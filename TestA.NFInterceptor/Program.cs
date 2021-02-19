@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
@@ -8,7 +9,7 @@ using Mono.Cecil.Rocks;
 namespace TestA.Interceptor
 {
     /* INFO *
-        https://cecilifier.me/ - online translator C# ti Mono.Cecil instruction on C#
+        https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C#
     */
 
     class Program
@@ -53,7 +54,7 @@ namespace TestA.Interceptor
 
                     //misc injections
                     //var ldstrBranch = Instruction.Create(OpCodes.Ldstr, $"-> BRANCH");                 
-                    Instruction ifInst = null;
+                    var ifStack = new Stack<Instruction>();
                     for (var i = 1; i < instructions.Count - 1; i++)
                     {
                         var op = instructions[i];
@@ -61,23 +62,26 @@ namespace TestA.Interceptor
                         var flow = op.OpCode.FlowControl;
 
                         //IF
-                        if (flow == FlowControl.Cond_Branch && (code == Code.Brfalse || code == Code.Brtrue || code == Code.Brfalse_S || code == Code.Brtrue_S))
+                        if (flow == FlowControl.Cond_Branch)
                         {
-                            ifInst = op;
+                            ifStack.Push(op);                
+                            var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
+
                             //when "after" set in desc order
-                            var ldstrIf = Instruction.Create(OpCodes.Ldstr, $"-> IF");
                             processor.InsertAfter(op, call);
                             processor.InsertAfter(op, ldstrIf);
                             i += 2;
                         }
 
                         //ELSE
-                        if (code == Code.Br || code == Code.Br_S)
+                        if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            var op2 = instructions[i + 1];
-                            var elseInst = Instruction.Create(OpCodes.Ldstr, $"-> ELSE");
+                            var ifInst = ifStack.Pop();
+                            var pairedCode = ifInst.OpCode.Code;
+                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
 
                             ifInst.Operand = elseInst; //readdress 'else'
+                            var op2 = instructions[i + 1];
                             processor.InsertBefore(op2, elseInst);
                             processor.InsertBefore(op2, call);
 
@@ -100,6 +104,16 @@ namespace TestA.Interceptor
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
             Console.ReadKey(true);
+        }
+
+        private static Instruction GetForIfInstruction()
+        {
+            return Instruction.Create(OpCodes.Ldstr, $"-> IF");
+        }
+
+        private static Instruction GetForElseInstruction()
+        {
+            return Instruction.Create(OpCodes.Ldstr, $"-> ELSE");
         }
 
         //http://www.swat4net.com/mono-cecil-part-ii-basic-operations/
