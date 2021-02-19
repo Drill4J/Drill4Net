@@ -46,20 +46,23 @@ namespace TestA.Interceptor
                     processor.InsertBefore(firstOp, ldstrEntering);
                     processor.InsertBefore(firstOp, call);
 
-                    //inject last instruction
+                    ////inject last instruction
                     var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {methodName}");
                     var lastOp = instructions.Last();
-                    processor.InsertBefore(lastOp, ldstrLeaving);
-                    processor.InsertBefore(lastOp, call);
+                    //processor.InsertBefore(lastOp, ldstrLeaving);
+                    //processor.InsertBefore(lastOp, call);
 
                     //misc injections
                     //var ldstrBranch = Instruction.Create(OpCodes.Ldstr, $"-> BRANCH");                 
                     var ifStack = new Stack<Instruction>();
-                    for (var i = 1; i < instructions.Count - 1; i++)
+                    for (var i = 1; i < instructions.Count; i++)
                     {
                         var op = instructions[i];
                         var code = op.OpCode.Code;
                         var flow = op.OpCode.FlowControl;
+
+                        if (op.Operand == lastOp) //jumps to end for return 
+                            op.Operand = ldstrLeaving;
 
                         //IF
                         if (flow == FlowControl.Cond_Branch)
@@ -67,7 +70,7 @@ namespace TestA.Interceptor
                             ifStack.Push(op);                
                             var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
 
-                            //when "after" set in desc order
+                            //when "after" - set in desc order
                             processor.InsertAfter(op, call);
                             processor.InsertAfter(op, ldstrIf);
                             i += 2;
@@ -88,8 +91,17 @@ namespace TestA.Interceptor
                             i += 2;
                         }
 
-                        //inject after return & throw
-                        if (/*op.OpCode.Code == Code.Leave_S || */flow == FlowControl.Return || flow == FlowControl.Throw)
+                        //THROW
+                        if (flow == FlowControl.Throw)
+                        {
+                            var throwInst = GetForThrowInstruction();
+                            processor.InsertBefore(op, throwInst);
+                            processor.InsertBefore(op, call);
+                            i += 2;
+                        }
+
+                        //RETURN
+                        if (flow == FlowControl.Return)
                         {
                             processor.InsertBefore(op, ldstrLeaving);
                             processor.InsertBefore(op, call);
@@ -114,6 +126,11 @@ namespace TestA.Interceptor
         private static Instruction GetForElseInstruction()
         {
             return Instruction.Create(OpCodes.Ldstr, $"-> ELSE");
+        }
+
+        private static Instruction GetForThrowInstruction()
+        {
+            return Instruction.Create(OpCodes.Ldstr, $"<< THROW");
         }
 
         //http://www.swat4net.com/mono-cecil-part-ii-basic-operations/

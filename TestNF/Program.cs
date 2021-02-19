@@ -34,8 +34,14 @@ namespace TestNF
             IfElse_FullSimple(false);
             IfElse_FullSimple(true);
 
-            Ternar(false);
-            Ternar(true);
+            Ternar_Direct(false);
+            Ternar_Direct(true);
+
+            Ternar_Negative(false);
+            Ternar_Negative(true);
+
+            //IfElse_Half_Func(false);
+            //IfElse_Half_Func(true);
 
             Console.ReadKey(true);
         }
@@ -62,12 +68,25 @@ namespace TestNF
 
         internal static void IfElse_Half(bool cond)
         {
-            string type = "no";
+            string type = "no"; 
             if (cond)
                 type = "yes";
 
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
         }
+
+        //internal static bool IfElse_Half_Func(bool cond)
+        //{
+        //    string type = "no";
+        //    if (cond)
+        //    {
+        //        type = "yes";
+        //        return true;
+        //    }
+
+        //    Console.WriteLine($"{nameof(IfElse_Half_Func)}: NO");
+        //    return false;
+        //}
 
         internal static void IfElse_FullSimple(bool cond)
         {
@@ -80,10 +99,16 @@ namespace TestNF
             Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
         }
 
-        internal static void Ternar(bool cond)
+        internal static void Ternar_Direct(bool cond)
         {
             string type = cond ? "yes" : "no";
-            Console.WriteLine($"{nameof(Ternar)}: {type}");
+            Console.WriteLine($"{nameof(Ternar_Direct)}: {type}");
+        }
+
+        internal static void Ternar_Negative(bool cond)
+        {
+            string type = !cond ? "no" : "yes";
+            Console.WriteLine($"{nameof(Ternar_Negative)}: {type}");
         }
     }
 }
