@@ -17,32 +17,34 @@ namespace TestNF
             //int d = operation(4, 5);
             //Console.WriteLine($"Anonym func: {d}"); // 17
 
-            //FuncA
+            //Exception_Conditional
             try
             {
-                FuncA(false);
-                FuncA(true);
+                Exception_Conditional(false);
+                Exception_Conditional(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"\n{ex}");
             }
 
-            if (DateTime.Now.Second % 2 == 0)
-                Console.WriteLine("!!!");
+            IfElse_Half(false);
+            IfElse_Half(true);
 
-            //FuncB
-            FuncB(0);
-            FuncB(1);
+            IfElse_FullSimple(false);
+            IfElse_FullSimple(true);
+
+            Ternar(false);
+            Ternar(true);
 
             Console.ReadKey(true);
         }
 
-        internal static void FuncA(bool isException)
+        internal static void Exception_Conditional(bool isException)
         {
             try
             {
-                Console.WriteLine("FuncA1");
+                Console.WriteLine(nameof(Exception_Conditional));
             }
             //exception rethrow is not crack the injection
             catch (Exception ex)
@@ -51,25 +53,37 @@ namespace TestNF
                 throw;
             }
 
-            Console.WriteLine("FuncA2");
-
             //exception throw is not crack the injection
             if (isException)
             {
-                Console.WriteLine("Will be throw!");
                 throw new Exception("Throw!");
             }
         }
 
-        internal static void FuncB(int b)
+        internal static void IfElse_Half(bool cond)
+        {
+            string type = "no";
+            if (cond)
+                type = "yes";
+
+            Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
+        }
+
+        internal static void IfElse_FullSimple(bool cond)
         {
             string type;
-            if (b % 2 == 0)
-                type = "even";
+            if (cond)
+                type = "yes";
             else
-                type = "odd";
+                type = "no";
 
-            Console.WriteLine($"FunB: {type}");
+            Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
+        }
+
+        internal static void Ternar(bool cond)
+        {
+            string type = cond ? "yes" : "no";
+            Console.WriteLine($"{nameof(Ternar)}: {type}");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
@@ -30,30 +29,29 @@ namespace TestA.Interceptor
             MethodReference consoleWriteLine =
                 module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
-            var nop = Instruction.Create(OpCodes.Nop);
 
             foreach (TypeDefinition type in module.Types)
             {
                 foreach (var methodDefinition in type.Methods)
                 {
                     var methodName = methodDefinition.Name;
-                    var ilBody = methodDefinition.Body;
-                    var ilProcessor = ilBody.GetILProcessor();
-                    var instructions = ilBody.Instructions;
+                    var body = methodDefinition.Body;
+                    var processor = body.GetILProcessor();
+                    var instructions = body.Instructions;
 
                     //inject first instruction
                     var firstOp = instructions.First();
-                    var ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n--Entering {methodName}");
-                    ilProcessor.InsertBefore(firstOp, ldstrEntering);
-                    ilProcessor.InsertBefore(firstOp, call);
+                    var ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n>> {methodName}");
+                    processor.InsertBefore(firstOp, ldstrEntering);
+                    processor.InsertBefore(firstOp, call);
 
                     //inject last instruction
-                    var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"--Leaving {methodName}");
+                    var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {methodName}");
                     var lastOp = instructions.Last();
-                    ilProcessor.InsertBefore(lastOp, ldstrLeaving);
-                    ilProcessor.InsertBefore(lastOp, call);
+                    processor.InsertBefore(lastOp, ldstrLeaving);
+                    processor.InsertBefore(lastOp, call);
 
-                    //inject after return & throw
+                    //misc injections
                     //var ldstrBranch = Instruction.Create(OpCodes.Ldstr, $"-> BRANCH");                 
                     Instruction ifInst = null;
                     for (var i = 1; i < instructions.Count - 1; i++)
@@ -68,8 +66,8 @@ namespace TestA.Interceptor
                             ifInst = op;
                             //when "after" set in desc order
                             var ldstrIf = Instruction.Create(OpCodes.Ldstr, $"-> IF");
-                            ilProcessor.InsertAfter(op, call);
-                            ilProcessor.InsertAfter(op, ldstrIf);
+                            processor.InsertAfter(op, call);
+                            processor.InsertAfter(op, ldstrIf);
                             i += 2;
                         }
 
@@ -80,18 +78,19 @@ namespace TestA.Interceptor
                             var elseInst = Instruction.Create(OpCodes.Ldstr, $"-> ELSE");
 
                             ifInst.Operand = elseInst; //readdress 'else'
-                            ilProcessor.InsertBefore(op2, elseInst);
-                            ilProcessor.InsertBefore(op2, call);
+                            processor.InsertBefore(op2, elseInst);
+                            processor.InsertBefore(op2, call);
 
                             i += 2;
                         }
 
-                        //if (/*op.OpCode.Code == Code.Leave_S || */flow == FlowControl.Return || flow == FlowControl.Throw)
-                        //{
-                        //    ilProcessor.InsertBefore(op, ldstrLeaving);
-                        //    ilProcessor.InsertBefore(op, call);
-                        //    i += 2;
-                        //}
+                        //inject after return & throw
+                        if (/*op.OpCode.Code == Code.Leave_S || */flow == FlowControl.Return || flow == FlowControl.Throw)
+                        {
+                            processor.InsertBefore(op, ldstrLeaving);
+                            processor.InsertBefore(op, call);
+                            i += 2;
+                        }
                     }
                 }
             }
