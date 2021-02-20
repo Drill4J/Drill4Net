@@ -41,18 +41,19 @@ namespace TestA.Interceptor
                     var processor = body.GetILProcessor();
                     var instructions = body.Instructions;//no copy list!
 
-                    //inject first instruction
+                    //inject 'entering' instruction
                     var firstOp = instructions.First();
                     var ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n>> {methodName}");
                     processor.InsertBefore(firstOp, ldstrEntering);
                     processor.InsertBefore(firstOp, call);
 
-                    //last instruction without immediate injection
+                    //'leaving' instruction without immediate injection
                     var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {methodName}");
                     var lastOp = instructions.Last();
 
                     //collect jumps. Hash table for addresses is almost useless,
-                    //because they will be recalculated inside the Engine during inject
+                    //because they will be recalculated inside the Engine during inject...
+                    //and ideally, there shouldn't be too many of them 
                     jumpers = new List<Instruction>();
                     for (var i = 1; i < instructions.Count; i++)
                     {
@@ -79,7 +80,7 @@ namespace TestA.Interceptor
                             ifStack.Push(op);                
                             var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
 
-                            //when "after" - set in desc order
+                            //when inserting 'after', let set in desc order
                             processor.InsertAfter(op, call);
                             processor.InsertAfter(op, ldstrIf);
                             i += 2;
@@ -88,17 +89,20 @@ namespace TestA.Interceptor
                         //ELSE
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            var ifInst = ifStack.Pop();
-                            var pairedCode = ifInst.OpCode.Code;
-                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
-                            var op2 = instructions[i + 1]; //check for overflow!
+                            if (ifStack.Any() && op.Operand != instructions[i + 1]) //is condition's jump?
+                            {
+                                var ifInst = ifStack.Pop();
+                                var pairedCode = ifInst.OpCode.Code;
+                                var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
+                                var op2 = instructions[i + 1]; //TODO: check for overflow!
 
-                            //ifInst.Operand = elseInst; //readdress 'else'
-                            CorrrectJump(op2, elseInst);                          
-                            processor.InsertBefore(op2, elseInst);
-                            processor.InsertBefore(op2, call);
+                                //ifInst.Operand = elseInst; //re-address 'else'
+                                CorrrectJump(op2, elseInst);
+                                processor.InsertBefore(op2, elseInst);
+                                processor.InsertBefore(op2, call);
 
-                            i += 2;
+                                i += 2;
+                            }
                         }
 
                         //THROW
@@ -128,20 +132,12 @@ namespace TestA.Interceptor
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
             Console.ReadKey(true);
 
-            // local functions
+            // local functions //
+
             void CorrrectJump(Instruction from, Instruction to)
             {
-                //check for nop jump
-                while (to.OpCode.Code == Code.Nop && to.Previous != null)
-                    to = to.Previous;
-
-                //correcting
-                for (var i = 0; i < jumpers.Count; i++)
-                {
-                    var curOp = jumpers[i];
-                    if (curOp.Operand == from)
-                        curOp.Operand = to;
-                }
+                foreach (var curOp in jumpers.Where(curOp => curOp.Operand == from))
+                    curOp.Operand = to;
             }
         }
 

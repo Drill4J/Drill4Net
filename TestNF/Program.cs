@@ -53,8 +53,16 @@ namespace TestNF
             IfElse_FullA_HalfB(true, true);
             IfElse_FullA_HalfB(false, true);
 
-            //IfElse_Half_Func(false);
-            //IfElse_Half_Func(true);
+            IfElse_Consec_Full(false, false);
+            IfElse_Consec_Full(false, true);
+            IfElse_Consec_Full(true, false);
+            IfElse_Consec_Full(true, true);
+
+            IfElse_Consec_HalfA_FullB(true, false);
+            IfElse_Consec_HalfA_FullB(true, true);
+
+            IfElse_Half_EarlyReturn_Func(false);
+            IfElse_Half_EarlyReturn_Func(true);
 
             Console.ReadKey(true);
         }
@@ -88,18 +96,60 @@ namespace TestNF
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
         }
 
-        //internal static bool IfElse_Half_Func(bool cond)
-        //{
-        //    string type = "no";
-        //    if (cond)
-        //    {
-        //        type = "yes";
-        //        return true;
-        //    }
+        internal static bool IfElse_Consec_Full(bool a, bool b)
+        {
+            if (a)
+            {
+                Console.WriteLine($"{nameof(IfElse_Consec_Full)}: YES1");
+            }
+            else
+            {
+                Console.WriteLine($"{nameof(IfElse_Consec_Full)}: NO1");
+            }
+            //
+            if (b)
+            {
+                Console.WriteLine($"{nameof(IfElse_Consec_Full)}: YES2");
+            }
+            else
+            {
+                Console.WriteLine($"{nameof(IfElse_Consec_Full)}: NO2");
+            }
+            return false;
+        }
 
-        //    Console.WriteLine($"{nameof(IfElse_Half_Func)}: NO");
-        //    return false;
-        //}
+        internal static bool IfElse_Consec_HalfA_FullB(bool a, bool b)
+        {
+            if (a)
+            {
+                Console.WriteLine($"{nameof(IfElse_Consec_HalfA_FullB)}: YES1");
+            }
+            //
+            if (b)
+            {
+                Console.WriteLine($"{nameof(IfElse_Consec_HalfA_FullB)}: YES2");
+            }
+            else
+            {
+                Console.WriteLine($"{nameof(IfElse_Consec_HalfA_FullB)}: NO2");
+            }
+            return false;
+        }
+
+        internal static bool IfElse_Half_EarlyReturn_Func(bool cond)
+        {
+            string type = "no";
+            if (cond)
+            {
+                type = "yes";
+                Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: YES");
+                return true;
+            }
+
+            Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: NO");
+
+            return false;
+        }
 
         internal static void IfElse_FullSimple(bool cond)
         {
