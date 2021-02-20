@@ -64,6 +64,11 @@ namespace TestNF
             IfElse_Half_EarlyReturn_Func(false);
             IfElse_Half_EarlyReturn_Func(true);
 
+            Switch(-1);
+            Switch(0);
+            Switch(1);
+            Switch(2);
+
             Console.ReadKey(true);
         }
 
@@ -87,6 +92,7 @@ namespace TestNF
             }
         }
 
+        #region IF/ELSE
         internal static void IfElse_Half(bool cond)
         {
             string type = "no"; 
@@ -239,6 +245,21 @@ namespace TestNF
             {
                 Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: !a*b");
             }
+        }
+        #endregion
+
+        internal static void Switch(int a)
+        {
+            var s = "";
+            switch (a)
+            {
+                case -1: Console.WriteLine($"{nameof(Switch)}: {a} -> return"); return;
+                case 0: s = "A"; break;
+                case 1: s = "B"; break;
+                default: s = "default"; break;
+            }
+
+            Console.WriteLine($"{nameof(Switch)}: {a} -> {s}");
         }
     }
 }

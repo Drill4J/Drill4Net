@@ -77,7 +77,13 @@ namespace TestA.Interceptor
                         //IF
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            ifStack.Push(op);                
+                            ifStack.Push(op);
+                            if (code == Code.Switch)
+                            {
+                                for (var k = 0; k < ((Instruction[])op.Operand).Length - 1; k++)
+                                    ifStack.Push(op);
+                            }
+
                             var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
 
                             //when inserting 'after', let set in desc order
@@ -89,7 +95,7 @@ namespace TestA.Interceptor
                         //ELSE
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            if (ifStack.Any() && op.Operand != instructions[i + 1]) //is condition's jump?
+                            if (ifStack.Any() && op.Operand != instructions[i + 1]) //is real condition's branch?
                             {
                                 var ifInst = ifStack.Pop();
                                 var pairedCode = ifInst.OpCode.Code;
@@ -136,8 +142,20 @@ namespace TestA.Interceptor
 
             void CorrrectJump(Instruction from, Instruction to)
             {
-                foreach (var curOp in jumpers.Where(curOp => curOp.Operand == from))
+                //direct jumps
+                foreach (var curOp in jumpers.Where(j => j.Operand == from))
                     curOp.Operand = to;
+
+                //switches
+                foreach (var curOp in jumpers.Where(j => j.OpCode.Code == Code.Switch))
+                {
+                    var switches = (Instruction[])curOp.Operand;
+                    for (int i = 0; i < switches.Length; i++)
+                    {
+                        if (switches[i] == from)
+                            switches[i] = to;
+                    }
+                }
             }
         }
 
