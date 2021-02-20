@@ -30,6 +30,7 @@ namespace TestA.Interceptor
             MethodReference consoleWriteLine =
                 module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
+            List<Instruction> jumpers;
 
             foreach (TypeDefinition type in module.Types)
             {
@@ -38,7 +39,7 @@ namespace TestA.Interceptor
                     var methodName = methodDefinition.Name;
                     var body = methodDefinition.Body;
                     var processor = body.GetILProcessor();
-                    var instructions = body.Instructions;
+                    var instructions = body.Instructions;//no copy list!
 
                     //inject first instruction
                     var firstOp = instructions.First();
@@ -46,14 +47,22 @@ namespace TestA.Interceptor
                     processor.InsertBefore(firstOp, ldstrEntering);
                     processor.InsertBefore(firstOp, call);
 
-                    ////inject last instruction
+                    //last instruction without immediate injection
                     var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {methodName}");
                     var lastOp = instructions.Last();
-                    //processor.InsertBefore(lastOp, ldstrLeaving);
-                    //processor.InsertBefore(lastOp, call);
 
-                    //misc injections
-                    //var ldstrBranch = Instruction.Create(OpCodes.Ldstr, $"-> BRANCH");                 
+                    //collect jumps. Hash table for addresses is almost useless,
+                    //because they will be recalculated inside the Engine during inject
+                    jumpers = new List<Instruction>();
+                    for (var i = 1; i < instructions.Count; i++)
+                    {
+                        var op = instructions[i];
+                        var flow = op.OpCode.FlowControl;
+                        if (flow == FlowControl.Branch || flow == FlowControl.Cond_Branch)
+                            jumpers.Add(op);
+                    }
+
+                    //misc injections               
                     var ifStack = new Stack<Instruction>();
                     for (var i = 1; i < instructions.Count; i++)
                     {
@@ -61,7 +70,7 @@ namespace TestA.Interceptor
                         var code = op.OpCode.Code;
                         var flow = op.OpCode.FlowControl;
 
-                        if (op.Operand == lastOp) //jumps to end for return 
+                        if (op.Operand == lastOp) //jump to the end for return from function
                             op.Operand = ldstrLeaving;
 
                         //IF
@@ -82,9 +91,10 @@ namespace TestA.Interceptor
                             var ifInst = ifStack.Pop();
                             var pairedCode = ifInst.OpCode.Code;
                             var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
+                            var op2 = instructions[i + 1]; //check for overflow!
 
-                            ifInst.Operand = elseInst; //readdress 'else'
-                            var op2 = instructions[i + 1];
+                            //ifInst.Operand = elseInst; //readdress 'else'
+                            CorrrectJump(op2, elseInst);                          
                             processor.InsertBefore(op2, elseInst);
                             processor.InsertBefore(op2, call);
 
@@ -103,6 +113,7 @@ namespace TestA.Interceptor
                         //RETURN
                         if (flow == FlowControl.Return)
                         {
+                            CorrrectJump(op, ldstrEntering);
                             processor.InsertBefore(op, ldstrLeaving);
                             processor.InsertBefore(op, call);
                             i += 2;
@@ -116,6 +127,22 @@ namespace TestA.Interceptor
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
             Console.ReadKey(true);
+
+            // local functions
+            void CorrrectJump(Instruction from, Instruction to)
+            {
+                //check for nop jump
+                while (to.OpCode.Code == Code.Nop && to.Previous != null)
+                    to = to.Previous;
+
+                //correcting
+                for (var i = 0; i < jumpers.Count; i++)
+                {
+                    var curOp = jumpers[i];
+                    if (curOp.Operand == from)
+                        curOp.Operand = to;
+                }
+            }
         }
 
         private static Instruction GetForIfInstruction()

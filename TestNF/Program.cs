@@ -34,11 +34,24 @@ namespace TestNF
             IfElse_FullSimple(false);
             IfElse_FullSimple(true);
 
-            Ternar_Direct(false);
-            Ternar_Direct(true);
+            Ternary_Positive(false);
+            Ternary_Positive(true);
 
-            Ternar_Negative(false);
-            Ternar_Negative(true);
+            Ternary_Negative(false);
+            Ternary_Negative(true);
+
+            IfElse_FullCompound(false, false);
+            IfElse_FullCompound(false, true);
+            IfElse_FullCompound(true, false);
+            IfElse_FullCompound(true, true);
+
+            IfElse_HalfA_FullB(true, false);
+            IfElse_HalfA_FullB(true, true);
+
+            IfElse_HalfA_HalfB(true, true);
+
+            IfElse_FullA_HalfB(true, true);
+            IfElse_FullA_HalfB(false, true);
 
             //IfElse_Half_Func(false);
             //IfElse_Half_Func(true);
@@ -99,16 +112,83 @@ namespace TestNF
             Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
         }
 
-        internal static void Ternar_Direct(bool cond)
+        internal static void Ternary_Positive(bool cond)
         {
             string type = cond ? "yes" : "no";
-            Console.WriteLine($"{nameof(Ternar_Direct)}: {type}");
+            Console.WriteLine($"{nameof(Ternary_Positive)}: {type}");
         }
 
-        internal static void Ternar_Negative(bool cond)
+        internal static void Ternary_Negative(bool cond)
         {
             string type = !cond ? "no" : "yes";
-            Console.WriteLine($"{nameof(Ternar_Negative)}: {type}");
+            Console.WriteLine($"{nameof(Ternary_Negative)}: {type}");
+        }
+
+        internal static void IfElse_FullCompound(bool a, bool b)
+        {
+            if (a)
+            {
+                if (b)
+                {
+                    Console.WriteLine($"{nameof(IfElse_FullCompound)}: ab");
+                }
+                else
+                {
+                    Console.WriteLine($"{nameof(IfElse_FullCompound)}: a!b");
+                }
+            }
+            else
+            {
+                if (b)
+                {
+                    Console.WriteLine($"{nameof(IfElse_FullCompound)}: !ab");
+                }
+                else
+                {
+                    Console.WriteLine($"{nameof(IfElse_FullCompound)}: !a!b");
+                }
+            }
+        }
+
+        internal static void IfElse_HalfA_FullB(bool a, bool b)
+        {
+            if (a)
+            {
+                if (b)
+                {
+                    Console.WriteLine($"{nameof(IfElse_HalfA_FullB)}: ab");
+                }
+                else
+                {
+                    Console.WriteLine($"{nameof(IfElse_HalfA_FullB)}: a!b");
+                }
+            }
+        }
+
+        internal static void IfElse_HalfA_HalfB(bool a, bool b)
+        {
+            if (a)
+            {
+                if (b)
+                {
+                    Console.WriteLine($"{nameof(IfElse_HalfA_FullB)}: ab");
+                }
+            }
+        }
+
+        internal static void IfElse_FullA_HalfB(bool a, bool b)
+        {
+            if (a)
+            {
+                if (b)
+                {
+                    Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: ab");
+                }
+            }
+            else 
+            {
+                Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: !a*b");
+            }
         }
     }
 }
