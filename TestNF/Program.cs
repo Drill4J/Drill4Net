@@ -64,10 +64,15 @@ namespace TestNF
             IfElse_Half_EarlyReturn_Func(false);
             IfElse_Half_EarlyReturn_Func(true);
 
-            Switch(-1);
-            Switch(0);
-            Switch(1);
-            Switch(2);
+            Switch_WithReturn(-1);
+            Switch_WithReturn(0);
+            Switch_WithReturn(1);
+            Switch_WithReturn(2);
+
+            Switch_AsReturn(-1);
+            Switch_AsReturn(0);
+            Switch_AsReturn(1);
+            Switch_AsReturn(2);
 
             Console.ReadKey(true);
         }
@@ -248,18 +253,31 @@ namespace TestNF
         }
         #endregion
 
-        internal static void Switch(int a)
+        internal static void Switch_WithReturn(int a)
         {
             var s = "";
             switch (a)
             {
-                case -1: Console.WriteLine($"{nameof(Switch)}: {a} -> return"); return;
+                case -1: Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> return"); return;
                 case 0: s = "A"; break;
                 case 1: s = "B"; break;
                 default: s = "default"; break;
             }
 
-            Console.WriteLine($"{nameof(Switch)}: {a} -> {s}");
+            Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> {s}");
+        }
+
+        internal static string Switch_AsReturn(int a)
+        {
+            Console.WriteLine($"{nameof(Switch_AsReturn)}: {a}");
+
+            return a switch
+            {
+                -1 => "",
+                0 => "A",
+                1 => "B",
+                _ => "default",
+            };
         }
     }
 }

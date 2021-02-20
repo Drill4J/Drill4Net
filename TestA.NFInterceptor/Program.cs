@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Collections.Generic;
 using Mono.Cecil.Rocks;
 
 namespace TestA.Interceptor
@@ -31,6 +32,7 @@ namespace TestA.Interceptor
                 module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
             List<Instruction> jumpers;
+            Collection<Instruction> instructions;
 
             foreach (TypeDefinition type in module.Types)
             {
@@ -39,7 +41,7 @@ namespace TestA.Interceptor
                     var methodName = methodDefinition.Name;
                     var body = methodDefinition.Body;
                     var processor = body.GetILProcessor();
-                    var instructions = body.Instructions;//no copy list!
+                    instructions = body.Instructions;//no copy list!
 
                     //inject 'entering' instruction
                     var firstOp = instructions.First();
@@ -52,7 +54,7 @@ namespace TestA.Interceptor
                     var lastOp = instructions.Last();
 
                     //collect jumps. Hash table for addresses is almost useless,
-                    //because they will be recalculated inside the Engine during inject...
+                    //because they will be recalculated inside the processor during inject...
                     //and ideally, there shouldn't be too many of them 
                     jumpers = new List<Instruction>();
                     for (var i = 1; i < instructions.Count; i++)
@@ -77,25 +79,28 @@ namespace TestA.Interceptor
                         //IF
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            ifStack.Push(op);
-                            if (code == Code.Switch)
+                            if (op.Operand != SkipNop(i)) //is real condition's branch?
                             {
-                                for (var k = 0; k < ((Instruction[])op.Operand).Length - 1; k++)
-                                    ifStack.Push(op);
+                                ifStack.Push(op);
+                                if (code == Code.Switch)
+                                {
+                                    for (var k = 0; k < ((Instruction[])op.Operand).Length - 1; k++)
+                                        ifStack.Push(op);
+                                }
+
+                                var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
+
+                                //when inserting 'after', let set in desc order
+                                processor.InsertAfter(op, call);
+                                processor.InsertAfter(op, ldstrIf);
+                                i += 2;
                             }
-
-                            var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
-
-                            //when inserting 'after', let set in desc order
-                            processor.InsertAfter(op, call);
-                            processor.InsertAfter(op, ldstrIf);
-                            i += 2;
                         }
 
                         //ELSE
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            if (ifStack.Any() && op.Operand != instructions[i + 1]) //is real condition's branch?
+                            if (ifStack.Any() && op.Operand != SkipNop(i)) //is real condition's branch?
                             {
                                 var ifInst = ifStack.Pop();
                                 var pairedCode = ifInst.OpCode.Code;
@@ -139,6 +144,20 @@ namespace TestA.Interceptor
             Console.ReadKey(true);
 
             // local functions //
+
+            Instruction SkipNop(int ind)
+            {
+                for (var i = ind+1; i < instructions.Count; i++)
+                {
+                    if (i == instructions.Count)
+                        break;
+                    var op = instructions[i];
+                    if (op.OpCode.Code == Code.Nop)
+                        continue;
+                    return op;
+                }
+                return Instruction.Create(OpCodes.Nop);
+            }
 
             void CorrrectJump(Instruction from, Instruction to)
             {
