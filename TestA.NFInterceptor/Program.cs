@@ -76,10 +76,29 @@ namespace TestA.Interceptor
                         if (op.Operand == lastOp) //jump to the end for return from function
                             op.Operand = ldstrLeaving;
 
-                        //IF
+                        // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            if (op.Operand != SkipNop(i)) //is real condition's branch?
+                            if (op.Operand is Instruction operand && operand.Offset > 0 && op.Offset > operand.Offset) //operators: while, do
+                            {
+                                var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
+                                var prevOperand = SkipNop(ind, false);
+                                if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
+                                {
+                                    var ldstrIf = GetForIfInstruction();
+                                    var targetOp = prevOperand.Operand as Instruction;
+                                    processor.InsertBefore(targetOp, ldstrIf);
+                                    processor.InsertBefore(targetOp, call);
+                                    i += 2;
+                                }
+                                else //do
+                                { 
+                                    //no signaling...
+                                }
+                                continue;
+                            }
+                            //
+                            if (op.Operand != SkipNop(i, true)) //is real condition's branch?
                             {
                                 ifStack.Push(op);
                                 if (code == Code.Switch)
@@ -97,10 +116,10 @@ namespace TestA.Interceptor
                             }
                         }
 
-                        //ELSE
+                        // ELSE/JUMP
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            if (ifStack.Any() && op.Operand != SkipNop(i)) //is real condition's branch?
+                            if (ifStack.Any() && op.Operand != SkipNop(i, true)) //is real condition's branch?
                             {
                                 var ifInst = ifStack.Pop();
                                 var pairedCode = ifInst.OpCode.Code;
@@ -111,7 +130,6 @@ namespace TestA.Interceptor
                                 CorrrectJump(op2, elseInst);
                                 processor.InsertBefore(op2, elseInst);
                                 processor.InsertBefore(op2, call);
-
                                 i += 2;
                             }
                         }
@@ -145,11 +163,25 @@ namespace TestA.Interceptor
 
             // local functions //
 
-            Instruction SkipNop(int ind)
+            Instruction SkipNop(int ind, bool forward)
             {
-                for (var i = ind+1; i < instructions.Count; i++)
+                int start, end, inc;
+                if (forward)
                 {
-                    if (i == instructions.Count)
+                    start = ind + 1;
+                    end = instructions.Count - 1;
+                    inc = 1;
+                }
+                else
+                {
+                    start = ind - 1;
+                    end = 0;
+                    inc = -1;
+                }
+                //
+                for (var i = start; true; i += inc)
+                {
+                    if (i >= instructions.Count || i < 0)
                         break;
                     var op = instructions[i];
                     if (op.OpCode.Code == Code.Nop)

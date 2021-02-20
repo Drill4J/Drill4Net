@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TestNF
 {
@@ -73,6 +74,18 @@ namespace TestNF
             Switch_AsReturn(0);
             Switch_AsReturn(1);
             Switch_AsReturn(2);
+
+            var list = new List<string> { "a", "b", "c" };
+            GenericParameter(list, false);
+            GenericParameter(list, true);
+
+            GenericVar(false);
+            GenericVar(true);
+
+            While_Operator(-1);
+            While_Operator(3);
+
+            Do_Operator();
 
             Console.ReadKey(true);
         }
@@ -252,7 +265,7 @@ namespace TestNF
             }
         }
         #endregion
-
+        #region Switch
         internal static void Switch_WithReturn(int a)
         {
             var s = "";
@@ -279,5 +292,59 @@ namespace TestNF
                 _ => "default",
             };
         }
+        #endregion
+        #region Generics
+        internal static void GenericParameter(List<string> list, bool a)
+        {
+            if (list == null)
+                throw new ArgumentNullException(nameof(list));
+            //
+            if (a)
+            {
+                if (list.Count > 0)
+                    list.RemoveAt(0);
+            }
+            else
+            {
+                list.Reverse();
+            }
+
+            Console.WriteLine($"{nameof(GenericParameter)}: {a} -> {string.Join(",", list)}");
+        }
+
+        internal static void GenericVar(bool a)
+        {
+            var list = new List<string> { "a", "b", "c" };
+            if (a)
+            {
+                if (list.Count > 0)
+                    list.RemoveAt(0);
+            }
+            else
+            {
+                list.Reverse();
+            }
+
+            Console.WriteLine($"{nameof(GenericVar)}: {a} -> {string.Join(",", list)}");
+        }
+        #endregion
+
+        internal static void While_Operator(int count)
+        {
+            Console.WriteLine($"{nameof(While_Operator)} -> {count}");
+            while (count > 0)
+                count--;
+        }
+
+        //in principle, it is not necessary, because 
+        //it is not a branch with a precondition
+        internal static void Do_Operator() 
+        {
+            int i = 3;
+            Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
+            do { i--; } while (i > 0);              
+        }
+
+        //TODO: unsafe, LINQ (both forms), catch, anonymous func, async/await
     }
 }
