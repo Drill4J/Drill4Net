@@ -96,7 +96,25 @@ namespace TestA.Interceptor
                         // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            if (op.Operand is Instruction operand && operand.Offset > 0 && op.Offset > operand.Offset) //operators: while, do
+                            if (IsAngledBranch(i))
+                                continue;
+
+                            //is real forward condition's branch?
+                            if (!IsRealCondition(i))
+                                continue;
+                            //
+                            var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S;
+                            var operand = op.Operand as Instruction;
+                            if (isBrFalse && operand!= null && operand.OpCode.Code == Code.Endfinally)
+                            {
+                                var endFinInd = instructions.IndexOf(operand);
+                                var prevInstr = SkipNop(endFinInd, false);
+                                var operand2 = prevInstr.Operand as MemberReference;
+                                if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
+                                    continue;
+                            }
+                            //
+                            if (operand != null && operand.Offset > 0 && op.Offset > operand.Offset) //operators: while, do
                             {
                                 var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
                                 var prevOperand = SkipNop(ind, false);
@@ -115,13 +133,6 @@ namespace TestA.Interceptor
                                 continue;
                             }
                             //
-                            if (IsAngledBranch(i))
-                                continue;
-
-                            //is real forward condition's branch?
-                            if (!IsRealCondition(i))
-                                continue;
-                            //
                             ifStack.Push(op);
                             if (code == Code.Switch)
                             {
@@ -129,7 +140,7 @@ namespace TestA.Interceptor
                                     ifStack.Push(op);
                             }
 
-                            var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
+                            var ldstrIf = isBrFalse ? GetForIfInstruction() : GetForElseInstruction();
 
                             //when inserting 'after', let set in desc order
                             processor.InsertAfter(op, call);

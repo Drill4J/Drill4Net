@@ -45,6 +45,9 @@ namespace TestNF
             Finally_Statement(false);
             Finally_Statement(true);
 
+            Lock_Statement(false);
+            Lock_Statement(true);
+
             IfElse_Half(false);
             IfElse_Half(true);
 
@@ -156,7 +159,18 @@ namespace TestNF
             {
                 s = $"{(cond ? "YES" : "NO")}/{s}";
             }
-            Console.WriteLine($"{nameof(Catch_Statement)}: {s}");
+            Console.WriteLine($"{nameof(Finally_Statement)}: {s}");
+        }
+
+        private readonly static object _locker = new object();
+        internal static void Lock_Statement(bool cond)
+        {
+            string s;
+            lock (_locker)
+            {
+               s = cond ? "YES" : "NO";
+            }
+            Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
         }
 
         delegate int Operation(int x, int y);
@@ -173,7 +187,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
         }
 
-        //yet no working!
+        //TODO: not working yet!
         internal static void Expression10(int x)
         {
             System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
