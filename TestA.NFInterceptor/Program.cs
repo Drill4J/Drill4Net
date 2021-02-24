@@ -33,6 +33,7 @@ namespace TestA.Interceptor
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
             List<Instruction> jumpers;
             Collection<Instruction> instructions;
+            HashSet<Instruction> angledInstructions;
 
             foreach (TypeDefinition type in module.Types)
             {
@@ -51,10 +52,9 @@ namespace TestA.Interceptor
                     var methodName = methodDefinition.Name;
                     var needEnterLeavings = !methodName.StartsWith("<");
                     var body = methodDefinition.Body;
-                    if (body == null)
-                        continue;
                     var processor = body.GetILProcessor();
                     instructions = body.Instructions;//no copy list!
+                    angledInstructions = new HashSet<Instruction>();
 
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
@@ -102,9 +102,9 @@ namespace TestA.Interceptor
                                 var prevOperand = SkipNop(ind, false);
                                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
                                 {
-                                    var ldstrIf = GetForIfInstruction();
+                                    var ldstrIf2 = GetForIfInstruction();
                                     var targetOp = prevOperand.Operand as Instruction;
-                                    processor.InsertBefore(targetOp, ldstrIf);
+                                    processor.InsertBefore(targetOp, ldstrIf2);
                                     processor.InsertBefore(targetOp, call);
                                     i += 2;
                                 }
@@ -115,29 +115,38 @@ namespace TestA.Interceptor
                                 continue;
                             }
                             //
-                            if (op.Operand != SkipNop(i, true)) //is real forward condition's branch?
+                            if (IsAngledBranch(i))
+                                continue;
+
+                            //is real forward condition's branch?
+                            if (!IsRealCondition(i))
+                                continue;
+                            //
+                            ifStack.Push(op);
+                            if (code == Code.Switch)
                             {
-                                ifStack.Push(op);
-                                if (code == Code.Switch)
-                                {
-                                    for (var k = 0; k < ((Instruction[])op.Operand).Length - 1; k++)
-                                        ifStack.Push(op);
-                                }
-
-                                var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
-
-                                //when inserting 'after', let set in desc order
-                                processor.InsertAfter(op, call);
-                                processor.InsertAfter(op, ldstrIf);
-                                i += 2;
+                                for (var k = 0; k < ((Instruction[])op.Operand).Length - 1; k++)
+                                    ifStack.Push(op);
                             }
+
+                            var ldstrIf = code == Code.Brfalse || code == Code.Brfalse_S ? GetForIfInstruction() : GetForElseInstruction();
+
+                            //when inserting 'after', let set in desc order
+                            processor.InsertAfter(op, call);
+                            processor.InsertAfter(op, ldstrIf);
+                            i += 2;
+                            continue;
                         }
 
                         // ELSE/JUMP
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            if (ifStack.Any() && op.Operand != SkipNop(i, true)) //is real forward condition's branch?
+                            if (IsAngledBranch(i))
+                                continue;
+                            if (ifStack.Any())
                             {
+                                if (!IsRealCondition(i)) //is real forward condition's branch?
+                                    continue;
                                 var ifInst = ifStack.Pop();
                                 var pairedCode = ifInst.OpCode.Code;
                                 var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
@@ -149,6 +158,7 @@ namespace TestA.Interceptor
                                 processor.InsertBefore(op2, call);
                                 i += 2;
                             }
+                            continue;
                         }
 
                         //THROW
@@ -179,6 +189,16 @@ namespace TestA.Interceptor
             Console.ReadKey(true);
 
             // local functions //
+
+            bool IsRealCondition(int ind)
+            {
+                if (ind < 0 || ind >= instructions.Count)
+                    return false;
+
+                var op = instructions[ind];
+                var next = SkipNop(ind, true);
+                return op.Operand != next && (op.Operand as Instruction)?.Operand?.ToString() != next.Offset.ToString();
+            }
 
             Instruction SkipNop(int ind, bool forward)
             {
@@ -224,6 +244,53 @@ namespace TestA.Interceptor
                             switches[i] = to;
                     }
                 }
+            }
+
+            bool IsAngledBranch(int ind)
+            {
+                //TODO: optimize (caching, etc)!!!
+                if (ind < 0 || ind >= instructions.Count)
+                    return false;
+                Instruction instr = instructions[ind];
+                Instruction inited = instr;
+                Instruction finish = inited.Operand as Instruction;
+                if (instr.OpCode.FlowControl != FlowControl.Cond_Branch)
+                    return false;
+                var localInsts = new List<Instruction>();
+                //
+                while (true)
+                {
+                    if (instr == null || instr.Offset == 0)
+                        break;
+
+                    //we don't need 'angled' instructions
+                    if (!angledInstructions.Contains(instr))
+                    {
+                        localInsts.Add(instr);
+                        var operand = instr.Operand as MemberReference;
+                        if (operand?.Name.StartsWith("<") == true)
+                        {
+                            //add next instructions of branch as 'angled'
+                            var curNext = inited.Next;
+                            while (true)
+                            {
+                                var flow = curNext.OpCode.FlowControl;
+                                if (curNext == null || curNext == finish || flow == FlowControl.Return || flow == FlowControl.Throw)
+                                    break;
+                                localInsts.Add(curNext);
+                                curNext = curNext.Next;
+                            }
+
+                            //add local angled instructions to cache
+                            foreach (var ins in localInsts)
+                                if (!angledInstructions.Contains(ins))
+                                    angledInstructions.Add(ins);
+                            return true;
+                        }
+                    }
+                    instr = instr.Previous; 
+                }
+                return false;
             }
         }
 

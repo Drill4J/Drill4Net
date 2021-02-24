@@ -14,6 +14,12 @@ namespace TestNF
             Lambda10(5);
             Lambda10(10);
 
+            Lambda10_AdditionalBranch(10);
+
+            Lambda10_AdditionalSwitch(5);
+            Lambda10_AdditionalSwitch(10);
+            Lambda10_AdditionalSwitch(12);
+
             Expression10(5);
             Expression10(10);
 
@@ -70,6 +76,11 @@ namespace TestNF
             Switch_WithReturn(0);
             Switch_WithReturn(1);
             Switch_WithReturn(2);
+
+            Switch_WithoutDefault(-1);
+            Switch_WithoutDefault(0);
+            Switch_WithoutDefault(1);
+            Switch_WithoutDefault(2);
 
             Switch_AsReturn(-1);
             Switch_AsReturn(0);
@@ -129,7 +140,28 @@ namespace TestNF
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
-            Console.WriteLine($"{nameof(Lambda10)}: {d}"); // 15
+            Console.WriteLine($"{nameof(Lambda10)}: {d}"); 
+        }
+
+        internal static void Lambda10_AdditionalBranch(int x)
+        {
+            Func<int, int> square = x => x < 10 ? 0 : x * x;
+            int d = square(x);
+            if (d >= 100)
+                d /= 2;
+            Console.WriteLine($"{nameof(Lambda10)}: {d}"); 
+        }
+
+        internal static void Lambda10_AdditionalSwitch(int x)
+        {
+            Func<int, int> square = x => x < 10 ? 0 : x * x;
+            int d = square(x);
+            switch (d)
+            {
+                case 100: d = 50; break;
+                case 144: d = 75; break;
+            }
+            Console.WriteLine($"{nameof(Lambda10)}: {d}");
         }
 
         //yet no working!
@@ -138,7 +170,7 @@ namespace TestNF
             System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
             var dlg = e.Compile();
             int d = dlg(x);
-            Console.WriteLine($"{nameof(Expression10)}: {d}"); // 15
+            Console.WriteLine($"{nameof(Expression10)}: {d}");
         }
 
         internal static void Linq(bool all)
@@ -313,6 +345,19 @@ namespace TestNF
                 case 0: s = "A"; break;
                 case 1: s = "B"; break;
                 default: s = "default"; break;
+            }
+
+            Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> {s}");
+        }
+
+        internal static void Switch_WithoutDefault(int a)
+        {
+            var s = "default";
+            switch (a)
+            {
+                case -1: Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> return"); return;
+                case 0: s = "A"; break;
+                case 1: s = "B"; break;
             }
 
             Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> {s}");
