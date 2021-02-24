@@ -36,18 +36,35 @@ namespace TestA.Interceptor
 
             foreach (TypeDefinition type in module.Types)
             {
-                foreach (var methodDefinition in type.Methods)
+                //collect methods including for all nested classes (delegates, anonymous types...)
+                var methods = type.Methods.Where(a => a.HasBody).ToList(); //need copy list
+                foreach (var nestedType in type.NestedTypes)
+                {
+                    var isAngleBracket = nestedType.Name.StartsWith("<");
+                    foreach (var nestedMethod in nestedType.Methods.Where(a => a.HasBody && !(isAngleBracket && a.IsConstructor)))
+                        methods.Add(nestedMethod);
+                }
+
+                //process all methods
+                foreach (var methodDefinition in methods) 
                 {
                     var methodName = methodDefinition.Name;
+                    var needEnterLeavings = !methodName.StartsWith("<");
                     var body = methodDefinition.Body;
+                    if (body == null)
+                        continue;
                     var processor = body.GetILProcessor();
                     instructions = body.Instructions;//no copy list!
 
                     //inject 'entering' instruction
-                    var firstOp = instructions.First();
-                    var ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n>> {methodName}");
-                    processor.InsertBefore(firstOp, ldstrEntering);
-                    processor.InsertBefore(firstOp, call);
+                    Instruction ldstrEntering = null;
+                    if (needEnterLeavings)
+                    {
+                        var firstOp = instructions.First();
+                        ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n>> {methodName}");
+                        processor.InsertBefore(firstOp, ldstrEntering);
+                        processor.InsertBefore(firstOp, call);
+                    }
 
                     //'leaving' instruction without immediate injection
                     var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {methodName}");
@@ -73,7 +90,7 @@ namespace TestA.Interceptor
                         var code = op.OpCode.Code;
                         var flow = op.OpCode.FlowControl;
 
-                        if (op.Operand == lastOp) //jump to the end for return from function
+                        if (op.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
                             op.Operand = ldstrLeaving;
 
                         // IF/SWITCH
@@ -98,7 +115,7 @@ namespace TestA.Interceptor
                                 continue;
                             }
                             //
-                            if (op.Operand != SkipNop(i, true)) //is real condition's branch?
+                            if (op.Operand != SkipNop(i, true)) //is real forward condition's branch?
                             {
                                 ifStack.Push(op);
                                 if (code == Code.Switch)
@@ -119,7 +136,7 @@ namespace TestA.Interceptor
                         // ELSE/JUMP
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            if (ifStack.Any() && op.Operand != SkipNop(i, true)) //is real condition's branch?
+                            if (ifStack.Any() && op.Operand != SkipNop(i, true)) //is real forward condition's branch?
                             {
                                 var ifInst = ifStack.Pop();
                                 var pairedCode = ifInst.OpCode.Code;
@@ -144,7 +161,7 @@ namespace TestA.Interceptor
                         }
 
                         //RETURN
-                        if (flow == FlowControl.Return)
+                        if (flow == FlowControl.Return && needEnterLeavings)
                         {
                             CorrrectJump(op, ldstrEntering);
                             processor.InsertBefore(op, ldstrLeaving);

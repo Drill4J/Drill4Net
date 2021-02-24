@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TestNF
 {
     class Program
     {
-        //delegate int Operation(int x, int y);
-
         static void Main(string[] args)
         {
-            ////anonymous func
-            //int z = 8;
-            //Operation operation = delegate (int x, int y)
-            //{
-            //    return x + y + z;
-            //};
-            //int d = operation(4, 5);
-            //Console.WriteLine($"Anonym func: {d}"); // 17
+            //anonymous func, lambda...
+            AnonymousFunc();
 
-            //Exception_Conditional
+            Lambda10(5);
+            Lambda10(10);
+
+            Expression10(5);
+            Expression10(10);
+
+            Linq(false);
+            Linq(true);
+
             try
             {
                 Exception_Conditional(false);
@@ -108,6 +109,43 @@ namespace TestNF
             {
                 throw new Exception("Throw!");
             }
+        }
+
+        delegate int Operation(int x, int y);
+        internal static void AnonymousFunc()
+        {
+            int z = 8;
+            Operation operation = delegate (int x, int y)
+            {
+                if (x > 1)
+                    x /= 2;
+                return x + y + z;
+            };
+            int d = operation(4, 5);
+            Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
+        }
+
+        internal static void Lambda10(int x)
+        {
+            Func<int, int> square = x => x < 10 ? 0 : x * x;
+            int d = square(x);
+            Console.WriteLine($"{nameof(Lambda10)}: {d}"); // 15
+        }
+
+        //yet no working!
+        internal static void Expression10(int x)
+        {
+            System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
+            var dlg = e.Compile();
+            int d = dlg(x);
+            Console.WriteLine($"{nameof(Expression10)}: {d}"); // 15
+        }
+
+        internal static void Linq(bool all)
+        {
+            var customers = new List<string> { "Paris", "London", "Moscow" };
+            var res = customers.Where(c => all ? c != null : c == "London");
+            Console.WriteLine($"{nameof(Expression10)}: {string.Join(",", res)}"); 
         }
 
         #region IF/ELSE
@@ -328,7 +366,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(GenericVar)}: {a} -> {string.Join(",", list)}");
         }
         #endregion
-
+        #region Do/While
         internal static void While_Operator(int count)
         {
             Console.WriteLine($"{nameof(While_Operator)} -> {count}");
@@ -344,7 +382,8 @@ namespace TestNF
             Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
             do { i--; } while (i > 0);              
         }
+        #endregion
 
-        //TODO: unsafe, LINQ (both forms), catch, anonymous func, async/await
+        //TODO: unsafe, LINQ (both forms), catch, async/await
     }
 }
