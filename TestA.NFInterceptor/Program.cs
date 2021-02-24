@@ -37,7 +37,7 @@ namespace TestA.Interceptor
 
             foreach (TypeDefinition type in module.Types)
             {
-                //collect methods including for all nested classes (delegates, anonymous types...)
+                //collect methods including business & system nested classes (for delegates, anonymous types...)
                 var methods = type.Methods.Where(a => a.HasBody).ToList(); //need copy list
                 foreach (var nestedType in type.NestedTypes)
                 {
@@ -141,23 +141,24 @@ namespace TestA.Interceptor
                         // ELSE/JUMP
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
-                            if (IsAngledBranch(i))
+                            if (!ifStack.Any())
                                 continue;
-                            if (ifStack.Any())
-                            {
-                                if (!IsRealCondition(i)) //is real forward condition's branch?
-                                    continue;
-                                var ifInst = ifStack.Pop();
-                                var pairedCode = ifInst.OpCode.Code;
-                                var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
-                                var op2 = instructions[i + 1]; //TODO: check for overflow!
+                           if (IsAngledBranch(i))
+                                continue;
+                            if (!IsRealCondition(i)) //is real forward condition's branch?
+                                continue;
+                            //
+                            var ifInst = ifStack.Pop();
+                            var pairedCode = ifInst.OpCode.Code;
+                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
+                            var op2 = instructions[i + 1]; //TODO: check for overflow!
 
-                                //ifInst.Operand = elseInst; //re-address 'else'
-                                CorrrectJump(op2, elseInst);
-                                processor.InsertBefore(op2, elseInst);
-                                processor.InsertBefore(op2, call);
-                                i += 2;
-                            }
+                            //ifInst.Operand = elseInst; //re-address 'else'
+                            CorrrectJump(op2, elseInst);
+                            processor.InsertBefore(op2, elseInst);
+                            processor.InsertBefore(op2, call);
+                            i += 2;
+
                             continue;
                         }
 
@@ -168,6 +169,7 @@ namespace TestA.Interceptor
                             processor.InsertBefore(op, throwInst);
                             processor.InsertBefore(op, call);
                             i += 2;
+                            continue;
                         }
 
                         //RETURN
@@ -177,6 +179,7 @@ namespace TestA.Interceptor
                             processor.InsertBefore(op, ldstrLeaving);
                             processor.InsertBefore(op, call);
                             i += 2;
+                            continue;
                         }
                     }
                 }
@@ -194,7 +197,7 @@ namespace TestA.Interceptor
             {
                 if (ind < 0 || ind >= instructions.Count)
                     return false;
-
+                //
                 var op = instructions[ind];
                 var next = SkipNop(ind, true);
                 return op.Operand != next && (op.Operand as Instruction)?.Operand?.ToString() != next.Offset.ToString();
@@ -248,22 +251,23 @@ namespace TestA.Interceptor
 
             bool IsAngledBranch(int ind)
             {
-                //TODO: optimize (caching, etc)!!!
+                //TODO: optimize (caching 'normal instruction')!!!
                 if (ind < 0 || ind >= instructions.Count)
                     return false;
                 Instruction instr = instructions[ind];
-                Instruction inited = instr;
-                Instruction finish = inited.Operand as Instruction;
                 if (instr.OpCode.FlowControl != FlowControl.Cond_Branch)
                     return false;
-                var localInsts = new List<Instruction>();
                 //
+                Instruction inited = instr;
+                Instruction finish = inited.Operand as Instruction;
+                var localInsts = new List<Instruction>();
+
                 while (true)
                 {
                     if (instr == null || instr.Offset == 0)
                         break;
 
-                    //we don't need 'angled' instructions
+                    //we don't need 'angled' instructions in business code
                     if (!angledInstructions.Contains(instr))
                     {
                         localInsts.Add(instr);
