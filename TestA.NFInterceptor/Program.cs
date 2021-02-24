@@ -173,7 +173,7 @@ namespace TestA.Interceptor
                         }
 
                         //RETURN
-                        if (flow == FlowControl.Return && needEnterLeavings)
+                        if (flow == FlowControl.Return && needEnterLeavings && code != Code.Endfinally) // && code != Code.Endfilter ???
                         {
                             CorrrectJump(op, ldstrEntering);
                             processor.InsertBefore(op, ldstrLeaving);

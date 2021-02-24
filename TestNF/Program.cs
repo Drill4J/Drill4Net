@@ -39,6 +39,12 @@ namespace TestNF
                 Console.WriteLine($"\n{ex}");
             }
 
+            Catch_Statement(false);
+            Catch_Statement(true);
+
+            Finally_Statement(false);
+            Finally_Statement(true);
+
             IfElse_Half(false);
             IfElse_Half(true);
 
@@ -123,6 +129,34 @@ namespace TestNF
             {
                 throw new Exception("Throw!");
             }
+        }
+
+        internal static void Catch_Statement(bool cond)
+        {
+            var s = "";
+            try
+            {
+                throw new Exception();
+            }
+            catch
+            {
+                s = cond ? "YES" : "NO";
+            }
+            Console.WriteLine($"{nameof(Catch_Statement)}: {s}");
+        }
+
+        internal static void Finally_Statement(bool cond)
+        {
+            string s = null;
+            try
+            {
+                s = "A";
+            }
+            finally
+            {
+                s = $"{(cond ? "YES" : "NO")}/{s}";
+            }
+            Console.WriteLine($"{nameof(Catch_Statement)}: {s}");
         }
 
         delegate int Operation(int x, int y);
@@ -441,6 +475,6 @@ namespace TestNF
         }
         #endregion
 
-        //TODO: unsafe, LINQ (both forms + async), catch, async/await
+        //TODO: finalyzer, unsafe, LINQ (+ async), async/await
     }
 }
