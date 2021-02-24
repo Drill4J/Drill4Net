@@ -23,8 +23,11 @@ namespace TestNF
             Expression10(5);
             Expression10(10);
 
-            Linq(false);
-            Linq(true);
+            Linq_Query(false);
+            Linq_Query(true);
+
+            Linq_Fluent(false);
+            Linq_Fluent(true);
 
             try
             {
@@ -136,6 +139,31 @@ namespace TestNF
             Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
         }
 
+        //yet no working!
+        internal static void Expression10(int x)
+        {
+            System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
+            var dlg = e.Compile();
+            int d = dlg(x);
+            Console.WriteLine($"{nameof(Expression10)}: {d}");
+        }
+
+        #region Linq
+        internal static void Linq_Query(bool all)
+        {
+            var customers = new List<string> { "Paris", "London", "Moscow" };
+            var res = from c in customers where all || c == "London" select c;
+            Console.WriteLine($"{nameof(Linq_Query)}: {string.Join(",", res)}");
+        }
+
+        internal static void Linq_Fluent(bool all)
+        {
+            var customers = new List<string> { "Paris", "London", "Moscow" };
+            var res = customers.Where(c => all ? c != null : c == "London");
+            Console.WriteLine($"{nameof(Linq_Fluent)}: {string.Join(",", res)}");
+        }
+        #endregion
+        #region Lambda
         internal static void Lambda10(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
@@ -149,7 +177,7 @@ namespace TestNF
             int d = square(x);
             if (d >= 100)
                 d /= 2;
-            Console.WriteLine($"{nameof(Lambda10)}: {d}"); 
+            Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}"); 
         }
 
         internal static void Lambda10_AdditionalSwitch(int x)
@@ -161,25 +189,9 @@ namespace TestNF
                 case 100: d = 50; break;
                 case 144: d = 75; break;
             }
-            Console.WriteLine($"{nameof(Lambda10)}: {d}");
+            Console.WriteLine($"{nameof(Lambda10_AdditionalSwitch)}: {d}");
         }
-
-        //yet no working!
-        internal static void Expression10(int x)
-        {
-            System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
-            var dlg = e.Compile();
-            int d = dlg(x);
-            Console.WriteLine($"{nameof(Expression10)}: {d}");
-        }
-
-        internal static void Linq(bool all)
-        {
-            var customers = new List<string> { "Paris", "London", "Moscow" };
-            var res = customers.Where(c => all ? c != null : c == "London");
-            Console.WriteLine($"{nameof(Expression10)}: {string.Join(",", res)}"); 
-        }
-
+        #endregion
         #region IF/ELSE
         internal static void IfElse_Half(bool cond)
         {
@@ -429,6 +441,6 @@ namespace TestNF
         }
         #endregion
 
-        //TODO: unsafe, LINQ (both forms), catch, async/await
+        //TODO: unsafe, LINQ (both forms + async), catch, async/await
     }
 }
