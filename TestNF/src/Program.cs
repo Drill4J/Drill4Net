@@ -15,7 +15,7 @@ namespace TestNF
 
         private static async void Process()
         {
-            //anonymous func, lambda...
+            #region Anonymous, lambda, Linq
             AnonymousFunc();
 
             Lambda10(5);
@@ -35,31 +35,7 @@ namespace TestNF
 
             Linq_Fluent(false);
             Linq_Fluent(true);
-
-            try
-            {
-                Exception_Conditional(false);
-                Exception_Conditional(true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"\n{ex}");
-            }
-
-            Catch_Statement(false);
-            Catch_Statement(true);
-
-            Finally_Statement(false);
-            Finally_Statement(true);
-
-            Lock_Statement(false);
-            Lock_Statement(true);
-
-            While_Operator(-1);
-            While_Operator(3);
-
-            Do_Operator();
-
+            #endregion
             #region IfElse
             IfElse_Half(false);
             IfElse_Half(true);
@@ -127,12 +103,43 @@ namespace TestNF
             Generic_Call_Child(false);
             Generic_Call_Child(true);
             #endregion
+            #region Misc
+            try
+            {
+                Exception_Conditional(false);
+                Exception_Conditional(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\n{ex}");
+            }
+
+            Catch_Statement(false);
+            Catch_Statement(true);
+
+            Finally_Statement(false);
+            Finally_Statement(true);
+
+            Lock_Statement(false);
+            Lock_Statement(true);
+
+            While_Operator(-1);
+            While_Operator(3);
+
+            Do_Operator();
+            #endregion
             #region Async
             await AsyncTask(false);
             await AsyncTask(true);
 
             await AsyncLambda(false);
             await AsyncLambda(true);
+
+            AsyncLinq_Blocking(false);
+            AsyncLinq_Blocking(true);
+
+            await AsyncLinq_NonBlocking(false);
+            await AsyncLinq_NonBlocking(true);
             #endregion
         }
 
@@ -550,8 +557,39 @@ namespace TestNF
                 Console.WriteLine($"{nameof(AsyncLambda)}: {cond}");
             });
         }
+
+        internal static void AsyncLinq_Blocking(bool cond)
+        {
+            var data = GetDataForAsyncLinq();
+            var inputs = data.Select(async ev => await ProcessElement(ev, cond))
+                   .Select(t => t.GetAwaiter().GetResult().Prop)
+                   .Where(i => i != null)
+                   .ToList();
+            Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
+        }
+
+        internal static async Task AsyncLinq_NonBlocking(bool cond)
+        {
+            var data = GetDataForAsyncLinq();
+            var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
+            var inputs = tasks.Select(a => a.Prop).Where(result => result != null).ToList();
+            Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
+        }
+
+        private static List<GenStr> GetDataForAsyncLinq()
+        {
+            return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C") };
+        }
+
+        private static async Task<GenStr> ProcessElement(GenStr element, bool cond)
+        {
+            await Task.Delay(10);
+            if(cond)
+                element.Prop += "/1";
+            return element;
+        }
         #endregion
 
-        //TODO: using, for, foreach, generics class, finalyzer, unsafe, async LINQ, WinAPI, ContextBoundObject, stringBuilder, EF, tuples, Lambda + tuples
+        //TODO: TPL, using, for, foreach, finalyzer, unsafe, WinAPI, ContextBoundObject, stringBuilder, EF, tuples, Lambda + tuples
     }
 }

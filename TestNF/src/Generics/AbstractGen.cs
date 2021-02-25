@@ -2,9 +2,9 @@
 
 namespace TestNF
 {
-    public abstract class AbstractGen<T> where T : class
+    public abstract class AbstractGen<T>
     {
-        public T Prop { get; }
+        public T Prop { get; set; }
 
         protected AbstractGen(T prop)
         {
