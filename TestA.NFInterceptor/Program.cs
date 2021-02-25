@@ -6,6 +6,8 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Collections.Generic;
 using Mono.Cecil.Rocks;
+using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace TestA.Interceptor
 {
@@ -34,6 +36,9 @@ namespace TestA.Interceptor
             List<Instruction> jumpers;
             Collection<Instruction> instructions;
             HashSet<Instruction> angledInstructions;
+            var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
+            var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
+            bool isAsyncStateMachine = false;
 
             foreach (TypeDefinition type in module.Types)
             {
@@ -49,25 +54,45 @@ namespace TestA.Interceptor
                 //process all methods
                 foreach (var methodDefinition in methods) 
                 {
+                    var realType = methodDefinition.DeclaringType;
+                    var typeName = realType.FullName;
                     var methodName = methodDefinition.Name;
-                    var needEnterLeavings = !methodName.StartsWith("<");
+
+                    //instructions
                     var body = methodDefinition.Body;
-                    var processor = body.GetILProcessor();
                     instructions = body.Instructions;//no copy list!
+                    var processor = body.GetILProcessor();
                     angledInstructions = new HashSet<Instruction>();
+                    var startInd = 1;
+
+                    //method's attributes
+                    var methAttrs = methodDefinition.CustomAttributes;
+                    var isDbgHidden = methAttrs.FirstOrDefault(a => a.AttributeType.Name == dbgHiddenAttrName) != null;
+                    if (isDbgHidden)
+                        continue;
+
+                    //check for async/await
+                    var interfaces = realType.Interfaces;
+                    isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
+                    if (isAsyncStateMachine) //seems not good: skip state machine's initial instructions
+                        startInd = 12; 
+
+                    //type's attributes
+                    var declAttrs = realType.CustomAttributes;
+                    var needEnterLeavings = declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null; //!methodName.StartsWith("<");
 
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
                     if (needEnterLeavings)
                     {
                         var firstOp = instructions.First();
-                        ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n>> {methodName}");
+                        ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n>> {typeName}.{methodName}");
                         processor.InsertBefore(firstOp, ldstrEntering);
                         processor.InsertBefore(firstOp, call);
                     }
 
                     //'leaving' instruction without immediate injection
-                    var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {methodName}");
+                    var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {typeName}.{methodName}");
                     var lastOp = instructions.Last();
 
                     //collect jumps. Hash table for addresses is almost useless,
@@ -76,35 +101,35 @@ namespace TestA.Interceptor
                     jumpers = new List<Instruction>();
                     for (var i = 1; i < instructions.Count; i++)
                     {
-                        var op = instructions[i];
-                        var flow = op.OpCode.FlowControl;
+                        var instr = instructions[i];
+                        var flow = instr.OpCode.FlowControl;
                         if (flow == FlowControl.Branch || flow == FlowControl.Cond_Branch)
-                            jumpers.Add(op);
+                            jumpers.Add(instr);
                     }
 
                     //misc injections               
                     var ifStack = new Stack<Instruction>();
-                    for (var i = 1; i < instructions.Count; i++)
+                    for (var i = startInd; i < instructions.Count; i++)
                     {
-                        var op = instructions[i];
-                        var code = op.OpCode.Code;
-                        var flow = op.OpCode.FlowControl;
+                        var instr = instructions[i];
+                        var code = instr.OpCode.Code;
+                        var flow = instr.OpCode.FlowControl;
 
-                        if (op.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
-                            op.Operand = ldstrLeaving;
+                        if (instr.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
+                            instr.Operand = ldstrLeaving;
 
                         // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            if (IsAngledBranch(i))
-                                continue;
-
-                            //is real forward condition's branch?
+                            if (!isAsyncStateMachine && IsAngledBranch(i))
+                                continue;                            
                             if (!IsRealCondition(i))
                                 continue;
                             //
                             var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S;
-                            var operand = op.Operand as Instruction;
+
+                            //lock/Monitor
+                            var operand = instr.Operand as Instruction;
                             if (isBrFalse && operand!= null && operand.OpCode.Code == Code.Endfinally)
                             {
                                 var endFinInd = instructions.IndexOf(operand);
@@ -113,8 +138,9 @@ namespace TestA.Interceptor
                                 if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
                                     continue;
                             }
-                            //
-                            if (operand != null && operand.Offset > 0 && op.Offset > operand.Offset) //operators: while, do
+                            
+                            //operators: while/do
+                            if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset) 
                             {
                                 var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
                                 var prevOperand = SkipNop(ind, false);
@@ -132,19 +158,20 @@ namespace TestA.Interceptor
                                 }
                                 continue;
                             }
-                            //
-                            ifStack.Push(op);
+                            
+                            // if/switch
+                            ifStack.Push(instr);
                             if (code == Code.Switch)
                             {
-                                for (var k = 0; k < ((Instruction[])op.Operand).Length - 1; k++)
-                                    ifStack.Push(op);
+                                for (var k = 0; k < ((Instruction[])instr.Operand).Length - 1; k++)
+                                    ifStack.Push(instr);
                             }
 
                             var ldstrIf = isBrFalse ? GetForIfInstruction() : GetForElseInstruction();
 
                             //when inserting 'after', let set in desc order
-                            processor.InsertAfter(op, call);
-                            processor.InsertAfter(op, ldstrIf);
+                            processor.InsertAfter(instr, call);
+                            processor.InsertAfter(instr, ldstrIf);
                             i += 2;
                             continue;
                         }
@@ -154,7 +181,7 @@ namespace TestA.Interceptor
                         {
                             if (!ifStack.Any())
                                 continue;
-                           if (IsAngledBranch(i))
+                           if (!isAsyncStateMachine && IsAngledBranch(i))
                                 continue;
                             if (!IsRealCondition(i)) //is real forward condition's branch?
                                 continue;
@@ -177,8 +204,8 @@ namespace TestA.Interceptor
                         if (flow == FlowControl.Throw)
                         {
                             var throwInst = GetForThrowInstruction();
-                            processor.InsertBefore(op, throwInst);
-                            processor.InsertBefore(op, call);
+                            processor.InsertBefore(instr, throwInst);
+                            processor.InsertBefore(instr, call);
                             i += 2;
                             continue;
                         }
@@ -186,9 +213,9 @@ namespace TestA.Interceptor
                         //RETURN
                         if (flow == FlowControl.Return && needEnterLeavings && code != Code.Endfinally) // && code != Code.Endfilter ???
                         {
-                            CorrrectJump(op, ldstrEntering);
-                            processor.InsertBefore(op, ldstrLeaving);
-                            processor.InsertBefore(op, call);
+                            CorrrectJump(instr, ldstrEntering);
+                            processor.InsertBefore(instr, ldstrLeaving);
+                            processor.InsertBefore(instr, call);
                             i += 2;
                             continue;
                         }
@@ -210,8 +237,19 @@ namespace TestA.Interceptor
                     return false;
                 //
                 var op = instructions[ind];
+                if (isAsyncStateMachine)
+                {
+                    var prev = SkipNop(ind, false);
+                    var isInternal = prev.OpCode.Code == Code.Call && prev.Operand.ToString().EndsWith("TaskAwaiter::get_IsCompleted()");
+                    if (isInternal)
+                        return false;
+                }
+                //
                 var next = SkipNop(ind, true);
-                return op.Operand != next && (op.Operand as Instruction)?.Operand?.ToString() != next.Offset.ToString();
+                var offsetS = string.Empty;
+                if (int.TryParse((op.Operand as Instruction)?.Operand?.ToString(), out int offset)) //is a jump?
+                    offsetS = offset.ToString();
+                return op.Operand != next && offsetS != next.Offset.ToString(); //how far do it jump?
             }
 
             Instruction SkipNop(int ind, bool forward)

@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TestNF
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            Process();
+            Console.ReadKey(true);
+        }
+
+        private static async void Process()
         {
             //anonymous func, lambda...
             AnonymousFunc();
@@ -48,6 +55,7 @@ namespace TestNF
             Lock_Statement(false);
             Lock_Statement(true);
 
+            #region IfElse
             IfElse_Half(false);
             IfElse_Half(true);
 
@@ -83,7 +91,8 @@ namespace TestNF
 
             IfElse_Half_EarlyReturn_Func(false);
             IfElse_Half_EarlyReturn_Func(true);
-
+            #endregion
+            #region Switch
             Switch_WithReturn(-1);
             Switch_WithReturn(0);
             Switch_WithReturn(1);
@@ -98,6 +107,7 @@ namespace TestNF
             Switch_AsReturn(0);
             Switch_AsReturn(1);
             Switch_AsReturn(2);
+            #endregion
 
             var list = new List<string> { "a", "b", "c" };
             GenericParameter(list, false);
@@ -111,7 +121,8 @@ namespace TestNF
 
             Do_Operator();
 
-            Console.ReadKey(true);
+            await AsyncTask(false);
+            await AsyncTask(true);
         }
 
         internal static void Exception_Conditional(bool isException)
@@ -488,7 +499,22 @@ namespace TestNF
             do { i--; } while (i > 0);              
         }
         #endregion
+        #region Async/await
+        internal static async Task AsyncTask(bool cond)
+        {
+            if (cond)
+                await Task.Delay(100);
+            else
+                await Delay150();
+            Console.WriteLine($"{nameof(AsyncTask)}: {cond}");
+        }
 
-        //TODO: finalyzer, unsafe, LINQ (+ async), async/await
+        private static Task Delay150()
+        {
+            return Task.Delay(150);
+        }
+        #endregion
+
+        //TODO: for, foreach, generics, finalyzer, unsafe, LINQ (+ async), WinAPI, ContextBoundObject
     }
 }
