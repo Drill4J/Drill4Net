@@ -54,7 +54,7 @@ namespace TestA.Interceptor
 
                     //instructions
                     var body = methodDefinition.Body;
-                    instructions = body.Instructions;//no copy list!
+                    instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
                     compilerInstructions = new HashSet<Instruction>();
                     var startInd = 1;

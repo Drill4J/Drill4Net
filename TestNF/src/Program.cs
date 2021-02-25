@@ -55,6 +55,11 @@ namespace TestNF
             Lock_Statement(false);
             Lock_Statement(true);
 
+            While_Operator(-1);
+            While_Operator(3);
+
+            Do_Operator();
+
             #region IfElse
             IfElse_Half(false);
             IfElse_Half(true);
@@ -108,7 +113,7 @@ namespace TestNF
             Switch_AsReturn(1);
             Switch_AsReturn(2);
             #endregion
-
+            #region Generics
             var list = new List<string> { "a", "b", "c" };
             GenericParameter(list, false);
             GenericParameter(list, true);
@@ -116,16 +121,19 @@ namespace TestNF
             GenericVar(false);
             GenericVar(true);
 
-            While_Operator(-1);
-            While_Operator(3);
+            Generic_Call_Base(false);
+            Generic_Call_Base(true);
 
-            Do_Operator();
-
+            Generic_Call_Child(false);
+            Generic_Call_Child(true);
+            #endregion
+            #region Async
             await AsyncTask(false);
             await AsyncTask(true);
 
             await AsyncLambda(false);
             await AsyncLambda(true);
+            #endregion
         }
 
         internal static void Exception_Conditional(bool isException)
@@ -484,6 +492,20 @@ namespace TestNF
 
             Console.WriteLine($"{nameof(GenericVar)}: {a} -> {string.Join(",", list)}");
         }
+
+        internal static void Generic_Call_Base(bool cond)
+        {
+            var gen = new GenStr("AAA");
+            var s = gen.GetDesc(cond);
+            Console.WriteLine($"{nameof(Generic_Call_Base)}: {s}");
+        }
+
+        internal static void Generic_Call_Child(bool cond)
+        {
+            var gen = new GenStr("AAA");
+            var s = cond ? gen.GetShortDesc() : "no desc";
+            Console.WriteLine($"{nameof(Generic_Call_Child)}: {s}");
+        }
         #endregion
         #region Do/While
         internal static void While_Operator(int count)
@@ -530,6 +552,6 @@ namespace TestNF
         }
         #endregion
 
-        //TODO: tuples, Lambda + tuples, using, for, foreach, generics class, finalyzer, unsafe, async LINQ, WinAPI, ContextBoundObject, stringBuilder
+        //TODO: using, for, foreach, generics class, finalyzer, unsafe, async LINQ, WinAPI, ContextBoundObject, stringBuilder, EF, tuples, Lambda + tuples
     }
 }
