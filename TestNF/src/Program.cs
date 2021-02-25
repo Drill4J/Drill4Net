@@ -589,7 +589,10 @@ namespace TestNF
             return element;
         }
         #endregion
+        #region TPL
 
-        //TODO: TPL, using, for, foreach, finalyzer, unsafe, WinAPI, ContextBoundObject, stringBuilder, EF, tuples, Lambda + tuples
+        #endregion
+
+        //TODO: TPL, using, for, foreach, finalyzer, unsafe, WinAPI, ContextBoundObject, StringBuilder, EF... + tuples, Lambda + tuples?
     }
 }
