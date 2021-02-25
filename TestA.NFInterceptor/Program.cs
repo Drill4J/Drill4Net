@@ -35,21 +35,15 @@ namespace TestA.Interceptor
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
             List<Instruction> jumpers;
             Collection<Instruction> instructions;
-            HashSet<Instruction> angledInstructions;
+            HashSet<Instruction> compilerInstructions;
             var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
             var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
             bool isAsyncStateMachine = false;
 
             foreach (TypeDefinition type in module.Types)
             {
-                //collect methods including business & system nested classes (for delegates, anonymous types...)
-                var methods = type.Methods.Where(a => a.HasBody).ToList(); //need copy list
-                foreach (var nestedType in type.NestedTypes)
-                {
-                    var isAngleBracket = nestedType.Name.StartsWith("<");
-                    foreach (var nestedMethod in nestedType.Methods.Where(a => a.HasBody && !(isAngleBracket && a.IsConstructor)))
-                        methods.Add(nestedMethod);
-                }
+                //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
+                var methods = GetAllMethods(type);
 
                 //process all methods
                 foreach (var methodDefinition in methods) 
@@ -62,7 +56,7 @@ namespace TestA.Interceptor
                     var body = methodDefinition.Body;
                     instructions = body.Instructions;//no copy list!
                     var processor = body.GetILProcessor();
-                    angledInstructions = new HashSet<Instruction>();
+                    compilerInstructions = new HashSet<Instruction>();
                     var startInd = 1;
 
                     //method's attributes
@@ -79,7 +73,7 @@ namespace TestA.Interceptor
 
                     //type's attributes
                     var declAttrs = realType.CustomAttributes;
-                    var needEnterLeavings = declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null; //!methodName.StartsWith("<");
+                    var needEnterLeavings = !isAsyncStateMachine && declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null; //!methodName.StartsWith("<");
 
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
@@ -121,7 +115,7 @@ namespace TestA.Interceptor
                         // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            if (!isAsyncStateMachine && IsAngledBranch(i))
+                            if (!isAsyncStateMachine && IsCompilerBranch(i))
                                 continue;                            
                             if (!IsRealCondition(i))
                                 continue;
@@ -181,7 +175,7 @@ namespace TestA.Interceptor
                         {
                             if (!ifStack.Any())
                                 continue;
-                           if (!isAsyncStateMachine && IsAngledBranch(i))
+                           if (!isAsyncStateMachine && IsCompilerBranch(i))
                                 continue;
                             if (!IsRealCondition(i)) //is real forward condition's branch?
                                 continue;
@@ -298,7 +292,7 @@ namespace TestA.Interceptor
                 }
             }
 
-            bool IsAngledBranch(int ind)
+            bool IsCompilerBranch(int ind)
             {
                 //TODO: optimize (caching 'normal instruction')!!!
                 if (ind < 0 || ind >= instructions.Count)
@@ -317,7 +311,7 @@ namespace TestA.Interceptor
                         break;
 
                     //we don't need 'angled' instructions in business code
-                    if (!angledInstructions.Contains(instr))
+                    if (!compilerInstructions.Contains(instr))
                     {
                         localInsts.Add(instr);
                         var operand = instr.Operand as MemberReference;
@@ -336,8 +330,8 @@ namespace TestA.Interceptor
 
                             //add local angled instructions to cache
                             foreach (var ins in localInsts)
-                                if (!angledInstructions.Contains(ins))
-                                    angledInstructions.Add(ins);
+                                if (!compilerInstructions.Contains(ins))
+                                    compilerInstructions.Add(ins);
                             return true;
                         }
                     }
@@ -345,6 +339,24 @@ namespace TestA.Interceptor
                 }
                 return false;
             }
+        }
+
+        private static List<MethodDefinition> GetAllMethods(TypeDefinition type)
+        {
+            var methods = new List<MethodDefinition>();
+
+            //own
+            var isAngleBracket = type.Name.StartsWith("<");
+            foreach (var nestedMethod in type.Methods.Where(a => a.HasBody && !(isAngleBracket && a.IsConstructor)))
+                methods.Add(nestedMethod);
+
+            //nested
+            foreach (var nestedType in type.NestedTypes)
+            {
+                var innerMethods = GetAllMethods(nestedType);
+                methods.AddRange(innerMethods);
+            }
+            return methods;
         }
 
         private static Instruction GetForIfInstruction()

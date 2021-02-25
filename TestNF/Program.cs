@@ -123,6 +123,9 @@ namespace TestNF
 
             await AsyncTask(false);
             await AsyncTask(true);
+
+            await AsyncLambda(false);
+            await AsyncLambda(true);
         }
 
         internal static void Exception_Conditional(bool isException)
@@ -513,8 +516,20 @@ namespace TestNF
         {
             return Task.Delay(150);
         }
+
+        internal static async Task AsyncLambda(bool cond)
+        {
+            await Task.Run(async() =>
+            {
+                if(cond)
+                    await Task.Delay(100);
+                else
+                    await Task.Delay(150);
+                Console.WriteLine($"{nameof(AsyncLambda)}: {cond}");
+            });
+        }
         #endregion
 
-        //TODO: for, foreach, generics, finalyzer, unsafe, LINQ (+ async), WinAPI, ContextBoundObject
+        //TODO: tuples, Lambda + tuples, using, for, foreach, generics class, finalyzer, unsafe, async LINQ, WinAPI, ContextBoundObject, stringBuilder
     }
 }
