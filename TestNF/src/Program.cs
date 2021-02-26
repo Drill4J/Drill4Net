@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestNF
@@ -9,7 +10,15 @@ namespace TestNF
     {
         static void Main(string[] args)
         {
-            Process();
+            try
+            {
+                Process();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
             Console.ReadKey(true);
         }
 
@@ -138,8 +147,15 @@ namespace TestNF
             AsyncLinq_Blocking(false);
             AsyncLinq_Blocking(true);
 
-            await AsyncLinq_NonBlocking(false);
-            await AsyncLinq_NonBlocking(true);
+            //await AsyncLinq_NonBlocking(false);
+            //await AsyncLinq_NonBlocking(true);
+            #endregion
+            #region Parallel
+            ForParallel(false);
+            ForParallel(true);
+
+            ForeachParallel(false);
+            ForeachParallel(true);
             #endregion
         }
 
@@ -568,13 +584,13 @@ namespace TestNF
             Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
         }
 
-        internal static async Task AsyncLinq_NonBlocking(bool cond)
-        {
-            var data = GetDataForAsyncLinq();
-            var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
-            var inputs = tasks.Select(a => a.Prop).Where(result => result != null).ToList();
-            Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
-        }
+        //internal static async Task AsyncLinq_NonBlocking(bool cond)
+        //{
+        //    var data = GetDataForAsyncLinq();
+        //    var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
+        //    var inputs = tasks.Select(a => a.Prop).Where(result => result != null).ToList();
+        //    Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
+        //}
 
         private static List<GenStr> GetDataForAsyncLinq()
         {
@@ -589,10 +605,42 @@ namespace TestNF
             return element;
         }
         #endregion
-        #region TPL
+        #region Parallel
+        internal static void Plinq(bool cond)
+        {
 
+        }
+
+        internal static void ForParallel(bool cond)
+        {
+            var data = GetDataForParallel();
+            int sum = 0;
+            Parallel.For(0, data.Count(), a =>
+            {
+                if (!cond || (cond && a % 2 == 0))
+                    Interlocked.Add(ref sum, a);
+            });
+            Console.WriteLine($"{nameof(ForParallel)}: {sum}");
+        }
+
+        internal static void ForeachParallel(bool cond)
+        {
+            var data = GetDataForParallel();
+            int sum = 0;
+            Parallel.ForEach(data, a =>
+            {
+                if (!cond || (cond && a % 2 == 0))
+                    Interlocked.Add(ref sum, a);
+            });
+            Console.WriteLine($"{nameof(ForeachParallel)}: {sum}");
+        }
+
+        private static IEnumerable<int> GetDataForParallel(int cnt = 10)
+        {
+            return Enumerable.Range(0, cnt);
+        }
         #endregion
 
-        //TODO: TPL, using, for, foreach, finalyzer, unsafe, WinAPI, ContextBoundObject, StringBuilder, EF... + tuples, Lambda + tuples?
+        //TODO: for, foreach, using, finalyzer, unsafe, WinAPI, ContextBoundObject, EF... + tuples, Lambda + tuples, StringBuilder?
     }
 }

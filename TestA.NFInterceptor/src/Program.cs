@@ -47,7 +47,7 @@ namespace TestA.Interceptor
                 var methods = GetAllMethods(type, isSetGetIncluding);
 
                 //process all methods
-                foreach (var methodDefinition in methods) 
+                foreach (var methodDefinition in methods)
                 {
                     var realType = methodDefinition.DeclaringType;
                     var typeName = realType.FullName;
@@ -70,7 +70,7 @@ namespace TestA.Interceptor
                     var interfaces = realType.Interfaces;
                     isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
                     if (isAsyncStateMachine) //seems not good: skip state machine's initial instructions
-                        startInd = 12; 
+                        startInd = 12;
 
                     //type's attributes
                     var declAttrs = realType.CustomAttributes;
@@ -117,7 +117,7 @@ namespace TestA.Interceptor
                         if (flow == FlowControl.Cond_Branch)
                         {
                             if (!isAsyncStateMachine && IsCompilerBranch(i))
-                                continue;                            
+                                continue;
                             if (!IsRealCondition(i))
                                 continue;
                             //
@@ -125,7 +125,7 @@ namespace TestA.Interceptor
 
                             //lock/Monitor
                             var operand = instr.Operand as Instruction;
-                            if (isBrFalse && operand!= null && operand.OpCode.Code == Code.Endfinally)
+                            if (isBrFalse && operand != null && operand.OpCode.Code == Code.Endfinally)
                             {
                                 var endFinInd = instructions.IndexOf(operand);
                                 var prevInstr = SkipNop(endFinInd, false);
@@ -133,9 +133,9 @@ namespace TestA.Interceptor
                                 if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
                                     continue;
                             }
-                            
+
                             //operators: while/do
-                            if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset) 
+                            if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset)
                             {
                                 var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
                                 var prevOperand = SkipNop(ind, false);
@@ -148,12 +148,12 @@ namespace TestA.Interceptor
                                     i += 2;
                                 }
                                 else //do
-                                { 
+                                {
                                     //no signaling...
                                 }
                                 continue;
                             }
-                            
+
                             // if/switch
                             ifStack.Push(instr);
                             if (code == Code.Switch)
@@ -176,7 +176,7 @@ namespace TestA.Interceptor
                         {
                             if (!ifStack.Any())
                                 continue;
-                           if (!isAsyncStateMachine && IsCompilerBranch(i))
+                            if (!isAsyncStateMachine && IsCompilerBranch(i))
                                 continue;
                             if (!IsRealCondition(i)) //is real forward condition's branch?
                                 continue;
@@ -336,7 +336,7 @@ namespace TestA.Interceptor
                             return true;
                         }
                     }
-                    instr = instr.Previous; 
+                    instr = instr.Previous;
                 }
                 return false;
             }
