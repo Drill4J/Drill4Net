@@ -28,8 +28,8 @@ namespace TestA.Interceptor
             //string filename = args[0];
 
             var filename = @"d:\Projects\EPM-D4J\!!_exp\TestA\TestNF\bin\Debug\TestNF.exe";
-            var isSetGetIncluding = false;
-            //TODO: checking the constructor traversal?
+            var isSetGetInclude = false;
+            var isCtorInclude = false; //for debugging purposes
 
             ModuleDefinition module = ModuleDefinition.ReadModule(filename);
             MethodReference consoleWriteLine =
@@ -45,7 +45,7 @@ namespace TestA.Interceptor
             foreach (TypeDefinition type in module.Types)
             {
                 //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
-                var methods = GetAllMethods(type, isSetGetIncluding);
+                var methods = GetAllMethods(type, isSetGetInclude, isCtorInclude);
 
                 //process all methods
                 foreach (var methodDefinition in methods)
@@ -348,7 +348,7 @@ namespace TestA.Interceptor
             }
         }
 
-        private static List<MethodDefinition> GetAllMethods(TypeDefinition type, bool isSetGetIncluding)
+        private static List<MethodDefinition> GetAllMethods(TypeDefinition type, bool isSetGetInclude, bool isCtorInclude)
         {
             var methods = new List<MethodDefinition>();
 
@@ -356,8 +356,9 @@ namespace TestA.Interceptor
             var isAngleBracket = type.Name.StartsWith("<");
             var nestedMeths = type.Methods
                 .Where(a => a.HasBody)
-                .Where(a => !(isAngleBracket && a.IsConstructor))
-                .Where(a => isSetGetIncluding || (!isSetGetIncluding && a.Name != "get_Prop" && a.Name != "set_Prop"))
+                .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
+                .Where(a => isCtorInclude || (!isCtorInclude && !a.IsConstructor)) //may be we skips own ctors
+                .Where(a => isSetGetInclude || (!isSetGetInclude && a.Name != "get_Prop" && a.Name != "set_Prop"))
                 ;
             foreach (var nestedMethod in nestedMeths)
                 methods.Add(nestedMethod);
@@ -365,7 +366,7 @@ namespace TestA.Interceptor
             //nested
             foreach (var nestedType in type.NestedTypes)
             {
-                var innerMethods = GetAllMethods(nestedType, isSetGetIncluding);
+                var innerMethods = GetAllMethods(nestedType, isSetGetInclude, isCtorInclude);
                 methods.AddRange(innerMethods);
             }
             return methods;
