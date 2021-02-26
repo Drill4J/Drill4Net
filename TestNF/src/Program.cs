@@ -137,6 +137,9 @@ namespace TestNF
             While_Operator(3);
 
             Do_Operator();
+
+            ContextBound(-1);
+            ContextBound(1);
             #endregion
             #region Async
             await AsyncTask(false);
@@ -698,6 +701,12 @@ namespace TestNF
         }
         #endregion
 
-        //TODO: for, foreach, unsafe, WinAPI, ContextBoundObject, EF... + tuples, Lambda + tuples, StringBuilder?
+        internal static void ContextBound(int prop)
+        {
+            new ContextBound(prop);
+            Console.WriteLine($"{nameof(ContextBound)}: {prop}");
+        }
+
+        //TODO: for, foreach, unsafe, WinAPI, EF... + tuples, Lambda + tuples, StringBuilder?
     }
 }
