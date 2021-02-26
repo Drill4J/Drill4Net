@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -159,6 +160,13 @@ namespace TestNF
 
             ForeachParallel(false);
             ForeachParallel(true);
+            #endregion
+            #region Using/finalizer
+            UsingStatement_Sync(false);
+            UsingStatement_Sync(true);
+
+            //await UsingStatement_Async(false);
+            //await UsingStatement_Async(true);
             #endregion
         }
 
@@ -645,7 +653,40 @@ namespace TestNF
             return Enumerable.Range(0, cnt);
         }
         #endregion
+        #region Using, finalizer
+        internal static void UsingStatement_Sync(bool cond)
+        {
+            byte cnt = 255;
+            var res = new byte[cnt];
+            using (var ms = new MemoryStream(GetDataForStream(cnt)))
+            {
+                if (cond)
+                    ms.Read(res, 0, (int)ms.Length);
+            }
+            Console.WriteLine($"{nameof(UsingStatement_Sync)}: {cond}");
+        }
 
-        //TODO: for, foreach, using, finalyzer, unsafe, WinAPI, ContextBoundObject, EF... + tuples, Lambda + tuples, StringBuilder?
+        //internal static async Task UsingStatement_Async(bool cond)
+        //{
+        //    byte cnt = byte.MaxValue;
+        //    var res = new byte[cnt];
+        //    using (var ms = new MemoryStream(GetDataForStream(cnt)))
+        //    {
+        //        if (cond)
+        //            await ms.ReadAsync(res, 0, (int)ms.Length);
+        //    }
+        //    Console.WriteLine($"{nameof(UsingStatement_Async)}: {cond}");
+        //}
+
+        private static byte[] GetDataForStream(byte cnt)
+        {
+            var arr = new byte[cnt];
+            for (byte i = 0; i < cnt; i++)
+                arr[i] = i;
+            return arr;
+        }
+        #endregion
+
+        //TODO: for, foreach, unsafe, WinAPI, ContextBoundObject, EF... + tuples, Lambda + tuples, StringBuilder?
     }
 }

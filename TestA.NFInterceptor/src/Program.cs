@@ -50,6 +50,7 @@ namespace TestA.Interceptor
                 //process all methods
                 foreach (var methodDefinition in methods)
                 {
+                    #region Init
                     var realType = methodDefinition.DeclaringType;
                     var typeName = realType.FullName;
                     var methodName = methodDefinition.Name;
@@ -76,6 +77,7 @@ namespace TestA.Interceptor
                     //type's attributes
                     var declAttrs = realType.CustomAttributes;
                     var needEnterLeavings = !isAsyncStateMachine && declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null; //!methodName.StartsWith("<");
+                    #endregion
 
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
@@ -192,7 +194,6 @@ namespace TestA.Interceptor
                             processor.InsertBefore(op2, elseInst);
                             processor.InsertBefore(op2, call);
                             i += 2;
-
                             continue;
                         }
 
@@ -237,7 +238,10 @@ namespace TestA.Interceptor
                 {
                     var prev = SkipNop(ind, false);
                     var prevOpS = prev.Operand?.ToString();
-                    var isInternal = prev.OpCode.Code == Code.Call && prevOpS != null && (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"));
+                    var isInternal = prev.OpCode.Code == Code.Call && 
+                                     prevOpS != null && 
+                                     (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"))
+                                     ;
                     if (isInternal)
                         return false;
                 }
