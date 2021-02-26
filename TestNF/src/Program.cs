@@ -167,6 +167,11 @@ namespace TestNF
 
             //await UsingStatement_Async(false);
             //await UsingStatement_Async(true);
+
+            Finalizer(1);
+            Finalizer(2);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             #endregion
         }
 
@@ -684,6 +689,12 @@ namespace TestNF
             for (byte i = 0; i < cnt; i++)
                 arr[i] = i;
             return arr;
+        }
+
+        internal static void Finalizer(int prop)
+        {
+            new Finalizer(prop);
+            Console.WriteLine($"{nameof(Finalizer)}: {prop}");
         }
         #endregion
 
