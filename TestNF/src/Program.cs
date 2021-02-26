@@ -176,6 +176,9 @@ namespace TestNF
             GC.Collect();
             GC.WaitForPendingFinalizers();
             #endregion
+
+            Unsafe(false);
+            Unsafe(true);
         }
 
         internal static void Exception_Conditional(bool isException)
@@ -707,6 +710,18 @@ namespace TestNF
             Console.WriteLine($"{nameof(ContextBound)}: {prop}");
         }
 
-        //TODO: for, foreach, unsafe, WinAPI, EF... + tuples, Lambda + tuples, StringBuilder?
+        internal static void Unsafe(bool cond)
+        {
+            Point point;
+            unsafe
+            {
+                Point* p = &point;
+                p->x = cond ? 10 : 20;
+                p->y = 35;
+                Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");
+            }
+        }
+
+        //TODO: for, foreach, WinAPI, EF... + tuples, Lambda + tuples, StringBuilder?
     }
 }

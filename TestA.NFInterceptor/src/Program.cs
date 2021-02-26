@@ -247,10 +247,10 @@ namespace TestA.Interceptor
                 }
                 //
                 var next = SkipNop(ind, true);
-                var offsetS = string.Empty;
-                if (int.TryParse((op.Operand as Instruction)?.Operand?.ToString(), out int offset)) //is a jump?
-                    offsetS = offset.ToString();
-                return op.Operand != next && offsetS != next.Offset.ToString(); //how far do it jump?
+                //var offsetS = string.Empty;
+                //if (int.TryParse((op.Operand as Instruction)?.Operand?.ToString(), out int offset)) //is a jump?
+                //    offsetS = offset.ToString();
+                return op.Operand != next /*&& offsetS != next.Offset.ToString()*/; //how far do it jump?
             }
 
             Instruction SkipNop(int ind, bool forward)
