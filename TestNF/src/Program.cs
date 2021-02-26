@@ -151,6 +151,9 @@ namespace TestNF
             //await AsyncLinq_NonBlocking(true);
             #endregion
             #region Parallel
+            Plinq(false);
+            Plinq(true);
+
             ForParallel(false);
             ForParallel(true);
 
@@ -584,13 +587,13 @@ namespace TestNF
             Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
         }
 
-        //internal static async Task AsyncLinq_NonBlocking(bool cond)
-        //{
-        //    var data = GetDataForAsyncLinq();
-        //    var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
-        //    var inputs = tasks.Select(a => a.Prop).Where(result => result != null).ToList();
-        //    Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
-        //}
+        internal static async Task AsyncLinq_NonBlocking(bool cond)
+        {
+            var data = GetDataForAsyncLinq();
+            var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
+            var inputs = tasks.Select(a => a.Prop).Where(result => result != null).ToList();
+            Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
+        }
 
         private static List<GenStr> GetDataForAsyncLinq()
         {
@@ -608,7 +611,9 @@ namespace TestNF
         #region Parallel
         internal static void Plinq(bool cond)
         {
-
+            var data = GetDataForParallel();
+            int sum = data.AsParallel().Where(a => !cond || (cond && a % 2 == 0)).Sum();
+            Console.WriteLine($"{nameof(Plinq)}: {sum}");
         }
 
         internal static void ForParallel(bool cond)

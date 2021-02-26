@@ -214,7 +214,7 @@ namespace TestA.Interceptor
                             i += 2;
                             continue;
                         }
-                    }
+                    } //cycle
                 }
             }
 
