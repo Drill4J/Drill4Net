@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -179,6 +180,9 @@ namespace TestNF
 
             Unsafe(false);
             Unsafe(true);
+
+            WinAPI(false);
+            WinAPI(true);
         }
 
         internal static void Exception_Conditional(bool isException)
@@ -261,6 +265,24 @@ namespace TestNF
             var dlg = e.Compile();
             int d = dlg(x);
             Console.WriteLine($"{nameof(Expression10)}: {d}");
+        }
+
+        internal static void ContextBound(int prop)
+        {
+            new ContextBound(prop);
+            Console.WriteLine($"{nameof(ContextBound)}: {prop}");
+        }
+
+        internal static void Unsafe(bool cond)
+        {
+            Point point;
+            unsafe
+            {
+                Point* p = &point;
+                p->x = cond ? 10 : 20;
+                p->y = 35;
+                Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");
+            }
         }
 
         #region Linq
@@ -669,7 +691,7 @@ namespace TestNF
         {
             byte cnt = 255;
             var res = new byte[cnt];
-            using (var ms = new MemoryStream(GetDataForStream(cnt)))
+            using (var ms = new MemoryStream(GetBytes(cnt)))
             {
                 if (cond)
                     ms.Read(res, 0, (int)ms.Length);
@@ -677,6 +699,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(UsingStatement_Sync)}: {cond}");
         }
 
+        // a terrible BUG !!!!
         //internal static async Task UsingStatement_Async(bool cond)
         //{
         //    byte cnt = byte.MaxValue;
@@ -689,7 +712,24 @@ namespace TestNF
         //    Console.WriteLine($"{nameof(UsingStatement_Async)}: {cond}");
         //}
 
-        private static byte[] GetDataForStream(byte cnt)
+        internal static void Finalizer(int prop)
+        {
+            new Finalizer(prop);
+            Console.WriteLine($"{nameof(Finalizer)}: {prop}");
+        }
+        #endregion
+        #region WinAPI
+        [DllImport("user32.dll")]
+        public static extern void SetWindowText(IntPtr hwnd, String lpString);
+
+        internal static void WinAPI(bool cond)     
+        {
+            SetWindowText(IntPtr.Zero, cond ? "Bye!" : "Hello!");
+            Console.WriteLine($"{nameof(WinAPI)}: {cond}");
+        }
+        #endregion
+
+        private static byte[] GetBytes(byte cnt)
         {
             var arr = new byte[cnt];
             for (byte i = 0; i < cnt; i++)
@@ -697,31 +737,6 @@ namespace TestNF
             return arr;
         }
 
-        internal static void Finalizer(int prop)
-        {
-            new Finalizer(prop);
-            Console.WriteLine($"{nameof(Finalizer)}: {prop}");
-        }
-        #endregion
-
-        internal static void ContextBound(int prop)
-        {
-            new ContextBound(prop);
-            Console.WriteLine($"{nameof(ContextBound)}: {prop}");
-        }
-
-        internal static void Unsafe(bool cond)
-        {
-            Point point;
-            unsafe
-            {
-                Point* p = &point;
-                p->x = cond ? 10 : 20;
-                p->y = 35;
-                Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");
-            }
-        }
-
-        //TODO: for, foreach, WinAPI, EF... + tuples, Lambda + tuples, StringBuilder?
+        //TODO: for, foreach, EF... + tuples, Lambda + tuples, StringBuilder?
     }
 }

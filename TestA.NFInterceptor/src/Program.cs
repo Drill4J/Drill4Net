@@ -358,7 +358,7 @@ namespace TestA.Interceptor
                 .Where(a => a.HasBody)
                 .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
                 .Where(a => isCtorInclude || (!isCtorInclude && !a.IsConstructor)) //may be we skips own ctors
-                .Where(a => isSetGetInclude || (!isSetGetInclude && a.Name != "get_Prop" && a.Name != "set_Prop"))
+                .Where(a => isSetGetInclude || (!isSetGetInclude && a.Name != "get_Prop" && a.Name != "set_Prop")) //do we need property setters and getters?
                 ;
             foreach (var nestedMethod in nestedMeths)
                 methods.Add(nestedMethod);
