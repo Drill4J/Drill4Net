@@ -44,7 +44,7 @@ namespace TestNF
 
             Linq_Fluent(false);
             Linq_Fluent(true);
-            #endregion
+             #endregion
             #region IfElse
             IfElse_Half(false);
             IfElse_Half(true);
@@ -147,8 +147,8 @@ namespace TestNF
             AsyncLinq_Blocking(false);
             AsyncLinq_Blocking(true);
 
-            //await AsyncLinq_NonBlocking(false);
-            //await AsyncLinq_NonBlocking(true);
+            await AsyncLinq_NonBlocking(false);
+            await AsyncLinq_NonBlocking(true);
             #endregion
             #region Parallel
             Plinq(false);
@@ -216,7 +216,7 @@ namespace TestNF
             string s;
             lock (_locker)
             {
-               s = cond ? "YES" : "NO";
+                s = cond ? "YES" : "NO";
             }
             Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
         }
@@ -264,7 +264,7 @@ namespace TestNF
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
-            Console.WriteLine($"{nameof(Lambda10)}: {d}"); 
+            Console.WriteLine($"{nameof(Lambda10)}: {d}");
         }
 
         internal static void Lambda10_AdditionalBranch(int x)
@@ -273,7 +273,7 @@ namespace TestNF
             int d = square(x);
             if (d >= 100)
                 d /= 2;
-            Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}"); 
+            Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}");
         }
 
         internal static void Lambda10_AdditionalSwitch(int x)
@@ -291,7 +291,7 @@ namespace TestNF
         #region IF/ELSE
         internal static void IfElse_Half(bool cond)
         {
-            string type = "no"; 
+            string type = "no";
             if (cond)
                 type = "yes";
 
@@ -340,7 +340,7 @@ namespace TestNF
 
         internal static bool IfElse_Half_EarlyReturn_Func(bool cond)
         {
-            string type = "no";
+            string type = "no"; //let it be... Let it beeee!...
             if (cond)
             {
                 type = "yes";
@@ -437,7 +437,7 @@ namespace TestNF
                     Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: ab");
                 }
             }
-            else 
+            else
             {
                 Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: !a*b");
             }
@@ -543,11 +543,11 @@ namespace TestNF
 
         //in principle, it is not necessary, because 
         //it is not a branch with a precondition
-        internal static void Do_Operator() 
+        internal static void Do_Operator()
         {
             int i = 3;
             Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
-            do { i--; } while (i > 0);              
+            do { i--; } while (i > 0);
         }
         #endregion
         #region Async/await
@@ -567,9 +567,9 @@ namespace TestNF
 
         internal static async Task AsyncLambda(bool cond)
         {
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
-                if(cond)
+                if (cond)
                     await Task.Delay(100);
                 else
                     await Task.Delay(150);

@@ -29,6 +29,7 @@ namespace TestA.Interceptor
 
             var filename = @"d:\Projects\EPM-D4J\!!_exp\TestA\TestNF\bin\Debug\TestNF.exe";
             var isSetGetIncluding = false;
+            //TODO: checking the constructor traversal?
 
             ModuleDefinition module = ModuleDefinition.ReadModule(filename);
             MethodReference consoleWriteLine =
@@ -235,7 +236,8 @@ namespace TestA.Interceptor
                 if (isAsyncStateMachine)
                 {
                     var prev = SkipNop(ind, false);
-                    var isInternal = prev.OpCode.Code == Code.Call && prev.Operand.ToString().EndsWith("TaskAwaiter::get_IsCompleted()");
+                    var prevOpS = prev.Operand?.ToString();
+                    var isInternal = prev.OpCode.Code == Code.Call && prevOpS != null && (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"));
                     if (isInternal)
                         return false;
                 }
