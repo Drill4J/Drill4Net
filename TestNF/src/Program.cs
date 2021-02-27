@@ -686,7 +686,7 @@ namespace TestNF
         #region Using, finalizer
         internal static void UsingStatement_SyncRead(bool cond)
         {
-            byte cnt = 255;
+            byte cnt = 10;
             var res = new byte[cnt];
             using (var ms = new MemoryStream(GetBytes(cnt)))
             {

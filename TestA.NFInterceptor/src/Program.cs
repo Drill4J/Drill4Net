@@ -179,17 +179,19 @@ namespace TestA.Interceptor
                             //correct jump instruction
                             if (operand != null) 
                             {
-                                var injectLen = ldstrIf.GetSize() + call.GetSize();
-                                var diff = operand.Offset - instr.Offset;
-                                if (diff + injectLen > 127 || diff < -128) //is too far?
+                                var newOpCode = ConvertShortJumpToLong(opCode);
+                                if (newOpCode.Code != opCode.Code)
                                 {
-                                    processor.RemoveAt(i);
-                                    var newOpCode = ConvertShortJumpToLong(opCode);
-                                    var instr2 = Instruction.Create(newOpCode, operand);
-                                    processor.InsertBefore(ldstrIf, instr2);
+                                    var injectLen = ldstrIf.GetSize() + call.GetSize();
+                                    var diff = operand.Offset - instr.Offset;
+                                    if (diff + injectLen > 127 || diff < -128) //is too far?
+                                    {
+                                        processor.RemoveAt(i);
+                                        var instr2 = Instruction.Create(newOpCode, operand);
+                                        processor.InsertBefore(ldstrIf, instr2);
+                                    }
                                 }
                             }
-
                             i += 2;
                             continue;
                         }
@@ -208,7 +210,7 @@ namespace TestA.Interceptor
                             var pairedCode = ifInst.OpCode.Code;
                             var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();                           
                             var instr2 = instructions[i + 1]; 
-                            CorrrectJump(instr2, elseInst);
+                            ReplaceJump(instr2, elseInst);
 
                             processor.InsertBefore(instr2, elseInst);
                             processor.InsertBefore(instr2, call);
@@ -220,6 +222,7 @@ namespace TestA.Interceptor
                         if (flow == FlowControl.Throw)
                         {
                             var throwInst = GetForThrowInstruction();
+                            ReplaceJump(instr, throwInst);
                             processor.InsertBefore(instr, throwInst);
                             processor.InsertBefore(instr, call);
                             i += 2;
@@ -227,9 +230,9 @@ namespace TestA.Interceptor
                         }
 
                         //RETURN
-                        if (flow == FlowControl.Return && needEnterLeavings && code != Code.Endfinally) // && code != Code.Endfilter ???
+                        if (flow == FlowControl.Return && needEnterLeavings && code != Code.Endfinally) //&& code != Code.Endfilter ???
                         {
-                            CorrrectJump(instr, ldstrEntering);
+                            ReplaceJump(instr, ldstrLeaving);
                             processor.InsertBefore(instr, ldstrLeaving);
                             processor.InsertBefore(instr, call);
                             i += 2;
@@ -249,7 +252,7 @@ namespace TestA.Interceptor
 
             OpCode ConvertShortJumpToLong(OpCode opCode)
             {
-                //TODO: to dictionary?
+                //TODO: to a dictionary
                 return opCode.Code switch
                 {
                     Code.Br_S => OpCodes.Br,
@@ -352,7 +355,7 @@ namespace TestA.Interceptor
                 return Instruction.Create(OpCodes.Nop);
             }
 
-            void CorrrectJump(Instruction from, Instruction to)
+            void ReplaceJump(Instruction from, Instruction to)
             {
                 //direct jumps
                 foreach (var curOp in jumpers.Where(j => j.Operand == from))
