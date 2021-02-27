@@ -71,8 +71,6 @@ namespace TestA.Interceptor
                     //check for async/await
                     var interfaces = realType.Interfaces;
                     isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
-                    if (isAsyncStateMachine) //seems not good: skip state machine's initial instructions
-                        startInd = 12;
 
                     //type's attributes
                     var declAttrs = realType.CustomAttributes;
@@ -243,6 +241,36 @@ namespace TestA.Interceptor
                                      (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"))
                                      ;
                     if (isInternal)
+                        return false;
+
+                    //seems not good: skip some state machine's instructions
+
+                    // machine state jump init block (yeah...)
+                    if (instructions[ind - 1].OpCode.Code == Code.Ldloc_0 &&
+                        instructions[ind + 1].OpCode.Code == Code.Br_S &&
+                        instructions[ind + 2].OpCode.Code == Code.Br_S &&
+                        instructions[ind + 3].OpCode.Code == Code.Nop &&
+                        op.Operand == instructions[ind + 2] &&
+                        instructions[ind + 1].Operand == instructions[ind + 3]
+                        )
+                        return false;
+
+                    //1. finally block for state machine
+                    if (op.OpCode.Code == Code.Bge_S &&
+                        instructions[ind - 1].OpCode.Code == Code.Ldc_I4_0 &&
+                        instructions[ind - 2].OpCode.Code == Code.Ldloc_0 &&
+                        instructions[ind - 3].OpCode.Code == Code.Leave_S                     
+                        )
+                        return false;
+
+                    //2. finally block for state machine
+                    if (op.OpCode.Code == Code.Brfalse_S &&
+                        instructions[ind + 1].OpCode.Code == Code.Ldarg_0 &&
+                        instructions[ind + 2].OpCode.Code == Code.Ldfld &&
+                        instructions[ind + 3].OpCode.Code == Code.Callvirt &&
+                        instructions[ind + 4].OpCode.Code == Code.Nop &&
+                        instructions[ind + 5].OpCode.Code == Code.Endfinally
+                        )
                         return false;
                 }
                 //

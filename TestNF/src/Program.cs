@@ -166,11 +166,14 @@ namespace TestNF
             ForeachParallel(true);
             #endregion
             #region Using/finalizer
-            UsingStatement_Sync(false);
-            UsingStatement_Sync(true);
+            UsingStatement_SyncRead(false);
+            UsingStatement_SyncRead(true);
 
-            //await UsingStatement_Async(false);
-            //await UsingStatement_Async(true);
+            //await UsingStatement_AsyncRead(false);
+            //await UsingStatement_AsyncRead(true);
+
+            await UsingStatement_AsyncDelay(false);
+            await UsingStatement_AsyncDelay(true);
 
             Finalizer(1);
             Finalizer(2);
@@ -687,7 +690,7 @@ namespace TestNF
         }
         #endregion
         #region Using, finalizer
-        internal static void UsingStatement_Sync(bool cond)
+        internal static void UsingStatement_SyncRead(bool cond)
         {
             byte cnt = 255;
             var res = new byte[cnt];
@@ -696,21 +699,33 @@ namespace TestNF
                 if (cond)
                     ms.Read(res, 0, (int)ms.Length);
             }
-            Console.WriteLine($"{nameof(UsingStatement_Sync)}: {cond}");
+            Console.WriteLine($"{nameof(UsingStatement_SyncRead)}: {cond}");
         }
 
         // a terrible BUG !!!!
-        //internal static async Task UsingStatement_Async(bool cond)
-        //{
-        //    byte cnt = byte.MaxValue;
-        //    var res = new byte[cnt];
-        //    using (var ms = new MemoryStream(GetDataForStream(cnt)))
-        //    {
-        //        if (cond)
-        //            await ms.ReadAsync(res, 0, (int)ms.Length);
-        //    }
-        //    Console.WriteLine($"{nameof(UsingStatement_Async)}: {cond}");
-        //}
+        internal static async Task UsingStatement_AsyncRead(bool cond)
+        {
+            byte cnt = 25;
+            var res = new byte[cnt];
+            using (var ms = new MemoryStream(GetBytes(cnt)))
+            {
+                if (cond)
+                    await ms.ReadAsync(res, 0, (int)ms.Length);
+            }
+            Console.WriteLine($"{nameof(UsingStatement_AsyncRead)}: {cond}");
+        }
+
+        internal static async Task UsingStatement_AsyncDelay(bool cond)
+        {
+            byte cnt = 25;
+            var res = new byte[cnt];
+            using (var ms = new MemoryStream(GetBytes(cnt)))
+            {
+                if (cond)
+                    await Task.Delay(100);
+            }
+            Console.WriteLine($"{nameof(UsingStatement_AsyncDelay)}: {cond}");
+        }
 
         internal static void Finalizer(int prop)
         {
