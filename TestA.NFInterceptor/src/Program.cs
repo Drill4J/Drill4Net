@@ -35,7 +35,6 @@ namespace TestA.Interceptor
             MethodReference consoleWriteLine =
                 module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
-            //var nop = Instruction.Create(OpCodes.Nop);
 
             List<Instruction> jumpers;
             Collection<Instruction> instructions;
@@ -177,12 +176,18 @@ namespace TestA.Interceptor
                             processor.InsertAfter(instr, call);
                             processor.InsertAfter(instr, ldstrIf);
 
-                            if (operand != null && Math.Abs(operand.Offset - instr.Offset) > 120) //?!!! TODO: understand the need for conversion!
+                            //correct jump instruction
+                            if (operand != null) 
                             {
-                                processor.RemoveAt(i);
-                                var newOpCode = ConvertShortJumpToLong(opCode); 
-                                var instr2 = Instruction.Create(newOpCode, operand);
-                                processor.InsertBefore(ldstrIf, instr2);
+                                var injectLen = ldstrIf.GetSize() + call.GetSize();
+                                var diff = operand.Offset - instr.Offset;
+                                if (diff + injectLen > 127 || diff < -128) //is too far?
+                                {
+                                    processor.RemoveAt(i);
+                                    var newOpCode = ConvertShortJumpToLong(opCode);
+                                    var instr2 = Instruction.Create(newOpCode, operand);
+                                    processor.InsertBefore(ldstrIf, instr2);
+                                }
                             }
 
                             i += 2;
