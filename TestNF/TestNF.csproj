@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\ContextBound.cs" />
+    <Compile Include="src\DynamicDictionary.cs" />
     <Compile Include="src\Finalizer.cs" />
     <Compile Include="src\Point.cs" />
     <Compile Include="src\Program.cs" />

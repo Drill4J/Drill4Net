@@ -115,8 +115,9 @@ namespace TestA.Interceptor
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
-                        var code = instr.OpCode.Code;
-                        var flow = instr.OpCode.FlowControl;
+                        var opCode = instr.OpCode;
+                        var code = opCode.Code;
+                        var flow = opCode.FlowControl;
 
                         if (instr.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
                             instr.Operand = ldstrLeaving;
@@ -129,7 +130,7 @@ namespace TestA.Interceptor
                             if (!IsRealCondition(i))
                                 continue;
                             //
-                            var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another codes!
+                            var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another branch codes? Hmm...
 
                             //lock/Monitor
                             var operand = instr.Operand as Instruction;
@@ -179,7 +180,8 @@ namespace TestA.Interceptor
                             if (operand != null && Math.Abs(operand.Offset - instr.Offset) > 120) //?!!! TODO: understand the need for conversion!
                             {
                                 processor.RemoveAt(i);
-                                var instr2 = Instruction.Create(isBrFalse ? OpCodes.Brfalse : OpCodes.Brtrue, operand);
+                                var newOpCode = ConvertShortJumpToLong(opCode); 
+                                var instr2 = Instruction.Create(newOpCode, operand);
                                 processor.InsertBefore(ldstrIf, instr2);
                             }
 
@@ -239,6 +241,28 @@ namespace TestA.Interceptor
             Console.ReadKey(true);
 
             // local functions //
+
+            OpCode ConvertShortJumpToLong(OpCode opCode)
+            {
+                //TODO: to dictionary?
+                return opCode.Code switch
+                {
+                    Code.Br_S => OpCodes.Br,
+                    Code.Brfalse_S => OpCodes.Brfalse,
+                    Code.Brtrue_S => OpCodes.Brtrue,
+                    Code.Beq_S => OpCodes.Beq,
+                    Code.Bge_S => OpCodes.Bge,
+                    Code.Bge_Un_S => OpCodes.Bge_Un,
+                    Code.Bgt_S => OpCodes.Bgt,
+                    Code.Bgt_Un_S => OpCodes.Bgt_Un,
+                    Code.Ble_S => OpCodes.Ble,
+                    Code.Ble_Un_S => OpCodes.Ble_Un,
+                    Code.Blt_S => OpCodes.Blt,
+                    Code.Blt_Un_S => OpCodes.Blt_Un,
+                    Code.Bne_Un_S => OpCodes.Bne_Un,
+                    _ => opCode,
+                };
+            }
 
             bool IsRealCondition(int ind)
             {

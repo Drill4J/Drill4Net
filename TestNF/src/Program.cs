@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -141,6 +142,12 @@ namespace TestNF
 
             ContextBound(-1);
             ContextBound(1);
+
+            ExpandoObject(false);
+            ExpandoObject(true);
+
+            DynamicObject(false);
+            DynamicObject(true);
             #endregion
             #region Async
             await AsyncTask(false);
@@ -288,6 +295,23 @@ namespace TestNF
             }
         }
 
+        #region Dynamic
+        internal static void ExpandoObject(bool cond)
+        {
+            dynamic exp = new ExpandoObject();
+            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
+            exp.Act(cond);
+            Console.WriteLine($"{nameof(ExpandoObject)}: {cond}");
+        }
+
+        internal static void DynamicObject(bool cond)
+        {
+            dynamic exp = new DynamicDictionary();
+            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
+            exp.Act(cond);
+            Console.WriteLine($"{nameof(DynamicObject)}: {cond}");
+        }
+        #endregion
         #region Linq
         internal static void Linq_Query(bool all)
         {
@@ -756,6 +780,6 @@ namespace TestNF
             return arr;
         }
 
-        //TODO: ExpandoObject, DynamicObject, catch when, for, foreach, EF... + tuples, Lambda + tuples, StringBuilder?
+        //TODO: DynamicObject, catch when, for, foreach, EF... + tuples, Lambda + tuples, StringBuilder?
     }
 }
