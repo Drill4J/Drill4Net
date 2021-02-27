@@ -169,11 +169,11 @@ namespace TestNF
             UsingStatement_SyncRead(false);
             UsingStatement_SyncRead(true);
 
-            //await UsingStatement_AsyncRead(false);
-            //await UsingStatement_AsyncRead(true);
+            await UsingStatement_AsyncRead(false);
+            await UsingStatement_AsyncRead(true);
 
-            await UsingStatement_AsyncDelay(false);
-            await UsingStatement_AsyncDelay(true);
+            await UsingStatement_AsyncTask(false);
+            await UsingStatement_AsyncTask(true);
 
             Finalizer(1);
             Finalizer(2);
@@ -702,10 +702,9 @@ namespace TestNF
             Console.WriteLine($"{nameof(UsingStatement_SyncRead)}: {cond}");
         }
 
-        // a terrible BUG !!!!
         internal static async Task UsingStatement_AsyncRead(bool cond)
         {
-            byte cnt = 25;
+            byte cnt = 10;
             var res = new byte[cnt];
             using (var ms = new MemoryStream(GetBytes(cnt)))
             {
@@ -715,16 +714,21 @@ namespace TestNF
             Console.WriteLine($"{nameof(UsingStatement_AsyncRead)}: {cond}");
         }
 
-        internal static async Task UsingStatement_AsyncDelay(bool cond)
+        internal static async Task UsingStatement_AsyncTask(bool cond)
         {
-            byte cnt = 25;
+            byte cnt = 10;
             var res = new byte[cnt];
             using (var ms = new MemoryStream(GetBytes(cnt)))
             {
                 if (cond)
-                    await Task.Delay(100);
+                    await AsyncWait();
             }
-            Console.WriteLine($"{nameof(UsingStatement_AsyncDelay)}: {cond}");
+            Console.WriteLine($"{nameof(UsingStatement_AsyncRead)}: {cond}");
+        }
+
+        private static Task AsyncWait()
+        {
+            return Task.Run(() => { Thread.Sleep(50); });
         }
 
         internal static void Finalizer(int prop)
@@ -752,6 +756,6 @@ namespace TestNF
             return arr;
         }
 
-        //TODO: for, foreach, EF... + tuples, Lambda + tuples, StringBuilder?
+        //TODO: ExpandoObject, DynamicObject, catch when, for, foreach, EF... + tuples, Lambda + tuples, StringBuilder?
     }
 }

@@ -35,6 +35,8 @@ namespace TestA.Interceptor
             MethodReference consoleWriteLine =
                 module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
+            //var nop = Instruction.Create(OpCodes.Nop);
+
             List<Instruction> jumpers;
             Collection<Instruction> instructions;
             HashSet<Instruction> compilerInstructions;
@@ -44,6 +46,9 @@ namespace TestA.Interceptor
 
             foreach (TypeDefinition type in module.Types)
             {
+                if (type.Name == "<Module>")
+                    continue;
+                
                 //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
                 var methods = GetAllMethods(type, isSetGetInclude, isCtorInclude);
 
@@ -71,6 +76,8 @@ namespace TestA.Interceptor
                     //check for async/await
                     var interfaces = realType.Interfaces;
                     isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
+                    if (isAsyncStateMachine) //skip state machine init jump block
+                        startInd = 12;
 
                     //type's attributes
                     var declAttrs = realType.CustomAttributes;
@@ -122,7 +129,7 @@ namespace TestA.Interceptor
                             if (!IsRealCondition(i))
                                 continue;
                             //
-                            var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S;
+                            var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another codes!
 
                             //lock/Monitor
                             var operand = instr.Operand as Instruction;
@@ -165,9 +172,17 @@ namespace TestA.Interceptor
 
                             var ldstrIf = isBrFalse ? GetForIfInstruction() : GetForElseInstruction();
 
-                            //when inserting 'after', let set in desc order
+                            //when inserting 'after', must set in desc order
                             processor.InsertAfter(instr, call);
                             processor.InsertAfter(instr, ldstrIf);
+
+                            if (operand != null && Math.Abs(operand.Offset - instr.Offset) > 120) //?!!! TODO: understand the need for conversion!
+                            {
+                                processor.RemoveAt(i);
+                                var instr2 = Instruction.Create(isBrFalse ? OpCodes.Brfalse : OpCodes.Brtrue, operand);
+                                processor.InsertBefore(ldstrIf, instr2);
+                            }
+
                             i += 2;
                             continue;
                         }
@@ -184,13 +199,12 @@ namespace TestA.Interceptor
                             //
                             var ifInst = ifStack.Pop();
                             var pairedCode = ifInst.OpCode.Code;
-                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
-                            var op2 = instructions[i + 1]; //TODO: check for overflow!
+                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();                           
+                            var instr2 = instructions[i + 1]; 
+                            CorrrectJump(instr2, elseInst);
 
-                            //ifInst.Operand = elseInst; //re-address 'else'
-                            CorrrectJump(op2, elseInst);
-                            processor.InsertBefore(op2, elseInst);
-                            processor.InsertBefore(op2, call);
+                            processor.InsertBefore(instr2, elseInst);
+                            processor.InsertBefore(instr2, call);
                             i += 2;
                             continue;
                         }
@@ -245,17 +259,17 @@ namespace TestA.Interceptor
 
                     //seems not good: skip some state machine's instructions
 
-                    // machine state jump init block (yeah...)
+                    // machine state not init jump block (yeah...)
                     if (instructions[ind - 1].OpCode.Code == Code.Ldloc_0 &&
-                        instructions[ind + 1].OpCode.Code == Code.Br_S &&
-                        instructions[ind + 2].OpCode.Code == Code.Br_S &&
+                        instructions[ind + 1].OpCode.FlowControl == FlowControl.Branch &&
+                        instructions[ind + 2].OpCode.FlowControl == FlowControl.Branch &&
                         instructions[ind + 3].OpCode.Code == Code.Nop &&
                         op.Operand == instructions[ind + 2] &&
                         instructions[ind + 1].Operand == instructions[ind + 3]
                         )
                         return false;
 
-                    //1. finally block for state machine
+                    //1. start of finally block of state machine
                     if (op.OpCode.Code == Code.Bge_S &&
                         instructions[ind - 1].OpCode.Code == Code.Ldc_I4_0 &&
                         instructions[ind - 2].OpCode.Code == Code.Ldloc_0 &&
@@ -263,7 +277,7 @@ namespace TestA.Interceptor
                         )
                         return false;
 
-                    //2. finally block for state machine
+                    //2. end of finally block of state machine
                     if (op.OpCode.Code == Code.Brfalse_S &&
                         instructions[ind + 1].OpCode.Code == Code.Ldarg_0 &&
                         instructions[ind + 2].OpCode.Code == Code.Ldfld &&
