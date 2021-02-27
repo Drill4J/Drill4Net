@@ -97,6 +97,9 @@ namespace TestNF
             #region Anonymous, lambda, Linq
             AnonymousFunc();
 
+            AnonymousType(false);
+            AnonymousType(true);
+
             Lambda10(5);
             Lambda10(10);
 
@@ -765,6 +768,12 @@ namespace TestNF
             };
             int d = operation(4, 5);
             Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
+        }
+
+        internal static void AnonymousType(bool cond)
+        {
+            var tom = new { Name = "Tom", Age = cond ? 21 : 9 };
+            Console.WriteLine($"{nameof(AnonymousType)}: {cond} -> {tom.Age}");
         }
 
         //TODO: not working yet!

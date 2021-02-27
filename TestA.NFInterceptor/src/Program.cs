@@ -177,6 +177,7 @@ namespace TestA.Interceptor
                             processor.InsertAfter(instr, ldstrIf);
 
                             //correct jump instruction
+                            //TODO: Separate it into a function to process all the Br-instructions at the end?
                             if (operand != null) 
                             {
                                 var newOpCode = ConvertShortJumpToLong(opCode);
