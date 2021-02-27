@@ -27,28 +27,7 @@ namespace TestNF
 
         private static async void Process()
         {
-            #region Anonymous, lambda, Linq
-            AnonymousFunc();
-
-            Lambda10(5);
-            Lambda10(10);
-
-            Lambda10_AdditionalBranch(10);
-
-            Lambda10_AdditionalSwitch(5);
-            Lambda10_AdditionalSwitch(10);
-            Lambda10_AdditionalSwitch(12);
-
-            Expression10(5);
-            Expression10(10);
-
-            Linq_Query(false);
-            Linq_Query(true);
-
-            Linq_Fluent(false);
-            Linq_Fluent(true);
-             #endregion
-            #region IfElse
+            #region If/Else
             IfElse_Half(false);
             IfElse_Half(true);
 
@@ -115,7 +94,28 @@ namespace TestNF
             Generic_Call_Child(false);
             Generic_Call_Child(true);
             #endregion
-            #region Misc
+            #region Anonymous, lambda, Linq
+            AnonymousFunc();
+
+            Lambda10(5);
+            Lambda10(10);
+
+            Lambda10_AdditionalBranch(10);
+
+            Lambda10_AdditionalSwitch(5);
+            Lambda10_AdditionalSwitch(10);
+            Lambda10_AdditionalSwitch(12);
+
+            Expression10(5);
+            Expression10(10);
+
+            Linq_Query(false);
+            Linq_Query(true);
+
+            Linq_Fluent(false);
+            Linq_Fluent(true);
+             #endregion
+            #region Try/cath/finally
             try
             {
                 Exception_Conditional(false);
@@ -129,25 +129,13 @@ namespace TestNF
             Catch_Statement(false);
             Catch_Statement(true);
 
+            Catch_When_Statement(false, false);
+            Catch_When_Statement(false, true);
+            Catch_When_Statement(true, false);
+            Catch_When_Statement(true, true);
+
             Finally_Statement(false);
             Finally_Statement(true);
-
-            Lock_Statement(false);
-            Lock_Statement(true);
-
-            While_Operator(-1);
-            While_Operator(3);
-
-            Do_Operator();
-
-            ContextBound(-1);
-            ContextBound(1);
-
-            ExpandoObject(false);
-            ExpandoObject(true);
-
-            DynamicObject(false);
-            DynamicObject(true);
             #endregion
             #region Async
             await AsyncTask(false);
@@ -187,175 +175,32 @@ namespace TestNF
             GC.Collect();
             GC.WaitForPendingFinalizers();
             #endregion
+            #region Misc
+            While_Operator(-1);
+            While_Operator(3);
+
+            Do_Operator();
+
+            Lock_Statement(false);
+            Lock_Statement(true);
+
+            ContextBound(-1);
+            ContextBound(1);
+
+            ExpandoObject(false);
+            ExpandoObject(true);
+
+            DynamicObject(false);
+            DynamicObject(true);
 
             Unsafe(false);
             Unsafe(true);
 
             WinAPI(false);
             WinAPI(true);
+            #endregion
         }
 
-        internal static void Exception_Conditional(bool isException)
-        {
-            try
-            {
-                Console.WriteLine(nameof(Exception_Conditional));
-            }
-            //exception rethrow is not crack the injection
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                throw;
-            }
-
-            //exception throw is not crack the injection
-            if (isException)
-            {
-                throw new Exception("Throw!");
-            }
-        }
-
-        internal static void Catch_Statement(bool cond)
-        {
-            var s = "";
-            try
-            {
-                throw new Exception();
-            }
-            catch
-            {
-                s = cond ? "YES" : "NO";
-            }
-            Console.WriteLine($"{nameof(Catch_Statement)}: {s}");
-        }
-
-        internal static void Finally_Statement(bool cond)
-        {
-            string s = null;
-            try
-            {
-                s = "A";
-            }
-            finally
-            {
-                s = $"{(cond ? "YES" : "NO")}/{s}";
-            }
-            Console.WriteLine($"{nameof(Finally_Statement)}: {s}");
-        }
-
-        private readonly static object _locker = new object();
-        internal static void Lock_Statement(bool cond)
-        {
-            string s;
-            lock (_locker)
-            {
-                s = cond ? "YES" : "NO";
-            }
-            Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
-        }
-
-        delegate int Operation(int x, int y);
-        internal static void AnonymousFunc()
-        {
-            int z = 8;
-            Operation operation = delegate (int x, int y)
-            {
-                if (x > 1)
-                    x /= 2;
-                return x + y + z;
-            };
-            int d = operation(4, 5);
-            Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
-        }
-
-        //TODO: not working yet!
-        internal static void Expression10(int x)
-        {
-            System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
-            var dlg = e.Compile();
-            int d = dlg(x);
-            Console.WriteLine($"{nameof(Expression10)}: {d}");
-        }
-
-        internal static void ContextBound(int prop)
-        {
-            new ContextBound(prop);
-            Console.WriteLine($"{nameof(ContextBound)}: {prop}");
-        }
-
-        internal static void Unsafe(bool cond)
-        {
-            Point point;
-            unsafe
-            {
-                Point* p = &point;
-                p->x = cond ? 10 : 20;
-                p->y = 35;
-                Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");
-            }
-        }
-
-        #region Dynamic
-        internal static void ExpandoObject(bool cond)
-        {
-            dynamic exp = new ExpandoObject();
-            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
-            exp.Act(cond);
-            Console.WriteLine($"{nameof(ExpandoObject)}: {cond}");
-        }
-
-        internal static void DynamicObject(bool cond)
-        {
-            dynamic exp = new DynamicDictionary();
-            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
-            exp.Act(cond);
-            Console.WriteLine($"{nameof(DynamicObject)}: {cond}");
-        }
-        #endregion
-        #region Linq
-        internal static void Linq_Query(bool all)
-        {
-            var customers = new List<string> { "Paris", "London", "Moscow" };
-            var res = from c in customers where all || c == "London" select c;
-            Console.WriteLine($"{nameof(Linq_Query)}: {string.Join(",", res)}");
-        }
-
-        internal static void Linq_Fluent(bool all)
-        {
-            var customers = new List<string> { "Paris", "London", "Moscow" };
-            var res = customers.Where(c => all ? c != null : c == "London");
-            Console.WriteLine($"{nameof(Linq_Fluent)}: {string.Join(",", res)}");
-        }
-        #endregion
-        #region Lambda
-        internal static void Lambda10(int x)
-        {
-            Func<int, int> square = x => x < 10 ? 0 : x * x;
-            int d = square(x);
-            Console.WriteLine($"{nameof(Lambda10)}: {d}");
-        }
-
-        internal static void Lambda10_AdditionalBranch(int x)
-        {
-            Func<int, int> square = x => x < 10 ? 0 : x * x;
-            int d = square(x);
-            if (d >= 100)
-                d /= 2;
-            Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}");
-        }
-
-        internal static void Lambda10_AdditionalSwitch(int x)
-        {
-            Func<int, int> square = x => x < 10 ? 0 : x * x;
-            int d = square(x);
-            switch (d)
-            {
-                case 100: d = 50; break;
-                case 144: d = 75; break;
-            }
-            Console.WriteLine($"{nameof(Lambda10_AdditionalSwitch)}: {d}");
-        }
-        #endregion
         #region IF/ELSE
         internal static void IfElse_Half(bool cond)
         {
@@ -552,6 +397,50 @@ namespace TestNF
             };
         }
         #endregion
+        #region Linq
+        internal static void Linq_Query(bool all)
+        {
+            var customers = new List<string> { "Paris", "London", "Moscow" };
+            var res = from c in customers where all || c == "London" select c;
+            Console.WriteLine($"{nameof(Linq_Query)}: {string.Join(",", res)}");
+        }
+
+        internal static void Linq_Fluent(bool all)
+        {
+            var customers = new List<string> { "Paris", "London", "Moscow" };
+            var res = customers.Where(c => all ? c != null : c == "London");
+            Console.WriteLine($"{nameof(Linq_Fluent)}: {string.Join(",", res)}");
+        }
+        #endregion
+        #region Lambda
+        internal static void Lambda10(int x)
+        {
+            Func<int, int> square = x => x < 10 ? 0 : x * x;
+            int d = square(x);
+            Console.WriteLine($"{nameof(Lambda10)}: {d}");
+        }
+
+        internal static void Lambda10_AdditionalBranch(int x)
+        {
+            Func<int, int> square = x => x < 10 ? 0 : x * x;
+            int d = square(x);
+            if (d >= 100)
+                d /= 2;
+            Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}");
+        }
+
+        internal static void Lambda10_AdditionalSwitch(int x)
+        {
+            Func<int, int> square = x => x < 10 ? 0 : x * x;
+            int d = square(x);
+            switch (d)
+            {
+                case 100: d = 50; break;
+                case 144: d = 75; break;
+            }
+            Console.WriteLine($"{nameof(Lambda10_AdditionalSwitch)}: {d}");
+        }
+        #endregion
         #region Generics
         internal static void GenericParameter(List<string> list, bool a)
         {
@@ -616,6 +505,87 @@ namespace TestNF
             int i = 3;
             Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
             do { i--; } while (i > 0);
+        }
+        #endregion
+        #region Try/cath/finally
+        internal static void Exception_Conditional(bool isException)
+        {
+            try
+            {
+                Console.WriteLine(nameof(Exception_Conditional));
+            }
+            //exception rethrow is not crack the injection
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+
+            //exception throw is not crack the injection
+            if (isException)
+            {
+                throw new Exception("Throw!");
+            }
+        }
+
+        internal static void Catch_Statement(bool cond)
+        {
+            var s = "none";
+            try
+            {
+                throw new Exception();
+            }
+            catch
+            {
+                s = cond ? "YES" : "NO";
+            }
+            Console.WriteLine($"{nameof(Catch_Statement)}: {s}");
+        }
+
+        internal static void Catch_When_Statement(bool cond, bool cond2)
+        {
+            var s = "none";
+            try
+            {
+                throw new ArgumentException();
+            }
+            catch when (cond2)
+            {
+                s = cond ? "YES" : "NO";
+            }
+            catch { }
+            Console.WriteLine($"{nameof(Catch_When_Statement)}: {s}");
+        }
+
+        internal static void Finally_Statement(bool cond)
+        {
+            string s = null;
+            try
+            {
+                s = "A";
+            }
+            finally
+            {
+                s = $"{(cond ? "YES" : "NO")}/{s}";
+            }
+            Console.WriteLine($"{nameof(Finally_Statement)}: {s}");
+        }
+        #endregion
+        #region Dynamic
+        internal static void ExpandoObject(bool cond)
+        {
+            dynamic exp = new ExpandoObject();
+            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
+            exp.Act(cond);
+            Console.WriteLine($"{nameof(ExpandoObject)}: {cond}");
+        }
+
+        internal static void DynamicObject(bool cond)
+        {
+            dynamic exp = new DynamicDictionary();
+            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
+            exp.Act(cond);
+            Console.WriteLine($"{nameof(DynamicObject)}: {cond}");
         }
         #endregion
         #region Async/await
@@ -771,6 +741,59 @@ namespace TestNF
             Console.WriteLine($"{nameof(WinAPI)}: {cond}");
         }
         #endregion
+        #region Misc
+        private readonly static object _locker = new object();
+        internal static void Lock_Statement(bool cond)
+        {
+            string s;
+            lock (_locker)
+            {
+                s = cond ? "YES" : "NO";
+            }
+            Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
+        }
+
+        delegate int Operation(int x, int y);
+        internal static void AnonymousFunc()
+        {
+            int z = 8;
+            Operation operation = delegate (int x, int y)
+            {
+                if (x > 1)
+                    x /= 2;
+                return x + y + z;
+            };
+            int d = operation(4, 5);
+            Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
+        }
+
+        //TODO: not working yet!
+        internal static void Expression10(int x)
+        {
+            System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
+            var dlg = e.Compile();
+            int d = dlg(x);
+            Console.WriteLine($"{nameof(Expression10)}: {d}");
+        }
+
+        internal static void ContextBound(int prop)
+        {
+            new ContextBound(prop);
+            Console.WriteLine($"{nameof(ContextBound)}: {prop}");
+        }
+
+        internal static void Unsafe(bool cond)
+        {
+            Point point;
+            unsafe
+            {
+                Point* p = &point;
+                p->x = cond ? 10 : 20;
+                p->y = 35;
+                Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");
+            }
+        }
+        #endregion
 
         private static byte[] GetBytes(byte cnt)
         {
@@ -780,6 +803,6 @@ namespace TestNF
             return arr;
         }
 
-        //TODO: DynamicObject, catch when, for, foreach, EF... + tuples, Lambda + tuples, StringBuilder?
+        //TODO: for, foreach, EF...
     }
 }
