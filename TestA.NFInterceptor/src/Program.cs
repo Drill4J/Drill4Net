@@ -177,19 +177,21 @@ namespace TestA.Interceptor
                             processor.InsertAfter(instr, ldstrIf);
 
                             //correct jump instruction
-                            //TODO: Separate it into a function to process all the Br-instructions at the end?
+                            //TODO: Separate it into a function to process all the Br-instructions at the end!
                             if (operand != null) 
                             {
                                 var newOpCode = ConvertShortJumpToLong(opCode);
                                 if (newOpCode.Code != opCode.Code)
                                 {
-                                    var injectLen = ldstrIf.GetSize() + call.GetSize();
-                                    var diff = operand.Offset - instr.Offset;
-                                    if (diff + injectLen > 127 || diff < -128) //is too far?
+                                    //EACH short form -> to long form (otherwise, you need to recalculate 
+                                    //again after each really necessary conversion)
+
+                                    //var injectLen = ldstrIf.GetSize() + call.GetSize();
+                                    //var diff = operand.Offset - instr.Offset;
+                                    //if (diff + injectLen > 127 || diff < -128) //is too far?
                                     {
-                                        processor.RemoveAt(i);
-                                        var instr2 = Instruction.Create(newOpCode, operand);
-                                        processor.InsertBefore(ldstrIf, instr2);
+                                        var longIstr = Instruction.Create(newOpCode, operand);
+                                        processor.Replace(instr, longIstr);
                                     }
                                 }
                             }
@@ -231,6 +233,7 @@ namespace TestA.Interceptor
                         }
 
                         //RETURN
+                        // TODO: check FAULT-block from VisualBasic (it should work with same OpCode)
                         if (flow == FlowControl.Return && needEnterLeavings && code != Code.Endfinally) //&& code != Code.Endfilter ???
                         {
                             ReplaceJump(instr, ldstrLeaving);
