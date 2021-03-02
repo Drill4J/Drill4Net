@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Collections.Generic;
-using Mono.Cecil.Rocks;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
 
-namespace TestA.Interceptor
+namespace Injector.Core
 {
-    /* INFO *
-        https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C#
-    */
-
-    class Program
+    public class InjectorEngine
     {
-        static void Main(string[] args)
+        /* INFO *
+            http://ilgenerator.apphb.com/ - online C# -> IL
+            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C#
+                on Github - https://github.com/adrianoc/cecilifier
+            https://www.codeproject.com/Articles/671259/Reweaving-IL-code-with-Mono-Cecil
+            https://blog.elishalom.com/2012/02/04/monitoring-execution-using-mono-cecil/
+            https://stackoverflow.com/questions/48090703/run-mono-cecil-in-net-core
+        */
+
+        public void Process(string[] args)
         {
             //if (args.Length != 1)
             //{
@@ -27,17 +30,43 @@ namespace TestA.Interceptor
 
             //string filename = args[0];
 
-            var filename = @"d:\Projects\EPM-D4J\!!_exp\TestA\TestNF\bin\Debug\TestNF.exe";
+            var filename = @"d:\Projects\EPM-D4J\!!_exp\TestA\TestA\bin\Debug\net5.0\TestA.dll";
+            if (!File.Exists(filename))
+            {
+                Console.WriteLine($"File not exists: [{filename}]");
+                return;
+            }
+
+            var dir = Path.GetFullPath(Path.GetDirectoryName(filename));
+            Environment.CurrentDirectory = dir;
+            var subjectName = Path.GetFileNameWithoutExtension(filename);
+
+            // read subject assembly with symbols
+            var assembly = AssemblyDefinition.ReadAssembly(filename,
+                new ReaderParameters
+                {
+                    // netcore uses portable pdb, so we provide appropriate reader
+                    SymbolReaderProvider = new PortablePdbReaderProvider(),
+                    // read symbols
+                    ReadSymbols = true,
+                    SymbolStream = File.Open(subjectName + ".pdb", FileMode.Open),
+                    // we will write to another file, so we don't need this
+                    ReadWrite = false,
+                    // read everything at once
+                    ReadingMode = ReadingMode.Immediate,
+                }
+            );
+            var module = assembly.MainModule;
+
             var isSetGetInclude = false;
             var isCtorInclude = false; //for debugging purposes
 
-            ModuleDefinition module = ModuleDefinition.ReadModule(filename);
             MethodReference consoleWriteLine =
                 module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
 
             List<Instruction> jumpers;
-            Collection<Instruction> instructions;
+            Mono.Collections.Generic.Collection<Instruction> instructions;
             HashSet<Instruction> compilerInstructions;
             var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
             var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
@@ -47,7 +76,7 @@ namespace TestA.Interceptor
             {
                 if (type.Name == "<Module>")
                     continue;
-                
+
                 //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
                 var methods = GetAllMethods(type, isSetGetInclude, isCtorInclude);
 
@@ -178,7 +207,7 @@ namespace TestA.Interceptor
 
                             //correct jump instruction
                             //TODO: Separate it into a function to process all the Br-instructions at the end!
-                            if (operand != null) 
+                            if (operand != null)
                             {
                                 var newOpCode = ConvertShortJumpToLong(opCode);
                                 if (newOpCode.Code != opCode.Code)
@@ -211,8 +240,8 @@ namespace TestA.Interceptor
                             //
                             var ifInst = ifStack.Pop();
                             var pairedCode = ifInst.OpCode.Code;
-                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();                           
-                            var instr2 = instructions[i + 1]; 
+                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
+                            var instr2 = instructions[i + 1];
                             ReplaceJump(instr2, elseInst);
 
                             processor.InsertBefore(instr2, elseInst);
@@ -246,8 +275,29 @@ namespace TestA.Interceptor
                 }
             }
 
-            var modifiedPath = Path.GetFileNameWithoutExtension(filename) + ".modified" + Path.GetExtension(filename);
-            module.Write(modifiedPath);
+            var modifiedName = Path.GetFileNameWithoutExtension(filename) + ".modified";// + Path.GetExtension(filename);
+            var modifiedPath = modifiedName + ".dll";
+
+            // ensure we referencing only ref assemblies
+            // var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+            // Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
+
+            // save modified assembly and symbols to new file            
+            assembly.Write(modifiedPath,
+                new WriterParameters
+                {
+                    SymbolStream = File.Create(modifiedName + ".pdb"),
+                    // write symbols 
+                    WriteSymbols = true,
+                    // net core uses portable pdb
+                    SymbolWriterProvider = new PortablePdbWriterProvider()
+                }
+            );
+
+            // don't forget to create runtime config json
+            // or copy existed and modify if necessary 
+            var runtimeConfigJsonExt = ".runtimeConfig.json";
+            File.Copy(subjectName + runtimeConfigJsonExt, modifiedName + runtimeConfigJsonExt, true);
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
             Console.ReadKey(true);
@@ -286,10 +336,10 @@ namespace TestA.Interceptor
                 {
                     var prev = SkipNop(ind, false);
                     var prevOpS = prev.Operand?.ToString();
-                    var isInternal = prev.OpCode.Code == Code.Call && 
-                                     prevOpS != null && 
-                                     (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"))
-                                     ;
+                    var isInternal = prev.OpCode.Code == Code.Call &&
+                                        prevOpS != null &&
+                                        (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"))
+                                        ;
                     if (isInternal)
                         return false;
 
@@ -309,7 +359,7 @@ namespace TestA.Interceptor
                     if (op.OpCode.Code == Code.Bge_S &&
                         instructions[ind - 1].OpCode.Code == Code.Ldc_I4_0 &&
                         instructions[ind - 2].OpCode.Code == Code.Ldloc_0 &&
-                        instructions[ind - 3].OpCode.Code == Code.Leave_S                     
+                        instructions[ind - 3].OpCode.Code == Code.Leave_S
                         )
                         return false;
 
@@ -426,7 +476,7 @@ namespace TestA.Interceptor
             }
         }
 
-        private static List<MethodDefinition> GetAllMethods(TypeDefinition type, bool isSetGetInclude, bool isCtorInclude)
+        private List<MethodDefinition> GetAllMethods(TypeDefinition type, bool isSetGetInclude, bool isCtorInclude)
         {
             var methods = new List<MethodDefinition>();
 
@@ -450,17 +500,17 @@ namespace TestA.Interceptor
             return methods;
         }
 
-        private static Instruction GetForIfInstruction()
+        private Instruction GetForIfInstruction()
         {
             return Instruction.Create(OpCodes.Ldstr, $"-> IF");
         }
 
-        private static Instruction GetForElseInstruction()
+        private Instruction GetForElseInstruction()
         {
             return Instruction.Create(OpCodes.Ldstr, $"-> ELSE");
         }
 
-        private static Instruction GetForThrowInstruction()
+        private Instruction GetForThrowInstruction()
         {
             return Instruction.Create(OpCodes.Ldstr, $"<< THROW");
         }

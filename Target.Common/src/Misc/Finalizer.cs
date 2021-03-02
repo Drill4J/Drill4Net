@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace TestNF
+namespace Target.Common
 {
     public class Finalizer
     {

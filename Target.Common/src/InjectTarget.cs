@@ -7,25 +7,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TestNF
+namespace Target.Common
 {
-    class Program
+    public class InjectTarget
     {
-        static void Main(string[] args)
-        {
-            try
-            {
-                Process();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
-            Console.ReadKey(true);
-        }
-
-        private static async void Process()
+        public async void Process()
         {
             #region If/Else
             IfElse_Half(false);
@@ -117,7 +103,7 @@ namespace TestNF
 
             Linq_Fluent(false);
             Linq_Fluent(true);
-             #endregion
+            #endregion
             #region Try/cath/finally
             try
             {
@@ -201,11 +187,11 @@ namespace TestNF
 
             WinAPI(false);
             WinAPI(true);
-            #endregion
+#endregion
         }
 
         #region IF/ELSE
-        internal static void IfElse_Half(bool cond)
+        internal void IfElse_Half(bool cond)
         {
             string type = "no";
             if (cond)
@@ -214,7 +200,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
         }
 
-        internal static bool IfElse_Consec_Full(bool a, bool b)
+        internal bool IfElse_Consec_Full(bool a, bool b)
         {
             if (a)
             {
@@ -236,7 +222,7 @@ namespace TestNF
             return false;
         }
 
-        internal static bool IfElse_Consec_HalfA_FullB(bool a, bool b)
+        internal bool IfElse_Consec_HalfA_FullB(bool a, bool b)
         {
             if (a)
             {
@@ -254,7 +240,7 @@ namespace TestNF
             return false;
         }
 
-        internal static bool IfElse_Half_EarlyReturn_Func(bool cond)
+        internal bool IfElse_Half_EarlyReturn_Func(bool cond)
         {
             string type = "no"; //let it be... Let it beeee!...
             if (cond)
@@ -269,7 +255,7 @@ namespace TestNF
             return false;
         }
 
-        internal static void IfElse_FullSimple(bool cond)
+        internal void IfElse_FullSimple(bool cond)
         {
             string type;
             if (cond)
@@ -280,19 +266,19 @@ namespace TestNF
             Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
         }
 
-        internal static void Ternary_Positive(bool cond)
+        internal void Ternary_Positive(bool cond)
         {
             string type = cond ? "yes" : "no";
             Console.WriteLine($"{nameof(Ternary_Positive)}: {type}");
         }
 
-        internal static void Ternary_Negative(bool cond)
+        internal void Ternary_Negative(bool cond)
         {
             string type = !cond ? "no" : "yes";
             Console.WriteLine($"{nameof(Ternary_Negative)}: {type}");
         }
 
-        internal static void IfElse_FullCompound(bool a, bool b)
+        internal void IfElse_FullCompound(bool a, bool b)
         {
             if (a)
             {
@@ -318,7 +304,7 @@ namespace TestNF
             }
         }
 
-        internal static void IfElse_HalfA_FullB(bool a, bool b)
+        internal void IfElse_HalfA_FullB(bool a, bool b)
         {
             if (a)
             {
@@ -333,7 +319,7 @@ namespace TestNF
             }
         }
 
-        internal static void IfElse_HalfA_HalfB(bool a, bool b)
+        internal void IfElse_HalfA_HalfB(bool a, bool b)
         {
             if (a)
             {
@@ -344,7 +330,7 @@ namespace TestNF
             }
         }
 
-        internal static void IfElse_FullA_HalfB(bool a, bool b)
+        internal void IfElse_FullA_HalfB(bool a, bool b)
         {
             if (a)
             {
@@ -360,7 +346,7 @@ namespace TestNF
         }
         #endregion
         #region Switch
-        internal static void Switch_WithReturn(int a)
+        internal void Switch_WithReturn(int a)
         {
             var s = "";
             switch (a)
@@ -374,7 +360,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> {s}");
         }
 
-        internal static void Switch_WithoutDefault(int a)
+        internal void Switch_WithoutDefault(int a)
         {
             var s = "default";
             switch (a)
@@ -387,7 +373,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> {s}");
         }
 
-        internal static string Switch_AsReturn(int a)
+        internal string Switch_AsReturn(int a)
         {
             Console.WriteLine($"{nameof(Switch_AsReturn)}: {a}");
 
@@ -401,14 +387,14 @@ namespace TestNF
         }
         #endregion
         #region Linq
-        internal static void Linq_Query(bool all)
+        internal void Linq_Query(bool all)
         {
             var customers = new List<string> { "Paris", "London", "Moscow" };
             var res = from c in customers where all || c == "London" select c;
             Console.WriteLine($"{nameof(Linq_Query)}: {string.Join(",", res)}");
         }
 
-        internal static void Linq_Fluent(bool all)
+        internal void Linq_Fluent(bool all)
         {
             var customers = new List<string> { "Paris", "London", "Moscow" };
             var res = customers.Where(c => all ? c != null : c == "London");
@@ -416,14 +402,14 @@ namespace TestNF
         }
         #endregion
         #region Lambda
-        internal static void Lambda10(int x)
+        internal void Lambda10(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
             Console.WriteLine($"{nameof(Lambda10)}: {d}");
         }
 
-        internal static void Lambda10_AdditionalBranch(int x)
+        internal void Lambda10_AdditionalBranch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
@@ -432,7 +418,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}");
         }
 
-        internal static void Lambda10_AdditionalSwitch(int x)
+        internal void Lambda10_AdditionalSwitch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
@@ -445,7 +431,7 @@ namespace TestNF
         }
         #endregion
         #region Generics
-        internal static void GenericParameter(List<string> list, bool a)
+        internal void GenericParameter(List<string> list, bool a)
         {
             if (list == null)
                 throw new ArgumentNullException(nameof(list));
@@ -463,7 +449,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(GenericParameter)}: {a} -> {string.Join(",", list)}");
         }
 
-        internal static void GenericVar(bool a)
+        internal void GenericVar(bool a)
         {
             var list = new List<string> { "a", "b", "c" };
             if (a)
@@ -479,22 +465,22 @@ namespace TestNF
             Console.WriteLine($"{nameof(GenericVar)}: {a} -> {string.Join(",", list)}");
         }
 
-        internal static void Generic_Call_Base(bool cond)
+        internal void Generic_Call_Base(bool cond)
         {
             var gen = new GenStr("AAA");
             var s = gen.GetDesc(cond);
             Console.WriteLine($"{nameof(Generic_Call_Base)}: {s}");
         }
 
-        internal static void Generic_Call_Child(bool cond)
+        internal void Generic_Call_Child(bool cond)
         {
             var gen = new GenStr("AAA");
             var s = cond ? gen.GetShortDesc() : "no desc";
             Console.WriteLine($"{nameof(Generic_Call_Child)}: {s}");
         }
-        #endregion
+#endregion
         #region Do/While
-        internal static void While_Operator(int count)
+        internal void While_Operator(int count)
         {
             Console.WriteLine($"{nameof(While_Operator)} -> {count}");
             while (count > 0)
@@ -503,7 +489,7 @@ namespace TestNF
 
         //in principle, it is not necessary, because 
         //it is not a branch with a precondition
-        internal static void Do_Operator()
+        internal void Do_Operator()
         {
             int i = 3;
             Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
@@ -511,7 +497,7 @@ namespace TestNF
         }
         #endregion
         #region Try/cath/finally
-        internal static void Exception_Conditional(bool isException)
+        internal void Exception_Conditional(bool isException)
         {
             try
             {
@@ -531,7 +517,7 @@ namespace TestNF
             }
         }
 
-        internal static void Catch_Statement(bool cond)
+        internal void Catch_Statement(bool cond)
         {
             var s = "none";
             try
@@ -545,7 +531,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(Catch_Statement)}: {s}");
         }
 
-        internal static void Catch_When_Statement(bool cond, bool cond2)
+        internal void Catch_When_Statement(bool cond, bool cond2)
         {
             var s = "none";
             try
@@ -560,7 +546,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(Catch_When_Statement)}: {s}");
         }
 
-        internal static void Finally_Statement(bool cond)
+        internal void Finally_Statement(bool cond)
         {
             string s = null;
             try
@@ -575,7 +561,7 @@ namespace TestNF
         }
         #endregion
         #region Dynamic
-        internal static void ExpandoObject(bool cond)
+        internal void ExpandoObject(bool cond)
         {
             dynamic exp = new ExpandoObject();
             exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
@@ -583,7 +569,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(ExpandoObject)}: {cond}");
         }
 
-        internal static void DynamicObject(bool cond)
+        internal void DynamicObject(bool cond)
         {
             dynamic exp = new DynamicDictionary();
             exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
@@ -592,7 +578,7 @@ namespace TestNF
         }
         #endregion
         #region Async/await
-        internal static async Task AsyncTask(bool cond)
+        internal async Task AsyncTask(bool cond)
         {
             if (cond)
                 await Task.Delay(100);
@@ -601,12 +587,12 @@ namespace TestNF
             Console.WriteLine($"{nameof(AsyncTask)}: {cond}");
         }
 
-        private static Task Delay150()
+        private Task Delay150()
         {
             return Task.Delay(150);
         }
 
-        internal static async Task AsyncLambda(bool cond)
+        internal async Task AsyncLambda(bool cond)
         {
             await Task.Run(async () =>
             {
@@ -618,7 +604,7 @@ namespace TestNF
             });
         }
 
-        internal static void AsyncLinq_Blocking(bool cond)
+        internal void AsyncLinq_Blocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
             var inputs = data.Select(async ev => await ProcessElement(ev, cond))
@@ -628,7 +614,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
         }
 
-        internal static async Task AsyncLinq_NonBlocking(bool cond)
+        internal async Task AsyncLinq_NonBlocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
             var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
@@ -636,28 +622,28 @@ namespace TestNF
             Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
         }
 
-        private static List<GenStr> GetDataForAsyncLinq()
+        private List<GenStr> GetDataForAsyncLinq()
         {
             return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C") };
         }
 
-        private static async Task<GenStr> ProcessElement(GenStr element, bool cond)
+        private async Task<GenStr> ProcessElement(GenStr element, bool cond)
         {
             await Task.Delay(10);
-            if(cond)
+            if (cond)
                 element.Prop += "/1";
             return element;
         }
         #endregion
         #region Parallel
-        internal static void Plinq(bool cond)
+        internal void Plinq(bool cond)
         {
             var data = GetDataForParallel();
             int sum = data.AsParallel().Where(a => !cond || (cond && a % 2 == 0)).Sum();
             Console.WriteLine($"{nameof(Plinq)}: {sum}");
         }
 
-        internal static void ForParallel(bool cond)
+        internal void ForParallel(bool cond)
         {
             var data = GetDataForParallel();
             int sum = 0;
@@ -669,7 +655,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(ForParallel)}: {sum}");
         }
 
-        internal static void ForeachParallel(bool cond)
+        internal void ForeachParallel(bool cond)
         {
             var data = GetDataForParallel();
             int sum = 0;
@@ -681,13 +667,13 @@ namespace TestNF
             Console.WriteLine($"{nameof(ForeachParallel)}: {sum}");
         }
 
-        private static IEnumerable<int> GetDataForParallel(int cnt = 10)
+        private IEnumerable<int> GetDataForParallel(int cnt = 10)
         {
             return Enumerable.Range(0, cnt);
         }
         #endregion
         #region Using, finalizer
-        internal static void UsingStatement_SyncRead(bool cond)
+        internal void UsingStatement_SyncRead(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -699,7 +685,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(UsingStatement_SyncRead)}: {cond}");
         }
 
-        internal static async Task UsingStatement_AsyncRead(bool cond)
+        internal async Task UsingStatement_AsyncRead(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -711,7 +697,7 @@ namespace TestNF
             Console.WriteLine($"{nameof(UsingStatement_AsyncRead)}: {cond}");
         }
 
-        internal static async Task UsingStatement_AsyncTask(bool cond)
+        internal async Task UsingStatement_AsyncTask(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -723,12 +709,12 @@ namespace TestNF
             Console.WriteLine($"{nameof(UsingStatement_AsyncRead)}: {cond}");
         }
 
-        private static Task AsyncWait()
+        private Task AsyncWait()
         {
             return Task.Run(() => { Thread.Sleep(50); });
         }
 
-        internal static void Finalizer(int prop)
+        internal void Finalizer(int prop)
         {
             new Finalizer(prop);
             Console.WriteLine($"{nameof(Finalizer)}: {prop}");
@@ -738,15 +724,15 @@ namespace TestNF
         [DllImport("user32.dll")]
         public static extern void SetWindowText(IntPtr hwnd, String lpString);
 
-        internal static void WinAPI(bool cond)     
+        internal void WinAPI(bool cond)
         {
             SetWindowText(IntPtr.Zero, cond ? "Bye!" : "Hello!");
             Console.WriteLine($"{nameof(WinAPI)}: {cond}");
         }
         #endregion
         #region Misc
-        private readonly static object _locker = new object();
-        internal static void Lock_Statement(bool cond)
+        private readonly object _locker = new object();
+        internal void Lock_Statement(bool cond)
         {
             string s;
             lock (_locker)
@@ -757,7 +743,7 @@ namespace TestNF
         }
 
         delegate int Operation(int x, int y);
-        internal static void AnonymousFunc()
+        internal void AnonymousFunc()
         {
             int z = 8;
             Operation operation = delegate (int x, int y)
@@ -770,14 +756,14 @@ namespace TestNF
             Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
         }
 
-        internal static void AnonymousType(bool cond)
+        internal void AnonymousType(bool cond)
         {
             var tom = new { Name = "Tom", Age = cond ? 21 : 9 };
             Console.WriteLine($"{nameof(AnonymousType)}: {cond} -> {tom.Age}");
         }
 
         //TODO: not working yet!
-        internal static void Expression10(int x)
+        internal void Expression10(int x)
         {
             System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
             var dlg = e.Compile();
@@ -785,13 +771,13 @@ namespace TestNF
             Console.WriteLine($"{nameof(Expression10)}: {d}");
         }
 
-        internal static void ContextBound(int prop)
+        internal void ContextBound(int prop)
         {
             new ContextBound(prop);
             Console.WriteLine($"{nameof(ContextBound)}: {prop}");
         }
 
-        internal static void Unsafe(bool cond)
+        internal void Unsafe(bool cond)
         {
             Point point;
             unsafe
@@ -804,7 +790,7 @@ namespace TestNF
         }
         #endregion
 
-        private static byte[] GetBytes(byte cnt)
+        private byte[] GetBytes(byte cnt)
         {
             var arr = new byte[cnt];
             for (byte i = 0; i < cnt; i++)

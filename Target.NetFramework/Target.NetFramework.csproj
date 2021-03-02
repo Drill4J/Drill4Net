@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{444389B5-5481-4FEF-855C-A75EEC812FB4}</ProjectGuid>
+    <ProjectGuid>{4C011347-AA81-4AD9-9688-06C0DFF448BB}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TestA.NFInterceptor</RootNamespace>
-    <AssemblyName>TestA.NFInterceptor</AssemblyName>
+    <RootNamespace>Target.NetFramework</RootNamespace>
+    <AssemblyName>Target.NetFramework</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -21,9 +21,10 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET48</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,18 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -62,8 +51,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Target.Common\Target.Common.csproj">
+      <Project>{7e40d044-dfe1-4ddd-a45f-74f820ae7b1d}</Project>
+      <Name>Target.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

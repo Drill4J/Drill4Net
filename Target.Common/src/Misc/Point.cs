@@ -1,4 +1,4 @@
-﻿namespace TestNF
+﻿namespace Target.Common
 {
     struct Point
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TestNF
+namespace Target.Common
 {
     public abstract class AbstractGen<T>
     {

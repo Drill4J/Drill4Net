@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
 
-namespace TestNF
+namespace Target.Common
 {
     /// <summary>
     /// The dictionary derived from DynamicObject.
