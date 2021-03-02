@@ -19,17 +19,21 @@ namespace Injector.Core
             if (ar.Length != 2)
                 throw new ArgumentException(nameof(rawVersion));
 
-            var versionAr = ar[1].Split('=');
-            if (versionAr.Length != 2)
-                throw new ArgumentException(nameof(rawVersion));
-            Version = versionAr[1];
-
             Target = (ar[0]) switch
             {
                 ".NETCoreApp" => AssemblyVersionType.NetCore,
                 ".NETStandard" => AssemblyVersionType.NetStandard,
                 _ => AssemblyVersionType.NetFramework,
             };
+
+            var versionAr = ar[1].Split('=');
+            if (versionAr.Length != 2)
+                throw new ArgumentException(nameof(rawVersion));
+            Version = versionAr[1];
+
+            //fix Core version format
+            //if (Target == AssemblyVersionType.NetCore)
+                Version = Version.Remove(0, 1) + ".0";
         }
 
         public AssemblyVersion()
