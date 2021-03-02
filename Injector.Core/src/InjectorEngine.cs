@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -23,12 +24,21 @@ namespace Injector.Core
         */
 
         private readonly IInjectorRepository _rep;
+        private ThreadLocal<bool?> _isNetCore;
+        private readonly EnumerationOptions _searchOpts;
 
         /***************************************************************************************/
 
         public InjectorEngine()
         {
             _rep = new InjectorRepository();
+            _isNetCore = new ThreadLocal<bool?>();
+            _searchOpts = new EnumerationOptions()
+            {
+                IgnoreInaccessible = true,
+                ReturnSpecialDirectories = false,
+                RecurseSubdirectories = false
+            };
         }
 
         /***************************************************************************************/
@@ -43,7 +53,8 @@ namespace Injector.Core
         {
             _rep.ValidateOptions(opts);
             CopySource(opts.SourceDirectory, opts.DestinationDirectory);
-            ProcessDirectory(opts.SourceDirectory, opts);
+            var versions = DefineTargetVersions(opts.SourceDirectory);
+            ProcessDirectory(opts.SourceDirectory, versions, opts);
         }
 
         internal void CopySource([NotNull] string sourcePath, [NotNull] string destPath)
@@ -54,32 +65,74 @@ namespace Injector.Core
             IoHelper.DirectoryCopy(sourcePath, destPath);
         }
 
-        internal void ProcessDirectory([NotNull] string directory, [NotNull] InjectOptions opts)
+        internal void ProcessDirectory([NotNull] string directory, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] InjectOptions opts)
         {
             //files
-            var fileOpts = new EnumerationOptions() 
-            { 
-                IgnoreInaccessible = true, 
-                ReturnSpecialDirectories = false, 
-                RecurseSubdirectories = false 
-            };
-            var files = Directory.EnumerateFiles(directory, "*", fileOpts)
-                .Where(a => a.EndsWith(".exe") || a.EndsWith(".dll"));
+            var files = IoHelper.GetAssemblies(directory, _searchOpts);
             foreach (var file in files)
             {
-                ProcessAssembly(file, opts);
+                ProcessAssembly(file, versions, opts);
             }
 
             //subdirectories
-            var dirs = Directory.GetDirectories(directory);
+            var dirs = Directory.GetDirectories(directory, "*", _searchOpts);
             foreach (var dir in dirs)
             {
-                ProcessDirectory(dir, opts);
+                ProcessDirectory(dir, versions, opts);
             }
         }
 
-        public void ProcessAssembly([NotNull] string filePath, [NotNull] InjectOptions opts)
+        internal Dictionary<string, AssemblyVersion> DefineTargetVersions([NotNull] string directory)
         {
+            if (!Directory.Exists(directory))
+                throw new DirectoryNotFoundException($"Source directory not exists: [{directory}]");
+            var files = IoHelper.GetAssemblies(directory, _searchOpts);
+            var versions = new Dictionary<string, AssemblyVersion>();
+            //'exe' must be after 'dll'
+            foreach (var file in files.OrderBy(a => a))
+            {
+                if (_isNetCore.Value == true && Path.GetExtension(file) == ".exe")
+                {
+                    var dll = Path.Combine(Path.ChangeExtension(file, ".dll"));
+                    var dllVer = versions.FirstOrDefault(a => a.Key == dll).Value;
+                    versions.Add(file, dllVer ?? new AssemblyVersion() { Target = AssemblyVersionType.NetCore });
+                    continue;
+                }
+                var version = GetAssemblyVersion(file);
+                versions.Add(file, version);
+                //
+                if (_isNetCore.Value == null)
+                {
+                    if (version.Target == AssemblyVersionType.NetCore)
+                        _isNetCore.Value = true;
+                    if (version.Target == AssemblyVersionType.NetFramework)
+                        _isNetCore.Value = false;
+                }
+            }
+            return versions;
+        }
+
+        internal AssemblyVersion GetAssemblyVersion([NotNull] string filePath)
+        {
+            var asmName = AssemblyName.GetAssemblyName(filePath);
+            if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
+                return new AssemblyVersion() { Target = AssemblyVersionType.NotIL  };
+            if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
+            {
+                //log: is strong name!
+                return new AssemblyVersion() { IsStrongName = true };
+            }
+            var asm = Assembly.LoadFrom(filePath);
+            var versionAttr = asm.CustomAttributes
+                .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
+            var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
+            var version = new AssemblyVersion(versionS);
+            return version;
+        }
+
+        public void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] InjectOptions opts)
+        {
+            #region Reading
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
 
@@ -88,25 +141,17 @@ namespace Injector.Core
             var subjectName = Path.GetFileNameWithoutExtension(filePath);
             var ext = Path.GetExtension(filePath);
 
-            var destDir = IoHelper.IsSameDirectories(sourceDir, opts.SourceDirectory) ? 
-                opts.DestinationDirectory : 
+            var destDir = IoHelper.IsSameDirectories(sourceDir, opts.SourceDirectory) ?
+                opts.DestinationDirectory :
                 _rep.GetInjectedDirectoryName(sourceDir);
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
 
-            var asmName = AssemblyName.GetAssemblyName(filePath);
-            if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
-                return;
-            if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
-            {
-                //log: is strong name!
-                return;
-            }
-            var asm = Assembly.LoadFrom(filePath);
-            var versionAttr = asm.CustomAttributes
-                .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
-            var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
-            var version = new AssemblyVersion(versionS);
+            AssemblyVersion version;
+            if (versions.ContainsKey(filePath))
+                version = versions[filePath];
+            else
+                version = GetAssemblyVersion(filePath);
 
             var pdb = subjectName + ".pdb";
             var isPdbExists = File.Exists(pdb);
@@ -132,7 +177,7 @@ namespace Injector.Core
                 ReadingMode = ReadingMode.Immediate,
             };
 
-            var needPdb = isPdbExists && (version.Target == AssemblyVersionType.NetCore || 
+            var needPdb = isPdbExists && (version.Target == AssemblyVersionType.NetCore ||
                                           version.Target == AssemblyVersionType.NetStandard);
             if (needPdb)
             {
@@ -159,15 +204,37 @@ namespace Injector.Core
             {
                 //log
             }
-
-            //// ///
-
             var module = assembly.MainModule;
+            #endregion
+            #region Commands
 
-            MethodReference consoleWriteLine =
-                module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
+            // 1. 'WriteLine' command
+            MethodReference consoleWriteLine;
+            if (_isNetCore.Value == true)
+            {
+                // get path to 'System.Console' reference assembly and read it
+                var consoleFileName = SdkHelper.GetCoreAssemblyPath(version.Version, "System.Console");
+                var consoleDefinition = AssemblyDefinition.ReadAssembly(consoleFileName);
+
+                // get 'System.Console' type and 'Console.WriteLine(string)' method and import it
+                consoleWriteLine = consoleDefinition.MainModule.GetType(typeof(Console).FullName)
+                    .Methods
+                    .FirstOrDefault(x =>
+                        string.Equals(x.Name, nameof(Console.WriteLine), StringComparison.InvariantCultureIgnoreCase) &&
+                        x.Parameters.Count == 1 &&
+                        string.Equals(x.Parameters[0].ParameterType.FullName, typeof(string).FullName, StringComparison.InvariantCultureIgnoreCase)
+                    );
+                var consoleWriteLineRef = module.ImportReference(consoleWriteLine);
+            }
+            else
+            {
+                 consoleWriteLine = module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
+            }
+
+            // 2. 'Call' command
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
-
+            #endregion
+            #region Processing
             List<Instruction> jumpers;
             Mono.Collections.Generic.Collection<Instruction> instructions;
             HashSet<Instruction> compilerInstructions;
@@ -379,10 +446,10 @@ namespace Injector.Core
             }
 
             // ensure we referencing only ref assemblies
-            // var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
-            // Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
-
-            //SAVING
+            var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+            //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
+            #endregion
+            #region Saving
             Environment.CurrentDirectory = destDir;
             var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
 
@@ -396,16 +463,11 @@ namespace Injector.Core
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
             }
             assembly.Write(modifiedPath, writeParams);
-
-            // don't forget to create runtime config json or copy existed and modify if necessary 
-            var runtimeJsonCfg = $"{subjectName}.runtimeConfig.json";
-            var sourceCfgPath = Path.Combine(sourceDir, runtimeJsonCfg);
-            if(File.Exists(sourceCfgPath))
-                File.Copy(sourceCfgPath, Path.Combine(destDir, runtimeJsonCfg), true);
+            #endregion
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
 
-            // local functions //
+            #region Local functions
 
             OpCode ConvertShortJumpToLong(OpCode opCode)
             {
@@ -577,6 +639,7 @@ namespace Injector.Core
                 }
                 return false;
             }
+            #endregion
         }
 
         private List<MethodDefinition> GetAllMethods(TypeDefinition type, [NotNull] InjectOptions opts)

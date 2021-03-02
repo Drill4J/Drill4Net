@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 namespace Injector.Core
 {
@@ -13,6 +15,12 @@ namespace Injector.Core
             if (!dir2.EndsWith("\\"))
                 dir2 += "\\";
             return dir1 == dir2;
+        }
+
+        public static IEnumerable<string> GetAssemblies([NotNull] string directory, EnumerationOptions searchOpts)
+        {
+            return Directory.EnumerateFiles(directory, "*", searchOpts)
+                .Where(a => a.EndsWith(".exe") || a.EndsWith(".dll"));
         }
 
         public static void DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)

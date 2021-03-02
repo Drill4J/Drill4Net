@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Injector.Core
 {
     public class AssemblyVersion
     {
-        public AssemblyVersionType Target { get; }
-        public string Version { get; }
+        public AssemblyVersionType Target { get; set; }
+        public string Version { get; set; }
+        public bool IsStrongName { get; set; }
 
         /*************************************************************************/
 
@@ -14,6 +14,7 @@ namespace Injector.Core
         {
             if (string.IsNullOrWhiteSpace(rawVersion))
                 return;
+
             var ar = rawVersion.Split(',');
             if (ar.Length != 2)
                 throw new ArgumentException(nameof(rawVersion));
@@ -31,10 +32,8 @@ namespace Injector.Core
             };
         }
 
-        public AssemblyVersion([NotNull] AssemblyVersionType target, [NotNull] string version)
+        public AssemblyVersion()
         {
-            Target = target;
-            Version = version;
         }
 
         /*************************************************************************/

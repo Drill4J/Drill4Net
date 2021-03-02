@@ -3,8 +3,9 @@
     public enum AssemblyVersionType
     {
         Unknown = 0,
-        NetFramework = 1,
-        NetStandard = 2,
-        NetCore = 3,
+        NotIL = 1,
+        NetFramework = 2,
+        NetStandard = 3,
+        NetCore = 4,
     }
 }
