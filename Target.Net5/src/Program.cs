@@ -19,6 +19,5 @@ namespace Target.Net5
 
             Console.ReadKey(true);
         }
-
     }
 }

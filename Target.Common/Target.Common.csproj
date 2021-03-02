@@ -14,8 +14,4 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
-  <!--<ItemGroup Condition=" '$(TargetFramework)' != 'NET48'">
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-  </ItemGroup>-->
-
 </Project>

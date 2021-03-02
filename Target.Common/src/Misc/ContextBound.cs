@@ -11,8 +11,8 @@ namespace Target.Common
     public class ContextBound : ContextBoundObject
     {
         public int Prop { get; set; }
-
-        /*********************************************/
+        
+        /**********************************************/
 
         public ContextBound(int prop)
         {

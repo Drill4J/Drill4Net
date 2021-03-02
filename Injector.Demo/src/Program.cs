@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using Injector.Core;
 
 namespace TestA.Interceptor
@@ -9,8 +7,19 @@ namespace TestA.Interceptor
     {
         static void Main(string[] args)
         {
-            var injector = new InjectorEngine();
-            injector.Process(null);
+            try
+            {
+                var injector = new InjectorEngine();
+                injector.Process(args);
+
+                Console.WriteLine("Injection is done.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            Console.ReadKey(true);
         }
     }
 }

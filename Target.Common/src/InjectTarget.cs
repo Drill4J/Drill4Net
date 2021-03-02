@@ -246,11 +246,11 @@ namespace Target.Common
             if (cond)
             {
                 type = "yes";
-                Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: YES");
+                Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: {type}");
                 return true;
             }
 
-            Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: NO");
+            Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: {type}");
 
             return false;
         }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -13,53 +15,154 @@ namespace Injector.Core
     {
         /* INFO *
             http://ilgenerator.apphb.com/ - online C# -> IL
-            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C#
+            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# -
                 on Github - https://github.com/adrianoc/cecilifier
             https://www.codeproject.com/Articles/671259/Reweaving-IL-code-with-Mono-Cecil
             https://blog.elishalom.com/2012/02/04/monitoring-execution-using-mono-cecil/
             https://stackoverflow.com/questions/48090703/run-mono-cecil-in-net-core
         */
 
-        public void Process(string[] args)
+        private readonly IInjectorRepository _rep;
+
+        /***************************************************************************************/
+
+        public InjectorEngine()
         {
-            //if (args.Length != 1)
-            //{
-            //    Console.WriteLine("TraceIL.exe <assembly>");
-            //    return;
-            //}
+            _rep = new InjectorRepository();
+        }
 
-            //string filename = args[0];
+        /***************************************************************************************/
 
-            var filename = @"d:\Projects\EPM-D4J\!!_exp\TestA\TestA\bin\Debug\net5.0\TestA.dll";
-            if (!File.Exists(filename))
+        public void Process([NotNull] string[] args)
+        {
+            var opts = _rep.CreateOptions(args);
+            Process(opts);
+        }
+
+        public void Process([NotNull] InjectOptions opts)
+        {
+            _rep.ValidateOptions(opts);
+            CopySource(opts.SourceDirectory, opts.DestinationDirectory);
+            ProcessDirectory(opts.SourceDirectory, opts);
+        }
+
+        internal void CopySource([NotNull] string sourcePath, [NotNull] string destPath)
+        {
+            if (Directory.Exists(destPath))
+                Directory.Delete(destPath, true);
+            Directory.CreateDirectory(destPath);
+            IoHelper.DirectoryCopy(sourcePath, destPath);
+        }
+
+        internal void ProcessDirectory([NotNull] string directory, [NotNull] InjectOptions opts)
+        {
+            //files
+            var fileOpts = new EnumerationOptions() 
+            { 
+                IgnoreInaccessible = true, 
+                ReturnSpecialDirectories = false, 
+                RecurseSubdirectories = false 
+            };
+            var files = Directory.EnumerateFiles(directory, "*", fileOpts)
+                .Where(a => a.EndsWith(".exe") || a.EndsWith(".dll"));
+            foreach (var file in files)
             {
-                Console.WriteLine($"File not exists: [{filename}]");
+                ProcessAssembly(file, opts);
+            }
+
+            //subdirectories
+            var dirs = Directory.GetDirectories(directory);
+            foreach (var dir in dirs)
+            {
+                ProcessDirectory(dir, opts);
+            }
+        }
+
+        public void ProcessAssembly([NotNull] string filePath, [NotNull] InjectOptions opts)
+        {
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException($"File not exists: [{filePath}]");
+
+            var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath))}\\";
+            Environment.CurrentDirectory = sourceDir;
+            var subjectName = Path.GetFileNameWithoutExtension(filePath);
+            var ext = Path.GetExtension(filePath);
+
+            var destDir = IoHelper.IsSameDirectories(sourceDir, opts.SourceDirectory) ? 
+                opts.DestinationDirectory : 
+                _rep.GetInjectedDirectoryName(sourceDir);
+            if (!Directory.Exists(destDir))
+                Directory.CreateDirectory(destDir);
+
+            var asmName = AssemblyName.GetAssemblyName(filePath);
+            if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
+                return;
+            if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
+            {
+                //log: is strong name!
+                return;
+            }
+            var asm = Assembly.LoadFrom(filePath);
+            var versionAttr = asm.CustomAttributes
+                .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
+            var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
+            var version = new AssemblyVersion(versionS);
+
+            var pdb = subjectName + ".pdb";
+            var isPdbExists = File.Exists(pdb);
+
+            if (ext == ".exe" && version.Target == AssemblyVersionType.NetCore)
+            {
+                //simply copy to destination
+                File.Copy(filePath, Path.Combine(destDir, Path.GetFileName(filePath)));
+                try
+                {
+                    if (isPdbExists)
+                        File.Copy(Path.Combine(sourceDir, pdb), Path.Combine(destDir, pdb));
+                }
+                catch { } //may be in VS
                 return;
             }
 
-            var dir = Path.GetFullPath(Path.GetDirectoryName(filename));
-            Environment.CurrentDirectory = dir;
-            var subjectName = Path.GetFileNameWithoutExtension(filename);
+            ReaderParameters readerParams = new ReaderParameters
+            {
+                // we will write to another file, so we don't need this
+                ReadWrite = false,
+                // read everything at once
+                ReadingMode = ReadingMode.Immediate,
+            };
+
+            var needPdb = isPdbExists && (version.Target == AssemblyVersionType.NetCore || 
+                                          version.Target == AssemblyVersionType.NetStandard);
+            if (needPdb)
+            {
+                // netcore uses portable pdb, so we provide appropriate reader
+                readerParams.SymbolReaderProvider = new PortablePdbReaderProvider();
+                readerParams.ReadSymbols = true;
+                try
+                {
+                    readerParams.SymbolStream = File.Open(pdb, FileMode.Open);
+                }
+                catch (IOException ex) //may be in VS for NET Core .exe
+                {
+                    //log
+                }
+            }
 
             // read subject assembly with symbols
-            var assembly = AssemblyDefinition.ReadAssembly(filename,
-                new ReaderParameters
-                {
-                    // netcore uses portable pdb, so we provide appropriate reader
-                    SymbolReaderProvider = new PortablePdbReaderProvider(),
-                    // read symbols
-                    ReadSymbols = true,
-                    SymbolStream = File.Open(subjectName + ".pdb", FileMode.Open),
-                    // we will write to another file, so we don't need this
-                    ReadWrite = false,
-                    // read everything at once
-                    ReadingMode = ReadingMode.Immediate,
-                }
-            );
-            var module = assembly.MainModule;
+            AssemblyDefinition assembly = null;
+            try
+            {
+                assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
+            }
+            catch
+            {
+                //log
+            }
 
-            var isSetGetInclude = false;
-            var isCtorInclude = false; //for debugging purposes
+            //// ///
+
+            var module = assembly.MainModule;
 
             MethodReference consoleWriteLine =
                 module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
@@ -78,7 +181,7 @@ namespace Injector.Core
                     continue;
 
                 //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
-                var methods = GetAllMethods(type, isSetGetInclude, isCtorInclude);
+                var methods = GetAllMethods(type, opts);
 
                 //process all methods
                 foreach (var methodDefinition in methods)
@@ -275,32 +378,32 @@ namespace Injector.Core
                 }
             }
 
-            var modifiedName = Path.GetFileNameWithoutExtension(filename) + ".modified";// + Path.GetExtension(filename);
-            var modifiedPath = modifiedName + ".dll";
-
             // ensure we referencing only ref assemblies
             // var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
             // Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
 
-            // save modified assembly and symbols to new file            
-            assembly.Write(modifiedPath,
-                new WriterParameters
-                {
-                    SymbolStream = File.Create(modifiedName + ".pdb"),
-                    // write symbols 
-                    WriteSymbols = true,
-                    // net core uses portable pdb
-                    SymbolWriterProvider = new PortablePdbWriterProvider()
-                }
-            );
+            //SAVING
+            Environment.CurrentDirectory = destDir;
+            var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
 
-            // don't forget to create runtime config json
-            // or copy existed and modify if necessary 
-            var runtimeConfigJsonExt = ".runtimeConfig.json";
-            File.Copy(subjectName + runtimeConfigJsonExt, modifiedName + runtimeConfigJsonExt, true);
+            // save modified assembly and symbols to new file    
+            var writeParams = new WriterParameters();
+            if (needPdb)
+            {
+                writeParams.SymbolStream = File.Create(pdb);
+                writeParams.WriteSymbols = true;
+                // net core uses portable pdb
+                writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
+            }
+            assembly.Write(modifiedPath, writeParams);
+
+            // don't forget to create runtime config json or copy existed and modify if necessary 
+            var runtimeJsonCfg = $"{subjectName}.runtimeConfig.json";
+            var sourceCfgPath = Path.Combine(sourceDir, runtimeJsonCfg);
+            if(File.Exists(sourceCfgPath))
+                File.Copy(sourceCfgPath, Path.Combine(destDir, runtimeJsonCfg), true);
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
-            Console.ReadKey(true);
 
             // local functions //
 
@@ -476,7 +579,7 @@ namespace Injector.Core
             }
         }
 
-        private List<MethodDefinition> GetAllMethods(TypeDefinition type, bool isSetGetInclude, bool isCtorInclude)
+        private List<MethodDefinition> GetAllMethods(TypeDefinition type, [NotNull] InjectOptions opts)
         {
             var methods = new List<MethodDefinition>();
 
@@ -485,8 +588,10 @@ namespace Injector.Core
             var nestedMeths = type.Methods
                 .Where(a => a.HasBody)
                 .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
-                .Where(a => isCtorInclude || (!isCtorInclude && !a.IsConstructor)) //may be we skips own ctors
-                .Where(a => isSetGetInclude || (!isSetGetInclude && a.Name != "get_Prop" && a.Name != "set_Prop")) //do we need property setters and getters?
+                .Where(a => opts.InjectConstructors || (!opts.InjectConstructors && !a.IsConstructor)) //may be we skips own ctors
+                .Where(a => opts.InjectSetters || (!opts.InjectSetters && a.Name != "set_Prop")) //do we need property setters?
+                .Where(a => opts.InjectGetters || (!opts.InjectGetters && a.Name != "get_Prop")) //do we need property getters?
+                .Where(a => opts.InjectPrivates || (!opts.InjectPrivates && !a.IsPrivate)) //do we need property privates?
                 ;
             foreach (var nestedMethod in nestedMeths)
                 methods.Add(nestedMethod);
@@ -494,7 +599,7 @@ namespace Injector.Core
             //nested
             foreach (var nestedType in type.NestedTypes)
             {
-                var innerMethods = GetAllMethods(nestedType, isSetGetInclude, isCtorInclude);
+                var innerMethods = GetAllMethods(nestedType, opts);
                 methods.AddRange(innerMethods);
             }
             return methods;
