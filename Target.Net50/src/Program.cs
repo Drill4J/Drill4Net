@@ -1,23 +1,30 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Target.Common;
 
-namespace Target.Net5
+namespace Target.Net50
 {
     class Program
     {
         static void Main(string[] args)
         {
+            Process().GetAwaiter().GetResult();
+
+            Console.WriteLine("\nDone.");
+            Console.ReadKey(true);
+        }
+
+        private static async Task Process()
+        {
             try
             {
                 var target = new InjectTarget();
-                target.Process();
+                await target.Process();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
-
-            Console.ReadKey(true);
         }
     }
 }

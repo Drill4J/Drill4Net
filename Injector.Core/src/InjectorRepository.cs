@@ -8,8 +8,8 @@ namespace Injector.Core
     {
         //TODO: to parameters!
         private readonly string _defaultDirectory =
-            @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Target.Net5\bin\Debug\net5.0\";
-            //@"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Target.NetFramework\bin\Debug\";
+            @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Target.Net50\bin\Debug\net5.0\";
+            //@"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Target.Net48\bin\Debug\";
 
         private readonly string _destinationFolderPostfix = "Injected";
 

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Target.Net5", "Target.Net5\Target.Net5.csproj", "{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Target.Net50", "Target.Net50\Target.Net50.csproj", "{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Injector.Demo", "Injector.Demo\Injector.Demo.csproj", "{96334265-0515-4C61-B6EF-A39A36A99CD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Target.NetFramework", "Target.NetFramework\Target.NetFramework.csproj", "{4C011347-AA81-4AD9-9688-06C0DFF448BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Target.Net48", "Target.Net48\Target.Net48.csproj", "{4C011347-AA81-4AD9-9688-06C0DFF448BB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetCore", "NetCore", "{FA69B589-117C-4E05-9F95-914965C37D71}"
 EndProject

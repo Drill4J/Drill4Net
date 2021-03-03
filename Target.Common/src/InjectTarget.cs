@@ -11,7 +11,7 @@ namespace Target.Common
 {
     public class InjectTarget
     {
-        public async void Process()
+        public async Task Process()
         {
             #region If/Else
             IfElse_Half(false);
@@ -159,8 +159,8 @@ namespace Target.Common
             await UsingStatement_AsyncTask(false);
             await UsingStatement_AsyncTask(true);
 
-            Finalizer(1);
-            Finalizer(2);
+            //Finalizer(1);
+            //Finalizer(2);
             GC.Collect();
             GC.WaitForPendingFinalizers();
             #endregion
@@ -187,7 +187,7 @@ namespace Target.Common
 
             WinAPI(false);
             WinAPI(true);
-#endregion
+            #endregion
         }
 
         #region IF/ELSE
