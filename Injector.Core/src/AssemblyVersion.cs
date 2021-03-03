@@ -10,6 +10,10 @@ namespace Injector.Core
 
         /*************************************************************************/
 
+        public AssemblyVersion()
+        {
+        }
+
         public AssemblyVersion(string rawVersion)
         {
             if (string.IsNullOrWhiteSpace(rawVersion))
@@ -29,15 +33,7 @@ namespace Injector.Core
             var versionAr = ar[1].Split('=');
             if (versionAr.Length != 2)
                 throw new ArgumentException(nameof(rawVersion));
-            Version = versionAr[1];
-
-            //fix Core version format
-            //if (Target == AssemblyVersionType.NetCore)
-                Version = Version.Remove(0, 1) + ".0";
-        }
-
-        public AssemblyVersion()
-        {
+            Version = $"{versionAr[1].Remove(0, 1)}.0";
         }
 
         /*************************************************************************/

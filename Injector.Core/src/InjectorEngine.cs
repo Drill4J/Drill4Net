@@ -217,7 +217,7 @@ namespace Injector.Core
             var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
             #endregion
             #region Processing
-            List<Instruction> jumpers;
+            HashSet<Instruction> jumpers;
             Mono.Collections.Generic.Collection<Instruction> instructions;
             HashSet<Instruction> compilerInstructions;
             var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
@@ -239,6 +239,7 @@ namespace Injector.Core
                     var realType = methodDefinition.DeclaringType;
                     var typeName = realType.FullName;
                     var methodName = methodDefinition.Name;
+                    var isFinalizer = methodName == "Finalize" && methodDefinition.IsVirtual;
 
                     //instructions
                     var body = methodDefinition.Body;
@@ -261,9 +262,13 @@ namespace Injector.Core
 
                     //type's attributes
                     var declAttrs = realType.CustomAttributes;
-                    var needEnterLeavings = !isAsyncStateMachine && declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null; //!methodName.StartsWith("<");
+                    var needEnterLeavings =
+                        //Async/await
+                        !isAsyncStateMachine && declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null && //!methodName.StartsWith("<");
+                        //Finalyze() -> strange, but in Core 'Enter' & 'Leaving' lead to a crash                    
+                        (_isNetCore.Value == false || (_isNetCore.Value == true && !isFinalizer));
                     #endregion
-
+                    #region Enter/Leaving
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
                     if (needEnterLeavings)
@@ -277,11 +282,12 @@ namespace Injector.Core
                     //'leaving' instruction without immediate injection
                     var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {typeName}.{methodName}");
                     var lastOp = instructions.Last();
-
+                    #endregion
+                    #region Jumps
                     //collect jumps. Hash table for addresses is almost useless,
-                    //because they will be recalculated inside the processor during inject...
+                    //because they may be recalculated inside the processor during inject...
                     //and ideally, there shouldn't be too many of them 
-                    jumpers = new List<Instruction>();
+                    jumpers = new HashSet<Instruction>();
                     for (var i = 1; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
@@ -289,8 +295,8 @@ namespace Injector.Core
                         if (flow == FlowControl.Branch || flow == FlowControl.Cond_Branch)
                             jumpers.Add(instr);
                     }
-
-                    //misc injections               
+                    #endregion
+                    #region Misc injections               
                     var ifStack = new Stack<Instruction>();
                     for (var i = startInd; i < instructions.Count; i++)
                     {
@@ -358,7 +364,6 @@ namespace Injector.Core
                             processor.InsertAfter(instr, ldstrIf);
 
                             //correct jump instruction
-                            //TODO: Separate it into a function to process all the Br-instructions at the end!
                             if (operand != null)
                             {
                                 var newOpCode = ConvertShortJumpToLong(opCode);
@@ -367,12 +372,18 @@ namespace Injector.Core
                                     //EACH short form -> to long form (otherwise, you need to recalculate 
                                     //again after each really necessary conversion)
 
+                                    //IF (!) convert to long form ONLY where NEEDED, we must separate it into 
+                                    //a function to process all such Br-instructions at the end!
+                                    //Let convert ALL branch instructions!..
+
                                     //var injectLen = ldstrIf.GetSize() + call.GetSize();
                                     //var diff = operand.Offset - instr.Offset;
                                     //if (diff + injectLen > 127 || diff < -128) //is too far?
                                     {
                                         var longIstr = Instruction.Create(newOpCode, operand);
                                         processor.Replace(instr, longIstr);
+                                        jumpers.Remove(instr);
+                                        jumpers.Add(longIstr);
                                     }
                                 }
                             }
@@ -396,7 +407,7 @@ namespace Injector.Core
                             var instr2 = instructions[i + 1];
                             ReplaceJump(instr2, elseInst);
 
-                            processor.InsertBefore(instr2, elseInst);
+                            processor.InsertBefore(instr2, elseInst); 
                             processor.InsertBefore(instr2, call);
                             i += 2;
                             continue;
@@ -424,6 +435,7 @@ namespace Injector.Core
                             continue;
                         }
                     } //cycle
+                    #endregion
                 }
             }
 
@@ -444,8 +456,6 @@ namespace Injector.Core
                 // net core uses portable pdb
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
             }
-            //if (File.Exists(modifiedPath))
-                //File.Delete(modifiedPath);
             assembly.Write(modifiedPath, writeParams);
             #endregion
 

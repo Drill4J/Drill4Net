@@ -4,26 +4,21 @@ namespace Target.Common
 {
     public class Finalizer
     {
-        public int Prop { get; set; }
-
         private readonly MemoryStream _ms;
 
-        /*************************************************/
+        /***************************************************/
 
-        public Finalizer(int prop)
+        public Finalizer(ushort len)
         {
-            Prop = prop;
-            _ms = new MemoryStream(new byte[1000]);
+            _ms = new MemoryStream(new byte[len]);
         }
 
         ~Finalizer()
         {
-            if (Prop % 2 == 0)
-                Prop = 13;
-            else
-                Prop = 100;
+            var s = _ms.Length % 2 == 0 ? "if" : "else";
+            System.Console.WriteLine($"~Finalizer({s})");
 
-            _ms.Dispose();
+            _ms?.Dispose();
         }
     }
 }

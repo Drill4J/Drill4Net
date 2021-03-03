@@ -14,180 +14,180 @@ namespace Target.Common
         public async Task Process()
         {
             #region If/Else
-            IfElse_Half(false);
-            IfElse_Half(true);
+            //IfElse_Half(false);
+            //IfElse_Half(true);
 
             IfElse_FullSimple(false);
             IfElse_FullSimple(true);
 
-            Ternary_Positive(false);
-            Ternary_Positive(true);
+            //Ternary_Positive(false);
+            //Ternary_Positive(true);
 
-            Ternary_Negative(false);
-            Ternary_Negative(true);
+            //Ternary_Negative(false);
+            //Ternary_Negative(true);
 
-            IfElse_FullCompound(false, false);
-            IfElse_FullCompound(false, true);
-            IfElse_FullCompound(true, false);
-            IfElse_FullCompound(true, true);
+            //IfElse_FullCompound(false, false);
+            //IfElse_FullCompound(false, true);
+            //IfElse_FullCompound(true, false);
+            //IfElse_FullCompound(true, true);
 
-            IfElse_HalfA_FullB(true, false);
-            IfElse_HalfA_FullB(true, true);
+            //IfElse_HalfA_FullB(true, false);
+            //IfElse_HalfA_FullB(true, true);
 
-            IfElse_HalfA_HalfB(true, true);
+            //IfElse_HalfA_HalfB(true, true);
 
-            IfElse_FullA_HalfB(true, true);
-            IfElse_FullA_HalfB(false, true);
+            //IfElse_FullA_HalfB(true, true);
+            //IfElse_FullA_HalfB(false, true);
 
-            IfElse_Consec_Full(false, false);
-            IfElse_Consec_Full(false, true);
-            IfElse_Consec_Full(true, false);
-            IfElse_Consec_Full(true, true);
+            //IfElse_Consec_Full(false, false);
+            //IfElse_Consec_Full(false, true);
+            //IfElse_Consec_Full(true, false);
+            //IfElse_Consec_Full(true, true);
 
-            IfElse_Consec_HalfA_FullB(true, false);
-            IfElse_Consec_HalfA_FullB(true, true);
+            //IfElse_Consec_HalfA_FullB(true, false);
+            //IfElse_Consec_HalfA_FullB(true, true);
 
-            IfElse_Half_EarlyReturn_Func(false);
-            IfElse_Half_EarlyReturn_Func(true);
+            //IfElse_Half_EarlyReturn_Func(false);
+            //IfElse_Half_EarlyReturn_Func(true);
             #endregion
-            #region Switch
-            Switch_WithReturn(-1);
-            Switch_WithReturn(0);
-            Switch_WithReturn(1);
-            Switch_WithReturn(2);
+            //#region Switch
+            //Switch_WithReturn(-1);
+            //Switch_WithReturn(0);
+            //Switch_WithReturn(1);
+            //Switch_WithReturn(2);
 
-            Switch_WithoutDefault(-1);
-            Switch_WithoutDefault(0);
-            Switch_WithoutDefault(1);
-            Switch_WithoutDefault(2);
+            //Switch_WithoutDefault(-1);
+            //Switch_WithoutDefault(0);
+            //Switch_WithoutDefault(1);
+            //Switch_WithoutDefault(2);
 
-            Switch_AsReturn(-1);
-            Switch_AsReturn(0);
-            Switch_AsReturn(1);
-            Switch_AsReturn(2);
-            #endregion
-            #region Generics
-            var list = new List<string> { "a", "b", "c" };
-            GenericParameter(list, false);
-            GenericParameter(list, true);
+            //Switch_AsReturn(-1);
+            //Switch_AsReturn(0);
+            //Switch_AsReturn(1);
+            //Switch_AsReturn(2);
+            //#endregion
+            //#region Generics
+            //var list = new List<string> { "a", "b", "c" };
+            //GenericParameter(list, false);
+            //GenericParameter(list, true);
 
-            GenericVar(false);
-            GenericVar(true);
+            //GenericVar(false);
+            //GenericVar(true);
 
-            Generic_Call_Base(false);
-            Generic_Call_Base(true);
+            //Generic_Call_Base(false);
+            //Generic_Call_Base(true);
 
-            Generic_Call_Child(false);
-            Generic_Call_Child(true);
-            #endregion
-            #region Anonymous, lambda, Linq
-            AnonymousFunc();
+            //Generic_Call_Child(false);
+            //Generic_Call_Child(true);
+            //#endregion
+            //#region Anonymous, lambda, Linq
+            //AnonymousFunc();
 
-            AnonymousType(false);
-            AnonymousType(true);
+            //AnonymousType(false);
+            //AnonymousType(true);
 
-            Lambda10(5);
-            Lambda10(10);
+            //Lambda10(5);
+            //Lambda10(10);
 
-            Lambda10_AdditionalBranch(10);
+            //Lambda10_AdditionalBranch(10);
 
-            Lambda10_AdditionalSwitch(5);
-            Lambda10_AdditionalSwitch(10);
-            Lambda10_AdditionalSwitch(12);
+            //Lambda10_AdditionalSwitch(5);
+            //Lambda10_AdditionalSwitch(10);
+            //Lambda10_AdditionalSwitch(12);
 
-            Expression10(5);
-            Expression10(10);
+            //Expression10(5);
+            //Expression10(10);
 
-            Linq_Query(false);
-            Linq_Query(true);
+            //Linq_Query(false);
+            //Linq_Query(true);
 
-            Linq_Fluent(false);
-            Linq_Fluent(true);
-            #endregion
-            #region Try/cath/finally
-            try
-            {
-                Exception_Conditional(false);
-                Exception_Conditional(true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"\n{ex}");
-            }
+            //Linq_Fluent(false);
+            //Linq_Fluent(true);
+            //#endregion
+            //#region Try/cath/finally
+            //try
+            //{
+            //    Exception_Conditional(false);
+            //    Exception_Conditional(true);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"\n{ex}");
+            //}
 
-            Catch_Statement(false);
-            Catch_Statement(true);
+            //Catch_Statement(false);
+            //Catch_Statement(true);
 
-            Catch_When_Statement(false, false);
-            Catch_When_Statement(false, true);
-            Catch_When_Statement(true, false);
-            Catch_When_Statement(true, true);
+            //Catch_When_Statement(false, false);
+            //Catch_When_Statement(false, true);
+            //Catch_When_Statement(true, false);
+            //Catch_When_Statement(true, true);
 
-            Finally_Statement(false);
-            Finally_Statement(true);
-            #endregion
-            #region Async
-            await AsyncTask(false);
-            await AsyncTask(true);
+            //Finally_Statement(false);
+            //Finally_Statement(true);
+            //#endregion
+            //#region Async
+            //await AsyncTask(false);
+            //await AsyncTask(true);
 
-            await AsyncLambda(false);
-            await AsyncLambda(true);
+            //await AsyncLambda(false);
+            //await AsyncLambda(true);
 
-            AsyncLinq_Blocking(false);
-            AsyncLinq_Blocking(true);
+            //AsyncLinq_Blocking(false);
+            //AsyncLinq_Blocking(true);
 
-            await AsyncLinq_NonBlocking(false);
-            await AsyncLinq_NonBlocking(true);
-            #endregion
-            #region Parallel
-            Plinq(false);
-            Plinq(true);
+            //await AsyncLinq_NonBlocking(false);
+            //await AsyncLinq_NonBlocking(true);
+            //#endregion
+            //#region Parallel
+            //Plinq(false);
+            //Plinq(true);
 
-            ForParallel(false);
-            ForParallel(true);
+            //ForParallel(false);
+            //ForParallel(true);
 
-            ForeachParallel(false);
-            ForeachParallel(true);
-            #endregion
-            #region Using/finalizer
-            UsingStatement_SyncRead(false);
-            UsingStatement_SyncRead(true);
+            //ForeachParallel(false);
+            //ForeachParallel(true);
+            //#endregion
+            //#region Using/finalizer
+            //UsingStatement_SyncRead(false);
+            //UsingStatement_SyncRead(true);
 
-            await UsingStatement_AsyncRead(false);
-            await UsingStatement_AsyncRead(true);
+            //await UsingStatement_AsyncRead(false);
+            //await UsingStatement_AsyncRead(true);
 
-            await UsingStatement_AsyncTask(false);
-            await UsingStatement_AsyncTask(true);
+            //await UsingStatement_AsyncTask(false);
+            //await UsingStatement_AsyncTask(true);
 
-            //Finalizer(1);
-            //Finalizer(2);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            #endregion
-            #region Misc
-            While_Operator(-1);
-            While_Operator(3);
+            //Finalizer(17);
+            //Finalizer(18);
+            //GC.Collect();
+            //GC.WaitForPendingFinalizers();
+            //#endregion
+            //#region Misc
+            //While_Operator(-1);
+            //While_Operator(3);
 
-            Do_Operator();
+            //Do_Operator();
 
-            Lock_Statement(false);
-            Lock_Statement(true);
+            //Lock_Statement(false);
+            //Lock_Statement(true);
 
-            ContextBound(-1);
-            ContextBound(1);
+            //ContextBound(-1);
+            //ContextBound(1);
 
-            ExpandoObject(false);
-            ExpandoObject(true);
+            //ExpandoObject(false);
+            //ExpandoObject(true);
 
-            DynamicObject(false);
-            DynamicObject(true);
+            //DynamicObject(false);
+            //DynamicObject(true);
 
-            Unsafe(false);
-            Unsafe(true);
+            //Unsafe(false);
+            //Unsafe(true);
 
-            WinAPI(false);
-            WinAPI(true);
-            #endregion
+            //WinAPI(false);
+            //WinAPI(true);
+            //#endregion
         }
 
         #region IF/ELSE
@@ -714,10 +714,10 @@ namespace Target.Common
             return Task.Run(() => { Thread.Sleep(50); });
         }
 
-        internal void Finalizer(int prop)
+        internal void Finalizer(ushort len)
         {
-            new Finalizer(prop);
-            Console.WriteLine($"{nameof(Finalizer)}: {prop}");
+            new Finalizer(len);
+            Console.WriteLine($"{nameof(Finalizer)}: {len}");
         }
         #endregion
         #region WinAPI
