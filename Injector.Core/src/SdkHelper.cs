@@ -20,6 +20,12 @@ namespace Injector.Core
             GetInstalledRefsVersions(CoreRefsPath);
         public static string[] GetInstalledStandardRefsVersions() =>
             GetInstalledRefsVersions(StandardRefsPath);
+
+        // Use dotnet tool to get sdk and runtime versions and paths
+        private const string DotNetTool = "dotnet";
+
+        /*******************************************************************************/
+
         private static string[] GetInstalledRefsVersions(string baseRefPath)
         {
             var dir = Directory.GetDirectories(baseRefPath);
@@ -44,9 +50,6 @@ namespace Injector.Core
                 ? null
                 : Path.Combine(baseRefPath, refVersion, path.Value);//.Replace('/', '\\');
         }
-
-        // Use dotnet tool to get sdk and runtime versions and paths
-        private const string DotNetTool = "dotnet";
 
         public static string GetInstalledSdks() => RunDotNetTool(@"--list-sdks");
         public static string GetInstalledRuntimes() => RunDotNetTool(@"--list-runtimes");

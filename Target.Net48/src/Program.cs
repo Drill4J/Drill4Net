@@ -8,6 +8,10 @@ namespace Target.Net48
     {
         static void Main(string[] args)
         {
+            var consoleType = typeof(Console);
+            var asm = consoleType.Assembly;
+
+
             Process().GetAwaiter().GetResult();
 
             Console.WriteLine("\nDone.");

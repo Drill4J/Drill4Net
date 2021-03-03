@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Loader;
 using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -209,8 +210,21 @@ namespace Injector.Core
             //}
             //else
             //{
-                //TODO: choose the correct version of Net Framework!
-                consoleWriteLine = module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
+            //TODO: choose the correct version of Net Framework!
+
+            //https://jeremybytes.blogspot.com/2020/01/using-typegettype-with-net-core.html
+            //var t = typeof(Console);
+            //AssemblyLoadContext.Default.LoadFromAssemblyPath(@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.3\System.Console.dll");
+            //AssemblyLoadContext.Default.LoadFromAssemblyPath(@"C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
+            //var t = Type.GetType("System.Console, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"); //load current, not specified
+
+            //TODO: for misc frameworks
+            //var path = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.3\System.Console.dll";
+            //AssemblyContext loadContext = new AssemblyContext(path);
+            //var asm = loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(path)));
+            //var consoleType = asm.ExportedTypes.FirstOrDefault(a => a.FullName == "System.Console");
+
+            consoleWriteLine = module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             //}
 
             // 2. 'Call' command
@@ -265,7 +279,7 @@ namespace Injector.Core
                     var needEnterLeavings =
                         //Async/await
                         !isAsyncStateMachine && declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null && //!methodName.StartsWith("<");
-                        //Finalyze() -> strange, but in Core 'Enter' & 'Leaving' lead to a crash                    
+                        //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
                         (_isNetCore.Value == false || (_isNetCore.Value == true && !isFinalizer));
                     #endregion
                     #region Enter/Leaving
@@ -370,11 +384,7 @@ namespace Injector.Core
                                 if (newOpCode.Code != opCode.Code)
                                 {
                                     //EACH short form -> to long form (otherwise, you need to recalculate 
-                                    //again after each really necessary conversion)
-
-                                    //IF (!) convert to long form ONLY where NEEDED, we must separate it into 
-                                    //a function to process all such Br-instructions at the end!
-                                    //Let convert ALL branch instructions!..
+                                    //again after each necessary conversion)
 
                                     //var injectLen = ldstrIf.GetSize() + call.GetSize();
                                     //var diff = operand.Offset - instr.Offset;
