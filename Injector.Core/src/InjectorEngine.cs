@@ -218,13 +218,25 @@ namespace Injector.Core
             //AssemblyLoadContext.Default.LoadFromAssemblyPath(@"C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
             //var t = Type.GetType("System.Console, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"); //load current, not specified
 
-            //TODO: for misc frameworks
-            //var path = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.3\System.Console.dll";
-            //AssemblyContext loadContext = new AssemblyContext(path);
-            //var asm = loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(path)));
-            //var consoleType = asm.ExportedTypes.FirstOrDefault(a => a.FullName == "System.Console");
+            ////TODO: for misc frameworks including Net Framework
+            //var path = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Console.dll";
+            //var loadContext = new AssemblyContext(path);
+            //var asm = loadContext.ResolveAssemblyToPath(path); //asm successful loading
+            //var consoleType = asm.CreateInstance("System.Console"); //fail on loading mscorlib.dll
+            //var consoleType = asm.ExportedTypes.FirstOrDefault(a => a.FullName == "System.Console"); //no loaded types
 
-            consoleWriteLine = module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
+            var path = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
+            var loadContext = new AssemblyContext(path);
+            var injAsm = loadContext.ResolveAssemblyToPath(path); //asm successful loading
+            var consoleType = injAsm.ExportedTypes.FirstOrDefault(a => a.FullName == "Plugins.Logger.LoggerPlugin");
+            var method = consoleType.GetMethod("Process", new Type[] { typeof(string) });
+            consoleWriteLine = module.ImportReference(method);
+   
+            //var injAsmName = injAsm.GetName();
+            //var injAsmRef = new AssemblyNameReference(injAsmName.Name, injAsmName.Version);
+            //module.AssemblyReferences.Add(injAsmRef);
+
+            //consoleWriteLine = module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             //}
 
             // 2. 'Call' command

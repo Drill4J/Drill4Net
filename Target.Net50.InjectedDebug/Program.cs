@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Target.Common;
 
-namespace Target.Net48
+namespace Target.Net50.InjectedDebug
 {
     class Program
     {
@@ -10,7 +10,7 @@ namespace Target.Net48
         {
             Process().GetAwaiter().GetResult();
 
-            Console.WriteLine("\nDone.");
+            Console.WriteLine("\nDone. SEE LOG!");
             Console.ReadKey(true);
         }
 

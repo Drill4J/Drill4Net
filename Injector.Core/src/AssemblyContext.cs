@@ -14,9 +14,20 @@ namespace Injector.Core
         public AssemblyContext(string asmPath)
         {
             _resolver = new AssemblyDependencyResolver(asmPath);
+            Resolving += AssemblyContext_Resolving;
         }
 
         /*************************************************************/
+
+        private Assembly AssemblyContext_Resolving(AssemblyLoadContext arg1, AssemblyName arg2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Assembly ResolveAssemblyToPath(string assemblyPath)
+        {
+            return LoadFromAssemblyPath(assemblyPath);
+        }
 
         protected override Assembly Load(AssemblyName assemblyName)
         {
