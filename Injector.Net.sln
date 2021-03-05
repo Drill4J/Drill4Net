@@ -19,17 +19,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C2C77100
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injector", "Injector", "{2FFDD626-2A70-425D-A6D7-5769E16CE0C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Injector.Core", "Injector.Core\Injector.Core.csproj", "{04F30A51-4DC7-4F70-94DF-F9AA594C3656}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Injector.Engine", "Injector.Engine\Injector.Engine.csproj", "{04F30A51-4DC7-4F70-94DF-F9AA594C3656}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Target.Common", "Target.Common\Target.Common.csproj", "{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugin", "Plugin", "{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugins.Logger", "Plugins.Logger\Plugins.Logger.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Logger", "Plugins.Logger\Plugins.Logger.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugins.Demo", "Plugins.Demo\Plugins.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Demo", "Plugins.Demo\Plugins.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Target.Net50.InjectedDebug", "Target.Net50.InjectedDebug\Target.Net50.InjectedDebug.csproj", "{723345D8-E451-4C4C-96B4-735932A75EE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Target.Net50.InjectedDebug", "Target.Net50.InjectedDebug\Target.Net50.InjectedDebug.csproj", "{723345D8-E451-4C4C-96B4-735932A75EE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Injection", "Injection\Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injection", "Injection", "{F224ACDF-5B60-47B3-98F7-15280126EF03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Injection.Demo", "Injection.Demo\Injection.Demo.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +75,14 @@ Global
 		{723345D8-E451-4C4C-96B4-735932A75EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{723345D8-E451-4C4C-96B4-735932A75EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{723345D8-E451-4C4C-96B4-735932A75EE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25B407C4-144B-4C55-9CC8-D53B625FDD69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25B407C4-144B-4C55-9CC8-D53B625FDD69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25B407C4-144B-4C55-9CC8-D53B625FDD69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25B407C4-144B-4C55-9CC8-D53B625FDD69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +98,8 @@ Global
 		{7D2F7D02-BD1D-4811-BCB0-7C44C7332390} = {15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}
 		{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2} = {15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}
 		{723345D8-E451-4C4C-96B4-735932A75EE1} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
+		{2FBA8974-AAE8-43C1-AAD6-37C25E869F08} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
+		{25B407C4-144B-4C55-9CC8-D53B625FDD69} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

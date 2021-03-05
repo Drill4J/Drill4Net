@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
-namespace Injector.Core
+namespace Injector.Engine
 {
     public static class IoHelper
     {

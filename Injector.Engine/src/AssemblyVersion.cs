@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Injector.Core
+namespace Injector.Engine
 {
     public class AssemblyVersion
     {

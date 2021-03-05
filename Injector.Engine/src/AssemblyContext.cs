@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Injector.Core
+namespace Injector.Engine
 {
     //https://docs.microsoft.com/ru-ru/dotnet/core/tutorials/creating-app-with-plugin-support
     internal class AssemblyContext : AssemblyLoadContext

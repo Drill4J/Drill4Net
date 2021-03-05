@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace Injector.Core
+namespace Injector.Engine
 {
     public static class SdkHelper
     {

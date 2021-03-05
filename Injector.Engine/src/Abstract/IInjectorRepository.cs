@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Injector.Core
+namespace Injector.Engine
 {
     public interface IInjectorRepository
     {

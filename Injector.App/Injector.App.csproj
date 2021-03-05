@@ -11,7 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Injector.Core\Injector.Core.csproj" />
+    <ProjectReference Include="..\Injector.Engine\Injector.Engine.csproj" />
+    <ProjectReference Include="..\Injector.Engine\Injector.Engine.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Injector.Core
+﻿namespace Injector.Engine
 {
     /// <summary>
     /// Miscellaneous options for target injection

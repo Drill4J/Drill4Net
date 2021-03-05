@@ -1,7 +1,7 @@
 ﻿using System;
-using Injector.Core;
+using Injector.Engine;
 
-namespace TestA.Interceptor
+namespace Injector.App
 {
     class Program
     {

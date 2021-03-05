@@ -1,4 +1,4 @@
-﻿namespace Injector.Core
+﻿namespace Injector.Engine
 {
     public enum AssemblyVersionType
     {

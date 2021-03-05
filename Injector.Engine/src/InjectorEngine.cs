@@ -11,7 +11,7 @@ using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace Injector.Core
+namespace Injector.Engine
 {
     public class InjectorEngine
     {

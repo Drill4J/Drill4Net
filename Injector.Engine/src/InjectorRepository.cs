@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-namespace Injector.Core
+namespace Injector.Engine
 {
     public class InjectorRepository : IInjectorRepository
     {
@@ -15,7 +15,7 @@ namespace Injector.Core
 
         /*******************************************************************/
 
-        public InjectOptions CreateOptions(string[] args)
+        public InjectOptions CreateOptions([NotNull] string[] args)
         {
             string sourceDir = string.Empty;
             string destDir = string.Empty;
