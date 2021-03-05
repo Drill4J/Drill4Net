@@ -5,6 +5,10 @@ namespace Plugins.Demo
 {
     class Program
     {
+        public delegate void ProcDlg(string s);
+
+        /**********************************************************************/
+
         static void Main(string[] args)
         {
             var path = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
@@ -13,8 +17,13 @@ namespace Plugins.Demo
 
             var type = asm.GetType("Plugins.Logger.LoggerPlugin");
             var methInfo = type.GetMethod("Process");
-            var parameters = new object[] { "YEAH..." };
-            methInfo.Invoke(null, parameters);
+            //var parameters = new object[] { "YEAH..." };
+            //methInfo.Invoke(null, parameters);
+
+            //https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate?view=net-5.0
+            var dlg = (ProcDlg)Delegate.CreateDelegate(typeof(ProcDlg), null, methInfo); //static method
+            dlg("DELEGATE");
+
 
             Console.WriteLine("Done.");
             Console.ReadKey(true);

@@ -125,8 +125,8 @@ namespace Injector.Core
             var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath))}\\";
             Environment.CurrentDirectory = sourceDir;
             var subjectName = Path.GetFileNameWithoutExtension(filePath);
-            var ext = Path.GetExtension(filePath);
 
+            #region Destinaton
             string destDir;
             if (IoHelper.IsSameDirectories(sourceDir, opts.SourceDirectory))
             {
@@ -138,16 +138,10 @@ namespace Injector.Core
             }
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
+            #endregion
 
-            AssemblyVersion version;
-            if (versions.ContainsKey(filePath))
-                version = versions[filePath];
-            else
-                version = GetAssemblyVersion(filePath);
-
-            var pdb = subjectName + ".pdb";
-            var isPdbExists = File.Exists(pdb);
-
+            var ext = Path.GetExtension(filePath);
+            var version = versions.ContainsKey(filePath) ? versions[filePath] : GetAssemblyVersion(filePath);
             if (ext == ".exe" && version.Target == AssemblyVersionType.NetCore)
                 return;
 
@@ -159,6 +153,9 @@ namespace Injector.Core
                 ReadingMode = ReadingMode.Immediate,
             };
 
+            #region PDB
+            var pdb = subjectName + ".pdb";
+            var isPdbExists = File.Exists(pdb);
             var needPdb = isPdbExists && (version.Target == AssemblyVersionType.NetCore ||
                                           version.Target == AssemblyVersionType.NetStandard);
             if (needPdb)
@@ -175,6 +172,7 @@ namespace Injector.Core
                     //log
                 }
             }
+            #endregion
 
             // read subject assembly with symbols
             AssemblyDefinition assembly = null;
@@ -227,11 +225,11 @@ namespace Injector.Core
 
             var path = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
             var loadContext = new AssemblyContext(path);
-            var injAsm = loadContext.ResolveAssemblyToPath(path); //asm successful loading
+            var injAsm = loadContext.ResolveAssemblyToPath(path); 
             var consoleType = injAsm.ExportedTypes.FirstOrDefault(a => a.FullName == "Plugins.Logger.LoggerPlugin");
             var method = consoleType.GetMethod("Process", new Type[] { typeof(string) });
             consoleWriteLine = module.ImportReference(method);
-   
+
             //var injAsmName = injAsm.GetName();
             //var injAsmRef = new AssemblyNameReference(injAsmName.Name, injAsmName.Version);
             //module.AssemblyReferences.Add(injAsmRef);
