@@ -461,6 +461,8 @@ namespace Injector.Engine
 
             // ensure we referencing only ref assemblies
             var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+            if(systemPrivateCoreLib!=null)
+                module.AssemblyReferences.Remove(systemPrivateCoreLib);
             //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
             #endregion
             #region Saving
