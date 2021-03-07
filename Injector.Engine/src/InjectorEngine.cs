@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Threading;
+using Drill4J.Injection;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -223,12 +224,12 @@ namespace Injector.Engine
             //var consoleType = asm.CreateInstance("System.Console"); //fail on loading mscorlib.dll
             //var consoleType = asm.ExportedTypes.FirstOrDefault(a => a.FullName == "System.Console"); //no loaded types
 
-            var path = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
-            var loadContext = new AssemblyContext(path);
-            var injAsm = loadContext.ResolveAssemblyToPath(path); 
-            var consoleType = injAsm.ExportedTypes.FirstOrDefault(a => a.FullName == "Plugins.Logger.LoggerPlugin");
-            var method = consoleType.GetMethod("Process", new Type[] { typeof(string) });
-            consoleWriteLine = module.ImportReference(method);
+            //var path = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
+            //var loadContext = new AssemblyContext(path);
+            //var injAsm = loadContext.ResolveAssemblyToPath(path); 
+            //var consoleType = injAsm.ExportedTypes.FirstOrDefault(a => a.FullName == "Plugins.Logger.LoggerPlugin");
+            //var method = consoleType.GetMethod("Process", new Type[] { typeof(string) });
+            //consoleWriteLine = module.ImportReference(method);
 
             //var injAsmName = injAsm.GetName();
             //var injAsmRef = new AssemblyNameReference(injAsmName.Name, injAsmName.Version);
@@ -237,8 +238,25 @@ namespace Injector.Engine
             //consoleWriteLine = module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
             //}
 
+            //var proxyPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Injection\bin\Debug\netstandard2.0\Plugins.Logger.dll";
+            //var loadContext = new AssemblyContext(proxyPath);
+            //var injAsm = loadContext.ResolveAssemblyToPath(proxyPath);
+            var proxyNs = "Drill4J.Injection";
+            var proxyClass = "ProfilerProxy";
+            var proxyFunc = "Process";
+            //var consoleType = injAsm.ExportedTypes.FirstOrDefault(a => a.FullName == $"{proxyNs}{proxyClass}");
+            //var method = consoleType.GetMethod(proxyFunc, new Type[] { typeof(string) });
+            //consoleWriteLine = module.ImportReference(method);
+
+            //callvirt  instance void [Injection]Drill4J.Injection.ProfilerProxy/ProcDlg::Invoke(string)
+            TypeReference proxyReturnTypeRef = module.TypeSystem.Void;
+            var proxyTypeRef = new TypeReference(proxyNs, proxyClass, module, module);
+            var proxy = new MethodReference(proxyFunc, proxyReturnTypeRef, proxyTypeRef);
+            var strPar = new ParameterDefinition("data", Mono.Cecil.ParameterAttributes.None, module.TypeSystem.String);
+            proxy.Parameters.Add(strPar);
+
             // 2. 'Call' command
-            var call = Instruction.Create(OpCodes.Call, consoleWriteLine);
+            var call = Instruction.Create(OpCodes.Call, proxy);
             #endregion
             #region Processing
             HashSet<Instruction> jumpers;
@@ -464,6 +482,18 @@ namespace Injector.Engine
             if(systemPrivateCoreLib!=null)
                 module.AssemblyReferences.Remove(systemPrivateCoreLib);
             //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
+            #endregion
+            #region Proxy class
+            //here we generate proxy class with data of real profiler
+            //directory of profiler dependencies - for injected target on it's side
+            var profilerDir = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\";
+            var profilerAsmName = "Plugins.Logger.dll";
+            var profilerNs = "Plugins.Logger";
+            var profilerClass = "LoggerPlugin";
+            var profilerFunc = "Process";
+            var proxyGenerator = new ProfilerProxyGenerator(proxyNs, proxyClass, proxyFunc, 
+                                                            profilerDir, profilerAsmName, profilerNs, profilerClass, profilerFunc);
+            proxyGenerator.InjectTo(assembly);
             #endregion
             #region Saving
             Environment.CurrentDirectory = destDir;

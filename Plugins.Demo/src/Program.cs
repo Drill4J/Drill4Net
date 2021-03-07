@@ -10,10 +10,17 @@ namespace Plugins.Demo
     {
         static void Main(string[] args)
         {
+            //var perf = new Performancer();
+            //var cnt = 10*1000*1000;
 
-            Console.WriteLine("Done.");
+            //perf.Calc(cnt);
+            //Console.WriteLine();
+            //perf.Calc(cnt);
+            //Console.WriteLine();
+            //perf.Calc(cnt);
+
+            Console.WriteLine("\nDone.");
             Console.ReadKey(true);
         }
-
     }
 }
