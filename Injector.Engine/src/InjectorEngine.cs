@@ -18,7 +18,7 @@ namespace Injector.Engine
     {
         /* INFO *
             http://ilgenerator.apphb.com/ - online C# -> IL
-            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# -
+            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (buggy and with restrictions!)
                 on Github - https://github.com/adrianoc/cecilifier
             https://www.codeproject.com/Articles/671259/Reweaving-IL-code-with-Mono-Cecil
             https://blog.elishalom.com/2012/02/04/monitoring-execution-using-mono-cecil/
@@ -189,74 +189,21 @@ namespace Injector.Engine
             #endregion
             #region Commands
 
-            // 1. 'WriteLine' command
-            MethodReference consoleWriteLine;
-            //if (_isNetCore.Value == true)
-            //{
-            //    // get path to 'System.Console' reference assembly and read it
-            //    var consoleFileName = SdkHelper.GetCoreAssemblyPath(_mainVersion.Value.Version, "System.Console");
-            //    var consoleDefinition = AssemblyDefinition.ReadAssembly(consoleFileName);
-
-            //    // get 'System.Console' type and 'Console.WriteLine(string)' method and import it
-            //    consoleWriteLine = consoleDefinition.MainModule.GetType(typeof(Console).FullName)
-            //        .Methods
-            //        .FirstOrDefault(x =>
-            //            string.Equals(x.Name, nameof(Console.WriteLine), StringComparison.InvariantCultureIgnoreCase) &&
-            //            x.Parameters.Count == 1 &&
-            //            string.Equals(x.Parameters[0].ParameterType.FullName, typeof(string).FullName, StringComparison.InvariantCultureIgnoreCase)
-            //        );
-            //    var consoleWriteLineRef = module.ImportReference(consoleWriteLine);
-            //}
-            //else
-            //{
-            //TODO: choose the correct version of Net Framework!
-
-            //https://jeremybytes.blogspot.com/2020/01/using-typegettype-with-net-core.html
-            //var t = typeof(Console);
-            //AssemblyLoadContext.Default.LoadFromAssemblyPath(@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.3\System.Console.dll");
-            //AssemblyLoadContext.Default.LoadFromAssemblyPath(@"C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
-            //var t = Type.GetType("System.Console, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"); //load current, not specified
-
-            ////TODO: for misc frameworks including Net Framework
-            //var path = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Console.dll";
-            //var loadContext = new AssemblyContext(path);
-            //var asm = loadContext.ResolveAssemblyToPath(path); //asm successful loading
-            //var consoleType = asm.CreateInstance("System.Console"); //fail on loading mscorlib.dll
-            //var consoleType = asm.ExportedTypes.FirstOrDefault(a => a.FullName == "System.Console"); //no loaded types
-
-            //var path = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
-            //var loadContext = new AssemblyContext(path);
-            //var injAsm = loadContext.ResolveAssemblyToPath(path); 
-            //var consoleType = injAsm.ExportedTypes.FirstOrDefault(a => a.FullName == "Plugins.Logger.LoggerPlugin");
-            //var method = consoleType.GetMethod("Process", new Type[] { typeof(string) });
-            //consoleWriteLine = module.ImportReference(method);
-
-            //var injAsmName = injAsm.GetName();
-            //var injAsmRef = new AssemblyNameReference(injAsmName.Name, injAsmName.Version);
-            //module.AssemblyReferences.Add(injAsmRef);
-
-            //consoleWriteLine = module.ImportReference(typeof(Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
-            //}
-
-            //var proxyPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Injection\bin\Debug\netstandard2.0\Plugins.Logger.dll";
-            //var loadContext = new AssemblyContext(proxyPath);
-            //var injAsm = loadContext.ResolveAssemblyToPath(proxyPath);
+            // 1. Command ref
+            //we will use proxy class (with cached Reflection) leading to real profiler
+            //proxy will be inject in each target assembly
             var proxyNs = "Drill4J.Injection";
             var proxyClass = "ProfilerProxy";
             var proxyFunc = "Process";
-            //var consoleType = injAsm.ExportedTypes.FirstOrDefault(a => a.FullName == $"{proxyNs}{proxyClass}");
-            //var method = consoleType.GetMethod(proxyFunc, new Type[] { typeof(string) });
-            //consoleWriteLine = module.ImportReference(method);
 
-            //callvirt  instance void [Injection]Drill4J.Injection.ProfilerProxy/ProcDlg::Invoke(string)
             TypeReference proxyReturnTypeRef = module.TypeSystem.Void;
             var proxyTypeRef = new TypeReference(proxyNs, proxyClass, module, module);
-            var proxy = new MethodReference(proxyFunc, proxyReturnTypeRef, proxyTypeRef);
+            var proxyMethRef = new MethodReference(proxyFunc, proxyReturnTypeRef, proxyTypeRef);
             var strPar = new ParameterDefinition("data", Mono.Cecil.ParameterAttributes.None, module.TypeSystem.String);
-            proxy.Parameters.Add(strPar);
+            proxyMethRef.Parameters.Add(strPar);
 
             // 2. 'Call' command
-            var call = Instruction.Create(OpCodes.Call, proxy);
+            var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             #endregion
             #region Processing
             HashSet<Instruction> jumpers;
@@ -484,7 +431,7 @@ namespace Injector.Engine
             //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
             #endregion
             #region Proxy class
-            //here we generate proxy class with data of real profiler
+            //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
             var profilerDir = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\";
             var profilerAsmName = "Plugins.Logger.dll";
