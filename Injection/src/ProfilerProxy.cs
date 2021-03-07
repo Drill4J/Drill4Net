@@ -6,13 +6,12 @@
 namespace Drill4J.Injection
 {
     /// <summary>
-    /// This is the proxy class that will be injected in the target assembly.
-    /// It provides Reflection access to real profiling functionality with 
-    /// some improvements such call to function through fast delegate
+    /// This is the MODEL of proxy class that will be injected in the target assembly.
+    /// It provides Reflection access to real profiling functionality with caching.
     /// </summary>
     public class ProfilerProxy
     {
-        private static MethodInfo _methInfo; //not readonly
+        private static MethodInfo _methInfo; //not make it as readonly (cecilifier.me not understand it yet)
 
         /**************************************************************/
 
@@ -25,6 +24,7 @@ namespace Drill4J.Injection
             _methInfo = type.GetMethod("Process");
         }
 
+        //cecilifier.me not understand static method yet
         public static void Process(string data)
         {
             _methInfo.Invoke(null, new object[] { data });

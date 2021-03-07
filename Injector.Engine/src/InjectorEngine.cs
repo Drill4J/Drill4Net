@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Loader;
 using System.Threading;
 using Drill4J.Injection;
 using Mono.Cecil;
@@ -190,6 +189,7 @@ namespace Injector.Engine
             #region Commands
 
             // 1. Command ref
+
             //we will use proxy class (with cached Reflection) leading to real profiler
             //proxy will be inject in each target assembly
             var proxyNs = "Drill4J.Injection";
