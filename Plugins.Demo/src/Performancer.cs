@@ -15,9 +15,9 @@ namespace Plugins.Demo
 
         public Performancer()
         {
-            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
+            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Test\bin\Debug\netstandard2.0\Plugins.Test.dll";
             var asm = Assembly.LoadFrom(profPath);
-            var type = asm.GetType("Plugins.Logger.TestPlugin");
+            var type = asm.GetType("Plugins.Test.TestPlugin");
             _methInfo = type.GetMethod("Do");
             //
             _dlg = (ProcDlgType)Delegate.CreateDelegate(typeof(ProcDlgType), null, _methInfo); //for static method
@@ -57,7 +57,7 @@ namespace Plugins.Demo
 
         public void CalcDirect(long cnt)
         {
-            Logger.TestPlugin.Do(cnt);
+            Logger.PerfPlugin.Do(cnt);
         }
 
         public void CalcMethodInfo(long cnt)
@@ -72,7 +72,7 @@ namespace Plugins.Demo
 
         public void CalcDynamic(long cnt)
         {
-            dynamic test = new Plugins.Logger.TestPlugin();
+            dynamic test = new Plugins.Test.PerfPlugin();
             test.InstanceDo(cnt);
         }
     }

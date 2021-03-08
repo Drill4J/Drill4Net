@@ -2,7 +2,8 @@
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Cecilifier.Runtime;
-namespace Drill4J.Injection
+
+namespace Drill4Net.Injection
 {
     public class ProfilerProxyGenerator
     {
@@ -72,7 +73,7 @@ namespace Drill4J.Injection
 			ProfilerProxy_cctor_.Body.InitLocals = true;
 			var il_ProfilerProxy_cctor_ = ProfilerProxy_cctor_.Body.GetILProcessor();
 
-			//var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
+			//var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Test\bin\Debug\netstandard2.0\Plugins.Test.dll";
 			var lv_profPath1 = new VariableDefinition(assembly.MainModule.TypeSystem.String);
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_profPath1);
 			var Ldstr2 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, $"{ProfilerReadDir}{ProfilerAsmName}");
@@ -90,7 +91,7 @@ namespace Drill4J.Injection
 			var Stloc7 = il_ProfilerProxy_cctor_.Create(OpCodes.Stloc, lv_asm4);
 			il_ProfilerProxy_cctor_.Append(Stloc7);
 
-			//var type = asm.GetType("Plugins.Logger.LoggerPlugin");
+			//var type = asm.GetType("Plugins.Test.LoggerPlugin");
 			var lv_type8 = new VariableDefinition(assembly.MainModule.ImportReference(typeof(Type)));
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_type8);
 			var Ldloc9 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_asm4);

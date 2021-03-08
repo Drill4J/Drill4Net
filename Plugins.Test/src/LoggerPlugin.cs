@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace Plugins.Logger
+namespace Plugins.Test
 {
     //add this in project's csproj file: 
     //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Plugins.Logger
+namespace Plugins.Test
 {
-    public class TestPlugin
+    public class PerfPlugin
     {
         public static void Do(long cnt)
         {

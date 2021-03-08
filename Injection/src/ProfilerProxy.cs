@@ -3,7 +3,7 @@
 /// <summary>
 /// ALL THIS MUST BE INJECTED INTO THE PROFILED ASSEMBLY
 /// </summary>
-namespace Drill4J.Injection
+namespace Drill4Net.Injection
 {
     /// <summary>
     /// This is the MODEL of proxy class that will be injected in the target assembly.
@@ -18,9 +18,9 @@ namespace Drill4J.Injection
         static ProfilerProxy()
         {
             //hardcode or cfg?
-            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\Plugins.Logger.dll";
+            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Test\bin\Debug\netstandard2.0\Plugins.Test.dll";
             var asm = Assembly.LoadFrom(profPath);
-            var type = asm.GetType("Plugins.Logger.LoggerPlugin");
+            var type = asm.GetType("Plugins.Test.LoggerPlugin");
             _methInfo = type.GetMethod("Process");
         }
 

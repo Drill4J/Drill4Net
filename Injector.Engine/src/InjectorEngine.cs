@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Drill4J.Injection;
+using Drill4Net.Injection;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -192,7 +192,7 @@ namespace Injector.Engine
 
             //we will use proxy class (with cached Reflection) leading to real profiler
             //proxy will be inject in each target assembly
-            var proxyNs = "Drill4J.Injection";
+            var proxyNs = "Drill4Net.Injection";
             var proxyClass = "ProfilerProxy";
             var proxyFunc = "Process";
 
@@ -433,9 +433,9 @@ namespace Injector.Engine
             #region Proxy class
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
-            var profilerDir = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Logger\bin\Debug\netstandard2.0\";
-            var profilerAsmName = "Plugins.Logger.dll";
-            var profilerNs = "Plugins.Logger";
+            var profilerDir = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Plugins.Test\bin\Debug\netstandard2.0\";
+            var profilerAsmName = "Plugins.Test.dll";
+            var profilerNs = "Plugins.Test";
             var profilerClass = "LoggerPlugin";
             var profilerFunc = "Process";
             var proxyGenerator = new ProfilerProxyGenerator(proxyNs, proxyClass, proxyFunc, 
@@ -701,63 +701,5 @@ namespace Injector.Engine
         {
             return Instruction.Create(OpCodes.Ldstr, $"<< THROW");
         }
-
-        //http://www.swat4net.com/mono-cecil-part-ii-basic-operations/
-        //public static void ReweaveMethods(List<MethodDefinition> targetMethods)
-        //{
-        //    // we need to rescue the string.concat method which lives in mscorlib.dll
-        //    var assemblyMSCorlib = AssemblyDefinition.ReadAssembly(Console.Default.ILMsCorlibPath);
-
-        //    foreach (var method in targetMethods)
-        //    {
-        //        try
-        //        {
-        //            var methodToInject = assemblyMSCorlib.MainModule.Types.Where(o => o.IsClass == true)
-        //                                                                  .SelectMany(type => type.Methods)
-        //                                                                  .Where(o => o.FullName.Contains("Concat(System.String,System.String)")).FirstOrDefault();
-
-        //            var InstructionPattern = new Func<Instruction, bool>(x => (x.OpCode == OpCodes.Ldstr) && (x.Operand.ToString().Contains("Name")));
-        //            var InstructionPatternSet = new Func<Instruction, bool>(x => (x.OpCode == OpCodes.Callvirt) && (x.Operand.ToString().Contains("ClientLibrary.Entities.Person::set_Name(System.String)")));
-
-        //            if (null != methodToInject)
-        //            {
-        //                // importing aspect method 
-        //                var methodReferenced = method.DeclaringType.Module.ImportReference(methodToInject);
-        //                method.DeclaringType.Module.ImportReference(methodToInject.DeclaringType);
-
-        //                // defining ILProcesor
-        //                var processor = method.Body.GetILProcessor();
-
-        //                method.Body.SimplifyMacros();
-
-        //                // first update
-        //                var writeLines = processor.Body.Instructions.Where(InstructionPattern).ToArray();
-        //                foreach (var instruction in writeLines)
-        //                {
-        //                    var newInstruction = processor.Create(OpCodes.Ldstr, "Code Injected !");
-
-        //                    Instruction targetReferenceInstruction = processor.Create(OpCodes.Nop);
-        //                    targetReferenceInstruction = instruction.Previous;
-        //                    processor.InsertBefore(targetReferenceInstruction, newInstruction);
-        //                }
-
-        //                // second update
-        //                var writeLinesSet = processor.Body.Instructions.Where(InstructionPatternSet).ToArray();
-        //                foreach (var instruction in writeLinesSet)
-        //                {
-        //                    var concatInstruction = processor.Create(OpCodes.Call, methodReferenced);
-        //                    processor.InsertBefore(instruction, concatInstruction);
-        //                }
-
-        //                method.Body.OptimizeMacros();
-
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            //throw;
-        //        }
-        //    }
-        //}
     }
 }

@@ -27,7 +27,6 @@ namespace Cecilifier.Runtime
             return new MethodReference(".ctor", type.Module.TypeSystem.Void, type) { HasThis = true };
         }
 
-
         public static MethodInfo ResolveGenericMethod(string assemblyName, string declaringTypeName, string methodName, BindingFlags bindingFlags, IEnumerable<string> typeArguments,
             IEnumerable<ParamData> paramTypes)
         {
@@ -196,7 +195,7 @@ namespace Cecilifier.Runtime
 
     public struct PrivateCoreLibFixer
     {
-        static AssemblyNameReference _systemRuntimeRef;
+        static readonly AssemblyNameReference _systemRuntimeRef;
 
         static PrivateCoreLibFixer()
         {

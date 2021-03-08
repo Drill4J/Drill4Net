@@ -25,17 +25,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Target.Common", "Target.Com
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugin", "Plugin", "{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Logger", "Plugins.Logger\Plugins.Logger.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Test", "Plugins.Test\Plugins.Test.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins.Demo", "Plugins.Demo\Plugins.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Target.Net50.InjectedDebug", "Target.Net50.InjectedDebug\Target.Net50.InjectedDebug.csproj", "{723345D8-E451-4C4C-96B4-735932A75EE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Injection", "Injection\Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Injection", "Injection\Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injection", "Injection", "{F224ACDF-5B60-47B3-98F7-15280126EF03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Injection.Demo", "Injection.Demo\Injection.Demo.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Injection.Demo", "Injection.Demo\Injection.Demo.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
