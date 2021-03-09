@@ -191,22 +191,13 @@ namespace Drill4Net.Target.Common
         }
 
         #region IF/ELSE
-        internal InjectionAnswer IfElse_Half(bool cond)
+        internal void IfElse_Half(bool cond)
         {
             var type = "no";
             if (cond)
                 type = "yes";
 
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
-            //
-            var ans = GetStandartSimpleAnswer();
-            ans.Points.Add(
-                new CrossPoint
-                {
-                    PointType = CrossPointType.If,
-                }
-            );
-            return ans;
         }
 
         internal void IfElse_FullSimple(bool cond)
@@ -220,7 +211,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
         }
 
-        internal InjectionAnswer IfElse_Consec_Full(bool a, bool b)
+        internal void IfElse_Consec_Full(bool a, bool b)
         {
             var info = new bool?[2,2];
             if (a)
@@ -244,16 +235,6 @@ namespace Drill4Net.Target.Common
                 info[0, 1] = false;
                 Console.WriteLine($"{nameof(IfElse_Consec_Full)}: NO2");
             }
-            //
-            var ans = GetStandartSimpleAnswer();
-            ans.Points.Add(
-                new CrossPoint
-                {
-                    PointType = CrossPointType.If,
-                    Info = info,
-                }
-            );
-            return ans;
         }
 
         internal bool IfElse_Consec_HalfA_FullB(bool a, bool b)
@@ -821,18 +802,18 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        private InjectionAnswer GetStandartSimpleAnswer()
-        {
-            var ans = new InjectionAnswer
-            {
-                Points = new List<CrossPoint> {
-                    new CrossPoint() { PointType = CrossPointType.Enter },
-                    new CrossPoint() { PointType = CrossPointType.Return },
-                },
-            };
-            return ans;
-        }
+        //private InjectionAnswer GetStandartSimpleAnswer()
+        //{
+        //    var ans = new InjectionAnswer
+        //    {
+        //        Points = new List<CrossPoint> {
+        //            new CrossPoint() { PointType = CrossPointType.Enter },
+        //            new CrossPoint() { PointType = CrossPointType.Return },
+        //        },
+        //    };
+        //    return ans;
+        //}
 
-        //TODO: for, foreach, EF...
+        //TODO: a || b, yield, for, foreach, EF...
     }
 }
