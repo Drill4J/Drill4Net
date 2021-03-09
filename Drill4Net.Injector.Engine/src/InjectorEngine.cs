@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Drill4Net.Injection;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -193,7 +192,7 @@ namespace Drill4Net.Injector.Engine
             //we will use proxy class (with cached Reflection) leading to real profiler
             //proxy will be inject in each target assembly
             TypeReference proxyReturnTypeRef = module.TypeSystem.Void;
-            var proxyNamespace = $"Ns{Guid.NewGuid()}".Replace("-", null); //must be unique for each target asm
+            var proxyNamespace = $"Injection_{Guid.NewGuid()}".Replace("-", null); //must be unique for each target asm
             var proxyTypeRef = new TypeReference(proxyNamespace, opts.ProxyClass, module, module);
             var proxyMethRef = new MethodReference(opts.ProxyMethod, proxyReturnTypeRef, proxyTypeRef);
             var strPar = new ParameterDefinition("data", Mono.Cecil.ParameterAttributes.None, module.TypeSystem.String);

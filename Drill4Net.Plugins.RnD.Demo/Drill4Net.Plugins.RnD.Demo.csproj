@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Drill4Net.Plugins.Test\Drill4Net.Plugins.Test.csproj" />
+    <ProjectReference Include="..\Drill4Net.Plugins.RnD\Drill4Net.Plugins.RnD.csproj" />
   </ItemGroup>
 
 </Project>

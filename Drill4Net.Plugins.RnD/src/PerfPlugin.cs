@@ -1,7 +1,7 @@
 ﻿using System;
 using Drill4Net.Plugins.Abstract;
 
-namespace Drill4Net.Plugins.Test
+namespace Drill4Net.Plugins.RnD
 {
     public class PerfPlugin : AbsractPlugin
     {

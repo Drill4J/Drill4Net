@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50", "Drill4Net.Target.Net50\Drill4Net.Target.Net50.csproj", "{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50.Demo", "Drill4Net.Target.Net50.Demo\Drill4Net.Target.Net50.Demo.csproj", "{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.App", "Drill4Net.Injector.App\Drill4Net.Injector.App.csproj", "{96334265-0515-4C61-B6EF-A39A36A99CD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Net48", "Drill4Net.Target.Net48\Drill4Net.Target.Net48.csproj", "{4C011347-AA81-4AD9-9688-06C0DFF448BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Net48.Demo", "Drill4Net.Target.Net48.Demo\Drill4Net.Target.Net48.Demo.csproj", "{4C011347-AA81-4AD9-9688-06C0DFF448BB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetCore", "NetCore", "{FA69B589-117C-4E05-9F95-914965C37D71}"
 EndProject
@@ -25,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Common", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.Test", "Drill4Net.Plugins.Test\Drill4Net.Plugins.Test.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.RnD", "Drill4Net.Plugins.RnD\Drill4Net.Plugins.RnD.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.Demo", "Drill4Net.Plugins.Demo\Drill4Net.Plugins.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.RnD.Demo", "Drill4Net.Plugins.RnD.Demo\Drill4Net.Plugins.RnD.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50.InjectedDebug", "Drill4Net.Target.Net50.InjectedDebug\Drill4Net.Target.Net50.InjectedDebug.csproj", "{723345D8-E451-4C4C-96B4-735932A75EE1}"
 EndProject
@@ -41,7 +41,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{1D6CE589-D18D-4682-A950-003BAC9B7B04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Plugins.Abstract", "Drill4Net.Plugins.Abstract\Drill4Net.Plugins.Abstract.csproj", "{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.Abstract", "Drill4Net.Plugins.Abstract\Drill4Net.Plugins.Abstract.csproj", "{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Comon.Tests", "Drill4Net.Target.Comon.Tests\Drill4Net.Target.Comon.Tests.csproj", "{2CC31503-BA1C-4339-947A-F8C5AC53711B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CC31503-BA1C-4339-947A-F8C5AC53711B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC31503-BA1C-4339-947A-F8C5AC53711B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CC31503-BA1C-4339-947A-F8C5AC53711B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC31503-BA1C-4339-947A-F8C5AC53711B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +120,7 @@ Global
 		{25B407C4-144B-4C55-9CC8-D53B625FDD69} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
 		{AD34A5D5-1235-4F55-A00F-8B307F7FF2EB} = {C2C77100-B789-417D-A387-E2C4A668C15C}
 		{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4} = {1D6CE589-D18D-4682-A950-003BAC9B7B04}
+		{2CC31503-BA1C-4339-947A-F8C5AC53711B} = {AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

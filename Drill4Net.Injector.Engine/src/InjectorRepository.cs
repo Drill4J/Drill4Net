@@ -8,8 +8,8 @@ namespace Drill4Net.Injector.Engine
     {
         //TODO: to parameters!
         private readonly string _defaultDirectory =
-            @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net50\bin\Debug\net5.0\";
-            //@"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Target.Net48\bin\Debug\";
+            @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net50.Demo\bin\Debug\net5.0\";
+          //@"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net48.Demo\bin\Debug\";
 
         private readonly string _destinationFolderPostfix = "Injected";
 
@@ -34,9 +34,9 @@ namespace Drill4Net.Injector.Engine
                 destDir = GetInjectedDirectoryName(sourceDir);
 
             //TODO: collect all parameters from args/cfg
-            var profilerDir = @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.Test\bin\Debug\netstandard2.0\";
-            var profilerAsmName = "Drill4Net.Plugins.Test.dll";
-            var profilerNs = "Drill4Net.Plugins.Test";
+            var profilerDir = @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.RnD\bin\Debug\netstandard2.0\";
+            var profilerAsmName = "Drill4Net.Plugins.RnD.dll";
+            var profilerNs = "Drill4Net.Plugins.RnD";
             var profilerClass = "LoggerPlugin";
             var profilerFunc = "ProcessStatic";
 

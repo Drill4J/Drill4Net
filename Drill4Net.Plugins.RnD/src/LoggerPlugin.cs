@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Drill4Net.Plugins.Abstract;
 
-namespace Drill4Net.Plugins.Test
+namespace Drill4Net.Plugins.RnD
 {
     //add this in project's csproj file: 
     //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

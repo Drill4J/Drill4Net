@@ -191,35 +191,69 @@ namespace Drill4Net.Target.Common
         }
 
         #region IF/ELSE
-        internal void IfElse_Half(bool cond)
+        internal InjectionAnswer IfElse_Half(bool cond)
         {
-            string type = "no";
+            var type = "no";
             if (cond)
                 type = "yes";
 
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
+            //
+            var ans = GetStandartSimpleAnswer();
+            ans.Points.Add(
+                new CrossPoint
+                {
+                    PointType = CrossPointType.If,
+                }
+            );
+            return ans;
         }
 
-        internal bool IfElse_Consec_Full(bool a, bool b)
+        internal void IfElse_FullSimple(bool cond)
         {
+            string type;
+            if (cond)
+                type = "yes";
+            else
+                type = "no";
+
+            Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
+        }
+
+        internal InjectionAnswer IfElse_Consec_Full(bool a, bool b)
+        {
+            var info = new bool?[2,2];
             if (a)
             {
+                info[0, 0] = true;
                 Console.WriteLine($"{nameof(IfElse_Consec_Full)}: YES1");
             }
             else
             {
+                info[0, 1] = false;
                 Console.WriteLine($"{nameof(IfElse_Consec_Full)}: NO1");
             }
             //
             if (b)
             {
+                info[1, 0] = true;
                 Console.WriteLine($"{nameof(IfElse_Consec_Full)}: YES2");
             }
             else
             {
+                info[0, 1] = false;
                 Console.WriteLine($"{nameof(IfElse_Consec_Full)}: NO2");
             }
-            return false;
+            //
+            var ans = GetStandartSimpleAnswer();
+            ans.Points.Add(
+                new CrossPoint
+                {
+                    PointType = CrossPointType.If,
+                    Info = info,
+                }
+            );
+            return ans;
         }
 
         internal bool IfElse_Consec_HalfA_FullB(bool a, bool b)
@@ -242,7 +276,7 @@ namespace Drill4Net.Target.Common
 
         internal bool IfElse_Half_EarlyReturn_Func(bool cond)
         {
-            string type = "no"; //let it be... Let it beeee!...
+            var type = "no"; //let it be... Let it beeee!...
             if (cond)
             {
                 type = "yes";
@@ -255,26 +289,15 @@ namespace Drill4Net.Target.Common
             return false;
         }
 
-        internal void IfElse_FullSimple(bool cond)
-        {
-            string type;
-            if (cond)
-                type = "yes";
-            else
-                type = "no";
-
-            Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
-        }
-
         internal void Ternary_Positive(bool cond)
         {
-            string type = cond ? "yes" : "no";
+            var type = cond ? "yes" : "no";
             Console.WriteLine($"{nameof(Ternary_Positive)}: {type}");
         }
 
         internal void Ternary_Negative(bool cond)
         {
-            string type = !cond ? "no" : "yes";
+            var type = !cond ? "no" : "yes";
             Console.WriteLine($"{nameof(Ternary_Negative)}: {type}");
         }
 
@@ -796,6 +819,18 @@ namespace Drill4Net.Target.Common
             for (byte i = 0; i < cnt; i++)
                 arr[i] = i;
             return arr;
+        }
+
+        private InjectionAnswer GetStandartSimpleAnswer()
+        {
+            var ans = new InjectionAnswer
+            {
+                Points = new List<CrossPoint> {
+                    new CrossPoint() { PointType = CrossPointType.Enter },
+                    new CrossPoint() { PointType = CrossPointType.Return },
+                },
+            };
+            return ans;
         }
 
         //TODO: for, foreach, EF...

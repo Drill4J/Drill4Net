@@ -1,4 +1,4 @@
-﻿using Drill4Net.Plugins.Test;
+﻿using Drill4Net.Plugins.RnD;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -16,9 +16,9 @@ namespace Drill4Net.Plugins.Demo
 
         public Performancer()
         {
-            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.Test\bin\Debug\netstandard2.0\Drill4Net.Plugins.Test.dll";
+            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.RnD\bin\Debug\netstandard2.0\Drill4Net.Plugins.RnD.dll";
             var asm = Assembly.LoadFrom(profPath);
-            var type = asm.GetType("Drill4Net.Plugins.Test.TestPlugin");
+            var type = asm.GetType("Drill4Net.Plugins.RnD.TestPlugin");
             _methInfo = type.GetMethod("Process");
             //
             _dlg = (ProcDlgType)Delegate.CreateDelegate(typeof(ProcDlgType), null, _methInfo); //for static method

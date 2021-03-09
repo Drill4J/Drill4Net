@@ -15,9 +15,9 @@ namespace Drill4Net.Injection
         static ProfilerProxy()
         {
             //hardcode or cfg?
-            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.Test\bin\Debug\netstandard2.0\Drill4Net.Plugins.Test.dll";
+            var profPath = @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.RnD\bin\Debug\netstandard2.0\Drill4Net.Plugins.RnD.dll";
             var asm = Assembly.LoadFrom(profPath);
-            var type = asm.GetType("Drill4Net.Plugins.Test.LoggerPlugin");
+            var type = asm.GetType("Drill4Net.Plugins.RnD.LoggerPlugin");
             _methInfo = type.GetMethod("ProcessStatic");
         }
 
