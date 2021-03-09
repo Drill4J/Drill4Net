@@ -604,15 +604,15 @@ namespace Drill4Net.Target.Common
         internal async Task AsyncTask(bool cond)
         {
             if (cond)
-                await Task.Delay(100);
+                await Task.Delay(50);
             else
-                await Delay150();
+                await Delay100();
             Console.WriteLine($"{nameof(AsyncTask)}: {cond}");
         }
 
-        private Task Delay150()
+        private Task Delay100()
         {
-            return Task.Delay(150);
+            return Task.Delay(100);
         }
 
         internal async Task AsyncLambda(bool cond)
@@ -620,9 +620,9 @@ namespace Drill4Net.Target.Common
             await Task.Run(async () =>
             {
                 if (cond)
-                    await Task.Delay(100);
+                    await Task.Delay(50);
                 else
-                    await Task.Delay(150);
+                    await Task.Delay(100);
                 Console.WriteLine($"{nameof(AsyncLambda)}: {cond}");
             });
         }

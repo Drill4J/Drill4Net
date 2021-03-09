@@ -211,7 +211,9 @@ namespace Drill4Net.Injector.Engine
 
             foreach (TypeDefinition type in module.Types)
             {
-                if (type.Name == "<Module>")
+                var typeName = type.Name;
+                //TODO: normal defining of business types (by cfg?)
+                if (typeName == "<Module>" || typeName.StartsWith("Microsoft.") || typeName.StartsWith("System.")) //GUANO....
                     continue;
 
                 //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
@@ -222,7 +224,7 @@ namespace Drill4Net.Injector.Engine
                 {
                     #region Init
                     var realType = methodDefinition.DeclaringType;
-                    var typeName = realType.FullName;
+                    typeName = realType.FullName;
                     var methodName = methodDefinition.Name;
                     var isFinalizer = methodName == "Finalize" && methodDefinition.IsVirtual;
 
@@ -665,7 +667,7 @@ namespace Drill4Net.Injector.Engine
                 .Where(a => opts.InjectConstructors || (!opts.InjectConstructors && !a.IsConstructor)) //may be we skips own ctors
                 .Where(a => opts.InjectSetters || (!opts.InjectSetters && a.Name != "set_Prop")) //do we need property setters?
                 .Where(a => opts.InjectGetters || (!opts.InjectGetters && a.Name != "get_Prop")) //do we need property getters?
-                .Where(a => opts.InjectPrivates || (!opts.InjectPrivates && !a.IsPrivate)) //do we need property privates?
+                .Where(a => type.Name.StartsWith("<") || opts.InjectPrivates || (!opts.InjectPrivates && !a.IsPrivate)) //do we need business privates?
                 ;
             foreach (var nestedMethod in nestedMeths)
                 methods.Add(nestedMethod);

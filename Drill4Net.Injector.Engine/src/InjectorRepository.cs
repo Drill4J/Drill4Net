@@ -9,7 +9,7 @@ namespace Drill4Net.Injector.Engine
         //TODO: to parameters!
         private readonly string _defaultDirectory =
             @"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net50.Demo\bin\Debug\net5.0\";
-          //@"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net48.Demo\bin\Debug\";
+           //@"d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net48.Demo\bin\Debug\";
 
         private readonly string _destinationFolderPostfix = "Injected";
 
