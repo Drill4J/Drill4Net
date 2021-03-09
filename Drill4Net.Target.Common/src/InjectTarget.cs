@@ -802,18 +802,6 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //private InjectionAnswer GetStandartSimpleAnswer()
-        //{
-        //    var ans = new InjectionAnswer
-        //    {
-        //        Points = new List<CrossPoint> {
-        //            new CrossPoint() { PointType = CrossPointType.Enter },
-        //            new CrossPoint() { PointType = CrossPointType.Return },
-        //        },
-        //    };
-        //    return ans;
-        //}
-
-        //TODO: a || b, yield, for, foreach, EF...
+        //TODO: a || b, yield, catch filter, for, foreach, EF...
     }
 }

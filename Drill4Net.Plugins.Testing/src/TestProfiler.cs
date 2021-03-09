@@ -25,13 +25,13 @@ namespace Drill4Net.Plugins.Testing
                 if (string.IsNullOrWhiteSpace(data))
                     throw new ArgumentNullException(nameof(data));
                 var ar = data.Split('^');
-                if (ar.Length < 4)
+                if (ar.Length < 3)
                     throw new ArgumentException($"Bad format of input: {data}");
                 //
                 var id = ar[0];
                 var source = ar[1];
                 var points = GetPoints(id, source);
-                points.Add(ar[3]);
+                points.Add(ar[2]);
             }
             catch (Exception ex)
             {

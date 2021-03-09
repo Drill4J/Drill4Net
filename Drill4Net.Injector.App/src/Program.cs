@@ -9,6 +9,8 @@ namespace Drill4Net.Injector.App
         {
             try
             {
+                Console.WriteLine("Drill4Net is started");
+
                 var injector = new InjectorEngine();
                 injector.Process(args);
 

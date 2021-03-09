@@ -227,6 +227,8 @@ namespace Drill4Net.Injector.Engine
                     typeName = realType.FullName;
                     var methodName = methodDefinition.Name;
                     var isFinalizer = methodName == "Finalize" && methodDefinition.IsVirtual;
+                    var funcSource = $"{module.Name};{methodDefinition.FullName}";
+                    var probData = string.Empty;
 
                     //instructions
                     var body = methodDefinition.Body;
@@ -255,20 +257,23 @@ namespace Drill4Net.Injector.Engine
                         //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
                         (_isNetCore.Value == false || (_isNetCore.Value == true && !isFinalizer));
                     #endregion
-                    #region Enter/Leaving
+                    #region Enter/Return
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
+                    var requestId = Guid.NewGuid().ToString().Replace("-",null); //TODO: NOOOO!!! It must be generated from IL as Guid + ThreadId ? (in ASP.NET + sessionId)!!!!
                     if (needEnterLeavings)
                     {
+                        probData = GetProbeData(requestId, funcSource, CrossPointType.Enter, 0);
+                        ldstrEntering = GetInstruction(probData);
+
                         var firstOp = instructions.First();
-                        ldstrEntering = Instruction.Create(OpCodes.Ldstr, $"\n>> {typeName}.{methodName}");
                         processor.InsertBefore(firstOp, ldstrEntering);
                         processor.InsertBefore(firstOp, call);
                     }
 
-                    //'leaving' instruction without immediate injection
-                    var ldstrLeaving = Instruction.Create(OpCodes.Ldstr, $"<< {typeName}.{methodName}");
-                    var lastOp = instructions.Last();
+                    //return
+                    var returnProbData = GetProbeData(requestId, funcSource, CrossPointType.Return, -1);
+                    var ldstrReturn = GetInstruction(probData);
                     #endregion
                     #region Jumps
                     //collect jumps. Hash table for addresses is almost useless,
@@ -285,15 +290,21 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                     #region Misc injections               
                     var ifStack = new Stack<Instruction>();
+                    var lastOp = instructions.Last();
+
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
                         var opCode = instr.OpCode;
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
+                        CrossPointType crossType = CrossPointType.Unset;
 
                         if (instr.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
-                            instr.Operand = ldstrLeaving;
+                        {
+                            ldstrReturn.Operand = $"{returnProbData}{i}";
+                            instr.Operand = ldstrReturn;
+                        }
 
                         // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
@@ -323,7 +334,8 @@ namespace Drill4Net.Injector.Engine
                                 var prevOperand = SkipNop(ind, false);
                                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
                                 {
-                                    var ldstrIf2 = GetForIfInstruction();
+                                    probData = GetProbeData(requestId, funcSource, CrossPointType.While, i);
+                                    var ldstrIf2 = GetInstruction(probData);
                                     var targetOp = prevOperand.Operand as Instruction;
                                     processor.InsertBefore(targetOp, ldstrIf2);
                                     processor.InsertBefore(targetOp, call);
@@ -342,9 +354,13 @@ namespace Drill4Net.Injector.Engine
                             {
                                 for (var k = 0; k < ((Instruction[])instr.Operand).Length - 1; k++)
                                     ifStack.Push(instr);
+                                crossType = CrossPointType.Switch;
                             }
 
-                            var ldstrIf = isBrFalse ? GetForIfInstruction() : GetForElseInstruction();
+                            if(crossType == CrossPointType.Unset)
+                                crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
+                            probData = GetProbeData(requestId, funcSource, crossType, i);
+                            var ldstrIf = GetInstruction(probData);
 
                             //when inserting 'after', must set in desc order
                             processor.InsertAfter(instr, call);
@@ -386,7 +402,10 @@ namespace Drill4Net.Injector.Engine
                             //
                             var ifInst = ifStack.Pop();
                             var pairedCode = ifInst.OpCode.Code;
-                            var elseInst = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? GetForElseInstruction() : GetForIfInstruction();
+                            crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
+                            probData = GetProbeData(requestId, funcSource, crossType, i);
+                            var elseInst = GetInstruction(probData);
+
                             var instr2 = instructions[i + 1];
                             ReplaceJump(instr2, elseInst);
 
@@ -399,7 +418,8 @@ namespace Drill4Net.Injector.Engine
                         //THROW
                         if (flow == FlowControl.Throw)
                         {
-                            var throwInst = GetForThrowInstruction();
+                            probData = GetProbeData(requestId, funcSource, CrossPointType.Throw, i);
+                            var throwInst = GetInstruction(probData);
                             ReplaceJump(instr, throwInst);
                             processor.InsertBefore(instr, throwInst);
                             processor.InsertBefore(instr, call);
@@ -411,8 +431,9 @@ namespace Drill4Net.Injector.Engine
                         // TODO: check FAULT-block from VisualBasic (it should work with same OpCode)
                         if (flow == FlowControl.Return && needEnterLeavings && code != Code.Endfinally) //&& code != Code.Endfilter ???
                         {
-                            ReplaceJump(instr, ldstrLeaving);
-                            processor.InsertBefore(instr, ldstrLeaving);
+                            ldstrReturn.Operand = $"{returnProbData}{i}";
+                            ReplaceJump(instr, ldstrReturn);
+                            processor.InsertBefore(instr, ldstrReturn);
                             processor.InsertBefore(instr, call);
                             i += 2;
                             continue;
@@ -681,19 +702,15 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
-        private Instruction GetForIfInstruction()
+        private Instruction GetInstruction(string probeData)
         {
-            return Instruction.Create(OpCodes.Ldstr, $"-> IF");
+            return Instruction.Create(OpCodes.Ldstr, probeData);
         }
 
-        private Instruction GetForElseInstruction()
-        {
-            return Instruction.Create(OpCodes.Ldstr, $"-> ELSE");
-        }
-
-        private Instruction GetForThrowInstruction()
-        {
-            return Instruction.Create(OpCodes.Ldstr, $"<< THROW");
+        internal string GetProbeData(string requestId, string funcSource, CrossPointType type, int localId)
+        { 
+            var id = localId == -1 ? null : localId.ToString();
+            return $"{requestId}^{funcSource}^{type}_{id}";
         }
     }
 }

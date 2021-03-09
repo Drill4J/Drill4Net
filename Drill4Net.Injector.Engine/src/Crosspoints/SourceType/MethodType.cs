@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Target.Common
+﻿namespace Drill4Net.Injector.Engine
 {
     public enum MethodType
     {
