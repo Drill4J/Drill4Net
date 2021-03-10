@@ -1,0 +1,31 @@
+﻿Source:
+    Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net50.Demo\bin\Debug\net5.0\
+    #directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net48.Demo\bin\Debug\
+    Filter: # mask for search files, namespaces, classes...
+       File: 
+       Namespace: 
+       Class:
+       Attribute:
+Destination:
+    Directory: # or full directory...
+    FolderPostfix: Injected #...or prefix to source dir
+Profiler:
+    Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.Testing\bin\Debug\netstandard2.1\
+    AssemblyName: Drill4Net.Plugins.Testing.dll
+    Namespace: Drill4Net.Plugins.Testing
+    Class: TestProfiler
+    Method: ProcessStatic
+    Static: true
+Proxy:
+    Class: ProfilerProxy
+    Method: Process
+    Static: true
+Probes: # types of cross cutting points
+    Private: false
+    Ctor: false
+    Getter: false
+    Setter: false
+Tests:
+    Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Comon.Tests\bin\Debug\net5.0\
+    AssemblyName: Drill4Net.Target.Common.dll
+

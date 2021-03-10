@@ -15,7 +15,7 @@ namespace Drill4Net.Injector.Core
 
         public InjectorRepository()
         {
-            _cfgPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CoreConstants.CONFIG_NAME);
+            _cfgPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), CoreConstants.CONFIG_NAME);
             _deser = new Deserializer();
         }
 
