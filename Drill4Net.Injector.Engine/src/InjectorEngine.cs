@@ -262,7 +262,7 @@ namespace Drill4Net.Injector.Engine
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
                     //TODO: NOOOO!!! It must be generated from IL as Guid + ThreadId ? (in ASP.NET + sessionId)!!!!
-                    var requestId = Guid.NewGuid().ToString().Replace("-", null);
+                    var requestId = "0"; // Guid.NewGuid().ToString().Replace("-", null);
                     if (needEnterLeavings)
                     {
                         probData = GetProbeData(requestId, funcSource, CrossPointType.Enter, 0);
@@ -474,17 +474,6 @@ namespace Drill4Net.Injector.Engine
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
             }
             assembly.Write(modifiedPath, writeParams);
-
-            // for Testing project
-            //var testsOpts = opts.Tests;
-            //if (module.Name == testsOpts.AssemblyName)
-            //{
-            //    var testingPrjDir = testsOpts.Directory;
-            //    if (!Directory.Exists(testingPrjDir))
-            //        Directory.CreateDirectory(testingPrjDir);
-            //    var testPath = Path.Combine(testingPrjDir, testsOpts.AssemblyName);
-            //    File.Copy(modifiedPath, testPath, true);
-            //}
             #endregion
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");

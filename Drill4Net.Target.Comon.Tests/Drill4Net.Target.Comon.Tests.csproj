@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Drill4Net.Target.Common">
+      <HintPath>..\Drill4Net.Target.Net50.Demo\bin\Debug\net5.0.Injected.Tests\Drill4Net.Target.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="cfg.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

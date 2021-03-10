@@ -16,6 +16,17 @@ namespace Drill4Net.Injector.App
                 var injector = new InjectorEngine(rep);
                 injector.Process(args);
 
+                // for Testing project
+                //var testsOpts = opts.Tests;
+                //if (module.Name == testsOpts.AssemblyName)
+                //{
+                //    var testingPrjDir = testsOpts.Directory;
+                //    if (!Directory.Exists(testingPrjDir))
+                //        Directory.CreateDirectory(testingPrjDir);
+                //    var testPath = Path.Combine(testingPrjDir, testsOpts.AssemblyName);
+                //    File.Copy(modifiedPath, testPath, true);
+                //}
+
                 Console.WriteLine("Injection is done.");
             }
             catch (Exception ex)
