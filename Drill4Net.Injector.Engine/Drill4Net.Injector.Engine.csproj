@@ -6,11 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="src\cfg.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.11.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Injection\Drill4Net.Injection.csproj" />
+    <ProjectReference Include="..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -30,9 +31,9 @@ namespace Drill4Net.Injector.Engine
 
         /***************************************************************************************/
 
-        public InjectorEngine()
+        public InjectorEngine([NotNull] IInjectorRepository rep)
         {
-            _rep = new InjectorRepository();
+            _rep = rep;
             _isNetCore = new ThreadLocal<bool?>();
             _mainVersion = new ThreadLocal<AssemblyVersion>();
             _searchOpts = new EnumerationOptions()
@@ -51,15 +52,15 @@ namespace Drill4Net.Injector.Engine
             Process(opts);
         }
 
-        public void Process([NotNull] InjectOptions opts)
+        public void Process([NotNull] MainOptions opts)
         {
             _rep.ValidateOptions(opts);
-            CopySource(opts.SourceDirectory, opts.DestinationDirectory);
-            var versions = DefineTargetVersions(opts.SourceDirectory);
-            ProcessDirectory(opts.SourceDirectory, versions, opts);
+            CopySource(opts.Source.Directory, opts.Destination.Directory);
+            var versions = DefineTargetVersions(opts.Source.Directory);
+            ProcessDirectory(opts.Source.Directory, versions, opts);
         }
 
-        internal void ProcessDirectory([NotNull] string directory, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] InjectOptions opts)
+        internal void ProcessDirectory([NotNull] string directory, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] MainOptions opts)
         {
             //files
             var files = IoHelper.GetAssemblies(directory, _searchOpts);
@@ -115,7 +116,7 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
 
-        public void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] InjectOptions opts)
+        public void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] MainOptions opts)
         {
             #region Reading
             if (!File.Exists(filePath))
@@ -127,13 +128,13 @@ namespace Drill4Net.Injector.Engine
 
             #region Destinaton
             string destDir;
-            if (IoHelper.IsSameDirectories(sourceDir, opts.SourceDirectory))
+            if (IoHelper.IsSameDirectories(sourceDir, opts.Source.Directory))
             {
-                destDir = opts.DestinationDirectory;
+                destDir = opts.Destination.Directory;
             }
             else
             {
-                destDir = Path.Combine(opts.DestinationDirectory, sourceDir.Remove(0, opts.SourceDirectory.Length));
+                destDir = Path.Combine(opts.Destination.Directory, sourceDir.Remove(0, opts.Source.Directory.Length));
             }
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
@@ -193,8 +194,8 @@ namespace Drill4Net.Injector.Engine
             //proxy will be inject in each target assembly
             TypeReference proxyReturnTypeRef = module.TypeSystem.Void;
             var proxyNamespace = $"Injection_{Guid.NewGuid()}".Replace("-", null); //must be unique for each target asm
-            var proxyTypeRef = new TypeReference(proxyNamespace, opts.ProxyClass, module, module);
-            var proxyMethRef = new MethodReference(opts.ProxyMethod, proxyReturnTypeRef, proxyTypeRef);
+            var proxyTypeRef = new TypeReference(proxyNamespace, opts.Proxy.Class, module, module);
+            var proxyMethRef = new MethodReference(opts.Proxy.Method, proxyReturnTypeRef, proxyTypeRef);
             var strPar = new ParameterDefinition("data", Mono.Cecil.ParameterAttributes.None, module.TypeSystem.String);
             proxyMethRef.Parameters.Add(strPar);
 
@@ -260,7 +261,8 @@ namespace Drill4Net.Injector.Engine
                     #region Enter/Return
                     //inject 'entering' instruction
                     Instruction ldstrEntering = null;
-                    var requestId = Guid.NewGuid().ToString().Replace("-",null); //TODO: NOOOO!!! It must be generated from IL as Guid + ThreadId ? (in ASP.NET + sessionId)!!!!
+                    //TODO: NOOOO!!! It must be generated from IL as Guid + ThreadId ? (in ASP.NET + sessionId)!!!!
+                    var requestId = Guid.NewGuid().ToString().Replace("-", null);
                     if (needEnterLeavings)
                     {
                         probData = GetProbeData(requestId, funcSource, CrossPointType.Enter, 0);
@@ -273,7 +275,8 @@ namespace Drill4Net.Injector.Engine
 
                     //return
                     var returnProbData = GetProbeData(requestId, funcSource, CrossPointType.Return, -1);
-                    var ldstrReturn = GetInstruction(probData);
+                    var ldstrReturn = GetInstruction(probData); //as object it must be only one
+                    var lastOp = instructions.Last();
                     #endregion
                     #region Jumps
                     //collect jumps. Hash table for addresses is almost useless,
@@ -290,7 +293,6 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                     #region Misc injections               
                     var ifStack = new Stack<Instruction>();
-                    var lastOp = instructions.Last();
 
                     for (var i = startInd; i < instructions.Count; i++)
                     {
@@ -452,9 +454,10 @@ namespace Drill4Net.Injector.Engine
             #region Proxy class
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
-            var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.ProxyClass, opts.ProxyMethod, //proxy to profiler
-                                                            opts.ProfilerDirectory, opts.ProfilerAssemblyName, //real profiler
-                                                            opts.ProfilerNamespace, opts.ProfilerClass, opts.ProfilerMethod);
+            var profilerOpts = opts.Profiler;
+            var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
+                                                            profilerOpts.Directory, profilerOpts.AssemblyName, //real profiler
+                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
             proxyGenerator.InjectTo(assembly);
             #endregion
             #region Saving
@@ -471,6 +474,17 @@ namespace Drill4Net.Injector.Engine
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
             }
             assembly.Write(modifiedPath, writeParams);
+
+            // for Testing project
+            var testsOpts = opts.Tests;
+            if (module.Name == testsOpts.AssemblyName)
+            {
+                var testingPrjDir = testsOpts.Directory;
+                if (!Directory.Exists(testingPrjDir))
+                    Directory.CreateDirectory(testingPrjDir);
+                var testPath = Path.Combine(testingPrjDir, testsOpts.AssemblyName);
+                File.Copy(modifiedPath, testPath, true);
+            }
             #endregion
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
@@ -676,19 +690,20 @@ namespace Drill4Net.Injector.Engine
             return version;
         }
 
-        private List<MethodDefinition> GetAllMethods(TypeDefinition type, [NotNull] InjectOptions opts)
+        private List<MethodDefinition> GetAllMethods(TypeDefinition type, [NotNull] MainOptions opts)
         {
             var methods = new List<MethodDefinition>();
 
             //own
+            var probOpts = opts.Probes;
             var isAngleBracket = type.Name.StartsWith("<");
             var nestedMeths = type.Methods
                 .Where(a => a.HasBody)
                 .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
-                .Where(a => opts.InjectConstructors || (!opts.InjectConstructors && !a.IsConstructor)) //may be we skips own ctors
-                .Where(a => opts.InjectSetters || (!opts.InjectSetters && a.Name != "set_Prop")) //do we need property setters?
-                .Where(a => opts.InjectGetters || (!opts.InjectGetters && a.Name != "get_Prop")) //do we need property getters?
-                .Where(a => type.Name.StartsWith("<") || opts.InjectPrivates || (!opts.InjectPrivates && !a.IsPrivate)) //do we need business privates?
+                .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
+                .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop")) //do we need property setters?
+                .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop")) //do we need property getters?
+                .Where(a => type.Name.StartsWith("<") || probOpts.Private || (!probOpts.Private && !a.IsPrivate)) //do we need business privates?
                 ;
             foreach (var nestedMethod in nestedMeths)
                 methods.Add(nestedMethod);
@@ -704,6 +719,7 @@ namespace Drill4Net.Injector.Engine
 
         private Instruction GetInstruction(string probeData)
         {
+            //TODO: YAML
             return Instruction.Create(OpCodes.Ldstr, probeData);
         }
 

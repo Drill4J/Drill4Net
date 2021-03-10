@@ -1,4 +1,5 @@
 ﻿using System;
+using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
 
 namespace Drill4Net.Injector.App
@@ -11,7 +12,8 @@ namespace Drill4Net.Injector.App
             {
                 Console.WriteLine("Drill4Net is started");
 
-                var injector = new InjectorEngine();
+                var rep = new InjectorRepository();
+                var injector = new InjectorEngine(rep);
                 injector.Process(args);
 
                 Console.WriteLine("Injection is done.");

@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Drill4Net.Target.Comon.Tests")]
+
 namespace Drill4Net.Target.Common
 {
     public class InjectTarget
@@ -802,6 +804,6 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: a || b, yield, catch filter, for, foreach, EF...
+        //TODO: a || b, yield, catch filter, for, foreach, EF, Visual Basic...
     }
 }
