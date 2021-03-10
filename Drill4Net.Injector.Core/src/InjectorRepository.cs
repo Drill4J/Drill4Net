@@ -21,23 +21,27 @@ namespace Drill4Net.Injector.Core
 
         /************************************************************************/
 
-        public MainOptions CreateOptions([NotNull] string[] args)
+        public MainOptions GetOptions(string[] args)
         {
             var cfg = ReadOptions();
 
+            //TODO: add input args
             string sourceDir = string.Empty;
             string destDir = string.Empty;
 
-            if (args.Length > 0)
-                sourceDir = args[0];
-            if (args.Length > 1 && args[1].Contains("//"))
-                sourceDir = args[1];
+            if (args != null)
+            {
+                if (args.Length > 0)
+                    sourceDir = args[0];
+                if (args.Length > 1 && args[1].Contains("//"))
+                    sourceDir = args[1];
+            }
 
             if (!string.IsNullOrWhiteSpace(sourceDir))
                 cfg.Source.Directory = sourceDir;
 
             if (string.IsNullOrWhiteSpace(destDir))
-                destDir = GetInjectedDirectoryName(cfg.Source.Directory, cfg);
+                destDir = $"{Path.GetDirectoryName(cfg.Source.Directory)}.{cfg.Destination.FolderPostfix}";
             cfg.Destination.Directory = destDir;
 
             return cfg;
@@ -52,13 +56,11 @@ namespace Drill4Net.Injector.Core
             return opts;
         }
 
-        public string GetInjectedDirectoryName([NotNull] string original, [NotNull] MainOptions opts)
+        public void ValidateOptions(MainOptions opts)
         {
-            return $"{Path.GetDirectoryName(original)}.{opts.Destination.FolderPostfix}";
-        }
-
-        public void ValidateOptions([NotNull] MainOptions opts)
-        {
+            if (opts == null)
+                throw new ArgumentNullException(nameof(opts));
+            //
             if (string.IsNullOrEmpty(opts.Source.Directory))
                 throw new Exception("Source directory name is empty");
             if (!Directory.Exists(opts.Source.Directory))

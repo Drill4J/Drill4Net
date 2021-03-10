@@ -48,7 +48,7 @@ namespace Drill4Net.Injector.Engine
 
         public void Process([NotNull] string[] args)
         {
-            var opts = _rep.CreateOptions(args);
+            var opts = _rep.GetOptions(args);
             Process(opts);
         }
 
