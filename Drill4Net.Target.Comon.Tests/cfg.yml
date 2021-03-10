@@ -8,7 +8,7 @@
        Attribute:
 Destination:
     Directory: # or full directory...
-    FolderPostfix: Injected #...or prefix to source dir
+    FolderPostfix: Injected.Tests #...or prefix to source dir
 Profiler:
     Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.Testing\bin\Debug\netstandard2.1\
     AssemblyName: Drill4Net.Plugins.Testing.dll
@@ -26,6 +26,6 @@ Probes: # types of cross cutting points
     Getter: false
     Setter: false
 Tests:
-    Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Comon.Tests\bin\Debug\net5.0\
     AssemblyName: Drill4Net.Target.Common.dll
-
+    Namespace: Drill4Net.Target.Common
+    Class: InjectTarget

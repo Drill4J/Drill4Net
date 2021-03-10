@@ -25,7 +25,4 @@ Probes: # types of cross cutting points
     Ctor: false
     Getter: false
     Setter: false
-Tests:
-    Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Comon.Tests\bin\Debug\net5.0\
-    AssemblyName: Drill4Net.Target.Common.dll
 

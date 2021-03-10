@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="cfg.yml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

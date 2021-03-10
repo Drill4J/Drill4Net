@@ -476,15 +476,15 @@ namespace Drill4Net.Injector.Engine
             assembly.Write(modifiedPath, writeParams);
 
             // for Testing project
-            var testsOpts = opts.Tests;
-            if (module.Name == testsOpts.AssemblyName)
-            {
-                var testingPrjDir = testsOpts.Directory;
-                if (!Directory.Exists(testingPrjDir))
-                    Directory.CreateDirectory(testingPrjDir);
-                var testPath = Path.Combine(testingPrjDir, testsOpts.AssemblyName);
-                File.Copy(modifiedPath, testPath, true);
-            }
+            //var testsOpts = opts.Tests;
+            //if (module.Name == testsOpts.AssemblyName)
+            //{
+            //    var testingPrjDir = testsOpts.Directory;
+            //    if (!Directory.Exists(testingPrjDir))
+            //        Directory.CreateDirectory(testingPrjDir);
+            //    var testPath = Path.Combine(testingPrjDir, testsOpts.AssemblyName);
+            //    File.Copy(modifiedPath, testPath, true);
+            //}
             #endregion
 
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");

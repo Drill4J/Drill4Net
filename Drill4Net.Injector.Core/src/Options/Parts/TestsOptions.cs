@@ -2,7 +2,8 @@
 {
     public class TestsOptions
     {
-        public string Directory { get; set; }
         public string AssemblyName { get; set; }
+        public string Namespace { get; set; }
+        public string Class { get; set; }
     }
 }
