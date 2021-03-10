@@ -4,6 +4,7 @@ using System.Reflection;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
+using Drill4Net.Plugins.Testing;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -12,10 +13,9 @@ namespace Drill4Net.Target.Comon.Tests
         private IInjectorRepository _rep;
         private MainOptions _opts;
         private Type _type;
-        private BindingFlags _methFlags = BindingFlags.Instance | BindingFlags.NonPublic;
         private object _target;
 
-        /**************************************************************/
+        /********************************************************************/
 
         [OneTimeSetUp]
         public void SetupClass()
@@ -31,20 +31,25 @@ namespace Drill4Net.Target.Comon.Tests
             _target = Activator.CreateInstance(_type);
         }
 
-        /**************************************************************/
+        /********************************************************************/
 
         [Test]
         public void IfElse_Half_False_Ok()
         {
             //arrange
-            var mi = _type.GetMethod("IfElse_Half", _methFlags);
+            var mi = GetMethod("IfElse_Half");
 
             //act
             mi.Invoke(_target, new object[] { false });
 
             //assert
-            //var points = TestProfiler.GetPoints("", "", true);
+            var points = TestProfiler.GetPoints("", "", true);
             Assert.Pass();
+        }
+
+        private MethodInfo GetMethod(string name)
+        {
+            return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
         }
     }
 }
