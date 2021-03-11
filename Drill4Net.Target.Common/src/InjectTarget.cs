@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace Drill4Net.Target.Common
 {
     public class InjectTarget
     {
-        public async Task Process()
+        public async Task RunTests()
         {
             #region If/Else
             IfElse_Half(false);
@@ -198,6 +200,40 @@ namespace Drill4Net.Target.Common
             var type = "no";
             if (cond)
                 type = "yes";
+
+            //var stackTrace = new StackTrace();
+            //StackFrame[] stackFrames = stackTrace.GetFrames();
+
+            //// write call stack method names
+            //foreach (StackFrame stackFrame in stackFrames)
+            //{
+            //    var method = stackFrame.GetMethod() as MethodInfo;
+            //    if (method == null)
+            //        continue;
+            //    var mType = method.DeclaringType;
+            //    if (mType.Name.StartsWith("<"))
+            //        continue;
+            //    var asmName = mType.Assembly.GetName().Name;
+            //    //GUANO! By file path is better?
+            //    if (asmName.StartsWith("System.") || asmName.StartsWith("Microsoft."))
+            //        continue;
+
+            //    var typeName = method.DeclaringType.FullName;
+            //    var name = $"{typeName}::{method.Name}";
+            //    var pars = method.GetParameters();
+            //    var parNames = string.Empty;
+            //    var lastInd = pars.Length - 1;
+            //    for (var j = 0; j <= lastInd; j++)
+            //    {
+            //        var p = pars[j];
+            //        parNames += p.ParameterType.FullName;
+            //        if (j < lastInd)
+            //            parNames += ",";
+            //    }
+            //    name = $"{method.ReturnType.FullName} {name}({parNames})";
+
+            //    Console.WriteLine($"{name} -> {stackFrame.GetILOffset()}");
+            //}
 
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
         }

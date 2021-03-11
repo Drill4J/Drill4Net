@@ -75,25 +75,21 @@ namespace Drill4Net.Target.Comon.Tests
 
         /****************************************************************************/
 
+        private List<string> GetPoints(string function)
+        {
+            var funcSig = $"System.Void Drill4Net.Target.Common.InjectTarget::{function}";
+            var asmName = "Drill4Net.Target.Common.dll";
+            return TestProfiler.GetPoints(GetRequestId(), asmName, funcSig, true);
+        }
+
         private string GetRequestId()
         {
             return "0";
         }
 
-        private string GetMethodPath(string sig)
-        {
-            return $"Drill4Net.Target.Common.dll;System.Void Drill4Net.Target.Common.InjectTarget::{sig}";
-        }
-
         private MethodInfo GetMethod(string name)
         {
             return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
-        }
-
-        private List<string> GetPoints(string function)
-        {
-            var path = GetMethodPath(function);
-            return TestProfiler.GetPoints(GetRequestId(), path, true);
         }
 
         private void CheckEnterReturn(List<string> points)

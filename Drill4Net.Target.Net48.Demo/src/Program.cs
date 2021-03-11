@@ -8,18 +8,18 @@ namespace Drill4Net.Target.Net48
     {
         static void Main(string[] args)
         {
-            Process().GetAwaiter().GetResult();
+            StartAsync().GetAwaiter().GetResult();
 
             Console.WriteLine("\nDone.");
             Console.ReadKey(true);
         }
 
-        private static async Task Process()
+        private static async Task StartAsync()
         {
             try
             {
                 var target = new InjectTarget();
-                await target.Process();
+                await target.RunTests();
             }
             catch (Exception ex)
             {
