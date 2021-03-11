@@ -10,14 +10,16 @@ namespace Drill4Net.Plugins.Testing
     public class TestProfiler : AbsractPlugin
     {
         private static readonly ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
-        private static readonly ConcurrentDictionary<MemberInfo, string> _fullSigs;
+        private static readonly ConcurrentDictionary<MethodInfo, string> _sigByInfo;
+        private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
 
         /*****************************************************************************/
 
         static TestProfiler()
         {
             _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
-            _fullSigs = new ConcurrentDictionary<MemberInfo, string>();
+            _sigByInfo = new ConcurrentDictionary<MethodInfo, string>();
+            _infoBySig = new ConcurrentDictionary<string, MethodInfo>();
         }
 
         /*****************************************************************************/
@@ -86,6 +88,11 @@ namespace Drill4Net.Plugins.Testing
             //curSig may be a internal compiler's function (for generics, Enumerator,
             //AsyncStateMachine) and we must find parent business function from the call stack
 
+            //FIRST cache
+            var key = $"{asmName};{curSig}";
+            if (_infoBySig.TryGetValue(key, out MethodInfo curInfo))
+                return;
+
             //TODO: check performance...
             var stackTrace = new StackTrace(2); //skip local calls
             StackFrame[] stackFrames = stackTrace.GetFrames();
@@ -110,13 +117,14 @@ namespace Drill4Net.Plugins.Testing
 
                 #endregion
 
-                //at this stage we have simplified method's signature
-                if (_fullSigs.TryGetValue(method, out string fullSig)) //cached
+                //SECOND cache
+                if (_sigByInfo.TryGetValue(method, out string fullSig))
                 {
                     curSig = fullSig;
                     return;
                 }
 
+                //at this stage we have simplified method's signature
                 //get full signature with types of parameters & return
                 var typeName = method.DeclaringType.FullName;
                 var name = $"{typeName}::{method.Name}";
@@ -131,7 +139,8 @@ namespace Drill4Net.Plugins.Testing
                         parNames += ",";
                 }
                 curSig = $"{method.ReturnType.FullName} {name}({parNames})";
-                _fullSigs.TryAdd(method, curSig);
+                _infoBySig.TryAdd(key, method);
+                _sigByInfo.TryAdd(method, curSig);
                 break;
             }
         }
