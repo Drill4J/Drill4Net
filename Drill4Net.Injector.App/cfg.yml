@@ -14,11 +14,11 @@ Profiler:
     AssemblyName: Drill4Net.Plugins.RnD.dll
     Namespace: Drill4Net.Plugins.RnD
     Class: LoggerPlugin
-    Method: ProcessStatic
+    Method: RegisterStatic
     Static: true
 Proxy:
     Class: ProfilerProxy
-    Method: Process
+    Method: Register
     Static: true
 Probes: # types of cross cutting points
     Private: false

@@ -22,7 +22,7 @@ namespace Drill4Net.Plugins.Testing
 
         /*****************************************************************************/
 
-        public static void ProcessStatic(string data)
+        public static void RegisterStatic(string data)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace Drill4Net.Plugins.Testing
                 var id = ar[0];
                 var asmName = ar[1];
                 var funcName = ar[2];
-                CorrectMethodName(asmName, ref funcName);
+                SetBusinessMethodName(asmName, ref funcName);
                 var points = GetPoints(id, asmName, funcName);
                 var point = ar[3];
                 points.Add(point);
@@ -44,6 +44,11 @@ namespace Drill4Net.Plugins.Testing
             {
                 //log
             }
+        }
+
+        public override void Register(string data)
+        {
+            RegisterStatic(data);
         }
 
         public static List<string> GetPoints(string id, string asmName, string funcSig, bool withRemoving = false)
@@ -76,8 +81,12 @@ namespace Drill4Net.Plugins.Testing
             return points;
         }
 
-        internal static void CorrectMethodName(string asmName, ref string curName)
+        internal static void SetBusinessMethodName(string asmName, ref string curSig)
         {
+            //curSig may be a internal compiler's function (for generics, Enumerator,
+            //AsyncStateMachine) and we must find parent business function from the call stack
+
+            //TODO: check performance...
             var stackTrace = new StackTrace(2); //skip local calls
             StackFrame[] stackFrames = stackTrace.GetFrames();
 
@@ -91,20 +100,20 @@ namespace Drill4Net.Plugins.Testing
                 if (method.GetCustomAttribute(typeof(DebuggerHiddenAttribute)) != null)
                     continue;
                 var mType = method.DeclaringType;
-                if ( mType.Name == "ProfilerProxy")
+                if ( mType.Name == "ProfilerProxy") //TODO: from constants/config
                     continue;
                 if (mType.Name.StartsWith("<"))
                     continue;
-                //GUANO! By file path is better?
+                //GUANO! By file path is better? Config?
                 if (asmName.StartsWith("System.") || asmName.StartsWith("Microsoft."))
                     continue;
 
                 #endregion
 
-                //in this stage we have simplifying method signature
-                if (_fullSigs.TryGetValue(method, out string cachedName)) //cached
+                //at this stage we have simplified method's signature
+                if (_fullSigs.TryGetValue(method, out string fullSig)) //cached
                 {
-                    curName = cachedName;
+                    curSig = fullSig;
                     return;
                 }
 
@@ -121,15 +130,10 @@ namespace Drill4Net.Plugins.Testing
                     if (j < lastInd)
                         parNames += ",";
                 }
-                curName = $"{method.ReturnType.FullName} {name}({parNames})";
-                _fullSigs.TryAdd(method, curName);
+                curSig = $"{method.ReturnType.FullName} {name}({parNames})";
+                _fullSigs.TryAdd(method, curSig);
                 break;
             }
-        }
-
-        public override void Process(string data)
-        {
-            ProcessStatic(data);
         }
     }
 }

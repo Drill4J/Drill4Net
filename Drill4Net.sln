@@ -20,6 +20,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injector", "Injector", "{2FFDD626-2A70-425D-A6D7-5769E16CE0C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Engine", "Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj", "{04F30A51-4DC7-4F70-94DF-F9AA594C3656}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D} = {7E40D044-DFE1-4DDD-A45F-74F820AE7B1D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Common", "Drill4Net.Target.Common\Drill4Net.Target.Common.csproj", "{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D}"
 EndProject

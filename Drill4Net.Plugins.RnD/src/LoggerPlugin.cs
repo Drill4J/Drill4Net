@@ -18,14 +18,14 @@ namespace Drill4Net.Plugins.RnD
 
         /*********************************************************/
 
-        public static void ProcessStatic(string data)
+        public static void RegisterStatic(string data)
         {
             Log.Information(data);
         }
 
-        public override void Process(string data)
+        public override void Register(string data)
         {
-            ProcessStatic(data);
+            RegisterStatic(data);
         }
     }
 }

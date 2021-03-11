@@ -14,7 +14,7 @@ namespace Drill4Net.Plugins.RnD
             }
         }
 
-        public override void Process(string data)
+        public override void Register(string data)
         {
             if (!long.TryParse(data, out long cnt))
                 throw new ArgumentException(nameof(data));
