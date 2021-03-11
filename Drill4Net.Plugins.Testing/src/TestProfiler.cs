@@ -10,14 +10,14 @@ namespace Drill4Net.Plugins.Testing
     public class TestProfiler : AbsractPlugin
     {
         private static readonly ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
-        private static readonly ConcurrentDictionary<string, string> _funcNames;
+        private static readonly ConcurrentDictionary<MemberInfo, string> _fullSigs;
 
         /*****************************************************************************/
 
         static TestProfiler()
         {
             _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
-            _funcNames = new ConcurrentDictionary<string, string>();
+            _fullSigs = new ConcurrentDictionary<MemberInfo, string>();
         }
 
         /*****************************************************************************/
@@ -101,16 +101,15 @@ namespace Drill4Net.Plugins.Testing
 
                 #endregion
 
-                //get simplifying signature of real method
-                var typeName = method.DeclaringType.FullName;
-                var key = $"{asmName};{typeName}::{method}"; 
-                if (_funcNames.TryGetValue(key, out string cachedName)) //cached
+                //in this stage we have simplifying method signature
+                if (_fullSigs.TryGetValue(method, out string cachedName)) //cached
                 {
                     curName = cachedName;
                     return;
                 }
 
                 //get full signature with types of parameters & return
+                var typeName = method.DeclaringType.FullName;
                 var name = $"{typeName}::{method.Name}";
                 var pars = method.GetParameters();
                 var parNames = string.Empty;
@@ -123,7 +122,7 @@ namespace Drill4Net.Plugins.Testing
                         parNames += ",";
                 }
                 curName = $"{method.ReturnType.FullName} {name}({parNames})";
-                _funcNames.TryAdd(key, curName);
+                _fullSigs.TryAdd(method, curName);
                 break;
             }
         }
