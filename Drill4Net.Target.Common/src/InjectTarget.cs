@@ -689,6 +689,7 @@ namespace Drill4Net.Target.Common
         {
             var data = GetDataForParallel();
             int sum = 0;
+
             Parallel.For(0, data.Count(), a =>
             {
                 if (!cond || (cond && a % 2 == 0))
@@ -840,6 +841,6 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: a || b, yield, catch filter, for, foreach, EF, Visual Basic...
+        //TODO: a || b, yield, catch filter, async iterator, for, foreach, EF, Visual Basic...
     }
 }

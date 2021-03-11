@@ -73,18 +73,21 @@ namespace Drill4Net.Target.Comon.Tests
             Check(points, checks);
         }
 
+        //This proves that parallel execution of the same
+        //function does not confuse the results.
+        [Test]
+        public void IfElse_Half_True2_Ok()
+        {
+            IfElse_Half_True_Ok();
+        }
+
         /****************************************************************************/
 
         private List<string> GetPoints(string function)
         {
             var funcSig = $"System.Void Drill4Net.Target.Common.InjectTarget::{function}";
             var asmName = "Drill4Net.Target.Common.dll";
-            return TestProfiler.GetPoints(GetRequestId(), asmName, funcSig, true);
-        }
-
-        private string GetRequestId()
-        {
-            return "0";
+            return TestProfiler.GetPoints(asmName, funcSig, true);
         }
 
         private MethodInfo GetMethod(string name)

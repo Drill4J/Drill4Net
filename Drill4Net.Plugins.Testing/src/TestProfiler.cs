@@ -3,13 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using Drill4Net.Plugins.Abstract;
 
 namespace Drill4Net.Plugins.Testing
 {
     public class TestProfiler : AbsractPlugin
     {
-        private static readonly ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
+        private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly ConcurrentDictionary<MethodInfo, string> _sigByInfo;
         private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
 
@@ -17,7 +18,7 @@ namespace Drill4Net.Plugins.Testing
 
         static TestProfiler()
         {
-            _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
+            _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
             _sigByInfo = new ConcurrentDictionary<MethodInfo, string>();
             _infoBySig = new ConcurrentDictionary<string, MethodInfo>();
         }
@@ -34,11 +35,11 @@ namespace Drill4Net.Plugins.Testing
                 if (ar.Length < 4)
                     throw new ArgumentException($"Bad format of input: {data}");
                 //
-                var id = ar[0];
+                //var id = ar[0]; //not using yet
                 var asmName = ar[1];
                 var funcName = ar[2];
                 SetBusinessMethodName(asmName, ref funcName);
-                var points = GetPoints(id, asmName, funcName);
+                var points = GetPoints(asmName, funcName);
                 var point = ar[3];
                 points.Add(point);
             }
@@ -53,8 +54,12 @@ namespace Drill4Net.Plugins.Testing
             RegisterStatic(data);
         }
 
-        public static List<string> GetPoints(string id, string asmName, string funcSig, bool withRemoving = false)
+        public static List<string> GetPoints(string asmName, string funcSig, bool withRemoving = false)
         {
+            //This defines the logical execution path of function callers regardless
+            //of whether threads are created in async/await or Parallel.For
+            var id = Thread.CurrentThread.ExecutionContext.GetHashCode(); 
+
             Dictionary<string, List<string>> byFunctions;
             if (_clientPoints.ContainsKey(id))
             {
