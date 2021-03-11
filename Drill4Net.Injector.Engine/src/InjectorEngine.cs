@@ -13,7 +13,7 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Engine
 {
-    public class InjectorEngine
+    public class InjectorEngine : IInjectorEngine
     {
         /* INFO *
             http://ilgenerator.apphb.com/ - online C# -> IL
@@ -46,10 +46,9 @@ namespace Drill4Net.Injector.Engine
 
         /***************************************************************************************/
 
-        public void Process([NotNull] string[] args)
+        public void Process()
         {
-            var opts = _rep.GetOptions(args);
-            Process(opts);
+            Process(_rep.Options);
         }
 
         public void Process([NotNull] MainOptions opts)
@@ -116,7 +115,7 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
 
-        public void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] MainOptions opts)
+        internal void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] MainOptions opts)
         {
             #region Reading
             if (!File.Exists(filePath))
@@ -255,7 +254,7 @@ namespace Drill4Net.Injector.Engine
                     var needEnterLeavings =
                         //Async/await
                         !isAsyncStateMachine && declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null && //!methodName.StartsWith("<");
-                        //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
+                                                                                                                                  //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
                         (_isNetCore.Value == false || (_isNetCore.Value == true && !isFinalizer));
                     #endregion
                     #region Enter/Return
@@ -359,7 +358,7 @@ namespace Drill4Net.Injector.Engine
                                 crossType = CrossPointType.Switch;
                             }
 
-                            if(crossType == CrossPointType.Unset)
+                            if (crossType == CrossPointType.Unset)
                                 crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
                             probData = GetProbeData(requestId, funcSource, crossType, i);
                             var ldstrIf = GetInstruction(probData);
@@ -411,7 +410,7 @@ namespace Drill4Net.Injector.Engine
                             var instr2 = instructions[i + 1];
                             ReplaceJump(instr2, elseInst);
 
-                            processor.InsertBefore(instr2, elseInst); 
+                            processor.InsertBefore(instr2, elseInst);
                             processor.InsertBefore(instr2, call);
                             i += 2;
                             continue;
@@ -447,7 +446,7 @@ namespace Drill4Net.Injector.Engine
 
             // ensure we referencing only ref assemblies
             var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
-            if(systemPrivateCoreLib!=null)
+            if (systemPrivateCoreLib != null)
                 module.AssemblyReferences.Remove(systemPrivateCoreLib);
             //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
             #endregion
@@ -679,7 +678,7 @@ namespace Drill4Net.Injector.Engine
             return version;
         }
 
-        private List<MethodDefinition> GetAllMethods(TypeDefinition type, [NotNull] MainOptions opts)
+        internal List<MethodDefinition> GetAllMethods(TypeDefinition type, [NotNull] MainOptions opts)
         {
             var methods = new List<MethodDefinition>();
 
@@ -706,16 +705,16 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
+        internal string GetProbeData(string requestId, string funcSource, CrossPointType type, int localId)
+        {
+            var id = localId == -1 ? null : localId.ToString();
+            return $"{requestId}^{funcSource}^{type}_{id}";
+        }
+
         private Instruction GetInstruction(string probeData)
         {
             //TODO: YAML
             return Instruction.Create(OpCodes.Ldstr, probeData);
-        }
-
-        internal string GetProbeData(string requestId, string funcSource, CrossPointType type, int localId)
-        { 
-            var id = localId == -1 ? null : localId.ToString();
-            return $"{requestId}^{funcSource}^{type}_{id}";
         }
     }
 }

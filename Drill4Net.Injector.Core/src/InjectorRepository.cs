@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using YamlDotNet.Serialization;
 
@@ -7,51 +8,96 @@ namespace Drill4Net.Injector.Core
 {
     public class InjectorRepository : IInjectorRepository
     {
-        private readonly string _cfgPath;
+        public MainOptions Options { get; set; }
+
+        private readonly string _defCfgPath;
         private readonly Deserializer _deser;
 
         /************************************************************************/
 
-        public InjectorRepository()
+        public InjectorRepository(): 
+            this(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), CoreConstants.CONFIG_DEFAULT_NAME))
         {
-            _cfgPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), CoreConstants.CONFIG_NAME);
+        }
+
+        public InjectorRepository(string cfgPath)
+        {
+            _defCfgPath = cfgPath;
             _deser = new Deserializer();
+            Options = GenerateOptions();
+        }
+
+        public InjectorRepository(string[] args): this()
+        {
+            Options = ClarifyOptions(args);
         }
 
         /************************************************************************/
 
-        public MainOptions GetOptions(string[] args)
+        #region Options
+        internal MainOptions GenerateOptions()
         {
-            var cfg = ReadOptions();
+            return ReadOptions(_defCfgPath);
+        }
 
-            //TODO: add input args
-            string sourceDir = string.Empty;
-            string destDir = string.Empty;
-
-            if (args != null)
-            {
-                if (args.Length > 0)
-                    sourceDir = args[0];
-                if (args.Length > 1 && args[1].Contains("//"))
-                    sourceDir = args[1];
-            }
-
-            if (!string.IsNullOrWhiteSpace(sourceDir))
-                cfg.Source.Directory = sourceDir;
-
-            if (string.IsNullOrWhiteSpace(destDir))
-                destDir = $"{Path.GetDirectoryName(cfg.Source.Directory)}.{cfg.Destination.FolderPostfix}";
-            cfg.Destination.Directory = destDir;
-
+        internal MainOptions ClarifyOptions(string[] args)
+        {
+            var cfgPath = GetCurrentConfigPath(args);
+            var cfg = ReadOptions(cfgPath);
+            ClarifySourceDirectory(args, cfg);
+            ClarifyDestinationDirectory(args, cfg);
             return cfg;
         }
 
-        internal MainOptions ReadOptions()
+        internal string GetCurrentConfigPath(string[] args)
         {
-            if (!File.Exists(_cfgPath))
-                throw new FileNotFoundException($"Options file not found: [{_cfgPath}]");
-            var cfg = File.ReadAllText(_cfgPath);
+            var cfgArg = GetArgument(args, CoreConstants.ARGUMENT_CONFIG_PATH);
+            return cfgArg == null ? _defCfgPath : cfgArg.Split('=')[1];
+        }
+
+        internal void ClarifySourceDirectory(string[] args, MainOptions opts)
+        {
+            if (opts == null)
+                throw new ArgumentNullException(nameof(opts));
+            //
+            var sourceDir = args?.Length > 1 ? PotentialPath(args[0]) : null;
+            if (!string.IsNullOrWhiteSpace(sourceDir))
+                opts.Source.Directory = sourceDir;
+        }
+
+        internal void ClarifyDestinationDirectory(string[] args, MainOptions opts)
+        {
+            if (opts == null)
+                throw new ArgumentNullException(nameof(opts));
+            //
+            var destDir = args?.Length > 1 ? PotentialPath(args?[1]) : null;
+            SetDestinationDirectory(opts, destDir);
+        }
+
+        internal void SetDestinationDirectory(MainOptions opts, string destDir)
+        {
+            if (string.IsNullOrWhiteSpace(destDir))
+                destDir = $"{Path.GetDirectoryName(opts.Source.Directory)}.{opts.Destination.FolderPostfix}";
+            opts.Destination.Directory = destDir;
+        }
+
+        internal string PotentialPath(string arg)
+        {
+            return !arg.StartsWith("-") && (arg.Contains("//") || arg.Contains("\\")) ? arg : null;
+        }
+
+        internal string GetArgument(string[] args, string arg)
+        {
+            return args?.FirstOrDefault(a => a.StartsWith($"-{arg}="));
+        }
+
+        internal MainOptions ReadOptions(string path)
+        {
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Options file not found: [{path}]");
+            var cfg = File.ReadAllText(path);
             var opts = _deser.Deserialize<MainOptions>(cfg);
+            SetDestinationDirectory(opts, null);
             return opts;
         }
 
@@ -68,5 +114,11 @@ namespace Drill4Net.Injector.Core
             if (string.IsNullOrEmpty(opts.Destination.Directory))
                 throw new Exception("Destination directory name is empty");
         }
+
+        public void ValidateOptions()
+        {
+            ValidateOptions(Options);
+        }
+        #endregion
     }
 }

@@ -7,7 +7,7 @@ namespace Drill4Net.Plugins.Testing.Demo
         static void Main(string[] args)
         {
             var profiler = new TestProfiler();
-            var requestId = "4243e54508a84689b7b6575f72630260";
+            var requestId = "0";
             var path = "Drill4Net.Target.Common.dll; System.Void Drill4Net.Target.Common.InjectTarget::IfElse_FullSimple(System.Boolean)";
             profiler.Process($"{requestId}^{path}^If_6");
             var points = TestProfiler.GetPoints(requestId, path, true);

@@ -29,3 +29,4 @@ Tests:
     AssemblyName: Drill4Net.Target.Common.dll
     Namespace: Drill4Net.Target.Common
     Class: InjectTarget
+Silent: true

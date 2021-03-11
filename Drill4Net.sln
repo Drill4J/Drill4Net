@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Comon.Test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{2D8768BC-205A-4BE5-8A42-66FAADF2CF7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Plugins.Testing.Demo", "Drill4Net.Plugins.Testing.Demo\Drill4Net.Plugins.Testing.Demo.csproj", "{695B6D02-77D6-432F-920E-EFE682BC0C19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.Testing.Demo", "Drill4Net.Plugins.Testing.Demo\Drill4Net.Plugins.Testing.Demo.csproj", "{695B6D02-77D6-432F-920E-EFE682BC0C19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

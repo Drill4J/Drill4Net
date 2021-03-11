@@ -8,13 +8,16 @@ namespace Drill4Net.Injector.App
     {
         static void Main(string[] args)
         {
+            IInjectorRepository rep = null;
             try
             {
-                Console.WriteLine("Drill4Net is started");
+                //name of program... from namespace
+                var name = typeof(Program).Namespace.Split('.')[0];
+                Console.WriteLine($"{name} is started");
 
-                var rep = new InjectorRepository();
+                rep = new InjectorRepository(args);
                 var injector = new InjectorEngine(rep);
-                injector.Process(args);
+                injector.Process();
 
                 // for Testing project
                 //var testsOpts = opts.Tests;
@@ -26,15 +29,16 @@ namespace Drill4Net.Injector.App
                 //    var testPath = Path.Combine(testingPrjDir, testsOpts.AssemblyName);
                 //    File.Copy(modifiedPath, testPath, true);
                 //}
-
-                Console.WriteLine("Injection is done.");
+                
+                 Console.WriteLine("Injection is done.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
 
-            Console.ReadKey(true);
+            if (rep?.Options?.Silent == false)
+                Console.ReadKey(true);
         }
     }
 }

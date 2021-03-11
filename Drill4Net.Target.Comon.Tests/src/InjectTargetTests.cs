@@ -26,11 +26,13 @@ namespace Drill4Net.Target.Comon.Tests
         [OneTimeSetUp]
         public void SetupClass()
         {
-            _rep = new InjectorRepository();
-            _opts = _rep.GetOptions(null);
-            var injector = new InjectorEngine(_rep);
-            injector.Process(Array.Empty<string>());
+            var cfg_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), CoreConstants.CONFIG_TESTS_NAME);
+            _rep = new InjectorRepository(cfg_path);
+            //this is done on the post-build event of the Injector project
+            //var injector = new InjectorEngine(_rep);
+            //injector.Process();
 
+            var _opts = _rep.Options;
             var profPath = Path.Combine(_opts.Destination.Directory, _opts.Tests.AssemblyName);
             var asm = Assembly.LoadFrom(profPath);
             _type = asm.GetType($"{_opts.Tests.Namespace}.{_opts.Tests.Class}");
@@ -44,13 +46,11 @@ namespace Drill4Net.Target.Comon.Tests
         {
             //arrange
             var mi = GetMethod("IfElse_Half");
-            var requestId = GetRequestId();
-            var path = GetMethodPath("IfElse_Half(System.Boolean)");
             var checks = new List<string>();
 
             //act
             mi.Invoke(_target, new object[] { false });
-            var points = TestProfiler.GetPoints(requestId, path, true);
+            var points = GetPoints("IfElse_Half(System.Boolean)");
 
             //assert
             CheckEnterReturn(points);
@@ -62,13 +62,11 @@ namespace Drill4Net.Target.Comon.Tests
         {
             //arrange
             var mi = GetMethod("IfElse_Half");
-            var requestId = GetRequestId();
-            var path = GetMethodPath("IfElse_Half(System.Boolean)");
             var checks = new List<string>() { "If_8" };
 
             //act
             mi.Invoke(_target, new object[] { true });
-            var points = TestProfiler.GetPoints(requestId, path, true);
+            var points = GetPoints("IfElse_Half(System.Boolean)");
 
             //assert
             CheckEnterReturn(points);
@@ -90,6 +88,12 @@ namespace Drill4Net.Target.Comon.Tests
         private MethodInfo GetMethod(string name)
         {
             return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
+        }
+
+        private List<string> GetPoints(string function)
+        {
+            var path = GetMethodPath(function);
+            return TestProfiler.GetPoints(GetRequestId(), path, true);
         }
 
         private void CheckEnterReturn(List<string> points)

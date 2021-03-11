@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
 	<DefineConstants>NET_CORE</DefineConstants>
+	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,5 +24,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)Drill4Net.Target.Comon.Tests\bin\Debug\net5.0\tests_cfg.yml" />
+  </Target>
 
 </Project>

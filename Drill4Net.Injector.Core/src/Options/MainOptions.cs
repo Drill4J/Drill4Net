@@ -13,5 +13,7 @@
         public ProbesOptions Probes { get; set; }
 
         public TestsOptions Tests { get; set; }
+
+        public bool Silent { get; set; }
     }
 }

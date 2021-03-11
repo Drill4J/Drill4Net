@@ -25,4 +25,5 @@ Probes: # types of cross cutting points
     Ctor: false
     Getter: false
     Setter: false
+Silent: false
 
