@@ -10,12 +10,14 @@ namespace Drill4Net.Plugins.Testing
     public class TestProfiler : AbsractPlugin
     {
         private static readonly ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
+        private static readonly ConcurrentDictionary<string, string> _funcNames;
 
         /*****************************************************************************/
 
         static TestProfiler()
         {
             _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
+            _funcNames = new ConcurrentDictionary<string, string>();
         }
 
         /*****************************************************************************/
@@ -33,7 +35,7 @@ namespace Drill4Net.Plugins.Testing
                 var id = ar[0];
                 var asmName = ar[1];
                 var funcName = ar[2];
-                CorrectMethodName(ref funcName);
+                CorrectMethodName(asmName, ref funcName);
                 var points = GetPoints(id, asmName, funcName);
                 var point = ar[3];
                 points.Add(point);
@@ -74,31 +76,46 @@ namespace Drill4Net.Plugins.Testing
             return points;
         }
 
-        internal static void CorrectMethodName(ref string curName)
+        internal static void CorrectMethodName(string asmName, ref string curName)
         {
-            var stackTrace = new StackTrace();
+            var stackTrace = new StackTrace(2); //skip local calls
             StackFrame[] stackFrames = stackTrace.GetFrames();
 
-            for (int i = 2; i < stackFrames.Length; i++)
+            for (var i = 0; i < stackFrames.Length; i++)
             {
+                #region Checks
                 StackFrame stackFrame = stackFrames[i];
                 var method = stackFrame.GetMethod() as MethodInfo;
                 if (method == null)
                     continue;
-                var mType = method.DeclaringType;
-                if (mType.Name.StartsWith("<") || mType.Name == "ProfilerProxy")
+                if (method.GetCustomAttribute(typeof(DebuggerHiddenAttribute)) != null)
                     continue;
-                var asmName = mType.Assembly.GetName().Name;
+                var mType = method.DeclaringType;
+                if ( mType.Name == "ProfilerProxy")
+                    continue;
+                if (mType.Name.StartsWith("<"))
+                    continue;
                 //GUANO! By file path is better?
                 if (asmName.StartsWith("System.") || asmName.StartsWith("Microsoft."))
                     continue;
 
+                #endregion
+
+                //get simplifying signature of real method
                 var typeName = method.DeclaringType.FullName;
+                var key = $"{asmName};{typeName}::{method}"; 
+                if (_funcNames.TryGetValue(key, out string cachedName)) //cached
+                {
+                    curName = cachedName;
+                    return;
+                }
+
+                //get full signature with types of parameters & return
                 var name = $"{typeName}::{method.Name}";
                 var pars = method.GetParameters();
                 var parNames = string.Empty;
                 var lastInd = pars.Length - 1;
-                for (int j = 0; j <= lastInd; j++)
+                for (var j = 0; j <= lastInd; j++)
                 {
                     var p = pars[j];
                     parNames += p.ParameterType.FullName;
@@ -106,8 +123,8 @@ namespace Drill4Net.Plugins.Testing
                         parNames += ",";
                 }
                 curName = $"{method.ReturnType.FullName} {name}({parNames})";
+                _funcNames.TryAdd(key, curName);
                 break;
-                //Console.WriteLine($"{typeName}.{method.Name} -> {stackFrame.GetILOffset()}");
             }
         }
 
