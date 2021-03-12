@@ -154,10 +154,13 @@ namespace Drill4Net.Plugins.Testing
                     if (j < lastInd)
                         parNames += ",";
                 }
+
+                //hm... TODO: get rid of the return type?
                 var retType = method.ReturnType.FullName;
-                if(retType.Contains("PublicKeyToken"))
+                if(retType.Contains("Version="))
                     retType = curSig.Split(' ')[0];
                 curSig = $"{retType} {name}({parNames})";
+
                 _infoBySig.TryAdd(key, method);
                 _sigByInfo.TryAdd(method, curSig);
                 break;

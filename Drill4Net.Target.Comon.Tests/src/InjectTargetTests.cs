@@ -183,6 +183,28 @@ namespace Drill4Net.Target.Comon.Tests
 
                     yield return new TestCaseData("System.ValueTuple`2<System.Boolean,System.Boolean> IfElse_Half_EarlyReturn_Tuple(System.Boolean)", new object[] { false }, new List<string>());
                     yield return new TestCaseData("System.ValueTuple`2<System.Boolean,System.Boolean> IfElse_Half_EarlyReturn_Tuple(System.Boolean)", new object[] { true }, new List<string> { "If_8" });
+
+                    yield return new TestCaseData("System.Void Ternary_Positive(System.Boolean)", new object[] { false }, new List<string> { "Else_4" });
+                    yield return new TestCaseData("System.Void Ternary_Positive(System.Boolean)", new object[] { true }, new List<string> { "If_8" });
+
+                    yield return new TestCaseData("System.Void Ternary_Negative(System.Boolean)", new object[] { false }, new List<string> { "Else_8" });
+                    yield return new TestCaseData("System.Void Ternary_Negative(System.Boolean)", new object[] { true }, new List<string> { "If_4" });
+
+                    yield return new TestCaseData("System.Void IfElse_FullCompound(System.Boolean,System.Boolean)", new object[] { false, false }, new List<string> { "Else_30", "Else_45" });
+                    yield return new TestCaseData("System.Void IfElse_FullCompound(System.Boolean,System.Boolean)", new object[] { false, true }, new List<string> { "Else_30", "If_37" });
+                    yield return new TestCaseData("System.Void IfElse_FullCompound(System.Boolean,System.Boolean)", new object[] { true, false }, new List<string> { "If_6", "Else_21" });
+                    yield return new TestCaseData("System.Void IfElse_FullCompound(System.Boolean,System.Boolean)", new object[] { true, true }, new List<string> { "If_6", "If_13" });
+
+                    yield return new TestCaseData("System.Void IfElse_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { false, false }, new List<string>());
+                    yield return new TestCaseData("System.Void IfElse_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { true, false }, new List<string> { "If_6", "Else_21" });
+                    yield return new TestCaseData("System.Void IfElse_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { true, true }, new List<string> { "If_6", "If_13" });
+
+                    yield return new TestCaseData("System.Void IfElse_HalfA_HalfB(System.Boolean,System.Boolean)", new object[] { true, false }, new List<string> { "If_6" });
+                    yield return new TestCaseData("System.Void IfElse_HalfA_HalfB(System.Boolean,System.Boolean)", new object[] { true, true }, new List<string> { "If_6", "If_13" });
+
+                    yield return new TestCaseData("System.Void IfElse_FullA_HalfB(System.Boolean,System.Boolean)", new object[] { false, false }, new List<string> { "Else_22" });
+                    yield return new TestCaseData("System.Void IfElse_FullA_HalfB(System.Boolean,System.Boolean)", new object[] { true, false }, new List<string> { "If_6" });
+                    yield return new TestCaseData("System.Void IfElse_FullA_HalfB(System.Boolean,System.Boolean)", new object[] { true, true }, new List<string> { "If_6", "If_13" });
                 }
             }
         }
