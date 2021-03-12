@@ -177,6 +177,12 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return new TestCaseData("System.Boolean IfElse_Consec_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { false, true }, new List<string> { "If_17" });
                     yield return new TestCaseData("System.Boolean IfElse_Consec_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { true, false }, new List<string> { "If_6", "Else_25" });
                     yield return new TestCaseData("System.Boolean IfElse_Consec_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { true, true }, new List<string> { "If_6", "If_17" });
+
+                    yield return new TestCaseData("System.Boolean IfElse_Half_EarlyReturn_Bool(System.Boolean)", new object[] { false }, new List<string>());
+                    yield return new TestCaseData("System.Boolean IfElse_Half_EarlyReturn_Bool(System.Boolean)", new object[] { true }, new List<string> { "If_8" });
+
+                    yield return new TestCaseData("System.ValueTuple`2<System.Boolean,System.Boolean> IfElse_Half_EarlyReturn_Tuple(System.Boolean)", new object[] { false }, new List<string>());
+                    yield return new TestCaseData("System.ValueTuple`2<System.Boolean,System.Boolean> IfElse_Half_EarlyReturn_Tuple(System.Boolean)", new object[] { true }, new List<string> { "If_8" });
                 }
             }
         }

@@ -200,6 +200,7 @@ namespace Drill4Net.Injector.Engine
             var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
             var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
             bool isAsyncStateMachine = false;
+            Instruction lastOp;
 
             foreach (TypeDefinition type in module.Types)
             {
@@ -266,7 +267,7 @@ namespace Drill4Net.Injector.Engine
                     //return
                     var returnProbData = GetProbeData(moduleName, methodFullName, CrossPointType.Return, -1);
                     var ldstrReturn = GetInstruction(probData); //as object it must be only one
-                    var lastOp = instructions.Last();
+                    lastOp = instructions.Last();
                     #endregion
                     #region Jumps
                     //collect jumps. Hash table for addresses is almost useless,
@@ -386,6 +387,8 @@ namespace Drill4Net.Injector.Engine
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
                             if (!ifStack.Any())
+                                continue;
+                            if (IsNextReturn(i))
                                 continue;
                             if (!isAsyncStateMachine && IsCompilerBranch(i))
                                 continue;
@@ -640,6 +643,17 @@ namespace Drill4Net.Injector.Engine
                     instr = instr.Previous;
                 }
                 return false;
+            }
+
+            bool IsNextReturn(int ind)
+            {
+                var ins = instructions[ind];
+                var op = ins.Operand as Instruction;
+                if (op == null)
+                    return false;
+                if (op == lastOp)
+                    return true;
+                return op.OpCode.Name.StartsWith("ldloc") ? true : false;
             }
             #endregion
         }

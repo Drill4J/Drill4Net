@@ -51,8 +51,11 @@ namespace Drill4Net.Target.Common
             IfElse_Consec_HalfA_FullB(true, false);
             IfElse_Consec_HalfA_FullB(true, true);
 
-            IfElse_Half_EarlyReturn_Func(false);
-            IfElse_Half_EarlyReturn_Func(true);
+            IfElse_Half_EarlyReturn_Bool(false);
+            IfElse_Half_EarlyReturn_Bool(true);
+
+            IfElse_Half_EarlyReturn_Tuple(false);
+            IfElse_Half_EarlyReturn_Tuple(true);
             #endregion
             #region Switch
             Switch_WithReturn(-1);
@@ -268,19 +271,32 @@ namespace Drill4Net.Target.Common
             return false;
         }
 
-        internal bool IfElse_Half_EarlyReturn_Func(bool cond)
+        internal bool IfElse_Half_EarlyReturn_Bool(bool cond)
         {
             var type = "no"; //let it be... Let it beeee!...
             if (cond)
             {
                 type = "yes";
-                Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: {type}");
+                Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Bool)}: {type}");
                 return true;
             }
+            Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Bool)}: {type}");
 
-            Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Func)}: {type}");
+            return false; //don't change to void
+        }
 
-            return false;
+        internal (bool, bool) IfElse_Half_EarlyReturn_Tuple(bool cond)
+        {
+            var type = "no"; //let it be... Let it beeee!...
+            if (cond)
+            {
+                type = "yes";
+                Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Tuple)}: {type}");
+                return (true,true);
+            }
+            Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Tuple)}: {type}");
+
+            return (false, false);
         }
 
         internal void Ternary_Positive(bool cond)

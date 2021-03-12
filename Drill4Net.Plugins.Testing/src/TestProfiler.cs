@@ -154,7 +154,10 @@ namespace Drill4Net.Plugins.Testing
                     if (j < lastInd)
                         parNames += ",";
                 }
-                curSig = $"{method.ReturnType.FullName} {name}({parNames})";
+                var retType = method.ReturnType.FullName;
+                if(retType.Contains("PublicKeyToken"))
+                    retType = curSig.Split(' ')[0];
+                curSig = $"{retType} {name}({parNames})";
                 _infoBySig.TryAdd(key, method);
                 _sigByInfo.TryAdd(method, curSig);
                 break;
