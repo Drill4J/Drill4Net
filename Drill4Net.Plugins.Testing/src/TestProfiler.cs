@@ -10,7 +10,7 @@ namespace Drill4Net.Plugins.Testing
 {
     public class TestProfiler : AbsractPlugin
     {
-        private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
+        public static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly ConcurrentDictionary<MethodInfo, string> _sigByInfo;
         private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
 
@@ -38,10 +38,8 @@ namespace Drill4Net.Plugins.Testing
                 //var id = ar[0]; //not using yet
                 var asmName = ar[1];
                 var funcName = ar[2];
-                SetBusinessMethodName(asmName, ref funcName);
-                var points = GetPoints(asmName, funcName);
-                var point = ar[3];
-                points.Add(point);
+                ClarifyBusinessMethodName(asmName, ref funcName);
+                AddPoint(asmName, funcName, ar[3]);
             }
             catch (Exception ex)
             {
@@ -54,23 +52,15 @@ namespace Drill4Net.Plugins.Testing
             RegisterStatic(data);
         }
 
-        public static List<string> GetPoints(string asmName, string funcSig, bool withRemoving = false)
+        internal static void AddPoint(string asmName, string funcSig, string point)
         {
-            //This defines the logical execution path of function callers regardless
-            //of whether threads are created in async/await or Parallel.For
-            var id = Thread.CurrentThread.ExecutionContext.GetHashCode(); 
+            var points = GetPoints(asmName, funcSig);
+            points.Add(point);
+        }
 
-            Dictionary<string, List<string>> byFunctions;
-            if (_clientPoints.ContainsKey(id))
-            {
-                _clientPoints.TryGetValue(id, out byFunctions);
-            }
-            else
-            {
-                byFunctions = new Dictionary<string, List<string>>();
-                _clientPoints.TryAdd(id, byFunctions);
-            }
-            //
+        public static List<string> GetPoints(string asmName, string funcSig, bool withPointRemoving = false)
+        {
+            Dictionary<string, List<string>> byFunctions = GetFunctions(!withPointRemoving);
             List<string> points;
             var funcPath = $"{asmName};{funcSig}";
             if (byFunctions.ContainsKey(funcPath))
@@ -83,12 +73,33 @@ namespace Drill4Net.Plugins.Testing
                 byFunctions.Add(funcPath, points);
             }
             //
-            if (withRemoving)
+            if (withPointRemoving)
                 byFunctions.Remove(funcPath);
             return points;
         }
 
-        internal static void SetBusinessMethodName(string asmName, ref string curSig)
+        public static Dictionary<string, List<string>> GetFunctions(bool createNotExistsedFuncBranch)
+        {
+            //This defines the logical execution path of function callers regardless
+            //of whether threads are created in async/await or Parallel.For
+            var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
+            Debug.WriteLine($"Profiler: id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
+
+            Dictionary<string, List<string>> byFunctions;
+            if (_clientPoints.ContainsKey(id))
+            {
+                _clientPoints.TryGetValue(id, out byFunctions);
+            }
+            else
+            {
+                byFunctions = new Dictionary<string, List<string>>();
+                if(createNotExistsedFuncBranch)
+                    _clientPoints.TryAdd(id, byFunctions);
+            }
+            return byFunctions;
+        }
+
+        internal static void ClarifyBusinessMethodName(string asmName, ref string curSig)
         {
             //curSig may be a internal compiler's function (for generics, Enumerator,
             //AsyncStateMachine) and we must find parent business function from the call stack

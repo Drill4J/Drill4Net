@@ -2,11 +2,14 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
-using Drill4Net.Injector.Engine;
 using Drill4Net.Plugins.Testing;
+using System.Threading;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -14,6 +17,7 @@ namespace Drill4Net.Target.Comon.Tests
     //must be added to the project (as file), which in turn must be updated
     //externally each time the injection process is started (automatically)
 
+    [TestFixture]
     public class InjectTargetTests
     {
         private IInjectorRepository _rep;
@@ -41,53 +45,85 @@ namespace Drill4Net.Target.Comon.Tests
 
         /****************************************************************************/
 
-        [Test]
-        public void IfElse_Half_False_Ok()
+        [TestCaseSource(typeof(SourceData), "Simple", Category = "Simple")]
+        public void Simple_Ok(string func, object[] args, string shortSig, List<string> parentChecks)
         {
             //arrange
-            var mi = GetMethod("IfElse_Half");
-            var checks = new List<string>();
+            var mi = GetMethod(func);
 
             //act
-            mi.Invoke(_target, new object[] { false });
-            var points = GetPoints("IfElse_Half(System.Boolean)");
+            mi.Invoke(_target, args);
 
             //assert
-            CheckEnterReturn(points);
-            Check(points, checks);
+            var funcs = GetFunctions();
+            Assert.IsTrue(funcs.Count == 1);
+
+            var sig = GetSource(shortSig);
+            Assert.True(funcs.ContainsKey(sig));
+            var parentFunc = funcs[sig];
+
+            CheckEnterAndLastReturn(parentFunc);
+            Check(parentFunc, parentChecks);
         }
 
-        [Test]
-        public void IfElse_Half_True_Ok()
+        [TestCaseSource(typeof(SourceData), "ParentChild", Category = "ParentChild")]
+        public void Parent_Child_Ok(string func, object[] args, 
+                                    string parentShortSig, List<string> parentChecks, 
+                                    string childShortSig, List<string> childChecks)
         {
             //arrange
-            var mi = GetMethod("IfElse_Half");
-            var checks = new List<string>() { "If_8" };
+            var mi = GetMethod(func);
 
             //act
-            mi.Invoke(_target, new object[] { true });
-            var points = GetPoints("IfElse_Half(System.Boolean)");
+            mi.Invoke(_target, args);
 
             //assert
-            CheckEnterReturn(points);
-            Check(points, checks);
+            var funcs = GetFunctions();
+            Assert.IsTrue(funcs.Count == 2);
+
+            //1. parent func
+            var parentSig = GetSource(parentShortSig);
+            Assert.True(funcs.ContainsKey(parentSig));
+            var parentFunc = funcs[parentSig];
+            CheckEnterAndLastReturn(parentFunc);
+            Check(parentFunc, parentChecks);
+
+            //2. child func
+            var childSig = GetSource(childShortSig);
+            Assert.True(funcs.ContainsKey(childSig));
+            var childFunc = funcs[childSig];
+            CheckEnterAndLastReturn(childFunc);
+            Check(childFunc, childChecks);
         }
 
-        //This proves that parallel execution of the same
-        //function does not confuse the results.
-        [Test]
-        public void IfElse_Half_True2_Ok()
+        #region Auxiliary funcs
+        private List<string> GetPoints(string shortSig)
         {
-            IfElse_Half_True_Ok();
+            var funcSig = GetFullSignature(shortSig);
+            var asmName = GetModuleName();
+            return TestProfiler.GetPoints(asmName, funcSig, false);
         }
 
-        /****************************************************************************/
-
-        private List<string> GetPoints(string function)
+        private string GetSource(string shortSig)
         {
-            var funcSig = $"System.Void Drill4Net.Target.Common.InjectTarget::{function}";
-            var asmName = "Drill4Net.Target.Common.dll";
-            return TestProfiler.GetPoints(asmName, funcSig, true);
+            var funcSig = GetFullSignature(shortSig);
+            var asmName = GetModuleName();
+            return $"{asmName};{funcSig}";
+        }
+
+        private string GetModuleName()
+        {
+            return "Drill4Net.Target.Common.dll";
+        }
+
+        private string GetFullSignature(string shortSig)
+        {
+            return $"System.Void Drill4Net.Target.Common.InjectTarget::{shortSig}";
+        }
+
+        private Dictionary<string, List<string>> GetFunctions()
+        {
+            return TestProfiler.GetFunctions(false);
         }
 
         private MethodInfo GetMethod(string name)
@@ -95,7 +131,7 @@ namespace Drill4Net.Target.Comon.Tests
             return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
-        private void CheckEnterReturn(List<string> points)
+        private void CheckEnterAndLastReturn(List<string> points)
         {
             Assert.IsNotNull(points.FirstOrDefault(a => a == "Enter_0"), "No Enter");
             Assert.IsNotNull(points.Last(a => a.StartsWith("Return_")), "No Return");
@@ -107,6 +143,28 @@ namespace Drill4Net.Target.Comon.Tests
             for (var i = 0; i < checks.Count; i++)
                 if (checks[i] != points[i+1])
                     Assert.Fail();
+        }
+        #endregion
+
+        internal class SourceData
+        {
+            internal static IEnumerable ParentChild
+            {
+                get
+                {
+                    yield return new TestCaseData("ThreadNew", new object[] { false }, "ThreadNew(System.Boolean)", new List<string>(), "GetStringListForThreadNew(System.Boolean)", new List<string> { "Else_4" });
+                    yield return new TestCaseData("ThreadNew", new object[] { true }, "ThreadNew(System.Boolean)", new List<string>(), "GetStringListForThreadNew(System.Boolean)", new List<string> { "If_12" });
+                }
+            }
+
+            internal static IEnumerable Simple
+            {
+                get
+                {
+                    yield return new TestCaseData("IfElse_Half", new object[] { false }, "IfElse_Half(System.Boolean)", new List<string>());
+                    yield return new TestCaseData("IfElse_Half", new object[] { true }, "IfElse_Half(System.Boolean)", new List<string> { "If_8" });
+                }
+            }
         }
     }
 }

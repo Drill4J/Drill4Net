@@ -7,11 +7,11 @@ namespace Drill4Net.Plugins.Testing.Demo
         static void Main(string[] args)
         {
             var profiler = new TestProfiler();
-            var requestId = "0";
+            //var requestId = "0";
             var asmName = $"Drill4Net.Target.Common.dll";
-            var funcSig = "System.Void Drill4Net.Target.Common.InjectTarget::IfElse_FullSimple(System.Boolean)";
-            profiler.Register($"{requestId}^{asmName}^{funcSig}^If_6");
-            var points = TestProfiler.GetPoints(requestId, asmName, funcSig, true);
+            var funcSig = "System.Void Drill4Net.Plugins.Testing.TestProfiler::Register(System.String)";
+            profiler.Register($"^{asmName}^{funcSig}^If_6");
+            var points = TestProfiler.GetPoints(asmName, funcSig, false);
             Console.WriteLine(string.Join(", ", points));
 
             Console.WriteLine("Done.");

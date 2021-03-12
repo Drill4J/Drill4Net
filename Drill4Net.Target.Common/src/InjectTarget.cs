@@ -152,6 +152,12 @@ namespace Drill4Net.Target.Common
 
             ForeachParallel(false);
             ForeachParallel(true);
+
+            TaskContinueWhenAll(false);
+            TaskContinueWhenAll(true);
+
+            ThreadNew(false);
+            ThreadNew(true);
             #endregion
             #region Using/finalizer
             UsingStatement_SyncRead(false);
@@ -177,6 +183,9 @@ namespace Drill4Net.Target.Common
             Lock_Statement(false);
             Lock_Statement(true);
 
+            Yield(false);
+            Yield(true);
+
             ContextBound(-1);
             ContextBound(1);
 
@@ -200,40 +209,6 @@ namespace Drill4Net.Target.Common
             var type = "no";
             if (cond)
                 type = "yes";
-
-            //var stackTrace = new StackTrace();
-            //StackFrame[] stackFrames = stackTrace.GetFrames();
-
-            //// write call stack method names
-            //foreach (StackFrame stackFrame in stackFrames)
-            //{
-            //    var method = stackFrame.GetMethod() as MethodInfo;
-            //    if (method == null)
-            //        continue;
-            //    var mType = method.DeclaringType;
-            //    if (mType.Name.StartsWith("<"))
-            //        continue;
-            //    var asmName = mType.Assembly.GetName().Name;
-            //    //GUANO! By file path is better?
-            //    if (asmName.StartsWith("System.") || asmName.StartsWith("Microsoft."))
-            //        continue;
-
-            //    var typeName = method.DeclaringType.FullName;
-            //    var name = $"{typeName}::{method.Name}";
-            //    var pars = method.GetParameters();
-            //    var parNames = string.Empty;
-            //    var lastInd = pars.Length - 1;
-            //    for (var j = 0; j <= lastInd; j++)
-            //    {
-            //        var p = pars[j];
-            //        parNames += p.ParameterType.FullName;
-            //        if (j < lastInd)
-            //            parNames += ",";
-            //    }
-            //    name = $"{method.ReturnType.FullName} {name}({parNames})";
-
-            //    Console.WriteLine($"{name} -> {stackFrame.GetILOffset()}");
-            //}
 
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
         }
@@ -714,6 +689,42 @@ namespace Drill4Net.Target.Common
         {
             return Enumerable.Range(0, cnt);
         }
+
+        internal void TaskContinueWhenAll(bool cond)
+        {
+            Task[] tasks = new Task[2];
+            List<string> list1 = null;
+            List<string> list2 = null;
+
+            tasks[0] = Task.Factory.StartNew(() => list1 = GetStringListForTaskContinue(cond));
+            tasks[1] = Task.Factory.StartNew(() => list2 = !cond ? new List<string> { "Y2" } : new List<string> { "A2, B2, C12" });
+
+            Task.Factory.ContinueWhenAll(tasks, completedTasks => {
+                Console.WriteLine($"{nameof(TaskContinueWhenAll)}: {cond} -> {string.Join(",", list1)} / {string.Join(",", list2)}");
+            });
+        }
+
+        internal List<string> GetStringListForTaskContinue(bool cond)
+        {
+            return cond ? new List<string> { "X1" } : new List<string> { "A1, B1, C1" };
+        }
+
+        internal void ThreadNew(bool cond)
+        {
+            var tr = new Thread(() =>
+            {
+                Thread.CurrentThread.IsBackground = true;
+                GetStringListForThreadNew(cond);
+            });
+            tr.Start();
+            tr.Join();
+        }
+
+        internal void GetStringListForThreadNew(bool cond)
+        {
+            var list = cond ? new List<string> { "XYZ" } : new List<string> { "A, B, C" };
+            Console.WriteLine($"{nameof(ThreadNew)}: {cond} -> {string.Join(",", list)}");
+        }
         #endregion
         #region Using, finalizer
         internal void UsingStatement_SyncRead(bool cond)
@@ -805,6 +816,19 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(AnonymousType)}: {cond} -> {tom.Age}");
         }
 
+        internal void Yield(bool cond)
+        {
+            var list = GetForYield(cond);
+            Console.WriteLine($"{nameof(Yield)}: {cond} -> {string.Join(",", list)}");
+        }
+
+        internal IEnumerable<string> GetForYield(bool cond)
+        {
+            var list = new List<string> { "Y1, Y2, Y3" };
+            foreach (var a in list)
+                yield return cond ? a : "z";
+        }
+
         //TODO: not working yet!
         internal void Expression10(int x)
         {
@@ -841,6 +865,6 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: a || b, yield, catch filter, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: a || b, catch filter, async iterator, for, foreach, EF, Visual Basic...
     }
 }
