@@ -7,9 +7,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Plugins.Testing;
-using System.Threading;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -46,10 +43,10 @@ namespace Drill4Net.Target.Comon.Tests
         /****************************************************************************/
 
         [TestCaseSource(typeof(SourceData), "Simple", Category = "Simple")]
-        public void Simple_Ok(string func, object[] args, string shortSig, List<string> parentChecks)
+        public void Simple_Ok(string shortSig, object[] args, List<string> parentChecks)
         {
             //arrange
-            var mi = GetMethod(func);
+            var mi = GetMethod(shortSig);
 
             //act
             mi.Invoke(_target, args);
@@ -60,19 +57,18 @@ namespace Drill4Net.Target.Comon.Tests
 
             var sig = GetSource(shortSig);
             Assert.True(funcs.ContainsKey(sig));
-            var parentFunc = funcs[sig];
+            var points = funcs[sig];
 
-            CheckEnterAndLastReturn(parentFunc);
-            Check(parentFunc, parentChecks);
+            CheckEnterAndLastReturn(points);
+            Check(points, parentChecks);
         }
 
         [TestCaseSource(typeof(SourceData), "ParentChild", Category = "ParentChild")]
-        public void Parent_Child_Ok(string func, object[] args, 
-                                    string parentShortSig, List<string> parentChecks, 
-                                    string childShortSig, List<string> childChecks)
+        public void Parent_Child_Ok(object[] args, string parentShortSig, List<string> parentChecks, 
+                                                   string childShortSig, List<string> childChecks)
         {
             //arrange
-            var mi = GetMethod(func);
+            var mi = GetMethod(parentShortSig);
 
             //act
             mi.Invoke(_target, args);
@@ -118,7 +114,10 @@ namespace Drill4Net.Target.Comon.Tests
 
         private string GetFullSignature(string shortSig)
         {
-            return $"System.Void Drill4Net.Target.Common.InjectTarget::{shortSig}";
+            var ar = shortSig.Split(' ');
+            var ret = ar[0];
+            var name = ar[1];
+            return $"{ret} Drill4Net.Target.Common.InjectTarget::{name}";
         }
 
         private Dictionary<string, List<string>> GetFunctions()
@@ -126,8 +125,10 @@ namespace Drill4Net.Target.Comon.Tests
             return TestProfiler.GetFunctions(false);
         }
 
-        private MethodInfo GetMethod(string name)
+        private MethodInfo GetMethod(string shortSig)
         {
+            var name = shortSig.Split(' ')[1];
+            name = name.Substring(0, name.IndexOf("("));
             return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
@@ -152,8 +153,8 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 get
                 {
-                    yield return new TestCaseData("ThreadNew", new object[] { false }, "ThreadNew(System.Boolean)", new List<string>(), "GetStringListForThreadNew(System.Boolean)", new List<string> { "Else_4" });
-                    yield return new TestCaseData("ThreadNew", new object[] { true }, "ThreadNew(System.Boolean)", new List<string>(), "GetStringListForThreadNew(System.Boolean)", new List<string> { "If_12" });
+                    yield return new TestCaseData(new object[] { false }, "System.Void ThreadNew(System.Boolean)", new List<string>(), "System.Void GetStringListForThreadNew(System.Boolean)", new List<string> { "Else_4" });
+                    yield return new TestCaseData(new object[] { true }, "System.Void ThreadNew(System.Boolean)", new List<string>(), "System.Void GetStringListForThreadNew(System.Boolean)", new List<string> { "If_12" });
                 }
             }
 
@@ -161,8 +162,21 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 get
                 {
-                    yield return new TestCaseData("IfElse_Half", new object[] { false }, "IfElse_Half(System.Boolean)", new List<string>());
-                    yield return new TestCaseData("IfElse_Half", new object[] { true }, "IfElse_Half(System.Boolean)", new List<string> { "If_8" });
+                    yield return new TestCaseData("System.Void IfElse_Half(System.Boolean)", new object[] { false }, new List<string>());
+                    yield return new TestCaseData("System.Void IfElse_Half(System.Boolean)", new object[] { true }, new List<string> { "If_8" });
+
+                    yield return new TestCaseData("System.Void IfElse_FullSimple(System.Boolean)", new object[] { false }, new List<string> { "Else_11" });
+                    yield return new TestCaseData("System.Void IfElse_FullSimple(System.Boolean)", new object[] { true }, new List<string> { "If_6" });
+
+                    yield return new TestCaseData("System.Void IfElse_Consec_Full(System.Boolean,System.Boolean)", new object[] { false, false }, new List<string> { "Else_24", "Else_55" });
+                    yield return new TestCaseData("System.Void IfElse_Consec_Full(System.Boolean,System.Boolean)", new object[] { false, true },  new List<string> { "Else_24", "If_41" });
+                    yield return new TestCaseData("System.Void IfElse_Consec_Full(System.Boolean,System.Boolean)", new object[] { true, false }, new List<string> { "If_10", "Else_55" });
+                    yield return new TestCaseData("System.Void IfElse_Consec_Full(System.Boolean,System.Boolean)", new object[] { true, true }, new List<string> { "If_10", "If_41" });
+
+                    yield return new TestCaseData("System.Boolean IfElse_Consec_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { false, false }, new List<string> { "Else_25" });
+                    yield return new TestCaseData("System.Boolean IfElse_Consec_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { false, true }, new List<string> { "If_17" });
+                    yield return new TestCaseData("System.Boolean IfElse_Consec_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { true, false }, new List<string> { "If_6", "Else_25" });
+                    yield return new TestCaseData("System.Boolean IfElse_Consec_HalfA_FullB(System.Boolean,System.Boolean)", new object[] { true, true }, new List<string> { "If_6", "If_17" });
                 }
             }
         }
