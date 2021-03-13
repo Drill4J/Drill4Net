@@ -599,7 +599,7 @@ namespace Drill4Net.Injector.Engine
 
             bool IsCompilerBranch(int ind)
             {
-                //TODO: optimize (caching 'normal instruction')!!!
+                //TODO: optimize (caching 'normal instruction')
                 if (ind < 0 || ind >= instructions.Count)
                     return false;
                 Instruction instr = instructions[ind];
@@ -651,7 +651,7 @@ namespace Drill4Net.Injector.Engine
                 var op = ins.Operand as Instruction;
                 if (op == null)
                     return false;
-                if (op == lastOp)
+                if (op == lastOp && ins.Next == lastOp)
                     return true;
                 return op.OpCode.Name.StartsWith("ldloc") ? true : false;
             }

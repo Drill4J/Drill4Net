@@ -38,7 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injection", "Injection", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection.Demo", "Drill4Net.Injection.Demo\Drill4Net.Injection.Demo.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{1D6CE589-D18D-4682-A950-003BAC9B7B04}"
 EndProject

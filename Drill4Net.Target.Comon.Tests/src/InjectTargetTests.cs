@@ -261,8 +261,23 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 2 }, new List<string> { "Switch_16" });
                     #endregion
                     #region Linq
-                    yield return GetCase(GetInfo(_target.Linq_Query), new object[] { false }, new List<string>());
-                    yield return GetCase(GetInfo(_target.Linq_Query), new object[] { true }, new List<string> { "If_8" });
+                    yield return GetCase(GetInfo(_target.Linq_Query), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });
+                    yield return GetCase(GetInfo(_target.Linq_Query), new object[] { true }, new List<string> { "If_8", "If_8", "If_8" });
+
+                    yield return GetCase(GetInfo(_target.Linq_Fluent), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });
+                    yield return GetCase(GetInfo(_target.Linq_Fluent), new object[] { true }, new List<string> { "If_8", "If_8", "If_8" });
+                    #endregion
+                    #region Lambda
+                    yield return GetCase(GetInfo(_target.Lambda10), new object[] { 5 }, new List<string> { "If_8" });
+                    yield return GetCase(GetInfo(_target.Lambda10), new object[] { 10 }, new List<string> { "Else_2" });
+
+                    yield return GetCase(GetInfo(_target.Lambda10_AdditionalBranch), new object[] { 5 }, new List<string> { "If_8" });
+                    yield return GetCase(GetInfo(_target.Lambda10_AdditionalBranch), new object[] { 10 }, new List<string> { "Else_2" });
+                    yield return GetCase(GetInfo(_target.Lambda10_AdditionalBranch), new object[] { 12 }, new List<string> { "Else_2", "If_22" });
+
+                    yield return GetCase(GetInfo(_target.Lambda10_AdditionalSwitch), new object[] { 5 }, new List<string> { "If_8", "Else_23", "Else_29" });
+                    yield return GetCase(GetInfo(_target.Lambda10_AdditionalSwitch), new object[] { 10 }, new List<string> { "Else_2", "If_32" });
+                    yield return GetCase(GetInfo(_target.Lambda10_AdditionalSwitch), new object[] { 12 }, new List<string> { "Else_2", "Else_23", "If_37" });
                     #endregion
                 }
             }

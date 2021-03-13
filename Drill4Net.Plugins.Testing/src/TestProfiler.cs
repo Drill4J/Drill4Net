@@ -121,20 +121,17 @@ namespace Drill4Net.Plugins.Testing
                 var method = stackFrame.GetMethod() as MethodInfo;
                 if (method == null)
                     continue;
-                var type = method.DeclaringType;
                 if (method.GetCustomAttribute(typeof(DebuggerHiddenAttribute)) != null)
                     continue;
+                var type = method.DeclaringType;
+                var typeName = type.FullName;
                 if (type.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) != null)
                     continue;
-                var mType = method.DeclaringType;
-                if ( mType.Name == "ProfilerProxy") //TODO: from constants/config
-                    continue;
-                if (mType.Name.StartsWith("<"))
+                if (type.Name == "ProfilerProxy") //TODO: from constants/config
                     continue;
                 //GUANO! By file path is better? Config?
-                if (asmName.StartsWith("System.") || asmName.StartsWith("Microsoft."))
+                if (typeName.StartsWith("System.") || typeName.StartsWith("Microsoft."))
                     continue;
-
                 #endregion
 
                 //SECOND cache
@@ -146,7 +143,6 @@ namespace Drill4Net.Plugins.Testing
 
                 //at this stage we have simplified method's signature
                 //get full signature with types of parameters & return
-                var typeName = type.FullName;
                 var name = $"{typeName}::{method.Name}";
                 var pars = method.GetParameters();
                 var parNames = string.Empty;

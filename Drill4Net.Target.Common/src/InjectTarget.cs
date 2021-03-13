@@ -76,6 +76,23 @@ namespace Drill4Net.Target.Common
             Switch_AsReturn(1);
             Switch_AsReturn(2);
             #endregion
+            #region Linq
+            Linq_Query(false);
+            Linq_Query(true);
+
+            Linq_Fluent(false);
+            Linq_Fluent(true);
+            #endregion
+            #region Lambda
+            Lambda10(5);
+            Lambda10(10);
+
+            Lambda10_AdditionalBranch(10);
+
+            Lambda10_AdditionalSwitch(5);
+            Lambda10_AdditionalSwitch(10);
+            Lambda10_AdditionalSwitch(12);
+            #endregion
             #region Generics
             var list = new List<string> { "a", "b", "c" };
             GenericParameter(list, false);
@@ -90,29 +107,14 @@ namespace Drill4Net.Target.Common
             Generic_Call_Child(false);
             Generic_Call_Child(true);
             #endregion
-            #region Anonymous, lambda, Linq
+            #region Anonymous, Expression
             AnonymousFunc();
 
             AnonymousType(false);
             AnonymousType(true);
 
-            Lambda10(5);
-            Lambda10(10);
-
-            Lambda10_AdditionalBranch(10);
-
-            Lambda10_AdditionalSwitch(5);
-            Lambda10_AdditionalSwitch(10);
-            Lambda10_AdditionalSwitch(12);
-
             Expression10(5);
             Expression10(10);
-
-            Linq_Query(false);
-            Linq_Query(true);
-
-            Linq_Fluent(false);
-            Linq_Fluent(true);
             #endregion
             #region Try/cath/finally
             try
@@ -458,7 +460,7 @@ namespace Drill4Net.Target.Common
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
-            if (d >= 100)
+            if (d > 100)
                 d /= 2;
             Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}");
         }
