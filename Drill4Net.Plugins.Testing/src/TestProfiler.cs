@@ -157,10 +157,12 @@ namespace Drill4Net.Plugins.Testing
 
                 //hm... TODO: get rid of the return type?
                 var retType = method.ReturnType.FullName;
-                if(retType.Contains("Version="))
+                //need simplify strong named type
+                if (retType.Contains("Version=")) 
                     retType = curSig.Split(' ')[0];
                 curSig = $"{retType} {name}({parNames})";
 
+                //caching
                 _infoBySig.TryAdd(key, method);
                 _sigByInfo.TryAdd(method, curSig);
                 break;
