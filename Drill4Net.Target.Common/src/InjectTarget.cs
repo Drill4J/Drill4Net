@@ -56,10 +56,15 @@ namespace Drill4Net.Target.Common
             IfElse_Half_EarlyReturn_Tuple(true);
             #endregion
             #region Switch
-            Switch_WithReturn(-1);
-            Switch_WithReturn(0);
-            Switch_WithReturn(1);
-            Switch_WithReturn(2);
+            Switch_ExplicitDefault(-1);
+            Switch_ExplicitDefault(0);
+            Switch_ExplicitDefault(1);
+            Switch_ExplicitDefault(2);
+
+            Switch_ImplicitDefault(-1);
+            Switch_ImplicitDefault(0);
+            Switch_ImplicitDefault(1);
+            Switch_ImplicitDefault(2);
 
             Switch_WithoutDefault(-1);
             Switch_WithoutDefault(0);
@@ -377,31 +382,40 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Switch
-        internal void Switch_WithReturn(int a)
+        internal void Switch_ExplicitDefault(int a)
         {
             var s = "";
             switch (a)
             {
-                case -1: Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> return"); return;
+                case -1: Console.WriteLine($"{nameof(Switch_ExplicitDefault)}: {a} -> return"); return;
                 case 0: s = "A"; break;
                 case 1: s = "B"; break;
-                default: s = "default"; break;
+                default: s = "explicit default"; break;
             }
+            Console.WriteLine($"{nameof(Switch_ExplicitDefault)}: {a} -> {s}");
+        }
 
-            Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> {s}");
+        internal void Switch_ImplicitDefault(int a)
+        {
+            var s = "implicit default";
+            switch (a)
+            {
+                case -1: Console.WriteLine($"{nameof(Switch_ImplicitDefault)}: {a} -> return"); return;
+                case 0: s = "A"; break;
+                case 1: s = "B"; break;
+            }
+            Console.WriteLine($"{nameof(Switch_ImplicitDefault)}: {a} -> {s}");
         }
 
         internal void Switch_WithoutDefault(int a)
         {
-            var s = "default";
             switch (a)
             {
-                case -1: Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> return"); return;
-                case 0: s = "A"; break;
-                case 1: s = "B"; break;
+                case -1: Console.WriteLine($"{nameof(Switch_WithoutDefault)}: {a}"); return;
+                case 0: Console.WriteLine($"{nameof(Switch_WithoutDefault)}: {a}"); return;
+                case 1: Console.WriteLine($"{nameof(Switch_WithoutDefault)}: {a}"); return;
             }
-
-            Console.WriteLine($"{nameof(Switch_WithReturn)}: {a} -> {s}");
+            Console.WriteLine($"{nameof(Switch_WithoutDefault)}: {a} -> no default");
         }
 
         internal string Switch_AsReturn(int a)

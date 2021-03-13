@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Drill4Net.Plugins.Abstract;
 
@@ -120,7 +121,10 @@ namespace Drill4Net.Plugins.Testing
                 var method = stackFrame.GetMethod() as MethodInfo;
                 if (method == null)
                     continue;
+                var type = method.DeclaringType;
                 if (method.GetCustomAttribute(typeof(DebuggerHiddenAttribute)) != null)
+                    continue;
+                if (type.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) != null)
                     continue;
                 var mType = method.DeclaringType;
                 if ( mType.Name == "ProfilerProxy") //TODO: from constants/config
@@ -142,7 +146,7 @@ namespace Drill4Net.Plugins.Testing
 
                 //at this stage we have simplified method's signature
                 //get full signature with types of parameters & return
-                var typeName = method.DeclaringType.FullName;
+                var typeName = type.FullName;
                 var name = $"{typeName}::{method.Name}";
                 var pars = method.GetParameters();
                 var parNames = string.Empty;

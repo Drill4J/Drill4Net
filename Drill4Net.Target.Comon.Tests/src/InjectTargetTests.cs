@@ -165,6 +165,9 @@ namespace Drill4Net.Target.Comon.Tests
             internal delegate bool TwoBoolFunc(bool cond, bool cond2);
 
             internal delegate (bool,bool) OneBoolTupleFunc(bool cond);
+
+            internal delegate void OneIntMethod(int digit);
+            internal delegate string OneIntFuncStr(int digit);
             #endregion
 
             private static readonly Common.InjectTarget _target;
@@ -191,6 +194,7 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 get
                 {
+                    #region If/Else
                     yield return GetCase(GetInfo(_target.IfElse_Half), new object[] { false }, new List<string>());
                     yield return GetCase(GetInfo(_target.IfElse_Half), new object[] { true }, new List<string> { "If_8" });
 
@@ -234,6 +238,32 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(GetInfo(_target.IfElse_FullA_HalfB), new object[] { false, false }, new List<string> { "Else_22" });
                     yield return GetCase(GetInfo(_target.IfElse_FullA_HalfB), new object[] { true, false }, new List<string> { "If_6" });                    
                     yield return GetCase(GetInfo(_target.IfElse_FullA_HalfB), new object[] { true, true }, new List<string> { "If_6", "If_13" });
+                    #endregion
+                    #region Switch
+                    yield return GetCase(GetInfo(_target.Switch_ExplicitDefault), new object[] { -1 }, new List<string> { "If_15" });
+                    yield return GetCase(GetInfo(_target.Switch_ExplicitDefault), new object[] { 0 }, new List<string> { "If_25" });
+                    yield return GetCase(GetInfo(_target.Switch_ExplicitDefault), new object[] { 1 }, new List<string> { "If_30" });
+                    yield return GetCase(GetInfo(_target.Switch_ExplicitDefault), new object[] { 2 }, new List<string> { "Switch_12" }); //default of switch statement
+
+                    yield return GetCase(GetInfo(_target.Switch_ImplicitDefault), new object[] { -1 }, new List<string> { "If_15" });
+                    yield return GetCase(GetInfo(_target.Switch_ImplicitDefault), new object[] { 0 }, new List<string> { "If_25" });
+                    yield return GetCase(GetInfo(_target.Switch_ImplicitDefault), new object[] { 1 }, new List<string> { "If_30" });
+                    yield return GetCase(GetInfo(_target.Switch_ImplicitDefault), new object[] { 2 }, new List<string> { "Switch_12" }); //default of switch statement
+
+                    yield return GetCase(GetInfo(_target.Switch_WithoutDefault), new object[] { -1 }, new List<string> { "If_13" });
+                    yield return GetCase(GetInfo(_target.Switch_WithoutDefault), new object[] { 0 }, new List<string> { "If_23" });
+                    yield return GetCase(GetInfo(_target.Switch_WithoutDefault), new object[] { 1 }, new List<string> { "If_33" });
+                    yield return GetCase(GetInfo(_target.Switch_WithoutDefault), new object[] { 2 }, new List<string> { "Switch_10" }); //place of Switch statement
+
+                    yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { -1 }, new List<string> { "If_19" });
+                    yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 0 }, new List<string> { "If_24" });
+                    yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 1 }, new List<string> { "If_29" });
+                    yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 2 }, new List<string> { "Switch_16" });
+                    #endregion
+                    #region Linq
+                    yield return GetCase(GetInfo(_target.Linq_Query), new object[] { false }, new List<string>());
+                    yield return GetCase(GetInfo(_target.Linq_Query), new object[] { true }, new List<string> { "If_8" });
+                    #endregion
                 }
             }
 
@@ -261,6 +291,16 @@ namespace Drill4Net.Target.Comon.Tests
             }
 
             internal static MethodInfo GetInfo(OneBoolTupleFunc method)
+            {
+                return method.Method;
+            }
+
+            internal static MethodInfo GetInfo(OneIntMethod method)
+            {
+                return method.Method;
+            }
+
+            internal static MethodInfo GetInfo(OneIntFuncStr method)
             {
                 return method.Method;
             }
