@@ -49,7 +49,11 @@ namespace Drill4Net.Target.Comon.Tests
             Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
 
             //act
-            mi.Invoke(_target, args);
+            try
+            {
+                mi.Invoke(_target, args);
+            }
+            catch { } //it's normal for special throws
 
             //assert
             var funcs = GetFunctions();
@@ -60,7 +64,7 @@ namespace Drill4Net.Target.Comon.Tests
             Assert.True(funcs.ContainsKey(source));
             var points = funcs[source];
 
-            CheckEnterAndLastReturn(points);
+            CheckEnterAndLastReturnOrThrow(points);
             Check(points, checks);
         }
 
@@ -85,7 +89,7 @@ namespace Drill4Net.Target.Comon.Tests
                 var source = GetSource(GetFullSignature(data.Info));
                 Assert.True(funcs.ContainsKey(source));
                 var childFunc = funcs[source];
-                CheckEnterAndLastReturn(childFunc);
+                CheckEnterAndLastReturnOrThrow(childFunc);
                 Check(childFunc, data.Checks);
             }
         }
@@ -166,10 +170,10 @@ namespace Drill4Net.Target.Comon.Tests
             return name;
         }
 
-        private void CheckEnterAndLastReturn(List<string> points)
+        private void CheckEnterAndLastReturnOrThrow(List<string> points)
         {
             Assert.IsNotNull(points.FirstOrDefault(a => a == "Enter_0"), "No Enter");
-            Assert.IsNotNull(points.Last(a => a.StartsWith("Return_")), "No Return");
+            Assert.IsNotNull(points.Last(a => a.StartsWith("Return_") || a.StartsWith("Throw_")), "No last Return/Throw");
         }
 
         private void Check(List<string> points, List<string> checks)
@@ -320,6 +324,21 @@ namespace Drill4Net.Target.Comon.Tests
 
                     //paired test locates in the ParentChild category
                     yield return GetCase(GetInfo(_target.Generic_Call_Child), new object[] { false }, new List<string> { "Else_7" });
+                    #endregion
+                    #region Try/cath/finally
+                    yield return GetCase(GetInfo(_target.Exception_Conditional), new object[] { false }, new List<string>());
+                    yield return GetCase(GetInfo(_target.Exception_Conditional), new object[] { true }, new List<string> { "If_20", "Throw_26" });
+
+                    yield return GetCase(GetInfo(_target.Catch_Statement), new object[] { false }, new List<string>());
+                    yield return GetCase(GetInfo(_target.Catch_Statement), new object[] { true }, new List<string> { "Throw_7", "If_17" });
+
+                    yield return GetCase(GetInfo(_target.Catch_When_Statement), new object[] { false, false }, new List<string> { "Throw_7", "CatchFilter_16" });
+                    yield return GetCase(GetInfo(_target.Catch_When_Statement), new object[] { false, true }, new List<string> { "Throw_7", "CatchFilter_16", "Else_22" });
+                    yield return GetCase(GetInfo(_target.Catch_When_Statement), new object[] { true, false }, new List<string> { "Throw_7", "CatchFilter_16" });
+                    yield return GetCase(GetInfo(_target.Catch_When_Statement), new object[] { true, true }, new List<string> { "Throw_7", "CatchFilter_16", "If_26" });
+
+                    yield return GetCase(GetInfo(_target.Finally_Statement), new object[] { false }, new List<string>());
+                    yield return GetCase(GetInfo(_target.Finally_Statement), new object[] { true }, new List<string> { "If_16" });
                     #endregion
                 }
             }

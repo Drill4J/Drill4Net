@@ -422,9 +422,20 @@ namespace Drill4Net.Injector.Engine
                             continue;
                         }
 
+                        //CATCH FILTER
+                        if (code == Code.Endfilter)
+                        {
+                            probData = GetProbeData(moduleName, methodFullName, CrossPointType.CatchFilter, i);
+                            var ldstrFlt = GetInstruction(probData);
+                            //ReplaceJump(instr, ldstrReturn);
+                            processor.InsertBefore(instr, ldstrFlt);
+                            processor.InsertBefore(instr, call);
+                            i += 2;
+                            continue;
+                        }
+
                         //RETURN
-                        // TODO: check FAULT-block from VisualBasic (it should work with same OpCode)
-                        if (flow == FlowControl.Return && needEnterLeavings && code != Code.Endfinally) //&& code != Code.Endfilter ???
+                        if (code == Code.Ret && needEnterLeavings) //&& code != Code.Endfilter ???
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             ReplaceJump(instr, ldstrReturn);
