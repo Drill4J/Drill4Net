@@ -40,6 +40,8 @@ namespace Drill4Net.Plugins.Testing
                 var asmName = ar[1];
                 var funcName = ar[2];
                 ClarifyBusinessMethodName(asmName, ref funcName);
+                if (funcName == null)
+                    return;
                 AddPoint(asmName, funcName, ar[3]);
             }
             catch (Exception ex)
@@ -124,6 +126,8 @@ namespace Drill4Net.Plugins.Testing
                 if (method.GetCustomAttribute(typeof(DebuggerHiddenAttribute)) != null)
                     continue;
                 var type = method.DeclaringType;
+                if (type == null)
+                    continue;
                 var typeName = type.FullName;
                 if (type.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) != null)
                     continue;
@@ -132,6 +136,12 @@ namespace Drill4Net.Plugins.Testing
                 //GUANO! By file path is better? Config?
                 if (typeName.StartsWith("System.") || typeName.StartsWith("Microsoft."))
                     continue;
+                var funcFullName = method.ToString();
+                if (funcFullName.Contains("(System.Dynamic."))
+                {
+                    curSig = null;
+                    return;
+                }
                 #endregion
 
                 //SECOND cache

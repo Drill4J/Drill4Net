@@ -340,6 +340,13 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(GetInfo(_target.Finally_Statement), new object[] { false }, new List<string>());
                     yield return GetCase(GetInfo(_target.Finally_Statement), new object[] { true }, new List<string> { "If_16" });
                     #endregion
+                    #region Dynamic
+                    yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { false }, new List<string> { "Else_2" });
+                    yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { true }, new List<string> { "If_6" });
+
+                    yield return GetCase(GetInfo(_target.DynamicObject), new object[] { false }, new List<string> { "Else_2" });
+                    yield return GetCase(GetInfo(_target.DynamicObject), new object[] { true }, new List<string> { "If_6" });
+                    #endregion
                 }
             }
 
