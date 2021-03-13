@@ -94,10 +94,6 @@ namespace Drill4Net.Target.Common
             Lambda10_AdditionalSwitch(12);
             #endregion
             #region Generics
-            var list = new List<string> { "a", "b", "c" };
-            GenericParameter(list, false);
-            GenericParameter(list, true);
-
             GenericVar(false);
             GenericVar(true);
 
@@ -478,28 +474,10 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Generics
-        internal void GenericParameter(List<string> list, bool a)
-        {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
-            //
-            if (a)
-            {
-                if (list.Count > 0)
-                    list.RemoveAt(0);
-            }
-            else
-            {
-                list.Reverse();
-            }
-
-            Console.WriteLine($"{nameof(GenericParameter)}: {a} -> {string.Join(",", list)}");
-        }
-
-        internal void GenericVar(bool a)
+        internal void GenericVar(bool cond)
         {
             var list = new List<string> { "a", "b", "c" };
-            if (a)
+            if (cond)
             {
                 if (list.Count > 0)
                     list.RemoveAt(0);
@@ -508,8 +486,7 @@ namespace Drill4Net.Target.Common
             {
                 list.Reverse();
             }
-
-            Console.WriteLine($"{nameof(GenericVar)}: {a} -> {string.Join(",", list)}");
+            Console.WriteLine($"{nameof(GenericVar)}: {cond} -> {string.Join(",", list)}");
         }
 
         internal void Generic_Call_Base(bool cond)
@@ -524,23 +501,6 @@ namespace Drill4Net.Target.Common
             var gen = new GenStr("AAA");
             var s = cond ? gen.GetShortDesc() : "no desc";
             Console.WriteLine($"{nameof(Generic_Call_Child)}: {s}");
-        }
-#endregion
-        #region Do/While
-        internal void While_Operator(int count)
-        {
-            Console.WriteLine($"{nameof(While_Operator)} -> {count}");
-            while (count > 0)
-                count--;
-        }
-
-        //in principle, it is not necessary, because 
-        //it is not a branch with a precondition
-        internal void Do_Operator()
-        {
-            int i = 3;
-            Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
-            do { i--; } while (i > 0);
         }
         #endregion
         #region Try/cath/finally
@@ -824,6 +784,22 @@ namespace Drill4Net.Target.Common
                 s = cond ? "YES" : "NO";
             }
             Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
+        }
+
+        internal void While_Operator(int count)
+        {
+            Console.WriteLine($"{nameof(While_Operator)} -> {count}");
+            while (count > 0)
+                count--;
+        }
+
+        //in principle, it is not necessary, because 
+        //it is not a branch with a precondition
+        internal void Do_Operator()
+        {
+            int i = 3;
+            Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
+            do { i--; } while (i > 0);
         }
 
         delegate int Operation(int x, int y);

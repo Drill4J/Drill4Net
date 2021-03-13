@@ -43,11 +43,10 @@ namespace Drill4Net.Target.Comon.Tests
         /****************************************************************************/
 
         [TestCaseSource(typeof(SourceData), "Simple"/*, Category = "Simple"*/)]
-        public void Simple_Ok(string shortSig, object[] args, List<string> checks)
+        public void Simple_Ok(MethodInfo mi, object[] args, List<string> checks)
         {
             //arrange
-            var mi = GetMethod(shortSig);
-            Assert.NotNull(mi, $"MethodInfo is empty for: {shortSig}");
+            Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
 
             //act
             mi.Invoke(_target, args);
@@ -56,42 +55,39 @@ namespace Drill4Net.Target.Comon.Tests
             var funcs = GetFunctions();
             Assert.IsTrue(funcs.Count == 1);
 
-            var sig = GetSource(shortSig);
-            Assert.True(funcs.ContainsKey(sig));
-            var points = funcs[sig];
+            var sig = GetFullSignature(mi);
+            var source = GetSource(sig);
+            Assert.True(funcs.ContainsKey(source));
+            var points = funcs[source];
 
             CheckEnterAndLastReturn(points);
             Check(points, checks);
         }
 
         [TestCaseSource(typeof(SourceData), "ParentChild", Category = "ParentChild")]
-        public void Parent_Child_Ok(object[] args, string parentShortSig, List<string> parentChecks, 
-                                                   string childShortSig, List<string> childChecks)
+        public void Parent_Child_Ok(object[] args, params (MethodInfo Info, List<string> Checks)[] inputs)
         {
             //arrange
-            var mi = GetMethod(parentShortSig);
-            Assert.NotNull(mi, $"MethodInfo is empty for: {parentShortSig}");
+            var parentData = inputs[0];
+            var mi = parentData.Info;
+            Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
 
             //act
             mi.Invoke(_target, args);
 
             //assert
             var funcs = GetFunctions();
-            Assert.IsTrue(funcs.Count == 2);
+            Assert.IsTrue(funcs.Count == inputs.Length);
 
-            //1. parent func
-            var parentSig = GetSource(parentShortSig);
-            Assert.True(funcs.ContainsKey(parentSig));
-            var parentFunc = funcs[parentSig];
-            CheckEnterAndLastReturn(parentFunc);
-            Check(parentFunc, parentChecks);
-
-            //2. child func
-            var childSig = GetSource(childShortSig);
-            Assert.True(funcs.ContainsKey(childSig));
-            var childFunc = funcs[childSig];
-            CheckEnterAndLastReturn(childFunc);
-            Check(childFunc, childChecks);
+            for (var i = 0; i < inputs.Length; i++)
+            {
+                var data = inputs[i];
+                var source = GetSource(GetFullSignature(data.Info));
+                Assert.True(funcs.ContainsKey(source));
+                var childFunc = funcs[source];
+                CheckEnterAndLastReturn(childFunc);
+                Check(childFunc, data.Checks);
+            }
         }
 
         #region Auxiliary funcs
@@ -102,9 +98,9 @@ namespace Drill4Net.Target.Comon.Tests
             return TestProfiler.GetPoints(asmName, funcSig, false);
         }
 
-        private string GetSource(string shortSig)
+        private string GetSource(string sig)
         {
-            var funcSig = GetFullSignature(shortSig);
+            var funcSig = sig;
             var asmName = GetModuleName();
             return $"{asmName};{funcSig}";
         }
@@ -120,6 +116,36 @@ namespace Drill4Net.Target.Comon.Tests
             var ret = ar[0];
             var name = ar[1];
             return $"{ret} Drill4Net.Target.Common.InjectTarget::{name}";
+        }
+
+        internal static string GetFullSignature(MethodInfo mi)
+        {
+            var func = mi.Name;
+            var type = mi.DeclaringType;
+            var className = $"{type.Namespace}.{type.Name}";
+
+            //parameters
+            var pars = mi.GetParameters();
+            var parNames = string.Empty;
+            var lastInd = pars.Length - 1;
+            for (var j = 0; j <= lastInd; j++)
+            {
+                var p = pars[j];
+                parNames += p.ParameterType.FullName;
+                if (j < lastInd)
+                    parNames += ",";
+            }
+
+            //return type
+            var retType = mi.ReturnType.FullName;
+            if (retType.Contains("Version=")) //need simplify strong named type
+            {
+                retType = mi.ReturnParameter.ToString()
+                    .Replace("[", "<").Replace("]", ">").Replace(" ", null);
+            }
+            var sig = $"{retType} {className}::{func}({parNames})";
+
+            return sig;
         }
 
         private Dictionary<string, List<string>> GetFunctions()
@@ -148,7 +174,6 @@ namespace Drill4Net.Target.Comon.Tests
 
         private void Check(List<string> points, List<string> checks)
         {
-            Assert.True(points.Count == checks.Count + 2, "Counts not equal");
             for (var i = 0; i < checks.Count; i++)
                 if (checks[i] != points[i+1])
                     Assert.Fail();
@@ -168,15 +193,19 @@ namespace Drill4Net.Target.Comon.Tests
 
             internal delegate void OneIntMethod(int digit);
             internal delegate string OneIntFuncStr(int digit);
+
+            internal delegate string OneBoolFuncStr(bool digit);
             #endregion
 
             private static readonly Common.InjectTarget _target;
+            private static readonly Common.GenStr _genStr;
 
             /*****************************************************/
 
             static SourceData()
             {
                 _target = new Common.InjectTarget();
+                _genStr = new Common.GenStr("");
             }
 
             /******************************************************************/
@@ -185,8 +214,14 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 get
                 {
-                    yield return GetCase(GetInfo(_target.ThreadNew), new object[] { false }, new List<string>(), GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" });
-                    yield return GetCase(GetInfo(_target.ThreadNew), new object[] { true }, new List<string>(), GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" });
+                    yield return GetCase(new object[] { false }, (GetInfo(_target.ThreadNew), new List<string>()), (GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
+                    yield return GetCase(new object[] { true }, (GetInfo(_target.ThreadNew), new List<string>()), (GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
+
+                    yield return GetCase(new object[] { false }, (GetInfo(_target.Generic_Call_Base), new List<string>()), (GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+                    yield return GetCase(new object[] { true }, (GetInfo(_target.Generic_Call_Base), new List<string>()), (GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
+
+                    //paired test locates in the Simple category
+                    yield return GetCase(new object[] { true }, (GetInfo(_target.Generic_Call_Child), new List<string> { "If_11"}), (GetInfo(_genStr.GetDesc), new List<string>()), (GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
                 }
             }
 
@@ -279,6 +314,13 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(GetInfo(_target.Lambda10_AdditionalSwitch), new object[] { 10 }, new List<string> { "Else_2", "If_32" });
                     yield return GetCase(GetInfo(_target.Lambda10_AdditionalSwitch), new object[] { 12 }, new List<string> { "Else_2", "Else_23", "If_37" });
                     #endregion
+                    #region Generics
+                    yield return GetCase(GetInfo(_target.GenericVar), new object[] { false }, new List<string> { "Else_38" });
+                    yield return GetCase(GetInfo(_target.GenericVar), new object[] { true }, new List<string> { "If_20", "If_30" });
+
+                    //paired test locates in the ParentChild category
+                    yield return GetCase(GetInfo(_target.Generic_Call_Child), new object[] { false }, new List<string> { "Else_7" });
+                    #endregion
                 }
             }
 
@@ -319,62 +361,43 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 return method.Method;
             }
+
+            internal static MethodInfo GetInfo(OneBoolFuncStr method)
+            {
+                return method.Method;
+            }
             #endregion
 
             internal static TestCaseData GetCase(MethodInfo mi, object[] pars, List<string> checks)
             {
                 var name = mi.Name;
                 var caption = GetCaption(name, pars);
-                var sig = GetFullSignature(mi);
-                return new TestCaseData(sig, pars, checks).SetName(caption);
+                return new TestCaseData(mi, pars, checks).SetName(caption);
             }
 
-            internal static TestCaseData GetCase(MethodInfo parentMi, object[] pars, List<string> parentChecks,
-                                                 MethodInfo childMi, List<string> childChecks)
+            internal static TestCaseData GetCase(object[] pars, params (MethodInfo Info, List<string> Checks)[] input)
             {
-                var parent = parentMi.Name;
-                var caption = GetCaption(parent, pars);
-                var parentSig = GetFullSignature(parentMi);
-                var childSig = GetFullSignature(childMi);
+                Assert.IsNotNull(input);
+                Assert.True(input.Length > 0);
 
-                return new TestCaseData(pars, parentSig, parentChecks, childSig, childChecks).SetName(caption);
+                string caption = null;
+                var data = new (MethodInfo Info, List<string> Checks)[input.Length];
+                for (var i = 0; i < data.Length; i++)
+                {
+                    if(i == 0)
+                        caption = GetCaption(input[0].Info.Name, pars);
+                    data[i] = (input[i]);
+                }
+                return new TestCaseData(pars, data).SetName(caption);
             }
 
-            internal static string GetFullSignature(MethodInfo mi)
-            {
-                var name = mi.Name;
-
-                //parameters
-                var pars = mi.GetParameters();
-                var parNames = string.Empty;
-                var lastInd = pars.Length - 1;
-                for (var j = 0; j <= lastInd; j++)
-                {
-                    var p = pars[j];
-                    parNames += p.ParameterType.FullName;
-                    if (j < lastInd)
-                        parNames += ",";
-                }
-
-                //return type
-                var retType = mi.ReturnType.FullName;
-                if (retType.Contains("Version=")) //need simplify strong named type
-                {
-                    retType = mi.ReturnParameter.ToString()
-                        .Replace("[","<").Replace("]",">").Replace(" ",null);
-                }
-                var sig = $"{retType} {name}({parNames})";
-
-                return sig;
-            }
-
-            private static string GetCaption(string name, object[] pars)
+            private static string GetCaption(string name, object[] parameters)
             {
                 name += ": ";
-                var lastInd = pars.Length - 1;
+                var lastInd = parameters.Length - 1;
                 for (int i = 0; i <= lastInd; i++)
                 {
-                    var par = pars[i];
+                    var par = parameters[i];
                     name += par;
                     if (i < lastInd)
                         name += ",";
