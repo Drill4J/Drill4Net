@@ -3,11 +3,10 @@ using System.IO;
 using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Plugins.Testing;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Drill4Net.Target.Comon.Tests
 {

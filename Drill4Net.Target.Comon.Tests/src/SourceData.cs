@@ -26,6 +26,7 @@ namespace Drill4Net.Target.Comon.Tests
         internal delegate Task OneBoolFuncTask(bool digit);
         internal delegate List<Common.GenStr> FuncListGetStr();
         internal delegate Task<Common.GenStr> ProcessElementDlg(Common.GenStr element, bool cond);
+        internal delegate List<string> OneBoolFuncListStr(bool cond);
         #endregion
 
         private static readonly Common.InjectTarget _target;
@@ -45,9 +46,6 @@ namespace Drill4Net.Target.Comon.Tests
         {
             get
             {
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
-
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
 
@@ -58,11 +56,9 @@ namespace Drill4Net.Target.Comon.Tests
                 //paired test locates in the Simple category
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.AsyncTask), new List<string> { "Else_58" }), new TestData(GetInfo(_target.Delay100), new List<string>()));
 
-                //If both tests run together, one of them will crash
                 yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.AsyncLambda), new List<string> { "Else_59" }));
                 yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.AsyncLambda), new List<string> { "If_18" }));
 
-                //If both tests run together, one of them will crash
                 yield return GetCase(new object[] { false }, true, new TestData(GetInfo(_target.AsyncLinq_Blocking), new List<string>()), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string>()));
                 yield return GetCase(new object[] { true }, true, new TestData(GetInfo(_target.AsyncLinq_Blocking),  new List<string>()), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
 
@@ -79,6 +75,13 @@ namespace Drill4Net.Target.Comon.Tests
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ForeachParallel), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ForeachParallel), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
+
+                //If both tests run together, one of them will crash
+                //yield return GetCase(new object[] { false }, true, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "Else_11" }), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "Else_4" }));
+                //yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "If_3" }, true), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "If_12" }));
+
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
                 #endregion
             }
         }
@@ -272,6 +275,11 @@ namespace Drill4Net.Target.Comon.Tests
         }
 
         internal static MethodInfo GetInfo(FuncString method)
+        {
+            return method.Method;
+        }
+
+        internal static MethodInfo GetInfo(OneBoolFuncListStr method)
         {
             return method.Method;
         }
