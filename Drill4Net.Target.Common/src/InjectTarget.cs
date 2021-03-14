@@ -652,7 +652,7 @@ namespace Drill4Net.Target.Common
         #region Parallel
         internal void Plinq(bool cond)
         {
-            var data = GetDataForParallel();
+            var data = GetDataForParallel(5);
             int sum = data.AsParallel().Where(a => !cond || (cond && a % 2 == 0)).Sum();
             Console.WriteLine($"{nameof(Plinq)}: {sum}");
         }

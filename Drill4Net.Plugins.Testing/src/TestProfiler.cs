@@ -146,15 +146,13 @@ namespace Drill4Net.Plugins.Testing
                 if (typeFullName.StartsWith("System.") || typeFullName.StartsWith("Microsoft."))
                     continue;
                 var funcFullName = method.ToString();
-                //if (funcFullName.Contains("<") || type.Name.Contains("<") || typeFullName.Contains("<"))
-                    //continue;
                 if (funcFullName.Contains("(System.Dynamic."))
                 {
                     curSig = null;
                     return;
                 }
 
-                //all checks are passed... but!
+                //all borders have been breached for call stack... but!
                 if (isDisplay)
                     break;
                 #endregion
@@ -221,7 +219,7 @@ namespace Drill4Net.Plugins.Testing
                         var ind = curName2.StartsWith("<<") ? 2 : 1;
                         curName2 = curName2.Substring(ind, curName2.IndexOf(">") - ind);
                     }
-                    foreach (var existStr in _infoBySig.Keys) // _lastFuncById.Values
+                    foreach (var existStr in _infoBySig.Keys)
                     {
                         var existName = existStr.Split("::")[1].Split("(")[0];
                         if (existName != curName && existName != curName2)
