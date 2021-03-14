@@ -194,7 +194,25 @@ namespace Drill4Net.Plugins.Testing
             if (!processed)
             {
                 if (_lastFuncById.ContainsKey(id))
+                {
                     curSig = _lastFuncById[id];
+                }
+                else
+                {
+                    // GUANO !!!!
+                    //find pure func name
+                    var curName = curSig.Split("::")[1].Split("(")[0]
+                        .Replace("<", null).Replace(">", " ")
+                        .Split(" ")[0];
+                    foreach (var existStr in _lastFuncById.Values)
+                    {
+                        var existName = existStr.Split("::")[1].Split("(")[0];
+                        if (existName != curName)
+                            continue;
+                        curSig = existStr;
+                        _lastFuncById.TryAdd(id, existStr);
+                    }
+                }
             }
             else
             {

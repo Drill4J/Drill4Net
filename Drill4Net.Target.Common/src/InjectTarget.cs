@@ -627,6 +627,11 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
         }
 
+        internal async Task AsyncLinq_NonBlockingRunner(bool cond)
+        {
+            await AsyncLinq_NonBlocking(cond);
+        }
+
         internal async Task AsyncLinq_NonBlocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
@@ -646,13 +651,12 @@ namespace Drill4Net.Target.Common
 
         internal async Task<GenStr> ProcessElement(GenStr element, bool cond)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 if (cond)
                     element.Prop += "/1";
                 return element;
             });
-            return element;
         }
         #endregion
         #region Parallel
