@@ -112,11 +112,11 @@ namespace Drill4Net.Plugins.Testing
             //FIRST cache
             var key = $"{asmName};{curSig}";
             //TODO: combine both dictionaries?
-            if (_infoBySig.TryGetValue(key, out MethodInfo curInfo))
-            {
-                _parentByInfo.TryGetValue(curInfo, out curSig);
-                return;
-            }
+            //if (_infoBySig.TryGetValue(key, out MethodInfo curInfo))
+            //{
+            //    _parentByInfo.TryGetValue(curInfo, out curSig);
+            //    return;
+            //}
 
             var isDisplay = curSig.Contains("c__DisplayClass");
 
@@ -221,18 +221,17 @@ namespace Drill4Net.Plugins.Testing
                         var ind = curName2.StartsWith("<<") ? 2 : 1;
                         curName2 = curName2.Substring(ind, curName2.IndexOf(">") - ind);
                     }
-                    foreach (var existStr in _lastFuncById.Values)
+                    foreach (var existStr in _infoBySig.Keys) // _lastFuncById.Values
                     {
                         var existName = existStr.Split("::")[1].Split("(")[0];
                         if (existName != curName && existName != curName2)
                             continue;
-                        curSig = existStr;
+                        curSig = existStr.Split(";")[1];
                         _lastFuncById.TryAdd(id, existStr);
                         processed = true;
                     }
                     if(!processed)
                     {
-
                     }
                 }
             }

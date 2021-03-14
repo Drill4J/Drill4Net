@@ -104,7 +104,7 @@ namespace Drill4Net.Target.Comon.Tests
                 if (ignoreEnterReturns)
                 {
                     var forDelete = points.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
-                    for(var j=0; j<forDelete.Length; j++)
+                    for (var j = 0; j < forDelete.Length; j++)
                         points.Remove(forDelete[j]);
                 }
                 else
@@ -281,8 +281,7 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(new object[] { true }, true, (GetInfo(_target.AsyncLinq_Blocking),  new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
 
                     //If both tests run together, one of them will crash
-                    yield return GetCase(new object[] { false }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string>()));
-                    //it pass only in Debud mode in NUnit
+                    //yield return GetCase(new object[] { false }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string>()));
                     yield return GetCase(new object[] { true }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
                     #endregion
                 }
