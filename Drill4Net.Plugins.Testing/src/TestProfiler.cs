@@ -151,6 +151,9 @@ namespace Drill4Net.Plugins.Testing
                     curSig = null;
                     return;
                 }
+
+                if (curSig.Contains("c__DisplayClass"))
+                    break;
                 #endregion
 
                 ////SECOND cache
@@ -200,7 +203,7 @@ namespace Drill4Net.Plugins.Testing
                 else
                 {
                     // GUANO !!!!
-                    //find pure func name
+                    //search pure func name - TODO: regex
                     var curName = curSig.Split("::")[1].Split("(")[0]
                         .Replace("<", null).Replace(">", " ")
                         .Split(" ")[0];
@@ -211,6 +214,11 @@ namespace Drill4Net.Plugins.Testing
                             continue;
                         curSig = existStr;
                         _lastFuncById.TryAdd(id, existStr);
+                        processed = true;
+                    }
+                    if(!processed)
+                    {
+
                     }
                 }
             }

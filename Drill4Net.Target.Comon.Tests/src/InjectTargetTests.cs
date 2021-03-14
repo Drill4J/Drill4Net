@@ -98,20 +98,20 @@ namespace Drill4Net.Target.Comon.Tests
                 var data = inputs[i];
                 var source = GetSource(GetFullSignature(data.Info));
                 Assert.True(funcs.ContainsKey(source));
-                var childFunc = funcs[source];
+                var points = funcs[source];
                 if (ignoreEnterReturns)
                 {
-                    var forDelete = childFunc.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
+                    var forDelete = points.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
                     for(var j=0; j<forDelete.Length; j++)
-                        childFunc.Remove(forDelete[j]);
+                        points.Remove(forDelete[j]);
                 }
                 else
                 {
-                    CheckEnterAndLastReturnOrThrow(childFunc);
-                    RemoveEnterAndLastReturn(childFunc);
+                    CheckEnterAndLastReturnOrThrow(points);
+                    RemoveEnterAndLastReturn(points);
                 }
 
-                Check(childFunc, data.Checks);
+                Check(points, data.Checks);
             }
         }
 
@@ -270,17 +270,17 @@ namespace Drill4Net.Target.Comon.Tests
                     //paired test locates in the Simple category
                     yield return GetCase(new object[] { false }, (GetInfo(_target.AsyncTask), new List<string> { "Else_58" }), (GetInfo(_target.Delay100), new List<string>()));
 
-                    // how it test in NUnit?
-                    //yield return GetCase(new object[] { false }, (GetInfo(_target.AsyncLambdaRunner), new List<string>()), (GetInfo(_target.AsyncLambda), new List<string> { "Else_59" }));
-                    //yield return GetCase(new object[] { true }, (GetInfo(_target.AsyncLambdaRunner), new List<string> { "If_17" }), (GetInfo(_target.AsyncLambda), new List<string> { "Else_58" }));
+                    //If both tests run together, one of them will crash
+                    //yield return GetCase(new object[] { false }, true, true, (GetInfo(_target.AsyncLambdaRunner), new List<string>()), (GetInfo(_target.AsyncLambda), new List<string> { "Else_59" }));
+                    yield return GetCase(new object[] { true }, true, true, (GetInfo(_target.AsyncLambdaRunner), new List<string>()), (GetInfo(_target.AsyncLambda), new List<string> { "If_18" }));
 
                     //If both tests run together, one of them will crash
                     yield return GetCase(new object[] { false }, true, (GetInfo(_target.AsyncLinq_Blocking), new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string>()));
                     yield return GetCase(new object[] { true }, true, (GetInfo(_target.AsyncLinq_Blocking),  new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
 
-                    //If both tests run together, one of them will crash
-                    //yield return GetCase(new object[] { false }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "Else_83", "Else_95" }));
-                    //yield return GetCase(new object[] { true }, true, true, (GetInfo(_target.AsyncLinq_NonBlockingRunner), new List<string>()), (GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
+                    //If both tests run together, one of them will crash or it pass only in Debud mode
+                    yield return GetCase(new object[] { false }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string>()));
+                    //yield return GetCase(new object[] { true }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
                     #endregion
                 }
             }
