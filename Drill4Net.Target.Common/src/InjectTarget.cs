@@ -659,7 +659,7 @@ namespace Drill4Net.Target.Common
 
         internal void ForParallel(bool cond)
         {
-            var data = GetDataForParallel();
+            var data = GetDataForParallel(5);
             int sum = 0;
 
             Parallel.For(0, data.Count(), a =>
@@ -672,7 +672,7 @@ namespace Drill4Net.Target.Common
 
         internal void ForeachParallel(bool cond)
         {
-            var data = GetDataForParallel();
+            var data = GetDataForParallel(5);
             int sum = 0;
             Parallel.ForEach(data, a =>
             {
@@ -682,7 +682,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(ForeachParallel)}: {sum}");
         }
 
-        private IEnumerable<int> GetDataForParallel(int cnt = 10)
+        private IEnumerable<int> GetDataForParallel(int cnt = 5)
         {
             return Enumerable.Range(0, cnt);
         }

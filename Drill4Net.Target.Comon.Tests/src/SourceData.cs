@@ -31,7 +31,7 @@ namespace Drill4Net.Target.Comon.Tests
         private static readonly Common.InjectTarget _target;
         private static readonly Common.GenStr _genStr;
 
-        /*****************************************************/
+        /************************************************************************/
 
         static SourceData()
         {
@@ -39,7 +39,7 @@ namespace Drill4Net.Target.Comon.Tests
             _genStr = new Common.GenStr("");
         }
 
-        /******************************************************************/
+        /************************************************************************/
 
         internal static IEnumerable ParentChild
         {
@@ -73,6 +73,12 @@ namespace Drill4Net.Target.Comon.Tests
                 #region Parallel
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Plinq), new List<string> { "Else_19", "Else_19", "Else_19", "Else_19", "Else_19" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Plinq), new List<string> { "If_2", "If_2", "If_2", "If_2", "If_2", "If_7", "If_7", "If_7", "If_7", "If_7" }, true));
+
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ForParallel), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ForParallel), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
+
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ForeachParallel), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ForeachParallel), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
                 #endregion
             }
         }

@@ -99,8 +99,7 @@ namespace Drill4Net.Target.Comon.Tests
                 var source = GetSource(GetFullSignature(data.Info));
                 Assert.True(funcs.ContainsKey(source));
                 var points = funcs[source];
-                if (data.NeedSort)
-                    points.Sort();
+
                 if (ignoreEnterReturns)
                 {
                     var forDelete = points.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
@@ -113,6 +112,8 @@ namespace Drill4Net.Target.Comon.Tests
                     RemoveEnterAndLastReturn(points);
                 }
 
+                if (data.NeedSort)
+                    points.Sort();
                 Check(points, data.Checks);
             }
         }
