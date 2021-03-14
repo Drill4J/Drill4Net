@@ -599,11 +599,6 @@ namespace Drill4Net.Target.Common
             return Task.Delay(100);
         }
 
-        internal async Task AsyncLambdaRunner(bool cond)
-        {
-            await AsyncLambda(cond);
-        }
-
         internal async Task AsyncLambda(bool cond)
         {
             await Task.Run(async () =>
@@ -625,11 +620,6 @@ namespace Drill4Net.Target.Common
                    .ToList();
 
             Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
-        }
-
-        internal async Task AsyncLinq_NonBlockingRunner(bool cond)
-        {
-            await AsyncLinq_NonBlocking(cond);
         }
 
         internal async Task AsyncLinq_NonBlocking(bool cond)

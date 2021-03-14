@@ -118,6 +118,8 @@ namespace Drill4Net.Plugins.Testing
                 return;
             }
 
+            var isDisplay = curSig.Contains("c__DisplayClass");
+
             //TODO: check performance...
             var stackTrace = new StackTrace(2); //skip local calls
             StackFrame[] stackFrames = stackTrace.GetFrames();
@@ -152,7 +154,8 @@ namespace Drill4Net.Plugins.Testing
                     return;
                 }
 
-                if (curSig.Contains("c__DisplayClass"))
+                //all checks are passed... but!
+                if (isDisplay)
                     break;
                 #endregion
 
@@ -207,10 +210,21 @@ namespace Drill4Net.Plugins.Testing
                     var curName = curSig.Split("::")[1].Split("(")[0]
                         .Replace("<", null).Replace(">", " ")
                         .Split(" ")[0];
+                    
+                    string curName2 = null;
+                    if (isDisplay)
+                    {
+                        var ar = curSig.Split("/");
+                        curName2 = ar[ar.Length-1];
+                        if (curName2.Contains("::"))
+                            curName2 = curName2.Split("::")[1];
+                        var ind = curName2.StartsWith("<<") ? 2 : 1;
+                        curName2 = curName2.Substring(ind, curName2.IndexOf(">") - ind);
+                    }
                     foreach (var existStr in _lastFuncById.Values)
                     {
                         var existName = existStr.Split("::")[1].Split("(")[0];
-                        if (existName != curName)
+                        if (existName != curName && existName != curName2)
                             continue;
                         curSig = existStr;
                         _lastFuncById.TryAdd(id, existStr);
