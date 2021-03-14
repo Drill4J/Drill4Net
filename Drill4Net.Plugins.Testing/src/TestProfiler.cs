@@ -12,7 +12,8 @@ namespace Drill4Net.Plugins.Testing
     public class TestProfiler : AbsractPlugin
     {
         public static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
-        private static readonly ConcurrentDictionary<MethodInfo, string> _sigByInfo;
+        public static readonly ConcurrentDictionary<int, string> _lastFuncById;
+        private static readonly ConcurrentDictionary<MethodInfo, string> _parentByInfo;
         private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
 
         /*****************************************************************************/
@@ -20,8 +21,9 @@ namespace Drill4Net.Plugins.Testing
         static TestProfiler()
         {
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
-            _sigByInfo = new ConcurrentDictionary<MethodInfo, string>();
+            _parentByInfo = new ConcurrentDictionary<MethodInfo, string>();
             _infoBySig = new ConcurrentDictionary<string, MethodInfo>();
+            _lastFuncById = new ConcurrentDictionary<int, string>();
         }
 
         /*****************************************************************************/
@@ -109,13 +111,18 @@ namespace Drill4Net.Plugins.Testing
 
             //FIRST cache
             var key = $"{asmName};{curSig}";
+            //TODO: combine both dictionaries?
             if (_infoBySig.TryGetValue(key, out MethodInfo curInfo))
+            {
+                _parentByInfo.TryGetValue(curInfo, out curSig);
                 return;
+            }
 
             //TODO: check performance...
             var stackTrace = new StackTrace(2); //skip local calls
             StackFrame[] stackFrames = stackTrace.GetFrames();
 
+            var processed = false;
             for (var i = 0; i < stackFrames.Length; i++)
             {
                 #region Checks
@@ -128,15 +135,17 @@ namespace Drill4Net.Plugins.Testing
                 var type = method.DeclaringType;
                 if (type == null)
                     continue;
-                var typeName = type.FullName;
                 if (type.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) != null)
                     continue;
                 if (type.Name == "ProfilerProxy") //TODO: from constants/config
                     continue;
+                var typeFullName = type.FullName;
                 //GUANO! By file path is better? Config?
-                if (typeName.StartsWith("System.") || typeName.StartsWith("Microsoft."))
+                if (typeFullName.StartsWith("System.") || typeFullName.StartsWith("Microsoft."))
                     continue;
                 var funcFullName = method.ToString();
+                //if (funcFullName.Contains("<") || type.Name.Contains("<") || typeFullName.Contains("<"))
+                    //continue;
                 if (funcFullName.Contains("(System.Dynamic."))
                 {
                     curSig = null;
@@ -144,16 +153,16 @@ namespace Drill4Net.Plugins.Testing
                 }
                 #endregion
 
-                //SECOND cache
-                if (_sigByInfo.TryGetValue(method, out string fullSig))
-                {
-                    curSig = fullSig;
-                    return;
-                }
+                ////SECOND cache
+                //if (_parentByInfo.TryGetValue(method, out string fullSig))
+                //{
+                //    curSig = fullSig;
+                //    return;
+                //}
 
                 //at this stage we have simplified method's signature
                 //get full signature with types of parameters & return
-                var name = $"{typeName}::{method.Name}";
+                var name = $"{typeFullName}::{method.Name}";
                 var pars = method.GetParameters();
                 var parNames = string.Empty;
                 var lastInd = pars.Length - 1;
@@ -174,8 +183,26 @@ namespace Drill4Net.Plugins.Testing
 
                 //caching
                 _infoBySig.TryAdd(key, method);
-                _sigByInfo.TryAdd(method, curSig);
+                _parentByInfo.TryAdd(method, curSig);
+                processed = true;
                 break;
+            }
+
+            // for async linq/lambda -> business func not in stack (guanito for parallels...)
+            // TODO: take into account Id of thread?
+            var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
+            if (!processed)
+            {
+                if (_lastFuncById.ContainsKey(id))
+                    curSig = _lastFuncById[id];
+            }
+            else
+            {
+                //last func
+                if (_lastFuncById.ContainsKey(id))
+                    _lastFuncById[id] = curSig;
+                else
+                    _lastFuncById.TryAdd(id, curSig);
             }
         }
     }

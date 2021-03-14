@@ -8,12 +8,9 @@ namespace Drill4Net.Target.Common
     /// </summary>
     public class DynamicDictionary : DynamicObject
     {
-        // The inner dictionary.
         readonly Dictionary<string, object> dictionary = 
             new Dictionary<string, object>();
 
-        // This property returns the number of elements
-        // in the inner dictionary.
         public int Count => dictionary.Count;
 
         // If you try to get a value of a property

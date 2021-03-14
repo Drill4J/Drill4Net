@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Plugins.Testing;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -53,7 +55,7 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 mi.Invoke(_target, args);
             }
-            catch { } //it's normal for special throws
+            catch { } //it's normal for business throws
 
             //assert
             var funcs = GetFunctions();
@@ -65,11 +67,13 @@ namespace Drill4Net.Target.Comon.Tests
             var points = funcs[source];
 
             CheckEnterAndLastReturnOrThrow(points);
+            RemoveEnterAndLastReturn(points);
             Check(points, checks);
         }
 
         [TestCaseSource(typeof(SourceData), "ParentChild", Category = "ParentChild")]
-        public void Parent_Child_Ok(object[] args, params (MethodInfo Info, List<string> Checks)[] inputs)
+        public void Parent_Child_Ok(object[] args, bool wait, bool ignoreEnterReturns, 
+                                    params(MethodInfo Info, List<string> Checks)[] inputs)
         {
             //arrange
             var parentData = inputs[0];
@@ -78,6 +82,12 @@ namespace Drill4Net.Target.Comon.Tests
 
             //act
             mi.Invoke(_target, args);
+            
+            if (wait) //for soame async
+            {
+                for (var i = 0; i < 10; i++) 
+                    Thread.Sleep(50);
+            }
 
             //assert
             var funcs = GetFunctions();
@@ -89,9 +99,31 @@ namespace Drill4Net.Target.Comon.Tests
                 var source = GetSource(GetFullSignature(data.Info));
                 Assert.True(funcs.ContainsKey(source));
                 var childFunc = funcs[source];
-                CheckEnterAndLastReturnOrThrow(childFunc);
+                if (ignoreEnterReturns)
+                {
+                    var forDelete = childFunc.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
+                    for(var j=0; j<forDelete.Length; j++)
+
+                        childFunc.Remove(forDelete[j]);
+                }
+                else
+                {
+                    CheckEnterAndLastReturnOrThrow(childFunc);
+                    RemoveEnterAndLastReturn(childFunc);
+                }
+
                 Check(childFunc, data.Checks);
             }
+        }
+
+        private void RemoveEnterAndLastReturn(List<string> points)
+        {
+            //Check() not checks Enter and last Return
+            if (points[0].StartsWith("Enter_"))
+                points.RemoveAt(0);
+            var lastInd = points.Count - 1;
+            if (points[lastInd].StartsWith("Return_"))
+                points.RemoveAt(lastInd);
         }
 
         #region Auxiliary funcs
@@ -178,9 +210,12 @@ namespace Drill4Net.Target.Comon.Tests
 
         private void Check(List<string> points, List<string> checks)
         {
+            Assert.IsTrue(points.Count == checks.Count);
             for (var i = 0; i < checks.Count; i++)
-                if (checks[i] != points[i+1])
+            {
+                if (points[i] != checks[i])
                     Assert.Fail();
+            }
         }
         #endregion
 
@@ -199,6 +234,11 @@ namespace Drill4Net.Target.Comon.Tests
             internal delegate string OneIntFuncStr(int digit);
 
             internal delegate string OneBoolFuncStr(bool digit);
+            internal delegate Task FuncTask();
+            internal delegate string FuncString();
+            internal delegate Task OneBoolFuncTask(bool digit);
+            internal delegate List<Common.GenStr> FuncListGetStr();
+            internal delegate Task<Common.GenStr> ProcessElementDlg(Common.GenStr element, bool cond);
             #endregion
 
             private static readonly Common.InjectTarget _target;
@@ -225,7 +265,24 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(new object[] { true }, (GetInfo(_target.Generic_Call_Base), new List<string>()), (GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
 
                     //paired test locates in the Simple category
-                    yield return GetCase(new object[] { true }, (GetInfo(_target.Generic_Call_Child), new List<string> { "If_11"}), (GetInfo(_genStr.GetDesc), new List<string>()), (GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+                    yield return GetCase(new object[] { true }, (GetInfo(_target.Generic_Call_Child), new List<string> { "If_11"}), (GetInfo(_genStr.GetShortDesc), new List<string>()), (GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+
+                    #region Async/await
+                    //paired test locates in the Simple category
+                    yield return GetCase(new object[] { false }, (GetInfo(_target.AsyncTask), new List<string> { "Else_58" }), (GetInfo(_target.Delay100), new List<string>()));
+
+                    // how it test in NUnit?
+                    //yield return GetCase(new object[] { false }, (GetInfo(_target.AsyncLambdaRunner), new List<string>()), (GetInfo(_target.AsyncLambda), new List<string> { "Else_59" }));
+                    //yield return GetCase(new object[] { true }, (GetInfo(_target.AsyncLambdaRunner), new List<string> { "If_17" }), (GetInfo(_target.AsyncLambda), new List<string> { "Else_58" }));
+
+                    //If both tests run together, one of them will crash
+                    //yield return GetCase(new object[] { false }, true, (GetInfo(_target.AsyncLinq_Blocking), new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string>()));
+                    yield return GetCase(new object[] { true }, true, (GetInfo(_target.AsyncLinq_Blocking),  new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "If_50", "If_50", "If_50" }));
+
+                    //If both tests run together, one of them will crash
+                    //yield return GetCase(new object[] { false }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "Else_83", "Else_95" }));
+                    yield return GetCase(new object[] { true }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string>()), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string> { "If_50", "If_50", "If_50", "Else_83", "Else_95" }));
+                    #endregion
                 }
             }
 
@@ -329,7 +386,7 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(GetInfo(_target.Exception_Conditional), new object[] { false }, new List<string>());
                     yield return GetCase(GetInfo(_target.Exception_Conditional), new object[] { true }, new List<string> { "If_20", "Throw_26" });
 
-                    yield return GetCase(GetInfo(_target.Catch_Statement), new object[] { false }, new List<string>());
+                    yield return GetCase(GetInfo(_target.Catch_Statement), new object[] { false }, new List<string> { "Throw_7", "Else_13" });
                     yield return GetCase(GetInfo(_target.Catch_Statement), new object[] { true }, new List<string> { "Throw_7", "If_17" });
 
                     yield return GetCase(GetInfo(_target.Catch_When_Statement), new object[] { false, false }, new List<string> { "Throw_7", "CatchFilter_16" });
@@ -337,7 +394,7 @@ namespace Drill4Net.Target.Comon.Tests
                     yield return GetCase(GetInfo(_target.Catch_When_Statement), new object[] { true, false }, new List<string> { "Throw_7", "CatchFilter_16" });
                     yield return GetCase(GetInfo(_target.Catch_When_Statement), new object[] { true, true }, new List<string> { "Throw_7", "CatchFilter_16", "If_26" });
 
-                    yield return GetCase(GetInfo(_target.Finally_Statement), new object[] { false }, new List<string>());
+                    yield return GetCase(GetInfo(_target.Finally_Statement), new object[] { false }, new List<string> { "Else_12" });
                     yield return GetCase(GetInfo(_target.Finally_Statement), new object[] { true }, new List<string> { "If_16" });
                     #endregion
                     #region Dynamic
@@ -346,6 +403,12 @@ namespace Drill4Net.Target.Comon.Tests
 
                     yield return GetCase(GetInfo(_target.DynamicObject), new object[] { false }, new List<string> { "Else_2" });
                     yield return GetCase(GetInfo(_target.DynamicObject), new object[] { true }, new List<string> { "If_6" });
+                    #endregion
+                    #region Async/await
+                    //paired test locates in the Simple category
+                    yield return GetCase(GetInfo(_target.AsyncTask), new object[] { true }, new List<string> { "If_17" });
+
+
                     #endregion
                 }
             }
@@ -392,6 +455,31 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 return method.Method;
             }
+
+            internal static MethodInfo GetInfo(OneBoolFuncTask method)
+            {
+                return method.Method;
+            }
+
+            internal static MethodInfo GetInfo(FuncTask method)
+            {
+                return method.Method;
+            }
+
+            internal static MethodInfo GetInfo(FuncListGetStr method)
+            {
+                return method.Method;
+            }
+
+            internal static MethodInfo GetInfo(ProcessElementDlg method)
+            {
+                return method.Method;
+            }
+
+            internal static MethodInfo GetInfo(FuncString method)
+            {
+                return method.Method;
+            }
             #endregion
 
             internal static TestCaseData GetCase(MethodInfo mi, object[] pars, List<string> checks)
@@ -401,7 +489,17 @@ namespace Drill4Net.Target.Comon.Tests
                 return new TestCaseData(mi, pars, checks).SetName(caption);
             }
 
+            internal static TestCaseData GetCase(object[] pars, bool ignoreEnterReturns, params (MethodInfo Info, List<string> Checks)[] input)
+            {
+                return GetCase(pars, false, ignoreEnterReturns, input);
+            }
+
             internal static TestCaseData GetCase(object[] pars, params (MethodInfo Info, List<string> Checks)[] input)
+            {
+                return GetCase(pars, false, false, input);
+            }
+
+            internal static TestCaseData GetCase(object[] pars, bool wait, bool ignoreEnterReturns, params (MethodInfo Info, List<string> Checks)[] input)
             {
                 Assert.IsNotNull(input);
                 Assert.True(input.Length > 0);
@@ -412,9 +510,9 @@ namespace Drill4Net.Target.Comon.Tests
                 {
                     if(i == 0)
                         caption = GetCaption(input[0].Info.Name, pars);
-                    data[i] = (input[i]);
+                    data[i] = input[i];
                 }
-                return new TestCaseData(pars, data).SetName(caption);
+                return new TestCaseData(pars, wait, ignoreEnterReturns, data).SetName(caption);
             }
 
             private static string GetCaption(string name, object[] parameters)

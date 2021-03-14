@@ -247,9 +247,11 @@ namespace Drill4Net.Injector.Engine
                     var declAttrs = realType.CustomAttributes;
                     var needEnterLeavings =
                         //Async/await
-                        !isAsyncStateMachine && declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null && //!methodName.StartsWith("<");
-                                                                                                                                  //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
+                        !isAsyncStateMachine && 
+                        declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null && //!methodName.StartsWith("<");                       
+                        //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
                         (_isNetCore.Value == false || (_isNetCore.Value == true && !isFinalizer));
+
                     #endregion
                     #region Enter/Return
                     //inject 'entering' instruction

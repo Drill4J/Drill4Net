@@ -594,9 +594,14 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(AsyncTask)}: {cond}");
         }
 
-        private Task Delay100()
+        internal Task Delay100()
         {
             return Task.Delay(100);
+        }
+
+        internal async Task AsyncLambdaRunner(bool cond)
+        {
+            await AsyncLambda(cond);
         }
 
         internal async Task AsyncLambda(bool cond)
@@ -618,6 +623,7 @@ namespace Drill4Net.Target.Common
                    .Select(t => t.GetAwaiter().GetResult().Prop)
                    .Where(i => i != null)
                    .ToList();
+
             Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
         }
 
@@ -625,20 +631,27 @@ namespace Drill4Net.Target.Common
         {
             var data = GetDataForAsyncLinq();
             var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
-            var inputs = tasks.Select(a => a.Prop).Where(result => result != null).ToList();
+            var inputs = tasks
+                .Select(a => a.Prop)
+                .Where(result => result != null)
+                .ToList();
+
             Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
         }
 
-        private List<GenStr> GetDataForAsyncLinq()
+        internal List<GenStr> GetDataForAsyncLinq()
         {
-            return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C") };
+            return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C"), };
         }
 
-        private async Task<GenStr> ProcessElement(GenStr element, bool cond)
+        internal async Task<GenStr> ProcessElement(GenStr element, bool cond)
         {
-            await Task.Delay(10);
-            if (cond)
-                element.Prop += "/1";
+            await Task.Run(() =>
+            {
+                if (cond)
+                    element.Prop += "/1";
+                return element;
+            });
             return element;
         }
         #endregion
