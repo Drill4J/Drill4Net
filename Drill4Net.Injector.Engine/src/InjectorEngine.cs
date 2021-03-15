@@ -240,7 +240,9 @@ namespace Drill4Net.Injector.Engine
                     //check for async/await
                     var interfaces = realType.Interfaces;
                     isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
-                    if (isAsyncStateMachine) //skip state machine init jump block
+                    var isEnumeratorMoveNext = methodName == "MoveNext" && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
+                    var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
+                    if (skipStart)
                         startInd = 12;
 
                     //type's attributes
@@ -286,7 +288,6 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                     #region Misc injections               
                     var ifStack = new Stack<Instruction>();
-
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
@@ -364,21 +365,16 @@ namespace Drill4Net.Injector.Engine
                             //correct jump instruction
                             if (operand != null)
                             {
+                                //TODO: check for SWITCH!
+                                //EACH short form -> to long form (otherwise, you need to recalculate 
+                                //again after each necessary conversion)
                                 var newOpCode = ConvertShortJumpToLong(opCode);
-                                if (newOpCode.Code != opCode.Code)
+                                if (newOpCode.Code != code)
                                 {
-                                    //EACH short form -> to long form (otherwise, you need to recalculate 
-                                    //again after each necessary conversion)
-
                                     //var injectLen = ldstrIf.GetSize() + call.GetSize();
                                     //var diff = operand.Offset - instr.Offset;
                                     //if (diff + injectLen > 127 || diff < -128) //is too far?
-                                    {
-                                        var longIstr = Instruction.Create(newOpCode, operand);
-                                        processor.Replace(instr, longIstr);
-                                        jumpers.Remove(instr);
-                                        jumpers.Add(longIstr);
-                                    }
+                                    instr.OpCode = newOpCode;
                                 }
                             }
                             i += 2;
@@ -448,6 +444,46 @@ namespace Drill4Net.Injector.Engine
                         }
                     } //cycle
                     #endregion
+                    #region Correct jumps
+                    if (skipStart)
+                    {
+                        //EACH short form -> to long form (otherwise, you need to recalculate 
+                        //again after each necessary conversion)
+                        if (methodName == "MoveNext" && typeName.Contains("<GetForYield>")) //TEST!!!!
+                        {
+                            var jumpersList = jumpers.ToList();
+                            //for (var j = 0; j < jumpersList.Count; j++)
+                            //{
+                            //    var jump = jumpersList[j];
+                            //    var opCode = jump.OpCode;
+                            //    if (jump.Operand is Instruction operand)
+                            //    {
+                            //        var newOpCode = ConvertShortJumpToLong(opCode);
+                            //        if (newOpCode.Code != opCode.Code)
+                            //        {
+                            //            var opCode2 = operand.OpCode;
+                            //            var flowOp2 = opCode2.FlowControl;
+                            //            if (flowOp2 == FlowControl.Branch || flowOp2 == FlowControl.Cond_Branch)
+                            //            {
+                            //                var newOpCode2 = ConvertShortJumpToLong(opCode2);
+                            //                if (newOpCode2.Code != opCode2.Code)
+                            //                {
+                            //                    if (operand.Operand is Instruction operand2)
+                            //                    {
+                            //                        var longIstr2 = Instruction.Create(newOpCode, operand2);
+                            //                        processor.Replace(operand, longIstr2);
+                            //                        operand = longIstr2;
+                            //                    }
+                            //                }
+                            //            }
+                            //            //
+                            //            jump.OpCode = newOpCode;
+                            //        }
+                            //    }
+                            //}
+                        }
+                    }
+                    #endregion
                 }
             }
 
@@ -505,6 +541,7 @@ namespace Drill4Net.Injector.Engine
                     Code.Blt_S => OpCodes.Blt,
                     Code.Blt_Un_S => OpCodes.Blt_Un,
                     Code.Bne_Un_S => OpCodes.Bne_Un,
+                    Code.Leave_S => OpCodes.Leave,
                     _ => opCode,
                 };
             }

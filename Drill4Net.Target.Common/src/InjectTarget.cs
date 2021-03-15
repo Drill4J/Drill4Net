@@ -901,6 +901,6 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: a || b, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: a || b, extensions, async iterator, for, foreach, EF, Visual Basic...
     }
 }
