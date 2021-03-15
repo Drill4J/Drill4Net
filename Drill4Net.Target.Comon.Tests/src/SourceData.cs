@@ -1,9 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using System;
 using Drill4Net.Target.Common;
 
 namespace Drill4Net.Target.Comon.Tests
@@ -29,12 +29,13 @@ namespace Drill4Net.Target.Comon.Tests
         {
             get
             {
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
+                #region Generics
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generic_Call_Child), new List<string> { "Else_7" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generic_Call_Child), new List<string> { "If_11" }), new TestData(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
 
-                //paired test locates in the Simple category
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generic_Call_Child), new List<string> { "If_11"}), new TestData(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
-
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.GenericVar), new List<string> { "Else_38" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.GenericVar), new List<string> { "If_20", "If_30" }));
+                #endregion
                 #region Async/await
                 //paired test locates in the Simple category
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.AsyncTask), new List<string> { "Else_58" }), new TestData(GetInfo(_target.Delay100), new List<string>()));
@@ -80,12 +81,16 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { (ushort)17 }, new TestData(GetInfo(_target.Finalizer), new List<string> { "If_8", "If_30" }));
                 yield return GetCase(new object[] { (ushort)18 }, new TestData(GetInfo(_target.Finalizer), new List<string> { "Else_12", "If_30" }));
                 #endregion
+                #region Misc
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Yield), new List<string>()), new TestData(GetInfo(_target.GetForYield), new List<string> { "If_11" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Yield), new List<string>()), new TestData(GetInfo(_target.GetForYield), new List<string> { "If_11" }));
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestData(GetInfo(_point.ToString), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Unsafe), new List<string> { "If_13" }), new TestData(GetInfo(_point.ToString), new List<string>()));
+                #endregion
             }
         }
 
@@ -178,13 +183,6 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.Lambda10_AdditionalSwitch), new object[] { 10 }, new List<string> { "Else_2", "If_32" });
                 yield return GetCase(GetInfo(_target.Lambda10_AdditionalSwitch), new object[] { 12 }, new List<string> { "Else_2", "Else_23", "If_37" });
                 #endregion
-                #region Generics
-                yield return GetCase(GetInfo(_target.GenericVar), new object[] { false }, new List<string> { "Else_38" });
-                yield return GetCase(GetInfo(_target.GenericVar), new object[] { true }, new List<string> { "If_20", "If_30" });
-
-                //paired test locates in the ParentChild category
-                yield return GetCase(GetInfo(_target.Generic_Call_Child), new object[] { false }, new List<string> { "Else_7" });
-                #endregion
                 #region Try/cath/finally
                 yield return GetCase(GetInfo(_target.Exception_Conditional), new object[] { false }, new List<string>());
                 yield return GetCase(GetInfo(_target.Exception_Conditional), new object[] { true }, new List<string> { "If_20", "Throw_26" });
@@ -216,6 +214,7 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.While_Operator), new object[] { 3 }, new List<string> { "While_20", "While_20", "While_20" });
 
                 yield return GetCase(GetInfo(_target.AnonymousFunc), Array.Empty<object>(), new List<string> { "If_6" });
+
                 yield return GetCase(GetInfo(_target.AnonymousFunc_WithLocalFunc), Array.Empty<object>(), new List<string> { "If_6" });
 
                 yield return GetCase(GetInfo(_target.AnonymousType), new object[] { false }, new List<string> { "Else_5" });
@@ -345,7 +344,7 @@ namespace Drill4Net.Target.Comon.Tests
             return method.Method;
         }
         #endregion
-
+        #region GetCase
         internal static TestCaseData GetCase(MethodInfo mi, object[] pars, List<string> checks = null)
         {
             var name = mi.Name;
@@ -387,5 +386,6 @@ namespace Drill4Net.Target.Comon.Tests
             }
             return name;
         }
+        #endregion
     }
 }
