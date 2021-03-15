@@ -85,8 +85,8 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generic_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Yield), new List<string> { "If_11" }), new TestData(GetInfo(_target.GetForYield), new List<string>()));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Yield), new List<string> { "If_11" }), new TestData(GetInfo(_target.GetForYield), new List<string>()));
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Yield), new List<string> { "Else_44" }), new TestData(GetInfo(_target.GetForYield), new List<string>()));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Yield), new List<string> { "If_48" }), new TestData(GetInfo(_target.GetForYield), new List<string>()));
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestData(GetInfo(_point.ToString), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Unsafe), new List<string> { "If_13" }), new TestData(GetInfo(_point.ToString), new List<string>()));

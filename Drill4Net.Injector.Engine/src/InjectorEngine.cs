@@ -326,6 +326,13 @@ namespace Drill4Net.Injector.Engine
                             //operators: while/do
                             if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset)
                             {
+                                if (isEnumeratorMoveNext)
+                                {
+                                    var prevRef = (instr.Previous.Operand as MemberReference).FullName;
+                                    if (prevRef?.Contains("::MoveNext()") == true)
+                                        continue;
+                                }
+                                //
                                 var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
                                 var prevOperand = SkipNop(ind, false);
                                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
@@ -361,22 +368,6 @@ namespace Drill4Net.Injector.Engine
                             //when inserting 'after', must set in desc order
                             processor.InsertAfter(instr, call);
                             processor.InsertAfter(instr, ldstrIf);
-
-                            //correct jump instruction
-                            if (operand != null)
-                            {
-                                //TODO: check for SWITCH!
-                                //EACH short form -> to long form (otherwise, you need to recalculate 
-                                //again after each necessary conversion)
-                                var newOpCode = ConvertShortJumpToLong(opCode);
-                                if (newOpCode.Code != code)
-                                {
-                                    //var injectLen = ldstrIf.GetSize() + call.GetSize();
-                                    //var diff = operand.Offset - instr.Offset;
-                                    //if (diff + injectLen > 127 || diff < -128) //is too far?
-                                    instr.OpCode = newOpCode;
-                                }
-                            }
                             i += 2;
                             continue;
                         }
@@ -449,38 +440,17 @@ namespace Drill4Net.Injector.Engine
                     {
                         //EACH short form -> to long form (otherwise, you need to recalculate 
                         //again after each necessary conversion)
-                        if (methodName == "MoveNext" && typeName.Contains("<GetForYield>")) //TEST!!!!
+                        var jumpersList = jumpers.ToList();
+                        for (var j = 0; j < jumpersList.Count; j++)
                         {
-                            var jumpersList = jumpers.ToList();
-                            //for (var j = 0; j < jumpersList.Count; j++)
-                            //{
-                            //    var jump = jumpersList[j];
-                            //    var opCode = jump.OpCode;
-                            //    if (jump.Operand is Instruction operand)
-                            //    {
-                            //        var newOpCode = ConvertShortJumpToLong(opCode);
-                            //        if (newOpCode.Code != opCode.Code)
-                            //        {
-                            //            var opCode2 = operand.OpCode;
-                            //            var flowOp2 = opCode2.FlowControl;
-                            //            if (flowOp2 == FlowControl.Branch || flowOp2 == FlowControl.Cond_Branch)
-                            //            {
-                            //                var newOpCode2 = ConvertShortJumpToLong(opCode2);
-                            //                if (newOpCode2.Code != opCode2.Code)
-                            //                {
-                            //                    if (operand.Operand is Instruction operand2)
-                            //                    {
-                            //                        var longIstr2 = Instruction.Create(newOpCode, operand2);
-                            //                        processor.Replace(operand, longIstr2);
-                            //                        operand = longIstr2;
-                            //                    }
-                            //                }
-                            //            }
-                            //            //
-                            //            jump.OpCode = newOpCode;
-                            //        }
-                            //    }
-                            //}
+                            var jump = jumpersList[j];
+                            var opCode = jump.OpCode;
+                            if (jump.Operand is Instruction operand)
+                            {
+                                var newOpCode = ConvertShortJumpToLong(opCode);
+                                if (newOpCode.Code != opCode.Code)
+                                    jump.OpCode = newOpCode;
+                            }
                         }
                     }
                     #endregion
@@ -664,6 +634,9 @@ namespace Drill4Net.Injector.Engine
                 {
                     if (instr == null || instr.Offset == 0)
                         break;
+                    var code = instr.OpCode.Name;
+                    //if (code.StartsWith("ld")) //guano!
+                        //break;
 
                     //we don't need 'angled' instructions in business code
                     if (!compilerInstructions.Contains(instr))
