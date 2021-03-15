@@ -305,7 +305,7 @@ namespace Drill4Net.Injector.Engine
                         // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            if (!isAsyncStateMachine && IsCompilerBranch(i))
+                            if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(i))
                                 continue;
                             if (!IsRealCondition(i))
                                 continue;
@@ -379,7 +379,7 @@ namespace Drill4Net.Injector.Engine
                                 continue;
                             if (IsNextReturn(i))
                                 continue;
-                            if (!isAsyncStateMachine && IsCompilerBranch(i))
+                            if (!isAsyncStateMachine && IsCompilerGeneratedBranch(i))
                                 continue;
                             if (!IsRealCondition(i)) //is real forward condition's branch?
                                 continue;
@@ -617,7 +617,7 @@ namespace Drill4Net.Injector.Engine
                 }
             }
 
-            bool IsCompilerBranch(int ind)
+            bool IsCompilerGeneratedBranch(int ind)
             {
                 //TODO: optimize (caching 'normal instruction')
                 if (ind < 0 || ind >= instructions.Count)
@@ -634,16 +634,17 @@ namespace Drill4Net.Injector.Engine
                 {
                     if (instr == null || instr.Offset == 0)
                         break;
-                    var code = instr.OpCode.Name;
-                    //if (code.StartsWith("ld")) //guano!
-                        //break;
+                    //var code = instr.OpCode.Name;
+                    //var operand2 = instr.Operand as MemberReference;
+                    //if (operand2?.FullName.Contains("::") == true) //guano!
+                       // break;
 
-                    //we don't need 'angled' instructions in business code
+                    //we don't need compiler generated instructions in business code
                     if (!compilerInstructions.Contains(instr))
                     {
                         localInsts.Add(instr);
                         var operand = instr.Operand as MemberReference;
-                        if (operand?.Name.StartsWith("<") == true)
+                        if (operand?.Name.StartsWith("<") == true) //hm...
                         {
                             //add next instructions of branch as 'angled'
                             var curNext = inited.Next;

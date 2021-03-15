@@ -39,6 +39,7 @@ namespace Drill4Net.Target.Comon.Tests
                 #region Async/await
                 //paired test locates in the Simple category
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.AsyncTask), new List<string> { "Else_58" }), new TestData(GetInfo(_target.Delay100), new List<string>()));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.AsyncTask), new List<string> { "If_17" }));
 
                 yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.AsyncLambda), new List<string> { "Else_59" }));
                 yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.AsyncLambda), new List<string> { "If_18" }));
@@ -212,10 +213,6 @@ namespace Drill4Net.Target.Comon.Tests
 
                 yield return GetCase(GetInfo(_target.DynamicObject), new object[] { false }, new List<string> { "Else_2" });
                 yield return GetCase(GetInfo(_target.DynamicObject), new object[] { true }, new List<string> { "If_6" });
-                #endregion
-                #region Async/await
-                //paired test locates in the Simple category
-                yield return GetCase(GetInfo(_target.AsyncTask), new object[] { true }, new List<string> { "If_17" });
                 #endregion
                 #region Misc
                 yield return GetCase(GetInfo(_target.While_Operator), new object[] { -1 }, new List<string>());
