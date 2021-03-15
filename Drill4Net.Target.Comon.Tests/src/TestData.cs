@@ -12,7 +12,7 @@ namespace Drill4Net.Target.Comon.Tests
 
         /*****************************************************/
 
-        public TestData(MethodInfo info, List<string> checks, bool needSort = false)
+        public TestData(MethodInfo info, List<string> checks = null, bool needSort = false)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
             Checks = checks ?? throw new ArgumentNullException(nameof(checks));

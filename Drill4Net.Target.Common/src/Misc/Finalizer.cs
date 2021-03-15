@@ -8,7 +8,7 @@ namespace Drill4Net.Target.Common
 
         /***************************************************/
 
-        public Finalizer(ushort len)
+        public Finalizer(int len)
         {
             _ms = new MemoryStream(new byte[len]);
         }

@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)Drill4Net.Target.Comon.Tests\bin\Debug\net5.0\tests_cfg.yml" />
+    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)Drill4Net.Target.Comon.Tests\tests_cfg.yml" />
   </Target>
 
 </Project>

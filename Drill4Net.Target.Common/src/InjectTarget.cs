@@ -105,6 +105,7 @@ namespace Drill4Net.Target.Common
             #endregion
             #region Anonymous, Expression
             AnonymousFunc();
+            AnonymousFunc_WithLocalFunc();
 
             AnonymousType(false);
             AnonymousType(true);
@@ -163,7 +164,7 @@ namespace Drill4Net.Target.Common
             ThreadNew(false);
             ThreadNew(true);
             #endregion
-            #region Using/finalizer
+            #region IDisposable
             UsingStatement_SyncRead(false);
             UsingStatement_SyncRead(true);
 
@@ -723,7 +724,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(ThreadNew)}: {cond} -> {string.Join(",", list)}");
         }
         #endregion
-        #region Using, finalizer
+        #region IDisposable
         internal void UsingStatement_SyncRead(bool cond)
         {
             byte cnt = 10;
@@ -765,10 +766,42 @@ namespace Drill4Net.Target.Common
             return Task.Run(() => { Thread.Sleep(50); });
         }
 
-        internal void Finalizer(ushort len)
+        internal bool Finalizer(int len)
         {
             new Finalizer(len);
             Console.WriteLine($"{nameof(Finalizer)}: {len}");
+            return true;
+        }
+        #endregion
+        #region Misc
+        #region AnonymousFunc
+        delegate int Operation(int x, int y);
+        internal void AnonymousFunc()
+        {
+            int z = 8;
+#pragma warning disable IDE0039 // Use local function
+            Operation operation = delegate (int x, int y)
+#pragma warning restore IDE0039 // Use local function
+            {
+                if (x > 1)
+                    x /= 2;
+                return x + y + z;
+            };
+            int d = operation(4, 5);
+            Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
+        }
+
+        internal void AnonymousFunc_WithLocalFunc()
+        {
+            int z = 8;
+            int operation(int x, int y)
+            {
+                if (x > 1)
+                    x /= 2;
+                return x + y + z;
+            }
+            int d = operation(4, 5);
+            Console.WriteLine($"{nameof(AnonymousFunc_WithLocalFunc)}: {d}"); // 15
         }
         #endregion
         #region WinAPI
@@ -781,23 +814,13 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(WinAPI)}: {cond}");
         }
         #endregion
-        #region Misc
-        private readonly object _locker = new object();
-        internal void Lock_Statement(bool cond)
-        {
-            string s;
-            lock (_locker)
-            {
-                s = cond ? "YES" : "NO";
-            }
-            Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
-        }
 
-        internal void While_Operator(int count)
+        internal bool While_Operator(int count)
         {
             Console.WriteLine($"{nameof(While_Operator)} -> {count}");
             while (count > 0)
                 count--;
+            return true;
         }
 
         //in principle, it is not necessary, because 
@@ -809,18 +832,15 @@ namespace Drill4Net.Target.Common
             do { i--; } while (i > 0);
         }
 
-        delegate int Operation(int x, int y);
-        internal void AnonymousFunc()
+        private readonly object _locker = new object();
+        internal void Lock_Statement(bool cond)
         {
-            int z = 8;
-            Operation operation = delegate (int x, int y)
+            string s;
+            lock (_locker)
             {
-                if (x > 1)
-                    x /= 2;
-                return x + y + z;
-            };
-            int d = operation(4, 5);
-            Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
+                s = cond ? "YES" : "NO";
+            }
+            Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
         }
 
         internal void AnonymousType(bool cond)
@@ -851,13 +871,15 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Expression10)}: {d}");
         }
 
-        internal void ContextBound(int prop)
+        //only for NetFramework?
+        internal bool ContextBound(int prop)
         {
             new ContextBound(prop);
             Console.WriteLine($"{nameof(ContextBound)}: {prop}");
+            return true;
         }
 
-        internal void Unsafe(bool cond)
+        internal bool Unsafe(bool cond)
         {
             Point point;
             unsafe
@@ -867,6 +889,7 @@ namespace Drill4Net.Target.Common
                 p->y = 35;
                 Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");
             }
+            return true;
         }
         #endregion
 

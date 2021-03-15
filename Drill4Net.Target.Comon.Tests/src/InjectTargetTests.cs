@@ -87,6 +87,8 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 mi.Invoke(_target, args);
             }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             //assert
             var funcs = GetFunctions();
@@ -211,7 +213,10 @@ namespace Drill4Net.Target.Comon.Tests
 
         private void Check(List<string> points, List<string> checks)
         {
+            if (checks == null)
+                checks = new List<string>();
             Assert.IsTrue(points.Count == checks.Count);
+
             for (var i = 0; i < checks.Count; i++)
             {
                 if (points[i] != checks[i])

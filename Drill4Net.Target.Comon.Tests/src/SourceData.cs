@@ -3,41 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using System;
+using Drill4Net.Target.Common;
 
 namespace Drill4Net.Target.Comon.Tests
 {
     internal class SourceData
     {
-        #region Delegates
-        internal delegate void OneBoolMethod(bool cond);
-        internal delegate void TwoBoolMethod(bool cond, bool cond2);
-
-        internal delegate bool OneBoolFunc(bool cond);
-        internal delegate bool TwoBoolFunc(bool cond, bool cond2);
-
-        internal delegate (bool,bool) OneBoolTupleFunc(bool cond);
-
-        internal delegate void OneIntMethod(int digit);
-        internal delegate string OneIntFuncStr(int digit);
-
-        internal delegate string OneBoolFuncStr(bool digit);
-        internal delegate Task FuncTask();
-        internal delegate string FuncString();
-        internal delegate Task OneBoolFuncTask(bool digit);
-        internal delegate List<Common.GenStr> FuncListGetStr();
-        internal delegate Task<Common.GenStr> ProcessElementDlg(Common.GenStr element, bool cond);
-        internal delegate List<string> OneBoolFuncListStr(bool cond);
-        #endregion
-
-        private static readonly Common.InjectTarget _target;
-        private static readonly Common.GenStr _genStr;
+        private static readonly InjectTarget _target;
+        private static readonly GenStr _genStr;
+        private static readonly Point _point;
 
         /************************************************************************/
 
         static SourceData()
         {
-            _target = new Common.InjectTarget();
-            _genStr = new Common.GenStr("");
+            _target = new InjectTarget();
+            _genStr = new GenStr("");
+            _point = new Point();
         }
 
         /************************************************************************/
@@ -77,12 +60,32 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ForeachParallel), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
 
                 //If both tests run together, one of them will crash
-                //yield return GetCase(new object[] { false }, true, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "Else_11" }), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "Else_4" }));
-                //yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "If_3" }, true), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "If_12" }));
+                yield return GetCase(new object[] { false }, true, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "Else_11" }), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "Else_4" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "If_3" }, true), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "If_12" }));
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
                 #endregion
+                #region IDisposable
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.UsingStatement_SyncRead), new List<string> { /*"If_31"*/ }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.UsingStatement_SyncRead), new List<string> { "If_17"/*, "If_31" */}));
+
+                yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.UsingStatement_AsyncRead), new List<string>()));
+                yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.UsingStatement_AsyncRead), new List<string> { "If_34" }));
+
+                yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.UsingStatement_AsyncTask), new List<string>()));
+                yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.UsingStatement_AsyncTask), new List<string> { "If_34" }));
+
+                //data will be located in different locations...
+                yield return GetCase(new object[] { (ushort)17 }, new TestData(GetInfo(_target.Finalizer), new List<string> { "If_8", "If_30" }));
+                yield return GetCase(new object[] { (ushort)18 }, new TestData(GetInfo(_target.Finalizer), new List<string> { "Else_12", "If_30" }));
+                #endregion
+
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Yield), new List<string>()), new TestData(GetInfo(_target.GetForYield), new List<string> { "If_11" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Yield), new List<string>()), new TestData(GetInfo(_target.GetForYield), new List<string> { "If_11" }));
+
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestData(GetInfo(_point.ToString), new List<string>()));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Unsafe), new List<string> { "If_13" }), new TestData(GetInfo(_point.ToString), new List<string>()));
             }
         }
 
@@ -208,12 +211,70 @@ namespace Drill4Net.Target.Comon.Tests
                 //paired test locates in the Simple category
                 yield return GetCase(GetInfo(_target.AsyncTask), new object[] { true }, new List<string> { "If_17" });
                 #endregion
+                #region Misc
+                yield return GetCase(GetInfo(_target.While_Operator), new object[] { -1 }, new List<string>());
+                yield return GetCase(GetInfo(_target.While_Operator), new object[] { 3 }, new List<string> { "While_20", "While_20", "While_20" });
+
+                yield return GetCase(GetInfo(_target.AnonymousFunc), Array.Empty<object>(), new List<string> { "If_6" });
+                yield return GetCase(GetInfo(_target.AnonymousFunc_WithLocalFunc), Array.Empty<object>(), new List<string> { "If_6" });
+
+                yield return GetCase(GetInfo(_target.AnonymousType), new object[] { false }, new List<string> { "Else_5" });
+                yield return GetCase(GetInfo(_target.AnonymousType), new object[] { true }, new List<string> { "If_9" });
+
+                yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { false }, new List<string> { "Else_14" });
+                yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { true }, new List<string> { "If_18" });
+
+                yield return GetCase(GetInfo(_target.WinAPI), new object[] { false }, new List<string> { "Else_5" });
+                yield return GetCase(GetInfo(_target.WinAPI), new object[] { true }, new List<string> { "If_9" });
+
+                //only for NetFramework?
+                //yield return GetCase(GetInfo(_target.ContextBound), new object[] { false }, new List<string> { "Else_5" });
+                //yield return GetCase(GetInfo(_target.ContextBound), new object[] { true }, new List<string> { "If_9" });
+                #endregion
             }
         }
 
         /******************************************************************/
 
+        #region Delegates
+        internal delegate void EmptySig();
+        internal delegate void OneBoolMethod(bool cond);
+        internal delegate void TwoBoolMethod(bool cond, bool cond2);
+
+        internal delegate bool OneBoolFunc(bool cond);
+        internal delegate bool TwoBoolFunc(bool cond, bool cond2);
+
+        internal delegate (bool, bool) OneBoolTupleFunc(bool cond);
+
+        internal delegate void OneIntMethod(int digit);
+        internal delegate string OneIntFuncStr(int digit);
+
+        internal delegate string OneBoolFuncStr(bool digit);
+        internal delegate Task FuncTask();
+        internal delegate string FuncString();
+        internal delegate Task OneBoolFuncTask(bool digit);
+        internal delegate List<Common.GenStr> FuncListGetStr();
+        internal delegate Task<Common.GenStr> ProcessElementDlg(Common.GenStr element, bool cond);
+        internal delegate List<string> OneBoolFuncListStr(bool cond);
+        internal delegate IEnumerable<string> OneBoolFuncIEnumerable(bool digit);
+        internal delegate bool OneInt(int digit);
+        #endregion
         #region Method info
+        internal static MethodInfo GetInfo(OneBoolFuncIEnumerable method)
+        {
+            return method.Method;
+        }
+
+        internal static MethodInfo GetInfo(EmptySig method)
+        {
+            return method.Method;
+        }
+
+        internal static MethodInfo GetInfo(OneInt method)
+        {
+            return method.Method;
+        }
+
         internal static MethodInfo GetInfo(OneBoolMethod method)
         {
             return method.Method;
@@ -285,7 +346,7 @@ namespace Drill4Net.Target.Comon.Tests
         }
         #endregion
 
-        internal static TestCaseData GetCase(MethodInfo mi, object[] pars, List<string> checks)
+        internal static TestCaseData GetCase(MethodInfo mi, object[] pars, List<string> checks = null)
         {
             var name = mi.Name;
             var caption = GetCaption(name, pars);
@@ -313,6 +374,8 @@ namespace Drill4Net.Target.Comon.Tests
 
         private static string GetCaption(string name, object[] parameters)
         {
+            if (parameters == null || parameters.Length == 0)
+                return name;
             name += ": ";
             var lastInd = parameters.Length - 1;
             for (int i = 0; i <= lastInd; i++)
