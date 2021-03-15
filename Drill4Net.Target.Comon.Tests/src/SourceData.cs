@@ -13,6 +13,7 @@ namespace Drill4Net.Target.Comon.Tests
         private static readonly InjectTarget _target;
         private static readonly GenStr _genStr;
         private static readonly Point _point;
+        private static string INFLUENCE = "The passing of the test is affected by some other asynchronous tests. May be test will pass in Debug Test Mode.";
 
         /************************************************************************/
 
@@ -37,7 +38,6 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.GenericVar), new List<string> { "If_20", "If_30" }));
                 #endregion
                 #region Async/await
-                //paired test locates in the Simple category
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.AsyncTask), new List<string> { "Else_58" }), new TestData(GetInfo(_target.Delay100), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.AsyncTask), new List<string> { "If_17" }));
 
@@ -47,8 +47,7 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, true, new TestData(GetInfo(_target.AsyncLinq_Blocking), new List<string>()), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string>()));
                 yield return GetCase(new object[] { true }, true, new TestData(GetInfo(_target.AsyncLinq_Blocking),  new List<string>()), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
 
-                //If both tests run together, one of them will crash
-                //yield return GetCase(new object[] { false }, true, true, (GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), (GetInfo(_target.GetDataForAsyncLinq), new List<string>()), (GetInfo(_target.ProcessElement), new List<string>()));
+                yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string>())).Ignore(INFLUENCE);
                 yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.AsyncLinq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
                 #endregion
                 #region Parallel
@@ -61,9 +60,12 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ForeachParallel), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ForeachParallel), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
 
-                //If both tests run together, one of them will crash
-                yield return GetCase(new object[] { false }, true, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "Else_11" }), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "Else_4" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskContinueWhenAll), new List<string> { "If_3" }, true), new TestData(GetInfo(_target.GetStringListForTaskContinue), new List<string> { "If_12" }));
+                //data migrates from one func to another depending on running other similar tests... See next option for execute them
+                //yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "Else_11"}), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "Else_4" }));
+                //yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "If_3" }), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "If_12" }));
+
+                yield return GetCase(new object[] { false }, false, true, true, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "Else_11", "Else_4" }, true));
+                yield return GetCase(new object[] { true }, false, true, true, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "If_12", "If_3" }, true));
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
@@ -352,21 +354,26 @@ namespace Drill4Net.Target.Comon.Tests
 
         internal static TestCaseData GetCase(object[] pars, params TestData[] input)
         {
-            return GetCase(pars, false, false, input);
+            return GetCase(pars, false, false, false, input);
         }
 
         internal static TestCaseData GetCase(object[] pars, bool ignoreEnterReturns, params TestData[] input)
         {
-            return GetCase(pars, false, ignoreEnterReturns, input);
+            return GetCase(pars, false, false, ignoreEnterReturns, input);
         }
 
         internal static TestCaseData GetCase(object[] pars, bool isAsync, bool ignoreEnterReturns, params TestData[] input)
+        {
+            return GetCase(pars, isAsync, false, ignoreEnterReturns, input);
+        }
+
+        internal static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestData[] input)
         {
             Assert.IsNotNull(input);
             Assert.True(input.Length > 0);
 
             var caption = GetCaption(input[0].Info.Name, pars);
-            return new TestCaseData(pars, isAsync, ignoreEnterReturns, input).SetName(caption);
+            return new TestCaseData(pars, isAsync, isBunch, ignoreEnterReturns, input).SetName(caption);
         }
 
         private static string GetCaption(string name, object[] parameters)

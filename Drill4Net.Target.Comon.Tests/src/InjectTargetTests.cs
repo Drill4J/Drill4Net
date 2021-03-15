@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Plugins.Testing;
+using System.Diagnostics;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -53,7 +54,11 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 mi.Invoke(_target, args);
             }
-            catch { } //it's normal for business throws
+            catch //it's normal for business throws
+            {
+                if (!checks.Any(a => a.Contains("Throw")))
+                    throw;
+            }
 
             //assert
             var funcs = GetFunctions();
@@ -70,7 +75,7 @@ namespace Drill4Net.Target.Comon.Tests
         }
 
         [TestCaseSource(typeof(SourceData), "ParentChild", Category = "ParentChild")]
-        public void Parent_Child_Ok(object[] args, bool isAsync, bool ignoreEnterReturns, params TestData[] inputs)
+        public void Parent_Child_Ok(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestData[] inputs)
         {
             //arrange
             var parentData = inputs[0];
@@ -92,30 +97,48 @@ namespace Drill4Net.Target.Comon.Tests
 
             //assert
             var funcs = GetFunctions();
-            Assert.IsTrue(funcs.Count == inputs.Length);
-
-            for (var i = 0; i < inputs.Length; i++)
+            if (!isBunch)
             {
-                var data = inputs[i];
-                var source = GetSource(GetFullSignature(data.Info));
-                Assert.True(funcs.ContainsKey(source));
-                var points = funcs[source];
+                Assert.IsTrue(funcs.Count == inputs.Length);
 
-                if (ignoreEnterReturns)
+                for (var i = 0; i < inputs.Length; i++)
                 {
-                    var forDelete = points.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
-                    for (var j = 0; j < forDelete.Length; j++)
-                        points.Remove(forDelete[j]);
-                }
-                else
-                {
-                    CheckEnterAndLastReturnOrThrow(points);
-                    RemoveEnterAndLastReturn(points);
-                }
+                    var data = inputs[i];
+                    var source = GetSource(GetFullSignature(data.Info));
+                    Assert.True(funcs.ContainsKey(source));
+                    var points = funcs[source];
 
+                    if (ignoreEnterReturns)
+                    {
+                        RemoveEnterReturns(points);
+                    }
+                    else
+                    {
+                        CheckEnterAndLastReturnOrThrow(points);
+                        RemoveEnterAndLastReturn(points);
+                    }
+
+                    if (data.NeedSort)
+                        points.Sort();
+                    Check(points, data.Checks);
+                }
+            }
+            else
+            {
+                var data = inputs[0];
+                var points = funcs.Values.SelectMany(a => a).ToList();
+                RemoveEnterReturns(points);
                 if (data.NeedSort)
                     points.Sort();
                 Check(points, data.Checks);
+            }
+
+            //local funcs
+            void RemoveEnterReturns(IList<string> points)
+            {
+                var forDelete = points.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
+                for (var j = 0; j < forDelete.Length; j++)
+                    points.Remove(forDelete[j]);
             }
         }
 
@@ -211,7 +234,7 @@ namespace Drill4Net.Target.Comon.Tests
             Assert.IsNotNull(points.Last(a => a.StartsWith("Return_") || a.StartsWith("Throw_")), "No last Return/Throw");
         }
 
-        private void Check(List<string> points, List<string> checks)
+        private void Check(IList<string> points, List<string> checks)
         {
             if (checks == null)
                 checks = new List<string>();

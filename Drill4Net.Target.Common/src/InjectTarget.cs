@@ -158,8 +158,8 @@ namespace Drill4Net.Target.Common
             ForeachParallel(false);
             ForeachParallel(true);
 
-            TaskContinueWhenAll(false);
-            TaskContinueWhenAll(true);
+            TaskNewWait(false);
+            TaskNewWait(true);
 
             ThreadNew(false);
             ThreadNew(true);
@@ -688,21 +688,20 @@ namespace Drill4Net.Target.Common
             return Enumerable.Range(0, cnt);
         }
 
-        internal void TaskContinueWhenAll(bool cond)
+        internal void TaskNewWait(bool cond)
         {
             Task[] tasks = new Task[2];
             List<string> list1 = null;
             List<string> list2 = null;
 
-            tasks[0] = Task.Factory.StartNew(() => list1 = GetStringListForTaskContinue(cond));
-            tasks[1] = Task.Factory.StartNew(() => list2 = !cond ? new List<string> { "Y2" } : new List<string> { "A2, B2, C12" });
+            tasks[0] = Task.Factory.StartNew(() => list1 = GetStringListForTaskNewWait(cond));
+            tasks[1] = Task.Factory.StartNew(() => list2 = !cond ? new List<string> { "Y2" } : new List<string> { "A2, B2, C2" });
 
-            Task.Factory.ContinueWhenAll(tasks, completedTasks => {
-                Console.WriteLine($"{nameof(TaskContinueWhenAll)}: {cond} -> {string.Join(",", list1)} / {string.Join(",", list2)}");
-            });
+            Task.WaitAll(tasks);
+            Console.WriteLine($"{nameof(TaskNewWait)}: {cond} -> {string.Join(",", list1)} / {string.Join(",", list2)}");
         }
 
-        internal List<string> GetStringListForTaskContinue(bool cond)
+        internal List<string> GetStringListForTaskNewWait(bool cond)
         {
             return cond ? new List<string> { "X1" } : new List<string> { "A1, B1, C1" };
         }
@@ -901,6 +900,6 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: a || b, local funcs, extensions, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
     }
 }

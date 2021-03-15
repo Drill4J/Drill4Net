@@ -83,12 +83,12 @@ namespace Drill4Net.Plugins.Testing
             return points;
         }
 
-        public static Dictionary<string, List<string>> GetFunctions(bool createNotExistsedFuncBranch)
+        public static Dictionary<string, List<string>> GetFunctions(bool createNotExistedBranch)
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
             var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
-            Debug.WriteLine($"Profiler: id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
+            Debug.WriteLine($"Profiler({createNotExistedBranch}): id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
 
             Dictionary<string, List<string>> byFunctions;
             if (_clientPoints.ContainsKey(id))
@@ -98,7 +98,7 @@ namespace Drill4Net.Plugins.Testing
             else
             {
                 byFunctions = new Dictionary<string, List<string>>();
-                if(createNotExistsedFuncBranch)
+                if(createNotExistedBranch)
                     _clientPoints.TryAdd(id, byFunctions);
             }
             return byFunctions;
