@@ -305,6 +305,20 @@ namespace Drill4Net.Injector.Engine
                         // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
+                            //check for using-statement (compiler generated Try/Finally with If-checking)
+                            if (i > 2 && i < instructions.Count - 2)
+                            {
+                                var a = instructions[i - 2];
+                                var isWasTry = a.OpCode.Code == Code.Leave || a.OpCode.Code == Code.Leave_S;
+                                if (isWasTry)
+                                {
+                                    var b = instructions[i + 2];
+                                    var isDispose = (b.Operand as MemberReference)?.FullName?.EndsWith("IDisposable::Dispose()") == true;
+                                    if (isDispose)
+                                        continue;
+                                }
+                            }
+                            //
                             if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(i))
                                 continue;
                             if (!IsRealCondition(i))
@@ -634,10 +648,6 @@ namespace Drill4Net.Injector.Engine
                 {
                     if (instr == null || instr.Offset == 0)
                         break;
-                    //var code = instr.OpCode.Name;
-                    //var operand2 = instr.Operand as MemberReference;
-                    //if (operand2?.FullName.Contains("::") == true) //guano!
-                       // break;
 
                     //we don't need compiler generated instructions in business code
                     if (!compilerInstructions.Contains(instr))
