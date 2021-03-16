@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Plugins.Testing;
-using System.Diagnostics;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -92,8 +91,6 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 mi.Invoke(_target, args);
             }
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
 
             //assert
             var funcs = GetFunctions();

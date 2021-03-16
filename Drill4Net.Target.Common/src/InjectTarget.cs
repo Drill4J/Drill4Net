@@ -164,7 +164,7 @@ namespace Drill4Net.Target.Common
             Parallel_Thread_New(false);
             Parallel_Thread_New(true);
             #endregion
-            #region IDisposable
+            #region Disposable
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
 
@@ -174,10 +174,8 @@ namespace Drill4Net.Target.Common
             await Disposable_Using_AsyncTask(false);
             await Disposable_Using_AsyncTask(true);
 
-            Disposable_Finalizer(17);
-            Disposable_Finalizer(18);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            await Disposable_Finalizer(17);
+            await Disposable_Finalizer(18);
             #endregion
             #region Cycle
             Cycle_While(-1);
@@ -742,7 +740,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Parallel_Thread_New)}: {cond} -> {string.Join(",", list)}");
         }
         #endregion
-        #region IDisposable
+        #region Disposable
         internal void Disposable_Using_SyncRead(bool cond)
         {
             byte cnt = 10;
@@ -784,11 +782,20 @@ namespace Drill4Net.Target.Common
             return Task.Run(() => { Thread.Sleep(50); });
         }
 
-        internal bool Disposable_Finalizer(int len)
+        internal async Task Disposable_Finalizer(int len)
+        {
+            CreateDisposable(len);
+
+            await Task.Delay(500);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Console.WriteLine($"{nameof(Disposable_Finalizer)}: {len}");
+        }
+
+        private void CreateDisposable(int len)
         {
             new Finalizer(len);
-            Console.WriteLine($"{nameof(Disposable_Finalizer)}: {len}");
-            return true;
         }
         #endregion
         #region Anonymous
@@ -904,6 +911,6 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: Elvis, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
     }
 }

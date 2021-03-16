@@ -13,10 +13,10 @@ namespace Drill4Net.Target.Comon.Tests
         private static readonly InjectTarget _target;
         private static readonly GenStr _genStr;
         private static readonly Point _point;
-        private static string INFLUENCE = "The passing of the test is affected by some other asynchronous tests. May be test will pass in Debug Test Mode.";
+        private const string INFLUENCE = "The passing of the test is affected by some other asynchronous tests. May be test will pass in Debug Test Mode.";
 
-        private static string CATEGORY_DYNAMIC = "Dynamic";
-        private static string CATEGORY_MISC = "Misc";
+        private const string CATEGORY_DYNAMIC = "Dynamic";
+        private const string CATEGORY_MISC = "Misc";
 
         /************************************************************************/
 
@@ -92,8 +92,8 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
                 //data will be located in different locations...
-                yield return GetCase(new object[] { (ushort)17 }, new TestData(GetInfo(_target.Disposable_Finalizer), new List<string> { "If_8", "If_30" }));
-                yield return GetCase(new object[] { (ushort)18 }, new TestData(GetInfo(_target.Disposable_Finalizer), new List<string> { "Else_12", "If_30" }));
+                yield return GetCase(new object[] { (ushort)17 }, true, true, new TestData(GetInfo(_target.Disposable_Finalizer), new List<string> { "If_8", "If_30" }));
+                yield return GetCase(new object[] { (ushort)18 }, true, true, new TestData(GetInfo(_target.Disposable_Finalizer), new List<string> { "Else_12", "If_30" }));
                 #endregion
                 #region Misc
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
@@ -254,15 +254,21 @@ namespace Drill4Net.Target.Comon.Tests
 
         internal delegate string OneBoolFuncStr(bool digit);
         internal delegate Task FuncTask();
+        internal delegate Task OneIntFuncTask(int digit);
         internal delegate string FuncString();
         internal delegate Task OneBoolFuncTask(bool digit);
-        internal delegate List<Common.GenStr> FuncListGetStr();
-        internal delegate Task<Common.GenStr> ProcessElementDlg(Common.GenStr element, bool cond);
+        internal delegate List<GenStr> FuncListGetStr();
+        internal delegate Task<GenStr> ProcessElementDlg(Common.GenStr element, bool cond);
         internal delegate List<string> OneBoolFuncListStr(bool cond);
         internal delegate IEnumerable<string> OneBoolFuncIEnumerable(bool digit);
         internal delegate bool OneInt(int digit);
         #endregion
         #region Method info
+        internal static MethodInfo GetInfo(OneIntFuncTask method)
+        {
+            return method.Method;
+        }
+
         internal static MethodInfo GetInfo(OneBoolFuncIEnumerable method)
         {
             return method.Method;
