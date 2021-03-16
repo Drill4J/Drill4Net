@@ -43,7 +43,7 @@ namespace Drill4Net.Target.Comon.Tests
 
         /****************************************************************************/
 
-        [TestCaseSource(typeof(SourceData), "Simple"/*, Category = "Simple"*/)]
+        [TestCaseSource(typeof(SourceData), "Simple")]
         public void Simple_Ok(MethodInfo mi, object[] args, List<string> checks)
         {
             //arrange
@@ -74,7 +74,7 @@ namespace Drill4Net.Target.Comon.Tests
             Check(points, checks);
         }
 
-        [TestCaseSource(typeof(SourceData), "ParentChild", Category = "ParentChild")]
+        [TestCaseSource(typeof(SourceData), "ParentChild")]
         public void Parent_Child_Ok(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestData[] inputs)
         {
             //arrange

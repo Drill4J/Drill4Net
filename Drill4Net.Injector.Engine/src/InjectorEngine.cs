@@ -305,7 +305,10 @@ namespace Drill4Net.Injector.Engine
                         // IF/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
-                            //check for using-statement (compiler generated Try/Finally with If-checking)
+                            //check for 'using' statement (compiler generated Try/Finally with If-checking)
+                            //There is a possibility that a very similar construction from the business code
+                            //may be omitted if the programmer directly implemented Try/Finally with a check
+                            //and a Dispose() call, instead of the usual 'using', although it is unlikely
                             if (i > 2 && i < instructions.Count - 2)
                             {
                                 var a = instructions[i - 2];

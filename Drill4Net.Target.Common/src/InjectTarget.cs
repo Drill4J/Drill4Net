@@ -22,11 +22,11 @@ namespace Drill4Net.Target.Common
             IfElse_FullSimple(false);
             IfElse_FullSimple(true);
 
-            Ternary_Positive(false);
-            Ternary_Positive(true);
+            IfElse_Ternary_Positive(false);
+            IfElse_Ternary_Positive(true);
 
-            Ternary_Negative(false);
-            Ternary_Negative(true);
+            IfElse_Ternary_Negative(false);
+            IfElse_Ternary_Negative(true);
 
             IfElse_FullCompound(false, false);
             IfElse_FullCompound(false, true);
@@ -84,107 +84,108 @@ namespace Drill4Net.Target.Common
             Linq_Fluent(true);
             #endregion
             #region Lambda
-            Lambda10(5);
-            Lambda10(10);
+            Lambda(5);
+            Lambda(10);
 
-            Lambda10_AdditionalBranch(10);
+            Lambda_AdditionalBranch(10);
 
-            Lambda10_AdditionalSwitch(5);
-            Lambda10_AdditionalSwitch(10);
-            Lambda10_AdditionalSwitch(12);
+            Lambda_AdditionalSwitch(5);
+            Lambda_AdditionalSwitch(10);
+            Lambda_AdditionalSwitch(12);
             #endregion
             #region Generics
-            GenericVar(false);
-            GenericVar(true);
+            Generics_Var(false);
+            Generics_Var(true);
 
-            Generic_Call_Base(false);
-            Generic_Call_Base(true);
+            Generics_Call_Base(false);
+            Generics_Call_Base(true);
 
-            Generic_Call_Child(false);
-            Generic_Call_Child(true);
+            Generics_Call_Child(false);
+            Generics_Call_Child(true);
             #endregion
             #region Anonymous, Expression
-            AnonymousFunc();
-            AnonymousFunc_WithLocalFunc();
+            Anonymous_Func();
+            Anonymous_Func_WithLocalFunc();
 
-            AnonymousType(false);
-            AnonymousType(true);
+            Anonymous_Type(false);
+            Anonymous_Type(true);
 
-            Expression10(5);
-            Expression10(10);
+            Expression(5);
+            Expression(10);
             #endregion
             #region Try/cath/finally
             try
             {
-                Exception_Conditional(false);
-                Exception_Conditional(true);
+                Try_Exception_Conditional(false);
+                Try_Exception_Conditional(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"\n{ex}");
             }
 
-            Catch_Statement(false);
-            Catch_Statement(true);
+            Try_Catch(false);
+            Try_Catch(true);
 
-            Catch_When_Statement(false, false);
-            Catch_When_Statement(false, true);
-            Catch_When_Statement(true, false);
-            Catch_When_Statement(true, true);
+            Try_CatchWhen(false, false);
+            Try_CatchWhen(false, true);
+            Try_CatchWhen(true, false);
+            Try_CatchWhen(true, true);
 
-            Finally_Statement(false);
-            Finally_Statement(true);
+            Try_Finally(false);
+            Try_Finally(true);
             #endregion
             #region Async
-            await AsyncTask(false);
-            await AsyncTask(true);
+            await Async_Task(false);
+            await Async_Task(true);
 
-            await AsyncLambda(false);
-            await AsyncLambda(true);
+            await Async_Lambda(false);
+            await Async_Lambda(true);
 
-            AsyncLinq_Blocking(false);
-            AsyncLinq_Blocking(true);
+            Async_Linq_Blocking(false);
+            Async_Linq_Blocking(true);
 
-            await AsyncLinq_NonBlocking(false);
-            await AsyncLinq_NonBlocking(true);
+            await Async_Linq_NonBlocking(false);
+            await Async_Linq_NonBlocking(true);
             #endregion
             #region Parallel
-            Plinq(false);
-            Plinq(true);
+            Parallel_Plinq(false);
+            Parallel_Plinq(true);
 
-            ForParallel(false);
-            ForParallel(true);
+            Parallel_For(false);
+            Parallel_For(true);
 
-            ForeachParallel(false);
-            ForeachParallel(true);
+            Parallel_Foreach(false);
+            Parallel_Foreach(true);
 
-            TaskNewWait(false);
-            TaskNewWait(true);
+            Parallel_Task_New(false);
+            Parallel_Task_New(true);
 
-            ThreadNew(false);
-            ThreadNew(true);
+            Parallel_ThreadNew(false);
+            Parallel_ThreadNew(true);
             #endregion
             #region IDisposable
-            UsingStatement_SyncRead(false);
-            UsingStatement_SyncRead(true);
+            Disposable_Using_SyncRead(false);
+            Disposable_Using_SyncRead(true);
 
-            await UsingStatement_AsyncRead(false);
-            await UsingStatement_AsyncRead(true);
+            await Disposable_Using_AsyncRead(false);
+            await Disposable_Using_AsyncRead(true);
 
-            await UsingStatement_AsyncTask(false);
-            await UsingStatement_AsyncTask(true);
+            await Disposable_Using_AsyncTask(false);
+            await Disposable_Using_AsyncTask(true);
 
-            Finalizer(17);
-            Finalizer(18);
+            Disposable_Finalizer(17);
+            Disposable_Finalizer(18);
             GC.Collect();
             GC.WaitForPendingFinalizers();
             #endregion
+            #region Cycle
+            Cycle_While(-1);
+            Cycle_While(3);
+
+            Cycle_Do_Operator();
+            #endregion
             #region Misc
-            While_Operator(-1);
-            While_Operator(3);
-
-            Do_Operator();
-
             Lock_Statement(false);
             Lock_Statement(true);
 
@@ -301,16 +302,16 @@ namespace Drill4Net.Target.Common
             return (false, false);
         }
 
-        internal void Ternary_Positive(bool cond)
+        internal void IfElse_Ternary_Positive(bool cond)
         {
             var type = cond ? "yes" : "no";
-            Console.WriteLine($"{nameof(Ternary_Positive)}: {type}");
+            Console.WriteLine($"{nameof(IfElse_Ternary_Positive)}: {type}");
         }
 
-        internal void Ternary_Negative(bool cond)
+        internal void IfElse_Ternary_Negative(bool cond)
         {
             var type = !cond ? "no" : "yes";
-            Console.WriteLine($"{nameof(Ternary_Negative)}: {type}");
+            Console.WriteLine($"{nameof(IfElse_Ternary_Negative)}: {type}");
         }
 
         internal void IfElse_FullCompound(bool a, bool b)
@@ -430,6 +431,24 @@ namespace Drill4Net.Target.Common
             };
         }
         #endregion
+        #region Cycle
+        internal bool Cycle_While(int count)
+        {
+            Console.WriteLine($"{nameof(Cycle_While)} -> {count}");
+            while (count > 0)
+                count--;
+            return true;
+        }
+
+        //in principle, it is not necessary, because 
+        //it is not a branch with a precondition
+        internal void Cycle_Do_Operator()
+        {
+            int i = 3;
+            Console.WriteLine($"{nameof(Cycle_Do_Operator)} -> {i}");
+            do { i--; } while (i > 0);
+        }
+        #endregion
         #region Linq
         internal void Linq_Query(bool all)
         {
@@ -446,23 +465,23 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Lambda
-        internal void Lambda10(int x)
+        internal void Lambda(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
-            Console.WriteLine($"{nameof(Lambda10)}: {d}");
+            Console.WriteLine($"{nameof(Lambda)}: {d}");
         }
 
-        internal void Lambda10_AdditionalBranch(int x)
+        internal void Lambda_AdditionalBranch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
             if (d > 100)
                 d /= 2;
-            Console.WriteLine($"{nameof(Lambda10_AdditionalBranch)}: {d}");
+            Console.WriteLine($"{nameof(Lambda_AdditionalBranch)}: {d}");
         }
 
-        internal void Lambda10_AdditionalSwitch(int x)
+        internal void Lambda_AdditionalSwitch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
@@ -471,11 +490,11 @@ namespace Drill4Net.Target.Common
                 case 100: d = 50; break;
                 case 144: d = 75; break;
             }
-            Console.WriteLine($"{nameof(Lambda10_AdditionalSwitch)}: {d}");
+            Console.WriteLine($"{nameof(Lambda_AdditionalSwitch)}: {d}");
         }
         #endregion
         #region Generics
-        internal void GenericVar(bool cond)
+        internal void Generics_Var(bool cond)
         {
             var list = new List<string> { "a", "b", "c" };
             if (cond)
@@ -487,29 +506,29 @@ namespace Drill4Net.Target.Common
             {
                 list.Reverse();
             }
-            Console.WriteLine($"{nameof(GenericVar)}: {cond} -> {string.Join(",", list)}");
+            Console.WriteLine($"{nameof(Generics_Var)}: {cond} -> {string.Join(",", list)}");
         }
 
-        internal void Generic_Call_Base(bool cond)
+        internal void Generics_Call_Base(bool cond)
         {
             var gen = new GenStr("AAA");
             var s = gen.GetDesc(cond);
-            Console.WriteLine($"{nameof(Generic_Call_Base)}: {s}");
+            Console.WriteLine($"{nameof(Generics_Call_Base)}: {s}");
         }
 
-        internal void Generic_Call_Child(bool cond)
+        internal void Generics_Call_Child(bool cond)
         {
             var gen = new GenStr("AAA");
             var s = cond ? gen.GetShortDesc() : "no desc";
-            Console.WriteLine($"{nameof(Generic_Call_Child)}: {s}");
+            Console.WriteLine($"{nameof(Generics_Call_Child)}: {s}");
         }
         #endregion
         #region Try/cath/finally
-        internal void Exception_Conditional(bool isException)
+        internal void Try_Exception_Conditional(bool isException)
         {
             try
             {
-                Console.WriteLine(nameof(Exception_Conditional));
+                Console.WriteLine(nameof(Try_Exception_Conditional));
             }
             //exception rethrow is not crack the injection
             catch (Exception ex)
@@ -525,7 +544,7 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        internal void Catch_Statement(bool cond)
+        internal void Try_Catch(bool cond)
         {
             var s = "none";
             try
@@ -536,10 +555,10 @@ namespace Drill4Net.Target.Common
             {
                 s = cond ? "YES" : "NO";
             }
-            Console.WriteLine($"{nameof(Catch_Statement)}: {s}");
+            Console.WriteLine($"{nameof(Try_Catch)}: {s}");
         }
 
-        internal void Catch_When_Statement(bool cond, bool cond2)
+        internal void Try_CatchWhen(bool cond, bool cond2)
         {
             var s = "none";
             try
@@ -551,10 +570,10 @@ namespace Drill4Net.Target.Common
                 s = cond ? "YES" : "NO";
             }
             catch { }
-            Console.WriteLine($"{nameof(Catch_When_Statement)}: {s}");
+            Console.WriteLine($"{nameof(Try_CatchWhen)}: {s}");
         }
 
-        internal void Finally_Statement(bool cond)
+        internal void Try_Finally(bool cond)
         {
             string s = null;
             try
@@ -565,7 +584,7 @@ namespace Drill4Net.Target.Common
             {
                 s = $"{(cond ? "YES" : "NO")}/{s}";
             }
-            Console.WriteLine($"{nameof(Finally_Statement)}: {s}");
+            Console.WriteLine($"{nameof(Try_Finally)}: {s}");
         }
         #endregion
         #region Dynamic
@@ -586,13 +605,13 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Async/await
-        internal async Task AsyncTask(bool cond)
+        internal async Task Async_Task(bool cond)
         {
             if (cond)
                 await Task.Delay(50);
             else
                 await Delay100();
-            Console.WriteLine($"{nameof(AsyncTask)}: {cond}");
+            Console.WriteLine($"{nameof(Async_Task)}: {cond}");
         }
 
         internal Task Delay100()
@@ -600,7 +619,7 @@ namespace Drill4Net.Target.Common
             return Task.Delay(100);
         }
 
-        internal async Task AsyncLambda(bool cond)
+        internal async Task Async_Lambda(bool cond)
         {
             await Task.Run(async () =>
             {
@@ -608,11 +627,11 @@ namespace Drill4Net.Target.Common
                     await Task.Delay(50);
                 else
                     await Task.Delay(100);
-                Console.WriteLine($"{nameof(AsyncLambda)}: {cond}");
+                Console.WriteLine($"{nameof(Async_Lambda)}: {cond}");
             });
         }
 
-        internal void AsyncLinq_Blocking(bool cond)
+        internal void Async_Linq_Blocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
             var inputs = data.Select(async ev => await ProcessElement(ev, cond))
@@ -620,10 +639,10 @@ namespace Drill4Net.Target.Common
                    .Where(i => i != null)
                    .ToList();
 
-            Console.WriteLine($"{nameof(AsyncLinq_Blocking)}: {string.Join(", ", inputs)}");
+            Console.WriteLine($"{nameof(Async_Linq_Blocking)}: {string.Join(", ", inputs)}");
         }
 
-        internal async Task AsyncLinq_NonBlocking(bool cond)
+        internal async Task Async_Linq_NonBlocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
             var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
@@ -632,7 +651,7 @@ namespace Drill4Net.Target.Common
                 .Where(result => result != null)
                 .ToList();
 
-            Console.WriteLine($"{nameof(AsyncLinq_NonBlocking)}: {string.Join(", ", inputs)}");
+            Console.WriteLine($"{nameof(Async_Linq_NonBlocking)}: {string.Join(", ", inputs)}");
         }
 
         internal List<GenStr> GetDataForAsyncLinq()
@@ -651,14 +670,14 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Parallel
-        internal void Plinq(bool cond)
+        internal void Parallel_Plinq(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = data.AsParallel().Where(a => !cond || (cond && a % 2 == 0)).Sum();
-            Console.WriteLine($"{nameof(Plinq)}: {sum}");
+            Console.WriteLine($"{nameof(Parallel_Plinq)}: {sum}");
         }
 
-        internal void ForParallel(bool cond)
+        internal void Parallel_For(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = 0;
@@ -668,10 +687,10 @@ namespace Drill4Net.Target.Common
                 if (!cond || (cond && a % 2 == 0))
                     Interlocked.Add(ref sum, a);
             });
-            Console.WriteLine($"{nameof(ForParallel)}: {sum}");
+            Console.WriteLine($"{nameof(Parallel_For)}: {sum}");
         }
 
-        internal void ForeachParallel(bool cond)
+        internal void Parallel_Foreach(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = 0;
@@ -680,7 +699,7 @@ namespace Drill4Net.Target.Common
                 if (!cond || (cond && a % 2 == 0))
                     Interlocked.Add(ref sum, a);
             });
-            Console.WriteLine($"{nameof(ForeachParallel)}: {sum}");
+            Console.WriteLine($"{nameof(Parallel_Foreach)}: {sum}");
         }
 
         private IEnumerable<int> GetDataForParallel(int cnt = 5)
@@ -688,25 +707,25 @@ namespace Drill4Net.Target.Common
             return Enumerable.Range(0, cnt);
         }
 
-        internal void TaskNewWait(bool cond)
+        internal void Parallel_Task_New(bool cond)
         {
             Task[] tasks = new Task[2];
             List<string> list1 = null;
             List<string> list2 = null;
 
-            tasks[0] = Task.Factory.StartNew(() => list1 = GetStringListForTaskNewWait(cond));
+            tasks[0] = Task.Factory.StartNew(() => list1 = GetStringListForTaskNew(cond));
             tasks[1] = Task.Factory.StartNew(() => list2 = !cond ? new List<string> { "Y2" } : new List<string> { "A2, B2, C2" });
 
             Task.WaitAll(tasks);
-            Console.WriteLine($"{nameof(TaskNewWait)}: {cond} -> {string.Join(",", list1)} / {string.Join(",", list2)}");
+            Console.WriteLine($"{nameof(Parallel_Task_New)}: {cond} -> {string.Join(",", list1)} / {string.Join(",", list2)}");
         }
 
-        internal List<string> GetStringListForTaskNewWait(bool cond)
+        internal List<string> GetStringListForTaskNew(bool cond)
         {
             return cond ? new List<string> { "X1" } : new List<string> { "A1, B1, C1" };
         }
 
-        internal void ThreadNew(bool cond)
+        internal void Parallel_ThreadNew(bool cond)
         {
             var tr = new Thread(() =>
             {
@@ -720,11 +739,11 @@ namespace Drill4Net.Target.Common
         internal void GetStringListForThreadNew(bool cond)
         {
             var list = cond ? new List<string> { "XYZ" } : new List<string> { "A, B, C" };
-            Console.WriteLine($"{nameof(ThreadNew)}: {cond} -> {string.Join(",", list)}");
+            Console.WriteLine($"{nameof(Parallel_ThreadNew)}: {cond} -> {string.Join(",", list)}");
         }
         #endregion
         #region IDisposable
-        internal void UsingStatement_SyncRead(bool cond)
+        internal void Disposable_Using_SyncRead(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -733,10 +752,10 @@ namespace Drill4Net.Target.Common
                 if (cond)
                     ms.Read(res, 0, (int)ms.Length);
             }
-            Console.WriteLine($"{nameof(UsingStatement_SyncRead)}: {cond}");
+            Console.WriteLine($"{nameof(Disposable_Using_SyncRead)}: {cond}");
         }
 
-        internal async Task UsingStatement_AsyncRead(bool cond)
+        internal async Task Disposable_Using_AsyncRead(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -745,10 +764,10 @@ namespace Drill4Net.Target.Common
                 if (cond)
                     await ms.ReadAsync(res, 0, (int)ms.Length);
             }
-            Console.WriteLine($"{nameof(UsingStatement_AsyncRead)}: {cond}");
+            Console.WriteLine($"{nameof(Disposable_Using_AsyncRead)}: {cond}");
         }
 
-        internal async Task UsingStatement_AsyncTask(bool cond)
+        internal async Task Disposable_Using_AsyncTask(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -757,7 +776,7 @@ namespace Drill4Net.Target.Common
                 if (cond)
                     await AsyncWait();
             }
-            Console.WriteLine($"{nameof(UsingStatement_AsyncRead)}: {cond}");
+            Console.WriteLine($"{nameof(Disposable_Using_AsyncRead)}: {cond}");
         }
 
         private Task AsyncWait()
@@ -765,17 +784,17 @@ namespace Drill4Net.Target.Common
             return Task.Run(() => { Thread.Sleep(50); });
         }
 
-        internal bool Finalizer(int len)
+        internal bool Disposable_Finalizer(int len)
         {
             new Finalizer(len);
-            Console.WriteLine($"{nameof(Finalizer)}: {len}");
+            Console.WriteLine($"{nameof(Disposable_Finalizer)}: {len}");
             return true;
         }
         #endregion
-        #region Misc
+        #region Anonymous
         #region AnonymousFunc
         delegate int Operation(int x, int y);
-        internal void AnonymousFunc()
+        internal void Anonymous_Func()
         {
             int z = 8;
 #pragma warning disable IDE0039 // Use local function
@@ -787,10 +806,10 @@ namespace Drill4Net.Target.Common
                 return x + y + z;
             };
             int d = operation(4, 5);
-            Console.WriteLine($"{nameof(AnonymousFunc)}: {d}"); // 15
+            Console.WriteLine($"{nameof(Anonymous_Func)}: {d}"); // 15
         }
 
-        internal void AnonymousFunc_WithLocalFunc()
+        internal void Anonymous_Func_WithLocalFunc()
         {
             int z = 8;
             int operation(int x, int y)
@@ -800,9 +819,17 @@ namespace Drill4Net.Target.Common
                 return x + y + z;
             }
             int d = operation(4, 5);
-            Console.WriteLine($"{nameof(AnonymousFunc_WithLocalFunc)}: {d}"); // 15
+            Console.WriteLine($"{nameof(Anonymous_Func_WithLocalFunc)}: {d}"); // 15
         }
         #endregion
+
+        internal void Anonymous_Type(bool cond)
+        {
+            var tom = new { Name = "Tom", Age = cond ? 21 : 9 };
+            Console.WriteLine($"{nameof(Anonymous_Type)}: {cond} -> {tom.Age}");
+        }
+        #endregion
+        #region Misc
         #region WinAPI
         [DllImport("user32.dll")]
         public static extern void SetWindowText(IntPtr hwnd, String lpString);
@@ -814,23 +841,6 @@ namespace Drill4Net.Target.Common
         }
         #endregion
 
-        internal bool While_Operator(int count)
-        {
-            Console.WriteLine($"{nameof(While_Operator)} -> {count}");
-            while (count > 0)
-                count--;
-            return true;
-        }
-
-        //in principle, it is not necessary, because 
-        //it is not a branch with a precondition
-        internal void Do_Operator()
-        {
-            int i = 3;
-            Console.WriteLine($"{nameof(Do_Operator)} -> {i}");
-            do { i--; } while (i > 0);
-        }
-
         private readonly object _locker = new object();
         internal void Lock_Statement(bool cond)
         {
@@ -840,12 +850,6 @@ namespace Drill4Net.Target.Common
                 s = cond ? "YES" : "NO";
             }
             Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
-        }
-
-        internal void AnonymousType(bool cond)
-        {
-            var tom = new { Name = "Tom", Age = cond ? 21 : 9 };
-            Console.WriteLine($"{nameof(AnonymousType)}: {cond} -> {tom.Age}");
         }
 
         internal void Yield(bool cond)
@@ -862,12 +866,12 @@ namespace Drill4Net.Target.Common
         }
 
         //TODO: not working yet!
-        internal void Expression10(int x)
+        internal void Expression(int x)
         {
             System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
             var dlg = e.Compile();
             int d = dlg(x);
-            Console.WriteLine($"{nameof(Expression10)}: {d}");
+            Console.WriteLine($"{nameof(Expression)}: {d}");
         }
 
         //only for NetFramework?
