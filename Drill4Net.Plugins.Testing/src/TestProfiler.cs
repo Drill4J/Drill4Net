@@ -16,6 +16,8 @@ namespace Drill4Net.Plugins.Testing
         private static readonly ConcurrentDictionary<MethodInfo, string> _parentByInfo;
         private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
 
+        private const string DISPLAY_CLASS = "c__DisplayClass";
+
         /*****************************************************************************/
 
         static TestProfiler()
@@ -47,13 +49,12 @@ namespace Drill4Net.Plugins.Testing
                 }
                 #endregion
 
-                //var id = ar[0]; //not using yet
+                //var id = ar[0]; //not used yet
                 var asmName = ar[1];
                 var funcName = ar[2];
-                ClarifyBusinessMethodName(asmName, ref funcName);
-                if (funcName == null)
-                    return;
-                AddPoint(asmName, funcName, ar[3]);
+                var mess = ar[3];
+                if (ClarifyBusinessMethodName(asmName, ref funcName))
+                    AddPoint(asmName, funcName, mess);
             }
             catch (Exception ex)
             {
@@ -132,7 +133,7 @@ namespace Drill4Net.Plugins.Testing
             return byFunctions;
         }
 
-        internal static void ClarifyBusinessMethodName(string asmName, ref string curSig)
+        internal static bool ClarifyBusinessMethodName(string asmName, ref string curSig)
         {
             //curSig may be a internal compiler's function (for generics, Enumerator,
             //AsyncStateMachine) and we must find parent business function from the call stack
@@ -145,8 +146,6 @@ namespace Drill4Net.Plugins.Testing
             //    _parentByInfo.TryGetValue(curInfo, out curSig);
             //    return;
             //}
-
-            var isDisplayClass = curSig.Contains("c__DisplayClass");
 
             //TODO: check performance...
             var stackTrace = new StackTrace(2); //skip local calls
@@ -175,14 +174,11 @@ namespace Drill4Net.Plugins.Testing
                     continue;
                 var funcFullName = method.ToString();
                 if (funcFullName.Contains("(System.Dynamic."))
-                {
-                    curSig = null;
-                    return;
-                }
+                    return false;
 
                 //all borders have been breached for call stack... but!
-                if (isDisplayClass)
-                    break;
+                if (typeFullName.Contains(DISPLAY_CLASS) || funcFullName.Contains(DISPLAY_CLASS))
+                    continue;
                 #endregion
 
                 ////SECOND cache
@@ -239,7 +235,7 @@ namespace Drill4Net.Plugins.Testing
 
                     //name from compiler generated 'DisplayClass'
                     string curName2 = null;
-                    if (isDisplayClass)
+                    if (curSig.Contains(DISPLAY_CLASS))
                     {
                         var ar = curSig.Split("/");
                         curName2 = ar[ar.Length-1];
@@ -271,6 +267,7 @@ namespace Drill4Net.Plugins.Testing
                 else
                     _lastFuncByCtx.TryAdd(id, curSig);
             }
+            return true;
         }
     }
 }
