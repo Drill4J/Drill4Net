@@ -12,7 +12,7 @@ namespace Drill4Net.Plugins.Testing
     public class TestProfiler : AbsractPlugin
     {
         public static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
-        public static readonly ConcurrentDictionary<int, string> _lastFuncById;
+        public static readonly ConcurrentDictionary<int, string> _lastFuncByCtx;
         private static readonly ConcurrentDictionary<MethodInfo, string> _parentByInfo;
         private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
 
@@ -23,7 +23,7 @@ namespace Drill4Net.Plugins.Testing
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
             _parentByInfo = new ConcurrentDictionary<MethodInfo, string>();
             _infoBySig = new ConcurrentDictionary<string, MethodInfo>();
-            _lastFuncById = new ConcurrentDictionary<int, string>();
+            _lastFuncByCtx = new ConcurrentDictionary<int, string>();
         }
 
         /*****************************************************************************/
@@ -32,12 +32,21 @@ namespace Drill4Net.Plugins.Testing
         {
             try
             {
+                #region Checks
                 if (string.IsNullOrWhiteSpace(data))
-                    throw new ArgumentNullException(nameof(data));
+                {
+                    Log("Data is empty");
+                    return;
+                }
+                //
                 var ar = data.Split('^');
                 if (ar.Length < 4)
-                    throw new ArgumentException($"Bad format of input: {data}");
-                //
+                {
+                    Log($"Bad format of input: {data}");
+                    return;
+                }
+                #endregion
+
                 //var id = ar[0]; //not using yet
                 var asmName = ar[1];
                 var funcName = ar[2];
@@ -48,8 +57,13 @@ namespace Drill4Net.Plugins.Testing
             }
             catch (Exception ex)
             {
-                //log
+                Log($"{data}\n{ex}");
             }
+        }
+
+        internal static void Log(string mess)
+        {
+            //...
         }
 
         public override void Register(string data)
@@ -132,7 +146,7 @@ namespace Drill4Net.Plugins.Testing
             //    return;
             //}
 
-            var isDisplay = curSig.Contains("c__DisplayClass");
+            var isDisplayClass = curSig.Contains("c__DisplayClass");
 
             //TODO: check performance...
             var stackTrace = new StackTrace(2); //skip local calls
@@ -167,7 +181,7 @@ namespace Drill4Net.Plugins.Testing
                 }
 
                 //all borders have been breached for call stack... but!
-                if (isDisplay)
+                if (isDisplayClass)
                     break;
                 #endregion
 
@@ -211,20 +225,21 @@ namespace Drill4Net.Plugins.Testing
             var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
             if (!processed)
             {
-                if (_lastFuncById.ContainsKey(id))
+                if (_lastFuncByCtx.ContainsKey(id))
                 {
-                    curSig = _lastFuncById[id];
+                    //be aware for multithread environment
+                    curSig = _lastFuncByCtx[id];
                 }
                 else
                 {
-                    // GUANO !!!!
-                    //search pure func name - TODO: regex
+                    //extract pure func name - TODO: regex
                     var curName = curSig.Split("::")[1].Split("(")[0]
                         .Replace("<", null).Replace(">", " ")
                         .Split(" ")[0];
-                    
+
+                    //name from compiler generated 'DisplayClass'
                     string curName2 = null;
-                    if (isDisplay)
+                    if (isDisplayClass)
                     {
                         var ar = curSig.Split("/");
                         curName2 = ar[ar.Length-1];
@@ -233,27 +248,28 @@ namespace Drill4Net.Plugins.Testing
                         var ind = curName2.StartsWith("<<") ? 2 : 1;
                         curName2 = curName2.Substring(ind, curName2.IndexOf(">") - ind);
                     }
+
+                    //ыearch using both vars
                     foreach (var existStr in _infoBySig.Keys)
                     {
                         var existName = existStr.Split("::")[1].Split("(")[0];
                         if (existName != curName && existName != curName2)
                             continue;
                         curSig = existStr.Split(";")[1];
-                        _lastFuncById.TryAdd(id, existStr);
+                        _lastFuncByCtx.TryAdd(id, existStr);
                         processed = true;
                     }
                     if(!processed)
-                    {
-                    }
+                    { }
                 }
             }
             else
             {
                 //last func
-                if (_lastFuncById.ContainsKey(id))
-                    _lastFuncById[id] = curSig;
+                if (_lastFuncByCtx.ContainsKey(id))
+                    _lastFuncByCtx[id] = curSig;
                 else
-                    _lastFuncById.TryAdd(id, curSig);
+                    _lastFuncByCtx.TryAdd(id, curSig);
             }
         }
     }
