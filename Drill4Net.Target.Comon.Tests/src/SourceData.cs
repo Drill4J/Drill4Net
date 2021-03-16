@@ -10,13 +10,17 @@ namespace Drill4Net.Target.Comon.Tests
 {
     internal class SourceData
     {
-        private static readonly InjectTarget _target;
-        private static readonly GenStr _genStr;
-        private static readonly Point _point;
+        #region CONSTs
         private const string INFLUENCE = "The passing of the test is affected by some other asynchronous tests. May be test will pass in Debug Test Mode.";
 
         private const string CATEGORY_DYNAMIC = "Dynamic";
         private const string CATEGORY_MISC = "Misc";
+        #endregion
+        #region FIELDs
+        private static readonly InjectTarget _target;
+        private static readonly GenStr _genStr;
+        private static readonly Point _point;
+        #endregion
 
         /************************************************************************/
 
@@ -81,7 +85,7 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
                 #endregion
-                #region IDisposable
+                #region Disposable
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Disposable_Using_SyncRead), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Disposable_Using_SyncRead), new List<string> { "If_17" }));
 
@@ -91,9 +95,15 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.Disposable_Using_AsyncTask), new List<string>()));
                 yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
-                //data will be located in different locations...
-                yield return GetCase(new object[] { (ushort)17 }, true, true, new TestData(GetInfo(_target.Disposable_Finalizer), new List<string> { "If_8", "If_30" }));
-                yield return GetCase(new object[] { (ushort)18 }, true, true, new TestData(GetInfo(_target.Disposable_Finalizer), new List<string> { "Else_12", "If_30" }));
+                //class::Finalize() is the thing-in-itself
+                yield return GetCase(new object[] { (ushort)17 }, true, true, 
+                    new TestData(GetInfo(_target.Disposable_Finalizer), new List<string>()), 
+                    new TestData(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_30", "If_8" }, true));
+                
+                //still not work togeteher with previous call
+                yield return GetCase(new object[] { (ushort)18 }, true, true, 
+                    new TestData(GetInfo(_target.Disposable_Finalizer), new List<string>()), 
+                    new TestData(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(INFLUENCE);
                 #endregion
                 #region Misc
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
@@ -412,5 +422,36 @@ namespace Drill4Net.Target.Comon.Tests
             return name;
         }
         #endregion
+
+        internal static string GetSource(string shortSig)
+        {
+            return GetSourceFromFullSig(GetFullSignature(shortSig));
+        }
+
+        internal static string GetSourceFromFullSig(string fullSig)
+        {
+            var asmName = GetModuleName();
+            return $"{asmName};{fullSig}";
+        }
+
+        internal static string GetFullSignature(string shortSig)
+        {
+            var ar = shortSig.Split(' ');
+            var ret = ar[0];
+            var name = ar[1];
+            return $"{ret} Drill4Net.Target.Common.InjectTarget::{name}";
+        }
+
+        internal static string GetModuleName()
+        {
+            return "Drill4Net.Target.Common.dll";
+        }
+
+        internal static string GetNameFromSig(string shortSig)
+        {
+            var name = shortSig.Split(' ')[1];
+            name = name.Substring(0, name.IndexOf("("));
+            return name;
+        }
     }
 }

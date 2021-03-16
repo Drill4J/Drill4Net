@@ -64,7 +64,7 @@ namespace Drill4Net.Target.Comon.Tests
             Assert.IsTrue(funcs.Count == 1);
 
             var sig = GetFullSignature(mi);
-            var source = GetSource(sig);
+            var source = SourceData.GetSourceFromFullSig(sig);
             Assert.True(funcs.ContainsKey(source));
             var points = funcs[source];
 
@@ -77,9 +77,11 @@ namespace Drill4Net.Target.Comon.Tests
         public void Parent_Child_Ok(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestData[] inputs)
         {
             //arrange
+            Assert.IsTrue(inputs?.Length > 0, "Method inputs is empty");
             var parentData = inputs[0];
             var mi = parentData.Info;
-            Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
+            if(string.IsNullOrWhiteSpace(parentData.Signature))
+                Assert.NotNull(mi, $"Parent method info is empty");
 
             //act
             if (isAsync)
@@ -94,6 +96,15 @@ namespace Drill4Net.Target.Comon.Tests
 
             //assert
             var funcs = GetFunctions();
+
+            //checking whether functions from another context are needed
+            foreach (var input in inputs.Where(a => a.IgnoreContextForSig))
+            {
+                var sig = input.Signature;
+                var funcs2 = TestProfiler.GetPointsIgnoringContext(sig);
+                funcs.Add(sig, funcs2);
+            }
+            //
             if (!isBunch)
             {
                 Assert.IsTrue(funcs.Count == inputs.Length);
@@ -101,7 +112,9 @@ namespace Drill4Net.Target.Comon.Tests
                 for (var i = 0; i < inputs.Length; i++)
                 {
                     var data = inputs[i];
-                    var source = GetSource(GetFullSignature(data.Info));
+                    var source = string.IsNullOrWhiteSpace(data.Signature) ?
+                        SourceData.GetSourceFromFullSig(GetFullSignature(data.Info)) :
+                        data.Signature;
                     Assert.True(funcs.ContainsKey(source));
                     var points = funcs[source];
 
@@ -150,33 +163,6 @@ namespace Drill4Net.Target.Comon.Tests
         }
 
         #region Auxiliary funcs
-        private List<string> GetPoints(string shortSig)
-        {
-            var funcSig = GetFullSignature(shortSig);
-            var asmName = GetModuleName();
-            return TestProfiler.GetPoints(asmName, funcSig, false);
-        }
-
-        private string GetSource(string sig)
-        {
-            var funcSig = sig;
-            var asmName = GetModuleName();
-            return $"{asmName};{funcSig}";
-        }
-
-        private string GetModuleName()
-        {
-            return "Drill4Net.Target.Common.dll";
-        }
-
-        private string GetFullSignature(string shortSig)
-        {
-            var ar = shortSig.Split(' ');
-            var ret = ar[0];
-            var name = ar[1];
-            return $"{ret} Drill4Net.Target.Common.InjectTarget::{name}";
-        }
-
         internal static string GetFullSignature(MethodInfo mi)
         {
             var func = mi.Name;
@@ -212,19 +198,6 @@ namespace Drill4Net.Target.Comon.Tests
             return TestProfiler.GetFunctions(false);
         }
 
-        private MethodInfo GetMethod(string shortSig)
-        {
-            var name = GetNameFromSig(shortSig);
-            return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
-        }
-
-        private string GetNameFromSig(string shortSig)
-        {
-            var name = shortSig.Split(' ')[1];
-            name = name.Substring(0, name.IndexOf("("));
-            return name;
-        }
-
         private void CheckEnterAndLastReturnOrThrow(List<string> points)
         {
             Assert.IsNotNull(points.FirstOrDefault(a => a == "Enter_0"), "No Enter");
@@ -242,6 +215,19 @@ namespace Drill4Net.Target.Comon.Tests
                 if (points[i] != checks[i])
                     Assert.Fail();
             }
+        }
+
+        private List<string> GetPoints(string shortSig)
+        {
+            var funcSig = SourceData.GetFullSignature(shortSig);
+            var asmName = SourceData.GetModuleName();
+            return TestProfiler.GetPoints(asmName, funcSig, false);
+        }
+
+        private MethodInfo GetMethodInfo(string shortSig)
+        {
+            var name = SourceData.GetNameFromSig(shortSig);
+            return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
         }
         #endregion
     }

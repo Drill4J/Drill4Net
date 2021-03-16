@@ -83,6 +83,20 @@ namespace Drill4Net.Plugins.Testing
             return points;
         }
 
+        public static List<string> GetPointsIgnoringContext(string funcSig)
+        {
+            var all = new List<string>();
+            foreach (var funcs in _clientPoints.Values)
+            {
+                if (funcs.ContainsKey(funcSig))
+                {
+                    all.AddRange(funcs[funcSig]);
+                    funcs.Remove(funcSig);
+                }
+            }
+            return all;
+        }
+
         public static Dictionary<string, List<string>> GetFunctions(bool createNotExistedBranch)
         {
             //This defines the logical execution path of function callers regardless
