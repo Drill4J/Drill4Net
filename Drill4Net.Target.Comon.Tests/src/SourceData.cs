@@ -38,82 +38,82 @@ namespace Drill4Net.Target.Comon.Tests
             get
             {
                 #region Generics
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Call_Child), new List<string> { "Else_7" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generics_Call_Child), new List<string> { "If_11" }), new TestData(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "Else_7" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "If_11" }), new TestInfo(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Var), new List<string> { "Else_38" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generics_Var), new List<string> { "If_20", "If_30" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Var), new List<string> { "Else_38" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Var), new List<string> { "If_20", "If_30" }));
                 #endregion
                 #region Anonymous
-                yield return GetCase(Array.Empty<object>(), new TestData(GetInfo(_target.Anonymous_Func), new List<string> { "If_6" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(_target.Anonymous_Func), new List<string> { "If_6" }));
 
-                yield return GetCase(Array.Empty<object>(), true, new TestData(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_8" }));
+                yield return GetCase(Array.Empty<object>(), true, new TestInfo(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_8" }));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Anonymous_Type), new List<string> { "If_9" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "If_9" }));
                 #endregion
                 #region Async/await
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Async_Task), new List<string> { "Else_58" }), new TestData(GetInfo(_target.Delay100), new List<string>()));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Async_Task), new List<string> { "If_17" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "Else_58" }), new TestInfo(GetInfo(_target.Delay100), new List<string>()));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "If_17" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.Async_Lambda), new List<string> { "Else_59" }));
-                yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.Async_Lambda), new List<string> { "If_18" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Async_Lambda), new List<string> { "Else_59" }));
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Async_Lambda), new List<string> { "If_18" }));
 
-                yield return GetCase(new object[] { false }, true, new TestData(GetInfo(_target.Async_Linq_Blocking), new List<string>()), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string>()));
-                yield return GetCase(new object[] { true }, true, new TestData(GetInfo(_target.Async_Linq_Blocking),  new List<string>()), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Async_Linq_Blocking), new List<string>()), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string>()));
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(_target.Async_Linq_Blocking),  new List<string>()), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string>())).Ignore(INFLUENCE);
-                yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string>())).Ignore(INFLUENCE);
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
                 #endregion
                 #region Parallel
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_Linq), new List<string> { "Else_19", "Else_19", "Else_19", "Else_19", "Else_19" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_Linq), new List<string> { "If_2", "If_2", "If_2", "If_2", "If_2", "If_7", "If_7", "If_7", "If_7", "If_7" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Linq), new List<string> { "Else_19", "Else_19", "Else_19", "Else_19", "Else_19" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Linq), new List<string> { "If_2", "If_2", "If_2", "If_2", "If_2", "If_7", "If_7", "If_7", "If_7", "If_7" }, true));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_For), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_For), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_For), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_For), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_Foreach), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_Foreach), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Foreach), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Foreach), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
 
                 //data migrates from one func to another depending on running other similar tests... See next option for execute them
                 //yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "Else_11"}), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "Else_4" }));
                 //yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "If_3" }), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "If_12" }));
 
-                yield return GetCase(new object[] { false }, false, true, true, new TestData(GetInfo(_target.Parallel_Task_New), new List<string> { "Else_11", "Else_4" }, true));
-                yield return GetCase(new object[] { true }, false, true, true, new TestData(GetInfo(_target.Parallel_Task_New), new List<string> { "If_12", "If_3" }, true));
+                yield return GetCase(new object[] { false }, false, true, true, new TestInfo(GetInfo(_target.Parallel_Task_New), new List<string> { "Else_11", "Else_4" }, true));
+                yield return GetCase(new object[] { true }, false, true, true, new TestInfo(GetInfo(_target.Parallel_Task_New), new List<string> { "If_12", "If_3" }, true));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
                 #endregion
                 #region Disposable
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Disposable_Using_SyncRead), new List<string>()));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Disposable_Using_SyncRead), new List<string> { "If_17" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Disposable_Using_SyncRead), new List<string>()));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Disposable_Using_SyncRead), new List<string> { "If_17" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.Disposable_Using_AsyncRead), new List<string>()));
-                yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.Disposable_Using_AsyncRead), new List<string> { "If_34" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Disposable_Using_AsyncRead), new List<string>()));
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Disposable_Using_AsyncRead), new List<string> { "If_34" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestData(GetInfo(_target.Disposable_Using_AsyncTask), new List<string>()));
-                yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Disposable_Using_AsyncTask), new List<string>()));
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
                 //class::Finalize() is the thing-in-itself
                 yield return GetCase(new object[] { (ushort)17 }, true, true, 
-                    new TestData(GetInfo(_target.Disposable_Finalizer), new List<string>()), 
-                    new TestData(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_30", "If_8" }, true));
-                
+                    new TestInfo(GetInfo(_target.Disposable_Finalizer), new List<string>()), 
+                    new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_30", "If_8" }, true));
+
                 //still not work togeteher with previous call
-                yield return GetCase(new object[] { (ushort)18 }, true, true, 
-                    new TestData(GetInfo(_target.Disposable_Finalizer), new List<string>()), 
-                    new TestData(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(INFLUENCE);
+                yield return GetCase(new object[] { (ushort)18 }, true, true,
+                    new TestInfo(GetInfo(_target.Disposable_Finalizer), new List<string>()),
+                    new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(INFLUENCE);
                 #endregion
                 #region Misc
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Yield), new List<string> { "Else_44" }), new TestData(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Yield), new List<string> { "If_48" }), new TestData(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Yield), new List<string> { "Else_44" }), new TestInfo(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Yield), new List<string> { "If_48" }), new TestInfo(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestData(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Unsafe), new List<string> { "If_13" }), new TestData(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "If_13" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
                 #endregion
             }
         }
@@ -373,22 +373,22 @@ namespace Drill4Net.Target.Comon.Tests
             return new TestCaseData(mi, pars, checks).SetCategory(category).SetName(caption);
         }
 
-        internal static TestCaseData GetCase(object[] pars, params TestData[] input)
+        internal static TestCaseData GetCase(object[] pars, params TestInfo[] input)
         {
             return GetCase(pars, false, false, false, input);
         }
 
-        internal static TestCaseData GetCase(object[] pars, bool ignoreEnterReturns, params TestData[] input)
+        internal static TestCaseData GetCase(object[] pars, bool ignoreEnterReturns, params TestInfo[] input)
         {
             return GetCase(pars, false, false, ignoreEnterReturns, input);
         }
 
-        internal static TestCaseData GetCase(object[] pars, bool isAsync, bool ignoreEnterReturns, params TestData[] input)
+        internal static TestCaseData GetCase(object[] pars, bool isAsync, bool ignoreEnterReturns, params TestInfo[] input)
         {
             return GetCase(pars, isAsync, false, ignoreEnterReturns, input);
         }
 
-        internal static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestData[] input)
+        internal static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] input)
         {
             Assert.IsNotNull(input);
             Assert.True(input.Length > 0);
@@ -422,7 +422,7 @@ namespace Drill4Net.Target.Comon.Tests
             return name;
         }
         #endregion
-
+        #region Source
         internal static string GetSource(string shortSig)
         {
             return GetSourceFromFullSig(GetFullSignature(shortSig));
@@ -453,5 +453,6 @@ namespace Drill4Net.Target.Comon.Tests
             name = name.Substring(0, name.IndexOf("("));
             return name;
         }
+        #endregion
     }
 }

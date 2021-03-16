@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Target.Comon.Tests
 {
-    public class TestData
+    public class TestInfo
     {
         internal MethodInfo Info { get; set; }
         internal string Signature { get; set; }
@@ -14,14 +14,14 @@ namespace Drill4Net.Target.Comon.Tests
 
         /*****************************************************/
 
-        public TestData(MethodInfo info, List<string> checks = null, bool needSort = false)
+        public TestInfo(MethodInfo info, List<string> checks = null, bool needSort = false)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
             Checks = checks ?? throw new ArgumentNullException(nameof(checks));
             NeedSort = needSort;
         }
 
-        public TestData(string sig, bool ignoreCtx, List<string> checks = null,bool needSort = false)
+        public TestInfo(string sig, bool ignoreCtx, List<string> checks = null,bool needSort = false)
         {
             Signature = sig ?? throw new ArgumentNullException(nameof(sig));
             IgnoreContextForSig = ignoreCtx;

@@ -74,7 +74,7 @@ namespace Drill4Net.Target.Comon.Tests
         }
 
         [TestCaseSource(typeof(SourceData), "ParentChild")]
-        public void Parent_Child_Ok(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestData[] inputs)
+        public void Parent_Child_Ok(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
             //arrange
             Assert.IsTrue(inputs?.Length > 0, "Method inputs is empty");

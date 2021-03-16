@@ -174,8 +174,8 @@ namespace Drill4Net.Target.Common
             await Disposable_Using_AsyncTask(false);
             await Disposable_Using_AsyncTask(true);
 
-            await Disposable_Finalizer(17);
-            await Disposable_Finalizer(18);
+            Disposable_Finalizer(17);
+            Disposable_Finalizer(18);
             #endregion
             #region Cycle
             Cycle_While(-1);
@@ -743,7 +743,7 @@ namespace Drill4Net.Target.Common
         #region Disposable
         internal void Disposable_Using_SyncRead(bool cond)
         {
-            byte cnt = 10;
+            byte cnt = 5;
             var res = new byte[cnt];
             using (var ms = new MemoryStream(GetBytes(cnt)))
             {
@@ -779,14 +779,12 @@ namespace Drill4Net.Target.Common
 
         private Task AsyncWait()
         {
-            return Task.Run(() => { Thread.Sleep(50); });
+            return Task.Run(() => { Thread.Sleep(10); });
         }
 
-        internal async Task Disposable_Finalizer(int len)
+        internal void Disposable_Finalizer(int len)
         {
             CreateDisposable(len);
-
-            await Task.Delay(500);
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
