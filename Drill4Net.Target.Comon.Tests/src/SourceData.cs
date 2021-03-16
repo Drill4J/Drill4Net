@@ -96,12 +96,12 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
                 //class::Finalize() is the thing-in-itself
-                yield return GetCase(new object[] { (ushort)17 }, true, true, 
+                yield return GetCase(new object[] { (ushort)17 }, true,
                     new TestInfo(GetInfo(_target.Disposable_Finalizer), new List<string>()), 
                     new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_30", "If_8" }, true));
 
                 //still not work togeteher with previous call
-                yield return GetCase(new object[] { (ushort)18 }, true, true,
+                yield return GetCase(new object[] { (ushort)18 }, true,
                     new TestInfo(GetInfo(_target.Disposable_Finalizer), new List<string>()),
                     new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(INFLUENCE);
                 #endregion
