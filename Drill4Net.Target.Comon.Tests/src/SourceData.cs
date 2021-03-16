@@ -40,6 +40,14 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Var), new List<string> { "Else_38" }));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generics_Var), new List<string> { "If_20", "If_30" }));
                 #endregion
+                #region Anonymous
+                yield return GetCase(Array.Empty<object>(), new TestData(GetInfo(_target.Anonymous_Func), new List<string> { "If_6" }));
+
+                yield return GetCase(Array.Empty<object>(), true, new TestData(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_8" }));
+
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Anonymous_Type), new List<string> { "If_9" }));
+                #endregion
                 #region Async/await
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Async_Task), new List<string> { "Else_58" }), new TestData(GetInfo(_target.Delay100), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Async_Task), new List<string> { "If_17" }));
@@ -54,8 +62,8 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, true, true, new TestData(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestData(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestData(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
                 #endregion
                 #region Parallel
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_Plinq), new List<string> { "Else_19", "Else_19", "Else_19", "Else_19", "Else_19" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_Plinq), new List<string> { "If_2", "If_2", "If_2", "If_2", "If_2", "If_7", "If_7", "If_7", "If_7", "If_7" }, true));
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_Linq), new List<string> { "Else_19", "Else_19", "Else_19", "Else_19", "Else_19" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_Linq), new List<string> { "If_2", "If_2", "If_2", "If_2", "If_2", "If_7", "If_7", "If_7", "If_7", "If_7" }, true));
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_For), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_For), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
@@ -70,8 +78,8 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, false, true, true, new TestData(GetInfo(_target.Parallel_Task_New), new List<string> { "Else_11", "Else_4" }, true));
                 yield return GetCase(new object[] { true }, false, true, true, new TestData(GetInfo(_target.Parallel_Task_New), new List<string> { "If_12", "If_3" }, true));
 
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_ThreadNew), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestData(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
                 #endregion
                 #region IDisposable
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Disposable_Using_SyncRead), new List<string>()));
@@ -88,8 +96,8 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { (ushort)18 }, new TestData(GetInfo(_target.Disposable_Finalizer), new List<string> { "Else_12", "If_30" }));
                 #endregion
                 #region Misc
-                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" })).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "If_16" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+                yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestData(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
 
                 yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.Yield), new List<string> { "Else_44" }), new TestData(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.Yield), new List<string> { "If_48" }), new TestData(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
@@ -188,14 +196,6 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 5 }, new List<string> { "If_8", "Else_23", "Else_29" });
                 yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 10 }, new List<string> { "Else_2", "If_32" });
                 yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 12 }, new List<string> { "Else_2", "Else_23", "If_37" });
-                #endregion
-                #region Anonymous
-                yield return GetCase(GetInfo(_target.Anonymous_Func), Array.Empty<object>(), new List<string> { "If_6" });
-
-                yield return GetCase(GetInfo(_target.Anonymous_Func_WithLocalFunc), Array.Empty<object>(), new List<string> { "If_6" });
-
-                yield return GetCase(GetInfo(_target.Anonymous_Type), new object[] { false }, new List<string> { "Else_5" });
-                yield return GetCase(GetInfo(_target.Anonymous_Type), new object[] { true }, new List<string> { "If_9" });
                 #endregion
                 #region Try/cath/finally
                 yield return GetCase(GetInfo(_target.Try_Exception_Conditional), new object[] { false }, new List<string>());
@@ -353,7 +353,8 @@ namespace Drill4Net.Target.Comon.Tests
         {
             var name = mi.Name;
             var caption = GetCaption(name, pars);
-            return new TestCaseData(mi, pars, checks).SetName(caption);
+            var category = GetCategory(name);
+            return new TestCaseData(mi, pars, checks).SetCategory(category).SetName(caption);
         }
 
         internal static TestCaseData GetCase(object[] pars, params TestData[] input)
@@ -379,7 +380,7 @@ namespace Drill4Net.Target.Comon.Tests
             var name = input[0].Info.Name;
             var caption = GetCaption(name, pars);
             var category = GetCategory(name);
-            return new TestCaseData(pars, isAsync, isBunch, ignoreEnterReturns, input).SetName(caption).SetCategory(category);
+            return new TestCaseData(pars, isAsync, isBunch, ignoreEnterReturns, input).SetCategory(category).SetName(caption);
         }
 
         private static string GetCategory(string name)

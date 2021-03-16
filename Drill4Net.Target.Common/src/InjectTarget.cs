@@ -149,8 +149,8 @@ namespace Drill4Net.Target.Common
             await Async_Linq_NonBlocking(true);
             #endregion
             #region Parallel
-            Parallel_Plinq(false);
-            Parallel_Plinq(true);
+            Parallel_Linq(false);
+            Parallel_Linq(true);
 
             Parallel_For(false);
             Parallel_For(true);
@@ -161,8 +161,8 @@ namespace Drill4Net.Target.Common
             Parallel_Task_New(false);
             Parallel_Task_New(true);
 
-            Parallel_ThreadNew(false);
-            Parallel_ThreadNew(true);
+            Parallel_Thread_New(false);
+            Parallel_Thread_New(true);
             #endregion
             #region IDisposable
             Disposable_Using_SyncRead(false);
@@ -183,7 +183,7 @@ namespace Drill4Net.Target.Common
             Cycle_While(-1);
             Cycle_While(3);
 
-            Cycle_Do_Operator();
+            Cycle_Do();
             #endregion
             #region Misc
             Lock_Statement(false);
@@ -442,10 +442,10 @@ namespace Drill4Net.Target.Common
 
         //in principle, it is not necessary, because 
         //it is not a branch with a precondition
-        internal void Cycle_Do_Operator()
+        internal void Cycle_Do()
         {
             int i = 3;
-            Console.WriteLine($"{nameof(Cycle_Do_Operator)} -> {i}");
+            Console.WriteLine($"{nameof(Cycle_Do)} -> {i}");
             do { i--; } while (i > 0);
         }
         #endregion
@@ -670,11 +670,11 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Parallel
-        internal void Parallel_Plinq(bool cond)
+        internal void Parallel_Linq(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = data.AsParallel().Where(a => !cond || (cond && a % 2 == 0)).Sum();
-            Console.WriteLine($"{nameof(Parallel_Plinq)}: {sum}");
+            Console.WriteLine($"{nameof(Parallel_Linq)}: {sum}");
         }
 
         internal void Parallel_For(bool cond)
@@ -725,7 +725,7 @@ namespace Drill4Net.Target.Common
             return cond ? new List<string> { "X1" } : new List<string> { "A1, B1, C1" };
         }
 
-        internal void Parallel_ThreadNew(bool cond)
+        internal void Parallel_Thread_New(bool cond)
         {
             var tr = new Thread(() =>
             {
@@ -739,7 +739,7 @@ namespace Drill4Net.Target.Common
         internal void GetStringListForThreadNew(bool cond)
         {
             var list = cond ? new List<string> { "XYZ" } : new List<string> { "A, B, C" };
-            Console.WriteLine($"{nameof(Parallel_ThreadNew)}: {cond} -> {string.Join(",", list)}");
+            Console.WriteLine($"{nameof(Parallel_Thread_New)}: {cond} -> {string.Join(",", list)}");
         }
         #endregion
         #region IDisposable
