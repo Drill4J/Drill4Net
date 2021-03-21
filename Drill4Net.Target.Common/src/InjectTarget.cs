@@ -165,7 +165,12 @@ namespace Drill4Net.Target.Common
             Parallel_Thread_New(true);
             #endregion
             #region Disposable
-            Disposable_UsingWithException();
+            try
+            {
+                Disposable_UsingWithException();
+            }
+            catch
+            {}
 
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
