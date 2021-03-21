@@ -9,5 +9,7 @@
         Anonymous = 4,
         Getter = 5,
         Setter = 6,
+        EventAdd = 7,
+        EventRemove = 8,
     }
 }

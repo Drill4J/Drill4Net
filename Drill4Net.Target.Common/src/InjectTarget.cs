@@ -165,6 +165,8 @@ namespace Drill4Net.Target.Common
             Parallel_Thread_New(true);
             #endregion
             #region Disposable
+            Disposable_UsingWithException();
+
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
 
@@ -230,7 +232,7 @@ namespace Drill4Net.Target.Common
 
         internal void IfElse_Consec_Full(bool a, bool b)
         {
-            var info = new bool?[2,2];
+            var info = new bool?[2, 2];
             if (a)
             {
                 info[0, 0] = true;
@@ -293,7 +295,7 @@ namespace Drill4Net.Target.Common
             {
                 type = "yes";
                 Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Tuple)}: {type}");
-                return (true,true);
+                return (true, true);
             }
             Console.WriteLine($"{nameof(IfElse_Half_EarlyReturn_Tuple)}: {type}");
 
@@ -741,6 +743,12 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Disposable
+        internal void Disposable_UsingWithException()
+        {
+            using var ms = new MemoryStream();
+            throw new Exception();
+        }
+
         internal void Disposable_Using_SyncRead(bool cond)
         {
             byte cnt = 5;
@@ -909,6 +917,11 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: Elvis, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: Elvis, events, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
+        //AutoProperty for F#
+
+        //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
+        // no obvious ways to exercise the path and has then inserted a sequence point to boot
+
     }
 }

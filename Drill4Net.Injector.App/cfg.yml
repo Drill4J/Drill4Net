@@ -1,4 +1,4 @@
-﻿Source:
+﻿Source: # what and how processing
     Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net50.Demo\bin\Debug\net5.0\
     #directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Target.Net48.Demo\bin\Debug\
     Filter: # mask for search files, namespaces, classes...
@@ -6,24 +6,24 @@
        Namespace: 
        Class:
        Attribute:
-Destination:
+Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
-Profiler:
+Profiler: # data collector/processor in separate assembly
     Directory: d:\Projects\EPM-D4J\!!_exp\Drill4Net\Drill4Net.Plugins.RnD\bin\Debug\netstandard2.0\
     AssemblyName: Drill4Net.Plugins.RnD.dll
     Namespace: Drill4Net.Plugins.RnD
     Class: LoggerPlugin
     Method: RegisterStatic
     Static: true
-Proxy:
+Proxy: # the injecting for transfer data to profiler
     Class: ProfilerProxy
     Method: Register
     Static: true
-Probes: # types of cross cutting points
+Probes: # types of cross-cutting points
     Private: false
     Ctor: false
     Getter: false
     Setter: false
-Silent: false
+Silent: false # no wait, no questions...
 

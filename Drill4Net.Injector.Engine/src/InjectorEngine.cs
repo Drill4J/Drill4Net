@@ -10,6 +10,7 @@ using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
+using Mono.Cecil.Rocks;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -226,6 +227,7 @@ namespace Drill4Net.Injector.Engine
 
                     //instructions
                     var body = methodDefinition.Body;
+                    //body.SimplifyMacros(); //buggy!!! not simplify!
                     instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
                     compilerInstructions = new HashSet<Instruction>();
@@ -471,6 +473,9 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                     #endregion
+
+                    body.Optimize();
+                    body.OptimizeMacros();
                 }
             }
 

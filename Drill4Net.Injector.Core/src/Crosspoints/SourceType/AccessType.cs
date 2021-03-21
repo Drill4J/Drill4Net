@@ -4,8 +4,9 @@
     {
         Unset = 0,
         Private = 1,
-        Protected = 2,
-        Internal = 3,
-        Public = 4
+        ProtectedPrivate = 2,
+        ProtectedInternal = 3,
+        Internal = 4,
+        Public = 5
     }
 }
