@@ -217,10 +217,13 @@ namespace Drill4Net.Injector.Engine
                 foreach (var methodDefinition in methods)
                 {
                     #region Init
-                    var realType = methodDefinition.DeclaringType;
-                    typeName = realType.FullName;
+                    var curType = methodDefinition.DeclaringType;
+                    typeName = curType.FullName;
+
                     var methodName = methodDefinition.Name;
                     var methodFullName = methodDefinition.FullName;
+
+                    var isMoveNext = methodName == "MoveNext";
                     var isFinalizer = methodName == "Finalize" && methodDefinition.IsVirtual;
                     var moduleName = module.Name;
                     var probData = string.Empty;
@@ -240,22 +243,58 @@ namespace Drill4Net.Injector.Engine
                         continue;
 
                     //check for async/await
-                    var interfaces = realType.Interfaces;
+                    var interfaces = curType.Interfaces;
                     isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
-                    var isEnumeratorMoveNext = methodName == "MoveNext" && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
+                    var isEnumeratorMoveNext = isMoveNext && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
                     var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
                     if (skipStart)
                         startInd = 12;
 
                     //type's attributes
-                    var declAttrs = realType.CustomAttributes;
+                    var declAttrs = curType.CustomAttributes;
+                    var isCompilerGenerated = declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; //methodName.StartsWith("<"); 
                     var needEnterLeavings =
                         //Async/await
                         !isAsyncStateMachine && 
-                        declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) == null && //!methodName.StartsWith("<");                       
+                        !isCompilerGenerated &&                       
                         //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
                         (_isNetCore.Value == false || (_isNetCore.Value == true && !isFinalizer));
 
+                    #region Real type & method names
+                    //TODO: regex!!!
+                    var realType = curType;
+                    var realTypeName = typeName;
+                    var realMethodName = methodName;
+                    if (isCompilerGenerated || isAsyncStateMachine)
+                    {
+                        try
+                        {
+                            var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
+                            if (isMoveNext || !fromMethodName && typeName.Contains("/"))
+                            {
+                                var ar = realTypeName.Split("/");
+                                var el = ar[ar.Length - 1];
+                                realMethodName = el.Split(">")[0].Replace("<", null);
+                            }
+                            else
+                            if (fromMethodName)
+                            {
+                                var tmp = methodName.Replace("<>", null);
+                                if(tmp.Contains("<"))
+                                    realMethodName = tmp.Split("<")[1].Split(">")[0];
+                            }
+                        }
+                        catch(Exception ex) 
+                        { }
+
+                        if (realType.DeclaringType != null)
+                        {
+                            do realType = realType.DeclaringType;
+                                while (realType.DeclaringType != null && (realType.Name.Contains("c__DisplayClass") || realType.Name.Contains("<>")));
+                        }
+                        realTypeName = realType.FullName;
+                    }
+                    #endregion
                     #endregion
                     #region Enter/Return
                     //inject 'entering' instruction
@@ -773,11 +812,11 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
-        internal string GetProbeData(string moduleName, string funcName, CrossPointType type, int localId)
+        internal string GetProbeData(string moduleName, string fullMethodName, CrossPointType type, int localId)
         {
             var id = localId == -1 ? null : localId.ToString();
             //first portion of data not using yet
-            return $"{null}^{moduleName}^{funcName}^{type}_{id}";
+            return $"{null}^{moduleName}^{fullMethodName}^{type}_{id}";
         }
 
         private Instruction GetInstruction(string probeData)

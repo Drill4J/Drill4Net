@@ -990,7 +990,7 @@ label:
             return arr;
         }
 
-        //TODO: events, goto, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: events, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
