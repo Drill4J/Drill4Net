@@ -298,7 +298,7 @@ namespace Drill4Net.Injector.Engine
                         var flow = opCode.FlowControl;
                         CrossPointType crossType = CrossPointType.Unset;
 
-                        if (instr.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
+                        if (instr.Operand == lastOp && needEnterLeavings && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             instr.Operand = ldstrReturn;
@@ -313,8 +313,10 @@ namespace Drill4Net.Injector.Engine
                             //and a Dispose() call, instead of the usual 'using', although it is unlikely
                             if (i > 2 && i < instructions.Count - 2)
                             {
-                                var a = instructions[i - 2];
-                                var isWasTry = a.OpCode.Code == Code.Leave || a.OpCode.Code == Code.Leave_S;
+                                var prev2 = instructions[i - 2].OpCode.Code;
+                                if (prev2 == Code.Throw)
+                                    continue;
+                                var isWasTry = prev2 == Code.Leave || prev2 == Code.Leave_S;
                                 if (isWasTry)
                                 {
                                     var b = instructions[i + 2];

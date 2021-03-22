@@ -173,6 +173,13 @@ namespace Drill4Net.Target.Common
             catch
             {}
 
+            try
+            {
+                Disposable_Using_Last_Exception();
+            }
+            catch
+            { }
+
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
 
@@ -749,6 +756,13 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Disposable
+        internal void Disposable_Using_Last_Exception()
+        {
+            Console.WriteLine($"{nameof(Disposable_Using_Last_Exception)}");
+            using var ms = new MemoryStream();
+            throw new Exception($"The exception has been throwed");
+        }
+
         internal void Disposable_Using_Exception(bool cond)
         {
             Console.WriteLine($"{nameof(Disposable_Using_Exception)}: {cond}");
@@ -925,7 +939,7 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: Elvis, events, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: Elvis, events, goto, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
