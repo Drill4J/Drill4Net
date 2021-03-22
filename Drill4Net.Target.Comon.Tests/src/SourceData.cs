@@ -38,8 +38,11 @@ namespace Drill4Net.Target.Comon.Tests
             get
             {
                 #region Generics
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_8" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "If_12" }));
+
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "Else_7" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "If_11" }), new TestInfo(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "If_11" }), new TestInfo(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_8" }));
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Var), new List<string> { "Else_38" }));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Var), new List<string> { "If_20", "If_30" }));
@@ -111,9 +114,6 @@ namespace Drill4Net.Target.Comon.Tests
                     new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(INFLUENCE);
                 #endregion
                 #region Misc
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_12" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "If_16" }));
-
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Yield), new List<string> { "Else_44" }), new TestInfo(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Yield), new List<string> { "If_48" }), new TestInfo(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
 
@@ -193,6 +193,13 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 1 }, new List<string> { "If_29" });
                 yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 2 }, new List<string> { "Switch_16" });
                 #endregion
+                #region Elvis
+                yield return GetCase(GetInfo(_target.Elvis_Property_NotNull), Array.Empty<object>(), new List<string> { "If_11" });
+                yield return GetCase(GetInfo(_target.Elvis_Property_Null), Array.Empty<object>(), new List<string> { "Else_6" });
+
+                yield return GetCase(GetInfo(_target.Elvis_Property_NotNull_Double), Array.Empty<object>(), new List<string> { "If_13", "If_26" });
+                yield return GetCase(GetInfo(_target.Elvis_Property_Null_Double), Array.Empty<object>(), new List<string> { "Else_6" });
+                #endregion
                 #region Linq
                 yield return GetCase(GetInfo(_target.Linq_Query), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });
                 yield return GetCase(GetInfo(_target.Linq_Query), new object[] { true }, new List<string> { "If_8", "If_8", "If_8" });
@@ -269,6 +276,7 @@ namespace Drill4Net.Target.Comon.Tests
 
         internal delegate string OneBoolFuncStr(bool digit);
         internal delegate Task FuncTask();
+        internal delegate void OneString(string par);
         internal delegate Task OneIntFuncTask(int digit);
         internal delegate string FuncString();
         internal delegate Task OneBoolFuncTask(bool digit);
@@ -279,6 +287,11 @@ namespace Drill4Net.Target.Comon.Tests
         internal delegate bool OneInt(int digit);
         #endregion
         #region Method info
+        internal static MethodInfo GetInfo(OneString method)
+        {
+            return method.Method;
+        }
+
         internal static MethodInfo GetInfo(OneIntFuncTask method)
         {
             return method.Method;

@@ -76,6 +76,12 @@ namespace Drill4Net.Target.Common
             Switch_AsReturn(1);
             Switch_AsReturn(2);
             #endregion
+            #region Elvis
+            Elvis_Property_NotNull();
+            Elvis_Property_NotNull_Double();
+            Elvis_Property_Null();
+            Elvis_Property_Null_Double();
+            #endregion
             #region Linq
             Linq_Query(false);
             Linq_Query(true);
@@ -178,7 +184,7 @@ namespace Drill4Net.Target.Common
                 Disposable_Using_Last_Exception();
             }
             catch
-            { }
+            {}
 
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
@@ -392,6 +398,35 @@ namespace Drill4Net.Target.Common
             {
                 Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: !a*b");
             }
+        }
+        #endregion
+        #region Elvis
+        internal void Elvis_Property_NotNull()
+        {
+            var obj = new GenStr("aaa");
+            var prop = obj?.Prop;
+            Console.WriteLine($"{nameof(Elvis_Property_NotNull)}: {prop}");
+        }
+
+        internal void Elvis_Property_NotNull_Double()
+        {
+            var obj = new GenStr("aaa");
+            var len = obj?.Prop?.Length;
+            Console.WriteLine($"{nameof(Elvis_Property_NotNull_Double)}: {len}");
+        }
+
+        internal void Elvis_Property_Null()
+        {
+            GenStr obj = null;
+            var prop = obj?.Prop;
+            Console.WriteLine($"{nameof(Elvis_Property_NotNull)}: {prop}");
+        }
+
+        internal void Elvis_Property_Null_Double()
+        {
+            GenStr obj = null;
+            var len = obj?.Prop?.Length;
+            Console.WriteLine($"{nameof(Elvis_Property_Null_Double)}: {len}");
         }
         #endregion
         #region Switch
