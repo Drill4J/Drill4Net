@@ -227,7 +227,7 @@ namespace Drill4Net.Injector.Engine
 
                     //instructions
                     var body = methodDefinition.Body;
-                    //body.SimplifyMacros(); //buggy!!! not simplify!
+                    //body.SimplifyMacros(); //buggy (Cecil or me?)
                     instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
                     compilerInstructions = new HashSet<Instruction>();
@@ -288,7 +288,7 @@ namespace Drill4Net.Injector.Engine
                             jumpers.Add(instr);
                     }
                     #endregion
-                    #region Misc injections               
+                    #region Injections               
                     var ifStack = new Stack<Instruction>();
                     for (var i = startInd; i < instructions.Count; i++)
                     {
@@ -298,7 +298,7 @@ namespace Drill4Net.Injector.Engine
                         var flow = opCode.FlowControl;
                         CrossPointType crossType = CrossPointType.Unset;
 
-                        if (instr.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
+                        if (instr.Operand == lastOp && needEnterLeavings/* && code != Code.Leave && code != Code.Leave_S*/) //jump to the end for return from function
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             instr.Operand = ldstrReturn;
@@ -443,9 +443,21 @@ namespace Drill4Net.Injector.Engine
                         }
 
                         //RETURN
-                        if (code == Code.Ret && needEnterLeavings) //&& code != Code.Endfilter ???
+                        if (code == Code.Ret && needEnterLeavings)
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
+                            //
+                            var prev = instr.Previous;
+                            var prevCode = prev.OpCode.Code;
+                            if (prevCode == Code.Endfinally)
+                            {
+                                foreach (var exc in body.ExceptionHandlers)
+                                {
+                                    if(exc.HandlerEnd == instr)
+                                        exc.HandlerEnd = ldstrReturn;
+                                }
+                            }
+                            //
                             ReplaceJump(instr, ldstrReturn);
                             processor.InsertBefore(instr, ldstrReturn);
                             processor.InsertBefore(instr, call);

@@ -84,15 +84,19 @@ namespace Drill4Net.Target.Comon.Tests
                 Assert.NotNull(mi, $"Parent method info is empty");
 
             //act
-            if (isAsync)
+            try
             {
-                var task = mi.Invoke(_target, args) as Task;
-                task.Wait();
+                if (isAsync)
+                {
+                    var task = mi.Invoke(_target, args) as Task;
+                    task.Wait();
+                }
+                else
+                {
+                    mi.Invoke(_target, args);
+                }
             }
-            else
-            {
-                mi.Invoke(_target, args);
-            }
+            catch {}
 
             //assert
             var funcs = GetFunctions();

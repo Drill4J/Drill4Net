@@ -95,6 +95,9 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Disposable_Using_AsyncTask), new List<string>()));
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Disposable_Using_Exception), new List<string>()));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Disposable_Using_Exception), new List<string> { "If_15", "Throw_20" }));
+
                 //class::Finalize() is the thing-in-itself
                 yield return GetCase(new object[] { (ushort)17 }, true,
                     new TestInfo(GetInfo(_target.Disposable_Finalizer), new List<string>()), 

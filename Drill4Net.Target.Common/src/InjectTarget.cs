@@ -167,7 +167,8 @@ namespace Drill4Net.Target.Common
             #region Disposable
             try
             {
-                Disposable_UsingWithException();
+                Disposable_Using_Exception(false);
+                Disposable_Using_Exception(true);
             }
             catch
             {}
@@ -748,10 +749,12 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Disposable
-        internal void Disposable_UsingWithException()
+        internal void Disposable_Using_Exception(bool cond)
         {
+            Console.WriteLine($"{nameof(Disposable_Using_Exception)}: {cond}");
             using var ms = new MemoryStream();
-            throw new Exception();
+            if (cond)
+                throw new Exception($"The exception has been throwed");
         }
 
         internal void Disposable_Using_SyncRead(bool cond)
