@@ -114,8 +114,8 @@ namespace Drill4Net.Target.Comon.Tests
                     new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(INFLUENCE);
                 #endregion
                 #region Misc
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Yield), new List<string> { "Else_44" }), new TestInfo(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Yield), new List<string> { "If_48" }), new TestInfo(GetInfo(_target.GetForYield), new List<string>())).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Yield), new List<string>()), new TestInfo(GetInfo(_target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(_target.Yield), new List<string>()), new TestInfo(GetInfo(_target.GetForYield), new List<string> { "If_48" })).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "If_13" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);

@@ -49,11 +49,11 @@ namespace Drill4Net.Plugins.Testing
                 }
                 #endregion
 
-                //var id = ar[0]; //not used yet
+                var realmethodName = ar[0];
                 var asmName = ar[1];
                 var funcName = ar[2];
                 var mess = ar[3];
-                if (ClarifyBusinessMethodName(asmName, ref funcName))
+                if (ClarifyBusinessMethodName(asmName, realmethodName, ref funcName))
                     AddPoint(asmName, funcName, mess);
             }
             catch (Exception ex)
@@ -133,7 +133,7 @@ namespace Drill4Net.Plugins.Testing
             return byFunctions;
         }
 
-        internal static bool ClarifyBusinessMethodName(string asmName, ref string curSig)
+        internal static bool ClarifyBusinessMethodName(string asmName, string realMethodName, ref string curSig)
         {
             //curSig may be a internal compiler's function (for generics, Enumerator,
             //AsyncStateMachine) and we must find parent business function from the call stack
@@ -159,7 +159,11 @@ namespace Drill4Net.Plugins.Testing
                 var method = stackFrame.GetMethod() as MethodInfo;
                 if (method == null)
                     continue;
+                if (!string.IsNullOrWhiteSpace(realMethodName) && method.Name != realMethodName)
+                    continue;
                 if (method.GetCustomAttribute(typeof(DebuggerHiddenAttribute)) != null)
+                    continue;
+                if (method.GetCustomAttribute(typeof(CompilerGeneratedAttribute)) != null)
                     continue;
                 var type = method.DeclaringType;
                 if (type == null)
@@ -221,6 +225,7 @@ namespace Drill4Net.Plugins.Testing
             var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
             if (!processed)
             {
+                Debug.WriteLine($"Not processed immediately: {curSig}");
                 if (_lastFuncByCtx.ContainsKey(id))
                 {
                     //be aware for multithread environment
@@ -245,7 +250,7 @@ namespace Drill4Net.Plugins.Testing
                         curName2 = curName2.Substring(ind, curName2.IndexOf(">") - ind);
                     }
 
-                    //ыearch using both vars
+                    //search using both vars
                     foreach (var existStr in _infoBySig.Keys)
                     {
                         var existName = existStr.Split("::")[1].Split("(")[0];

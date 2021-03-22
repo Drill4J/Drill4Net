@@ -262,9 +262,10 @@ namespace Drill4Net.Injector.Engine
 
                     #region Real type & method names
                     //TODO: regex!!!
-                    var realType = curType;
-                    var realTypeName = typeName;
-                    var realMethodName = methodName;
+                    TypeDefinition realType = null;
+                    string realTypeName = null;
+                    string realMethodName = null;
+                    //var realMethodFullmame = methodFullName;
                     if (isCompilerGenerated || isAsyncStateMachine)
                     {
                         try
@@ -272,7 +273,7 @@ namespace Drill4Net.Injector.Engine
                             var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
                             if (isMoveNext || !fromMethodName && typeName.Contains("/"))
                             {
-                                var ar = realTypeName.Split("/");
+                                var ar = typeName.Split("/");
                                 var el = ar[ar.Length - 1];
                                 realMethodName = el.Split(">")[0].Replace("<", null);
                             }
@@ -287,12 +288,13 @@ namespace Drill4Net.Injector.Engine
                         catch(Exception ex) 
                         { }
 
-                        if (realType.DeclaringType != null)
+                        if (curType.DeclaringType != null)
                         {
+                            realType = curType;
                             do realType = realType.DeclaringType;
                                 while (realType.DeclaringType != null && (realType.Name.Contains("c__DisplayClass") || realType.Name.Contains("<>")));
                         }
-                        realTypeName = realType.FullName;
+                        realTypeName = realType?.FullName;
                     }
                     #endregion
                     #endregion
@@ -301,7 +303,7 @@ namespace Drill4Net.Injector.Engine
                     Instruction ldstrEntering = null;
                     if (needEnterLeavings)
                     {
-                        probData = GetProbeData(moduleName, methodFullName, CrossPointType.Enter, 0);
+                        probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.Enter, 0);
                         ldstrEntering = GetInstruction(probData);
 
                         var firstOp = instructions.First();
@@ -310,7 +312,7 @@ namespace Drill4Net.Injector.Engine
                     }
 
                     //return
-                    var returnProbData = GetProbeData(moduleName, methodFullName, CrossPointType.Return, -1);
+                    var returnProbData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.Return, -1);
                     var ldstrReturn = GetInstruction(probData); //as object it must be only one
                     lastOp = instructions.Last();
                     #endregion
@@ -397,7 +399,7 @@ namespace Drill4Net.Injector.Engine
                                 var prevOperand = SkipNop(ind, false);
                                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
                                 {
-                                    probData = GetProbeData(moduleName, methodFullName, CrossPointType.While, i);
+                                    probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.While, i);
                                     var ldstrIf2 = GetInstruction(probData);
                                     var targetOp = prevOperand.Operand as Instruction;
                                     processor.InsertBefore(targetOp, ldstrIf2);
@@ -422,7 +424,7 @@ namespace Drill4Net.Injector.Engine
 
                             if (crossType == CrossPointType.Unset)
                                 crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                            probData = GetProbeData(moduleName, methodFullName, crossType, i);
+                            probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, i);
                             var ldstrIf = GetInstruction(probData);
 
                             //when inserting 'after', must set in desc order
@@ -447,7 +449,7 @@ namespace Drill4Net.Injector.Engine
                             var ifInst = ifStack.Pop();
                             var pairedCode = ifInst.OpCode.Code;
                             crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                            probData = GetProbeData(moduleName, methodFullName, crossType, i);
+                            probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, i);
                             var elseInst = GetInstruction(probData);
 
                             var instr2 = instructions[i + 1];
@@ -462,7 +464,7 @@ namespace Drill4Net.Injector.Engine
                         //THROW
                         if (flow == FlowControl.Throw)
                         {
-                            probData = GetProbeData(moduleName, methodFullName, CrossPointType.Throw, i);
+                            probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
                             var throwInst = GetInstruction(probData);
                             FixFinallyEnd(instr, throwInst, body.ExceptionHandlers);
                             ReplaceJump(instr, throwInst);
@@ -475,7 +477,7 @@ namespace Drill4Net.Injector.Engine
                         //CATCH FILTER
                         if (code == Code.Endfilter)
                         {
-                            probData = GetProbeData(moduleName, methodFullName, CrossPointType.CatchFilter, i);
+                            probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, i);
                             var ldstrFlt = GetInstruction(probData);
                             FixFinallyEnd(instr, ldstrFlt, body.ExceptionHandlers);
                             //ReplaceJump(instr, ldstrReturn);
@@ -812,11 +814,10 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
-        internal string GetProbeData(string moduleName, string fullMethodName, CrossPointType type, int localId)
+        internal string GetProbeData(string moduleName, string reaMethodName, string fullMethodName, CrossPointType type, int localId)
         {
             var id = localId == -1 ? null : localId.ToString();
-            //first portion of data not using yet
-            return $"{null}^{moduleName}^{fullMethodName}^{type}_{id}";
+            return $"{reaMethodName}^{moduleName}^{fullMethodName}^{type}_{id}";
         }
 
         private Instruction GetInstruction(string probeData)
