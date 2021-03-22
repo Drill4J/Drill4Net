@@ -298,7 +298,7 @@ namespace Drill4Net.Injector.Engine
                         var flow = opCode.FlowControl;
                         CrossPointType crossType = CrossPointType.Unset;
 
-                        if (instr.Operand == lastOp && needEnterLeavings/* && code != Code.Leave && code != Code.Leave_S*/) //jump to the end for return from function
+                        if (instr.Operand == lastOp && needEnterLeavings) //jump to the end for return from function
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             instr.Operand = ldstrReturn;
@@ -410,8 +410,8 @@ namespace Drill4Net.Injector.Engine
                             var elseInst = GetInstruction(probData);
 
                             var instr2 = instructions[i + 1];
+                            FixFinallyEnd(instr, elseInst, body.ExceptionHandlers);
                             ReplaceJump(instr2, elseInst);
-
                             processor.InsertBefore(instr2, elseInst);
                             processor.InsertBefore(instr2, call);
                             i += 2;
@@ -423,6 +423,7 @@ namespace Drill4Net.Injector.Engine
                         {
                             probData = GetProbeData(moduleName, methodFullName, CrossPointType.Throw, i);
                             var throwInst = GetInstruction(probData);
+                            FixFinallyEnd(instr, throwInst, body.ExceptionHandlers);
                             ReplaceJump(instr, throwInst);
                             processor.InsertBefore(instr, throwInst);
                             processor.InsertBefore(instr, call);
@@ -435,6 +436,7 @@ namespace Drill4Net.Injector.Engine
                         {
                             probData = GetProbeData(moduleName, methodFullName, CrossPointType.CatchFilter, i);
                             var ldstrFlt = GetInstruction(probData);
+                            FixFinallyEnd(instr, ldstrFlt, body.ExceptionHandlers);
                             //ReplaceJump(instr, ldstrReturn);
                             processor.InsertBefore(instr, ldstrFlt);
                             processor.InsertBefore(instr, call);
@@ -446,24 +448,14 @@ namespace Drill4Net.Injector.Engine
                         if (code == Code.Ret && needEnterLeavings)
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
-                            //
-                            var prev = instr.Previous;
-                            var prevCode = prev.OpCode.Code;
-                            if (prevCode == Code.Endfinally)
-                            {
-                                foreach (var exc in body.ExceptionHandlers)
-                                {
-                                    if(exc.HandlerEnd == instr)
-                                        exc.HandlerEnd = ldstrReturn;
-                                }
-                            }
-                            //
+                            FixFinallyEnd(instr, ldstrReturn, body.ExceptionHandlers);
                             ReplaceJump(instr, ldstrReturn);
                             processor.InsertBefore(instr, ldstrReturn);
                             processor.InsertBefore(instr, call);
                             i += 2;
                             continue;
                         }
+                    
                     } //cycle
                     #endregion
                     #region Correct jumps
@@ -526,6 +518,20 @@ namespace Drill4Net.Injector.Engine
             Console.WriteLine($"Modified assembly is created: {modifiedPath}");
 
             #region Local functions
+
+            void FixFinallyEnd(Instruction cur, Instruction on, Mono.Collections.Generic.Collection<ExceptionHandler> handlers)
+            {
+                var prev = cur.Previous;
+                var prevCode = prev.OpCode.Code;
+                if (prevCode == Code.Endfinally)
+                {
+                    foreach (var exc in handlers)
+                    {
+                        if (exc.HandlerEnd == cur)
+                            exc.HandlerEnd = on;
+                    }
+                }
+            }
 
             OpCode ConvertShortJumpToLong(OpCode opCode)
             {
