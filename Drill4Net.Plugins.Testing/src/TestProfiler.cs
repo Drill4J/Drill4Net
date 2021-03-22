@@ -15,6 +15,7 @@ namespace Drill4Net.Plugins.Testing
         public static readonly ConcurrentDictionary<int, string> _lastFuncByCtx;
         private static readonly ConcurrentDictionary<MethodInfo, string> _parentByInfo;
         private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
+        private static readonly ConcurrentDictionary<string, string> _sigBySig;
 
         private const string DISPLAY_CLASS = "c__DisplayClass";
 
@@ -26,6 +27,7 @@ namespace Drill4Net.Plugins.Testing
             _parentByInfo = new ConcurrentDictionary<MethodInfo, string>();
             _infoBySig = new ConcurrentDictionary<string, MethodInfo>();
             _lastFuncByCtx = new ConcurrentDictionary<int, string>();
+            _sigBySig = new ConcurrentDictionary<string, string>();
         }
 
         /*****************************************************************************/
@@ -139,18 +141,17 @@ namespace Drill4Net.Plugins.Testing
             //AsyncStateMachine) and we must find parent business function from the call stack
 
             //FIRST cache
-            var key = $"{asmName};{curSig}";
-            //TODO: combine both dictionaries?
-            //if (_infoBySig.TryGetValue(key, out MethodInfo curInfo))
-            //{
-            //    _parentByInfo.TryGetValue(curInfo, out curSig);
-            //    return;
-            //}
+            if (_sigBySig.TryGetValue(curSig, out string fullSig))
+            {
+                curSig = fullSig;
+                return true;
+            }
 
             //TODO: check performance...
             var stackTrace = new StackTrace(2); //skip local calls
             StackFrame[] stackFrames = stackTrace.GetFrames();
 
+            var key = $"{asmName};{curSig}";
             var processed = false;
             for (var i = 0; i < stackFrames.Length; i++)
             {
@@ -189,7 +190,7 @@ namespace Drill4Net.Plugins.Testing
                 //if (_parentByInfo.TryGetValue(method, out string fullSig))
                 //{
                 //    curSig = fullSig;
-                //    return;
+                //    return true;
                 //}
 
                 //at this stage we have simplified method's signature
@@ -211,7 +212,11 @@ namespace Drill4Net.Plugins.Testing
                 //need simplify strong named type
                 if (retType.Contains("Version=")) 
                     retType = curSig.Split(' ')[0];
-                curSig = $"{retType} {name}({parNames})";
+
+                var curSig2 = $"{retType} {name}({parNames})";
+                if(curSig.Contains(DISPLAY_CLASS) && !_sigBySig.ContainsKey(curSig))
+                    _sigBySig.TryAdd(curSig, curSig2);
+                curSig = curSig2;
 
                 //caching
                 _infoBySig.TryAdd(key, method);
@@ -229,39 +234,13 @@ namespace Drill4Net.Plugins.Testing
                 if (_lastFuncByCtx.ContainsKey(id))
                 {
                     //be aware for multithread environment
-                    curSig = _lastFuncByCtx[id];
+                    var curSig2 = _lastFuncByCtx[id];
+                    if (!_sigBySig.ContainsKey(curSig))
+                        _sigBySig.TryAdd(curSig, curSig2); 
+                    curSig = curSig2;
                 }
                 else
                 {
-                    //extract pure func name - TODO: regex
-                    var curName = curSig.Split("::")[1].Split("(")[0]
-                        .Replace("<", null).Replace(">", " ")
-                        .Split(" ")[0];
-
-                    //name from compiler generated 'DisplayClass'
-                    string curName2 = null;
-                    if (curSig.Contains(DISPLAY_CLASS))
-                    {
-                        var ar = curSig.Split("/");
-                        curName2 = ar[ar.Length-1];
-                        if (curName2.Contains("::"))
-                            curName2 = curName2.Split("::")[1];
-                        var ind = curName2.StartsWith("<<") ? 2 : 1;
-                        curName2 = curName2.Substring(ind, curName2.IndexOf(">") - ind);
-                    }
-
-                    //search using both vars
-                    foreach (var existStr in _infoBySig.Keys)
-                    {
-                        var existName = existStr.Split("::")[1].Split("(")[0];
-                        if (existName != curName && existName != curName2)
-                            continue;
-                        curSig = existStr.Split(";")[1];
-                        _lastFuncByCtx.TryAdd(id, existStr);
-                        processed = true;
-                    }
-                    if(!processed)
-                    { }
                 }
             }
             else
