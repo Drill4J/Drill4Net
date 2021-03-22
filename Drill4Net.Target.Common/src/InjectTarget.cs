@@ -211,6 +211,9 @@ namespace Drill4Net.Target.Common
             Yield(false);
             Yield(true);
 
+            Goto_Statement(false);
+            Goto_Statement(true);
+
             ContextBound(-1);
             ContextBound(1);
 
@@ -910,7 +913,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(WinAPI)}: {cond}");
         }
         #endregion
-
+        #region Lock
         private readonly object _locker = new object();
         internal void Lock_Statement(bool cond)
         {
@@ -921,7 +924,8 @@ namespace Drill4Net.Target.Common
             }
             Console.WriteLine($"{nameof(Lock_Statement)}: {s}");
         }
-
+        #endregion
+        #region Yield
         internal void Yield(bool cond)
         {
             var list = GetForYield(cond);
@@ -934,6 +938,7 @@ namespace Drill4Net.Target.Common
             foreach (var a in list)
                 yield return cond ? a : "z";
         }
+        #endregion
 
         //TODO: not working yet!
         internal void Expression(int x)
@@ -942,6 +947,17 @@ namespace Drill4Net.Target.Common
             var dlg = e.Compile();
             int d = dlg(x);
             Console.WriteLine($"{nameof(Expression)}: {d}");
+        }
+
+        internal void Goto_Statement(bool cond)
+        {
+            var s = "aaa";
+            if(cond)
+                goto label;
+            s = "bbb";
+label:
+            Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
+            return;
         }
 
         //only for NetFramework?
@@ -974,7 +990,7 @@ namespace Drill4Net.Target.Common
             return arr;
         }
 
-        //TODO: Elvis, events, goto, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: events, goto, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 

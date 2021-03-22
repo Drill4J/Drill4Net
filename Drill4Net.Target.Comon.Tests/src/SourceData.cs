@@ -246,6 +246,9 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.Cycle_While), new object[] { 3 }, new List<string> { "While_20", "While_20", "While_20" });
                 #endregion
                 #region Misc
+                yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { false }, new List<string> { "Else_11" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { true }, new List<string> { "If_8" }).SetCategory(CATEGORY_MISC);
+
                 yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { false }, new List<string> { "Else_14" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { true }, new List<string> { "If_18" }).SetCategory(CATEGORY_MISC);
 
