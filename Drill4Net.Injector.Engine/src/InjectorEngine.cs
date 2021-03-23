@@ -354,6 +354,7 @@ namespace Drill4Net.Injector.Engine
                         //awaiters in MoveNext as a border
                         if (isMoveNext && isCompilerGenerated)
                         {
+                            //TODO: caching!!!
                             foreach (var catcher in body.ExceptionHandlers)
                             {
                                 if (catcher.TryStart == instr)

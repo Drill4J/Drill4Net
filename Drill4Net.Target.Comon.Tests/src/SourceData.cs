@@ -69,8 +69,8 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Async_Linq_Blocking), new List<string>()), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string>()));
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(_target.Async_Linq_Blocking),  new List<string>()), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string>())).Ignore(INFLUENCE);
-                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Async_Linq_NonBlocking), new List<string>()), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string>())).Ignore(INFLUENCE);
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Async_Linq_NonBlocking), new List<string>()), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
                 #endregion
                 #region Parallel
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Linq), new List<string> { "Else_16", "Else_16", "Else_16", "Else_16", "Else_16" }));
