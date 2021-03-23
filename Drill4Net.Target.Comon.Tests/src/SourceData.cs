@@ -117,6 +117,9 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Yield), new List<string>()), new TestInfo(GetInfo(_target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(_target.Yield), new List<string>()), new TestInfo(GetInfo(_target.GetForYield), new List<string> { "If_49" })).SetCategory(CATEGORY_MISC);
 
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Else_4" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "If_9" })).SetCategory(CATEGORY_MISC);
+
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "If_14" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
                 #endregion

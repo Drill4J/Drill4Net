@@ -218,6 +218,9 @@ namespace Drill4Net.Target.Common
             Goto_Statement(false);
             Goto_Statement(true);
 
+            Extension(false);
+            Extension(true);
+
             ContextBound(-1);
             ContextBound(1);
 
@@ -958,6 +961,11 @@ namespace Drill4Net.Target.Common
         }
         #endregion
 
+        internal void Extension(bool cond)
+        {
+            Console.WriteLine($"{nameof(Extension)}: {cond.ToWord()}");
+        }
+
         //TODO: not working yet!
         internal void Expression(int x)
         {
@@ -1008,7 +1016,7 @@ label:
             return arr;
         }
 
-        //TODO: events, a || b, local funcs, extensions, own enumerator, async iterator, for, foreach, EF, Visual Basic...
+        //TODO: events, local funcs, own enumerator, async iterator, a || b (with PDB), for, foreach, EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
