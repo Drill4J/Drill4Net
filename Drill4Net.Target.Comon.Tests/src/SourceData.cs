@@ -106,7 +106,7 @@ namespace Drill4Net.Target.Comon.Tests
                 //class::Finalize() is the thing-in-itself
                 yield return GetCase(new object[] { (ushort)17 }, true,
                     new TestInfo(GetInfo(_target.Disposable_Finalizer), new List<string>()), 
-                    new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_30", "If_8" }, true));
+                    new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_31", "If_8" }, true));
 
                 //still not work togeteher with previous call
                 yield return GetCase(new object[] { (ushort)18 }, true,
