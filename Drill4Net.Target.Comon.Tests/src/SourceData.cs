@@ -50,7 +50,7 @@ namespace Drill4Net.Target.Comon.Tests
                 #region Anonymous
                 yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(_target.Anonymous_Func), new List<string> { "If_6" }));
 
-                yield return GetCase(Array.Empty<object>(), true, new TestInfo(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_8" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_6" }));
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "If_10" }));
@@ -119,6 +119,9 @@ namespace Drill4Net.Target.Comon.Tests
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Else_4" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "If_9" })).SetCategory(CATEGORY_MISC);
+
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.LocalFunc), new List<string> { "Else_2" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.LocalFunc), new List<string> { "If_7" })).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "If_14" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);

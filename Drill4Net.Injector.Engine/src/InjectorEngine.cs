@@ -255,6 +255,8 @@ namespace Drill4Net.Injector.Engine
                     var declAttrs = curType.CustomAttributes;
                     var isCompilerGenerated = declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; //methodName.StartsWith("<"); 
                     var needEnterLeavings =
+                        //local func
+                        !methodName.Contains("|") &&
                         //Async/await
                         !isAsyncStateMachine && 
                         !isCompilerGenerated &&                       

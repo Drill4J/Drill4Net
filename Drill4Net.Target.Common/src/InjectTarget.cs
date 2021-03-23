@@ -221,6 +221,9 @@ namespace Drill4Net.Target.Common
             Extension(false);
             Extension(true);
 
+            LocalFunc(false);
+            LocalFunc(true);
+
             ContextBound(-1);
             ContextBound(1);
 
@@ -958,6 +961,17 @@ namespace Drill4Net.Target.Common
             var list = new List<string> { "Y1, Y2, Y3" };
             foreach (var a in list)
                 yield return cond ? a : "z";
+        }
+        #endregion
+        #region Local func
+        internal void LocalFunc(bool cond)
+        {
+            Console.WriteLine($"{nameof(LocalFunc)}: {GetString(cond)}");
+
+            string GetString(bool cond)
+            {
+                return cond ? "YES" : "NO";
+            }
         }
         #endregion
 
