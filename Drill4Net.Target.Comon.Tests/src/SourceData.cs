@@ -56,6 +56,10 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "If_10" }));
                 #endregion
                 #region Async/await
+                yield return GetCase(Array.Empty<object>(), true, true, 
+                    new TestInfo(GetInfo(_target.Async_Stream), new List<string> { "If_54" }), 
+                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceAsync()"), true, new List<string> { "Else_24", "Else_24", "Else_24", "If_36", "If_36" }, true));
+
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "Else_59" }), new TestInfo(GetInfo(_target.Delay100), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "If_17" }));
 
@@ -120,6 +124,7 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Else_4" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "If_9" })).SetCategory(CATEGORY_MISC);
 
+                //we dont't take into account local func as separate entity
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.LocalFunc), new List<string> { "Else_2" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.LocalFunc), new List<string> { "If_7" })).SetCategory(CATEGORY_MISC);
 
@@ -289,6 +294,7 @@ namespace Drill4Net.Target.Comon.Tests
 
         internal delegate string OneBoolFuncStr(bool digit);
         internal delegate Task FuncTask();
+        internal delegate IAsyncEnumerable<int> FuncAsyncEnum();
         internal delegate void OneString(string par);
         internal delegate Task OneIntFuncTask(int digit);
         internal delegate string FuncString();
@@ -300,6 +306,11 @@ namespace Drill4Net.Target.Comon.Tests
         internal delegate bool OneInt(int digit);
         #endregion
         #region Method info
+        internal static MethodInfo GetInfo(FuncAsyncEnum method)
+        {
+            return method.Method;
+        }
+
         internal static MethodInfo GetInfo(OneString method)
         {
             return method.Method;

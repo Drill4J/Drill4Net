@@ -96,7 +96,7 @@ namespace Drill4Net.Target.Comon.Tests
                     mi.Invoke(_target, args);
                 }
             }
-            catch {}
+            catch{} //it's normal for business exceptions, not set here Assert.Fail
 
             //assert
             var funcs = GetFunctions();

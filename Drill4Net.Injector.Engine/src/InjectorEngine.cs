@@ -29,6 +29,7 @@ namespace Drill4Net.Injector.Engine
         private readonly ThreadLocal<bool?> _isNetCore;
         private readonly ThreadLocal<AssemblyVersion> _mainVersion;
         private readonly EnumerationOptions _searchOpts;
+        private readonly HashSet<string> _restrictNamespaces;
 
         /***************************************************************************************/
 
@@ -43,6 +44,7 @@ namespace Drill4Net.Injector.Engine
                 ReturnSpecialDirectories = false,
                 RecurseSubdirectories = false
             };
+            _restrictNamespaces = GetRestrictNamespaces();
         }
 
         /***************************************************************************************/
@@ -121,6 +123,11 @@ namespace Drill4Net.Injector.Engine
             #region Reading
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
+
+            //filter
+            var ns1 = Path.GetFileNameWithoutExtension(filePath).Split(".")[0];
+            if (_restrictNamespaces.Contains(ns1))
+                return;
 
             var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath))}\\";
             Environment.CurrentDirectory = sourceDir;
@@ -343,6 +350,26 @@ namespace Drill4Net.Injector.Engine
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
                         CrossPointType crossType = CrossPointType.Unset;
+
+                        //awaiters in MoveNext as a border
+                        if (isMoveNext && isCompilerGenerated)
+                        {
+                            foreach (var catcher in body.ExceptionHandlers)
+                            {
+                                if (catcher.TryStart == instr)
+                                {
+                                    i += 8;
+                                    continue;
+                                }
+                            }
+
+                            if (code == Code.Callvirt || code == Code.Call)
+                            {
+                                var s = instr.ToString();
+                                if (s.EndsWith("get_IsCompleted()")) //breaks Async_Linq_NonBlocking
+                                    break;
+                            }
+                        }
 
                         if (instr.Operand == lastOp && needEnterLeavings && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
                         {
@@ -854,6 +881,17 @@ namespace Drill4Net.Injector.Engine
         {
             //TODO: YAML
             return Instruction.Create(OpCodes.Ldstr, probeData);
+        }
+
+        private HashSet<string> GetRestrictNamespaces()
+        {
+            var hash = new HashSet<string>
+            {
+                "Microsoft",
+                "Windows",
+                //...
+            };
+            return hash;
         }
     }
 }

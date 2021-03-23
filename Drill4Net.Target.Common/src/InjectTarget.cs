@@ -146,6 +146,8 @@ namespace Drill4Net.Target.Common
             Try_Finally(true);
             #endregion
             #region Async
+            await Async_Stream();
+
             await Async_Task(false);
             await Async_Task(true);
 
@@ -743,6 +745,30 @@ namespace Drill4Net.Target.Common
                 return element;
             });
         }
+
+        internal async Task Async_Stream()
+        {
+            IAsyncEnumerable<int> enumerable = GenerateSequenceAsync();
+            var s = "";
+            await foreach (var i in enumerable)
+            {
+                if (i > 2) //If_54
+                    s += i;
+            }
+            Console.WriteLine($"{nameof(Async_Stream)}: {s}");
+        }
+
+        internal async IAsyncEnumerable<int> GenerateSequenceAsync()
+        {
+            for (int i = 1; i <= 3; i++) //Else_24
+            {
+                if (i % 2 == 1) //If_36
+                {
+                    await Task.Delay(10);
+                    yield return i;
+                }
+            }
+        }
         #endregion
         #region Parallel
         internal void Parallel_Linq(bool cond)
@@ -963,9 +989,10 @@ namespace Drill4Net.Target.Common
                 yield return cond ? a : "z";
         }
         #endregion
-        #region Local func
+
         internal void LocalFunc(bool cond)
         {
+            //we dont't take into account local func as separate entity
             Console.WriteLine($"{nameof(LocalFunc)}: {GetString(cond)}");
 
             string GetString(bool cond)
@@ -973,7 +1000,6 @@ namespace Drill4Net.Target.Common
                 return cond ? "YES" : "NO";
             }
         }
-        #endregion
 
         internal void Extension(bool cond)
         {
@@ -1030,7 +1056,7 @@ label:
             return arr;
         }
 
-        //TODO: events, local funcs, own enumerator, async iterator, a || b (with PDB), for, foreach, EF, Visual Basic...
+        //TODO: events, own enumerator, a || b (with PDB), for, foreach, EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
