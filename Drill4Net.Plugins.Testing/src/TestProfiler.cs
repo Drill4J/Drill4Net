@@ -15,7 +15,7 @@ namespace Drill4Net.Plugins.Testing
         public static readonly ConcurrentDictionary<int, string> _lastFuncByCtx;
         private static readonly ConcurrentDictionary<MethodInfo, string> _parentByInfo;
         private static readonly ConcurrentDictionary<string, MethodInfo> _infoBySig; // <string, byte> ?
-        private static readonly ConcurrentDictionary<string, string> _sigBySig;
+        private static readonly ConcurrentDictionary<string, string> _displaySigs;
 
         private const string DISPLAY_CLASS = "c__DisplayClass";
 
@@ -27,7 +27,7 @@ namespace Drill4Net.Plugins.Testing
             _parentByInfo = new ConcurrentDictionary<MethodInfo, string>();
             _infoBySig = new ConcurrentDictionary<string, MethodInfo>();
             _lastFuncByCtx = new ConcurrentDictionary<int, string>();
-            _sigBySig = new ConcurrentDictionary<string, string>();
+            _displaySigs = new ConcurrentDictionary<string, string>();
         }
 
         /*****************************************************************************/
@@ -141,7 +141,7 @@ namespace Drill4Net.Plugins.Testing
             //AsyncStateMachine) and we must find parent business function from the call stack
 
             //FIRST cache
-            if (_sigBySig.TryGetValue(curSig, out string fullSig))
+            if (_displaySigs.TryGetValue(curSig, out string fullSig))
             {
                 curSig = fullSig;
                 return true;
@@ -214,8 +214,8 @@ namespace Drill4Net.Plugins.Testing
                     retType = curSig.Split(' ')[0];
 
                 var curSig2 = $"{retType} {name}({parNames})";
-                if(curSig.Contains(DISPLAY_CLASS) && !_sigBySig.ContainsKey(curSig))
-                    _sigBySig.TryAdd(curSig, curSig2);
+                if(curSig.Contains(DISPLAY_CLASS) && !_displaySigs.ContainsKey(curSig))
+                    _displaySigs.TryAdd(curSig, curSig2);
                 curSig = curSig2;
 
                 //caching
@@ -235,8 +235,8 @@ namespace Drill4Net.Plugins.Testing
                 {
                     //be aware for multithread environment
                     var curSig2 = _lastFuncByCtx[id];
-                    if (!_sigBySig.ContainsKey(curSig))
-                        _sigBySig.TryAdd(curSig, curSig2); 
+                    if (!_displaySigs.ContainsKey(curSig))
+                        _displaySigs.TryAdd(curSig, curSig2); 
                     curSig = curSig2;
                 }
                 else

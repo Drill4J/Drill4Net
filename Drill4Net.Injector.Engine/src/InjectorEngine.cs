@@ -227,6 +227,7 @@ namespace Drill4Net.Injector.Engine
                     var isFinalizer = methodName == "Finalize" && methodDefinition.IsVirtual;
                     var moduleName = module.Name;
                     var probData = string.Empty;
+                    HashSet<Instruction> _processed = new HashSet<Instruction>();
 
                     //instructions
                     var body = methodDefinition.Body;
@@ -334,6 +335,8 @@ namespace Drill4Net.Injector.Engine
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
+                        if (_processed.Contains(instr))
+                            continue;
                         var opCode = instr.OpCode;
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
@@ -413,7 +416,7 @@ namespace Drill4Net.Injector.Engine
                                 continue;
                             }
 
-                            // if/switch
+                            // switch
                             ifStack.Push(instr);
                             if (code == Code.Switch)
                             {
@@ -422,15 +425,42 @@ namespace Drill4Net.Injector.Engine
                                 crossType = CrossPointType.Switch;
                             }
 
-                            if (crossType == CrossPointType.Unset)
-                                crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                            probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, i);
-                            var ldstrIf = GetInstruction(probData);
+                            // IF
+                            if (code == Code.Switch || instructions[i + 1].OpCode.FlowControl != FlowControl.Branch) //empty IF?
+                            {
+                                if (crossType == CrossPointType.Unset)
+                                    crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
+                                probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, i);
+                                var ldstrIf = GetInstruction(probData);
 
-                            //when inserting 'after', must set in desc order
-                            processor.InsertAfter(instr, call);
-                            processor.InsertAfter(instr, ldstrIf);
-                            i += 2;
+                                //when inserting 'after', must set in desc order
+                                processor.InsertAfter(instr, call);
+                                processor.InsertAfter(instr, ldstrIf);
+                                i += 2;
+                            }
+
+                            //for 'switch when()', etc
+                            var prev = operand?.Previous;
+                            if (prev == null || _processed.Contains(prev))
+                                continue;
+                            var prevCode = prev.OpCode.Code;
+                            if (prevCode == Code.Br || prevCode == Code.Br_S) //need insert paired call
+                            {
+                                //TODO: совместить с веткой ELSE/JUMP ?
+                                crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
+                                var ind = instructions.IndexOf(operand);
+                                probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, ind);
+                                var elseInst = GetInstruction(probData);
+
+                                ReplaceJump(operand, elseInst);
+                                processor.InsertBefore(operand, elseInst);
+                                processor.InsertBefore(operand, call);
+
+                                _processed.Add(prev);
+                                if (operand.Offset < instr.Offset)
+                                    i += 2;
+                            }
+                            //
                             continue;
                         }
 
@@ -443,7 +473,7 @@ namespace Drill4Net.Injector.Engine
                                 continue;
                             if (!isAsyncStateMachine && IsCompilerGeneratedBranch(i))
                                 continue;
-                            if (!IsRealCondition(i)) //is real forward condition's branch?
+                            if (!IsRealCondition(i)) //is real condition's branch?
                                 continue;
                             //
                             var ifInst = ifStack.Pop();
@@ -648,10 +678,8 @@ namespace Drill4Net.Injector.Engine
                 }
                 //
                 var next = SkipNop(ind, true);
-                //var offsetS = string.Empty;
-                //if (int.TryParse((op.Operand as Instruction)?.Operand?.ToString(), out int offset)) //is a jump?
-                //    offsetS = offset.ToString();
-                return op.Operand != next /*&& offsetS != next.Offset.ToString()*/; //how far do it jump?
+
+                return op.Operand != next; //how far do it jump?
             }
 
             Instruction SkipNop(int ind, bool forward)
@@ -756,7 +784,7 @@ namespace Drill4Net.Injector.Engine
                     return false;
                 if (op == lastOp && ins.Next == lastOp)
                     return true;
-                return op.OpCode.Name.StartsWith("ldloc") ? true : false;
+                return op.OpCode.Name.StartsWith("ldloc") && (op.Next == lastOp || op.Next?.Next == lastOp) ? true : false;
             }
             #endregion
         }

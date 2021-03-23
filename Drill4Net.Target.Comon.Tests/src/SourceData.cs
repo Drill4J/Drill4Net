@@ -39,12 +39,12 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 #region Generics
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_8" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "If_12" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Base), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "If_13" }));
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "Else_7" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "If_11" }), new TestInfo(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_8" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Call_Child), new List<string> { "If_12" }), new TestInfo(GetInfo(_genStr.GetShortDesc), new List<string>()), new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Else_8" }));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Var), new List<string> { "Else_38" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Generics_Var), new List<string> { "Else_37" }));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Generics_Var), new List<string> { "If_20", "If_30" }));
                 #endregion
                 #region Anonymous
@@ -53,13 +53,13 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(Array.Empty<object>(), true, new TestInfo(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_8" }));
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "If_9" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "If_10" }));
                 #endregion
                 #region Async/await
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "Else_58" }), new TestInfo(GetInfo(_target.Delay100), new List<string>()));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "Else_59" }), new TestInfo(GetInfo(_target.Delay100), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "If_17" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Async_Lambda), new List<string> { "Else_59" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(_target.Async_Lambda), new List<string> { "Else_60" }));
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Async_Lambda), new List<string> { "If_18" }));
 
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Async_Linq_Blocking), new List<string>()), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string>()));
@@ -69,24 +69,24 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(_target.Async_Linq_NonBlocking), new List<string> { "Else_83", "Else_95" }), new TestInfo(GetInfo(_target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(_target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
                 #endregion
                 #region Parallel
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Linq), new List<string> { "Else_19", "Else_19", "Else_19", "Else_19", "Else_19" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Linq), new List<string> { "Else_16", "Else_16", "Else_16", "Else_16", "Else_16" }));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Linq), new List<string> { "If_2", "If_2", "If_2", "If_2", "If_2", "If_7", "If_7", "If_7", "If_7", "If_7" }, true));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_For), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_For), new List<string> { "Else_17", "Else_17", "Else_17", "Else_17", "Else_17", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_For), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Foreach), new List<string> { "Else_20", "Else_20", "Else_20", "Else_20", "Else_20", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Foreach), new List<string> { "Else_17", "Else_17", "Else_17", "Else_17", "Else_17", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Foreach), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
 
                 //data migrates from one func to another depending on running other similar tests... See next option for execute them
                 //yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "Else_11"}), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "Else_4" }));
                 //yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "If_3" }), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "If_12" }));
 
-                yield return GetCase(new object[] { false }, false, true, true, new TestInfo(GetInfo(_target.Parallel_Task_New), new List<string> { "Else_11", "Else_4" }, true));
-                yield return GetCase(new object[] { true }, false, true, true, new TestInfo(GetInfo(_target.Parallel_Task_New), new List<string> { "If_12", "If_3" }, true));
+                yield return GetCase(new object[] { false }, false, true, true, new TestInfo(GetInfo(_target.Parallel_Task_New), new List<string> { "Else_12", "Else_4" }, true));
+                yield return GetCase(new object[] { true }, false, true, true, new TestInfo(GetInfo(_target.Parallel_Task_New), new List<string> { "If_13", "If_3" }, true));
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_12" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_13" }));
                 #endregion
                 #region Disposable
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Disposable_Using_SyncRead), new List<string>()));
@@ -115,10 +115,10 @@ namespace Drill4Net.Target.Comon.Tests
                 #endregion
                 #region Misc
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Yield), new List<string>()), new TestInfo(GetInfo(_target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(_target.Yield), new List<string>()), new TestInfo(GetInfo(_target.GetForYield), new List<string> { "If_48" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(_target.Yield), new List<string>()), new TestInfo(GetInfo(_target.GetForYield), new List<string> { "If_49" })).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "Else_9" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "If_13" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Unsafe), new List<string> { "If_14" }), new TestInfo(GetInfo(_point.ToString), new List<string>())).SetCategory(CATEGORY_MISC);
                 #endregion
             }
         }
@@ -131,44 +131,44 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.IfElse_Half), new object[] { false }, new List<string>());
                 yield return GetCase(GetInfo(_target.IfElse_Half), new object[] { true }, new List<string> { "If_8" });
 
-                yield return GetCase(GetInfo(_target.IfElse_FullSimple), new object[] { false }, new List<string> { "Else_11" });
+                yield return GetCase(GetInfo(_target.IfElse_FullSimple), new object[] { false }, new List<string> { "Else_12" });
                 yield return GetCase(GetInfo(_target.IfElse_FullSimple), new object[] { true }, new List<string> { "If_6" });
 
-                yield return GetCase(GetInfo(_target.IfElse_Consec_Full), new object[] { false, false }, new List<string> { "Else_24", "Else_55" });
-                yield return GetCase(GetInfo(_target.IfElse_Consec_Full), new object[] { false, true },  new List<string> { "Else_24", "If_41" });
-                yield return GetCase(GetInfo(_target.IfElse_Consec_Full), new object[] { true, false }, new List<string> { "If_10", "Else_55" });
+                yield return GetCase(GetInfo(_target.IfElse_Consec_Full), new object[] { false, false }, new List<string> { "Else_25", "Else_56" });
+                yield return GetCase(GetInfo(_target.IfElse_Consec_Full), new object[] { false, true },  new List<string> { "Else_25", "If_41" });
+                yield return GetCase(GetInfo(_target.IfElse_Consec_Full), new object[] { true, false }, new List<string> { "If_10", "Else_56" });
                 yield return GetCase(GetInfo(_target.IfElse_Consec_Full), new object[] { true, true }, new List<string> { "If_10", "If_41" });
 
-                yield return GetCase(GetInfo(_target.IfElse_Consec_HalfA_FullB), new object[] { false, false }, new List<string> { "Else_25" });
+                yield return GetCase(GetInfo(_target.IfElse_Consec_HalfA_FullB), new object[] { false, false }, new List<string> { "Else_26" });
                 yield return GetCase(GetInfo(_target.IfElse_Consec_HalfA_FullB), new object[] { false, true }, new List<string> { "If_17" });
-                yield return GetCase(GetInfo(_target.IfElse_Consec_HalfA_FullB), new object[] { true, false }, new List<string> { "If_6", "Else_25" });
+                yield return GetCase(GetInfo(_target.IfElse_Consec_HalfA_FullB), new object[] { true, false }, new List<string> { "If_6", "Else_26" });
                 yield return GetCase(GetInfo(_target.IfElse_Consec_HalfA_FullB), new object[] { true, true }, new List<string> { "If_6", "If_17" });
 
-                yield return GetCase(GetInfo(_target.IfElse_Half_EarlyReturn_Bool), new object[] { false }, new List<string>());
+                yield return GetCase(GetInfo(_target.IfElse_Half_EarlyReturn_Bool), new object[] { false }, new List<string> { "Else_22" });
                 yield return GetCase(GetInfo(_target.IfElse_Half_EarlyReturn_Bool), new object[] { true }, new List<string> { "If_8" });
 
-                yield return GetCase(GetInfo(_target.IfElse_Half_EarlyReturn_Tuple), new object[] { false }, new List<string>());                                                 
+                yield return GetCase(GetInfo(_target.IfElse_Half_EarlyReturn_Tuple), new object[] { false }, new List<string> { "Else_24" });                                                 
                 yield return GetCase(GetInfo(_target.IfElse_Half_EarlyReturn_Tuple), new object[] { true }, new List<string> { "If_8" });
 
                 yield return GetCase(GetInfo(_target.IfElse_Ternary_Positive), new object[] { false }, new List<string> { "Else_4" });
-                yield return GetCase(GetInfo(_target.IfElse_Ternary_Positive), new object[] { true }, new List<string> { "If_8" });
+                yield return GetCase(GetInfo(_target.IfElse_Ternary_Positive), new object[] { true }, new List<string> { "If_9" });
 
-                yield return GetCase(GetInfo(_target.IfElse_Ternary_Negative), new object[] { false }, new List<string> { "Else_8" });
+                yield return GetCase(GetInfo(_target.IfElse_Ternary_Negative), new object[] { false }, new List<string> { "Else_9" });
                 yield return GetCase(GetInfo(_target.IfElse_Ternary_Negative), new object[] { true }, new List<string> { "If_4" });
 
-                yield return GetCase(GetInfo(_target.IfElse_FullCompound), new object[] { false, false }, new List<string> { "Else_30", "Else_45" });
-                yield return GetCase(GetInfo(_target.IfElse_FullCompound), new object[] { false, true }, new List<string> { "Else_30", "If_37" });
-                yield return GetCase(GetInfo(_target.IfElse_FullCompound), new object[] { true, false }, new List<string> { "If_6", "Else_21" });
+                yield return GetCase(GetInfo(_target.IfElse_FullCompound), new object[] { false, false }, new List<string> { "Else_27", "Else_46" });
+                yield return GetCase(GetInfo(_target.IfElse_FullCompound), new object[] { false, true }, new List<string> { "Else_27", "If_37" });
+                yield return GetCase(GetInfo(_target.IfElse_FullCompound), new object[] { true, false }, new List<string> { "If_6", "Else_22" });
                 yield return GetCase(GetInfo(_target.IfElse_FullCompound), new object[] { true, true }, new List<string> { "If_6", "If_13" });
 
                 yield return GetCase(GetInfo(_target.IfElse_HalfA_FullB), new object[] { false, false }, new List<string>());
-                yield return GetCase(GetInfo(_target.IfElse_HalfA_FullB), new object[] { true, false }, new List<string> { "If_6", "Else_21" });
+                yield return GetCase(GetInfo(_target.IfElse_HalfA_FullB), new object[] { true, false }, new List<string> { "If_6", "Else_22" });
                 yield return GetCase(GetInfo(_target.IfElse_HalfA_FullB), new object[] { true, true }, new List<string> { "If_6", "If_13" });
 
                 yield return GetCase(GetInfo(_target.IfElse_HalfA_HalfB), new object[] { true, false }, new List<string> { "If_6" });
                 yield return GetCase(GetInfo(_target.IfElse_HalfA_HalfB), new object[] { true, true }, new List<string> { "If_6", "If_13" });
 
-                yield return GetCase(GetInfo(_target.IfElse_FullA_HalfB), new object[] { false, false }, new List<string> { "Else_22" });
+                yield return GetCase(GetInfo(_target.IfElse_FullA_HalfB), new object[] { false, false }, new List<string> { "Else_21" });
                 yield return GetCase(GetInfo(_target.IfElse_FullA_HalfB), new object[] { true, false }, new List<string> { "If_6" });                    
                 yield return GetCase(GetInfo(_target.IfElse_FullA_HalfB), new object[] { true, true }, new List<string> { "If_6", "If_13" });
                 #endregion
@@ -192,68 +192,72 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 0 }, new List<string> { "If_24" });
                 yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 1 }, new List<string> { "If_29" });
                 yield return GetCase(GetInfo(_target.Switch_AsReturn), new object[] { 2 }, new List<string> { "Switch_16" });
+
+                yield return GetCase(GetInfo(_target.Switch_When), new object[] { 0 }, new List<string> { "If_20", "If_28" });
+                yield return GetCase(GetInfo(_target.Switch_When), new object[] { 1 }, new List<string> { "If_20", "Else_34" });
+                yield return GetCase(GetInfo(_target.Switch_When), new object[] { -1 }, new List<string> { "If_14" });
                 #endregion
                 #region Elvis
-                yield return GetCase(GetInfo(_target.Elvis_Property_NotNull), Array.Empty<object>(), new List<string> { "If_11" });
+                yield return GetCase(GetInfo(_target.Elvis_Property_NotNull), Array.Empty<object>(), new List<string> { "If_12" });
                 yield return GetCase(GetInfo(_target.Elvis_Property_Null), Array.Empty<object>(), new List<string> { "Else_6" });
 
-                yield return GetCase(GetInfo(_target.Elvis_Property_NotNull_Double), Array.Empty<object>(), new List<string> { "If_13", "If_26" });
+                yield return GetCase(GetInfo(_target.Elvis_Property_NotNull_Double), Array.Empty<object>(), new List<string> { "If_14", "If_27" });
                 yield return GetCase(GetInfo(_target.Elvis_Property_Null_Double), Array.Empty<object>(), new List<string> { "Else_6" });
                 #endregion
                 #region Linq
                 yield return GetCase(GetInfo(_target.Linq_Query), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });
-                yield return GetCase(GetInfo(_target.Linq_Query), new object[] { true }, new List<string> { "If_8", "If_8", "If_8" });
+                yield return GetCase(GetInfo(_target.Linq_Query), new object[] { true }, new List<string> { "If_9", "If_9", "If_9" });
 
                 yield return GetCase(GetInfo(_target.Linq_Fluent), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });
-                yield return GetCase(GetInfo(_target.Linq_Fluent), new object[] { true }, new List<string> { "If_8", "If_8", "If_8" });
+                yield return GetCase(GetInfo(_target.Linq_Fluent), new object[] { true }, new List<string> { "If_9", "If_9", "If_9" });
                 #endregion
                 #region Lambda
-                yield return GetCase(GetInfo(_target.Lambda), new object[] { 5 }, new List<string> { "If_8" });
+                yield return GetCase(GetInfo(_target.Lambda), new object[] { 5 }, new List<string> { "If_9" });
                 yield return GetCase(GetInfo(_target.Lambda), new object[] { 10 }, new List<string> { "Else_2" });
 
-                yield return GetCase(GetInfo(_target.Lambda_AdditionalBranch), new object[] { 5 }, new List<string> { "If_8" });
+                yield return GetCase(GetInfo(_target.Lambda_AdditionalBranch), new object[] { 5 }, new List<string> { "If_9" });
                 yield return GetCase(GetInfo(_target.Lambda_AdditionalBranch), new object[] { 10 }, new List<string> { "Else_2" });
                 yield return GetCase(GetInfo(_target.Lambda_AdditionalBranch), new object[] { 12 }, new List<string> { "Else_2", "If_22" });
 
-                yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 5 }, new List<string> { "If_8", "Else_23", "Else_29" });
-                yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 10 }, new List<string> { "Else_2", "If_32" });
-                yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 12 }, new List<string> { "Else_2", "Else_23", "If_37" });
+                yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 5 }, new List<string> { "If_9" });
+                yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 10 }, new List<string> { "Else_2", "If_29" });
+                yield return GetCase(GetInfo(_target.Lambda_AdditionalSwitch), new object[] { 12 }, new List<string> { "Else_2", "If_34" });
                 #endregion
                 #region Try/cath/finally
                 yield return GetCase(GetInfo(_target.Try_Exception_Conditional), new object[] { false }, new List<string>());
                 yield return GetCase(GetInfo(_target.Try_Exception_Conditional), new object[] { true }, new List<string> { "If_20", "Throw_26" });
 
                 yield return GetCase(GetInfo(_target.Try_Catch), new object[] { false }, new List<string> { "Throw_7", "Else_13" });
-                yield return GetCase(GetInfo(_target.Try_Catch), new object[] { true }, new List<string> { "Throw_7", "If_17" });
+                yield return GetCase(GetInfo(_target.Try_Catch), new object[] { true }, new List<string> { "Throw_7", "If_18" });
 
                 yield return GetCase(GetInfo(_target.Try_CatchWhen), new object[] { false, false }, new List<string> { "Throw_7", "CatchFilter_16" });
                 yield return GetCase(GetInfo(_target.Try_CatchWhen), new object[] { false, true }, new List<string> { "Throw_7", "CatchFilter_16", "Else_22" });
                 yield return GetCase(GetInfo(_target.Try_CatchWhen), new object[] { true, false }, new List<string> { "Throw_7", "CatchFilter_16" });
-                yield return GetCase(GetInfo(_target.Try_CatchWhen), new object[] { true, true }, new List<string> { "Throw_7", "CatchFilter_16", "If_26" });
+                yield return GetCase(GetInfo(_target.Try_CatchWhen), new object[] { true, true }, new List<string> { "Throw_7", "CatchFilter_16", "If_27" });
 
                 yield return GetCase(GetInfo(_target.Try_Finally), new object[] { false }, new List<string> { "Else_12" });
-                yield return GetCase(GetInfo(_target.Try_Finally), new object[] { true }, new List<string> { "If_16" });
+                yield return GetCase(GetInfo(_target.Try_Finally), new object[] { true }, new List<string> { "If_17" });
                 #endregion
                 #region Dynamic
                 yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { false }, new List<string> { "Else_2" }).SetCategory(CATEGORY_DYNAMIC);
-                yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { true }, new List<string> { "If_6" }).SetCategory(CATEGORY_DYNAMIC);
+                yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { true }, new List<string> { "If_7" }).SetCategory(CATEGORY_DYNAMIC);
 
                 yield return GetCase(GetInfo(_target.DynamicObject), new object[] { false }, new List<string> { "Else_2" }).SetCategory(CATEGORY_DYNAMIC);
-                yield return GetCase(GetInfo(_target.DynamicObject), new object[] { true }, new List<string> { "If_6" }).SetCategory(CATEGORY_DYNAMIC);
+                yield return GetCase(GetInfo(_target.DynamicObject), new object[] { true }, new List<string> { "If_7" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
                 yield return GetCase(GetInfo(_target.Cycle_While), new object[] { -1 }, new List<string>());
                 yield return GetCase(GetInfo(_target.Cycle_While), new object[] { 3 }, new List<string> { "While_20", "While_20", "While_20" });
                 #endregion
                 #region Misc
-                yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { false }, new List<string> { "Else_11" }).SetCategory(CATEGORY_MISC);
-                yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { true }, new List<string> { "If_8" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { false }, new List<string> { "If_10" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { false }, new List<string> { "Else_14" }).SetCategory(CATEGORY_MISC);
-                yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { true }, new List<string> { "If_18" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { true }, new List<string> { "If_19" }).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(GetInfo(_target.WinAPI), new object[] { false }, new List<string> { "Else_5" }).SetCategory(CATEGORY_MISC);
-                yield return GetCase(GetInfo(_target.WinAPI), new object[] { true }, new List<string> { "If_9" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(_target.WinAPI), new object[] { true }, new List<string> { "If_10" }).SetCategory(CATEGORY_MISC);
 
                 //only for NetFramework?
                 //yield return GetCase(GetInfo(_target.ContextBound), new object[] { false }, new List<string> { "Else_5" });

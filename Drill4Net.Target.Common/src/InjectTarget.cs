@@ -75,6 +75,10 @@ namespace Drill4Net.Target.Common
             Switch_AsReturn(0);
             Switch_AsReturn(1);
             Switch_AsReturn(2);
+
+            Switch_When(-1);
+            Switch_When(0);
+            Switch_When(1);
             #endregion
             #region Elvis
             Elvis_Property_NotNull();
@@ -480,6 +484,20 @@ namespace Drill4Net.Target.Common
                 1 => "B",
                 _ => "default",
             };
+        }
+
+        internal void Switch_When(int a)
+        {
+            //in IL code it presents as set of simply 'if/else',
+            //not as 'switch' statement
+            var s = "default";
+            switch (a)
+            {
+                case int x when a < 0: s = "A"; x = 6; break;
+                case int x when a == 0: s = "B"; x = 3; break;
+                default: Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}"); return;
+            }
+            Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}");
         }
         #endregion
         #region Cycle
