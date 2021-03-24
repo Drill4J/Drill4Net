@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -81,10 +82,14 @@ namespace Drill4Net.Target.Common
             Switch_When(1);
             #endregion
             #region Elvis
-            Elvis_Property_NotNull();
-            Elvis_Property_NotNull_Double();
-            Elvis_Property_Null();
-            Elvis_Property_Null_Double();
+            Elvis_NotNull();
+            Elvis_Null();
+
+            Elvis_Sequence_NotNull();
+            Elvis_Sequence_Null();
+
+            Elvis_Double_NotNull();
+            Elvis_Double_Null();
             #endregion
             #region Linq
             Linq_Query(false);
@@ -147,6 +152,7 @@ namespace Drill4Net.Target.Common
             #endregion
             #region Async
             await Async_Stream();
+            await Async_Stream_Cancellation();
 
             await Async_Task(false);
             await Async_Task(true);
@@ -416,32 +422,46 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Elvis
-        internal void Elvis_Property_NotNull()
+        internal void Elvis_NotNull()
         {
             var obj = new GenStr("aaa");
             var prop = obj?.Prop;
-            Console.WriteLine($"{nameof(Elvis_Property_NotNull)}: {prop}");
+            Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
         }
 
-        internal void Elvis_Property_NotNull_Double()
-        {
-            var obj = new GenStr("aaa");
-            var len = obj?.Prop?.Length;
-            Console.WriteLine($"{nameof(Elvis_Property_NotNull_Double)}: {len}");
-        }
-
-        internal void Elvis_Property_Null()
+        internal void Elvis_Null()
         {
             GenStr obj = null;
             var prop = obj?.Prop;
-            Console.WriteLine($"{nameof(Elvis_Property_NotNull)}: {prop}");
+            Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
         }
 
-        internal void Elvis_Property_Null_Double()
+        internal void Elvis_Sequence_NotNull()
+        {
+            var obj = new GenStr("aaa");
+            var len = obj?.Prop?.Length;
+            Console.WriteLine($"{nameof(Elvis_Sequence_NotNull)}: {len}");
+        }
+
+        internal void Elvis_Sequence_Null()
         {
             GenStr obj = null;
             var len = obj?.Prop?.Length;
-            Console.WriteLine($"{nameof(Elvis_Property_Null_Double)}: {len}");
+            Console.WriteLine($"{nameof(Elvis_Sequence_Null)}: {len}");
+        }
+
+        internal void Elvis_Double_NotNull()
+        {
+            var obj = "aaa";
+            var prop = obj ?? "bbb";
+            Console.WriteLine($"{nameof(Elvis_Double_NotNull)}: {prop}");
+        }
+
+        internal void Elvis_Double_Null()
+        {
+            string obj = null;
+            var prop = obj ?? "bbb";
+            Console.WriteLine($"{nameof(Elvis_Double_Null)}: {prop}");
         }
         #endregion
         #region Switch
@@ -746,6 +766,8 @@ namespace Drill4Net.Target.Common
             });
         }
 
+        #region Stream
+        #region Simple
         internal async Task Async_Stream()
         {
             IAsyncEnumerable<int> enumerable = GenerateSequenceAsync();
@@ -769,6 +791,47 @@ namespace Drill4Net.Target.Common
                 }
             }
         }
+        #endregion
+        #region Cancellation
+        internal async Task Async_Stream_Cancellation()
+        {
+            //data
+            var cts = new CancellationTokenSource();
+            var token = cts.Token;
+            IAsyncEnumerable<int> enumerable = GenerateSequenceWithCancellationAsync(token);
+
+            //processing
+            var s = "";
+            try
+            {
+                await foreach (var i in enumerable)
+                {
+                    if (i == 2)
+                    {
+                        s += i;
+                        cts.Cancel();
+                    }
+                }
+            }
+            catch { } //on cancellation
+
+            Console.WriteLine($"{nameof(Async_Stream_Cancellation)}: {s}");
+        }
+   
+        internal async IAsyncEnumerable<int> GenerateSequenceWithCancellationAsync
+            ([EnumeratorCancellation] CancellationToken token = default)
+        {
+            for (int i = 1; i <= 3; i++) 
+            {
+                token.ThrowIfCancellationRequested();
+                await Task.Delay(10);
+                yield return i;
+            }
+        }
+        #endregion
+
+        //https://docs.microsoft.com/en-us/archive/msdn-magazine/2019/november/csharp-iterating-with-async-enumerables-in-csharp-8
+        #endregion
         #endregion
         #region Parallel
         internal void Parallel_Linq(bool cond)
@@ -1056,7 +1119,7 @@ label:
             return arr;
         }
 
-        //TODO: events, own enumerator, a || b (with PDB), for, foreach, EF, Visual Basic...
+        //TODO: ConfigureAwait, events, own enumerator, a || b (with PDB), for, foreach, EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
