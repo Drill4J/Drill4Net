@@ -232,6 +232,8 @@ namespace Drill4Net.Target.Common
             LocalFunc(false);
             LocalFunc(true);
 
+            Enumerator_Implementation();
+
             ContextBound(-1);
             ContextBound(1);
 
@@ -799,6 +801,7 @@ namespace Drill4Net.Target.Common
             var cts = new CancellationTokenSource();
             var token = cts.Token;
             IAsyncEnumerable<int> enumerable = GenerateSequenceWithCancellationAsync(token);
+            enumerable.ConfigureAwait(false);
 
             //processing
             var s = "";
@@ -1089,6 +1092,17 @@ label:
             return;
         }
 
+        internal void Enumerator_Implementation()
+        {
+            var iter = new StringEnumerable();
+
+            var s = "";
+            foreach (var a in iter)
+                s += a;
+
+            Console.WriteLine($"{nameof(Enumerator_Implementation)}: {s}");
+        }
+
         //only for NetFramework?
         internal bool ContextBound(int prop)
         {
@@ -1119,7 +1133,7 @@ label:
             return arr;
         }
 
-        //TODO: ConfigureAwait, events, own enumerator, a || b (with PDB), for, foreach, EF, Visual Basic...
+        //TODO: events, own enumerator, a || b (with PDB), for, foreach, EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
