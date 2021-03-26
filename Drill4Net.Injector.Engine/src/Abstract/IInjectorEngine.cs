@@ -5,7 +5,7 @@ namespace Drill4Net.Injector.Engine
 {
     public interface IInjectorEngine
     {
-        void Process();
-        void Process([NotNull] MainOptions opts);
+        InjectedSolution Process();
+        InjectedSolution Process([NotNull] MainOptions opts);
     }
 }

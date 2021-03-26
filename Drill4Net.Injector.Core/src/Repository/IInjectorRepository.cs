@@ -7,5 +7,7 @@ namespace Drill4Net.Injector.Core
         MainOptions Options { get; set; }
         void ValidateOptions();
         void ValidateOptions(MainOptions opts);
+        InjectedSolution ReadInjectedTree(string path);
+        void WriteInjectedTree(string path, InjectedSolution tree);
     }
 }

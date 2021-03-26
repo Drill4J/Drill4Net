@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -118,6 +119,40 @@ namespace Drill4Net.Injector.Core
         public void ValidateOptions()
         {
             ValidateOptions(Options);
+        }
+        #endregion
+        #region Injected Tree
+        public InjectedSolution ReadInjectedTree(string path)
+        {
+            var types = GetInjectedTreeTypes();
+            var ser = new NetSerializer.Serializer(types);
+
+            var bytes2 = File.ReadAllBytes(path);
+            using var ms2 = new MemoryStream(bytes2);
+            var tree = ser.Deserialize(ms2) as InjectedSolution;
+            return tree;
+        }
+
+        public void WriteInjectedTree(string path, InjectedSolution tree)
+        {
+            var types = GetInjectedTreeTypes();
+            var ser = new NetSerializer.Serializer(types);
+            using var ms = new MemoryStream();
+            ser.Serialize(ms, tree);
+            File.WriteAllBytes(path, ms.ToArray());
+        }
+
+        internal List<Type> GetInjectedTreeTypes()
+        {
+            return new List<Type>
+            {
+                typeof(InjectedSolution),
+                typeof(InjectedDirectory),
+                typeof(InjectedAssembly),
+                typeof(InjectedClass),
+                typeof(InjectedMethod),
+                typeof(CrossPoint),
+            };
         }
         #endregion
     }

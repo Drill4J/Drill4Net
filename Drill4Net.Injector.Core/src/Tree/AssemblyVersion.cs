@@ -1,7 +1,8 @@
 ﻿using System;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
+    [Serializable]
     public class AssemblyVersion
     {
         public AssemblyVersionType Target { get; set; }

@@ -21,6 +21,7 @@ namespace Drill4Net.Target.Comon.Tests
         private static readonly GenStr _genStr;
         private static readonly Point _point;
         private static readonly NotEmptyStringEnumerator _strEnumerator;
+        private static readonly Eventer _eventer;
         #endregion
 
         /************************************************************************/
@@ -30,6 +31,7 @@ namespace Drill4Net.Target.Comon.Tests
             _target = new InjectTarget();
             _genStr = new GenStr("");
             _point = new Point();
+            _eventer = new Eventer();
             _strEnumerator = new NotEmptyStringEnumerator(null);
         }
 
@@ -277,6 +279,11 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "If_9" })).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(Array.Empty<object>(), true, 
+                    new TestInfo(GetInfo(_target.Event), new List<string>()),
+                    new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "If_11" }))
+                    .SetCategory(CATEGORY_MISC);
+
+                yield return GetCase(Array.Empty<object>(), true,
                     new TestInfo(GetInfo(_target.Enumerator_Implementation), new List<string> { "While_21", "While_21", "While_21", "While_21" }),
                     new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
                     new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "If_14", "If_14", "If_14", "If_14", "Else_25" }),

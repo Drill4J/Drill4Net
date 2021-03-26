@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Plugins.Testing;
+using YamlDotNet.Serialization;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -21,6 +22,7 @@ namespace Drill4Net.Target.Comon.Tests
         private MainOptions _opts;
         private Type _type;
         private object _target;
+        private Deserializer _deser;
 
         /****************************************************************************/
 
@@ -33,6 +35,7 @@ namespace Drill4Net.Target.Comon.Tests
             //var injector = new InjectorEngine(_rep);
             //injector.Process();
 
+            _deser = new Deserializer();
             var _opts = _rep.Options;
             var profPath = Path.Combine(_opts.Destination.Directory, _opts.Tests.AssemblyName);
             var asm = Assembly.LoadFrom(profPath);
@@ -197,9 +200,22 @@ namespace Drill4Net.Target.Comon.Tests
             return sig;
         }
 
-        private Dictionary<string, List<string>> GetFunctions()
+        private Dictionary<string, List<CrossPoint>> GetFunctions()
         {
-            return TestProfiler.GetFunctions(false);
+            var raw = TestProfiler.GetFunctions(false);
+            var res = new Dictionary<string, List<CrossPoint>>();
+            foreach (var func in raw.Keys)
+            {
+                var serPoints = raw[func];
+                var points = new List<CrossPoint>();
+                res.Add(func, points);
+                foreach (var serPoint in serPoints)
+                {
+                    var point = _deser.Deserialize<CrossPoint>(serPoint);
+                    points.Add(point);
+                }
+            }
+            return res;
         }
 
         private void CheckEnterAndLastReturnOrThrow(List<string> points)
@@ -213,6 +229,7 @@ namespace Drill4Net.Target.Comon.Tests
             if (checks == null)
                 checks = new List<string>();
             Assert.IsTrue(points.Count == checks.Count);
+            points = points.Select(a => a.Split(":")[1]).ToList();
 
             for (var i = 0; i < checks.Count; i++)
             {

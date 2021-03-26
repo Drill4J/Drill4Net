@@ -233,6 +233,7 @@ namespace Drill4Net.Target.Common
             LocalFunc(true);
 
             Enumerator_Implementation();
+            Event();
 
             ContextBound(-1);
             ContextBound(1);
@@ -1056,6 +1057,23 @@ namespace Drill4Net.Target.Common
         }
         #endregion
 
+        internal void Event()
+        {
+            Console.WriteLine($"{nameof(Event)} started");
+
+#pragma warning disable IDE0039 // Use local function
+            NotifyHandler p = delegate (string mes)
+            { 
+                Console.WriteLine($"{nameof(Event)} -> {mes}"); 
+            };
+#pragma warning restore IDE0039 // Use local function
+
+            var eventer = new Eventer();
+            eventer.Notify += p;
+            eventer.NotifyAbout("AAA");
+            eventer.Notify -= p;
+        }
+
         internal void LocalFunc(bool cond)
         {
             //we dont't take into account local func as separate entity
@@ -1095,11 +1113,9 @@ label:
         internal void Enumerator_Implementation()
         {
             var iter = new StringEnumerable();
-
             var s = "";
             foreach (var a in iter)
                 s += a;
-
             Console.WriteLine($"{nameof(Enumerator_Implementation)}: {s}");
         }
 
@@ -1133,11 +1149,10 @@ label:
             return arr;
         }
 
-        //TODO: events, own enumerator, a || b (with PDB), for, foreach, EF, Visual Basic...
+        //TODO: for, foreach, a || b (with PDB), EF, Visual Basic...
         //AutoProperty for F#
 
         //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
         // no obvious ways to exercise the path and has then inserted a sequence point to boot
-
     }
 }

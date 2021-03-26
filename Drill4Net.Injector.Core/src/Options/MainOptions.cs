@@ -2,6 +2,7 @@
 {
     public class MainOptions
     {
+        public TargetOptions Target { get; set; }
         public SourceOptions Source { get; set; }
 
         public DestinationOptions Destination { get; set; }

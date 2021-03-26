@@ -9,8 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Drill4Net.Injector.Core;
 using Mono.Cecil.Rocks;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -30,6 +30,7 @@ namespace Drill4Net.Injector.Engine
         private readonly ThreadLocal<AssemblyVersion> _mainVersion;
         private readonly EnumerationOptions _searchOpts;
         private readonly HashSet<string> _restrictNamespaces;
+        private int _curPointUid;
 
         /***************************************************************************************/
 
@@ -49,33 +50,46 @@ namespace Drill4Net.Injector.Engine
 
         /***************************************************************************************/
 
-        public void Process()
+        public InjectedSolution Process()
         {
-            Process(_rep.Options);
+            return Process(_rep.Options);
         }
 
-        public void Process([NotNull] MainOptions opts)
+        public InjectedSolution Process([NotNull] MainOptions opts)
         {
             _rep.ValidateOptions(opts);
             CopySource(opts.Source.Directory, opts.Destination.Directory);
             var versions = DefineTargetVersions(opts.Source.Directory);
-            ProcessDirectory(opts.Source.Directory, versions, opts);
+            _curPointUid = -1;
+            //
+            var dir = opts.Source.Directory;
+            var tree = new InjectedSolution(opts.Target?.Name, dir)
+            {
+                StartTime = DateTime.Now,
+                DestinationPath = GetDestinationDirectory(opts, dir),
+            };
+            ProcessDirectory(dir, versions, opts, tree);
+            tree.FinishTime = DateTime.Now;
+            InjectTree(tree);
+            //
+            return tree;
         }
 
-        internal void ProcessDirectory([NotNull] string directory, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] MainOptions opts)
+        internal void ProcessDirectory([NotNull] string directory, [NotNull] Dictionary<string, AssemblyVersion> versions, 
+            [NotNull] MainOptions opts, [NotNull] InjectedSolution tree)
         {
             //files
             var files = IoHelper.GetAssemblies(directory, _searchOpts);
             foreach (var file in files)
             {
-                ProcessAssembly(file, versions, opts);
+                ProcessAssembly(file, versions, opts, tree);
             }
 
             //subdirectories
             var dirs = Directory.GetDirectories(directory, "*", _searchOpts);
             foreach (var dir in dirs)
             {
-                ProcessDirectory(dir, versions, opts);
+                ProcessDirectory(dir, versions, opts, tree);
             }
         }
 
@@ -118,7 +132,8 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
 
-        internal void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, AssemblyVersion> versions, [NotNull] MainOptions opts)
+        internal void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, 
+            AssemblyVersion> versions, [NotNull] MainOptions opts, [NotNull] InjectedSolution tree)
         {
             #region Reading
             if (!File.Exists(filePath))
@@ -129,24 +144,17 @@ namespace Drill4Net.Injector.Engine
             if (_restrictNamespaces.Contains(ns1))
                 return;
 
+            //source
             var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath))}\\";
             Environment.CurrentDirectory = sourceDir;
             var subjectName = Path.GetFileNameWithoutExtension(filePath);
 
-            #region Destinaton
-            string destDir;
-            if (IoHelper.IsSameDirectories(sourceDir, opts.Source.Directory))
-            {
-                destDir = opts.Destination.Directory;
-            }
-            else
-            {
-                destDir = Path.Combine(opts.Destination.Directory, sourceDir.Remove(0, opts.Source.Directory.Length));
-            }
+            //destinaton
+            string destDir = GetDestinationDirectory(opts, sourceDir);
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
-            #endregion
 
+            //must process?
             var ext = Path.GetExtension(filePath);
             var version = versions.ContainsKey(filePath) ? versions[filePath] : GetAssemblyVersion(filePath);
             if (ext == ".exe" && version.Target == AssemblyVersionType.NetCore)
@@ -184,6 +192,24 @@ namespace Drill4Net.Injector.Engine
             // read subject assembly with symbols
             using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
+
+            #region Tree
+            //directory
+            var treeDir = tree.GetDirectory(sourceDir);
+            if (treeDir == null)
+            {
+                treeDir = new InjectedDirectory(sourceDir, destDir);
+                tree.AddChild(treeDir);
+            }
+
+            //assembly
+            var treeAsm = treeDir.GetAssembly(assembly.FullName);
+            if (treeAsm == null)
+            {
+                treeAsm = new InjectedAssembly(module.Name, assembly.FullName, filePath);
+                treeDir.AddChild(treeAsm);
+            }
+            #endregion
             #endregion
             #region Commands
 
@@ -205,39 +231,48 @@ namespace Drill4Net.Injector.Engine
             HashSet<Instruction> jumpers;
             Mono.Collections.Generic.Collection<Instruction> instructions;
             HashSet<Instruction> compilerInstructions;
-            var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
             var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
             bool isAsyncStateMachine = false;
             Instruction lastOp;
 
-            foreach (TypeDefinition type in module.Types)
+            foreach (TypeDefinition typeDef in module.Types)
             {
-                var typeName = type.Name;
+                var typeName = typeDef.Name;
                 //TODO: normal defining of business types (by cfg?)
                 if (typeName == "<Module>" || typeName.StartsWith("Microsoft.") || typeName.StartsWith("System.")) //GUANO....
                     continue;
+                var nameSpace = typeDef.Namespace;
+                var typeFullName = typeDef.FullName;
+
+                #region Tree
+                var treeClass = new InjectedClass(treeAsm.Name, typeFullName)
+                {
+                    Source = CreateTypeSource(typeDef)
+                };
+                treeAsm.AddChild(treeClass);
+                #endregion
 
                 //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
-                var methods = GetAllMethods(type, opts);
+                var methods = GetAllMethods(typeDef, opts);
 
                 //process all methods
-                foreach (var methodDefinition in methods)
+                foreach (var methodDef in methods)
                 {
                     #region Init
-                    var curType = methodDefinition.DeclaringType;
+                    var curType = methodDef.DeclaringType;
                     typeName = curType.FullName;
 
-                    var methodName = methodDefinition.Name;
-                    var methodFullName = methodDefinition.FullName;
+                    var methodName = methodDef.Name;
+                    var methodFullName = methodDef.FullName;
 
                     var isMoveNext = methodName == "MoveNext";
-                    var isFinalizer = methodName == "Finalize" && methodDefinition.IsVirtual;
+                    var isFinalizer = methodName == "Finalize" && methodDef.IsVirtual;
                     var moduleName = module.Name;
                     var probData = string.Empty;
                     HashSet<Instruction> _processed = new HashSet<Instruction>();
 
                     //instructions
-                    var body = methodDefinition.Body;
+                    var body = methodDef.Body;
                     //body.SimplifyMacros(); //buggy (Cecil or me?)
                     instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
@@ -245,7 +280,7 @@ namespace Drill4Net.Injector.Engine
                     var startInd = 1;
 
                     //method's attributes
-                    var methAttrs = methodDefinition.CustomAttributes;
+                    var methAttrs = methodDef.CustomAttributes;
                     var isDbgHidden = methAttrs.FirstOrDefault(a => a.AttributeType.Name == dbgHiddenAttrName) != null;
                     if (isDbgHidden)
                         continue;
@@ -258,18 +293,16 @@ namespace Drill4Net.Injector.Engine
                     if (skipStart)
                         startInd = 12;
 
-                    //type's attributes
-                    var declAttrs = curType.CustomAttributes;
-                    var isCompilerGenerated = declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; //methodName.StartsWith("<"); 
-                    var needEnterLeavings =
-                        //local func
-                        !methodName.Contains("|") &&
-                        //Async/await
-                        !isAsyncStateMachine && 
-                        !isCompilerGenerated &&                       
-                        //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash here                   
-                        (_isNetCore.Value == false || (_isNetCore.Value == true && !isFinalizer));
+                    var methodType = GetMethodType(methodDef);
+                    var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
 
+                    #region Tree
+                    var treeFunc = new InjectedMethod(nameSpace, methodName);
+                    var isNested = false; //TODO: DEFINE & FIX !!!
+                    var methHashcode = GetMethodHashCode(body.Instructions);
+                    treeFunc.Source = CreateMethodSource(methodDef, methodType, isNested, methHashcode);
+                    treeClass.AddChild(treeFunc);
+                    #endregion
                     #region Real type & method names
                     //TODO: regex!!!
                     TypeDefinition realType = null;
@@ -310,10 +343,21 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                     #region Enter/Return
                     //inject 'entering' instruction
+                    var isSpecFunc = IsSpecialGeneratedMethod(methodType);
+                    var strictEnterReturn = //what is principally forbidden
+                        !isSpecFunc &&
+                        (                           
+                            methodName.Contains("|") || //local func                                                        
+                            isAsyncStateMachine || //async/await
+                            isCompilerGenerated ||
+                            //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash                   
+                            (_isNetCore.Value == true && isFinalizer)
+                        );
+
                     Instruction ldstrEntering = null;
-                    if (needEnterLeavings)
+                    if (!strictEnterReturn)
                     {
-                        probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.Enter, 0);
+                        probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.Enter, 0);
                         ldstrEntering = GetInstruction(probData);
 
                         var firstOp = instructions.First();
@@ -322,7 +366,7 @@ namespace Drill4Net.Injector.Engine
                     }
 
                     //return
-                    var returnProbData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.Return, -1);
+                    var returnProbData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.Return, -1);
                     var ldstrReturn = GetInstruction(probData); //as object it must be only one
                     lastOp = instructions.Last();
                     #endregion
@@ -367,12 +411,12 @@ namespace Drill4Net.Injector.Engine
                             if (code == Code.Callvirt || code == Code.Call)
                             {
                                 var s = instr.ToString();
-                                if (s.EndsWith("get_IsCompleted()")) //breaks Async_Linq_NonBlocking
+                                if (s.EndsWith("get_IsCompleted()")) 
                                     break;
                             }
                         }
 
-                        if (instr.Operand == lastOp && needEnterLeavings && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
+                        if (instr.Operand == lastOp && !strictEnterReturn && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             instr.Operand = ldstrReturn;
@@ -432,7 +476,7 @@ namespace Drill4Net.Injector.Engine
                                 var prevOperand = SkipNop(ind, false);
                                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
                                 {
-                                    probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.While, i);
+                                    probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.While, i);
                                     var ldstrIf2 = GetInstruction(probData);
                                     var targetOp = prevOperand.Operand as Instruction;
                                     processor.InsertBefore(targetOp, ldstrIf2);
@@ -460,7 +504,7 @@ namespace Drill4Net.Injector.Engine
                             {
                                 if (crossType == CrossPointType.Unset)
                                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                                probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, i);
+                                probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, crossType, i);
                                 var ldstrIf = GetInstruction(probData);
 
                                 //when inserting 'after', must set in desc order
@@ -479,7 +523,7 @@ namespace Drill4Net.Injector.Engine
                                 //TODO: совместить с веткой ELSE/JUMP ?
                                 crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
                                 var ind = instructions.IndexOf(operand);
-                                probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, ind);
+                                probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, crossType, ind);
                                 var elseInst = GetInstruction(probData);
 
                                 ReplaceJump(operand, elseInst);
@@ -509,7 +553,7 @@ namespace Drill4Net.Injector.Engine
                             var ifInst = ifStack.Pop();
                             var pairedCode = ifInst.OpCode.Code;
                             crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                            probData = GetProbeData(moduleName, realMethodName, methodFullName, crossType, i);
+                            probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, crossType, i);
                             var elseInst = GetInstruction(probData);
 
                             var instr2 = instructions[i + 1];
@@ -524,7 +568,7 @@ namespace Drill4Net.Injector.Engine
                         //THROW
                         if (flow == FlowControl.Throw)
                         {
-                            probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
+                            probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
                             var throwInst = GetInstruction(probData);
                             FixFinallyEnd(instr, throwInst, body.ExceptionHandlers);
                             ReplaceJump(instr, throwInst);
@@ -537,7 +581,7 @@ namespace Drill4Net.Injector.Engine
                         //CATCH FILTER
                         if (code == Code.Endfilter)
                         {
-                            probData = GetProbeData(moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, i);
+                            probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, i);
                             var ldstrFlt = GetInstruction(probData);
                             FixFinallyEnd(instr, ldstrFlt, body.ExceptionHandlers);
                             //ReplaceJump(instr, ldstrReturn);
@@ -548,7 +592,7 @@ namespace Drill4Net.Injector.Engine
                         }
 
                         //RETURN
-                        if (code == Code.Ret && needEnterLeavings)
+                        if (code == Code.Ret && !strictEnterReturn)
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             FixFinallyEnd(instr, ldstrReturn, body.ExceptionHandlers);
@@ -819,6 +863,58 @@ namespace Drill4Net.Injector.Engine
             #endregion
         }
 
+        internal string GetDestinationDirectory(MainOptions opts, string sourceDir)
+        {
+            string destDir;
+            if (IoHelper.IsSameDirectories(sourceDir, opts.Source.Directory))
+            {
+                destDir = opts.Destination.Directory;
+            }
+            else
+            {
+                destDir = Path.Combine(opts.Destination.Directory, sourceDir.Remove(0, opts.Source.Directory.Length));
+            }
+            return destDir;
+        }
+
+        internal MethodType GetMethodType(MethodDefinition def)
+        {
+            string methodFullName = def.FullName;
+            var type = def.DeclaringType;
+            var declAttrs = type.CustomAttributes;
+            var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
+            var isCompilerGeneratedType = declAttrs
+                .FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; //methodName.StartsWith("<"); 
+            //                                                                                                          
+            if (def.IsSetter)
+                return MethodType.Setter;
+            if (def.IsGetter)
+                return MethodType.Getter;
+            if (methodFullName.Contains("::add_"))
+                return MethodType.EventAdd;
+            if (methodFullName.Contains("::remove_"))
+                return MethodType.EventRemove;
+            //if (methodFullName.StartsWith("<>f__"))
+            //    return MethodType.Anonymous;
+            //
+            if (isCompilerGeneratedType)
+                return MethodType.CompilerGenerated;
+            //
+            if (def.IsConstructor)
+                return MethodType.Constructor;
+            if (methodFullName.EndsWith("::Finalize()"))
+                return MethodType.Destructor;
+            if (methodFullName.Contains("|"))
+                return MethodType.Local; 
+
+            return MethodType.Normal;
+        }
+
+        internal bool IsSpecialGeneratedMethod(MethodType type)
+        {
+            return type == MethodType.EventAdd || type == MethodType.EventRemove;
+        }
+
         internal void CopySource([NotNull] string sourcePath, [NotNull] string destPath)
         {
             if (Directory.Exists(destPath))
@@ -872,15 +968,78 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
-        internal string GetProbeData(string moduleName, string reaMethodName, string fullMethodName, CrossPointType type, int localId)
+        internal string GetProbeData(InjectedMethod injMeth, MethodDefinition def, string moduleName, 
+                                     string reaMethodName, string fullMethodName, CrossPointType pointType, 
+                                     int localId)
         {
             var id = localId == -1 ? null : localId.ToString();
-            return $"{reaMethodName}^{moduleName}^{fullMethodName}^{type}_{id}";
+            Interlocked.Add(ref _curPointUid, 1);
+
+            var crossPoint = new CrossPoint(_curPointUid.ToString(), id, pointType)
+            {
+                //PDB data
+            };
+            injMeth.AddChild(crossPoint);
+
+            return $"{reaMethodName}^{moduleName}^{fullMethodName}^{_curPointUid}";
+        }
+
+        private TypeSource CreateTypeSource(TypeDefinition def)
+        {
+            return new TypeSource
+            {
+                AccessType = GetAccessType(def),
+                IsAbstract = def.IsAbstract,
+                IsGeneric = def.IsGenericInstance,
+                //IsStatic = ...,
+                IsValueType = def.IsValueType,
+                IsNested = def.IsNested
+            };
+        }
+
+        private MethodSource CreateMethodSource(MethodDefinition def, MethodType methodType, bool isNested, string hashCode)
+        {
+            return new MethodSource
+            {
+                AccessType = GetAccessType(def),
+                IsAbstract = def.IsAbstract,
+                IsGeneric = def.HasGenericParameters,
+                IsStatic = def.IsStatic,
+                MethodType = methodType,
+                //IsOverride = ...
+                IsNested = isNested,
+                HashCode = hashCode,
+            };
+        }
+
+        private AccessType GetAccessType(MethodDefinition def)
+        {
+            if (def.IsPrivate)
+                return AccessType.Private;
+            if (def.IsPublic)
+                return AccessType.Public;
+            return AccessType.Internal;
+        }
+
+        private AccessType GetAccessType(TypeDefinition def)
+        {
+            if (def.IsNestedPrivate)
+                return AccessType.Private;
+            if (def.IsPublic)
+                return AccessType.Public;
+            return AccessType.Internal;
+        }
+
+        internal string GetMethodHashCode(Mono.Collections.Generic.Collection<Instruction> instructions)
+        {
+            var s = "";
+            foreach (var p in instructions)
+                s += p.ToString();
+            return s.GetHashCode().ToString();
         }
 
         private Instruction GetInstruction(string probeData)
         {
-            //TODO: YAML
             return Instruction.Create(OpCodes.Ldstr, probeData);
         }
 
@@ -894,5 +1053,41 @@ namespace Drill4Net.Injector.Engine
             };
             return hash;
         }
+
+        #region Tree
+        internal void InjectTree(InjectedSolution tree)
+        {
+            SaveTree(tree);
+            NotifyAboutTree(tree);
+        }
+
+        internal void SaveTree(InjectedSolution tree)
+        {
+            var path = GetTreeFilePath(tree);
+            _rep.WriteInjectedTree(path, tree);
+        }
+
+        internal async void NotifyAboutTree(InjectedSolution tree)
+        {
+            //in each folder create file with path to tree data
+            var dirs = tree.GetAllDirectories();
+            var pathInText = GetTreeFilePath(tree);
+            foreach (var dir in dirs)
+            {
+                var hintPath = GetTreeFileHintPath(dir.DestinationPath);
+                await File.WriteAllTextAsync(hintPath, pathInText);
+            }
+        }
+
+        internal string GetTreeFilePath(InjectedSolution tree)
+        {
+            return Path.Combine(tree.DestinationPath, CoreConstants.TREE_FILE_NAME);
+        }
+        
+        internal string GetTreeFileHintPath(string path)
+        {
+            return Path.Combine(path, CoreConstants.TREE_FILE_HINT_NAME);
+        }
+        #endregion
     }
 }

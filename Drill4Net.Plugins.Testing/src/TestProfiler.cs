@@ -176,7 +176,7 @@ namespace Drill4Net.Plugins.Testing
                 var typeFullName = type.FullName;
                 //GUANO! By file path is better? Config?
                 if (typeFullName.StartsWith("System.") || typeFullName.StartsWith("Microsoft."))
-                    continue;
+                        continue;
                 var funcFullName = method.ToString();
                 if (funcFullName.Contains("(System.Dynamic."))
                     return false;
