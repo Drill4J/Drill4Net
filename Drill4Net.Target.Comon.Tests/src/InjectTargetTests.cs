@@ -117,13 +117,11 @@ namespace Drill4Net.Target.Comon.Tests
             foreach (var input in inputs.Where(a => a.IgnoreContextForSig))
             {
                 var sig = input.Signature;
+                if (funcs.ContainsKey(sig))
+                    continue;
                 var probes2 = TestProfiler.GetPointsIgnoringContext(sig);
                 var links2 = ConvertToLinks(probes2);
-
-                if (funcs.ContainsKey(sig))
-                    funcs[sig].AddRange(links2);
-                else
-                    funcs.Add(sig, links2);
+                funcs.Add(sig, links2);
             }
             if (!isBunch)
             {
@@ -149,7 +147,7 @@ namespace Drill4Net.Target.Comon.Tests
                     }
 
                     if (data.NeedSort)
-                        points.Sort();
+                        points.Sort(new PointLinkageProbeComparer());
                     Check(points, data.Checks);
                 }
             }
