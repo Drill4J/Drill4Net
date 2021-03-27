@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Plugins.Testing;
-using YamlDotNet.Serialization;
 
 namespace Drill4Net.Target.Comon.Tests
 {
@@ -34,17 +33,20 @@ namespace Drill4Net.Target.Comon.Tests
             var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
             _rep = new InjectorRepository(cfg_path);
+            _opts = _rep.Options;
+
             //this is done on the post-build event of the Injector project
             //var injector = new InjectorEngine(_rep);
             //injector.Process();
 
-            _opts = _rep.Options;
+            //target assembly
             var targetDir = _opts.Destination.Directory;
             var profPath = Path.Combine(targetDir, _opts.Tests.AssemblyName);
             var asm = Assembly.LoadFrom(profPath);
             _type = asm.GetType($"{_opts.Tests.Namespace}.{_opts.Tests.Class}");
             _target = Activator.CreateInstance(_type);
 
+            //tree info
             var treeHintPath = _rep.GetTreeFileHintPath(targetDir);
             var treePath = File.ReadAllText(treeHintPath);
             _tree = _rep.ReadInjectedTree(treePath);

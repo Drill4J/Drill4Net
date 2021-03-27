@@ -247,7 +247,7 @@ namespace Drill4Net.Injector.Engine
                 #region Tree
                 var treeClass = new InjectedClass(treeAsm.Name, typeFullName)
                 {
-                    Source = CreateTypeSource(typeDef)
+                    SourceType = CreateTypeSource(typeDef)
                 };
                 treeAsm.AddChild(treeClass);
                 #endregion
@@ -269,7 +269,7 @@ namespace Drill4Net.Injector.Engine
                     var isFinalizer = methodName == "Finalize" && methodDef.IsVirtual;
                     var moduleName = module.Name;
                     var probData = string.Empty;
-                    HashSet<Instruction> _processed = new HashSet<Instruction>();
+                    HashSet<Instruction> _processed = new();
 
                     //instructions
                     var body = methodDef.Body;
@@ -296,13 +296,6 @@ namespace Drill4Net.Injector.Engine
                     var methodType = GetMethodType(methodDef);
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
 
-                    #region Tree
-                    var treeFunc = new InjectedMethod(nameSpace, methodName);
-                    var isNested = false; //TODO: DEFINE & FIX !!!
-                    var methHashcode = GetMethodHashCode(body.Instructions);
-                    treeFunc.Source = CreateMethodSource(methodDef, methodType, isNested, methHashcode);
-                    treeClass.AddChild(treeFunc);
-                    #endregion
                     #region Real type & method names
                     //TODO: regex!!!
                     TypeDefinition realType = null;
@@ -339,6 +332,14 @@ namespace Drill4Net.Injector.Engine
                         }
                         realTypeName = realType?.FullName;
                     }
+                    #endregion
+                    #region Tree
+                    var treeFunc = new InjectedMethod(methodFullName);
+                    var isNested = false; //TODO: DEFINE & FIX !!!
+                    var methHashcode = GetMethodHashCode(body.Instructions);
+                    treeFunc.SourceType = CreateMethodSource(methodDef, methodType, isNested, methHashcode);
+                    //treeFunc.RealFullname = realMethodName;
+                    treeClass.AddChild(treeFunc);
                     #endregion
                     #endregion
                     #region Enter/Return
@@ -984,9 +985,9 @@ namespace Drill4Net.Injector.Engine
             return $"{reaMethodName}^{moduleName}^{fullMethodName}^{_curPointUid}^{pointType}_{id}";
         }
 
-        private TypeSource CreateTypeSource(TypeDefinition def)
+        private ClassSource CreateTypeSource(TypeDefinition def)
         {
-            return new TypeSource
+            return new ClassSource
             {
                 AccessType = GetAccessType(def),
                 IsAbstract = def.IsAbstract,

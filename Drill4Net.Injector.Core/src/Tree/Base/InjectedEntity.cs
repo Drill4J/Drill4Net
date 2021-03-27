@@ -9,6 +9,10 @@ namespace Drill4Net.Injector.Core
 
         /****************************************************************/
 
+        public InjectedEntity()
+        {
+        }
+
         public InjectedEntity(string name) : base(name)
         {
         }

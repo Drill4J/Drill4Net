@@ -5,7 +5,7 @@ namespace Drill4Net.Injector.Core
     [Serializable]
     public class InjectedClass : InjectedEntity
     {
-        public TypeSource Source { get; set; }
+        public ClassSource SourceType { get; set; }
 
         /******************************************************************/
 

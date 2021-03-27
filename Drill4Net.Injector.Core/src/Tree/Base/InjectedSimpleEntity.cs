@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
@@ -10,6 +9,10 @@ namespace Drill4Net.Injector.Core
         public string Path { get; set; }
 
         /*********************************************************************/
+
+        public InjectedSimpleEntity()
+        {
+        }
 
         public InjectedSimpleEntity(string name, string path = null)
         {
