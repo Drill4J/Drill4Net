@@ -149,7 +149,7 @@ namespace Drill4Net.Injector.Core
                 typeof(InjectedSolution),
                 typeof(InjectedDirectory),
                 typeof(InjectedAssembly),
-                typeof(InjectedClass),
+                typeof(InjectedType),
                 typeof(InjectedMethod),
                 typeof(CrossPoint),
             };

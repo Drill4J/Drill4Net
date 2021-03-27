@@ -6,13 +6,11 @@ namespace Drill4Net.Injector.Core
     [Serializable]
     public class InjectedMethod : InjectedEntity
     {
-        public List<CrossPoint> Points { get; set; }
-
         public string Namespace { get; set; }
         public string ReturnType { get; set; }
         public string Parameters { get; set; }
 
-        //public string RealFullname { get; set; }
+        public InjectedMethod BusinessMethod { get; set; }
 
         public MethodSource SourceType { get; set; }
 
@@ -25,15 +23,14 @@ namespace Drill4Net.Injector.Core
             Name = parts.Name;
             ReturnType = parts.RetType;
             Parameters = parts.Pars;
-            Fullname = fullName; 
-            Points = new List<CrossPoint>();
+            Fullname = fullName;
         }
 
         /********************************************************************/
 
         internal static (string Ns, string RetType, string Name, string Pars) GetParts(string fullName)
         {
-            //TODO: regex !!!
+            //TODO: regex !!! AAAAAAAAAA!!!!
             //System.String Drill4Net.Target.Common.AbstractGen`1::GetDesc(System.Boolean)
             string ns = null; string retType = null; 
             string name = null; string pars = null;

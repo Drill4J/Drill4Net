@@ -6,14 +6,14 @@ namespace Drill4Net.Target.Comon.Tests
     internal class PointLinkage : IComparable
     {
         public InjectedAssembly Assembly { get; }
-        public InjectedClass Type { get; }
+        public InjectedType Type { get; }
         public InjectedMethod Method { get; }
         public CrossPoint Point { get; }
         public string Probe { get; }
 
         /****************************************************************************/
 
-        public PointLinkage(InjectedAssembly assembly, InjectedClass type, 
+        public PointLinkage(InjectedAssembly assembly, InjectedType type, 
             InjectedMethod method,  CrossPoint point)
         {
             Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));

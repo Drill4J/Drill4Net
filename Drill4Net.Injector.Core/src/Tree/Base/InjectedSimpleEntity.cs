@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Drill4Net.Injector.Core
 {
@@ -18,6 +19,13 @@ namespace Drill4Net.Injector.Core
         {
             Name = name;
             Path = path;
+        }
+
+        /*********************************************************************/
+
+        public InjectedSimpleEntity GetByName(string name)
+        {
+            return _children.FirstOrDefault(a => a.Name == name);
         }
     }
 }

@@ -266,7 +266,7 @@ namespace Drill4Net.Target.Comon.Tests
             //
             var point = _pointMap[uid] as CrossPoint;
             var method = _fullMap[point] as InjectedMethod;
-            var type = _fullMap[method] as InjectedClass;
+            var type = _fullMap[method] as InjectedType;
 
             InjectedSimpleEntity asmObj = type;
             do { asmObj = _fullMap[asmObj]; }

@@ -26,14 +26,14 @@ namespace Drill4Net.Injector.Core
 
         public IEnumerable<InjectedDirectory> GetAllDirectories()
         {
-            return Flatten(typeof(InjectedClass)) //exactly for class, not assembly
+            return Flatten(typeof(InjectedType)) //exactly for class, not assembly
                 .Where(a => a.GetType().Name == nameof(InjectedDirectory))
                 .Cast<InjectedDirectory>();
         }
 
         public IEnumerable<InjectedAssembly> GetAllAssemblies()
         {
-            return Flatten(typeof(InjectedClass))
+            return Flatten(typeof(InjectedType))
                 .Where(a => a.GetType().Name == nameof(InjectedDirectory))
                 .Cast<InjectedAssembly>();
         }
@@ -47,7 +47,7 @@ namespace Drill4Net.Injector.Core
 
         public InjectedDirectory GetDirectory(string path)
         {
-            return Flatten(typeof(InjectedClass))
+            return Flatten(typeof(InjectedType))
                 .FirstOrDefault(a => a.Path.Equals(path, StringComparison.InvariantCultureIgnoreCase)) 
                 as InjectedDirectory;
         }

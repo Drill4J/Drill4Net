@@ -30,6 +30,8 @@ namespace Drill4Net.Injector.Engine
         private readonly ThreadLocal<AssemblyVersion> _mainVersion;
         private readonly EnumerationOptions _searchOpts;
         private readonly HashSet<string> _restrictNamespaces;
+        private Dictionary<string, InjectedType> _injClasses;
+        private Dictionary<string, InjectedMethod> _injMethods;
         private int _curPointUid;
 
         /***************************************************************************************/
@@ -232,6 +234,8 @@ namespace Drill4Net.Injector.Engine
             Mono.Collections.Generic.Collection<Instruction> instructions;
             HashSet<Instruction> compilerInstructions;
             var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
+            _injClasses = new Dictionary<string, InjectedType>();
+            _injMethods = new Dictionary<string, InjectedMethod>();
             bool isAsyncStateMachine = false;
             Instruction lastOp;
 
@@ -245,15 +249,17 @@ namespace Drill4Net.Injector.Engine
                 var typeFullName = typeDef.FullName;
 
                 #region Tree
-                var treeClass = new InjectedClass(treeAsm.Name, typeFullName)
+                var treeClass = new InjectedType(treeAsm.Name, typeFullName)
                 {
                     SourceType = CreateTypeSource(typeDef)
                 };
+                _injClasses.Add(treeClass.Fullname, treeClass);
                 treeAsm.AddChild(treeClass);
                 #endregion
 
-                //collect methods including business & compiler's nested classes (for async, delegates, anonymous types...)
-                var methods = GetAllMethods(typeDef, opts);
+                //collect methods including business & compiler's nested classes
+                //(for async, delegates, anonymous types...)
+                var methods = GetAllMethods(treeClass, typeDef, opts);
 
                 //process all methods
                 foreach (var methodDef in methods)
@@ -261,6 +267,7 @@ namespace Drill4Net.Injector.Engine
                     #region Init
                     var curType = methodDef.DeclaringType;
                     typeName = curType.FullName;
+                    typeFullName = curType.FullName;
 
                     var methodName = methodDef.Name;
                     var methodFullName = methodDef.FullName;
@@ -292,10 +299,14 @@ namespace Drill4Net.Injector.Engine
                     var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
                     if (skipStart)
                         startInd = 12;
-
-                    var methodType = GetMethodType(methodDef);
+                    #endregion
+                    #region Tree
+                    treeClass = _injClasses[typeFullName];
+                    var treeFunc = _injMethods[methodFullName];
+                    treeFunc.SourceType = CreateMethodSource(methodDef);
+                    var methodType = treeFunc.SourceType.MethodType;
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
-
+                    #endregion
                     #region Real type & method names
                     //TODO: regex!!!
                     TypeDefinition realType = null;
@@ -333,15 +344,6 @@ namespace Drill4Net.Injector.Engine
                         realTypeName = realType?.FullName;
                     }
                     #endregion
-                    #region Tree
-                    var treeFunc = new InjectedMethod(methodFullName);
-                    var isNested = false; //TODO: DEFINE & FIX !!!
-                    var methHashcode = GetMethodHashCode(body.Instructions);
-                    treeFunc.SourceType = CreateMethodSource(methodDef, methodType, isNested, methHashcode);
-                    //treeFunc.RealFullname = realMethodName;
-                    treeClass.AddChild(treeFunc);
-                    #endregion
-                    #endregion
                     #region Enter/Return
                     //inject 'entering' instruction
                     var isSpecFunc = IsSpecialGeneratedMethod(methodType);
@@ -351,14 +353,14 @@ namespace Drill4Net.Injector.Engine
                             methodName.Contains("|") || //local func                                                        
                             isAsyncStateMachine || //async/await
                             isCompilerGenerated ||
-                            //Finalyze() -> strange, but for Core 'Enter' & 'Leaving' lead to a crash                   
+                            //Finalyze() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
                             (_isNetCore.Value == true && isFinalizer)
                         );
 
                     Instruction ldstrEntering = null;
                     if (!strictEnterReturn)
                     {
-                        probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.Enter, 0);
+                        probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Enter, 0);
                         ldstrEntering = GetInstruction(probData);
 
                         var firstOp = instructions.First();
@@ -367,7 +369,7 @@ namespace Drill4Net.Injector.Engine
                     }
 
                     //return
-                    var returnProbData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.Return, -1);
+                    var returnProbData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Return, -1);
                     var ldstrReturn = GetInstruction(probData); //as object it must be only one
                     lastOp = instructions.Last();
                     #endregion
@@ -477,7 +479,7 @@ namespace Drill4Net.Injector.Engine
                                 var prevOperand = SkipNop(ind, false);
                                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
                                 {
-                                    probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.While, i);
+                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.While, i);
                                     var ldstrIf2 = GetInstruction(probData);
                                     var targetOp = prevOperand.Operand as Instruction;
                                     processor.InsertBefore(targetOp, ldstrIf2);
@@ -505,7 +507,7 @@ namespace Drill4Net.Injector.Engine
                             {
                                 if (crossType == CrossPointType.Unset)
                                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                                probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, crossType, i);
+                                probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
                                 var ldstrIf = GetInstruction(probData);
 
                                 //when inserting 'after', must set in desc order
@@ -524,7 +526,7 @@ namespace Drill4Net.Injector.Engine
                                 //TODO: совместить с веткой ELSE/JUMP ?
                                 crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
                                 var ind = instructions.IndexOf(operand);
-                                probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, crossType, ind);
+                                probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ind);
                                 var elseInst = GetInstruction(probData);
 
                                 ReplaceJump(operand, elseInst);
@@ -554,7 +556,7 @@ namespace Drill4Net.Injector.Engine
                             var ifInst = ifStack.Pop();
                             var pairedCode = ifInst.OpCode.Code;
                             crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                            probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, crossType, i);
+                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
                             var elseInst = GetInstruction(probData);
 
                             var instr2 = instructions[i + 1];
@@ -569,7 +571,7 @@ namespace Drill4Net.Injector.Engine
                         //THROW
                         if (flow == FlowControl.Throw)
                         {
-                            probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
+                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
                             var throwInst = GetInstruction(probData);
                             FixFinallyEnd(instr, throwInst, body.ExceptionHandlers);
                             ReplaceJump(instr, throwInst);
@@ -582,7 +584,7 @@ namespace Drill4Net.Injector.Engine
                         //CATCH FILTER
                         if (code == Code.Endfilter)
                         {
-                            probData = GetProbeData(treeFunc, methodDef, moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, i);
+                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, i);
                             var ldstrFlt = GetInstruction(probData);
                             FixFinallyEnd(instr, ldstrFlt, body.ExceptionHandlers);
                             //ReplaceJump(instr, ldstrReturn);
@@ -942,36 +944,49 @@ namespace Drill4Net.Injector.Engine
             return version;
         }
 
-        internal List<MethodDefinition> GetAllMethods(TypeDefinition type, [NotNull] MainOptions opts)
+        internal List<MethodDefinition> GetAllMethods([NotNull] InjectedType treeParentClass, [NotNull] TypeDefinition type, 
+            [NotNull] MainOptions opts)
         {
             var methods = new List<MethodDefinition>();
 
             //own
             var probOpts = opts.Probes;
             var isAngleBracket = type.Name.StartsWith("<");
-            var nestedMeths = type.Methods
+            var ownMethods = type.Methods
                 .Where(a => a.HasBody)
                 .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
                 .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
                 .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop")) //do we need property setters?
                 .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop")) //do we need property getters?
-                .Where(a => type.Name.StartsWith("<") || probOpts.Private || (!probOpts.Private && !a.IsPrivate)) //do we need business privates?
+                .Where(a => isAngleBracket || probOpts.Private || (!probOpts.Private && !a.IsPrivate)) //do we need business privates?
                 ;
-            foreach (var nestedMethod in nestedMeths)
-                methods.Add(nestedMethod);
+            foreach (var ownMethod in ownMethods)
+            {
+                var treeFunc = new InjectedMethod(ownMethod.FullName);
+                _injMethods.Add(treeFunc.Fullname, treeFunc);
+                treeParentClass.AddChild(treeFunc);
+                //
+                methods.Add(ownMethod);
+            }
 
             //nested
             foreach (var nestedType in type.NestedTypes)
             {
-                var innerMethods = GetAllMethods(nestedType, opts);
+                var treeClass = new InjectedType(nestedType.Module.Name, nestedType.FullName)
+                {
+                    SourceType = CreateTypeSource(nestedType),
+                };
+                _injClasses.Add(treeClass.Fullname, treeClass);
+                treeParentClass.AddChild(treeClass);
+                //
+                var innerMethods = GetAllMethods(treeClass, nestedType, opts);
                 methods.AddRange(innerMethods);
             }
             return methods;
         }
 
-        internal string GetProbeData(InjectedMethod injMeth, MethodDefinition def, string moduleName, 
-                                     string reaMethodName, string fullMethodName, CrossPointType pointType, 
-                                     int localId)
+        internal string GetProbeData(InjectedMethod injMeth, string moduleName, string reaMethodName, 
+                                     string fullMethodName, CrossPointType pointType, int localId)
         {
             var id = localId == -1 ? null : localId.ToString();
             Interlocked.Add(ref _curPointUid, 1);
@@ -998,7 +1013,7 @@ namespace Drill4Net.Injector.Engine
             };
         }
 
-        private MethodSource CreateMethodSource(MethodDefinition def, MethodType methodType, bool isNested, string hashCode)
+        private MethodSource CreateMethodSource(MethodDefinition def)
         {
             return new MethodSource
             {
@@ -1006,10 +1021,10 @@ namespace Drill4Net.Injector.Engine
                 IsAbstract = def.IsAbstract,
                 IsGeneric = def.HasGenericParameters,
                 IsStatic = def.IsStatic,
-                MethodType = methodType,
+                MethodType = GetMethodType(def),
                 //IsOverride = ...
-                IsNested = isNested,
-                HashCode = hashCode,
+                IsNested = def.FullName.Contains("|"),
+                HashCode = GetMethodHashCode(def.Body.Instructions),
             };
         }
 
