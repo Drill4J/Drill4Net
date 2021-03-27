@@ -22,25 +22,34 @@ namespace Drill4Net.Target.Comon.Tests
         private MainOptions _opts;
         private Type _type;
         private object _target;
-        private Deserializer _deser;
+        private Dictionary<string, InjectedSimpleEntity> _pointMap;
+        private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _fullMap;
+        private InjectedSolution _tree;
 
         /****************************************************************************/
 
         [OneTimeSetUp]
         public void SetupClass()
         {
-            var cfg_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), CoreConstants.CONFIG_TESTS_NAME);
+            var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
             _rep = new InjectorRepository(cfg_path);
             //this is done on the post-build event of the Injector project
             //var injector = new InjectorEngine(_rep);
             //injector.Process();
 
-            _deser = new Deserializer();
-            var _opts = _rep.Options;
-            var profPath = Path.Combine(_opts.Destination.Directory, _opts.Tests.AssemblyName);
+            _opts = _rep.Options;
+            var targetDir = _opts.Destination.Directory;
+            var profPath = Path.Combine(targetDir, _opts.Tests.AssemblyName);
             var asm = Assembly.LoadFrom(profPath);
             _type = asm.GetType($"{_opts.Tests.Namespace}.{_opts.Tests.Class}");
             _target = Activator.CreateInstance(_type);
+
+            var treeHintPath = _rep.GetTreeFileHintPath(targetDir);
+            var treePath = File.ReadAllText(treeHintPath);
+            _tree = _rep.ReadInjectedTree(treePath);
+            _fullMap = _tree.CalcMap();
+            CalcPointMap();
         }
 
         /****************************************************************************/
@@ -48,10 +57,9 @@ namespace Drill4Net.Target.Comon.Tests
         [TestCaseSource(typeof(SourceData), "Simple")]
         public void Simple_Ok(MethodInfo mi, object[] args, List<string> checks)
         {
-            //arrange
             Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
 
-            //act
+            #region Act
             try
             {
                 mi.Invoke(_target, args);
@@ -61,32 +69,33 @@ namespace Drill4Net.Target.Comon.Tests
                 if (!checks.Any(a => a.Contains("Throw")))
                     throw;
             }
-
-            //assert
+            #endregion
+            #region Assert
             var funcs = GetFunctions();
             Assert.IsTrue(funcs.Count == 1);
 
             var sig = GetFullSignature(mi);
             var source = SourceData.GetSourceFromFullSig(sig);
             Assert.True(funcs.ContainsKey(source));
-            var points = funcs[source];
+            var links = funcs[source];
 
-            CheckEnterAndLastReturnOrThrow(points);
-            RemoveEnterAndLastReturn(points);
-            Check(points, checks);
+            CheckEnterAndLastReturnOrThrow(links);
+            RemoveEnterAndLastReturn(links);
+            Check(links, checks);
+            #endregion
         }
 
         [TestCaseSource(typeof(SourceData), "ParentChild")]
         public void Parent_Child_Ok(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
-            //arrange
+            #region Arrange
             Assert.IsTrue(inputs?.Length > 0, "Method inputs is empty");
             var parentData = inputs[0];
             var mi = parentData.Info;
             if(string.IsNullOrWhiteSpace(parentData.Signature))
                 Assert.NotNull(mi, $"Parent method info is empty");
-
-            //act
+            #endregion
+            #region Act
             try
             {
                 if (isAsync)
@@ -100,18 +109,22 @@ namespace Drill4Net.Target.Comon.Tests
                 }
             }
             catch{} //it's normal for business exceptions, not set here Assert.Fail
-
-            //assert
+            #endregion
+            #region Assert
             var funcs = GetFunctions();
 
             //checking whether functions from another context are needed
             foreach (var input in inputs.Where(a => a.IgnoreContextForSig))
             {
                 var sig = input.Signature;
-                var funcs2 = TestProfiler.GetPointsIgnoringContext(sig);
-                funcs.Add(sig, funcs2);
+                var probes2 = TestProfiler.GetPointsIgnoringContext(sig);
+                var links2 = ConvertToLinks(probes2);
+
+                if (funcs.ContainsKey(sig))
+                    funcs[sig].AddRange(links2);
+                else
+                    funcs.Add(sig, links2);
             }
-            //
             if (!isBunch)
             {
                 Assert.IsTrue(funcs.Count == inputs.Length);
@@ -151,25 +164,35 @@ namespace Drill4Net.Target.Comon.Tests
             }
 
             //local funcs
-            void RemoveEnterReturns(IList<string> points)
+            void RemoveEnterReturns(IList<PointLinkage> links)
             {
-                var forDelete = points.Where(a => a.StartsWith("Enter_") || a.StartsWith("Return_")).ToArray();
+                var forDelete = links.Where(a => a.Point.PointType == CrossPointType.Enter || 
+                                                 a.Point.PointType == CrossPointType.Return)
+                    .ToArray();
                 for (var j = 0; j < forDelete.Length; j++)
-                    points.Remove(forDelete[j]);
+                    links.Remove(forDelete[j]);
             }
-        }
-
-        private void RemoveEnterAndLastReturn(List<string> points)
-        {
-            //Check() not checks Enter and last Return
-            if (points[0].StartsWith("Enter_"))
-                points.RemoveAt(0);
-            var lastInd = points.Count - 1;
-            if (points[lastInd].StartsWith("Return_"))
-                points.RemoveAt(lastInd);
+            #endregion
         }
 
         #region Auxiliary funcs
+        private void CheckEnterAndLastReturnOrThrow(List<PointLinkage> links)
+        {
+            var probes = links.Select(a => a.Probe);
+            Assert.IsNotNull(probes.FirstOrDefault(a => a == "Enter_0"), "No Enter");
+            Assert.IsNotNull(probes.Last(a => a.StartsWith("Return_") || a.StartsWith("Throw_")), "No last Return/Throw");
+        }
+
+        private void RemoveEnterAndLastReturn(List<PointLinkage> links)
+        {
+            //Check() not checks Enter and last Return
+            if (links[0].Point.PointType == CrossPointType.Enter)
+                links.RemoveAt(0);
+            var lastInd = links.Count - 1;
+            if (links[lastInd].Point.PointType == CrossPointType.Return)
+                links.RemoveAt(lastInd);
+        }
+
         internal static string GetFullSignature(MethodInfo mi)
         {
             var func = mi.Name;
@@ -200,41 +223,81 @@ namespace Drill4Net.Target.Comon.Tests
             return sig;
         }
 
-        private Dictionary<string, List<CrossPoint>> GetFunctions()
+        private Dictionary<string, List<PointLinkage>> GetFunctions()
         {
             var raw = TestProfiler.GetFunctions(false);
-            var res = new Dictionary<string, List<CrossPoint>>();
-            foreach (var func in raw.Keys)
+            return ConvertToLinks(raw);
+        }
+
+        private Dictionary<string, List<PointLinkage>> ConvertToLinks(Dictionary<string, List<string>> funcs)
+        {
+            var res = new Dictionary<string, List<PointLinkage>>();
+
+            //key is func name, val - is in format $"{uid}:{probe}"
+            foreach (var func in funcs.Keys)
             {
-                var serPoints = raw[func];
-                var points = new List<CrossPoint>();
-                res.Add(func, points);
-                foreach (var serPoint in serPoints)
-                {
-                    var point = _deser.Deserialize<CrossPoint>(serPoint);
-                    points.Add(point);
-                }
+                var probDatas = funcs[func];
+                var links = ConvertToLinks(probDatas);
+                res.Add(func, links);
             }
             return res;
         }
 
-        private void CheckEnterAndLastReturnOrThrow(List<string> points)
+        internal List<PointLinkage> ConvertToLinks(List<string> probDatas)
         {
-            Assert.IsNotNull(points.FirstOrDefault(a => a == "Enter_0"), "No Enter");
-            Assert.IsNotNull(points.Last(a => a.StartsWith("Return_") || a.StartsWith("Throw_")), "No last Return/Throw");
+            var links = new List<PointLinkage>();
+            foreach (var probData in probDatas)
+            {
+                var link = ConvertToLink(probData);
+                links.Add(link);
+            }
+            return links;
         }
 
-        private void Check(IList<string> points, List<string> checks)
+        internal PointLinkage ConvertToLink(string probData)
+        {
+            if (probData?.Contains(":") == false)
+                throw new ArgumentException(nameof(probData));
+            //
+            var ar = probData.Split(":");
+            var uid = ar[0];
+            if (!_pointMap.ContainsKey(uid))
+                Assert.Fail($"No point with Uid = {uid}");
+            //
+            var point = _pointMap[uid] as CrossPoint;
+            var method = _fullMap[point] as InjectedMethod;
+            var type = _fullMap[method] as InjectedClass;
+
+            InjectedSimpleEntity asmObj = type;
+            do { asmObj = _fullMap[asmObj]; }
+            while (asmObj != null && asmObj is not InjectedAssembly);
+            var asm = asmObj as InjectedAssembly;
+            //
+            var link = new PointLinkage(asm, type, method, point);
+            return link;
+        }
+
+        private void Check(IList<PointLinkage> links, List<string> checks)
         {
             if (checks == null)
                 checks = new List<string>();
-            Assert.IsTrue(points.Count == checks.Count);
-            points = points.Select(a => a.Split(":")[1]).ToList();
+            Assert.IsTrue(links.Count == checks.Count);
 
             for (var i = 0; i < checks.Count; i++)
             {
-                if (points[i] != checks[i])
+                if (links[i].Probe != checks[i])
                     Assert.Fail();
+            }
+        }
+
+        private void CalcPointMap()
+        {
+            _pointMap = new Dictionary<string, InjectedSimpleEntity>();
+            var pointPairs = _fullMap.Where(a => a.Key is CrossPoint);
+            foreach (var pointPair in pointPairs)
+            {
+                var point = (CrossPoint)pointPair.Key;
+                _pointMap.Add((point).PointUid, point);
             }
         }
 

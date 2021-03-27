@@ -9,5 +9,7 @@ namespace Drill4Net.Injector.Core
         void ValidateOptions(MainOptions opts);
         InjectedSolution ReadInjectedTree(string path);
         void WriteInjectedTree(string path, InjectedSolution tree);
+        string GetTreeFilePath(InjectedSolution tree);
+        string GetTreeFileHintPath(string path);
     }
 }

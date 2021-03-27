@@ -44,7 +44,7 @@ namespace Drill4Net.Plugins.Testing
                 }
                 //
                 var ar = data.Split('^');
-                if (ar.Length < 4)
+                if (ar.Length < 5)
                 {
                     Log($"Bad format of input: {data}");
                     return;
@@ -54,9 +54,11 @@ namespace Drill4Net.Plugins.Testing
                 var realmethodName = ar[0];
                 var asmName = ar[1];
                 var funcName = ar[2];
-                var mess = ar[3];
+                var uid = ar[3];
+                var probe = ar[4];
+
                 if (ClarifyBusinessMethodName(asmName, realmethodName, ref funcName))
-                    AddPoint(asmName, funcName, mess);
+                    AddPoint(asmName, funcName, $"{uid}:{probe}"); //in the prod profiler only uid needed
             }
             catch (Exception ex)
             {

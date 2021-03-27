@@ -29,7 +29,7 @@ namespace Drill4Net.Injector.Core
 
         public override string ToString()
         {
-            return $"{PointUid}/{PointId}: {PointType}";
+            return $"{PointUid}: {PointType}_{PointId}";
         }
     }
 }

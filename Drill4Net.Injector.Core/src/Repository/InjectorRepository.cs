@@ -154,6 +154,16 @@ namespace Drill4Net.Injector.Core
                 typeof(CrossPoint),
             };
         }
+
+        public string GetTreeFilePath(InjectedSolution tree)
+        {
+            return Path.Combine(tree.DestinationPath, CoreConstants.TREE_FILE_NAME);
+        }
+
+        public string GetTreeFileHintPath(string path)
+        {
+            return Path.Combine(path, CoreConstants.TREE_FILE_HINT_NAME);
+        }
         #endregion
     }
 }

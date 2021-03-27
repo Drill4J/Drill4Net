@@ -981,7 +981,7 @@ namespace Drill4Net.Injector.Engine
             };
             injMeth.AddChild(crossPoint);
 
-            return $"{reaMethodName}^{moduleName}^{fullMethodName}^{_curPointUid}";
+            return $"{reaMethodName}^{moduleName}^{fullMethodName}^{_curPointUid}^{pointType}_{id}";
         }
 
         private TypeSource CreateTypeSource(TypeDefinition def)
@@ -1063,7 +1063,7 @@ namespace Drill4Net.Injector.Engine
 
         internal void SaveTree(InjectedSolution tree)
         {
-            var path = GetTreeFilePath(tree);
+            var path = _rep.GetTreeFilePath(tree);
             _rep.WriteInjectedTree(path, tree);
         }
 
@@ -1071,22 +1071,12 @@ namespace Drill4Net.Injector.Engine
         {
             //in each folder create file with path to tree data
             var dirs = tree.GetAllDirectories();
-            var pathInText = GetTreeFilePath(tree);
+            var pathInText = _rep.GetTreeFilePath(tree);
             foreach (var dir in dirs)
             {
-                var hintPath = GetTreeFileHintPath(dir.DestinationPath);
+                var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
                 await File.WriteAllTextAsync(hintPath, pathInText);
             }
-        }
-
-        internal string GetTreeFilePath(InjectedSolution tree)
-        {
-            return Path.Combine(tree.DestinationPath, CoreConstants.TREE_FILE_NAME);
-        }
-        
-        internal string GetTreeFileHintPath(string path)
-        {
-            return Path.Combine(path, CoreConstants.TREE_FILE_HINT_NAME);
         }
         #endregion
     }

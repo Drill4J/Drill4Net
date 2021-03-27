@@ -202,17 +202,17 @@ namespace Drill4Net.Target.Comon.Tests
 
                 yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_6" }));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "If_10" }));
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "If_10" }));
                 #endregion
                 #region Async/await
                 yield return GetCase(Array.Empty<object>(), true, true, 
                     new TestInfo(GetInfo(_target.Async_Stream), new List<string> { "If_54" }), 
-                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceAsync()"), true, new List<string> { "Else_24", "Else_24", "Else_24", "If_36", "If_36" }, true));
+                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceAsync()"), false, new List<string> { "Else_24", "Else_24", "Else_24", "If_36", "If_36" }, true));
 
                 yield return GetCase(Array.Empty<object>(), true, true,
                     new TestInfo(GetInfo(_target.Async_Stream_Cancellation), new List<string> { "If_76" }),
-                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceWithCancellationAsync(System.Threading.CancellationToken)"), true, new List<string> { "Else_24", "Else_24", "Else_24" }, true));
+                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceWithCancellationAsync(System.Threading.CancellationToken)"), false, new List<string> { "Else_24", "Else_24", "Else_24" }, true));
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "Else_59" }), new TestInfo(GetInfo(_target.Delay100), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Async_Task), new List<string> { "If_17" }));

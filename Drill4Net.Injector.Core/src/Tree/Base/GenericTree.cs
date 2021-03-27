@@ -49,16 +49,24 @@ namespace Drill4Net.Injector.Core
             return _children.SelectMany(x => x.Flatten(breakOn)).Concat(_children);
         }
 
-        public void Traverse(Action<int, T> visitor)
+        public void Traverse(Action<int, T, T> visitor)
         {
-            Traverse(0, visitor);
+            Traverse(0, visitor, null);
         }
 
-        protected virtual void Traverse(int depth, Action<int, T> visitor)
+        protected virtual void Traverse(int depth, Action<int, T, T> visitor, T parent)
         {
-            visitor(depth, (T)this);
+            var @this = (T)this;
+            visitor(depth, @this, parent);
             foreach (T child in _children)
-                child.Traverse(depth + 1, visitor);
+                child.Traverse(depth + 1, visitor, @this);
+        }
+
+        public Dictionary<T, T> CalcMap()
+        {
+            var map = new Dictionary<T, T>();
+            Traverse((int level, T child, T parent) => map.Add(child, parent));
+            return map;
         }
     }
 }
