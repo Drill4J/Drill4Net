@@ -158,9 +158,6 @@ namespace Drill4Net.Target.Comon.Tests
                 #region Dynamic
                 yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { false }, new List<string> { "Else_2" }).SetCategory(CATEGORY_DYNAMIC);
                 yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { true }, new List<string> { "If_7" }).SetCategory(CATEGORY_DYNAMIC);
-
-                yield return GetCase(GetInfo(_target.DynamicObject), new object[] { false }, new List<string> { "Else_2" }).SetCategory(CATEGORY_DYNAMIC);
-                yield return GetCase(GetInfo(_target.DynamicObject), new object[] { true }, new List<string> { "If_7" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
                 yield return GetCase(GetInfo(_target.Cycle_While), new object[] { -1 }, new List<string>());
@@ -245,6 +242,17 @@ namespace Drill4Net.Target.Comon.Tests
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(_target.GetStringListForThreadNew), new List<string> { "Else_4" }));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(_target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(_target.GetStringListForThreadNew), new List<string> { "If_13" }));
+                #endregion
+                #region Dynamic
+                yield return GetCase(new object[] { false }, 
+                    new TestInfo(GetInfo(_target.DynamicObject), new List<string> { "Else_2" }),
+                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
+                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
+                
+                yield return GetCase(new object[] { true }, 
+                    new TestInfo(GetInfo(_target.DynamicObject), new List<string> { "If_7" }),
+                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
+                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
                 #endregion
                 #region Disposable
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(_target.Disposable_Using_SyncRead), new List<string>()));
