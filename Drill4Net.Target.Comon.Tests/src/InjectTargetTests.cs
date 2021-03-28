@@ -22,7 +22,7 @@ namespace Drill4Net.Target.Comon.Tests
         private Type _type;
         private object _target;
         private Dictionary<string, InjectedSimpleEntity> _pointMap;
-        private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _fullMap;
+        private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private InjectedSolution _tree;
 
         /****************************************************************************/
@@ -50,8 +50,8 @@ namespace Drill4Net.Target.Comon.Tests
             var treeHintPath = _rep.GetTreeFileHintPath(targetDir);
             var treePath = File.ReadAllText(treeHintPath);
             _tree = _rep.ReadInjectedTree(treePath);
-            _fullMap = _tree.CalcMap();
-            CalcPointMap();
+            _parentMap = _tree.CalcParentMap();
+            _pointMap = _tree.CalcPointMap(_parentMap);
         }
 
         /****************************************************************************/
@@ -265,11 +265,11 @@ namespace Drill4Net.Target.Comon.Tests
                 Assert.Fail($"No point with Uid = {uid}");
             //
             var point = _pointMap[uid] as CrossPoint;
-            var method = _fullMap[point] as InjectedMethod;
-            var type = _fullMap[method] as InjectedType;
+            var method = _parentMap[point] as InjectedMethod;
+            var type = _parentMap[method] as InjectedType;
 
             InjectedSimpleEntity asmObj = type;
-            do { asmObj = _fullMap[asmObj]; }
+            do { asmObj = _parentMap[asmObj]; }
             while (asmObj != null && asmObj is not InjectedAssembly);
             var asm = asmObj as InjectedAssembly;
             //
@@ -287,17 +287,6 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 if (links[i].Probe != checks[i])
                     Assert.Fail();
-            }
-        }
-
-        private void CalcPointMap()
-        {
-            _pointMap = new Dictionary<string, InjectedSimpleEntity>();
-            var pointPairs = _fullMap.Where(a => a.Key is CrossPoint);
-            foreach (var pointPair in pointPairs)
-            {
-                var point = (CrossPoint)pointPair.Key;
-                _pointMap.Add((point).PointUid, point);
             }
         }
 

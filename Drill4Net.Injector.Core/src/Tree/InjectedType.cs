@@ -15,7 +15,7 @@ namespace Drill4Net.Injector.Core
         /// For compiler generated classes which was created 
         /// compiler for some business methods
         /// </summary>
-        public InjectedMethod FromMethod { get; set; }
+        public string FromMethod { get; set; }
 
         public ClassSource SourceType { get; set; }
 

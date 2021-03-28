@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
@@ -9,7 +10,7 @@ namespace Drill4Net.Injector.Core
         public string ReturnType { get; set; }
         public string Parameters { get; set; }
 
-        public InjectedMethod FromMethod { get; set; }
+        public string FromMethod { get; set; }
 
         public MethodSource SourceType { get; set; }
 
@@ -61,6 +62,23 @@ namespace Drill4Net.Injector.Core
             }
 
             return (ns, retType, name, pars);
+        }
+
+        public InjectedType FindBusinessType(Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parentMap,
+            InjectedMethod forEntity)
+        {
+            InjectedType type = null;
+            InjectedSimpleEntity key = forEntity;
+            while (true)
+            {
+                if (!parentMap.ContainsKey(key))
+                    break;
+                type = parentMap[key] as InjectedType;
+                if (!type.IsCompilerGenerated)
+                    break;
+                key = type;
+            }
+            return type;
         }
 
         public override string ToString()

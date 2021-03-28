@@ -307,41 +307,8 @@ namespace Drill4Net.Injector.Engine
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
                     #endregion
                     #region Real type & method names
-                    //TODO: regex!!!
-                    TypeDefinition realType = null;
-                    string realTypeName = null;
-                    string realMethodName = null;
-                    //var realMethodFullmame = methodFullName;
-                    if (isCompilerGenerated || isAsyncStateMachine)
-                    {
-                        try
-                        {
-                            var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
-                            if (isMoveNext || !fromMethodName && typeName.Contains("/"))
-                            {
-                                var ar = typeName.Split("/");
-                                var el = ar[ar.Length - 1];
-                                realMethodName = el.Split(">")[0].Replace("<", null);
-                            }
-                            else
-                            if (fromMethodName)
-                            {
-                                var tmp = methodName.Replace("<>", null);
-                                if(tmp.Contains("<"))
-                                    realMethodName = tmp.Split("<")[1].Split(">")[0];
-                            }
-                        }
-                        catch(Exception ex) 
-                        { }
-
-                        if (curType.DeclaringType != null)
-                        {
-                            realType = curType;
-                            do realType = realType.DeclaringType;
-                                while (realType.DeclaringType != null && (realType.Name.Contains("c__DisplayClass") || realType.Name.Contains("<>")));
-                        }
-                        realTypeName = realType?.FullName;
-                    }
+                    TryGetRealNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
+                        out string realTypeName, out string realMethodName);
                     #endregion
                     #region Enter/Return
                     //inject 'entering' instruction
@@ -398,47 +365,60 @@ namespace Drill4Net.Injector.Engine
                         #region Tree
                         //in any case needed check compiler generated classes
                         if (instr.Operand is MethodReference && 
-                            (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Stfld))
+                           (flow == FlowControl.Call || code == Code.Ldftn || 
+                            code == Code.Stfld || code == Code.Ldfld))
                         {
                             var cgOp = instr.Operand as MethodReference;
                             var cgTypeFullName = cgOp.DeclaringType.FullName;
                             var cgTypeName = cgOp.DeclaringType.Name;
                             var cgFullname = cgOp.FullName;
                             var cgName = cgOp.Name;
-                            if (cgTypeFullName.StartsWith("<>") ||
-                                cgTypeFullName.Contains(">d__") ||
-                                cgFullname.Contains("|") || 
-                                cgName.StartsWith("<"))
+                            if (cgName.StartsWith("<") || cgTypeFullName.Contains(">d__") || cgFullname.Contains("|") ||
+                                (isMoveNext && i == startInd))
                             {
                                 try
                                 {
+                                    //null is norm for anonymous types
                                     var cgType = _injClasses.ContainsKey(cgTypeFullName) ?
                                                       _injClasses[cgTypeFullName] :
                                                       (_injClasses.ContainsKey(cgTypeName) ? _injClasses[cgTypeName] : null);
-                                    if (cgType != null) //else is norm for anonymous types
+
+                                    if (cgType != null && cgType.FromMethod != null && cgType.FromMethod != treeFunc.Fullname)
                                     {
-                                        if (cgType.FromMethod != null && cgType.FromMethod != treeFunc)
+                                        //cgType used by many callers
+                                        cgType.IsCompilerMultiTarget = true;
+                                        cgType.FromMethod = null;
+                                    }
+                                    else
+                                    {
+                                        if (!cgFullname.Contains("|") && cgType?.Name?.EndsWith("/<>c") == false)
                                         {
-                                            //cgType used by many callers
-                                            cgType.IsCompilerMultiTarget = true;
-                                            cgType.FromMethod = null;
-                                        }
-                                        else
-                                        {
-                                            if (treeFunc.SourceType.MethodType == MethodType.CompilerGenerated)
+                                            TryGetRealNames(curType, cgFullname, cgFullname, true, true, out string cgRealTypeName, out string cgRealMethodName);
+                                            InjectedType realCgType = null;
+                                            var typeKey = realTypeName ?? typeFullName;
+                                            if (_injClasses.ContainsKey(typeKey))
+                                                realCgType = _injClasses[typeKey];
+                                            var methodKey = cgRealMethodName ?? realMethodName;
+                                            if (realCgType != null && methodKey != null)
                                             {
-                                                //correction for async internal methods
-                                                InjectedType realCgType = null;
-                                                if (realTypeName != null && _injClasses.ContainsKey(realTypeName))
-                                                  realCgType = _injClasses[realTypeName];
-                                                if (realCgType != null)
+                                                var mkey = GetMethodByClassKey(realCgType.Fullname, methodKey);
+                                                treeFunc = _injMethodByClasses[mkey];
+                                                var nesteds = cgType.Flatten(typeof(InjectedMethod));
+                                                foreach (InjectedType nested in nesteds)
                                                 {
-                                                    var mkey = GetMethodByClassKey(realCgType.Fullname, realMethodName);
-                                                    treeFunc = _injMethodByClasses[mkey];
+                                                    var injNested = _injClasses[nested.Fullname];
+                                                    injNested.FromMethod = treeFunc.Fullname;
                                                 }
                                             }
+                                            if (cgType != null && !cgType.IsCompilerMultiTarget)
                                             {
-                                                cgType.FromMethod = treeFunc;
+                                                cgType.FromMethod = treeFunc.Fullname;
+                                                var cgMethods = cgType.Flatten(typeof(CrossPoint))
+                                                    .Where(a => a.GetType() == typeof(InjectedMethod));
+                                                foreach (InjectedMethod meth in cgMethods)
+                                                {
+                                                    meth.FromMethod = treeFunc.Fullname ?? cgType.FromMethod;
+                                                }
                                             }
                                         }
                                     }
@@ -446,7 +426,8 @@ namespace Drill4Net.Injector.Engine
                                     if (_injMethods.ContainsKey(cgFullname))
                                     {
                                         var cgFunc = _injMethods[cgFullname];
-                                        cgFunc.FromMethod = treeFunc;
+                                        if(cgFunc.FromMethod == null)
+                                            cgFunc.FromMethod = treeFunc.Fullname ?? cgType.FromMethod;
                                     }
                                 }
                                 catch 
@@ -930,6 +911,47 @@ namespace Drill4Net.Injector.Engine
             #endregion
         }
 
+        internal void TryGetRealNames(TypeDefinition curType, string typeName, string methodName, 
+            bool isCompilerGenerated, bool isAsyncStateMachine, 
+            out string realTypeName, out string realMethodName)
+        {
+            //TODO: regex!!!
+            TypeDefinition realType = null;
+            realTypeName = null;
+            realMethodName = null;
+            var isMoveNext = methodName == "MoveNext";
+            if (isCompilerGenerated || isAsyncStateMachine)
+            {
+                try
+                {
+                    var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
+                    if (isMoveNext || !fromMethodName && typeName.Contains("/"))
+                    {
+                        var ar = typeName.Split("/");
+                        var el = ar[ar.Length - 1];
+                        realMethodName = el.Split(">")[0].Replace("<", null);
+                    }
+                    else
+                    if (fromMethodName)
+                    {
+                        var tmp = methodName.Replace("<>", null);
+                        if (tmp.Contains("<"))
+                            realMethodName = tmp.Split(' ')[1].Split("<")[1].Split(">")[0];
+                    }
+                }
+                catch (Exception ex)
+                { }
+
+                if (curType.DeclaringType != null)
+                {
+                    realType = curType;
+                    do realType = realType.DeclaringType;
+                    while (realType.DeclaringType != null && (realType.Name.Contains("c__DisplayClass") || realType.Name.Contains("<>")));
+                }
+                realTypeName = realType?.FullName;
+            }
+        }
+
         internal string GetDestinationDirectory(MainOptions opts, string sourceDir)
         {
             string destDir;
@@ -950,8 +972,8 @@ namespace Drill4Net.Injector.Engine
             var type = def.DeclaringType;
             var declAttrs = type.CustomAttributes;
             var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
-            var isCompilerGeneratedType = declAttrs
-                .FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; //methodName.StartsWith("<"); 
+            var isCompilerGeneratedType = def.Name.StartsWith("<") || 
+                declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; 
             //                                                                                                          
             if (def.IsSetter)
                 return MethodType.Setter;

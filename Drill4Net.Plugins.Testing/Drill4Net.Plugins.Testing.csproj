@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
     <ProjectReference Include="..\Drill4Net.Plugins.Abstract\Drill4Net.Plugins.Abstract.csproj" />
   </ItemGroup>
 

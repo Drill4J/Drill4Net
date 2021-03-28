@@ -46,7 +46,8 @@ namespace Drill4Net.Injector.Core
         {
             if (breakOn != null && GetType().Name == breakOn.Name)
                 return Enumerable.Empty<T>();
-            return _children.SelectMany(x => x.Flatten(breakOn)).Concat(_children);
+            var filter = _children.Where(a => breakOn == null || (breakOn!=null && a.GetType().Name != breakOn.Name));
+            return _children.SelectMany(x => x.Flatten(breakOn)).Concat(filter);
         }
 
         public void Traverse(Action<int, T, T> visitor)
@@ -62,7 +63,7 @@ namespace Drill4Net.Injector.Core
                 child.Traverse(depth + 1, visitor, @this);
         }
 
-        public Dictionary<T, T> CalcMap()
+        public Dictionary<T, T> CalcParentMap()
         {
             var map = new Dictionary<T, T>();
             Traverse((int level, T child, T parent) => map.Add(child, parent));

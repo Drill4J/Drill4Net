@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Drill4Net.Injector.Core
@@ -26,6 +27,18 @@ namespace Drill4Net.Injector.Core
         public InjectedSimpleEntity GetByName(string name)
         {
             return _children.FirstOrDefault(a => a.Name == name);
+        }
+
+        public Dictionary<string, InjectedSimpleEntity> CalcPointMap(Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parentMap)
+        {
+            var pointMap = new Dictionary<string, InjectedSimpleEntity>();
+            var pointPairs = parentMap.Where(a => a.Key is CrossPoint);
+            foreach (var pointPair in pointPairs)
+            {
+                var point = (CrossPoint)pointPair.Key;
+                pointMap.Add((point).PointUid, point);
+            }
+            return pointMap;
         }
     }
 }
