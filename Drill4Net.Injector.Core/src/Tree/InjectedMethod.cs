@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
@@ -10,7 +9,7 @@ namespace Drill4Net.Injector.Core
         public string ReturnType { get; set; }
         public string Parameters { get; set; }
 
-        public InjectedMethod BusinessMethod { get; set; }
+        public InjectedMethod FromMethod { get; set; }
 
         public MethodSource SourceType { get; set; }
 
@@ -66,7 +65,7 @@ namespace Drill4Net.Injector.Core
 
         public override string ToString()
         {
-            return Fullname;
+            return $"M: {Fullname}";
         }
     }
 }

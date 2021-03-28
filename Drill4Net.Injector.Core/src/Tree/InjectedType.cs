@@ -7,6 +7,7 @@ namespace Drill4Net.Injector.Core
     public class InjectedType : InjectedEntity
     {
         public bool IsCompilerGenerated { get; set; }
+        public bool IsCompilerMultiTarget { get; set; }
 
         public string BusinessType { get; set; }
 
@@ -14,14 +15,14 @@ namespace Drill4Net.Injector.Core
         /// For compiler generated classes which was created 
         /// compiler for some business methods
         /// </summary>
-        public InjectedMethod BusinessMethod { get; set; }
+        public InjectedMethod FromMethod { get; set; }
 
         public ClassSource SourceType { get; set; }
 
         /******************************************************************/
 
         public InjectedType(string assemblyName, string fullName): 
-            base(GetName(fullName), GetFullPath(assemblyName, fullName))
+            base(GetName(fullName), GetSource(assemblyName, fullName))
         {
             Fullname = fullName;
             BusinessType = GetBusinessType(fullName);
@@ -32,6 +33,7 @@ namespace Drill4Net.Injector.Core
 
         internal string GetBusinessType(string fullName)
         {
+            //TODO: regex!!!
             var list = fullName.Split('/').ToList();
             for(var i = 0; i < list.Count; i++)
             {
@@ -54,14 +56,14 @@ namespace Drill4Net.Injector.Core
             return ar[ar.Length - 1];
         }
 
-        internal static string GetFullPath(string assemblyName, string fullName)
+        internal static string GetSource(string assemblyName, string fullName)
         {
             return string.IsNullOrWhiteSpace(assemblyName) ? fullName : $"{assemblyName};{fullName}";
         }
 
         public override string ToString()
         {
-            return Fullname;
+            return $"T: {Fullname}";
         }
     }
 }

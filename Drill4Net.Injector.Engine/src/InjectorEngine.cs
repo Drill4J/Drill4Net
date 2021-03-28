@@ -32,6 +32,7 @@ namespace Drill4Net.Injector.Engine
         private readonly HashSet<string> _restrictNamespaces;
         private Dictionary<string, InjectedType> _injClasses;
         private Dictionary<string, InjectedMethod> _injMethods;
+        private Dictionary<string, InjectedMethod> _injMethodByClasses;
         private int _curPointUid;
 
         /***************************************************************************************/
@@ -236,6 +237,7 @@ namespace Drill4Net.Injector.Engine
             var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
             _injClasses = new Dictionary<string, InjectedType>();
             _injMethods = new Dictionary<string, InjectedMethod>();
+            _injMethodByClasses = new Dictionary<string, InjectedMethod>();
             bool isAsyncStateMachine = false;
             Instruction lastOp;
 
@@ -391,11 +393,76 @@ namespace Drill4Net.Injector.Engine
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
-                        if (_processed.Contains(instr))
-                            continue;
                         var opCode = instr.OpCode;
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
+
+                        //in any case needed check compiler generated classes
+                        if (instr.Operand is MethodReference && 
+                            (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Stfld))
+                        {
+                            var cgOp = instr.Operand as MethodReference;
+                            var cgTypeFullName = cgOp.DeclaringType.FullName;
+                            var cgTypeName = cgOp.DeclaringType.Name;
+                            var cgFullname = cgOp.FullName;
+                            var cgName = cgOp.Name;
+                            if (cgTypeFullName.StartsWith("<>") ||
+                                cgTypeFullName.Contains(">d__") ||
+                                cgFullname.Contains("|") || 
+                                cgName.StartsWith("<"))
+                            {
+                                try
+                                {
+                                    InjectedType cgType = null;
+                                    //if (realTypeName != null && _injClasses.ContainsKey(realTypeName))
+                                        //cgType = _injClasses[realTypeName];
+                                    if (cgType == null)
+                                    {
+                                        cgType = _injClasses.ContainsKey(cgTypeFullName) ?
+                                                      _injClasses[cgTypeFullName] :
+                                                      (_injClasses.ContainsKey(cgTypeName) ? _injClasses[cgTypeName] : null);
+                                    }
+                                    if (cgType != null)
+                                    {
+                                        if (cgType.FromMethod != null && cgType.FromMethod != treeFunc)
+                                        {
+                                            //cgType used by many callers
+                                            cgType.IsCompilerMultiTarget = true;
+                                            cgType.FromMethod = null;
+                                        }
+                                        else
+                                        {
+                                            if (treeFunc.SourceType.MethodType == MethodType.CompilerGenerated)
+                                            {
+                                                //correction
+                                                InjectedType realCgType = null;
+                                                if (realTypeName != null && _injClasses.ContainsKey(realTypeName))
+                                                  realCgType = _injClasses[realTypeName];
+                                                if (realCgType != null)
+                                                {
+                                                    var mkey = GetMethodByClassKey(realCgType.Fullname, realMethodName);
+                                                    treeFunc = _injMethodByClasses[mkey];
+                                                }
+                                            }
+                                            {
+                                                cgType.FromMethod = treeFunc;
+                                            }
+                                        }
+                                    }
+                                    //
+                                    if (_injMethods.ContainsKey(cgFullname))
+                                    {
+                                        var cgFunc = _injMethods[cgFullname];
+                                        cgFunc.FromMethod = treeFunc;
+                                    }
+                                }
+                                catch { }
+                            }
+                        }                       
+                        
+                        // for injecting cases
+                        if (_processed.Contains(instr))
+                            continue;
                         CrossPointType crossType = CrossPointType.Unset;
 
                         //awaiters in MoveNext as a border
@@ -964,6 +1031,7 @@ namespace Drill4Net.Injector.Engine
             {
                 var treeFunc = new InjectedMethod(ownMethod.FullName);
                 _injMethods.Add(treeFunc.Fullname, treeFunc);
+                _injMethodByClasses.Add(GetMethodByClassKey(treeParentClass.Fullname, treeFunc.Name), treeFunc);
                 treeParentClass.AddChild(treeFunc);
                 //
                 methods.Add(ownMethod);
@@ -983,6 +1051,11 @@ namespace Drill4Net.Injector.Engine
                 methods.AddRange(innerMethods);
             }
             return methods;
+        }
+
+        private string GetMethodByClassKey(string typeFullname, string methodShortName)
+        {
+            return $"{typeFullname}::{methodShortName}";
         }
 
         internal string GetProbeData(InjectedMethod injMeth, string moduleName, string reaMethodName, 
