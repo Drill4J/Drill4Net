@@ -38,14 +38,14 @@ namespace Drill4Net.Injector.Core
             for(var i = 0; i < list.Count; i++)
             {
                 var a = list[i];
-                if (!a.StartsWith("<>"))
+                if (!a.StartsWith("<>") && !a.Contains(">d__"))
                     continue;
                 var c = list.Count - i;
                 for (var j = 0; j < c; j++)
                     list.RemoveAt(list.Count - 1);
                 break;
             }
-            return string.Join(".", list);
+            return string.Join("/", list);
         }
 
         internal static string GetName(string fullName)

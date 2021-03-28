@@ -286,7 +286,6 @@ namespace Drill4Net.Injector.Engine
                     instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
                     compilerInstructions = new HashSet<Instruction>();
-                    var startInd = 1;
 
                     //method's attributes
                     var methAttrs = methodDef.CustomAttributes;
@@ -299,8 +298,6 @@ namespace Drill4Net.Injector.Engine
                     isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
                     var isEnumeratorMoveNext = isMoveNext && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
                     var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
-                    if (skipStart)
-                        startInd = 12;
                     #endregion
                     #region Tree
                     treeClass = _injClasses[typeFullName];
@@ -390,6 +387,7 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                     #region Injections               
                     var ifStack = new Stack<Instruction>();
+                    var startInd = skipStart ? 12 : 1;
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
@@ -397,6 +395,7 @@ namespace Drill4Net.Injector.Engine
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
 
+                        #region Tree
                         //in any case needed check compiler generated classes
                         if (instr.Operand is MethodReference && 
                             (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Stfld))
@@ -413,16 +412,10 @@ namespace Drill4Net.Injector.Engine
                             {
                                 try
                                 {
-                                    InjectedType cgType = null;
-                                    //if (realTypeName != null && _injClasses.ContainsKey(realTypeName))
-                                        //cgType = _injClasses[realTypeName];
-                                    if (cgType == null)
-                                    {
-                                        cgType = _injClasses.ContainsKey(cgTypeFullName) ?
+                                    var cgType = _injClasses.ContainsKey(cgTypeFullName) ?
                                                       _injClasses[cgTypeFullName] :
                                                       (_injClasses.ContainsKey(cgTypeName) ? _injClasses[cgTypeName] : null);
-                                    }
-                                    if (cgType != null)
+                                    if (cgType != null) //else is norm for anonymous types
                                     {
                                         if (cgType.FromMethod != null && cgType.FromMethod != treeFunc)
                                         {
@@ -434,7 +427,7 @@ namespace Drill4Net.Injector.Engine
                                         {
                                             if (treeFunc.SourceType.MethodType == MethodType.CompilerGenerated)
                                             {
-                                                //correction
+                                                //correction for async internal methods
                                                 InjectedType realCgType = null;
                                                 if (realTypeName != null && _injClasses.ContainsKey(realTypeName))
                                                   realCgType = _injClasses[realTypeName];
@@ -456,10 +449,14 @@ namespace Drill4Net.Injector.Engine
                                         cgFunc.FromMethod = treeFunc;
                                     }
                                 }
-                                catch { }
+                                catch 
+                                { 
+                                    //log
+                                }
                             }
-                        }                       
-                        
+                        }
+                        #endregion
+
                         // for injecting cases
                         if (_processed.Contains(instr))
                             continue;
