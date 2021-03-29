@@ -367,6 +367,7 @@ namespace Drill4Net.Injector.Engine
                         if (instr.Operand is MethodReference && 
                            (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Ldfld))
                         {
+                            //TODO: cache!
                             var extOp = instr.Operand as MethodReference;
                             var extTypeFullName = extOp.DeclaringType.FullName;
                             var extTypeName = extOp.DeclaringType.Name;
@@ -381,51 +382,42 @@ namespace Drill4Net.Injector.Engine
                                                       _injClasses[extTypeFullName] :
                                                       (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
 
-                                    if (extType != null && extType.FromMethod != null && extType.FromMethod != treeFunc.Fullname)
+                                    //not local func and not 'class-for-all'
+                                    if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                                     {
-                                        //cgType used by many callers
-                                        extType.IsCompilerMultiTarget = true;
-                                        extType.FromMethod = null;
-                                    }
-                                    else
-                                    {
-                                        //local func and not 'class-for-all'
-                                        if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
+                                        TryGetRealNames(curType, extFullname, extFullname, true, true, out string cgRealTypeName, out string cgRealMethodName);
+                                        InjectedType realCgType = null;
+                                        var typeKey = realTypeName ?? typeFullName;
+                                        if (_injClasses.ContainsKey(typeKey))
+                                            realCgType = _injClasses[typeKey];
+                                        var methodKey = cgRealMethodName ?? realMethodName;
+                                        if (realCgType != null && methodKey != null)
                                         {
-                                            TryGetRealNames(curType, extFullname, extFullname, true, true, out string cgRealTypeName, out string cgRealMethodName);
-                                            InjectedType realCgType = null;
-                                            var typeKey = realTypeName ?? typeFullName;
-                                            if (_injClasses.ContainsKey(typeKey))
-                                                realCgType = _injClasses[typeKey];
-                                            var methodKey = cgRealMethodName ?? realMethodName;
-                                            if (realCgType != null && methodKey != null)
+                                            var mkey = GetMethodByClassKey(realCgType.Fullname, methodKey);
+                                            treeFunc = _injMethodByClasses[mkey];
+                                            var nestTypes = extType.Filter(typeof(InjectedType), true);
+                                            foreach (InjectedType nestType in nestTypes)
                                             {
-                                                var mkey = GetMethodByClassKey(realCgType.Fullname, methodKey);
-                                                treeFunc = _injMethodByClasses[mkey];
-                                                var nestTypes = extType.Filter(typeof(InjectedType), true);
-                                                foreach (InjectedType nestType in nestTypes)
-                                                {
-                                                    var injNested = _injClasses[nestType.Fullname];
-                                                    injNested.FromMethod = treeFunc.Fullname;
-                                                }
+                                                if(nestType.IsCompilerGenerated)
+                                                    nestType.FromMethod = treeFunc.Fullname;
                                             }
-                                            if (extType != null && !extType.IsCompilerMultiTarget)
+                                        }
+                                        if (extType != null)
+                                        {
+                                            extType.FromMethod = treeFunc.Fullname;
+                                            var extMethods = extType.Filter(typeof(InjectedMethod), true);
+                                            foreach (InjectedMethod meth in extMethods)
                                             {
-                                                extType.FromMethod = treeFunc.Fullname;
-                                                var cgMethods = extType.Filter(typeof(InjectedMethod), true);
-                                                foreach (InjectedMethod meth in cgMethods)
-                                                {
-                                                    meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
-                                                }
+                                                meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
                                             }
                                         }
                                     }
                                     //
                                     if (_injMethods.ContainsKey(extFullname))
                                     {
-                                        var cgFunc = _injMethods[extFullname];
-                                        if(cgFunc.FromMethod == null)
-                                            cgFunc.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                                        var extFunc = _injMethods[extFullname];
+                                        if(extFunc.FromMethod == null)
+                                            extFunc.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
                                     }
                                 }
                                 catch 

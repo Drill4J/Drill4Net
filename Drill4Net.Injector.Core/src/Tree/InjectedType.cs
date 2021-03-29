@@ -7,7 +7,6 @@ namespace Drill4Net.Injector.Core
     public class InjectedType : InjectedEntity
     {
         public bool IsCompilerGenerated { get; set; }
-        public bool IsCompilerMultiTarget { get; set; }
 
         public string BusinessType { get; set; }
 
