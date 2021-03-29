@@ -22,6 +22,7 @@ namespace Drill4Net.Target.Common
         {
             get
             {
+                //"Else_6"
                 if (_position == -1 || _position >= _data.Length)
                     throw new InvalidOperationException();
                 return _data[_position];
@@ -32,15 +33,15 @@ namespace Drill4Net.Target.Common
 
         public bool MoveNext()
         {
-            if (_position < _data.Length - 1)
-            {
-                _position = GetPosition();
-                return true;
-            }
-            else
+            //"Else_22" / "If_16"
+            if (_position >= _data.Length - 1)
                 return false;
+            _position = GetPosition();
+            return true;
         }
 
+        //TODO: later implement selective inclusion in the injection,
+        //even if it is private
         private int GetPosition()
         {
             var pos = _position;

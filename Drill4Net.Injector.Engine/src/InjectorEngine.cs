@@ -382,10 +382,11 @@ namespace Drill4Net.Injector.Engine
                                                       _injClasses[extTypeFullName] :
                                                       (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
 
-                                    //not local func and not 'class-for-all'
+                                    //extType found + not local func, not 'class-for-all'
                                     if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                                     {
-                                        TryGetRealNames(curType, extFullname, extFullname, true, true, out string cgRealTypeName, out string cgRealMethodName);
+                                        TryGetRealNames(curType, extFullname, extFullname, true, true, 
+                                            out string cgRealTypeName, out string cgRealMethodName);
                                         InjectedType realCgType = null;
                                         var typeKey = realTypeName ?? typeFullName;
                                         if (_injClasses.ContainsKey(typeKey))
@@ -398,7 +399,7 @@ namespace Drill4Net.Injector.Engine
                                             var nestTypes = extType.Filter(typeof(InjectedType), true);
                                             foreach (InjectedType nestType in nestTypes)
                                             {
-                                                if(nestType.IsCompilerGenerated)
+                                                if (nestType.IsCompilerGenerated)
                                                     nestType.FromMethod = treeFunc.Fullname;
                                             }
                                         }
@@ -412,12 +413,14 @@ namespace Drill4Net.Injector.Engine
                                             }
                                         }
                                     }
-                                    //
-                                    if (_injMethods.ContainsKey(extFullname))
+                                    else
                                     {
-                                        var extFunc = _injMethods[extFullname];
-                                        if(extFunc.FromMethod == null)
-                                            extFunc.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                                        if (_injMethods.ContainsKey(extFullname))
+                                        {
+                                            var extFunc = _injMethods[extFullname];
+                                            if (extFunc.FromMethod == null)
+                                                extFunc.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                                        }
                                     }
                                 }
                                 catch 
@@ -1024,6 +1027,7 @@ namespace Drill4Net.Injector.Engine
             [NotNull] MainOptions opts)
         {
             var methods = new List<MethodDefinition>();
+            var typeFullname = treeParentClass.Fullname;
 
             //own
             var probOpts = opts.Probes;
@@ -1034,13 +1038,24 @@ namespace Drill4Net.Injector.Engine
                 .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
                 .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop")) //do we need property setters?
                 .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop")) //do we need property getters?
-                .Where(a => isAngleBracket || probOpts.Private || (!probOpts.Private && !a.IsPrivate)) //do we need business privates?
+                .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
                 ;
             foreach (var ownMethod in ownMethods)
             {
-                var treeFunc = new InjectedMethod(ownMethod.FullName);
+                //check for setter & getter of properties for anonymous types
+                //is it useless? But for custom weaving it's very interesting idea...
+                if (treeParentClass.IsCompilerGenerated)
+                {
+                    var name = ownMethod.Name;
+                    if (ownMethod.IsSetter && !name.StartsWith("set_Prop"))
+                        continue;
+                    if (ownMethod.IsGetter && !name.StartsWith("get_Prop"))
+                        continue;
+                }
+                //
+                var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName);
                 _injMethods.Add(treeFunc.Fullname, treeFunc);
-                _injMethodByClasses.Add(GetMethodByClassKey(treeParentClass.Fullname, treeFunc.Name), treeFunc);
+                _injMethodByClasses.Add(GetMethodByClassKey(typeFullname, treeFunc.Name), treeFunc);
                 treeParentClass.AddChild(treeFunc);
                 //
                 methods.Add(ownMethod);

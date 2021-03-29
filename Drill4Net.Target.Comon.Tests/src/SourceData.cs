@@ -294,7 +294,7 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(Array.Empty<object>(), true,
                     new TestInfo(GetInfo(_target.Enumerator_Implementation), new List<string> { "While_21", "While_21", "While_21", "While_21" }),
                     new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
-                    new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "If_14", "If_14", "If_14", "If_14", "Else_25" }),
+                    new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "Else_22", "Else_22", "Else_22", "Else_22", "If_16" }),
                     new TestInfo(GetSourceFromFullSig("System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false, new List<string> { "Else_6", "Else_6", "Else_6", "Else_6" }),
                     new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.NotEmptyStringEnumerator::Dispose()"), false, new List<string>()))
                     .SetCategory(CATEGORY_MISC);

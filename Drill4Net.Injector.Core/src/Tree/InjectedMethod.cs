@@ -9,6 +9,7 @@ namespace Drill4Net.Injector.Core
         public string Namespace { get; set; }
         public string ReturnType { get; set; }
         public string Parameters { get; set; }
+        public string TypeName { get; set; }
 
         public string FromMethod { get; set; }
 
@@ -16,8 +17,10 @@ namespace Drill4Net.Injector.Core
 
         /********************************************************************/
 
-        public InjectedMethod(string fullName)
+        public InjectedMethod(string typeName, string fullName)
         {
+            TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
+            //
             var parts = GetParts(fullName);
             Namespace = parts.Ns;
             Name = parts.Name;
