@@ -66,10 +66,10 @@ namespace Drill4Net.Target.Comon.Tests
             {
                 mi.Invoke(_target, args);
             }
-            catch //it's normal for business throws
+            catch(Exception ex) //it's normal for business throws
             {
                 if (!checks.Any(a => a.Contains("Throw")))
-                    throw;
+                    Assert.Fail(ex.Message);
             }
             #endregion
             #region Assert
@@ -205,8 +205,13 @@ namespace Drill4Net.Target.Comon.Tests
             var lastInd = pars.Length - 1;
             for (var j = 0; j <= lastInd; j++)
             {
-                var p = pars[j];
-                parNames += p.ParameterType.FullName;
+                var p = pars[j].ParameterType;
+                var pName = p.FullName;
+                if (pName.Contains("Version=")) //need simplify strong named type
+                {
+                    pName = $"{p.Namespace}.{p.Name}<{string.Join(",", p.GenericTypeArguments.Select(a => a.FullName))}>";
+                }
+                parNames += pName;
                 if (j < lastInd)
                     parNames += ",";
             }

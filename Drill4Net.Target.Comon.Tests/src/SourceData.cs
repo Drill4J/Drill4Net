@@ -110,6 +110,24 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.Switch_When), new object[] { 0 }, new List<string> { "If_20", "If_28" });
                 yield return GetCase(GetInfo(_target.Switch_When), new object[] { 1 }, new List<string> { "If_20", "Else_34" });
                 yield return GetCase(GetInfo(_target.Switch_When), new object[] { -1 }, new List<string> { "If_14" });
+
+                yield return GetCase(GetInfo((OneNullBoolFuncStr)_target.Switch_Property), new object[] { null }, new List<string> { "Else_30", "If_45", "If_72" });
+                yield return GetCase(GetInfo((OneNullBoolFuncStr)_target.Switch_Property), new object[] { false }, new List<string> { "If_5", "Else_19", "If_45", "Else_54", "If_68", "If_85" });
+                yield return GetCase(GetInfo((OneNullBoolFuncStr)_target.Switch_Property), new object[] { true }, new List<string> { "If_5", "If_27", "If_45", "Else_54", "Else_60", "If_88" });
+
+                yield return GetCase(GetInfo(_target.Switch_Tuple), new object[] { "English", "morning" }, new List<string> { "If_17", "If_41" });
+                yield return GetCase(GetInfo(_target.Switch_Tuple), new object[] { "English", "evening" }, new List<string> { "If_17", "Else_22", "If_46" });
+                yield return GetCase(GetInfo(_target.Switch_Tuple), new object[] { "German", "morning" }, new List<string> { "Else_9", "If_28", "If_53" });
+                yield return GetCase(GetInfo(_target.Switch_Tuple), new object[] { "German", "evening" }, new List<string> { "Else_9", "If_28", "Else_35", "If_58" });
+
+                yield return GetCase(GetInfo(_target.Switch_Relational), new object[] { -5 }, new List<string> { "Else_8", "If_21" });
+                yield return GetCase(GetInfo(_target.Switch_Relational), new object[] { 5 }, new List<string> { "Else_8", "If_25" });
+                yield return GetCase(GetInfo(_target.Switch_Relational), new object[] { 10 }, new List<string> { "If_15", "If_31" });
+                yield return GetCase(GetInfo(_target.Switch_Relational), new object[] { 100 }, new List<string> { "If_15", "If_39" });
+
+                yield return GetCase(GetInfo(_target.Switch_Logical), new object[] { -5 }, new List<string> { "If_15" });
+                yield return GetCase(GetInfo(_target.Switch_Logical), new object[] { 5 }, new List<string> { "Else_8", "If_20" });
+                yield return GetCase(GetInfo(_target.Switch_Logical), new object[] { 10 }, new List<string> { "Else_8", "If_24" });
                 #endregion
                 #region Elvis
                 yield return GetCase(GetInfo(_target.Elvis_NotNull), Array.Empty<object>(), new List<string> { "If_12" });
@@ -160,11 +178,15 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.ExpandoObject), new object[] { true }, new List<string> { "If_7" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
+                yield return GetCase(GetInfo(_target.Cycle_Do), Array.Empty<object>(), new List<string> { "If_10" });
+
                 yield return GetCase(GetInfo(_target.Cycle_For), new object[] { -1 }, new List<string>());
                 yield return GetCase(GetInfo(_target.Cycle_For), new object[] { 3 }, new List<string> { "Cycle_22", "Cycle_22", "Cycle_22" });
 
                 yield return GetCase(GetInfo(_target.Cycle_While), new object[] { -1 }, new List<string>());
                 yield return GetCase(GetInfo(_target.Cycle_While), new object[] { 3 }, new List<string> { "Cycle_20", "Cycle_20", "Cycle_20" });
+
+
                 #endregion
                 #region Misc
                 yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { false }, new List<string> { "If_10" }).SetCategory(CATEGORY_MISC);
@@ -331,8 +353,11 @@ namespace Drill4Net.Target.Comon.Tests
 
         internal delegate void OneIntMethod(int digit);
         internal delegate string OneIntFuncStr(int digit);
+        internal delegate double OneDoubleFuncDouble(double digit);
 
-        internal delegate string OneBoolFuncStr(bool digit);
+        internal delegate string OneBoolFuncStr(bool cond);
+        internal delegate string OneNullBoolFuncStr(bool? cond);
+        internal delegate string TwoStringFuncStr(string a, string b);
         internal delegate Task FuncTask();
         internal delegate IAsyncEnumerable<int> FuncAsyncEnum();
         internal delegate void OneString(string par);
@@ -346,6 +371,21 @@ namespace Drill4Net.Target.Comon.Tests
         internal delegate bool OneInt(int digit);
         #endregion
         #region Method info
+        internal static MethodInfo GetInfo(OneDoubleFuncDouble method)
+        {
+            return method.Method;
+        }
+
+        internal static MethodInfo GetInfo(TwoStringFuncStr method)
+        {
+            return method.Method;
+        }
+
+        internal static MethodInfo GetInfo(OneNullBoolFuncStr method)
+        {
+            return method.Method;
+        }
+
         internal static MethodInfo GetInfo(OneBool method)
         {
             return method.Method;
@@ -502,7 +542,7 @@ namespace Drill4Net.Target.Comon.Tests
             for (int i = 0; i <= lastInd; i++)
             {
                 var par = parameters[i];
-                name += par;
+                name += par ?? "null";
                 if (i < lastInd)
                     name += ",";
             }

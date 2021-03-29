@@ -646,21 +646,18 @@ namespace Drill4Net.Injector.Engine
                     } //cycle
                     #endregion
                     #region Correct jumps
-                    if (skipStart)
+                    //EACH short form -> to long form (otherwise, you need to recalculate 
+                    //again after each necessary conversion)
+                    var jumpersList = jumpers.ToList();
+                    for (var j = 0; j < jumpersList.Count; j++)
                     {
-                        //EACH short form -> to long form (otherwise, you need to recalculate 
-                        //again after each necessary conversion)
-                        var jumpersList = jumpers.ToList();
-                        for (var j = 0; j < jumpersList.Count; j++)
+                        var jump = jumpersList[j];
+                        var opCode = jump.OpCode;
+                        if (jump.Operand is Instruction operand)
                         {
-                            var jump = jumpersList[j];
-                            var opCode = jump.OpCode;
-                            if (jump.Operand is Instruction operand)
-                            {
-                                var newOpCode = ConvertShortJumpToLong(opCode);
-                                if (newOpCode.Code != opCode.Code)
-                                    jump.OpCode = newOpCode;
-                            }
+                            var newOpCode = ConvertShortJumpToLong(opCode);
+                            if (newOpCode.Code != opCode.Code)
+                                jump.OpCode = newOpCode;
                         }
                     }
                     #endregion

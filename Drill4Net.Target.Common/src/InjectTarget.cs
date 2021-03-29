@@ -80,6 +80,24 @@ namespace Drill4Net.Target.Common
             Switch_When(-1);
             Switch_When(0);
             Switch_When(1);
+
+            Switch_Property(null);
+            Switch_Property(false);
+            Switch_Property(true);
+
+            Switch_Tuple("English", "morning");
+            Switch_Tuple("English", "evening");
+            Switch_Tuple("German", "morning");
+            Switch_Tuple("German", "evening");
+
+            Switch_Relational(-5);
+            Switch_Relational(5);
+            Switch_Relational(10);
+            Switch_Relational(100);
+
+            Switch_Logical(-5);
+            Switch_Logical(5);
+            Switch_Logical(10);
             #endregion
             #region Elvis
             Elvis_NotNull();
@@ -149,7 +167,7 @@ namespace Drill4Net.Target.Common
 
             Try_Finally(false);
             Try_Finally(true);
-            #endregion
+#endregion
             #region Async
             await Async_Stream();
             await Async_Stream_Cancellation();
@@ -165,7 +183,7 @@ namespace Drill4Net.Target.Common
 
             await Async_Linq_NonBlocking(false);
             await Async_Linq_NonBlocking(true);
-            #endregion
+#endregion
             #region Parallel
             Parallel_Linq(false);
             Parallel_Linq(true);
@@ -181,7 +199,7 @@ namespace Drill4Net.Target.Common
 
             Parallel_Thread_New(false);
             Parallel_Thread_New(true);
-            #endregion
+#endregion
             #region Disposable
             try
             {
@@ -255,7 +273,7 @@ namespace Drill4Net.Target.Common
 
             WinAPI(false);
             WinAPI(true);
-            #endregion
+#endregion
         }
 
         #region IF/ELSE
@@ -429,7 +447,7 @@ namespace Drill4Net.Target.Common
                 Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: !a*b");
             }
         }
-        #endregion
+#endregion
         #region Elvis
         internal void Elvis_NotNull()
         {
@@ -472,7 +490,7 @@ namespace Drill4Net.Target.Common
             var prop = obj ?? "bbb";
             Console.WriteLine($"{nameof(Elvis_Double_Null)}: {prop}");
         }
-        #endregion
+#endregion
         #region Switch
         internal void Switch_ExplicitDefault(int a)
         {
@@ -536,6 +554,68 @@ namespace Drill4Net.Target.Common
             }
             Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}");
         }
+
+        internal string Switch_Property(bool? cond)
+        {
+            var p = cond == null ?
+                new { Name = "John", IsAdmin = false, Language = "English" } :
+                ( cond == true ?
+                    new { Name = "Андрей", IsAdmin = false, Language = "Russian" } :
+                    new { Name = "Woldemar", IsAdmin = true, Language = "German" }
+                );
+            //
+            var s = p switch
+            {
+                { Language: "English" } => $"Hello, {p.Name}!",
+                { Language: "German", IsAdmin: true } => "Hallo, Geheimagent!",
+                { Language: "Russian" } => $"Привет, {p.Name}!",
+                { } => "undefined",
+                null => "null"
+            };
+            Console.WriteLine($"{nameof(Switch_Property)}: {p} -> {s}");
+            return s;
+        }
+
+        internal string Switch_Tuple(string lang, string daytime)
+        {
+            var s = (lang, daytime) switch
+            {
+                ("English", "morning") => "Good morning",
+                ("English", "evening") => "Good evening",
+                ("German", "morning") => "Guten Morgen",
+                ("German", "evening") => "Guten Abend",
+                _ => "Доброго времени суток!"
+            };
+            Console.WriteLine($"{nameof(Switch_Tuple)}: {s}");
+            return s;
+        }
+
+        //C#9
+        internal double Switch_Relational(double sum)
+        {
+            var newSum = sum switch
+            {
+                <= 0 => 0,      
+                < 10 => sum * 1.05,
+                < 100 => sum * 1.1,
+                _ => sum * 1.15
+            };
+            Console.WriteLine($"{nameof(Switch_Relational)}: {newSum}");
+            return sum;
+        }
+
+        //C#9
+        internal string Switch_Logical(int a)
+        {
+            var s = a switch
+            {
+                <= 0 => "zero",
+                > 0 and < 10 => "small",
+                _ => "big"
+            };
+            Console.WriteLine($"{nameof(Switch_Logical)}: {s}");
+            return s;
+        }
         #endregion
         #region Cycle
         internal bool Cycle_For(int count)
@@ -555,8 +635,6 @@ namespace Drill4Net.Target.Common
             return true;
         }
 
-        //in principle, it is not necessary, because 
-        //it is not a branch with a precondition
         internal void Cycle_Do()
         {
             int i = 3;
@@ -847,7 +925,7 @@ namespace Drill4Net.Target.Common
                 yield return i;
             }
         }
-        #endregion
+#endregion
 
         //https://docs.microsoft.com/en-us/archive/msdn-magazine/2019/november/csharp-iterating-with-async-enumerables-in-csharp-8
         #endregion
@@ -1028,7 +1106,7 @@ namespace Drill4Net.Target.Common
                 return x + y + z;
             }
         }
-        #endregion
+#endregion
 
         internal void Anonymous_Type(bool cond)
         {
