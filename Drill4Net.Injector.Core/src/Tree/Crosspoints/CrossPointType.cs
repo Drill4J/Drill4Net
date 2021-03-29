@@ -14,8 +14,8 @@
         Switch = 9,
 
         //cycles
-        For = 10,
-        While = 11,
+        Cycle = 10,
+        //While = 11,
 
         //try/catch
         Throw = 12,

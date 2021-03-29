@@ -462,7 +462,7 @@ namespace Drill4Net.Injector.Engine
                             instr.Operand = ldstrReturn;
                         }
 
-                        // IF/SWITCH
+                        // IF, FOR/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
                             //check for 'using' statement (compiler generated Try/Finally with If-checking)
@@ -502,7 +502,7 @@ namespace Drill4Net.Injector.Engine
                                     continue;
                             }
 
-                            //operators: while/do
+                            //operators: while/for, do
                             if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset)
                             {
                                 if (isEnumeratorMoveNext)
@@ -514,9 +514,9 @@ namespace Drill4Net.Injector.Engine
                                 //
                                 var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
                                 var prevOperand = SkipNop(ind, false);
-                                if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //while
+                                if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //for/while
                                 {
-                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.While, i);
+                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Cycle, i);
                                     var ldstrIf2 = GetInstruction(probData);
                                     var targetOp = prevOperand.Operand as Instruction;
                                     processor.InsertBefore(targetOp, ldstrIf2);

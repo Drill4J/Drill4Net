@@ -211,6 +211,9 @@ namespace Drill4Net.Target.Common
             Disposable_Finalizer(18);
             #endregion
             #region Cycle
+            Cycle_For(-1);
+            Cycle_For(3);
+
             Cycle_While(-1);
             Cycle_While(3);
 
@@ -535,6 +538,15 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Cycle
+        internal bool Cycle_For(int count)
+        {
+            var s = "";
+            for (var i = 0; i < count; i++)
+                s += i;
+            Console.WriteLine($"{nameof(Cycle_For)} -> {count}");
+            return true;
+        }
+
         internal bool Cycle_While(int count)
         {
             Console.WriteLine($"{nameof(Cycle_While)} -> {count}");
@@ -1073,7 +1085,7 @@ namespace Drill4Net.Target.Common
             return;
         }
 
-        //Cycle_Int is forbidden
+        //Cycle_In is forbidden
         internal void Goto_Statement_Cycle_Out(bool cond)
         {
             var s = "a";
@@ -1085,7 +1097,7 @@ namespace Drill4Net.Target.Common
                 s += "b";
             }
         label:
-            Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
+            Console.WriteLine($"{nameof(Goto_Statement_Cycle_Out)}: {cond} -> {s}");
             return;
         }
         #endregion
