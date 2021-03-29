@@ -46,8 +46,16 @@ namespace Drill4Net.Injector.Core
         {
             if (breakOn != null && GetType().Name == breakOn.Name)
                 return Enumerable.Empty<T>();
-            var filter = _children.Where(a => breakOn == null || (breakOn!=null && a.GetType().Name != breakOn.Name));
+            var filter = _children.Where(a => breakOn == null || (breakOn != null && a.GetType().Name != breakOn.Name));
             return _children.SelectMany(x => x.Flatten(breakOn)).Concat(filter);
+        }
+
+        public IEnumerable<T> Filter(Type flt, bool inDepth)
+        {
+            var filter = _children.Where(a => flt == null || (flt != null && a.GetType() == flt));
+            if (!inDepth)
+                return filter;
+            return _children.SelectMany(x => x.Filter(flt, inDepth)).Concat(filter);
         }
 
         public void Traverse(Action<int, T, T> visitor)
