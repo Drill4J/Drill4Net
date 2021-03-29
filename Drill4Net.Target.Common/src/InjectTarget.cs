@@ -226,6 +226,9 @@ namespace Drill4Net.Target.Common
             Goto_Statement(false);
             Goto_Statement(true);
 
+            Goto_Statement_Cycle_Out(false);
+            Goto_Statement_Cycle_Out(true);
+
             Extension(false);
             Extension(true);
 
@@ -1002,14 +1005,16 @@ namespace Drill4Net.Target.Common
         internal void Anonymous_Func_WithLocalFunc()
         {
             int z = 8;
+            int d = operation(4, 5);
+            Console.WriteLine($"{nameof(Anonymous_Func_WithLocalFunc)}: {d}"); // 15
+
+            //local func
             int operation(int x, int y)
             {
                 if (x > 1)
                     x /= 2;
                 return x + y + z;
             }
-            int d = operation(4, 5);
-            Console.WriteLine($"{nameof(Anonymous_Func_WithLocalFunc)}: {d}"); // 15
         }
         #endregion
 
@@ -1056,6 +1061,34 @@ namespace Drill4Net.Target.Common
                 yield return cond ? a : "z";
         }
         #endregion
+        #region Goto
+        internal void Goto_Statement(bool cond)
+        {
+            var s = "aaa";
+            if (cond)
+                goto label;
+            s = "bbb";
+        label:
+            Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
+            return;
+        }
+
+        //Cycle_Int is forbidden
+        internal void Goto_Statement_Cycle_Out(bool cond)
+        {
+            var s = "a";
+            for (var i = 0; i < 2; i++)
+            {
+                s += i;
+                if (cond)
+                    goto label;
+                s += "b";
+            }
+        label:
+            Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
+            return;
+        }
+        #endregion
 
         internal void Event()
         {
@@ -1097,17 +1130,6 @@ namespace Drill4Net.Target.Common
             var dlg = e.Compile();
             int d = dlg(x);
             Console.WriteLine($"{nameof(Expression)}: {d}");
-        }
-
-        internal void Goto_Statement(bool cond)
-        {
-            var s = "aaa";
-            if(cond)
-                goto label;
-            s = "bbb";
-label:
-            Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
-            return;
         }
 
         internal void Enumerator_Implementation()

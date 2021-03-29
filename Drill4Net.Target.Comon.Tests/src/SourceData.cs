@@ -167,6 +167,9 @@ namespace Drill4Net.Target.Comon.Tests
                 yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { false }, new List<string> { "If_10" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(_target.Goto_Statement), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
 
+                yield return GetCase(GetInfo(_target.Goto_Statement_Cycle_Out), new object[] { false }, new List<string> { "If_19", "While_35", "If_19", "While_35" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(_target.Goto_Statement_Cycle_Out), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
+
                 yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { false }, new List<string> { "Else_14" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(_target.Lock_Statement), new object[] { true }, new List<string> { "If_19" }).SetCategory(CATEGORY_MISC);
 
@@ -197,6 +200,7 @@ namespace Drill4Net.Target.Comon.Tests
                 #region Anonymous
                 yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(_target.Anonymous_Func), new List<string> { "If_6" }));
 
+                //at the moment, we decided not to consider local functions as separate entities 
                 yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(_target.Anonymous_Func_WithLocalFunc), new List<string> { "If_6" }));
 
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(_target.Anonymous_Type), new List<string> { "Else_5" }));

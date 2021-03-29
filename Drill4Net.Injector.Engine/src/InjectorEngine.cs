@@ -302,7 +302,6 @@ namespace Drill4Net.Injector.Engine
                     #region Tree
                     treeClass = _injClasses[typeFullName];
                     var treeFunc = _injMethods[methodFullName];
-                    treeFunc.SourceType = CreateMethodSource(methodDef);
                     var methodType = treeFunc.SourceType.MethodType;
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
                     #endregion
@@ -976,9 +975,6 @@ namespace Drill4Net.Injector.Engine
                 return MethodType.EventAdd;
             if (methodFullName.Contains("::remove_"))
                 return MethodType.EventRemove;
-            //if (methodFullName.StartsWith("<>f__"))
-            //    return MethodType.Anonymous;
-            //
             if (isCompilerGeneratedType)
                 return MethodType.CompilerGenerated;
             //
@@ -1029,7 +1025,7 @@ namespace Drill4Net.Injector.Engine
             var methods = new List<MethodDefinition>();
             var typeFullname = treeParentClass.Fullname;
 
-            //own
+            #region Own methods
             var probOpts = opts.Probes;
             var isAngleBracket = type.Name.StartsWith("<");
             var ownMethods = type.Methods
@@ -1038,6 +1034,8 @@ namespace Drill4Net.Injector.Engine
                 .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
                 .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop")) //do we need property setters?
                 .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop")) //do we need property getters?
+                .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
+                .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
                 .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
                 ;
             foreach (var ownMethod in ownMethods)
@@ -1053,15 +1051,16 @@ namespace Drill4Net.Injector.Engine
                         continue;
                 }
                 //
-                var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName);
+                var sourceType = CreateMethodSource(ownMethod);
+                var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName, sourceType);
                 _injMethods.Add(treeFunc.Fullname, treeFunc);
+                methods.Add(ownMethod);
+                //
                 _injMethodByClasses.Add(GetMethodByClassKey(typeFullname, treeFunc.Name), treeFunc);
                 treeParentClass.AddChild(treeFunc);
-                //
-                methods.Add(ownMethod);
             }
-
-            //nested
+            #endregion
+            #region Nested classes
             foreach (var nestedType in type.NestedTypes)
             {
                 var treeClass = new InjectedType(nestedType.Module.Name, nestedType.FullName)
@@ -1074,6 +1073,7 @@ namespace Drill4Net.Injector.Engine
                 var innerMethods = GetAllMethods(treeClass, nestedType, opts);
                 methods.AddRange(innerMethods);
             }
+            #endregion
             return methods;
         }
 

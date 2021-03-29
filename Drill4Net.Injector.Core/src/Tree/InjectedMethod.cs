@@ -17,9 +17,10 @@ namespace Drill4Net.Injector.Core
 
         /********************************************************************/
 
-        public InjectedMethod(string typeName, string fullName)
+        public InjectedMethod(string typeName, string fullName, MethodSource sourceType)
         {
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
+            SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             //
             var parts = GetParts(fullName);
             Namespace = parts.Ns;
