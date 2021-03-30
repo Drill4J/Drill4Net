@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Drill4Net.Target.Common</name>
+    </assembly>
+    <members>
+        <member name="T:Drill4Net.Target.Common.DynamicDictionary">
+            <summary>
+            The dictionary derived from DynamicObject.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Drill4Net.Injection</name>
+    </assembly>
+    <members>
+        <member name="M:Cecilifier.Runtime.PrivateCoreLibFixer.FixReferences(Mono.Cecil.ModuleDefinition)">
+            <summary>Changes types referencing mscorlib so they appear to be defined in System.Runtime.dll</summary>
+            <param name="mainModule">module which assembly references will be added to/removed from</param>
+        </member>
+        <member name="T:Drill4Net.Injection.ProfilerProxy">
+            <summary>
+            This is the MODEL of proxy class that must be injected into the target assembly.
+            It provides Reflection access to real profiling functionality with caching.
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injection.ProfilerProxyGenerator.InjectTo(Mono.Cecil.AssemblyDefinition)">
+            <summary>
+            Generating IL instructions for a class ProfilerProxy by Mono.Cecil
+            </summary>
+            <param name="assembly"></param>
+        </member>
+    </members>
+</doc>

@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50.Demo", "Drill4Net.Target.Net50.Demo\Drill4Net.Target.Net50.Demo.csproj", "{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.App", "src\Injector\Drill4Net.Injector.App\Drill4Net.Injector.App.csproj", "{96334265-0515-4C61-B6EF-A39A36A99CD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.App", "Drill4Net.Injector.App\Drill4Net.Injector.App.csproj", "{96334265-0515-4C61-B6EF-A39A36A99CD2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Net48.Debug", "src\Tests\Targets\NetFramework\Drill4Net.Target.Net48.Debug\Drill4Net.Target.Net48.Debug.csproj", "{4C011347-AA81-4AD9-9688-06C0DFF448BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Net48.Demo", "Drill4Net.Target.Net48.Demo\Drill4Net.Target.Net48.Demo.csproj", "{4C011347-AA81-4AD9-9688-06C0DFF448BB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetCore", "NetCore", "{FA69B589-117C-4E05-9F95-914965C37D71}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net50", "Net50", "{FA69B589-117C-4E05-9F95-914965C37D71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetFramework", "NetFramework", "{1823BF42-E41D-42E0-9D4B-F198CD321D84}"
 EndProject
@@ -19,40 +17,53 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C2C77100
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injector", "Injector", "{2FFDD626-2A70-425D-A6D7-5769E16CE0C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Engine", "Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj", "{04F30A51-4DC7-4F70-94DF-F9AA594C3656}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Engine", "src\Injector\Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj", "{04F30A51-4DC7-4F70-94DF-F9AA594C3656}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D} = {7E40D044-DFE1-4DDD-A45F-74F820AE7B1D}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Common", "Drill4Net.Target.Common\Drill4Net.Target.Common.csproj", "{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Common", "src\Tests\Targets\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj", "{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.RnD", "Drill4Net.Plugins.RnD\Drill4Net.Plugins.RnD.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.RnD", "src\RnD\Drill4Net.Agent.RnD\Drill4Net.Agent.RnD.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.RnD.Demo", "Drill4Net.Plugins.RnD.Demo\Drill4Net.Plugins.RnD.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.RnD.Demo", "src\RnD\Drill4Net.Agent.RnD.Demo\Drill4Net.Agent.RnD.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection", "Drill4Net.Injection\Drill4Net.Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection", "src\Injection\Drill4Net.Injection\Drill4Net.Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injection", "Injection", "{F224ACDF-5B60-47B3-98F7-15280126EF03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection.Demo", "Drill4Net.Injection.Demo\Drill4Net.Injection.Demo.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection.Debug", "src\Injection\Drill4Net.Injection.Debug\Drill4Net.Injection.Debug.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{1D6CE589-D18D-4682-A950-003BAC9B7B04}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{1D6CE589-D18D-4682-A950-003BAC9B7B04}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.Abstract", "Drill4Net.Plugins.Abstract\Drill4Net.Plugins.Abstract.csproj", "{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Abstract", "src\Agent\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj", "{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.Testing", "Drill4Net.Plugins.Testing\Drill4Net.Plugins.Testing.csproj", "{3E816CEF-341B-4010-8C8C-B266F031EF6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Testing", "src\Tests\IntegrationTests\Agent\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj", "{3E816CEF-341B-4010-8C8C-B266F031EF6D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Core", "Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj", "{4F7E6B2F-4AF1-444A-9753-3FB1EE3F554A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Core", "src\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj", "{4F7E6B2F-4AF1-444A-9753-3FB1EE3F554A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Comon.Tests", "Drill4Net.Target.Comon.Tests\Drill4Net.Target.Comon.Tests.csproj", "{049043DD-4F2B-465B-9BE4-3F5A623D8AB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.NetCore.Tests", "src\Tests\IntegrationTests\Drill4Net.Target.NetCore.Tests\Drill4Net.Target.NetCore.Tests.csproj", "{049043DD-4F2B-465B-9BE4-3F5A623D8AB4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{2D8768BC-205A-4BE5-8A42-66FAADF2CF7E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{2D8768BC-205A-4BE5-8A42-66FAADF2CF7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Plugins.Testing.Demo", "Drill4Net.Plugins.Testing.Demo\Drill4Net.Plugins.Testing.Demo.csproj", "{695B6D02-77D6-432F-920E-EFE682BC0C19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Testing.Debug", "src\Tests\IntegrationTests\Agent\Drill4Net.Agent.Testing.Debug\Drill4Net.Agent.Testing.Debug.csproj", "{695B6D02-77D6-432F-920E-EFE682BC0C19}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50", "src\Tests\Targets\Net50\Drill4Net.Target.Net50\Drill4Net.Target.Net50.csproj", "{E28213A1-824A-46D1-A429-861A65D28E54}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{1E4C1FE4-C8D5-4B77-B4F1-A732628FDA82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RnD", "RnD", "{77625A58-589A-4E69-B835-64A01A197D09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50.Debug", "src\Tests\Targets\Net50\Drill4Net.Target.Net50.Debug\Drill4Net.Target.Net50.Debug.csproj", "{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B21E08BB-F547-47C7-A9E1-30AE2DC0CB65}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,10 +71,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{96334265-0515-4C61-B6EF-A39A36A99CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96334265-0515-4C61-B6EF-A39A36A99CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96334265-0515-4C61-B6EF-A39A36A99CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -116,20 +123,27 @@ Global
 		{695B6D02-77D6-432F-920E-EFE682BC0C19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{695B6D02-77D6-432F-920E-EFE682BC0C19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{695B6D02-77D6-432F-920E-EFE682BC0C19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E28213A1-824A-46D1-A429-861A65D28E54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E28213A1-824A-46D1-A429-861A65D28E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E28213A1-824A-46D1-A429-861A65D28E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E28213A1-824A-46D1-A429-861A65D28E54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{375C6B1D-2CF5-4EB1-BFD7-6DD24E427C06} = {FA69B589-117C-4E05-9F95-914965C37D71}
 		{96334265-0515-4C61-B6EF-A39A36A99CD2} = {2FFDD626-2A70-425D-A6D7-5769E16CE0C5}
 		{4C011347-AA81-4AD9-9688-06C0DFF448BB} = {1823BF42-E41D-42E0-9D4B-F198CD321D84}
 		{FA69B589-117C-4E05-9F95-914965C37D71} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
 		{1823BF42-E41D-42E0-9D4B-F198CD321D84} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
 		{50B3CF2D-D22F-4393-97BF-67C14B2E1756} = {C2C77100-B789-417D-A387-E2C4A668C15C}
 		{04F30A51-4DC7-4F70-94DF-F9AA594C3656} = {2FFDD626-2A70-425D-A6D7-5769E16CE0C5}
-		{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
-		{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1} = {C2C77100-B789-417D-A387-E2C4A668C15C}
+		{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D} = {1E4C1FE4-C8D5-4B77-B4F1-A732628FDA82}
+		{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1} = {77625A58-589A-4E69-B835-64A01A197D09}
 		{7D2F7D02-BD1D-4811-BCB0-7C44C7332390} = {15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}
 		{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2} = {15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}
 		{2FBA8974-AAE8-43C1-AAD6-37C25E869F08} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
@@ -141,6 +155,9 @@ Global
 		{049043DD-4F2B-465B-9BE4-3F5A623D8AB4} = {AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}
 		{2D8768BC-205A-4BE5-8A42-66FAADF2CF7E} = {AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}
 		{695B6D02-77D6-432F-920E-EFE682BC0C19} = {2D8768BC-205A-4BE5-8A42-66FAADF2CF7E}
+		{E28213A1-824A-46D1-A429-861A65D28E54} = {FA69B589-117C-4E05-9F95-914965C37D71}
+		{1E4C1FE4-C8D5-4B77-B4F1-A732628FDA82} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
+		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A} = {FA69B589-117C-4E05-9F95-914965C37D71}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

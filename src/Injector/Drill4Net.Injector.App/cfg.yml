@@ -1,0 +1,32 @@
+﻿Target: # some metadata about target
+    Name: Test Target #optional injection name
+Source: # what and how processing
+    Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\Drill4Net.Target.Net50.Debug\net5.0\
+    Filter: # mask for search files, namespaces, classes...
+       File: 
+       Namespace: 
+       Class:
+       Attribute:
+Destination: # where copying injected assemblies
+    Directory: # or full directory...
+    FolderPostfix: Injected #...or prefix to source dir
+Profiler: # data collector/processor in separate assembly
+    Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.RnD\netstandard2.0\
+    AssemblyName: Drill4Net.Agent.RnD.dll
+    Namespace: Drill4Net.Agent.RnD
+    Class: LoggerAgent
+    Method: RegisterStatic
+    Static: true
+Proxy: # the injecting for transfer data to profiler
+    Class: ProfilerProxy
+    Method: Register
+    Static: true
+Probes: # types of cross-cutting points
+    Ctor: false
+    Private: false
+    Getter: false
+    Setter: false
+    EventAdd: false
+    EventRemove: false
+Silent: false # no wait, no questions...
+

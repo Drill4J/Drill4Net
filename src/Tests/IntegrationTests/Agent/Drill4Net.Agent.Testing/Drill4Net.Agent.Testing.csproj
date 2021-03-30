@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+   <!--Copy NuGet packages to output directory-->
+   <PropertyGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+     <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Agent.Testing</OutputPath>
+     <DocumentationFile>..\..\..\..\..\doc\xml\Tests\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.xml</DocumentationFile>
+   </PropertyGroup>
+   <ItemGroup>
+     <ProjectReference Include="..\..\..\..\Agent\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+     <ProjectReference Include="..\..\..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tests_cfg.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
