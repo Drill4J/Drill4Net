@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,10 +15,10 @@ namespace Drill4Net.Injector.Core
         private readonly string _defCfgPath;
         private readonly Deserializer _deser;
 
-        /************************************************************************/
+        /**********************************************************************************/
 
         public InjectorRepository(): 
-            this(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), CoreConstants.CONFIG_DEFAULT_NAME))
+            this(Path.Combine(GetExecutionDir(), CoreConstants.CONFIG_DEFAULT_NAME))
         {
         }
 
@@ -35,8 +36,110 @@ namespace Drill4Net.Injector.Core
             Options = ClarifyOptions(args);
         }
 
-        /************************************************************************/
+        /**********************************************************************************/
 
+        #region Directories
+        public static string GetExecutionDir()
+        {
+            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
+
+        public bool IsSameDirectories(string dir1, string dir2)
+        {
+            if (!dir1.EndsWith("\\"))
+                dir1 += "\\";
+            if (!dir2.EndsWith("\\"))
+                dir2 += "\\";
+            return dir1 == dir2;
+        }
+
+        public string GetSourceDirectory(MainOptions opts)
+        {
+            return GetFullPath(opts.Source.Directory);
+        }
+
+        public string GetFullPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return path;
+            if (!Path.IsPathRooted(path))
+            {
+                var curDir = GetExecutionDir();
+                path = Path.GetFullPath(Path.Combine(curDir, path));
+            }
+            return path;
+        }
+
+        public string GetDestinationDirectory(MainOptions opts, string currentDir)
+        {
+            string destDir = GetFullPath(opts.Destination.Directory);
+            if (!IsSameDirectories(currentDir, opts.Source.Directory))
+            {
+                var origPath = GetFullPath(opts.Source.Directory);
+                destDir = Path.Combine(destDir, currentDir.Remove(0, origPath.Length));
+            }
+            return destDir;
+        }
+
+        public void CopySource(string sourcePath, string destPath)
+        {
+            if (Directory.Exists(destPath))
+                Directory.Delete(destPath, true);
+            Directory.CreateDirectory(destPath);
+            DirectoryCopy(sourcePath, destPath);
+        }
+
+        public void DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)
+        {
+            var dir = new DirectoryInfo(sourceDir);
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException($"Source directory does not exist: {sourceDir}");
+
+            var dirs = dir.GetDirectories();
+            Directory.CreateDirectory(destDir);
+
+            var files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(destDir, file.Name);
+                file.CopyTo(tempPath, false);
+            }
+
+            if (copySubDirs)
+            {
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    string tempPath = Path.Combine(destDir, subdir.Name);
+                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
+                }
+            }
+        }
+        #endregion
+        #region Assembly
+        public IEnumerable<string> GetAssemblies(string directory)
+        {
+            return Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly)
+                .Where(a => a.EndsWith(".exe") || a.EndsWith(".dll"));
+        }
+
+        public AssemblyVersion GetAssemblyVersion(string filePath)
+        {
+            var asmName = AssemblyName.GetAssemblyName(filePath);
+            if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
+                return new AssemblyVersion() { Target = AssemblyVersionType.NotIL };
+            if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
+            {
+                //log: is strong name!
+                return new AssemblyVersion() { IsStrongName = true };
+            }
+            var asm = Assembly.LoadFrom(filePath);
+            var versionAttr = asm.CustomAttributes
+                .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
+            var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
+            var version = new AssemblyVersion(versionS);
+            return version;
+        }
+        #endregion
         #region Options
         internal MainOptions GenerateOptions()
         {
@@ -45,11 +148,24 @@ namespace Drill4Net.Injector.Core
 
         internal MainOptions ClarifyOptions(string[] args)
         {
+            Log.Debug("Arguments: {@Args}", args);
+
             var cfgPath = GetCurrentConfigPath(args);
             var cfg = ReadOptions(cfgPath);
             ClarifySourceDirectory(args, cfg);
             ClarifyDestinationDirectory(args, cfg);
             return cfg;
+        }
+
+        public void NormalizePathes(MainOptions opts)
+        {
+            if (opts == null)
+                throw new ArgumentNullException(nameof(opts));
+            Log.Debug("Options before normalizing: {@Options}", opts);
+
+            opts.Source.Directory = GetFullPath(opts.Source.Directory);
+            opts.Destination.Directory = GetFullPath(opts.Destination.Directory);
+            opts.Profiler.Directory = GetFullPath(opts.Profiler.Directory);
         }
 
         internal string GetCurrentConfigPath(string[] args)
@@ -101,6 +217,7 @@ namespace Drill4Net.Injector.Core
             var cfg = File.ReadAllText(path);
             var opts = _deser.Deserialize<MainOptions>(cfg);
             SetDestinationDirectory(opts, null);
+            NormalizePathes(opts);
             return opts;
         }
 
@@ -109,12 +226,14 @@ namespace Drill4Net.Injector.Core
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
             //
-            if (string.IsNullOrEmpty(opts.Source.Directory))
+            var sourceDir = GetFullPath(opts.Source.Directory);
+            if (string.IsNullOrEmpty(sourceDir))
                 throw new Exception("Source directory name is empty");
-            if (!Directory.Exists(opts.Source.Directory))
-                throw new DirectoryNotFoundException("Destination directory does not exists");
+            if (!Directory.Exists(sourceDir))
+                throw new DirectoryNotFoundException($"Source directory does not exists: {sourceDir}");
             //
-            if (string.IsNullOrEmpty(opts.Destination.Directory))
+            var destDir = GetFullPath(opts.Destination.Directory);
+            if (string.IsNullOrEmpty(destDir))
                 throw new Exception("Destination directory name is empty");
         }
 
@@ -162,9 +281,24 @@ namespace Drill4Net.Injector.Core
             return Path.Combine(tree.DestinationPath, CoreConstants.TREE_FILE_NAME);
         }
 
-        public string GetTreeFileHintPath(string path)
+        public string GetTreeFileHintPath(string targetDir)
         {
-            return Path.Combine(path, CoreConstants.TREE_FILE_HINT_NAME);
+            return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
+        }
+        #endregion
+        #region Logger
+        public void PrepareLogger()
+        {
+            Log.Logger = new LoggerConfiguration()
+               .MinimumLevel.Verbose()
+               .WriteTo.Console()
+               .WriteTo.File(GetLogPath())
+               .CreateLogger();
+        }
+
+        public string GetLogPath()
+        {
+            return Path.Combine(GetExecutionDir(), "log.txt");
         }
         #endregion
     }

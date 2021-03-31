@@ -11,6 +11,10 @@
    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
      <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Agent.Testing</OutputPath>
      <DocumentationFile>..\..\..\..\..\doc\xml\Tests\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.xml</DocumentationFile>
+     <WarningLevel>2</WarningLevel>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+     <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Agent.Testing</OutputPath>
    </PropertyGroup>
    <ItemGroup>
      <ProjectReference Include="..\..\..\..\Agent\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />

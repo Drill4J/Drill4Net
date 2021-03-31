@@ -11,6 +11,10 @@
     <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.RnD.Demo\Drill4Net.Agent.RnD.Demo.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.RnD.Demo</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Agent.RnD\Drill4Net.Agent.RnD.csproj" />
   </ItemGroup>

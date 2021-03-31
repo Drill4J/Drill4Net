@@ -10,4 +10,8 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Net50</OutputPath>
+  </PropertyGroup>
+
 </Project>

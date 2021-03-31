@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Mono.Cecil;
@@ -12,6 +11,7 @@ using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
+using Serilog;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -29,7 +29,6 @@ namespace Drill4Net.Injector.Engine
         private readonly IInjectorRepository _rep;
         private readonly ThreadLocal<bool?> _isNetCore;
         private readonly ThreadLocal<AssemblyVersion> _mainVersion;
-        private readonly EnumerationOptions _searchOpts;
         private readonly HashSet<string> _restrictNamespaces;
         private Dictionary<string, InjectedType> _injClasses;
         private Dictionary<string, InjectedMethod> _injMethods;
@@ -40,15 +39,10 @@ namespace Drill4Net.Injector.Engine
 
         public InjectorEngine([NotNull] IInjectorRepository rep)
         {
-            _rep = rep;
+            _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+
             _isNetCore = new ThreadLocal<bool?>();
             _mainVersion = new ThreadLocal<AssemblyVersion>();
-            _searchOpts = new EnumerationOptions()
-            {
-                IgnoreInaccessible = true,
-                ReturnSpecialDirectories = false,
-                RecurseSubdirectories = false
-            };
             _restrictNamespaces = GetRestrictNamespaces();
         }
 
@@ -62,17 +56,20 @@ namespace Drill4Net.Injector.Engine
         public InjectedSolution Process([NotNull] MainOptions opts)
         {
             _rep.ValidateOptions(opts);
-            CopySource(opts.Source.Directory, opts.Destination.Directory);
-            var versions = DefineTargetVersions(opts.Source.Directory);
+
+            var sourceDir = opts.Source.Directory;
+            var destDir = opts.Destination.Directory;
+            _rep.CopySource(sourceDir, destDir);
+
+            var versions = DefineTargetVersions(sourceDir);
             _curPointUid = -1;
             //
-            var dir = opts.Source.Directory;
-            var tree = new InjectedSolution(opts.Target?.Name, dir)
+            var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
             {
                 StartTime = DateTime.Now,
-                DestinationPath = GetDestinationDirectory(opts, dir),
+                DestinationPath = destDir,
             };
-            ProcessDirectory(dir, versions, opts, tree);
+            ProcessDirectory(sourceDir, versions, opts, tree);
             tree.FinishTime = DateTime.Now;
             InjectTree(tree);
             //
@@ -83,14 +80,14 @@ namespace Drill4Net.Injector.Engine
             [NotNull] MainOptions opts, [NotNull] InjectedSolution tree)
         {
             //files
-            var files = IoHelper.GetAssemblies(directory, _searchOpts);
+            var files = _rep.GetAssemblies(directory);
             foreach (var file in files)
             {
                 ProcessAssembly(file, versions, opts, tree);
             }
 
             //subdirectories
-            var dirs = Directory.GetDirectories(directory, "*", _searchOpts);
+            var dirs = Directory.GetDirectories(directory, "*");
             foreach (var dir in dirs)
             {
                 ProcessDirectory(dir, versions, opts, tree);
@@ -101,7 +98,7 @@ namespace Drill4Net.Injector.Engine
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException($"Source directory not exists: [{directory}]");
-            var files = IoHelper.GetAssemblies(directory, _searchOpts);
+            var files = _rep.GetAssemblies(directory);
             var versions = new Dictionary<string, AssemblyVersion>();
             //'exe' must be after 'dll'
             foreach (var file in files.OrderBy(a => a))
@@ -116,27 +113,28 @@ namespace Drill4Net.Injector.Engine
                     versions.Add(file, version);
                     continue;
                 }
-                version = GetAssemblyVersion(file);
+                version = _rep.GetAssemblyVersion(file);
                 versions.Add(file, version);
                 //
                 if (_isNetCore.Value == null)
                 {
-                    if (version.Target == AssemblyVersionType.NetCore)
+                    switch (version.Target)
                     {
-                        _mainVersion.Value = version;
-                        _isNetCore.Value = true;
-                    }
-                    if (version.Target == AssemblyVersionType.NetFramework)
-                    {
-                        _mainVersion.Value = version;
-                        _isNetCore.Value = false;
+                        case AssemblyVersionType.NetCore:
+                            _mainVersion.Value = version;
+                            _isNetCore.Value = true;
+                            break;
+                        case AssemblyVersionType.NetFramework:
+                            _mainVersion.Value = version;
+                            _isNetCore.Value = false;
+                            break;
                     }
                 }
             }
             return versions;
         }
 
-        internal void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, 
+        private void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, 
             AssemblyVersion> versions, [NotNull] MainOptions opts, [NotNull] InjectedSolution tree)
         {
             #region Reading
@@ -154,13 +152,13 @@ namespace Drill4Net.Injector.Engine
             var subjectName = Path.GetFileNameWithoutExtension(filePath);
 
             //destinaton
-            string destDir = GetDestinationDirectory(opts, sourceDir);
+            var destDir = _rep.GetDestinationDirectory(opts, sourceDir);
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
 
             //must process?
             var ext = Path.GetExtension(filePath);
-            var version = versions.ContainsKey(filePath) ? versions[filePath] : GetAssemblyVersion(filePath);
+            var version = versions.ContainsKey(filePath) ? versions[filePath] : _rep.GetAssemblyVersion(filePath);
             if (ext == ".exe" && version.Target == AssemblyVersionType.NetCore)
                 return;
 
@@ -194,7 +192,7 @@ namespace Drill4Net.Injector.Engine
             #endregion
 
             // read subject assembly with symbols
-            using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
+            using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
 
             #region Tree
@@ -700,7 +698,7 @@ namespace Drill4Net.Injector.Engine
             assembly.Dispose();
             #endregion
 
-            Console.WriteLine($"Modified assembly is created: {modifiedPath}");
+            Log.Information($"Modified assembly is created: {modifiedPath}");
 
             #region Local functions
 
@@ -942,20 +940,6 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal string GetDestinationDirectory(MainOptions opts, string sourceDir)
-        {
-            string destDir;
-            if (IoHelper.IsSameDirectories(sourceDir, opts.Source.Directory))
-            {
-                destDir = opts.Destination.Directory;
-            }
-            else
-            {
-                destDir = Path.Combine(opts.Destination.Directory, sourceDir.Remove(0, opts.Source.Directory.Length));
-            }
-            return destDir;
-        }
-
         internal MethodType GetMethodType(MethodDefinition def)
         {
             string methodFullName = def.FullName;
@@ -989,32 +973,6 @@ namespace Drill4Net.Injector.Engine
         internal bool IsSpecialGeneratedMethod(MethodType type)
         {
             return type == MethodType.EventAdd || type == MethodType.EventRemove;
-        }
-
-        internal void CopySource([NotNull] string sourcePath, [NotNull] string destPath)
-        {
-            if (Directory.Exists(destPath))
-                Directory.Delete(destPath, true);
-            Directory.CreateDirectory(destPath);
-            IoHelper.DirectoryCopy(sourcePath, destPath);
-        }
-
-        internal AssemblyVersion GetAssemblyVersion([NotNull] string filePath)
-        {
-            var asmName = AssemblyName.GetAssemblyName(filePath);
-            if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
-                return new AssemblyVersion() { Target = AssemblyVersionType.NotIL };
-            if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
-            {
-                //log: is strong name!
-                return new AssemblyVersion() { IsStrongName = true };
-            }
-            var asm = Assembly.LoadFrom(filePath);
-            var versionAttr = asm.CustomAttributes
-                .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
-            var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
-            var version = new AssemblyVersion(versionS);
-            return version;
         }
 
         internal List<MethodDefinition> GetAllMethods([NotNull] InjectedType treeParentClass, [NotNull] TypeDefinition type, 

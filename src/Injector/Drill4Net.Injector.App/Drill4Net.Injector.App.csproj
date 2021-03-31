@@ -12,6 +12,10 @@
     <DocumentationFile>..\..\..\doc\xml\Drill4Net.Injector.App\Drill4Net.Injector.App.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Injector.App</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="cfg.yml" />
   </ItemGroup>
@@ -24,6 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.11.3" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>

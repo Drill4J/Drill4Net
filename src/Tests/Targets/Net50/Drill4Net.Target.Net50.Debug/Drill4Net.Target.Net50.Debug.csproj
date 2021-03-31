@@ -12,6 +12,10 @@
     <DocumentationFile>..\..\..\..\..\doc\xml\Tests\Drill4Net.Target.Net50.Debug\Drill4Net.Target.Net50.Debug.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Net50.Debug</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
     <ProjectReference Include="..\Drill4Net.Target.Net50\Drill4Net.Target.Net50.csproj" />

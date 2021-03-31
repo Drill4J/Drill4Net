@@ -9,4 +9,8 @@
     <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Abstract</OutputPath>
+  </PropertyGroup>
+
 </Project>

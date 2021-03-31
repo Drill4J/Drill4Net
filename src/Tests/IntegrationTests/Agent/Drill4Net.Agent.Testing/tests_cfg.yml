@@ -1,7 +1,7 @@
 ﻿Target: # some metadata about target
     Name: Test Target #optional injection name
 Source: # what and how processing
-    Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\Drill4Net.Target.Net50.Debug\net5.0\
+    Directory: ..\..\Drill4Net.Target.Net50.Debug\net5.0\
     Filter: # mask for search files, namespaces, classes...
        File: 
        Namespace: 
@@ -11,7 +11,7 @@ Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected.Tests #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
-    Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\Drill4Net.Agent.Testing\netstandard2.1\
+    Directory: ..\..\Drill4Net.Agent.Testing\netstandard2.1\
     AssemblyName: Drill4Net.Agent.Testing.dll
     Namespace: Drill4Net.Agent.Testing
     Class: TesterProfiler

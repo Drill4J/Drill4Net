@@ -10,6 +10,10 @@
     <DocumentationFile>..\..\..\doc\xml\Drill4Net.Injection.Debug\Drill4Net.Injection.Debug.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Injection.Debug</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Injection\Drill4Net.Injection.csproj" />
   </ItemGroup>

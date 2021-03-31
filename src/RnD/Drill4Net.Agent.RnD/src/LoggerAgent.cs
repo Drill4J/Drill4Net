@@ -12,7 +12,7 @@ namespace Drill4Net.Agent.RnD
         {
             Log.Logger = new LoggerConfiguration()
                .MinimumLevel.Debug()
-               .WriteTo.File("log.txt")
+               .WriteTo.File("agent_log.txt")
                .CreateLogger();
         }
 

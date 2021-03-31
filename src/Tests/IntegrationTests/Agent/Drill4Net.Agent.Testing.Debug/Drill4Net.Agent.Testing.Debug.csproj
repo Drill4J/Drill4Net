@@ -10,6 +10,10 @@
     <DocumentationFile>..\..\..\..\..\doc\xml\Tests\Drill4Net.Agent.Testing.Debug\Drill4Net.Agent.Testing.Debug.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Agent.Testing.Debug</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj" />
   </ItemGroup>

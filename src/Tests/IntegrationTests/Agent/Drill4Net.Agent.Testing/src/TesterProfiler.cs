@@ -12,9 +12,7 @@ namespace Drill4Net.Agent.Testing
 {
     public class TesterProfiler : AbsractAgent
     {
-        public static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
-        public static readonly ConcurrentDictionary<int, string> _lastFuncByCtx;
-
+        private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly InjectedSolution _tree;
         private static readonly Dictionary<string, InjectedSimpleEntity> _pointMap;
         private static readonly Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
@@ -24,7 +22,6 @@ namespace Drill4Net.Agent.Testing
         static TesterProfiler()
         {
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
-            _lastFuncByCtx = new ConcurrentDictionary<int, string>();
 
             //rep
             var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -43,6 +40,7 @@ namespace Drill4Net.Agent.Testing
 
         /*****************************************************************************/
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public static void RegisterStatic(string data)
         {
             try
@@ -97,7 +95,7 @@ namespace Drill4Net.Agent.Testing
 
         public static List<string> GetPoints(string asmName, string funcSig, bool withPointRemoving = false)
         {
-            Dictionary<string, List<string>> byFunctions = GetFunctions(!withPointRemoving);
+            var byFunctions = GetFunctions(!withPointRemoving);
             List<string> points;
             var funcPath = $"{asmName};{funcSig}";
             if (byFunctions.ContainsKey(funcPath))
@@ -120,11 +118,10 @@ namespace Drill4Net.Agent.Testing
             var all = new List<string>();
             foreach (var funcs in _clientPoints.Values)
             {
-                if (funcs.ContainsKey(funcSig))
-                {
-                    all.AddRange(funcs[funcSig]);
-                    funcs.Remove(funcSig);
-                }
+                if (!funcs.ContainsKey(funcSig)) 
+                    continue;
+                all.AddRange(funcs[funcSig]);
+                funcs.Remove(funcSig);
             }
             return all;
         }
@@ -152,8 +149,12 @@ namespace Drill4Net.Agent.Testing
 
         internal static string GetBusinessMethodName(string probeUid)
         {
-            var point = _pointMap[probeUid] as CrossPoint;
-            var method = _parentMap[point] as InjectedMethod;
+            if (!_pointMap.ContainsKey(probeUid))
+                return null;
+            if (!(_pointMap[probeUid] is CrossPoint point))
+                return null;
+            if (!(_parentMap[point] is InjectedMethod method))
+                return null;
             return method.FromMethod ?? method.Fullname;
         }
     }

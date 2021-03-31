@@ -10,6 +10,10 @@
     <DocumentationFile>..\..\..\doc\xml\Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Injector.Engine</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="src\cfg.yml" />
   </ItemGroup>
