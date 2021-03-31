@@ -30,9 +30,9 @@ namespace Drill4Net.Target.NetCore.Tests
         [OneTimeSetUp]
         public void SetupClass()
         {
-            var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var dirName = InjectorRepository.GetExecutionDir();
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-            _rep = new InjectorRepository(cfg_path);
+            _rep = new InjectorRepository(cfg_path, true);
             _opts = _rep.Options;
 
             //this is done on the post-build event of the Injector project

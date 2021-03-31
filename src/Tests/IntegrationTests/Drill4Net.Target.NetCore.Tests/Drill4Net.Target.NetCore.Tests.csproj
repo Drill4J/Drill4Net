@@ -29,10 +29,10 @@
 
   <ItemGroup>
     <Reference Include="Drill4Net.Target.Common">
-      <HintPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net50.Debug\net5.0.Injected\Drill4Net.Target.Common.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net50.Debug\net5.0.Injected.Tests\Drill4Net.Target.Common.dll</HintPath>
     </Reference>
     <Reference Include="Drill4Net.Target.Net50">
-      <HintPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net50.Debug\net5.0.Injected\Drill4Net.Target.Net50.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net50.Debug\net5.0.Injected.Tests\Drill4Net.Target.Net50.dll</HintPath>
     </Reference>
   </ItemGroup>
 

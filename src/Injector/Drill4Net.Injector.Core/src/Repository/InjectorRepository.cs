@@ -12,6 +12,7 @@ namespace Drill4Net.Injector.Core
     {
         public MainOptions Options { get; set; }
 
+        private readonly string _baseDir;
         private readonly string _defCfgPath;
         private readonly Deserializer _deser;
 
@@ -22,11 +23,17 @@ namespace Drill4Net.Injector.Core
         {
         }
 
-        public InjectorRepository(string cfgPath)
+        public InjectorRepository(string cfgPath, bool isTestEngine = false)
         {
             if (!File.Exists(cfgPath))
                 throw new FileNotFoundException($"Config not found: {cfgPath}");
             _defCfgPath = cfgPath;
+
+            //for posibility of relative pathes in misc executables (Test Engine, VS' post-build events,
+            //RnD project - which may located on misc levels of directories)
+            _baseDir = isTestEngine ? 
+                Path.GetFullPath(Path.Combine(Path.GetDirectoryName(cfgPath), "..\\")) :
+                GetExecutionDir();
             _deser = new Deserializer();
             Options = GenerateOptions();
         }
@@ -63,10 +70,7 @@ namespace Drill4Net.Injector.Core
             if (string.IsNullOrWhiteSpace(path))
                 return path;
             if (!Path.IsPathRooted(path))
-            {
-                var curDir = GetExecutionDir();
-                path = Path.GetFullPath(Path.Combine(curDir, path));
-            }
+                path = Path.GetFullPath(Path.Combine(_baseDir, path));
             return path;
         }
 
@@ -148,8 +152,6 @@ namespace Drill4Net.Injector.Core
 
         internal MainOptions ClarifyOptions(string[] args)
         {
-            Log.Debug("Arguments: {@Args}", args);
-
             var cfgPath = GetCurrentConfigPath(args);
             var cfg = ReadOptions(cfgPath);
             ClarifySourceDirectory(args, cfg);
@@ -298,7 +300,7 @@ namespace Drill4Net.Injector.Core
 
         public string GetLogPath()
         {
-            return Path.Combine(GetExecutionDir(), "log.txt");
+            return Path.Combine(GetExecutionDir(), "logs", "log.txt");
         }
         #endregion
     }

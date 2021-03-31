@@ -55,6 +55,7 @@ namespace Drill4Net.Injector.Engine
 
         public InjectedSolution Process([NotNull] MainOptions opts)
         {
+            Log.Information("Process starting...");
             _rep.ValidateOptions(opts);
 
             var sourceDir = opts.Source.Directory;

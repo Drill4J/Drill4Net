@@ -26,7 +26,7 @@ namespace Drill4Net.Agent.Testing
             //rep
             var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-            var rep = new InjectorRepository(cfg_path);
+            var rep = new InjectorRepository(cfg_path, true);
             var opts = rep.Options;
 
             //tree info

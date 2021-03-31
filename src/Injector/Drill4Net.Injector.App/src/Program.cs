@@ -18,12 +18,14 @@ namespace Drill4Net.Injector.App
 
                 rep = new InjectorRepository(args);
                 rep.PrepareLogger();
+                Log.Debug("Arguments: {@Args}", args);
                 Log.Debug("Options: {@Options}", rep.Options);
 
                 var injector = new InjectorEngine(rep);
                 injector.Process();
 
                 Log.Information("Injection is done.");
+                Log.Verbose("");
             }
             catch (Exception ex)
             {
