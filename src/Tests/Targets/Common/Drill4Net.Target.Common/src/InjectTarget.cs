@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Drill4Net.Target.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Target.Common
 {
-    public class InjectTarget
+    public class InjectTarget : IInjectTarget
     {
         public async Task RunTests()
         {

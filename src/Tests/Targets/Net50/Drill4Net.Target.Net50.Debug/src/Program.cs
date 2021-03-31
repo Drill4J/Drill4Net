@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Drill4Net.Target.Interfaces;
 
 namespace Drill4Net.Target.Net50.Debug
 {
@@ -18,22 +19,20 @@ namespace Drill4Net.Target.Net50.Debug
         {
             try
             {
-                var targetCommon = new Common.InjectTarget();
-                PrintInfo(targetCommon);
-                await targetCommon.RunTests();
-
-                var target50 = new InjectTarget();
-                PrintInfo(target50);
-                await target50.RunTests();
-
-                var target31 = new Core31.InjectTarget();
-                PrintInfo(target31);
-                await target31.RunTests();
+                await Start(new Common.InjectTarget());
+                await Start(new Net50.InjectTarget());
+                await Start(new Core31.InjectTarget());
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        private static async Task Start(IInjectTarget target)
+        {
+            PrintInfo(target);
+            await target.RunTests();
         }
 
         private static void PrintInfo([NotNull]object obj)

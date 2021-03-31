@@ -14,4 +14,8 @@
     <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Net50</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Drill4Net.Target.Interfaces\Drill4Net.Target.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>

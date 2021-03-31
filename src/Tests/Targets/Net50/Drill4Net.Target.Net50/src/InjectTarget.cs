@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Drill4Net.Target.Interfaces;
 
 [assembly: InternalsVisibleTo("Drill4Net.Target.NetCore.Tests")]
 
 namespace Drill4Net.Target.Net50
 {
-    public class InjectTarget
+    public class InjectTarget : IInjectTarget
     {
         public async Task RunTests()
         {

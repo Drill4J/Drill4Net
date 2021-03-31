@@ -22,4 +22,8 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Target.Interfaces\Drill4Net.Target.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>
