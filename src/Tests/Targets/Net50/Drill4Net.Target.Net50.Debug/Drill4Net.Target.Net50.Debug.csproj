@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
+    <ProjectReference Include="..\..\Core31\Drill4Net.Target.Core31\Drill4Net.Target.Core31.csproj" />
     <ProjectReference Include="..\Drill4Net.Target.Net50\Drill4Net.Target.Net50.csproj" />
   </ItemGroup>
 

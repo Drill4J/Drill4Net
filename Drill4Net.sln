@@ -65,6 +65,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core31", "Core31", "{99B7AB57-6767-42A0-A2F7-9BB539BFC547}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Core31", "src\Tests\Targets\Core31\Drill4Net.Target.Core31\Drill4Net.Target.Core31.csproj", "{A4E60C53-DCA1-414B-8235-D2A83792A655}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +135,10 @@ Global
 		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4E60C53-DCA1-414B-8235-D2A83792A655}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4E60C53-DCA1-414B-8235-D2A83792A655}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4E60C53-DCA1-414B-8235-D2A83792A655}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4E60C53-DCA1-414B-8235-D2A83792A655}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +166,8 @@ Global
 		{E28213A1-824A-46D1-A429-861A65D28E54} = {FA69B589-117C-4E05-9F95-914965C37D71}
 		{1E4C1FE4-C8D5-4B77-B4F1-A732628FDA82} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
 		{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A} = {FA69B589-117C-4E05-9F95-914965C37D71}
+		{99B7AB57-6767-42A0-A2F7-9BB539BFC547} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
+		{A4E60C53-DCA1-414B-8235-D2A83792A655} = {99B7AB57-6767-42A0-A2F7-9BB539BFC547}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

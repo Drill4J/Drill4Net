@@ -10,8 +10,6 @@ namespace Drill4Net.Target.Net50
     {
         public async Task RunTests()
         {
-            Console.WriteLine($"\n*** {typeof(InjectTarget).FullName} ***\n");
-
             #region Switch
             Switch_Relational(-5);
             Switch_Relational(5);

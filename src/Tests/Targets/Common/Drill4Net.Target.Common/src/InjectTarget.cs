@@ -17,8 +17,6 @@ namespace Drill4Net.Target.Common
     {
         public async Task RunTests()
         {
-            Console.WriteLine($"\n*** {typeof(InjectTarget).FullName} ***\n");
-
             #region If/Else
             IfElse_Half(false);
             IfElse_Half(true);

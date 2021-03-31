@@ -20,9 +20,7 @@ namespace Drill4Net.Target.NetCore.Tests
     {
         private IInjectorRepository _rep;
         private MainOptions _opts;
-
         private object _targetCommon;
-        private object _target50;
 
         private Dictionary<string, InjectedSimpleEntity> _pointMap;
         private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
@@ -43,12 +41,12 @@ namespace Drill4Net.Target.NetCore.Tests
             //injector.Process();
 
             //target assemblies
-            var targetDir = _opts.Destination.Directory;
-            var asms = _opts.Tests.Assemblies;
-            _targetCommon = LoadTarget(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
-            _target50 = LoadTarget(asms, targetDir, TestConstants.ASSEMBLY_NET5);
+            //var asms = _opts.Tests.Assemblies;
+            _targetCommon = SourceData.TargetCommon; // LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
+            //LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_NET5);
 
             //tree info for targerPath
+            var targetDir = _opts.Destination.Directory;
             LoadTreeData(targetDir);
         }
 
@@ -178,7 +176,7 @@ namespace Drill4Net.Target.NetCore.Tests
         }
 
         #region Auxiliary funcs
-        private object LoadTarget([NotNull]Dictionary<string, List<string>> assemblies, [NotNull] string targetDir,
+        private object LoadTargetIntoMemory([NotNull]Dictionary<string, List<string>> assemblies, [NotNull] string targetDir,
             [NotNull] string assemblyName, [NotNull] string className = TestConstants.CLASS_DEFAULT)
         {
             if (!assemblies.ContainsKey(assemblyName))
