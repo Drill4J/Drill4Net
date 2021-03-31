@@ -28,8 +28,4 @@ Probes: # types of cross-cutting points
     Setter: false
     EventAdd: false
     EventRemove: false
-Tests: # what will tested
-    AssemblyName: Drill4Net.Target.Common.dll
-    Namespace: Drill4Net.Target.Common
-    Class: InjectTarget
 Silent: true #no wait, no questions...

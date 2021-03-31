@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Testing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Drill4Net.Target.NetCore.Tests
 {
@@ -19,8 +20,10 @@ namespace Drill4Net.Target.NetCore.Tests
     {
         private IInjectorRepository _rep;
         private MainOptions _opts;
-        private Type _type;
-        private object _target;
+
+        private object _targetCommon;
+        private object _target50;
+
         private Dictionary<string, InjectedSimpleEntity> _pointMap;
         private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private InjectedSolution _tree;
@@ -39,34 +42,29 @@ namespace Drill4Net.Target.NetCore.Tests
             //var injector = new InjectorEngine(_rep);
             //injector.Process();
 
-            //target assembly
+            //target assemblies
             var targetDir = _opts.Destination.Directory;
-            var targerPath = Path.Combine(targetDir, _opts.Tests.AssemblyName);
-            if (!File.Exists(targerPath))
-                Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
-            var asm = Assembly.LoadFrom(targerPath);
-            _type = asm.GetType($"{_opts.Tests.Namespace}.{_opts.Tests.Class}");
-            _target = Activator.CreateInstance(_type);
+            var asms = _opts.Tests.Assemblies;
+            _targetCommon = LoadTarget(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
+            _target50 = LoadTarget(asms, targetDir, TestConstants.ASSEMBLY_NET5);
 
             //tree info for targerPath
-            var treeHintPath = _rep.GetTreeFileHintPath(targetDir);
-            var treePath = File.ReadAllText(treeHintPath);
-            _tree = _rep.ReadInjectedTree(treePath);
-            _parentMap = _tree.CalcParentMap();
-            _pointMap = _tree.CalcPointMap(_parentMap);
+            LoadTreeData(targetDir);
         }
 
         /****************************************************************************/
 
         [TestCaseSource(typeof(SourceData), "Simple")]
-        public void Simple_Ok(MethodInfo mi, object[] args, List<string> checks)
+        public void Simple_Ok(object target, MethodInfo mi, object[] args, List<string> checks)
         {
             Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
+            if (target == null)
+                target = _targetCommon;
 
             #region Act
             try
             {
-                mi.Invoke(_target, args);
+                mi.Invoke(target, args);
             }
             catch(Exception ex) //it's normal for business throws
             {
@@ -79,7 +77,7 @@ namespace Drill4Net.Target.NetCore.Tests
             Assert.IsTrue(funcs.Count == 1);
 
             var sig = GetFullSignature(mi);
-            var source = SourceData.GetSourceFromFullSig(sig);
+            var source = SourceData.GetSourceFromFullSig(sig, target);
             Assert.True(funcs.ContainsKey(source));
             var links = funcs[source];
 
@@ -90,7 +88,7 @@ namespace Drill4Net.Target.NetCore.Tests
         }
 
         [TestCaseSource(typeof(SourceData), "ParentChild")]
-        public void Parent_Child_Ok(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
+        public void Parent_Child_Ok(object target, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
             #region Arrange
             Assert.IsTrue(inputs?.Length > 0, "Method inputs is empty");
@@ -98,18 +96,20 @@ namespace Drill4Net.Target.NetCore.Tests
             var mi = parentData.Info;
             if(string.IsNullOrWhiteSpace(parentData.Signature))
                 Assert.NotNull(mi, $"Parent method info is empty");
+            if (target == null)
+                target = _targetCommon;
             #endregion
             #region Act
             try
             {
                 if (isAsync)
                 {
-                    var task = mi.Invoke(_target, args) as Task;
+                    var task = mi.Invoke(target, args) as Task;
                     task.Wait();
                 }
                 else
                 {
-                    mi.Invoke(_target, args);
+                    mi.Invoke(_targetCommon, args);
                 }
             }
             catch{} //it's normal for business exceptions, not set here Assert.Fail
@@ -135,7 +135,7 @@ namespace Drill4Net.Target.NetCore.Tests
                 {
                     var data = inputs[i];
                     var source = string.IsNullOrWhiteSpace(data.Signature) ?
-                        SourceData.GetSourceFromFullSig(GetFullSignature(data.Info)) :
+                        SourceData.GetSourceFromFullSig(GetFullSignature(data.Info), target) :
                         data.Signature;
                     Assert.True(funcs.ContainsKey(source));
                     var points = funcs[source];
@@ -178,6 +178,33 @@ namespace Drill4Net.Target.NetCore.Tests
         }
 
         #region Auxiliary funcs
+        private object LoadTarget([NotNull]Dictionary<string, List<string>> assemblies, [NotNull] string targetDir,
+            [NotNull] string assemblyName, [NotNull] string className = TestConstants.CLASS_DEFAULT)
+        {
+            if (!assemblies.ContainsKey(assemblyName))
+                throw new ArgumentException($"Assembly [{assemblyName}] not found in config data");
+            var asmData = assemblies[assemblyName];
+            var classFullName = asmData.FirstOrDefault(a => a.EndsWith($".{className}", StringComparison.InvariantCultureIgnoreCase));
+            if (classFullName == null)
+                throw new ArgumentException($"Class [{className}] not found for assembly [{assemblyName}] in config");
+            //
+            var targerPath = Path.Combine(targetDir, assemblyName);
+            if (!File.Exists(targerPath))
+                Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
+            var asm = Assembly.LoadFrom(targerPath);
+            var type = asm.GetType(classFullName);
+            return Activator.CreateInstance(type);
+        }
+
+        private void LoadTreeData(string targetDir)
+        {
+            var treeHintPath = _rep.GetTreeFileHintPath(targetDir);
+            var treePath = File.ReadAllText(treeHintPath);
+            _tree = _rep.ReadInjectedTree(treePath);
+            _parentMap = _tree.CalcParentMap();
+            _pointMap = _tree.CalcPointMap(_parentMap);
+        }
+
         private void CheckEnterAndLastReturnOrThrow(List<PointLinkage> links)
         {
             var probes = links.Select(a => a.Probe);
@@ -295,19 +322,6 @@ namespace Drill4Net.Target.NetCore.Tests
                 if (links[i].Probe != checks[i])
                     Assert.Fail();
             }
-        }
-
-        private List<string> GetPoints(string shortSig)
-        {
-            var funcSig = SourceData.GetFullSignature(shortSig);
-            var asmName = SourceData.GetModuleName();
-            return TesterProfiler.GetPoints(asmName, funcSig, false);
-        }
-
-        private MethodInfo GetMethodInfo(string shortSig)
-        {
-            var name = SourceData.GetNameFromSig(shortSig);
-            return _type.GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
         }
         #endregion
     }

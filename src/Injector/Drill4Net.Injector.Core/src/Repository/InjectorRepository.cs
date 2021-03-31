@@ -29,8 +29,8 @@ namespace Drill4Net.Injector.Core
                 throw new FileNotFoundException($"Config not found: {cfgPath}");
             _defCfgPath = cfgPath;
 
-            //for posibility of relative pathes in misc executables (Test Engine, VS' post-build events,
-            //RnD project - which may located on misc levels of directories)
+            //for posibility of relative pathes in misc executables: Test Engine, VS' post-build events,
+            //RnD project which may located on misc levels of directories
             _baseDir = isTestEngine ? 
                 Path.GetFullPath(Path.Combine(Path.GetDirectoryName(cfgPath), "..\\")) :
                 GetExecutionDir();
