@@ -31,8 +31,7 @@ namespace Drill4Net.Agent.Testing
 
             //tree info
             var targetDir = opts.Destination.Directory;
-            var treeHintPath = rep.GetTreeFileHintPath(targetDir);
-            var treePath = File.ReadAllText(treeHintPath);
+            var treePath = rep.GenerateTreeFilePath(targetDir);
             _tree = rep.ReadInjectedTree(treePath);
             _parentMap = _tree.CalcParentMap();
             _pointMap = _tree.CalcPointMap(_parentMap);

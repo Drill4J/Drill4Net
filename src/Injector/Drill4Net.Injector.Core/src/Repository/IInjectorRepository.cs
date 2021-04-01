@@ -26,5 +26,6 @@ namespace Drill4Net.Injector.Core
         void WriteInjectedTree(string path, InjectedSolution tree);
         string GetTreeFilePath(InjectedSolution tree);
         string GetTreeFileHintPath(string path);
+        string GenerateTreeFilePath(string targetDir);
     }
 }

@@ -1,4 +1,5 @@
-﻿Target: # some metadata about target
+﻿Description: For testing Agent
+Target: # some metadata about target
     Name: Test Target #optional injection name
 Source: # what and how processing
     Directory: ..\..\TargetApps\

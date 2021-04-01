@@ -46,7 +46,10 @@ namespace Drill4Net.Target.NetCore.Tests
             //LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_NET5);
 
             //tree info for targerPath
-            var targetDir =  _opts.Tests.Directory;
+            var baseDir = _opts.Tests.Directory;
+            if (baseDir.EndsWith("\\"))
+                baseDir = baseDir.Remove(baseDir.Length - 1, 1);
+            var targetDir = $"{baseDir}.{_opts.Destination.FolderPostfix}";
             LoadTreeData(targetDir);
         }
 

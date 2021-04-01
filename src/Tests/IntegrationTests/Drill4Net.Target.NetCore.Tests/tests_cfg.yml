@@ -1,7 +1,8 @@
-﻿Target: # some metadata about target
+﻿Description: Engine for integration tests
+Target: # some metadata about target
     Name: Test Target #optional injection name
 Source: # what and how processing
-    Directory: ..\..\Tests\TargetApps\
+    Directory: ..\..\TargetApps\
     Filter: # mask for search files, namespaces, classes...
        File: 
        Namespace: 

@@ -16,5 +16,7 @@
         public TestsOptions Tests { get; set; }
 
         public bool Silent { get; set; }
+
+        public string Description { get; set; }
     }
 }

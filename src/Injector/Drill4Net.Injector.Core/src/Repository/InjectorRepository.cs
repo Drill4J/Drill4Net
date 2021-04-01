@@ -305,7 +305,12 @@ namespace Drill4Net.Injector.Core
 
         public string GetTreeFilePath(InjectedSolution tree)
         {
-            return Path.Combine(tree.DestinationPath, CoreConstants.TREE_FILE_NAME);
+            return GenerateTreeFilePath(tree.DestinationPath);
+        }
+
+        public string GenerateTreeFilePath(string targetDir)
+        {
+            return Path.Combine(targetDir, CoreConstants.TREE_FILE_NAME);
         }
 
         public string GetTreeFileHintPath(string targetDir)
