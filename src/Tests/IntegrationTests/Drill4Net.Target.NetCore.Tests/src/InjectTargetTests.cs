@@ -42,7 +42,7 @@ namespace Drill4Net.Target.NetCore.Tests
 
             //target assemblies
             //var asms = _opts.Tests.Assemblies;
-            //_targetCommon = SourceData_Common.TargetCommon; // LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
+            _targetCommon = SourceData_Common.TargetCommon; // LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
             //LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_NET5);
 
             //tree info for targerPath
@@ -59,15 +59,21 @@ namespace Drill4Net.Target.NetCore.Tests
         public void Simple_Ok(object target, MethodInfo mi, object[] args, List<string> checks)
         {
             Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
-            if (target == null)
-                target = _targetCommon;
 
             #region Act
             try
             {
                 mi.Invoke(target, args);
             }
-            catch(Exception ex) //it's normal for business throws
+            catch (FileNotFoundException fex)
+            {
+                Assert.Fail(fex.Message);
+            }
+            catch (TargetException tex)
+            {
+                Assert.Fail(tex.Message);
+            }
+            catch (Exception ex) //it's normal for business throws
             {
                 if (!checks.Any(a => a.Contains("Throw")))
                     Assert.Fail(ex.Message);
@@ -97,8 +103,6 @@ namespace Drill4Net.Target.NetCore.Tests
             var mi = parentData.Info;
             if(string.IsNullOrWhiteSpace(parentData.Signature))
                 Assert.NotNull(mi, $"Parent method info is empty");
-            if (target == null)
-                target = _targetCommon;
             #endregion
             #region Act
             try
@@ -110,10 +114,22 @@ namespace Drill4Net.Target.NetCore.Tests
                 }
                 else
                 {
-                    mi.Invoke(_targetCommon, args);
+                    mi.Invoke(target, args);
                 }
             }
-            catch{} //it's normal for business exceptions, not set here Assert.Fail
+            catch (FileNotFoundException fex)
+            {
+                Assert.Fail(fex.Message);
+            }
+            catch (TargetException tex) 
+            {
+                Assert.Fail(tex.Message);
+            }
+            catch (Exception ex) //it's normal for business throws
+            {
+                //if (!inputs.Select(a => a.Checks).Any(a => a.Contains("Throw")))
+                    //Assert.Fail(ex.Message);
+            }
             #endregion
             #region Assert
             var funcs = GetFunctions();

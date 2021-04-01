@@ -15,7 +15,7 @@ namespace Drill4Net.Target.NetCore.Tests
         private const string CATEGORY_MISC = "Misc";
         #endregion
         #region FIELDs
-        private static readonly InjectTarget _targetCommon;
+        public static InjectTarget TargetCommon { get; }
 
         private static readonly GenStr _genStr;
         private static readonly Point _point;
@@ -27,7 +27,10 @@ namespace Drill4Net.Target.NetCore.Tests
 
         static SourceData_Common()
         {
-            _targetCommon = new InjectTarget();
+            TargetCommon = new InjectTarget();
+            var t = TargetCommon.GetType();
+            var asmLocation = t.Assembly.Location;
+            //
             _genStr = new GenStr("");
             _point = new Point();
             _eventer = new Eventer();
@@ -40,7 +43,7 @@ namespace Drill4Net.Target.NetCore.Tests
         {
             get 
             {
-                var a = GetSimple(_targetCommon).ToList();
+                var a = GetSimple(TargetCommon).ToList();
                 //var b = GetSimple(_target31).ToList();
                 //a.AddRange(b);
                 return a;
@@ -213,7 +216,7 @@ namespace Drill4Net.Target.NetCore.Tests
         {
             get
             {
-                var a = GetParentChild(_targetCommon).ToList();
+                var a = GetParentChild(TargetCommon).ToList();
                 //var b = GetParentChild(_target31).ToList();
                 //a.AddRange(b);
                 return a;
@@ -304,18 +307,18 @@ namespace Drill4Net.Target.NetCore.Tests
                 yield return GetCase(target, new object[] { false }, true, true, new TestInfo(GetInfo(target.Disposable_Using_AsyncTask), new List<string>()));
                 yield return GetCase(target, new object[] { true }, true, true, new TestInfo(GetInfo(target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
-                yield return GetCase(target, Array.Empty<object>(), new TestInfo(GetInfo(target.Disposable_Using_Last_Exception), new List<string> { "Throw_10" }));
+                yield return GetCase(target, Array.Empty<object>(), new TestInfo(GetInfo(target.Disposable_Using_Last_Exception), new List<string> { "Throw_11" })); //in net50 was "Throw_10"
 
-                yield return GetCase(target, new object[] { false }, new TestInfo(GetInfo(target.Disposable_Using_Exception), new List<string>()));
-                yield return GetCase(target, new object[] { true }, new TestInfo(GetInfo(target.Disposable_Using_Exception), new List<string> { "If_15", "Throw_20" }));
+            yield return GetCase(target, new object[] { false }, new TestInfo(GetInfo(target.Disposable_Using_Exception), new List<string>()));
+                yield return GetCase(target, new object[] { true }, new TestInfo(GetInfo(target.Disposable_Using_Exception), new List<string> { "If_16", "Throw_21" })); //in net50 was "If_15", "Throw_20"
 
-                //class::Finalize() is the thing-in-itself
-                yield return GetCase(target, new object[] { (ushort)17 }, true,
+            //class::Finalize() is the thing-in-itself
+            yield return GetCase(target, new object[] { (ushort)17 }, true,
                     new TestInfo(GetInfo(target.Disposable_Finalizer), new List<string>()), 
-                    new TestInfo(GetSourceFromFullSig(target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_31", "If_8" }, true));
+                    new TestInfo(GetSourceFromFullSig(target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_10", "If_33" }, true)); //in net5 was "If_31", "If_8"
 
-                //still not work togeteher with previous call
-                yield return GetCase(target, new object[] { (ushort)18 }, true,
+            //still not work togeteher with previous call
+            yield return GetCase(target, new object[] { (ushort)18 }, true,
                     new TestInfo(GetInfo(target.Disposable_Finalizer), new List<string>()),
                     new TestInfo(GetSourceFromFullSig(target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(TestConstants.INFLUENCE);
                 #endregion
