@@ -15,8 +15,7 @@ namespace Drill4Net.Target.NetCore.Tests
         private const string CATEGORY_MISC = "Misc";
         #endregion
         #region FIELDs
-        private static readonly Common.InjectTarget _targetCommon;
-        private static readonly Net50.InjectTarget _target31;
+        private static readonly InjectTarget _targetCommon;
 
         private static readonly GenStr _genStr;
         private static readonly Point _point;
@@ -29,8 +28,6 @@ namespace Drill4Net.Target.NetCore.Tests
         static SourceData_Common()
         {
             _targetCommon = new InjectTarget();
-            _target31 = new Core31.InjectTarget();
-
             _genStr = new GenStr("");
             _point = new Point();
             _eventer = new Eventer();
@@ -44,13 +41,13 @@ namespace Drill4Net.Target.NetCore.Tests
             get 
             {
                 var a = GetSimple(_targetCommon).ToList();
-                var b = GetSimple(_target31).ToList();
-                a.AddRange(b);
+                //var b = GetSimple(_target31).ToList();
+                //a.AddRange(b);
                 return a;
             }
         }
 
-        private static IEnumerable<TestCaseData> GetSimple(IInjectTarget target)
+        private static IEnumerable<TestCaseData> GetSimple(InjectTarget target)
         {
             //get
             //{
@@ -217,8 +214,8 @@ namespace Drill4Net.Target.NetCore.Tests
             get
             {
                 var a = GetParentChild(_targetCommon).ToList();
-                var b = GetParentChild(_target31).ToList();
-                a.AddRange(b);
+                //var b = GetParentChild(_target31).ToList();
+                //a.AddRange(b);
                 return a;
             }
         }
@@ -248,11 +245,11 @@ namespace Drill4Net.Target.NetCore.Tests
                 #region Async/await
                 yield return GetCase(target, Array.Empty<object>(), true, true, 
                     new TestInfo(GetInfo(target.Async_Stream), new List<string> { "If_54" }), 
-                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceAsync()"), false, new List<string> { "Else_24", "Else_24", "Else_24", "If_36", "If_36" }, true));
+                    new TestInfo(GetSourceFromFullSig(target, "System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceAsync()"), false, new List<string> { "Else_24", "Else_24", "Else_24", "If_36", "If_36" }, true));
 
                 yield return GetCase(target, Array.Empty<object>(), true, true,
                     new TestInfo(GetInfo(target.Async_Stream_Cancellation), new List<string> { "If_76" }),
-                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceWithCancellationAsync(System.Threading.CancellationToken)"), false, new List<string> { "Else_24", "Else_24", "Else_24" }, true));
+                    new TestInfo(GetSourceFromFullSig(target, "System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceWithCancellationAsync(System.Threading.CancellationToken)"), false, new List<string> { "Else_24", "Else_24", "Else_24" }, true));
 
                 yield return GetCase(target, new object[] { false }, new TestInfo(GetInfo(target.Async_Task), new List<string> { "Else_59" }), new TestInfo(GetInfo(target.Delay100), new List<string>()));
                 yield return GetCase(target, new object[] { true }, new TestInfo(GetInfo(target.Async_Task), new List<string> { "If_17" }));
@@ -289,13 +286,13 @@ namespace Drill4Net.Target.NetCore.Tests
                 #region Dynamic
                 yield return GetCase(target, new object[] { false }, 
                     new TestInfo(GetInfo(target.DynamicObject), new List<string> { "Else_2" }),
-                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
-                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
+                    new TestInfo(GetSourceFromFullSig(target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
+                    new TestInfo(GetSourceFromFullSig(target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
                 
                 yield return GetCase(target, new object[] { true }, 
                     new TestInfo(GetInfo(target.DynamicObject), new List<string> { "If_7" }),
-                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
-                    new TestInfo(GetSourceFromFullSig("System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
+                    new TestInfo(GetSourceFromFullSig(target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
+                    new TestInfo(GetSourceFromFullSig(target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
                 #endregion
                 #region Disposable
                 yield return GetCase(target, new object[] { false }, new TestInfo(GetInfo(target.Disposable_Using_SyncRead), new List<string>()));
@@ -315,12 +312,12 @@ namespace Drill4Net.Target.NetCore.Tests
                 //class::Finalize() is the thing-in-itself
                 yield return GetCase(target, new object[] { (ushort)17 }, true,
                     new TestInfo(GetInfo(target.Disposable_Finalizer), new List<string>()), 
-                    new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_31", "If_8" }, true));
+                    new TestInfo(GetSourceFromFullSig(target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_31", "If_8" }, true));
 
                 //still not work togeteher with previous call
                 yield return GetCase(target, new object[] { (ushort)18 }, true,
                     new TestInfo(GetInfo(target.Disposable_Finalizer), new List<string>()),
-                    new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(TestConstants.INFLUENCE);
+                    new TestInfo(GetSourceFromFullSig(target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(TestConstants.INFLUENCE);
                 #endregion
                 #region Misc
                 yield return GetCase(target, new object[] { false }, true, new TestInfo(GetInfo(target.Yield), new List<string>()), new TestInfo(GetInfo(target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
@@ -336,10 +333,10 @@ namespace Drill4Net.Target.NetCore.Tests
 
                 yield return GetCase(target, Array.Empty<object>(), true,
                     new TestInfo(GetInfo(target.Enumerator_Implementation), new List<string> { "Cycle_21", "Cycle_21", "Cycle_21", "Cycle_21" }),
-                    new TestInfo(GetSourceFromFullSig("System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
+                    new TestInfo(GetSourceFromFullSig(target, "System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
                     new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "Else_22", "Else_22", "Else_22", "Else_22", "If_16" }),
-                    new TestInfo(GetSourceFromFullSig("System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false, new List<string> { "Else_6", "Else_6", "Else_6", "Else_6" }),
-                    new TestInfo(GetSourceFromFullSig("System.Void Drill4Net.Target.Common.NotEmptyStringEnumerator::Dispose()"), false, new List<string>()))
+                    new TestInfo(GetSourceFromFullSig(target, "System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false, new List<string> { "Else_6", "Else_6", "Else_6", "Else_6" }),
+                    new TestInfo(GetSourceFromFullSig(target, "System.Void Drill4Net.Target.Common.NotEmptyStringEnumerator::Dispose()"), false, new List<string>()))
                     .SetCategory(CATEGORY_MISC);
 
                 //we dont't take into account local func as separate entity

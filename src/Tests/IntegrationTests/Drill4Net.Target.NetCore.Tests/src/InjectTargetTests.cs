@@ -33,7 +33,7 @@ namespace Drill4Net.Target.NetCore.Tests
         {
             var dirName = InjectorRepository.GetExecutionDir();
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-            _rep = new InjectorRepository(cfg_path, true);
+            _rep = new InjectorRepository(cfg_path);
             _opts = _rep.Options;
 
             //this is done on the post-build event of the Injector project
@@ -75,7 +75,7 @@ namespace Drill4Net.Target.NetCore.Tests
             Assert.IsTrue(funcs.Count == 1);
 
             var sig = GetFullSignature(mi);
-            var source = SourceDataCore.GetSourceFromFullSig(sig, target);
+            var source = SourceDataCore.GetSourceFromFullSig(target, sig);
             Assert.True(funcs.ContainsKey(source));
             var links = funcs[source];
 
@@ -133,7 +133,7 @@ namespace Drill4Net.Target.NetCore.Tests
                 {
                     var data = inputs[i];
                     var source = string.IsNullOrWhiteSpace(data.Signature) ?
-                        SourceDataCore.GetSourceFromFullSig(GetFullSignature(data.Info), target) :
+                        SourceDataCore.GetSourceFromFullSig(target, GetFullSignature(data.Info)) :
                         data.Signature;
                     Assert.True(funcs.ContainsKey(source));
                     var points = funcs[source];
@@ -200,6 +200,8 @@ namespace Drill4Net.Target.NetCore.Tests
         private void LoadTreeData(string targetDir)
         {
             var treeHintPath = _rep.GetTreeFileHintPath(targetDir);
+            if (!File.Exists(treeHintPath))
+                Assert.Fail($"File with hint about tree data not found: {treeHintPath}");
             var treePath = File.ReadAllText(treeHintPath);
             _tree = _rep.ReadInjectedTree(treePath);
             _parentMap = _tree.CalcParentMap();

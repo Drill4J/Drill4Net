@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net45.Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps\Drill4Net.Target.Net45.App\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Net45.Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\TargetApps\Drill4Net.Target.Net45.App\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

@@ -1,7 +1,7 @@
 ﻿Target: # some metadata about target
     Name: Test Target #optional injection name
 Source: # what and how processing
-    Directory: ..\..\Tests\Drill4Net.Target.Net50.Debug\net5.0\
+    Directory: ..\..\Tests\TargetApps\
     Filter: # mask for search files, namespaces, classes...
        File: 
        Namespace: 

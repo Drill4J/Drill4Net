@@ -23,7 +23,7 @@ namespace Drill4Net.Injector.Core
         {
         }
 
-        public InjectorRepository(string cfgPath, bool isTestEngine = false)
+        public InjectorRepository(string cfgPath)
         {
             if (!File.Exists(cfgPath))
                 throw new FileNotFoundException($"Config not found: {cfgPath}");
@@ -31,8 +31,8 @@ namespace Drill4Net.Injector.Core
 
             //for posibility of relative pathes in misc executables: Test Engine, VS' post-build events,
             //RnD project which may located on misc levels of directories
-            _baseDir = isTestEngine ? 
-                Path.GetFullPath(Path.Combine(Path.GetDirectoryName(cfgPath), "..\\")) :
+            _baseDir = //isTestEngine ? 
+                //Path.GetFullPath(Path.Combine(Path.GetDirectoryName(cfgPath), "..\\")) :
                 GetExecutionDir();
             _deser = new Deserializer();
             Options = GenerateOptions();

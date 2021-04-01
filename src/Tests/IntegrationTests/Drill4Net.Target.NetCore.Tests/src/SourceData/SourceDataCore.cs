@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -226,18 +225,18 @@ namespace Drill4Net.Target.NetCore.Tests
         }
         #endregion
         #region Source
-        internal static string GetSource(string shortSig, object target)
+        internal static string GetSource(object target, string shortSig)
         {
-            return GetSourceFromFullSig(GetFullSignature(shortSig, target), target);
+            return GetSourceFromFullSig(target, GetFullSignature(target, shortSig));
         }
 
-        internal static string GetSourceFromFullSig(string fullSig, object target = null)
+        internal static string GetSourceFromFullSig(object target, string fullSig)
         {
             var asmName = GetModuleName(target);
             return $"{asmName};{fullSig}";
         }
 
-        internal static string GetFullSignature(string shortSig, object target)
+        internal static string GetFullSignature(object target, string shortSig)
         {
             var ar = shortSig.Split(' ');
             var ret = ar[0];
@@ -252,6 +251,8 @@ namespace Drill4Net.Target.NetCore.Tests
 
         internal static Assembly GetAssembly(object target)
         {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
             return target.GetType().Assembly;
         }
 

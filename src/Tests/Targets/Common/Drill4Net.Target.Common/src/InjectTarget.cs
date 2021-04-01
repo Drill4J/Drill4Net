@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("Drill4Net.Target.NetCore.Tests")] 
+[assembly: InternalsVisibleTo("Drill4Net.Target.NetCore.Tests")]
 [assembly: InternalsVisibleTo("Drill4Net.Target.NetFramework.Tests")]
 
 namespace Drill4Net.Target.Common
