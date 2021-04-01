@@ -46,7 +46,7 @@ namespace Drill4Net.Target.NetCore.Tests
             //LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_NET5);
 
             //tree info for targerPath
-            var targetDir = _opts.Destination.Directory;
+            var targetDir =  _opts.Tests.Directory;
             LoadTreeData(targetDir);
         }
 
@@ -199,7 +199,20 @@ namespace Drill4Net.Target.NetCore.Tests
 
         private void LoadTreeData(string targetDir)
         {
-            var treeHintPath = _rep.GetTreeFileHintPath(targetDir);
+            //search dir with files - there must be tree data
+            var curDir = targetDir;
+            while (true)
+            {
+                if (Directory.GetFiles(curDir, "*.dll").Length > 0)
+                    break;
+                var dirs = Directory.GetDirectories(curDir);
+                if (dirs.Length == 0)
+                    Assert.Fail($"Tree info not found in {targetDir}");
+                curDir = dirs[0];
+            }
+            
+            //read tree data
+            var treeHintPath = _rep.GetTreeFileHintPath(curDir);
             if (!File.Exists(treeHintPath))
                 Assert.Fail($"File with hint about tree data not found: {treeHintPath}");
             var treePath = File.ReadAllText(treeHintPath);

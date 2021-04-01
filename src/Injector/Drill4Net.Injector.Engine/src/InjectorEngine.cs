@@ -160,7 +160,7 @@ namespace Drill4Net.Injector.Engine
             //must process?
             var ext = Path.GetExtension(filePath);
             var version = versions.ContainsKey(filePath) ? versions[filePath] : _rep.GetAssemblyVersion(filePath);
-            if (ext == ".exe" && version.Target == AssemblyVersionType.NetCore)
+            if (version == null || (ext == ".exe" && version.Target == AssemblyVersionType.NetCore))
                 return;
 
             ReaderParameters readerParams = new ReaderParameters
@@ -245,10 +245,14 @@ namespace Drill4Net.Injector.Engine
             {
                 var typeName = typeDef.Name;
                 //TODO: normal defining of business types (by cfg?)
-                if (typeName == "<Module>" || typeName.StartsWith("Microsoft.") || typeName.StartsWith("System.")) //GUANO....
+                if (typeName == "<Module>")
                     continue;
                 var nameSpace = typeDef.Namespace;
                 var typeFullName = typeDef.FullName;
+                var tAr = typeFullName.Split('.');
+                ns1 = tAr[0];
+                if (_restrictNamespaces.Contains(ns1)) //Guanito
+                    continue;
 
                 #region Tree
                 var treeClass = new InjectedType(treeAsm.Name, typeFullName)
@@ -1010,10 +1014,17 @@ namespace Drill4Net.Injector.Engine
                 //
                 var sourceType = CreateMethodSource(ownMethod);
                 var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName, sourceType);
+                if (_injMethods.ContainsKey(treeFunc.Fullname)) //strange...
+                {
+                }
                 _injMethods.Add(treeFunc.Fullname, treeFunc);
                 methods.Add(ownMethod);
                 //
-                _injMethodByClasses.Add(GetMethodByClassKey(typeFullname, treeFunc.Name), treeFunc);
+                var method = GetMethodByClassKey(typeFullname, treeFunc.Name);
+                if (_injMethodByClasses.ContainsKey(method))
+                { 
+                }
+                _injMethodByClasses.Add(method, treeFunc);
                 treeParentClass.AddChild(treeFunc);
             }
             #endregion
@@ -1119,6 +1130,7 @@ namespace Drill4Net.Injector.Engine
             {
                 "Microsoft",
                 "Windows",
+                "System",
                 //...
             };
             return hash;
@@ -1141,11 +1153,14 @@ namespace Drill4Net.Injector.Engine
         {
             //in each folder create file with path to tree data
             var dirs = tree.GetAllDirectories();
-            var pathInText = _rep.GetTreeFilePath(tree);
-            foreach (var dir in dirs)
+            if (dirs.Any())
             {
-                var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
-                await File.WriteAllTextAsync(hintPath, pathInText);
+                var pathInText = _rep.GetTreeFilePath(tree);
+                foreach (var dir in dirs)
+                {
+                    var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
+                    await File.WriteAllTextAsync(hintPath, pathInText);
+                }
             }
         }
         #endregion

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using YamlDotNet.Serialization;
 
 namespace Drill4Net.Injector.Core
@@ -126,22 +127,44 @@ namespace Drill4Net.Injector.Core
                 .Where(a => a.EndsWith(".exe") || a.EndsWith(".dll"));
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public AssemblyVersion GetAssemblyVersion(string filePath)
         {
-            var asmName = AssemblyName.GetAssemblyName(filePath);
-            if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
-                return new AssemblyVersion() { Target = AssemblyVersionType.NotIL };
-            if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
+            try
             {
-                //log: is strong name!
-                return new AssemblyVersion() { IsStrongName = true };
+                var asmName = AssemblyName.GetAssemblyName(filePath);
+                if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
+                    return new AssemblyVersion() { Target = AssemblyVersionType.NotIL };
+                if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
+                {
+                    //log: is strong name!
+                    return new AssemblyVersion() { IsStrongName = true };
+                }
+                //var asm = Assembly.LoadFrom(filePath);
+                var asmCtx = new AssemblyContext(filePath);
+                var asm = asmCtx.LoadFromAssemblyPath(filePath);
+                var alcWeakRef = new WeakReference(asmCtx, trackResurrection: true);
+
+                var versionAttr = asm.CustomAttributes
+                    .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
+                var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
+                var version = new AssemblyVersion(versionS);
+                //
+                //https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
+                asmCtx.Unload();
+                for (int i = 0; alcWeakRef.IsAlive && (i < 10); i++)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                //
+                return version;
             }
-            var asm = Assembly.LoadFrom(filePath);
-            var versionAttr = asm.CustomAttributes
-                .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
-            var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
-            var version = new AssemblyVersion(versionS);
-            return version;
+            catch (Exception ex)
+            {
+                //log ??
+                return null;
+            }
         }
         #endregion
         #region Options
@@ -168,6 +191,8 @@ namespace Drill4Net.Injector.Core
             opts.Source.Directory = GetFullPath(opts.Source.Directory);
             opts.Destination.Directory = GetFullPath(opts.Destination.Directory);
             opts.Profiler.Directory = GetFullPath(opts.Profiler.Directory);
+            if(opts.Tests?.Directory != null)
+                opts.Tests.Directory = GetFullPath(opts.Tests.Directory);
         }
 
         internal string GetCurrentConfigPath(string[] args)

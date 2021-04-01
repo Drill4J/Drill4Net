@@ -29,6 +29,7 @@ Probes: # types of cross-cutting points
     EventAdd: false
     EventRemove: false
 Tests: # what will tested - dictionary of lists
+    Directory: ..\..\TargetApps\ #target dir relatively Test project
   #Assemblies:
   #    Drill4Net.Target.Common.dll: #assembly name
   #      -

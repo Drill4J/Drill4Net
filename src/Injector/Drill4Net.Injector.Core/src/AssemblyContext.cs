@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
     //https://docs.microsoft.com/ru-ru/dotnet/core/tutorials/creating-app-with-plugin-support
     internal class AssemblyContext : AssemblyLoadContext
@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Engine
 
         /*************************************************************/
 
-        public AssemblyContext(string asmPath)
+        public AssemblyContext(string asmPath) : base(isCollectible: true)
         {
             _resolver = new AssemblyDependencyResolver(asmPath);
             Resolving += AssemblyContext_Resolving;
