@@ -42,7 +42,7 @@ namespace Drill4Net.Target.NetCore.Tests
 
             //target assemblies
             //var asms = _opts.Tests.Assemblies;
-            _targetCommon = SourceData.TargetCommon; // LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
+            //_targetCommon = SourceData_Common.TargetCommon; // LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
             //LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_NET5);
 
             //tree info for targerPath
@@ -52,7 +52,7 @@ namespace Drill4Net.Target.NetCore.Tests
 
         /****************************************************************************/
 
-        [TestCaseSource(typeof(SourceData), "Simple")]
+        [TestCaseSource(typeof(SourceData_Common), "Simple")]
         public void Simple_Ok(object target, MethodInfo mi, object[] args, List<string> checks)
         {
             Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
@@ -75,7 +75,7 @@ namespace Drill4Net.Target.NetCore.Tests
             Assert.IsTrue(funcs.Count == 1);
 
             var sig = GetFullSignature(mi);
-            var source = SourceData.GetSourceFromFullSig(sig, target);
+            var source = SourceDataCore.GetSourceFromFullSig(sig, target);
             Assert.True(funcs.ContainsKey(source));
             var links = funcs[source];
 
@@ -85,7 +85,7 @@ namespace Drill4Net.Target.NetCore.Tests
             #endregion
         }
 
-        [TestCaseSource(typeof(SourceData), "ParentChild")]
+        [TestCaseSource(typeof(SourceData_Common), "ParentChild")]
         public void Parent_Child_Ok(object target, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
             #region Arrange
@@ -133,7 +133,7 @@ namespace Drill4Net.Target.NetCore.Tests
                 {
                     var data = inputs[i];
                     var source = string.IsNullOrWhiteSpace(data.Signature) ?
-                        SourceData.GetSourceFromFullSig(GetFullSignature(data.Info), target) :
+                        SourceDataCore.GetSourceFromFullSig(GetFullSignature(data.Info), target) :
                         data.Signature;
                     Assert.True(funcs.ContainsKey(source));
                     var points = funcs[source];
@@ -164,8 +164,11 @@ namespace Drill4Net.Target.NetCore.Tests
             }
 
             //local funcs
-            void RemoveEnterReturns(IList<PointLinkage> links)
+            static void RemoveEnterReturns(IList<PointLinkage> links)
             {
+                if (links is null)
+                    throw new ArgumentNullException(nameof(links));
+
                 var forDelete = links.Where(a => a.Point.PointType == CrossPointType.Enter || 
                                                  a.Point.PointType == CrossPointType.Return)
                     .ToArray();
@@ -309,17 +312,9 @@ namespace Drill4Net.Target.NetCore.Tests
             return link;
         }
 
-        private void Check(IList<PointLinkage> links, List<string> checks)
+        private static void Check([NotNull]IList<PointLinkage> links, [NotNull]List<string> checks)
         {
-            if (checks == null)
-                checks = new List<string>();
-            Assert.IsTrue(links.Count == checks.Count);
-
-            for (var i = 0; i < checks.Count; i++)
-            {
-                if (links[i].Probe != checks[i])
-                    Assert.Fail();
-            }
+            Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
         }
         #endregion
     }

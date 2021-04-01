@@ -1,23 +1,24 @@
-﻿using Drill4Net.Target.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Dynamic;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("Drill4Net.Target.NetCore.Tests")]
+[assembly: InternalsVisibleTo("Drill4Net.Target.NetCore.Tests")] 
 [assembly: InternalsVisibleTo("Drill4Net.Target.NetFramework.Tests")]
 
 namespace Drill4Net.Target.Common
 {
-    public class InjectTarget : IInjectTarget
+    public class InjectTarget
     {
         public async Task RunTests()
         {
+            PrintInfo();
+
             #region If/Else
             IfElse_Half(false);
             IfElse_Half(true);
@@ -54,9 +55,10 @@ namespace Drill4Net.Target.Common
 
             IfElse_Half_EarlyReturn_Bool(false);
             IfElse_Half_EarlyReturn_Bool(true);
-
+#if NETCOREAPP
             IfElse_Half_EarlyReturn_Tuple(false);
             IfElse_Half_EarlyReturn_Tuple(true);
+#endif
             #endregion
             #region Switch
             Switch_ExplicitDefault(-1);
@@ -73,12 +75,12 @@ namespace Drill4Net.Target.Common
             Switch_WithoutDefault(0);
             Switch_WithoutDefault(1);
             Switch_WithoutDefault(2);
-
+#if NETCOREAPP
             Switch_AsReturn(-1);
             Switch_AsReturn(0);
             Switch_AsReturn(1);
             Switch_AsReturn(2);
-
+#endif
             Switch_When(-1);
             Switch_When(0);
             Switch_When(1);
@@ -87,10 +89,20 @@ namespace Drill4Net.Target.Common
             Switch_Property(false);
             Switch_Property(true);
 
+#if NETCOREAPP
             Switch_Tuple("English", "morning");
             Switch_Tuple("English", "evening");
             Switch_Tuple("German", "morning");
             Switch_Tuple("German", "evening");
+#endif
+            Switch_Relational(-5);
+            Switch_Relational(5);
+            Switch_Relational(10);
+            Switch_Relational(100);
+
+            Switch_Logical(-5);
+            Switch_Logical(5);
+            Switch_Logical(10);
             #endregion
             #region Elvis
             Elvis_NotNull();
@@ -160,11 +172,12 @@ namespace Drill4Net.Target.Common
 
             Try_Finally(false);
             Try_Finally(true);
-#endregion
+            #endregion
             #region Async
+#if !NET45
             await Async_Stream();
             await Async_Stream_Cancellation();
-
+#endif
             await Async_Task(false);
             await Async_Task(true);
 
@@ -176,7 +189,7 @@ namespace Drill4Net.Target.Common
 
             await Async_Linq_NonBlocking(false);
             await Async_Linq_NonBlocking(true);
-#endregion
+            #endregion
             #region Parallel
             Parallel_Linq(false);
             Parallel_Linq(true);
@@ -192,7 +205,7 @@ namespace Drill4Net.Target.Common
 
             Parallel_Thread_New(false);
             Parallel_Thread_New(true);
-#endregion
+            #endregion
             #region Disposable
             try
             {
@@ -200,14 +213,14 @@ namespace Drill4Net.Target.Common
                 Disposable_Using_Exception(true);
             }
             catch
-            {}
+            { }
 
             try
             {
                 Disposable_Using_Last_Exception();
             }
             catch
-            {}
+            { }
 
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
@@ -266,11 +279,11 @@ namespace Drill4Net.Target.Common
 
             WinAPI(false);
             WinAPI(true);
-#endregion
+            #endregion
         }
 
         #region IF/ELSE
-        internal void IfElse_Half(bool cond)
+        public void IfElse_Half(bool cond)
         {
             var type = "no";
             if (cond)
@@ -279,7 +292,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
         }
 
-        internal void IfElse_FullSimple(bool cond)
+        public void IfElse_FullSimple(bool cond)
         {
             string type;
             if (cond)
@@ -290,7 +303,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(IfElse_FullSimple)}: {type}");
         }
 
-        internal void IfElse_Consec_Full(bool a, bool b)
+        public void IfElse_Consec_Full(bool a, bool b)
         {
             var info = new bool?[2, 2];
             if (a)
@@ -316,7 +329,7 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        internal bool IfElse_Consec_HalfA_FullB(bool a, bool b)
+        public bool IfElse_Consec_HalfA_FullB(bool a, bool b)
         {
             if (a)
             {
@@ -334,7 +347,7 @@ namespace Drill4Net.Target.Common
             return false;
         }
 
-        internal bool IfElse_Half_EarlyReturn_Bool(bool cond)
+        public bool IfElse_Half_EarlyReturn_Bool(bool cond)
         {
             var type = "no"; //let it be... Let it beeee!...
             if (cond)
@@ -348,7 +361,8 @@ namespace Drill4Net.Target.Common
             return false; //don't change to void
         }
 
-        internal (bool, bool) IfElse_Half_EarlyReturn_Tuple(bool cond)
+#if NETCOREAPP
+        public (bool, bool) IfElse_Half_EarlyReturn_Tuple(bool cond)
         {
             var type = "no"; //let it be... Let it beeee!...
             if (cond)
@@ -362,19 +376,20 @@ namespace Drill4Net.Target.Common
             return (false, false);
         }
 
-        internal void IfElse_Ternary_Positive(bool cond)
+#endif
+        public void IfElse_Ternary_Positive(bool cond)
         {
             var type = cond ? "yes" : "no";
             Console.WriteLine($"{nameof(IfElse_Ternary_Positive)}: {type}");
         }
 
-        internal void IfElse_Ternary_Negative(bool cond)
+        public void IfElse_Ternary_Negative(bool cond)
         {
             var type = !cond ? "no" : "yes";
             Console.WriteLine($"{nameof(IfElse_Ternary_Negative)}: {type}");
         }
 
-        internal void IfElse_FullCompound(bool a, bool b)
+        public void IfElse_FullCompound(bool a, bool b)
         {
             if (a)
             {
@@ -400,7 +415,7 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        internal void IfElse_HalfA_FullB(bool a, bool b)
+        public void IfElse_HalfA_FullB(bool a, bool b)
         {
             if (a)
             {
@@ -415,7 +430,7 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        internal void IfElse_HalfA_HalfB(bool a, bool b)
+        public void IfElse_HalfA_HalfB(bool a, bool b)
         {
             if (a)
             {
@@ -426,7 +441,7 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        internal void IfElse_FullA_HalfB(bool a, bool b)
+        public void IfElse_FullA_HalfB(bool a, bool b)
         {
             if (a)
             {
@@ -440,52 +455,52 @@ namespace Drill4Net.Target.Common
                 Console.WriteLine($"{nameof(IfElse_FullA_HalfB)}: !a*b");
             }
         }
-#endregion
+        #endregion
         #region Elvis
-        internal void Elvis_NotNull()
+        public void Elvis_NotNull()
         {
             var obj = new GenStr("aaa");
             var prop = obj?.Prop;
             Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
         }
 
-        internal void Elvis_Null()
+        public void Elvis_Null()
         {
             GenStr obj = null;
             var prop = obj?.Prop;
             Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
         }
 
-        internal void Elvis_Sequence_NotNull()
+        public void Elvis_Sequence_NotNull()
         {
             var obj = new GenStr("aaa");
             var len = obj?.Prop?.Length;
             Console.WriteLine($"{nameof(Elvis_Sequence_NotNull)}: {len}");
         }
 
-        internal void Elvis_Sequence_Null()
+        public void Elvis_Sequence_Null()
         {
             GenStr obj = null;
             var len = obj?.Prop?.Length;
             Console.WriteLine($"{nameof(Elvis_Sequence_Null)}: {len}");
         }
 
-        internal void Elvis_Double_NotNull()
+        public void Elvis_Double_NotNull()
         {
             var obj = "aaa";
             var prop = obj ?? "bbb";
             Console.WriteLine($"{nameof(Elvis_Double_NotNull)}: {prop}");
         }
 
-        internal void Elvis_Double_Null()
+        public void Elvis_Double_Null()
         {
             string obj = null;
             var prop = obj ?? "bbb";
             Console.WriteLine($"{nameof(Elvis_Double_Null)}: {prop}");
         }
-#endregion
+        #endregion
         #region Switch
-        internal void Switch_ExplicitDefault(int a)
+        public void Switch_ExplicitDefault(int a)
         {
             var s = "";
             switch (a)
@@ -498,7 +513,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_ExplicitDefault)}: {a} -> {s}");
         }
 
-        internal void Switch_ImplicitDefault(int a)
+        public void Switch_ImplicitDefault(int a)
         {
             var s = "implicit default";
             switch (a)
@@ -510,7 +525,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_ImplicitDefault)}: {a} -> {s}");
         }
 
-        internal void Switch_WithoutDefault(int a)
+        public void Switch_WithoutDefault(int a)
         {
             switch (a)
             {
@@ -521,7 +536,8 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_WithoutDefault)}: {a} -> no default");
         }
 
-        internal string Switch_AsReturn(int a)
+#if NETCOREAPP
+        public string Switch_AsReturn(int a)
         {
             Console.WriteLine($"{nameof(Switch_AsReturn)}: {a}");
 
@@ -533,8 +549,8 @@ namespace Drill4Net.Target.Common
                 _ => "default",
             };
         }
-
-        internal void Switch_When(int a)
+#endif
+        public void Switch_When(int a)
         {
             //in IL code it presents as set of simply 'if/else',
             //not as 'switch' statement
@@ -548,11 +564,11 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}");
         }
 
-        internal string Switch_Property(bool? cond)
+        public string Switch_Property(bool? cond)
         {
             var p = cond == null ?
                 new { Name = "John", IsAdmin = false, Language = "English" } :
-                ( cond == true ?
+                (cond == true ?
                     new { Name = "Андрей", IsAdmin = false, Language = "Russian" } :
                     new { Name = "Woldemar", IsAdmin = true, Language = "German" }
                 );
@@ -569,7 +585,8 @@ namespace Drill4Net.Target.Common
             return s;
         }
 
-        internal string Switch_Tuple(string lang, string daytime)
+#if NETCOREAPP
+        public string Switch_Tuple(string lang, string daytime)
         {
             var s = (lang, daytime) switch
             {
@@ -582,9 +599,36 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_Tuple)}: {s}");
             return s;
         }
+#endif
+        //C#9
+        internal double Switch_Relational(double sum)
+        {
+            var newSum = sum switch
+            {
+                <= 0 => 0,
+                < 10 => sum * 1.05,
+                < 100 => sum * 1.1,
+                _ => sum * 1.15
+            };
+            Console.WriteLine($"{nameof(Switch_Relational)}: {newSum:F2}");
+            return sum;
+        }
+
+        //C#9
+        internal string Switch_Logical(int a)
+        {
+            var s = a switch
+            {
+                <= 0 => "zero",
+                > 0 and < 10 => "small",
+                _ => "big"
+            };
+            Console.WriteLine($"{nameof(Switch_Logical)}: {s}");
+            return s;
+        }
         #endregion
         #region Cycle
-        internal bool Cycle_For(int count)
+        public bool Cycle_For(int count)
         {
             var s = "";
             for (var i = 0; i < count; i++)
@@ -593,7 +637,7 @@ namespace Drill4Net.Target.Common
             return true;
         }
 
-        internal bool Cycle_While(int count)
+        public bool Cycle_While(int count)
         {
             Console.WriteLine($"{nameof(Cycle_While)} -> {count}");
             while (count > 0)
@@ -601,7 +645,7 @@ namespace Drill4Net.Target.Common
             return true;
         }
 
-        internal void Cycle_Do()
+        public void Cycle_Do()
         {
             int i = 3;
             Console.WriteLine($"{nameof(Cycle_Do)} -> {i}");
@@ -609,14 +653,14 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Linq
-        internal void Linq_Query(bool all)
+        public void Linq_Query(bool all)
         {
             var customers = new List<string> { "Paris", "London", "Moscow" };
             var res = from c in customers where all || c == "London" select c;
             Console.WriteLine($"{nameof(Linq_Query)}: {string.Join(",", res)}");
         }
 
-        internal void Linq_Fluent(bool all)
+        public void Linq_Fluent(bool all)
         {
             var customers = new List<string> { "Paris", "London", "Moscow" };
             var res = customers.Where(c => all ? c != null : c == "London");
@@ -624,14 +668,14 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Lambda
-        internal void Lambda(int x)
+        public void Lambda(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
             Console.WriteLine($"{nameof(Lambda)}: {d}");
         }
 
-        internal void Lambda_AdditionalBranch(int x)
+        public void Lambda_AdditionalBranch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
@@ -640,7 +684,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Lambda_AdditionalBranch)}: {d}");
         }
 
-        internal void Lambda_AdditionalSwitch(int x)
+        public void Lambda_AdditionalSwitch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
             int d = square(x);
@@ -653,7 +697,7 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Generics
-        internal void Generics_Var(bool cond)
+        public void Generics_Var(bool cond)
         {
             var list = new List<string> { "a", "b", "c" };
             if (cond)
@@ -668,14 +712,14 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Generics_Var)}: {cond} -> {string.Join(",", list)}");
         }
 
-        internal void Generics_Call_Base(bool cond)
+        public void Generics_Call_Base(bool cond)
         {
             var gen = new GenStr("AAA");
             var s = gen.GetDesc(cond);
             Console.WriteLine($"{nameof(Generics_Call_Base)}: {s}");
         }
 
-        internal void Generics_Call_Child(bool cond)
+        public void Generics_Call_Child(bool cond)
         {
             var gen = new GenStr("AAA");
             var s = cond ? gen.GetShortDesc() : "no desc";
@@ -683,7 +727,7 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Try/cath/finally
-        internal void Try_Exception_Conditional(bool isException)
+        public void Try_Exception_Conditional(bool isException)
         {
             try
             {
@@ -703,7 +747,7 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        internal void Try_Catch(bool cond)
+        public void Try_Catch(bool cond)
         {
             var s = "none";
             try
@@ -717,7 +761,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Try_Catch)}: {s}");
         }
 
-        internal void Try_CatchWhen(bool cond, bool cond2)
+        public void Try_CatchWhen(bool cond, bool cond2)
         {
             var s = "none";
             try
@@ -732,7 +776,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Try_CatchWhen)}: {s}");
         }
 
-        internal void Try_Finally(bool cond)
+        public void Try_Finally(bool cond)
         {
             string s = null;
             try
@@ -747,7 +791,7 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Dynamic
-        internal void ExpandoObject(bool cond)
+        public void ExpandoObject(bool cond)
         {
             dynamic exp = new ExpandoObject();
             exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
@@ -755,7 +799,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(ExpandoObject)}: {cond}");
         }
 
-        internal void DynamicObject(bool cond)
+        public void DynamicObject(bool cond)
         {
             dynamic exp = new DynamicDictionary();
             exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
@@ -764,7 +808,7 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Async/await
-        internal async Task Async_Task(bool cond)
+        public async Task Async_Task(bool cond)
         {
             if (cond)
                 await Task.Delay(50);
@@ -773,12 +817,12 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Async_Task)}: {cond}");
         }
 
-        internal Task Delay100()
+        public Task Delay100()
         {
             return Task.Delay(100);
         }
 
-        internal async Task Async_Lambda(bool cond)
+        public async Task Async_Lambda(bool cond)
         {
             await Task.Run(async () =>
             {
@@ -790,10 +834,10 @@ namespace Drill4Net.Target.Common
             });
         }
 
-        internal void Async_Linq_Blocking(bool cond)
+        public void Async_Linq_Blocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
-            var inputs = data.Select(async ev => await ProcessElement(ev, cond))
+            var inputs = data.Select(async ev => await ProcessElement((GenStr)ev, cond))
                    .Select(t => t.GetAwaiter().GetResult().Prop)
                    .Where(i => i != null)
                    .ToList();
@@ -801,10 +845,10 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Async_Linq_Blocking)}: {string.Join(", ", inputs)}");
         }
 
-        internal async Task Async_Linq_NonBlocking(bool cond)
+        public async Task Async_Linq_NonBlocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
-            var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
+            var tasks = await Task.WhenAll(data.Select(ev => ProcessElement((GenStr)ev, cond)));
             var inputs = tasks
                 .Select(a => a.Prop)
                 .Where(result => result != null)
@@ -813,12 +857,12 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Async_Linq_NonBlocking)}: {string.Join(", ", inputs)}");
         }
 
-        internal List<GenStr> GetDataForAsyncLinq()
+        public List<GenStr> GetDataForAsyncLinq()
         {
             return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C"), };
         }
 
-        internal async Task<GenStr> ProcessElement(GenStr element, bool cond)
+        private async Task<GenStr> ProcessElement(GenStr element, bool cond)
         {
             return await Task.Run(() =>
             {
@@ -829,8 +873,9 @@ namespace Drill4Net.Target.Common
         }
 
         #region Stream
+#if !NET45
         #region Simple
-        internal async Task Async_Stream()
+        public async Task Async_Stream()
         {
             IAsyncEnumerable<int> enumerable = GenerateSequenceAsync();
             var s = "";
@@ -842,7 +887,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Async_Stream)}: {s}");
         }
 
-        internal async IAsyncEnumerable<int> GenerateSequenceAsync()
+        public async IAsyncEnumerable<int> GenerateSequenceAsync()
         {
             for (int i = 1; i <= 3; i++) //Else_24
             {
@@ -855,7 +900,7 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Cancellation
-        internal async Task Async_Stream_Cancellation()
+        public async Task Async_Stream_Cancellation()
         {
             //data
             var cts = new CancellationTokenSource();
@@ -880,31 +925,32 @@ namespace Drill4Net.Target.Common
 
             Console.WriteLine($"{nameof(Async_Stream_Cancellation)}: {s}");
         }
-   
-        internal async IAsyncEnumerable<int> GenerateSequenceWithCancellationAsync
+
+        public async IAsyncEnumerable<int> GenerateSequenceWithCancellationAsync
             ([EnumeratorCancellation] CancellationToken token = default)
         {
-            for (int i = 1; i <= 3; i++) 
+            for (int i = 1; i <= 3; i++)
             {
                 token.ThrowIfCancellationRequested();
                 await Task.Delay(10);
                 yield return i;
             }
         }
-#endregion
+        #endregion
 
         //https://docs.microsoft.com/en-us/archive/msdn-magazine/2019/november/csharp-iterating-with-async-enumerables-in-csharp-8
+#endif
         #endregion
         #endregion
         #region Parallel
-        internal void Parallel_Linq(bool cond)
+        public void Parallel_Linq(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = data.AsParallel().Where(a => !cond || (cond && a % 2 == 0)).Sum();
             Console.WriteLine($"{nameof(Parallel_Linq)}: {sum}");
         }
 
-        internal void Parallel_For(bool cond)
+        public void Parallel_For(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = 0;
@@ -917,7 +963,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Parallel_For)}: {sum}");
         }
 
-        internal void Parallel_Foreach(bool cond)
+        public void Parallel_Foreach(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = 0;
@@ -934,7 +980,7 @@ namespace Drill4Net.Target.Common
             return Enumerable.Range(0, cnt);
         }
 
-        internal void Parallel_Task_New(bool cond)
+        public void Parallel_Task_New(bool cond)
         {
             Task[] tasks = new Task[2];
             List<string> list1 = null;
@@ -947,12 +993,12 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Parallel_Task_New)}: {cond} -> {string.Join(",", list1)} / {string.Join(",", list2)}");
         }
 
-        internal List<string> GetStringListForTaskNew(bool cond)
+        public List<string> GetStringListForTaskNew(bool cond)
         {
             return cond ? new List<string> { "X1" } : new List<string> { "A1, B1, C1" };
         }
 
-        internal void Parallel_Thread_New(bool cond)
+        public void Parallel_Thread_New(bool cond)
         {
             var tr = new Thread(() =>
             {
@@ -963,29 +1009,33 @@ namespace Drill4Net.Target.Common
             tr.Join();
         }
 
-        internal void GetStringListForThreadNew(bool cond)
+        public void GetStringListForThreadNew(bool cond)
         {
             var list = cond ? new List<string> { "XYZ" } : new List<string> { "A, B, C" };
             Console.WriteLine($"{nameof(Parallel_Thread_New)}: {cond} -> {string.Join(",", list)}");
         }
         #endregion
         #region Disposable
-        internal void Disposable_Using_Last_Exception()
+        public void Disposable_Using_Last_Exception()
         {
             Console.WriteLine($"{nameof(Disposable_Using_Last_Exception)}");
-            using var ms = new MemoryStream();
-            throw new Exception($"The exception has been throwed");
+            using (var ms = new MemoryStream())
+            {
+                throw new Exception($"The exception has been throwed");
+            }
         }
 
-        internal void Disposable_Using_Exception(bool cond)
+        public void Disposable_Using_Exception(bool cond)
         {
             Console.WriteLine($"{nameof(Disposable_Using_Exception)}: {cond}");
-            using var ms = new MemoryStream();
-            if (cond)
-                throw new Exception($"The exception has been throwed");
+            using (var ms = new MemoryStream())
+            {
+                if (cond)
+                    throw new Exception($"The exception has been throwed");
+            }
         }
 
-        internal void Disposable_Using_SyncRead(bool cond)
+        public void Disposable_Using_SyncRead(bool cond)
         {
             byte cnt = 5;
             var res = new byte[cnt];
@@ -997,7 +1047,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Disposable_Using_SyncRead)}: {cond}");
         }
 
-        internal async Task Disposable_Using_AsyncRead(bool cond)
+        public async Task Disposable_Using_AsyncRead(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -1009,7 +1059,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Disposable_Using_AsyncRead)}: {cond}");
         }
 
-        internal async Task Disposable_Using_AsyncTask(bool cond)
+        public async Task Disposable_Using_AsyncTask(bool cond)
         {
             byte cnt = 10;
             var res = new byte[cnt];
@@ -1026,7 +1076,7 @@ namespace Drill4Net.Target.Common
             return Task.Run(() => { Thread.Sleep(10); });
         }
 
-        internal void Disposable_Finalizer(int len)
+        public void Disposable_Finalizer(int len)
         {
             CreateDisposable(len);
             GC.Collect();
@@ -1043,7 +1093,7 @@ namespace Drill4Net.Target.Common
         #region Anonymous
         #region AnonymousFunc
         delegate int Operation(int x, int y);
-        internal void Anonymous_Func()
+        public void Anonymous_Func()
         {
             int z = 8;
 #pragma warning disable IDE0039 // Use local function
@@ -1058,7 +1108,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Anonymous_Func)}: {d}"); // 15
         }
 
-        internal void Anonymous_Func_WithLocalFunc()
+        public void Anonymous_Func_WithLocalFunc()
         {
             int z = 8;
             int d = operation(4, 5);
@@ -1072,9 +1122,9 @@ namespace Drill4Net.Target.Common
                 return x + y + z;
             }
         }
-#endregion
+        #endregion
 
-        internal void Anonymous_Type(bool cond)
+        public void Anonymous_Type(bool cond)
         {
             var tom = new { Name = "Tom", Age = cond ? 21 : 9 };
             Console.WriteLine($"{nameof(Anonymous_Type)}: {cond} -> {tom.Age}");
@@ -1085,7 +1135,7 @@ namespace Drill4Net.Target.Common
         [DllImport("user32.dll")]
         public static extern void SetWindowText(IntPtr hwnd, String lpString);
 
-        internal void WinAPI(bool cond)
+        public void WinAPI(bool cond)
         {
             SetWindowText(IntPtr.Zero, cond ? "Bye!" : "Hello!");
             Console.WriteLine($"{nameof(WinAPI)}: {cond}");
@@ -1093,7 +1143,7 @@ namespace Drill4Net.Target.Common
         #endregion
         #region Lock
         private readonly object _locker = new object();
-        internal void Lock_Statement(bool cond)
+        public void Lock_Statement(bool cond)
         {
             string s;
             lock (_locker)
@@ -1104,13 +1154,13 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Yield
-        internal void Yield(bool cond)
+        public void Yield(bool cond)
         {
             var list = GetForYield(cond);
             Console.WriteLine($"{nameof(Yield)}: {cond} -> {string.Join(",", list)}");
         }
 
-        internal IEnumerable<string> GetForYield(bool cond)
+        public IEnumerable<string> GetForYield(bool cond)
         {
             var list = new List<string> { "Y1, Y2, Y3" };
             foreach (var a in list)
@@ -1118,7 +1168,7 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Goto
-        internal void Goto_Statement(bool cond)
+        public void Goto_Statement(bool cond)
         {
             var s = "aaa";
             if (cond)
@@ -1130,7 +1180,7 @@ namespace Drill4Net.Target.Common
         }
 
         //Cycle_In is forbidden
-        internal void Goto_Statement_Cycle_Out(bool cond)
+        public void Goto_Statement_Cycle_Out(bool cond)
         {
             var s = "a";
             for (var i = 0; i < 2; i++)
@@ -1146,14 +1196,14 @@ namespace Drill4Net.Target.Common
         }
         #endregion
 
-        internal void Event()
+        public void Event()
         {
             Console.WriteLine($"{nameof(Event)} started");
 
 #pragma warning disable IDE0039 // Use local function
             NotifyHandler p = delegate (string mes)
-            { 
-                Console.WriteLine($"{nameof(Event)} -> {mes}"); 
+            {
+                Console.WriteLine($"{nameof(Event)} -> {mes}");
             };
 #pragma warning restore IDE0039 // Use local function
 
@@ -1163,7 +1213,7 @@ namespace Drill4Net.Target.Common
             eventer.Notify -= p;
         }
 
-        internal void LocalFunc(bool cond)
+        public void LocalFunc(bool cond)
         {
             //we dont't take into account local func as separate entity
             Console.WriteLine($"{nameof(LocalFunc)}: {GetString(cond)}");
@@ -1174,13 +1224,13 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        internal void Extension(bool cond)
+        public void Extension(bool cond)
         {
             Console.WriteLine($"{nameof(Extension)}: {cond.ToWord()}");
         }
 
         //TODO: not working yet!
-        internal void Expression(int x)
+        public void Expression(int x)
         {
             System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
             var dlg = e.Compile();
@@ -1188,7 +1238,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Expression)}: {d}");
         }
 
-        internal void Enumerator_Implementation()
+        public void Enumerator_Implementation()
         {
             var enumerable = new StringEnumerable();
             var s = "";
@@ -1198,14 +1248,14 @@ namespace Drill4Net.Target.Common
         }
 
         //only for NetFramework?
-        internal bool ContextBound(int prop)
+        public bool ContextBound(int prop)
         {
             new ContextBound(prop);
             Console.WriteLine($"{nameof(ContextBound)}: {prop}");
             return true;
         }
 
-        internal bool Unsafe(bool cond)
+        public bool Unsafe(bool cond)
         {
             Point point;
             unsafe
@@ -1225,6 +1275,27 @@ namespace Drill4Net.Target.Common
             for (byte i = 0; i < cnt; i++)
                 arr[i] = i;
             return arr;
+        }
+
+        private static void PrintInfo()
+        {
+            var s = "UNKNOWN";
+#if NET45
+            s = "Net45";
+#endif
+#if NET48
+            s = "Net48";
+#endif
+#if NET5_0
+            s = "Net50";
+#endif
+#if NETCOREAPP3_1
+            s = "Core31";
+#endif
+#if NETCOREAPP2_2
+            s = "Core22";
+#endif
+            Console.WriteLine($"  *** Version: {s}  ***\n");
         }
 
         //TODO: for, foreach, a || b (with PDB), EF, Visual Basic...

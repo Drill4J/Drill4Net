@@ -1,19 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-	<DefineConstants>NET_CORE,NET5</DefineConstants>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net50.Debug</OutputPath>
+    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Core22.Debug\</OutputPath>
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Net50.Debug</OutputPath>
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Core31.Debug\</OutputPath>
+    <DocumentationFile></DocumentationFile>
+    <NoWarn>1591;1138</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

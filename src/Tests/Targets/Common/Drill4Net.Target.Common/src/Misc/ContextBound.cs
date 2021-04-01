@@ -1,10 +1,16 @@
 ﻿using System;
+#if NET45
+using System.Runtime.Remoting.Contexts;
+#endif
 #if NET48
 using System.Runtime.Remoting.Contexts;
 #endif
 
 namespace Drill4Net.Target.Common
 {
+#if NET45
+    [Synchronization]
+#endif
 #if NET48
     [Synchronization]
 #endif

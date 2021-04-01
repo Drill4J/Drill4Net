@@ -4,35 +4,29 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4C011347-AA81-4AD9-9688-06C0DFF448BB}</ProjectGuid>
+    <ProjectGuid>{1B1D2534-D211-475F-8CF5-C619CF1554A8}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Drill4Net.Target.Net48.Debug</RootNamespace>
-    <AssemblyName>Drill4Net.Target.Net48.Debug</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <RootNamespace>Drill4Net.Target.Net45.Debug</RootNamespace>
+    <AssemblyName>Drill4Net.Target.Net45.Debug</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net48.Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET48</DefineConstants>
+    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Net45.Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Net48.Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Net45.Debug\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
