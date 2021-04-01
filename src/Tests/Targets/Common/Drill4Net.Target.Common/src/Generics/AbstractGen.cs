@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Drill4Net.Target.Common
+﻿namespace Drill4Net.Target.Common
 {
     public abstract class AbstractGen<T>
     {
@@ -13,7 +11,7 @@ namespace Drill4Net.Target.Common
 
         public string GetDesc(bool isFull)
         {
-            var name = typeof(T).Name; 
+            var name = typeof(T).Name;
             return isFull ? $"Type of {nameof(Prop)} is {name}" : name;
         }
     }

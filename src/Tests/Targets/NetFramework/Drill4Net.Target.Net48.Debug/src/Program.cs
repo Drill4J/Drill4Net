@@ -18,8 +18,7 @@ namespace Drill4Net.Target.Net48.Debug
         {
             try
             {
-                var target = new InjectTarget();
-                await target.RunTests();
+                await new InjectTarget().RunTests();
             }
             catch (Exception ex)
             {
