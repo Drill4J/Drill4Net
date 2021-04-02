@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 
@@ -14,6 +14,7 @@ namespace Drill4Net.Target.Tests
         private readonly MainOptions _opts;
         private readonly FolderData _defaultFolderData;
         private readonly Dictionary<string, MonikerData> _targets;
+        private readonly AssemblyContextManager _asmCtxManager;
         private readonly IInjectorRepository _injRep;
 
         /*******************************************************************************/
@@ -24,6 +25,7 @@ namespace Drill4Net.Target.Tests
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
             _injRep = new InjectorRepository(cfg_path);
             _opts = _injRep.Options;
+            _asmCtxManager = new AssemblyContextManager();
 
             var baseDir = _opts.Tests.Directory;
             if (baseDir.EndsWith("\\"))
@@ -47,21 +49,26 @@ namespace Drill4Net.Target.Tests
         #region Loading target
         public void LoadTargetIntoMemory([NotNull] string moniker)
         {
-            var monikerData = GetFolderMoniker(moniker);
+            var monikerData = GetMoniker(moniker);
+           
+            //folders of interest in target
             foreach (var folder in monikerData.Folders)
             {
-                //assemblies
                 var asms = folder.Assemblies;
                 if (asms == null)
                     asms = _defaultFolderData.Assemblies;
+
+                //asemblies
                 foreach (var asm in asms.Keys)
                 {
+                    var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asm);
+                    if (!File.Exists(targerPath))
+                        Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
+                    
+                    //classes
                     var classes = asms[asm];
                     foreach (var classFullName in classes)
                     {
-                        var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asm);
-                        if (!File.Exists(targerPath))
-                            Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
                         LoadTargetIntoMemoryByPath(targerPath, classFullName);
                     }
                 }
@@ -76,7 +83,9 @@ namespace Drill4Net.Target.Tests
         public object LoadTypeIntoMemory([NotNull]string moniker, [NotNull] string assemblyName, 
             [NotNull] string className = TestConstants.CLASS_DEFAULT_SHORT)
         {
-            var monikerData = GetFolderMoniker(moniker);
+            var monikerData = GetMoniker(moniker);
+
+            //folders of interest in target
             foreach (var folder in monikerData.Folders)
             {
                 //assemblies
@@ -101,7 +110,7 @@ namespace Drill4Net.Target.Tests
             return null;
         }
 
-        internal MonikerData GetFolderMoniker([NotNull] string moniker)
+        internal MonikerData GetMoniker([NotNull] string moniker)
         {
             //target moniker
             if (!_targets.ContainsKey(moniker))
@@ -111,7 +120,6 @@ namespace Drill4Net.Target.Tests
                 throw new ArgumentException($"Moniker data for [{moniker}] is empty");
 
             //folders
-            var folders = monikerData.Folders;
             if (monikerData.Folders == null)
                 monikerData.Folders = new List<FolderData> { _defaultFolderData };
             return monikerData;
@@ -121,10 +129,28 @@ namespace Drill4Net.Target.Tests
         {
             if (string.IsNullOrWhiteSpace(assemblyPath))
                 throw new ArgumentNullException(nameof(assemblyPath));
-            var asmCtx = new AssemblyContext(assemblyPath);
-            var asm = asmCtx.LoadFromAssemblyPath(assemblyPath);
+            var asm = _asmCtxManager.Load(assemblyPath);
             var type = asm.GetType(classFullName);
             return Activator.CreateInstance(type);
+        }
+
+        public void UnloadTarget([NotNull] string moniker)
+        {
+            var monikerData = GetMoniker(moniker);
+            foreach (var folder in monikerData.Folders)
+            {
+                var asms = folder.Assemblies;
+                if (asms == null)
+                    asms = _defaultFolderData.Assemblies;
+                foreach (var asm in asms.Keys)
+                {
+                    var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asm);
+                    if (!File.Exists(targerPath))
+                        Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
+                    _asmCtxManager.Load(targerPath);
+                }
+
+            }
         }
         #endregion
 

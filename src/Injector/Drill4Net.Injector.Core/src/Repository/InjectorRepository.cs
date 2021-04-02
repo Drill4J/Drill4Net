@@ -1,10 +1,10 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Serilog;
 using YamlDotNet.Serialization;
 
 namespace Drill4Net.Injector.Core
@@ -13,9 +13,7 @@ namespace Drill4Net.Injector.Core
     {
         public MainOptions Options { get; set; }
 
-#if !NET5_0
-        private readonly AssemblyContext _asmCtx = new AssemblyContext();
-#endif
+        private readonly AssemblyContextManager _asmCtxManager = new AssemblyContextManager();
         private readonly string _baseDir;
         private readonly string _defCfgPath;
         private readonly Deserializer _deser;
@@ -138,32 +136,19 @@ namespace Drill4Net.Injector.Core
                 var asmName = AssemblyName.GetAssemblyName(filePath);
                 if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
                     return new AssemblyVersion() { Target = AssemblyVersionType.NotIL };
+
                 if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
                 {
                     //log: is strong name!
                     return new AssemblyVersion() { IsStrongName = true };
                 }
-#if NET5_0
-                var asmCtx = new AssemblyContext(filePath);
-                var asm = asmCtx.LoadFromAssemblyPath(filePath);
-                var alcWeakRef = new WeakReference(asmCtx, trackResurrection: true);
-#else
-                var asm = _asmCtx.Load(filePath);
-#endif
+
+                var asm = _asmCtxManager.Load(filePath);
                 var versionAttr = asm.CustomAttributes
                     .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
                 var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
                 var version = new AssemblyVersion(versionS);
-
-#if NET5_0
-                //https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
-                asmCtx.Unload();
-                for (int i = 0; alcWeakRef.IsAlive && (i < 10); i++)
-                {
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                }
-#endif
+                _asmCtxManager.Unload(filePath);
                 return version;
             }
             catch (Exception ex)

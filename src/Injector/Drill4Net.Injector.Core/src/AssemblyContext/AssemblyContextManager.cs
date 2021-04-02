@@ -2,69 +2,68 @@
 using System.Reflection;
 #if NET5_0
 using System.Runtime.Loader;
-#else
-using System.Collections.Generic;
 #endif
+using System.Collections.Generic;
+
 
 namespace Drill4Net.Injector.Core
 {
 #if NET5_0
-    //https://docs.microsoft.com/ru-ru/dotnet/core/tutorials/creating-app-with-plugin-support
-    public class AssemblyContext : AssemblyLoadContext
+    public class AssemblyContextManager : IAssemblyContextManager
     {
-        private readonly AssemblyDependencyResolver _resolver;
+        private readonly Dictionary<string, WeakReference> _contexts;
 
         /*************************************************************/
 
-        public AssemblyContext(string asmPath) : base(isCollectible: true)
+        public AssemblyContextManager()
         {
-            _resolver = new AssemblyDependencyResolver(asmPath);
-            Resolving += AssemblyContext_Resolving;
+            _contexts = new Dictionary<string, WeakReference>();
         }
 
         /*************************************************************/
 
-        private Assembly AssemblyContext_Resolving(AssemblyLoadContext arg1, AssemblyName arg2)
+        public Assembly Load(string assemblyPath)
         {
-            throw new NotImplementedException();
-        }
-
-        public Assembly ResolveAssemblyToPath(string assemblyPath)
-        {
-            return LoadFromAssemblyPath(assemblyPath);
-        }
-
-        protected override Assembly Load(AssemblyName assemblyName)
-        {
-            string assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            if (assemblyPath != null)
+            WeakReference refCtx;
+            if (!_contexts.ContainsKey(assemblyPath))
             {
-                return LoadFromAssemblyPath(assemblyPath);
+                var asmCtx = new AssemblyContext(assemblyPath);
+                refCtx = new WeakReference(asmCtx, trackResurrection: true);
+                _contexts.Add(assemblyPath, refCtx);
             }
-
-            return null;
+            else
+            {
+                refCtx = _contexts[assemblyPath];
+            }
+            var asm = ((AssemblyContext)refCtx.Target).LoadFromAssemblyPath(assemblyPath);
+            return asm;
         }
 
-        protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
+        public void Unload(string assemblyPath)
         {
-            string libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            if (libraryPath != null)
-            {
-                return LoadUnmanagedDllFromPath(libraryPath);
-            }
+            if (!_contexts.ContainsKey(assemblyPath))
+                return;
+            var refCtx = _contexts[assemblyPath];
 
-            return IntPtr.Zero;
+            //https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
+            var asmCtx = (AssemblyContext)refCtx.Target;
+            asmCtx.Unload();
+            for (var i = 0; refCtx.IsAlive && i < 10; i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
     }
 #else
-    internal class AssemblyContext
+    public class AssemblyContextManager : IAssemblyContextManager
     {
         private readonly Dictionary<string, AppDomain> _domains;
         private readonly Dictionary<string, Assembly> _assemblies;
 
         /***************************************************************/
 
-        public AssemblyContext()
+        public AssemblyContextManager()
         {
             _domains = new Dictionary<string, AppDomain>();
             _assemblies = new Dictionary<string, Assembly>();
@@ -96,8 +95,10 @@ namespace Drill4Net.Injector.Core
                 return;
             //
             _assemblies.Remove(path);
-            var domen = _domains[path];
-            AppDomain.Unload(domen);
+            var domain = _domains[path];
+
+            //TODO: it's simplified... do it properly
+            AppDomain.Unload(domain);
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }

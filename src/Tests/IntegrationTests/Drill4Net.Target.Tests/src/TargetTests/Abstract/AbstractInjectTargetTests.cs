@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Testing;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Drill4Net.Target.Tests
 {
@@ -33,9 +33,16 @@ namespace Drill4Net.Target.Tests
             LoadTreeData();
         }
 
+        [OneTimeTearDown]
+        public void TearDownClass()
+        {
+            UnloadTarget();
+        }
+
         /****************************************************************************/
 
         protected abstract void LoadTarget();
+        protected abstract void UnloadTarget();
 
         [TestCaseSource(typeof(SourceData_Common), "Simple")]
         public void Simple_Ok(object target, MethodInfo mi, object[] args, List<string> checks)
