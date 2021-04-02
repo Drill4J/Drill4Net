@@ -44,6 +44,8 @@ namespace Drill4Net.Injector.Core
             if (!_contexts.ContainsKey(assemblyPath))
                 return;
             var refCtx = _contexts[assemblyPath];
+            if (!refCtx.IsAlive)
+                return;
 
             //https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
             var asmCtx = (AssemblyContext)refCtx.Target;

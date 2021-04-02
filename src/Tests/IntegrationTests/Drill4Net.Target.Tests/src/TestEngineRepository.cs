@@ -147,7 +147,7 @@ namespace Drill4Net.Target.Tests
                     var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asm);
                     if (!File.Exists(targerPath))
                         Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
-                    _asmCtxManager.Load(targerPath);
+                    _asmCtxManager.Unload(targerPath);
                 }
 
             }

@@ -18,19 +18,23 @@ namespace Drill4Net.Target.Tests
     [TestFixture]
     internal abstract class AbstractInjectTargetTests
     {
-        protected TestEngineRepository _testsRep;
-        private Dictionary<string, InjectedSimpleEntity> _pointMap;
-        private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
-        private InjectedSolution _tree;
+        protected static TestEngineRepository _testsRep;
+        private static Dictionary<string, InjectedSimpleEntity> _pointMap;
+        private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
+        private static InjectedSolution _tree;
 
         /****************************************************************************/
+
+        static AbstractInjectTargetTests()
+        {
+            _testsRep = new TestEngineRepository();
+            LoadTreeData();
+        }
 
         [OneTimeSetUp]
         public void SetupClass()
         {
-            _testsRep = new TestEngineRepository();
             LoadTarget();
-            LoadTreeData();
         }
 
         [OneTimeTearDown]
@@ -187,7 +191,7 @@ namespace Drill4Net.Target.Tests
         }
 
         #region Auxiliary funcs
-        private void LoadTreeData()
+        private static void LoadTreeData()
         {
             _tree = _testsRep.LoadTree();
             _parentMap = _tree.CalcParentMap();
