@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Drill4Net.Target.Common;
-using static Drill4Net.Target.NetCore.Tests.SourceDataCore;
+using static Drill4Net.Target.Tests.SourceDataCore;
 
-namespace Drill4Net.Target.NetCore.Tests
+namespace Drill4Net.Target.Tests
 {
     internal class SourceData_Common
     {
@@ -18,7 +18,7 @@ namespace Drill4Net.Target.NetCore.Tests
         public static InjectTarget TargetCommon { get; }
 
         private static readonly GenStr _genStr;
-        private static readonly Point _point;
+        private static readonly MyPoint _point;
         private static readonly NotEmptyStringEnumerator _strEnumerator;
         private static readonly Eventer _eventer;
         #endregion
@@ -32,7 +32,7 @@ namespace Drill4Net.Target.NetCore.Tests
             var asmLocation = t.Assembly.Location;
             //
             _genStr = new GenStr("");
-            _point = new Point();
+            _point = new MyPoint();
             _eventer = new Eventer();
             _strEnumerator = new NotEmptyStringEnumerator(null);
         }

@@ -9,16 +9,16 @@ using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Testing;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Drill4Net.Target.NetCore.Tests
+namespace Drill4Net.Target.Tests
 {
     //Despite the late binding, a reference to the injected target assembly
     //must be added to the project (as file), which in turn must be updated
     //externally each time the injection process is started (automatically)
 
     [TestFixture]
-    public partial class InjectTargetTests
+    internal abstract class AbstractInjectTargetTests
     {
-        private TestEngineRepository _testsRep;
+        protected TestEngineRepository _testsRep;
         private Dictionary<string, InjectedSimpleEntity> _pointMap;
         private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private InjectedSolution _tree;
@@ -29,11 +29,13 @@ namespace Drill4Net.Target.NetCore.Tests
         public void SetupClass()
         {
             _testsRep = new TestEngineRepository();
-            _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_NET48);
+            LoadTarget();
             LoadTreeData();
         }
 
         /****************************************************************************/
+
+        protected abstract void LoadTarget();
 
         [TestCaseSource(typeof(SourceData_Common), "Simple")]
         public void Simple_Ok(object target, MethodInfo mi, object[] args, List<string> checks)

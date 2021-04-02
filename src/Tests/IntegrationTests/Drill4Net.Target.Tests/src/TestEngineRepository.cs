@@ -6,7 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 
-namespace Drill4Net.Target.NetCore.Tests
+namespace Drill4Net.Target.Tests
 {
     internal class TestEngineRepository
     {
@@ -44,7 +44,7 @@ namespace Drill4Net.Target.NetCore.Tests
 
         /*******************************************************************************/
 
-        #region Load target
+        #region Loading target
         public void LoadTargetIntoMemory([NotNull] string moniker)
         {
             var monikerData = GetFolderMoniker(moniker);

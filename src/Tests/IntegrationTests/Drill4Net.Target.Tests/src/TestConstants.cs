@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Target.NetCore
+﻿namespace Drill4Net.Target.Tests
 {
     public static class TestConstants
     {

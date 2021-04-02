@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("Drill4Net.Target.NetCore.Tests")]
+[assembly: InternalsVisibleTo("Drill4Net.Target.Tests")]
 [assembly: InternalsVisibleTo("Drill4Net.Target.NetFramework.Tests")]
 
 namespace Drill4Net.Target.Common
@@ -1257,10 +1257,10 @@ namespace Drill4Net.Target.Common
 
         public bool Unsafe(bool cond)
         {
-            Point point;
+            MyPoint point;
             unsafe
             {
-                Point* p = &point;
+                MyPoint* p = &point;
                 p->x = cond ? 10 : 20;
                 p->y = 35;
                 Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");

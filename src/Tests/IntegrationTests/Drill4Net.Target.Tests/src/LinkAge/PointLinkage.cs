@@ -1,7 +1,7 @@
 ﻿using System;
 using Drill4Net.Injector.Core;
 
-namespace Drill4Net.Target.NetCore.Tests
+namespace Drill4Net.Target.Tests
 {
     internal class PointLinkage : IComparable
     {

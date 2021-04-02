@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Target.Common;
 
-namespace Drill4Net.Target.NetCore.Tests
+namespace Drill4Net.Target.Tests
 {
     internal static class SourceDataCore
     {

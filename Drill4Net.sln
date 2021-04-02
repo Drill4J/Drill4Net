@@ -44,7 +44,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Testing", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Core", "src\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj", "{4F7E6B2F-4AF1-444A-9753-3FB1EE3F554A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.NetCore.Tests", "src\Tests\IntegrationTests\Drill4Net.Target.NetCore.Tests\Drill4Net.Target.NetCore.Tests.csproj", "{049043DD-4F2B-465B-9BE4-3F5A623D8AB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests", "src\Tests\IntegrationTests\Drill4Net.Target.Tests\Drill4Net.Target.Tests.csproj", "{049043DD-4F2B-465B-9BE4-3F5A623D8AB4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{2D8768BC-205A-4BE5-8A42-66FAADF2CF7E}"
 EndProject

@@ -2,9 +2,9 @@
 //using System.Collections.Generic;
 //using System.Linq;
 //using NUnit.Framework;
-//using static Drill4Net.Target.NetCore.Tests.SourceDataCore;
+//using static Drill4Net.Target.Tests.SourceDataCore;
 
-//namespace Drill4Net.Target.NetCore.Tests
+//namespace Drill4Net.Target.Tests
 //{
 //    internal class SourceData_Net50
 //    {

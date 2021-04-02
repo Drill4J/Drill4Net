@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Drill4Net.Target.NetCore.Tests
+namespace Drill4Net.Target.Tests
 {
     public class PointLinkageProbeComparer : IComparer<PointLinkage>
     {
