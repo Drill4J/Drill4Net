@@ -2,7 +2,16 @@
 {
     public static class TestConstants
     {
-        public const string CLASS_DEFAULT = "InjectTarget";
+        #region Monikers
+        public const string MONIKER_NET50 = "net5.0";
+        public const string MONIKER_CORE31 = "netcoreapp3.1";
+        public const string MONIKER_CORE22 = "netcoreapp2.2";
+        public const string MONIKER_NET48 = "net48";
+        public const string MONIKER_NET45 = "net45";
+        #endregion
+
+        public const string CLASS_DEFAULT_SHORT = "InjectTarget";
+        public const string CLASS_DEFAULT_FULL = "Drill4Net.Target.Common.InjectTarget";
 
         public const string ASSEMBLY_COMMON = "Drill4Net.Target.Common.dll";
         public const string ASSEMBLY_NET31 = "Drill4Net.Target.Core31.dll";

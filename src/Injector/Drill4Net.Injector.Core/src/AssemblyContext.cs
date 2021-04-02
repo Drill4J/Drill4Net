@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.Core
 {
 #if NET5_0
     //https://docs.microsoft.com/ru-ru/dotnet/core/tutorials/creating-app-with-plugin-support
-    internal class AssemblyContext : AssemblyLoadContext
+    public class AssemblyContext : AssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _resolver;
 

@@ -4,6 +4,48 @@
         <name>Drill4Net.Injector.Core</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Injector.Core.FolderData">
+            <summary>
+            Data for assemblies and it's classes in folder for testing 
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Injector.Core.FolderData.Folder">
+            <summary>
+            Current folder(s) of the testing target
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Injector.Core.FolderData.Assemblies">
+            <summary>
+            Testing assemblies in the Folder: key is name of assembly's file, 
+            for example, "Drill4Net.Target.Common.dll", value is list 
+            of full class names (Namespace.Name)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Injector.Core.MonikerData.BaseFolder">
+            <summary>
+            Base folder(s) of the testing target
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Injector.Core.MonikerData.Folders">
+            <summary>
+            Testing folders in the BaseFolder
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Injector.Core.TestsOptions">
+            <summary>
+            Options for Test Engine
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Injector.Core.TestsOptions.Directory">
+            <summary>
+            Base directory of the testing targets
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Injector.Core.TestsOptions.Targets">
+            <summary>
+            What will be tested - by target moniker/assembly/class
+            </summary>
+        </member>
         <member name="T:Drill4Net.Injector.Core.AstEntity">
             <summary>
             Data about a class sent to Drill admin.

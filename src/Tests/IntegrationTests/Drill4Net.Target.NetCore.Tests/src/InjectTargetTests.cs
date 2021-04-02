@@ -18,10 +18,7 @@ namespace Drill4Net.Target.NetCore.Tests
     [TestFixture]
     public partial class InjectTargetTests
     {
-        private IInjectorRepository _rep;
-        private MainOptions _opts;
-        private object _targetCommon;
-
+        private TestEngineRepository _testsRep;
         private Dictionary<string, InjectedSimpleEntity> _pointMap;
         private Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private InjectedSolution _tree;
@@ -31,26 +28,9 @@ namespace Drill4Net.Target.NetCore.Tests
         [OneTimeSetUp]
         public void SetupClass()
         {
-            var dirName = InjectorRepository.GetExecutionDir();
-            var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-            _rep = new InjectorRepository(cfg_path);
-            _opts = _rep.Options;
-
-            //this is done on the post-build event of the Injector project
-            //var injector = new InjectorEngine(_rep);
-            //injector.Process();
-
-            //target assemblies
-            //var asms = _opts.Tests.Assemblies;
-            _targetCommon = SourceData_Common.TargetCommon; // LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_COMMON);
-            //LoadTargetIntoMemory(asms, targetDir, TestConstants.ASSEMBLY_NET5);
-
-            //tree info for targerPath
-            var baseDir = _opts.Tests.Directory;
-            if (baseDir.EndsWith("\\"))
-                baseDir = baseDir.Remove(baseDir.Length - 1, 1);
-            var targetDir = $"{baseDir}.{_opts.Destination.FolderPostfix}";
-            LoadTreeData(targetDir);
+            _testsRep = new TestEngineRepository();
+            _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_NET48);
+            LoadTreeData();
         }
 
         /****************************************************************************/
@@ -198,44 +178,9 @@ namespace Drill4Net.Target.NetCore.Tests
         }
 
         #region Auxiliary funcs
-        private object LoadTargetIntoMemory([NotNull]Dictionary<string, List<string>> assemblies, [NotNull] string targetDir,
-            [NotNull] string assemblyName, [NotNull] string className = TestConstants.CLASS_DEFAULT)
+        private void LoadTreeData()
         {
-            if (!assemblies.ContainsKey(assemblyName))
-                throw new ArgumentException($"Assembly [{assemblyName}] not found in config data");
-            var asmData = assemblies[assemblyName];
-            var classFullName = asmData.FirstOrDefault(a => a.EndsWith($".{className}", StringComparison.InvariantCultureIgnoreCase));
-            if (classFullName == null)
-                throw new ArgumentException($"Class [{className}] not found for assembly [{assemblyName}] in config");
-            //
-            var targerPath = Path.Combine(targetDir, assemblyName);
-            if (!File.Exists(targerPath))
-                Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
-            var asm = Assembly.LoadFrom(targerPath);
-            var type = asm.GetType(classFullName);
-            return Activator.CreateInstance(type);
-        }
-
-        private void LoadTreeData(string targetDir)
-        {
-            //search dir with files - there must be tree data
-            var curDir = targetDir;
-            while (true)
-            {
-                if (Directory.GetFiles(curDir, "*.dll").Length > 0)
-                    break;
-                var dirs = Directory.GetDirectories(curDir);
-                if (dirs.Length == 0)
-                    Assert.Fail($"Tree info not found in {targetDir}");
-                curDir = dirs[0];
-            }
-            
-            //read tree data
-            var treeHintPath = _rep.GetTreeFileHintPath(curDir);
-            if (!File.Exists(treeHintPath))
-                Assert.Fail($"File with hint about tree data not found: {treeHintPath}");
-            var treePath = File.ReadAllText(treeHintPath);
-            _tree = _rep.ReadInjectedTree(treePath);
+            _tree = _testsRep.LoadTree();
             _parentMap = _tree.CalcParentMap();
             _pointMap = _tree.CalcPointMap(_parentMap);
         }
@@ -345,7 +290,7 @@ namespace Drill4Net.Target.NetCore.Tests
             var link = new PointLinkage(asm, type, method, point);
             return link;
         }
-
+        
         private static void Check([NotNull]IList<PointLinkage> links, [NotNull]List<string> checks)
         {
             Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
