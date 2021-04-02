@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Drill4Net.Target.Tests
 {
@@ -14,9 +14,9 @@ namespace Drill4Net.Target.Tests
 
         /*****************************************************/
 
-        public TestInfo(MethodInfo info, List<string> checks = null, bool needSort = false)
+        public TestInfo(MethodInfo mi, List<string> checks = null, bool needSort = false)
         {
-            Info = info ?? throw new ArgumentNullException(nameof(info));
+            Info = mi ?? throw new ArgumentNullException(nameof(mi));
             Checks = checks ?? throw new ArgumentNullException(nameof(checks));
             NeedSort = needSort;
         }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
+using System.Reflection;
 
 namespace Drill4Net.Target.Tests
 {
@@ -47,32 +48,36 @@ namespace Drill4Net.Target.Tests
         /*******************************************************************************/
 
         #region Loading target
-        public void LoadTargetIntoMemory([NotNull] string moniker)
+        public Dictionary<string, object> LoadTargetIntoMemory([NotNull] string moniker)
         {
             var monikerData = GetMoniker(moniker);
-           
+
             //folders of interest in target
+            var objects = new Dictionary<string, object>();
             foreach (var folder in monikerData.Folders)
             {
-                var asms = folder.Assemblies;
-                if (asms == null)
-                    asms = _defaultFolderData.Assemblies;
+                var asmDatas = folder.Assemblies;
+                if (asmDatas == null)
+                    asmDatas = _defaultFolderData.Assemblies;
 
                 //asemblies
-                foreach (var asm in asms.Keys)
+                foreach (var asmFile in asmDatas.Keys)
                 {
-                    var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asm);
+                    var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asmFile);
                     if (!File.Exists(targerPath))
                         Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
                     
                     //classes
-                    var classes = asms[asm];
+                    var classes = asmDatas[asmFile];
                     foreach (var classFullName in classes)
                     {
-                        LoadTargetIntoMemoryByPath(targerPath, classFullName);
+                        var asm = LoadAssembly(targerPath);
+                        var obj = LoadType(asm, classFullName);
+                        objects.Add(classFullName, obj);
                     }
                 }
             }
+            return objects;
         }
 
         public object LoadDefaultTypeIntoMemory([NotNull] string moniker)
@@ -105,7 +110,8 @@ namespace Drill4Net.Target.Tests
                 var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, assemblyName);
                 if (!File.Exists(targerPath))
                     Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
-                return LoadTargetIntoMemoryByPath(targerPath, classFullName);
+                var asm = LoadAssembly(targerPath);
+                return LoadType(asm, classFullName);
             }
             return null;
         }
@@ -125,11 +131,15 @@ namespace Drill4Net.Target.Tests
             return monikerData;
         }
 
-        public object LoadTargetIntoMemoryByPath([NotNull] string assemblyPath, [NotNull] string classFullName = TestConstants.CLASS_DEFAULT_FULL)
+        public Assembly LoadAssembly([NotNull] string assemblyPath)
         {
             if (string.IsNullOrWhiteSpace(assemblyPath))
                 throw new ArgumentNullException(nameof(assemblyPath));
-            var asm = _asmCtxManager.Load(assemblyPath);
+            return _asmCtxManager.Load(assemblyPath);
+        }
+
+        internal object LoadType([NotNull] Assembly asm, [NotNull] string classFullName = TestConstants.CLASS_DEFAULT_FULL)
+        {
             var type = asm.GetType(classFullName);
             return Activator.CreateInstance(type);
         }

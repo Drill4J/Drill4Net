@@ -16,12 +16,15 @@ namespace Drill4Net.Target.Tests
     //externally each time the injection process is started (automatically)
 
     [TestFixture]
+    [NonParallelizable]
     internal abstract class AbstractInjectTargetTests
     {
         protected static TestEngineRepository _testsRep;
         private static Dictionary<string, InjectedSimpleEntity> _pointMap;
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
+        private Dictionary<string, object> _types;
+        protected object _target;
 
         /****************************************************************************/
 
@@ -31,32 +34,49 @@ namespace Drill4Net.Target.Tests
             LoadTreeData();
         }
 
+        /****************************************************************************/
+
         [OneTimeSetUp]
         public void SetupClass()
         {
-            LoadTarget();
+            _types = LoadTarget();
+            SetTarget();
         }
 
         [OneTimeTearDown]
         public void TearDownClass()
         {
-            UnloadTarget();
+            //it seems that unloading assemblies from memory technically works,
+            //but the tests although with the correct statistics
+            //do not look very nice in NUnit
+
+            //UnloadTarget();
         }
 
         /****************************************************************************/
 
-        protected abstract void LoadTarget();
+        protected abstract Dictionary<string, object> LoadTarget();
         protected abstract void UnloadTarget();
 
-        [TestCaseSource(typeof(SourceData_Common), "Simple")]
-        public void Simple_Ok(object target, MethodInfo mi, object[] args, List<string> checks)
+        protected virtual void SetTarget()
         {
-            Assert.NotNull(mi, $"MethodInfo is empty for: {mi}");
+            _target = _types[TestConstants.CLASS_DEFAULT_FULL];
+        }
+
+        [TestCaseSource(typeof(SourceData_Common), "Simple")]
+        public void Base_Simple(string methodName, object[] args, List<string> checks)
+        {
+            Assert.NotNull(methodName, $"Method name is empty");
+
+            //arrange
+            var mi = _target.GetType().GetMethod(methodName);
+            if (mi == null)
+                Assert.Fail($"Methof [{methodName}] not found");
 
             #region Act
             try
             {
-                mi.Invoke(target, args);
+                mi.Invoke(_target, args);
             }
             catch (FileNotFoundException fex)
             {
@@ -76,8 +96,8 @@ namespace Drill4Net.Target.Tests
             var funcs = GetFunctions();
             Assert.IsTrue(funcs.Count == 1);
 
-            var sig = GetFullSignature(mi);
-            var source = SourceDataCore.GetSourceFromFullSig(target, sig);
+            var sig = SourceDataCore.GetFullSignature(mi);
+            var source = SourceDataCore.GetSourceFromFullSig(_target, sig);
             Assert.True(funcs.ContainsKey(source));
             var links = funcs[source];
 
@@ -87,27 +107,29 @@ namespace Drill4Net.Target.Tests
             #endregion
         }
 
-        [TestCaseSource(typeof(SourceData_Common), "ParentChild")]
-        public void Parent_Child_Ok(object target, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
+        [TestCaseSource(typeof(SourceData_Common), "Parented")]
+        public void Base_Parented(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
             #region Arrange
             Assert.IsTrue(inputs?.Length > 0, "Method inputs is empty");
             var parentData = inputs[0];
-            var mi = parentData.Info;
-            if(string.IsNullOrWhiteSpace(parentData.Signature))
-                Assert.NotNull(mi, $"Parent method info is empty");
+            var mName = parentData.Info.Name;
+            var mi = _target.GetType().GetMethod(mName); //need re-create for current real type
+
+            if (string.IsNullOrWhiteSpace(parentData.Signature))
+                Assert.NotNull(mi, $"Method [{mName}] not found");
             #endregion
             #region Act
             try
             {
                 if (isAsync)
                 {
-                    var task = mi.Invoke(target, args) as Task;
+                    var task = mi.Invoke(_target, args) as Task;
                     task.Wait();
                 }
                 else
                 {
-                    mi.Invoke(target, args);
+                    mi.Invoke(_target, args);
                 }
             }
             catch (FileNotFoundException fex)
@@ -145,7 +167,7 @@ namespace Drill4Net.Target.Tests
                 {
                     var data = inputs[i];
                     var source = string.IsNullOrWhiteSpace(data.Signature) ?
-                        SourceDataCore.GetSourceFromFullSig(target, GetFullSignature(data.Info)) :
+                        SourceDataCore.GetSourceFromFullSig(_target, SourceDataCore.GetFullSignature(data.Info)) : //for child methods exactly data.Info, not for current mi
                         data.Signature;
                     Assert.True(funcs.ContainsKey(source));
                     var points = funcs[source];
@@ -213,41 +235,6 @@ namespace Drill4Net.Target.Tests
             var lastInd = links.Count - 1;
             if (links[lastInd].Point.PointType == CrossPointType.Return)
                 links.RemoveAt(lastInd);
-        }
-
-        internal static string GetFullSignature(MethodInfo mi)
-        {
-            var func = mi.Name;
-            var type = mi.DeclaringType;
-            var className = $"{type.Namespace}.{type.Name}";
-
-            //parameters
-            var pars = mi.GetParameters();
-            var parNames = string.Empty;
-            var lastInd = pars.Length - 1;
-            for (var j = 0; j <= lastInd; j++)
-            {
-                var p = pars[j].ParameterType;
-                var pName = p.FullName;
-                if (pName.Contains("Version=")) //need simplify strong named type
-                {
-                    pName = $"{p.Namespace}.{p.Name}<{string.Join(",", p.GenericTypeArguments.Select(a => a.FullName))}>";
-                }
-                parNames += pName;
-                if (j < lastInd)
-                    parNames += ",";
-            }
-
-            //return type
-            var retType = mi.ReturnType.FullName;
-            if (retType.Contains("Version=")) //need simplify strong named type
-            {
-                retType = mi.ReturnParameter.ToString()
-                    .Replace("[", "<").Replace("]", ">").Replace(" ", null);
-            }
-            var sig = $"{retType} {className}::{func}({parNames})";
-
-            return sig;
         }
 
         private Dictionary<string, List<PointLinkage>> GetFunctions()

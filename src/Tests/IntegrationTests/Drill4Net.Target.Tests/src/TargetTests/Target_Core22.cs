@@ -1,10 +1,12 @@
-﻿namespace Drill4Net.Target.Tests
+﻿using System.Collections.Generic;
+
+namespace Drill4Net.Target.Tests
 {
     internal class Target_Core22 : AbstractInjectTargetTests
     {
-        protected override void LoadTarget()
+        protected override Dictionary<string, object> LoadTarget()
         {
-            _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_CORE22);
+            return _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_CORE22);
         }
 
         protected override void UnloadTarget()

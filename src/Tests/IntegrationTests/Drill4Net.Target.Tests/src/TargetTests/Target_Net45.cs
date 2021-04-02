@@ -1,10 +1,12 @@
-﻿namespace Drill4Net.Target.Tests
+﻿using System.Collections.Generic;
+
+namespace Drill4Net.Target.Tests
 {
     internal class Target_Net45 : AbstractInjectTargetTests
     {
-        protected override void LoadTarget()
+        protected override Dictionary<string, object> LoadTarget()
         {
-            _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_NET45);
+            return _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_NET45);
         }
 
         protected override void UnloadTarget()

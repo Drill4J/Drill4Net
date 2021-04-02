@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Target.Common;
+using System.Linq;
 
 namespace Drill4Net.Target.Tests
 {
@@ -161,34 +162,36 @@ namespace Drill4Net.Target.Tests
         }
         #endregion
         #region GetCase
-        internal static TestCaseData GetCase(object target, MethodInfo mi, object[] pars, List<string> checks)
+        //simple
+        internal static TestCaseData GetCase(MethodInfo mi, object[] pars, List<string> checks)
         {
             var name = mi.Name;
             var caption = GetCaption(name, pars);
             var category = GetCategory(name);
-            return new TestCaseData(target, mi, pars, checks)
+            return new TestCaseData(mi.Name, pars, checks)
                 .SetCategory(category)
                 .SetName(caption);
         }
 
-        internal static TestCaseData GetCase(object target, object[] pars, params TestInfo[] input)
+        internal static TestCaseData GetCase(object[] pars, params TestInfo[] input)
         {
-            return GetCase(target, pars, false, false, false, input);
+            return GetCase(pars, false, false, false, input);
         }
 
-        internal static TestCaseData GetCase(object target, object[] pars, bool ignoreEnterReturns, params TestInfo[] input)
+        internal static TestCaseData GetCase(object[] pars, bool ignoreEnterReturns, params TestInfo[] input)
         {
-            return GetCase(target, pars, false, false, ignoreEnterReturns, input);
+            return GetCase(pars, false, false, ignoreEnterReturns, input);
         }
 
-        internal static TestCaseData GetCase(object target, object[] pars, bool isAsync, bool ignoreEnterReturns,
+        internal static TestCaseData GetCase(object[] pars, bool isAsync, bool ignoreEnterReturns,
             params TestInfo[] input)
         {
-            return GetCase(target, pars, isAsync, false, ignoreEnterReturns, input);
+            return GetCase(pars, isAsync, false, ignoreEnterReturns, input);
         }
 
-        internal static TestCaseData GetCase(object target, object[] pars, bool isAsync, bool isBunch,
-            bool ignoreEnterReturns, params TestInfo[] input)
+        //parented
+        internal static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, 
+            params TestInfo[] input)
         {
             Assert.IsNotNull(input);
             Assert.True(input.Length > 0);
@@ -196,7 +199,7 @@ namespace Drill4Net.Target.Tests
             var name = input[0].Info.Name;
             var caption = GetCaption(name, pars);
             var category = GetCategory(name);
-            return new TestCaseData(target, pars, isAsync, isBunch, ignoreEnterReturns, input)
+            return new TestCaseData(pars, isAsync, isBunch, ignoreEnterReturns, input)
                 .SetCategory(category)
                 .SetName(caption);
         }
@@ -230,18 +233,75 @@ namespace Drill4Net.Target.Tests
             return GetSourceFromFullSig(target, GetFullSignature(target, shortSig));
         }
 
+        internal static string GetSourceFromFullSig(Assembly asm, string fullSig)
+        {
+            var asmName = GetModuleName(asm);
+            return CreateMethodSource(asmName, fullSig);
+        }
+
         internal static string GetSourceFromFullSig(object target, string fullSig)
         {
             var asmName = GetModuleName(target);
-            return $"{asmName};{fullSig}";
+            return CreateMethodSource(asmName, fullSig);
+        }
+
+        internal static string CreateMethodSource(string moduleName, string methodFullSig)
+        {
+            return $"{moduleName};{methodFullSig}";
         }
 
         internal static string GetFullSignature(object target, string shortSig)
         {
+            var asm = GetAssembly(target);
+            return GetFullSignatureFromAssembly(asm, shortSig);
+        }
+
+        internal static string GetFullSignatureFromAssembly(Assembly asm, string shortSig)
+        {
             var ar = shortSig.Split(' ');
             var ret = ar[0];
             var name = ar[1];
-            return $"{ret} {GetAssembly(target).GetName().Name}.InjectTarget::{name}";
+            return $"{ret} {asm.GetName().Name}.InjectTarget::{name}";
+        }
+
+        internal static string GetFullSignature(MethodInfo mi)
+        {
+            var func = mi.Name;
+            var type = mi.DeclaringType;
+            var className = $"{type.Namespace}.{type.Name}";
+
+            //parameters
+            var pars = mi.GetParameters();
+            var parNames = string.Empty;
+            var lastInd = pars.Length - 1;
+            for (var j = 0; j <= lastInd; j++)
+            {
+                var p = pars[j].ParameterType;
+                var pName = p.FullName;
+                if (pName.Contains("Version=")) //need simplify strong named type
+                {
+                    pName = $"{p.Namespace}.{p.Name}<{string.Join(",", p.GenericTypeArguments.Select(a => a.FullName))}>";
+                }
+                parNames += pName;
+                if (j < lastInd)
+                    parNames += ",";
+            }
+
+            //return type
+            var retType = mi.ReturnType.FullName;
+            if (retType.Contains("Version=")) //need simplify strong named type
+            {
+                retType = mi.ReturnParameter.ToString()
+                    .Replace("[", "<").Replace("]", ">").Replace(" ", null);
+            }
+            var sig = $"{retType} {className}::{func}({parNames})";
+
+            return sig;
+        }
+
+        internal static string GetModuleName(Assembly asm)
+        {
+            return asm.ManifestModule.Name;
         }
 
         internal static string GetModuleName(object target)

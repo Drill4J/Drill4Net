@@ -49,7 +49,8 @@ namespace Drill4Net.Injector.Core
 
             //https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
             var asmCtx = (AssemblyContext)refCtx.Target;
-            asmCtx.Unload();
+            if (refCtx.IsAlive)
+                asmCtx.Unload();
             for (var i = 0; refCtx.IsAlive && i < 10; i++)
             {
                 GC.Collect();
