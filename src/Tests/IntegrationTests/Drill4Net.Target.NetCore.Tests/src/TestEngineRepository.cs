@@ -44,7 +44,31 @@ namespace Drill4Net.Target.NetCore.Tests
 
         /*******************************************************************************/
 
-        public object LoadTargetIntoMemory([NotNull] string moniker)
+        #region Load target
+        public void LoadTargetIntoMemory([NotNull] string moniker)
+        {
+            var monikerData = GetFolderMoniker(moniker);
+            foreach (var folder in monikerData.Folders)
+            {
+                //assemblies
+                var asms = folder.Assemblies;
+                if (asms == null)
+                    asms = _defaultFolderData.Assemblies;
+                foreach (var asm in asms.Keys)
+                {
+                    var classes = asms[asm];
+                    foreach (var classFullName in classes)
+                    {
+                        var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asm);
+                        if (!File.Exists(targerPath))
+                            Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
+                        LoadTargetIntoMemoryByPath(targerPath, classFullName);
+                    }
+                }
+            }
+        }
+
+        public object LoadDefaultTypeIntoMemory([NotNull] string moniker)
         {
             return LoadTypeIntoMemory(moniker, TestConstants.ASSEMBLY_COMMON);
         }
@@ -52,19 +76,8 @@ namespace Drill4Net.Target.NetCore.Tests
         public object LoadTypeIntoMemory([NotNull]string moniker, [NotNull] string assemblyName, 
             [NotNull] string className = TestConstants.CLASS_DEFAULT_SHORT)
         {
-            //target moniker
-            if (!_targets.ContainsKey(moniker))
-                throw new ArgumentException($"Moniker [{moniker}] not found in config data");
-            var monikerData = _targets[moniker];
-            if (monikerData == null)
-                throw new ArgumentException($"Moniker data for [{moniker}] is empty");
-
-            //folders
-            var folders = monikerData.Folders;
-            if (folders == null)
-                folders = new List<FolderData> { _defaultFolderData };
-
-            foreach (var folder in folders)
+            var monikerData = GetFolderMoniker(moniker);
+            foreach (var folder in monikerData.Folders)
             {
                 //assemblies
                 var asms = folder.Assemblies;
@@ -88,6 +101,22 @@ namespace Drill4Net.Target.NetCore.Tests
             return null;
         }
 
+        internal MonikerData GetFolderMoniker([NotNull] string moniker)
+        {
+            //target moniker
+            if (!_targets.ContainsKey(moniker))
+                throw new ArgumentException($"Moniker [{moniker}] not found in config data");
+            var monikerData = _targets[moniker];
+            if (monikerData == null)
+                throw new ArgumentException($"Moniker data for [{moniker}] is empty");
+
+            //folders
+            var folders = monikerData.Folders;
+            if (monikerData.Folders == null)
+                monikerData.Folders = new List<FolderData> { _defaultFolderData };
+            return monikerData;
+        }
+
         public object LoadTargetIntoMemoryByPath([NotNull] string assemblyPath, [NotNull] string classFullName = TestConstants.CLASS_DEFAULT_FULL)
         {
             if (string.IsNullOrWhiteSpace(assemblyPath))
@@ -97,6 +126,7 @@ namespace Drill4Net.Target.NetCore.Tests
             var type = asm.GetType(classFullName);
             return Activator.CreateInstance(type);
         }
+        #endregion
 
         public InjectedSolution LoadTree()
         {
