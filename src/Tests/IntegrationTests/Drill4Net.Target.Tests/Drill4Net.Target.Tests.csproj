@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
+	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,13 +25,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+    <ProjectReference Include="..\..\Targets\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
     <ProjectReference Include="..\Agent\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Drill4Net.Target.Common">
-      <HintPath>..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\Drill4Net.Target.Common.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

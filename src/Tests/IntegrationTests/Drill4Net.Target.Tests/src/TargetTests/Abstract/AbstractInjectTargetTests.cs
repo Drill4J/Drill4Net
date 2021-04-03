@@ -23,7 +23,6 @@ namespace Drill4Net.Target.Tests
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
         private Dictionary<string, object> _types;
-        protected object _target;
 
         /****************************************************************************/
 
@@ -39,7 +38,6 @@ namespace Drill4Net.Target.Tests
         public void SetupClass()
         {
             _types = LoadTarget();
-            SetTarget();
         }
 
         [OneTimeTearDown]
@@ -57,25 +55,18 @@ namespace Drill4Net.Target.Tests
         protected abstract Dictionary<string, object> LoadTarget();
         protected abstract void UnloadTarget();
 
-        protected virtual void SetTarget()
-        {
-            _target = _types[TestConstants.CLASS_DEFAULT_FULL];
-        }
-
         [TestCaseSource(typeof(SourceData_Common), "Simple")]
-        public void Base_Simple(string methodName, object[] args, List<string> checks)
+        public void Base_Simple(MethodInfo mi, object[] args, List<string> checks)
         {
-            Assert.NotNull(methodName, $"Method name is empty");
+            Assert.NotNull(mi, $"Method info is empty");
 
             //arrange
-            var mi = _target.GetType().GetMethod(methodName);
-            if (mi == null)
-                Assert.Fail($"Methof [{methodName}] not found");
+            var target = SourceData_Common.Target;
 
             #region Act
             try
             {
-                mi.Invoke(_target, args);
+                mi.Invoke(target, args);
             }
             catch (FileNotFoundException fex)
             {
@@ -96,7 +87,7 @@ namespace Drill4Net.Target.Tests
             Assert.IsTrue(funcs.Count == 1);
 
             var sig = SourceDataCore.GetFullSignature(mi);
-            var source = SourceDataCore.GetSourceFromFullSig(_target, sig);
+            var source = SourceDataCore.GetSourceFromFullSig(target, sig);
             Assert.True(funcs.ContainsKey(source));
             var links = funcs[source];
 
@@ -107,28 +98,26 @@ namespace Drill4Net.Target.Tests
         }
 
         [TestCaseSource(typeof(SourceData_Common), "Parented")]
-        public void Base_Parented(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
+        public void Base_Parented(MethodInfo mi, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
             #region Arrange
             Assert.IsTrue(inputs?.Length > 0, "Method inputs is empty");
+
+            var target = SourceData_Common.Target;
             var parentData = inputs[0];
             var mName = parentData.Info.Name;
-            var mi = _target.GetType().GetMethod(mName); //need re-create for current real type
-
-            if (string.IsNullOrWhiteSpace(parentData.Signature))
-                Assert.NotNull(mi, $"Method [{mName}] not found");
             #endregion
             #region Act
             try
             {
                 if (isAsync)
                 {
-                    var task = mi.Invoke(_target, args) as Task;
+                    var task = mi.Invoke(target, args) as Task;
                     task.Wait();
                 }
                 else
                 {
-                    mi.Invoke(_target, args);
+                    mi.Invoke(target, args);
                 }
             }
             catch (FileNotFoundException fex)
@@ -166,7 +155,7 @@ namespace Drill4Net.Target.Tests
                 {
                     var data = inputs[i];
                     var source = string.IsNullOrWhiteSpace(data.Signature) ?
-                        SourceDataCore.GetSourceFromFullSig(_target, SourceDataCore.GetFullSignature(data.Info)) : //for child methods exactly data.Info, not for current mi
+                        SourceDataCore.GetSourceFromFullSig(target, SourceDataCore.GetFullSignature(data.Info)) : //for child methods exactly data.Info, not for current mi
                         data.Signature;
                     Assert.True(funcs.ContainsKey(source));
                     var points = funcs[source];

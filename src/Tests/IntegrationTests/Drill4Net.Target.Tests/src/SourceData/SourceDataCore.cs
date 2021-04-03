@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Target.Common;
-using System.Linq;
 
 namespace Drill4Net.Target.Tests
 {
@@ -168,7 +168,7 @@ namespace Drill4Net.Target.Tests
             var name = mi.Name;
             var caption = GetCaption(name, pars);
             var category = GetCategory(name);
-            return new TestCaseData(mi.Name, pars, checks)
+            return new TestCaseData(mi, pars, checks)
                 .SetCategory(category)
                 .SetName(caption);
         }
@@ -196,10 +196,11 @@ namespace Drill4Net.Target.Tests
             Assert.IsNotNull(input);
             Assert.True(input.Length > 0);
 
-            var name = input[0].Info.Name;
+            var mi = input[0].Info;
+            var name = mi.Name;
             var caption = GetCaption(name, pars);
             var category = GetCategory(name);
-            return new TestCaseData(pars, isAsync, isBunch, ignoreEnterReturns, input)
+            return new TestCaseData(mi, pars, isAsync, isBunch, ignoreEnterReturns, input)
                 .SetCategory(category)
                 .SetName(caption);
         }

@@ -95,7 +95,7 @@ namespace Drill4Net.Target.Common
             Switch_Tuple("German", "morning");
             Switch_Tuple("German", "evening");
 #endif
-#if NET5_0
+//#if NET5_0
             Switch_Relational(-5);
             Switch_Relational(5);
             Switch_Relational(10);
@@ -104,7 +104,7 @@ namespace Drill4Net.Target.Common
             Switch_Logical(-5);
             Switch_Logical(5);
             Switch_Logical(10);
-#endif
+//#endif
             #endregion
             #region Elvis
             Elvis_NotNull();
@@ -602,7 +602,7 @@ namespace Drill4Net.Target.Common
             return s;
         }
 #endif
-#if NET5_0
+//#if NET5_0
         //C#9
         internal double Switch_Relational(double sum)
         {
@@ -629,7 +629,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_Logical)}: {s}");
             return s;
         }
-#endif
+//#endif
         #endregion
         #region Cycle
         public bool Cycle_For(int count)
