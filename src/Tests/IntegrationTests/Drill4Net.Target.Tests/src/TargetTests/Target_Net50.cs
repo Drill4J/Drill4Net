@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using NUnit.Framework;
 
 namespace Drill4Net.Target.Tests
@@ -8,7 +7,7 @@ namespace Drill4Net.Target.Tests
     {
         protected override Dictionary<string, object> LoadTarget()
         {
-            return _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_NET50);
+            return _testsRep.LoadTarget(TestConstants.MONIKER_NET50);
         }
 
         protected override void UnloadTarget()
@@ -18,16 +17,16 @@ namespace Drill4Net.Target.Tests
 
         /******************************************************************/
 
-        [TestCaseSource(typeof(SourceData_Common), "Net50_Simple")]
-        public void Net50_Simple(object target, MethodInfo mi, object[] args, List<string> checks)
+        [TestCaseSource(typeof(SourceData_Net50), "Net50_Simple")]
+        public void Net50_Simple(string methodName, object[] args, List<string> check)
         {
-            
+            Base_Simple(methodName, args, check);
         }
 
-        [TestCaseSource(typeof(SourceData_Common), "Net50_Parented")]
-        public void Net50_Parented(object target, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
+        [TestCaseSource(typeof(SourceData_Net50), "Net50_Parented")]
+        public void Net50_Parented(object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
-            
+            Base_Parented(args, isAsync, isBunch, ignoreEnterReturns, inputs);
         }
     }
 }

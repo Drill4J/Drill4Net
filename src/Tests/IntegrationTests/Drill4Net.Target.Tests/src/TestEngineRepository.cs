@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
-using System.Reflection;
 
 namespace Drill4Net.Target.Tests
 {
@@ -48,7 +48,7 @@ namespace Drill4Net.Target.Tests
         /*******************************************************************************/
 
         #region Loading target
-        public Dictionary<string, object> LoadTargetIntoMemory([NotNull] string moniker)
+        public Dictionary<string, object> LoadTarget([NotNull] string moniker)
         {
             var monikerData = GetMoniker(moniker);
 
@@ -63,15 +63,15 @@ namespace Drill4Net.Target.Tests
                 //asemblies
                 foreach (var asmFile in asmDatas.Keys)
                 {
-                    var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asmFile);
-                    if (!File.Exists(targerPath))
-                        Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
+                    var targetPath = Path.Combine(_targetDir, monikerData.BaseFolder, asmFile);
+                    if (!File.Exists(targetPath))
+                        Assert.Fail($"Path for target not found: {targetPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
                     
                     //classes
                     var classes = asmDatas[asmFile];
                     foreach (var classFullName in classes)
                     {
-                        var asm = LoadAssembly(targerPath);
+                        var asm = LoadAssembly(targetPath);
                         var obj = LoadType(asm, classFullName);
                         objects.Add(classFullName, obj);
                     }
@@ -80,12 +80,12 @@ namespace Drill4Net.Target.Tests
             return objects;
         }
 
-        public object LoadDefaultTypeIntoMemory([NotNull] string moniker)
+        public object LoadDefaultType([NotNull] string moniker)
         {
-            return LoadTypeIntoMemory(moniker, TestConstants.ASSEMBLY_COMMON);
+            return LoadType(moniker, TestConstants.ASSEMBLY_COMMON);
         }
 
-        public object LoadTypeIntoMemory([NotNull]string moniker, [NotNull] string assemblyName, 
+        public object LoadType([NotNull]string moniker, [NotNull] string assemblyName, 
             [NotNull] string className = TestConstants.CLASS_DEFAULT_SHORT)
         {
             var monikerData = GetMoniker(moniker);
@@ -120,7 +120,7 @@ namespace Drill4Net.Target.Tests
         {
             //target moniker
             if (!_targets.ContainsKey(moniker))
-                throw new ArgumentException($"Moniker [{moniker}] not found in config data");
+                Assert.Ignore($"Moniker [{moniker}] not found in config data");
             var monikerData = _targets[moniker];
             if (monikerData == null)
                 throw new ArgumentException($"Moniker data for [{moniker}] is empty");

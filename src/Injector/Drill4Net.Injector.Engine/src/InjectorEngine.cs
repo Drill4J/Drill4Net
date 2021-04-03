@@ -157,12 +157,13 @@ namespace Drill4Net.Injector.Engine
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
 
-            //must process?
+            //must process? need to know the version of the assembly before reading it via cecil
             var ext = Path.GetExtension(filePath);
             var version = versions.ContainsKey(filePath) ? versions[filePath] : _rep.GetAssemblyVersion(filePath);
             if (version == null || (ext == ".exe" && version.Target == AssemblyVersionType.NetCore))
                 return;
 
+            #region Read params
             ReaderParameters readerParams = new ReaderParameters
             {
                 // we will write to another file, so we don't need this
@@ -191,11 +192,25 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             #endregion
+            #endregion
 
             // read subject assembly with symbols
             using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
 
+            //var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(System.Runtime.Versioning.TargetFrameworkAttribute).Name);
+            //string targetVersion = null;
+            //if (targetVersionAtr != null)
+            //{
+            //    targetVersion = targetVersionAtr.ConstructorArguments[0].Value?.ToString();
+            //    Console.WriteLine($"Version={targetVersion}");
+            //}
+
+            var type2 = assembly.MainModule.GetType("Drill4Net.Target.Common.InjectTarget");
+            if (type2 != null)
+            {
+                var methods2 = type2.GetMethods().Where(a => a.Name.StartsWith("Switch_")).ToList();
+            }
             #region Tree
             //directory
             var treeDir = tree.GetDirectory(sourceDir);

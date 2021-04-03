@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Drill4Net.Target.Common;
@@ -14,7 +13,7 @@ namespace Drill4Net.Target.Tests
         private const string CATEGORY_MISC = "Misc";
         #endregion
         #region FIELDs
-        public static InjectTarget _target;
+        protected static readonly InjectTarget _target;
         private static readonly GenStr _genStr;
         private static readonly MyPoint _point;
         private static readonly NotEmptyStringEnumerator _strEnumerator;

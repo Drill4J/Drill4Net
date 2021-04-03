@@ -6,7 +6,7 @@ namespace Drill4Net.Target.Tests
     {
         protected override Dictionary<string, object> LoadTarget()
         {
-            return _testsRep.LoadTargetIntoMemory(TestConstants.MONIKER_NET45);
+            return _testsRep.LoadTarget(TestConstants.MONIKER_NET45);
         }
 
         protected override void UnloadTarget()

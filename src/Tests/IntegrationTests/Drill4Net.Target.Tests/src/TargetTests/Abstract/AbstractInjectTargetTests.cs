@@ -16,7 +16,6 @@ namespace Drill4Net.Target.Tests
     //externally each time the injection process is started (automatically)
 
     [TestFixture]
-    [NonParallelizable]
     internal abstract class AbstractInjectTargetTests
     {
         protected static TestEngineRepository _testsRep;

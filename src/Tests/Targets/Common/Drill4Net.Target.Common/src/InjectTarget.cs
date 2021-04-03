@@ -75,12 +75,7 @@ namespace Drill4Net.Target.Common
             Switch_WithoutDefault(0);
             Switch_WithoutDefault(1);
             Switch_WithoutDefault(2);
-#if NETCOREAPP
-            Switch_AsReturn(-1);
-            Switch_AsReturn(0);
-            Switch_AsReturn(1);
-            Switch_AsReturn(2);
-#endif
+
             Switch_When(-1);
             Switch_When(0);
             Switch_When(1);
@@ -90,11 +85,17 @@ namespace Drill4Net.Target.Common
             Switch_Property(true);
 
 #if NETCOREAPP
+            Switch_AsReturn(-1);
+            Switch_AsReturn(0);
+            Switch_AsReturn(1);
+            Switch_AsReturn(2);
+
             Switch_Tuple("English", "morning");
             Switch_Tuple("English", "evening");
             Switch_Tuple("German", "morning");
             Switch_Tuple("German", "evening");
 #endif
+#if NET5_0
             Switch_Relational(-5);
             Switch_Relational(5);
             Switch_Relational(10);
@@ -103,6 +104,7 @@ namespace Drill4Net.Target.Common
             Switch_Logical(-5);
             Switch_Logical(5);
             Switch_Logical(10);
+#endif
             #endregion
             #region Elvis
             Elvis_NotNull();
@@ -265,9 +267,10 @@ namespace Drill4Net.Target.Common
             Enumerator_Implementation();
             Event();
 
+#if NETFRAMEWORK
             ContextBound(-1);
             ContextBound(1);
-
+#endif
             ExpandoObject(false);
             ExpandoObject(true);
 
@@ -536,20 +539,6 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_WithoutDefault)}: {a} -> no default");
         }
 
-#if NETCOREAPP
-        public string Switch_AsReturn(int a)
-        {
-            Console.WriteLine($"{nameof(Switch_AsReturn)}: {a}");
-
-            return a switch
-            {
-                -1 => "",
-                0 => "A",
-                1 => "B",
-                _ => "default",
-            };
-        }
-#endif
         public void Switch_When(int a)
         {
             //in IL code it presents as set of simply 'if/else',
@@ -586,6 +575,19 @@ namespace Drill4Net.Target.Common
         }
 
 #if NETCOREAPP
+        public string Switch_AsReturn(int a)
+        {
+            Console.WriteLine($"{nameof(Switch_AsReturn)}: {a}");
+
+            return a switch
+            {
+                -1 => "",
+                0 => "A",
+                1 => "B",
+                _ => "default",
+            };
+        }
+
         public string Switch_Tuple(string lang, string daytime)
         {
             var s = (lang, daytime) switch
@@ -600,6 +602,7 @@ namespace Drill4Net.Target.Common
             return s;
         }
 #endif
+#if NET5_0
         //C#9
         internal double Switch_Relational(double sum)
         {
@@ -626,6 +629,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_Logical)}: {s}");
             return s;
         }
+#endif
         #endregion
         #region Cycle
         public bool Cycle_For(int count)
@@ -1247,14 +1251,14 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Enumerator_Implementation)}: {s}");
         }
 
-        //only for NetFramework?
+#if NETFRAMEWORK
         public bool ContextBound(int prop)
         {
             new ContextBound(prop);
             Console.WriteLine($"{nameof(ContextBound)}: {prop}");
             return true;
         }
-
+#endif
         public bool Unsafe(bool cond)
         {
             MyPoint point;
