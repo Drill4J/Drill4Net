@@ -5,6 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
 	<DefineConstants>NET_CORE</DefineConstants>
 	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,7 +37,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)src\Tests\IntegrationTests\Drill4Net.Target.Tests\post_build_cfg.yml" />
+    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)src\Tests\IntegrationTests\Projects\Drill4Net.Target.Tests.Common\post_build_cfg.yml" />
   </Target>
 
 </Project>

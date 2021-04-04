@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,6 +11,8 @@ using Mono.Cecil.Rocks;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
 using Serilog;
+using System.Globalization;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -37,7 +38,7 @@ namespace Drill4Net.Injector.Engine
 
         /***************************************************************************************/
 
-        public InjectorEngine([NotNull] IInjectorRepository rep)
+        public InjectorEngine( IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
 
@@ -53,32 +54,54 @@ namespace Drill4Net.Injector.Engine
             return Process(_rep.Options);
         }
 
-        public InjectedSolution Process([NotNull] MainOptions opts)
+        public InjectedSolution Process( MainOptions opts)
         {
             Log.Information("Process starting...");
             _rep.ValidateOptions(opts);
 
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
-            _rep.CopySource(sourceDir, destDir);
+
+            //copying of all needed data in needed targets
+            var monikers = opts.Tests?.Targets;
+            _rep.CopySource(sourceDir, destDir, monikers);
 
             var versions = DefineTargetVersions(sourceDir);
             _curPointUid = -1;
-            //
+            
+            //tree
             var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
             {
                 StartTime = DateTime.Now,
                 DestinationPath = destDir,
             };
-            ProcessDirectory(sourceDir, versions, opts, tree);
-            tree.FinishTime = DateTime.Now;
+
+            //targets (which in cfg)
+            var dirs = Directory.GetDirectories(sourceDir, "*");
+            foreach (var dir in dirs)
+            {
+                var yes = monikers == null || monikers.Any(a =>
+                {
+                    var x = Path.Combine(sourceDir, a.Value.BaseFolder);
+                    if (x.EndsWith("\\"))
+                        x = x.Substring(0, x.Length - 1);
+                    var z = Path.Combine(dir, a.Key);
+                    return x == z;
+                });
+
+                if(yes) 
+                    ProcessDirectory(dir, versions, opts, tree);
+            }
+
+            //copying tree data to target root directories
             InjectTree(tree);
+            tree.FinishTime = DateTime.Now;
             //
             return tree;
         }
 
-        internal void ProcessDirectory([NotNull] string directory, [NotNull] Dictionary<string, AssemblyVersion> versions, 
-            [NotNull] MainOptions opts, [NotNull] InjectedSolution tree)
+        internal void ProcessDirectory( string directory,  Dictionary<string, AssemblyVersion> versions, 
+             MainOptions opts,  InjectedSolution tree)
         {
             //files
             var files = _rep.GetAssemblies(directory);
@@ -95,7 +118,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal Dictionary<string, AssemblyVersion> DefineTargetVersions([NotNull] string directory)
+        internal Dictionary<string, AssemblyVersion> DefineTargetVersions( string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException($"Source directory not exists: [{directory}]");
@@ -135,15 +158,15 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
 
-        private void ProcessAssembly([NotNull] string filePath, [NotNull] Dictionary<string, 
-            AssemblyVersion> versions, [NotNull] MainOptions opts, [NotNull] InjectedSolution tree)
+        private void ProcessAssembly( string filePath,  Dictionary<string, 
+            AssemblyVersion> versions,  MainOptions opts,  InjectedSolution tree)
         {
             #region Reading
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
 
             //filter
-            var ns1 = Path.GetFileNameWithoutExtension(filePath).Split(".")[0];
+            var ns1 = Path.GetFileNameWithoutExtension(filePath).Split('.')[0];
             if (_restrictNamespaces.Contains(ns1))
                 return;
 
@@ -198,19 +221,16 @@ namespace Drill4Net.Injector.Engine
             using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
 
-            //var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(System.Runtime.Versioning.TargetFrameworkAttribute).Name);
-            //string targetVersion = null;
-            //if (targetVersionAtr != null)
-            //{
-            //    targetVersion = targetVersionAtr.ConstructorArguments[0].Value?.ToString();
-            //    Console.WriteLine($"Version={targetVersion}");
-            //}
-
-            var type2 = assembly.MainModule.GetType("Drill4Net.Target.Common.InjectTarget");
-            if (type2 != null)
+            #region Target version
+            var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(System.Runtime.Versioning.TargetFrameworkAttribute).Name);
+            string targetVersion = null;
+            if (targetVersionAtr != null)
             {
-                var methods2 = type2.GetMethods().Where(a => a.Name.StartsWith("Switch_")).ToList();
+                targetVersion = targetVersionAtr.ConstructorArguments[0].Value?.ToString();
+                Console.WriteLine($"Version = {targetVersion}");
             }
+            var targetFolder = ConvertTargetTypeToFolder(targetVersion);
+            #endregion
             #region Tree
             //directory
             var treeDir = tree.GetDirectory(sourceDir);
@@ -393,6 +413,7 @@ namespace Drill4Net.Injector.Engine
                             var extName = extOp.Name;
                             if (extName.StartsWith("<") || extTypeFullName.Contains(">d__") || extFullname.Contains("|"))
                             {
+                                Log.Verbose($"Converting [{extOp}]");
                                 try
                                 {
                                     //null is norm for anonymous types
@@ -412,8 +433,9 @@ namespace Drill4Net.Injector.Engine
                                         var methodKey = cgRealMethodName ?? realMethodName;
                                         if (realCgType != null && methodKey != null)
                                         {
-                                            var mkey = GetMethodByClassKey(realCgType.Fullname, methodKey);
-                                            treeFunc = _injMethodByClasses[mkey];
+                                            var mkey = GetMethodKeyByClass(realCgType.Fullname, methodKey);
+                                            if(_injMethodByClasses.ContainsKey(mkey))
+                                                treeFunc = _injMethodByClasses[mkey];
                                             var nestTypes = extType.Filter(typeof(InjectedType), true);
                                             foreach (InjectedType nestType in nestTypes)
                                             {
@@ -441,10 +463,12 @@ namespace Drill4Net.Injector.Engine
                                         }
                                     }
                                 }
-                                catch 
-                                { 
-                                    //log
+                                catch(Exception ex)
+                                {
+                                    Log.Error(ex, $"Getting real name of func method: [{extOp}]");
                                 }
+                                //
+                                //Log.Verbose($"Converted to: [{treeFunc.FromMethod}]");
                             }
                         }
                         #endregion
@@ -686,20 +710,29 @@ namespace Drill4Net.Injector.Engine
                 }
             }
 
-            // ensure we referencing only ref assemblies
-            var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
-            if (systemPrivateCoreLib != null)
-                module.AssemblyReferences.Remove(systemPrivateCoreLib);
+
             //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
             #endregion
             #region Proxy class
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
             var profilerOpts = opts.Profiler;
+            var profDir = profilerOpts.Directory;
+            if (!Directory.EnumerateFiles(profDir).Any() && targetFolder != null)
+                profDir = Path.Combine(profDir, targetFolder) + "\\";
             var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
-                                                            profilerOpts.Directory, profilerOpts.AssemblyName, //real profiler
+                                                            profDir, profilerOpts.AssemblyName, //real profiler
                                                             profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
-            proxyGenerator.InjectTo(assembly);
+            var isNetFx = version.Target == AssemblyVersionType.NetFramework;
+            proxyGenerator.InjectTo(assembly, isNetFx);
+            //
+            // ensure we referencing only ref assemblies
+            if (isNetFx)
+            {
+                var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+                if (systemPrivateCoreLib != null)
+                    module.AssemblyReferences.Remove(systemPrivateCoreLib);
+            }
             #endregion
             #region Saving
             Environment.CurrentDirectory = destDir;
@@ -919,6 +952,18 @@ namespace Drill4Net.Injector.Engine
             #endregion
         }
 
+        internal string ConvertTargetTypeToFolder(string fullType)
+        {
+            if (fullType.StartsWith(".NETFramework"))
+                return null;
+            var ar = fullType.Split('=');
+            var version = ar[1].Replace("v", null);
+            var digit = float.Parse(version, CultureInfo.InvariantCulture);
+            if (fullType.StartsWith(".NETCoreApp"))
+                return digit < 5 ? $"netcoreapp{version}" : $"net{version}";
+            return null;
+        }
+
         internal void TryGetRealNames(TypeDefinition curType, string typeName, string methodName, 
             bool isCompilerGenerated, bool isAsyncStateMachine, 
             out string realTypeName, out string realMethodName)
@@ -935,16 +980,16 @@ namespace Drill4Net.Injector.Engine
                     var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
                     if (isMoveNext || !fromMethodName && typeName.Contains("/"))
                     {
-                        var ar = typeName.Split("/");
+                        var ar = typeName.Split('/');
                         var el = ar[ar.Length - 1];
-                        realMethodName = el.Split(">")[0].Replace("<", null);
+                        realMethodName = el.Split('>')[0].Replace("<", null);
                     }
                     else
                     if (fromMethodName)
                     {
                         var tmp = methodName.Replace("<>", null);
                         if (tmp.Contains("<"))
-                            realMethodName = tmp.Split(' ')[1].Split("<")[1].Split(">")[0];
+                            realMethodName = tmp.Split(' ')[1].Split('<')[1].Split('>')[0];
                     }
                 }
                 catch (Exception ex)
@@ -995,8 +1040,8 @@ namespace Drill4Net.Injector.Engine
             return type == MethodType.EventAdd || type == MethodType.EventRemove;
         }
 
-        internal List<MethodDefinition> GetAllMethods([NotNull] InjectedType treeParentClass, [NotNull] TypeDefinition type, 
-            [NotNull] MainOptions opts)
+        internal List<MethodDefinition> GetAllMethods( InjectedType treeParentClass,  TypeDefinition type, 
+             MainOptions opts)
         {
             var methods = new List<MethodDefinition>();
             var typeFullname = treeParentClass.Fullname;
@@ -1027,19 +1072,17 @@ namespace Drill4Net.Injector.Engine
                         continue;
                 }
                 //
-                var sourceType = CreateMethodSource(ownMethod);
-                var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName, sourceType);
-                if (_injMethods.ContainsKey(treeFunc.Fullname)) //strange...
-                {
-                }
-                _injMethods.Add(treeFunc.Fullname, treeFunc);
+                var methodSource = CreateMethodSource(ownMethod);
+                var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName, methodSource);
+                if (!_injMethods.ContainsKey(treeFunc.Fullname)) //strange...
+                    _injMethods.Add(treeFunc.Fullname, treeFunc);
+                else { }
                 methods.Add(ownMethod);
                 //
-                var method = GetMethodByClassKey(typeFullname, treeFunc.Name);
-                if (_injMethodByClasses.ContainsKey(method))
-                { 
-                }
-                _injMethodByClasses.Add(method, treeFunc);
+                var method = GetMethodKeyByClass(typeFullname, treeFunc.Name);
+                if (!_injMethodByClasses.ContainsKey(method))
+                    _injMethodByClasses.Add(method, treeFunc);
+                else { }
                 treeParentClass.AddChild(treeFunc);
             }
             #endregion
@@ -1060,7 +1103,7 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
-        private string GetMethodByClassKey(string typeFullname, string methodShortName)
+        private string GetMethodKeyByClass(string typeFullname, string methodShortName)
         {
             return $"{typeFullname}::{methodShortName}";
         }
@@ -1164,17 +1207,19 @@ namespace Drill4Net.Injector.Engine
             _rep.WriteInjectedTree(path, tree);
         }
 
-        internal async void NotifyAboutTree(InjectedSolution tree)
+        internal void NotifyAboutTree(InjectedSolution tree)
         {
             //in each folder create file with path to tree data
             var dirs = tree.GetAllDirectories();
             if (dirs.Any())
             {
                 var pathInText = _rep.GetTreeFilePath(tree);
+                Log.Debug($"Tree saved to: [{pathInText}]");
                 foreach (var dir in dirs)
                 {
                     var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
-                    await File.WriteAllTextAsync(hintPath, pathInText);
+                    File.WriteAllText(hintPath, pathInText);
+                    Log.Debug($"Hint placed to: [{hintPath}]");
                 }
             }
         }

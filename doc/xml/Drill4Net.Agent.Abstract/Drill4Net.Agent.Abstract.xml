@@ -4,5 +4,70 @@
         <name>Drill4Net.Agent.Abstract</name>
     </assembly>
     <members>
+        <member name="P:Drill4Net.Agent.Abstract.ProfilingData.MethodByProbUid">
+            <summary>
+            Get the method full name (by Injector standard) against Guid of cross-point (probe).
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.ProfilingData.AstMethodByName">
+            <summary>
+            Get the AstMethod for transfer to the API by full name (by Injector standard).
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.AstEntity">
+            <summary>
+            Data about a class sent to Drill admin.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstEntity.Path">
+            <summary>
+            The assembly where the class is located.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstEntity.Name">
+            <summary>
+            The name of the class, with namespace.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstEntity.Methods">
+            <summary>
+            Information about methods in the class.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Path">
+            <summary>
+            Namespace? Full source?
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Name">
+            <summary>
+            Name of the method.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Params">
+            <summary>
+            Lists the parameters.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstMethod.ReturnType">
+            <summary>
+            The return type.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Probes">
+            <summary>
+            The identifiers of the probes added to the method.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Count">
+            <summary>
+            The count of probes added to the method.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.ClassName">
+            <summary>
+            Full class name
+            </summary>
+        </member>
     </members>
 </doc>

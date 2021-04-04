@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
    <!--Copy NuGet packages to output directory-->
@@ -17,8 +18,9 @@
      <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Agent.Testing</OutputPath>
    </PropertyGroup>
    <ItemGroup>
-     <ProjectReference Include="..\..\..\..\Agent\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
-     <ProjectReference Include="..\..\..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+     <ProjectReference Include="..\..\..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+     <ProjectReference Include="..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+     <ProjectReference Include="..\..\..\..\Injector\Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj" />
    </ItemGroup>
 
   <ItemGroup>

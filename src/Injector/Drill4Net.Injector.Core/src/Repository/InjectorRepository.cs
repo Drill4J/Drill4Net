@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Drill4Net.Common;
+using Drill4Net.Profiling.Tree;
 using Serilog;
 using YamlDotNet.Serialization;
 
@@ -33,9 +35,7 @@ namespace Drill4Net.Injector.Core
 
             //for posibility of relative pathes in misc executables: Test Engine, VS' post-build events,
             //RnD project which may located on misc levels of directories
-            _baseDir = //isTestEngine ? 
-                //Path.GetFullPath(Path.Combine(Path.GetDirectoryName(cfgPath), "..\\")) :
-                GetExecutionDir();
+            _baseDir = GetExecutionDir();
             _deser = new Deserializer();
             Options = GenerateOptions();
         }
@@ -87,12 +87,26 @@ namespace Drill4Net.Injector.Core
             return destDir;
         }
 
-        public void CopySource(string sourcePath, string destPath)
+        public void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {
             if (Directory.Exists(destPath))
                 Directory.Delete(destPath, true);
             Directory.CreateDirectory(destPath);
-            DirectoryCopy(sourcePath, destPath);
+
+            if (monikers == null)
+            {
+                DirectoryCopy(sourcePath, destPath);
+            }
+            else
+            {
+                foreach (var moniker in monikers.Keys)
+                {
+                    var data = monikers[moniker];
+                    var sourcePath2 = Path.Combine(sourcePath, data.BaseFolder);
+                    var destPath2 = Path.Combine(destPath, data.BaseFolder);
+                    DirectoryCopy(sourcePath2, destPath2);
+                }
+            }
         }
 
         public void DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)

@@ -14,11 +14,12 @@
             It provides Reflection access to real profiling functionality with caching.
             </summary>
         </member>
-        <member name="M:Drill4Net.Injection.ProfilerProxyGenerator.InjectTo(Mono.Cecil.AssemblyDefinition)">
+        <member name="M:Drill4Net.Injection.ProfilerProxyGenerator.InjectTo(Mono.Cecil.AssemblyDefinition,System.Boolean)">
             <summary>
             Generating IL instructions for a class ProfilerProxy by Mono.Cecil
             </summary>
             <param name="assembly"></param>
+            <param name="isNetFX"></param>
         </member>
     </members>
 </doc>

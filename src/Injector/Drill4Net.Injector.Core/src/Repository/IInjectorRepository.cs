@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Drill4Net.Profiling.Tree;
+using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
@@ -16,7 +17,7 @@ namespace Drill4Net.Injector.Core
         string GetFullPath(string path);
         string GetSourceDirectory(MainOptions opts);
         string GetDestinationDirectory(MainOptions opts, string currentDir);
-        void CopySource(string sourcePath, string destPath);
+        void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers);
         void DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true);
 
         IEnumerable<string> GetAssemblies(string directory);

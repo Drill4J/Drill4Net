@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Drill4Net.Profiling.Tree</name>
+    </assembly>
+    <members>
+        <member name="P:Drill4Net.Profiling.Tree.InjectedType.FromMethod">
+            <summary>
+            For compiler generated classes which was created 
+            compiler for some business methods
+            </summary>
+        </member>
+    </members>
+</doc>

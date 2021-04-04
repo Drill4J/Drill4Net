@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Drill4Net.Target.Common;
 
-namespace Drill4Net.Target.Core31.Debug
+namespace Drill4Net.Target.Core31.App
 {
     class Program
     {

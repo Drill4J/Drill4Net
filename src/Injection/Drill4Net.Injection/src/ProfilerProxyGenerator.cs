@@ -54,13 +54,16 @@ namespace Drill4Net.Injection
         /// Generating IL instructions for a class ProfilerProxy by Mono.Cecil
         /// </summary>
         /// <param name="assembly"></param>
-        public void InjectTo(AssemblyDefinition assembly)
+        /// <param name="isNetFX"></param>
+        public void InjectTo(AssemblyDefinition assembly, bool isNetFX = false)
         {
 			if (assembly == null)
 				throw new ArgumentNullException(nameof(assembly));
 
-            #region ClassDeclaration : ProfilerProxy
-            var t1 = new TypeDefinition(ProxyNs, ProxyClass, TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit | TypeAttributes.Public, assembly.MainModule.TypeSystem.Object);
+			var coreLib = isNetFX ? "System.Runtime" : "System.Private.CoreLib";
+
+			#region ClassDeclaration : ProfilerProxy
+			var t1 = new TypeDefinition(ProxyNs, ProxyClass, TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit | TypeAttributes.Public, assembly.MainModule.TypeSystem.Object);
 			assembly.MainModule.Types.Add(t1);
 			t1.BaseType = assembly.MainModule.TypeSystem.Object;
 
@@ -84,7 +87,7 @@ namespace Drill4Net.Injection
 			//var asm = Assembly.LoadFrom(profPath);
 			var lv_asm4 = new VariableDefinition(assembly.MainModule.ImportReference(typeof(System.Reflection.Assembly)));
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_asm4);
-			var Call5 = il_ProfilerProxy_cctor_.Create(OpCodes.Call, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "LoadFrom", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.String")));
+			var Call5 = il_ProfilerProxy_cctor_.Create(OpCodes.Call, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "LoadFrom", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.String")));
 			var Ldloc6 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_profPath1);
 			il_ProfilerProxy_cctor_.Append(Ldloc6);
 			il_ProfilerProxy_cctor_.Append(Call5);
@@ -96,7 +99,7 @@ namespace Drill4Net.Injection
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_type8);
 			var Ldloc9 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_asm4);
 			il_ProfilerProxy_cctor_.Append(Ldloc9);
-			var Callvirt10 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "GetType", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
+			var Callvirt10 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "GetType", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
 			var Ldstr11 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, $"{ProfilerNs}.{ProfilerClass}");
 			il_ProfilerProxy_cctor_.Append(Ldstr11);
 			il_ProfilerProxy_cctor_.Append(Callvirt10);
@@ -106,7 +109,7 @@ namespace Drill4Net.Injection
 			//_methInfo = type.GetMethod("Process");
 			var Ldloc13 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_type8);
 			il_ProfilerProxy_cctor_.Append(Ldloc13);
-			var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
+			var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
 			var Ldstr15 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, ProfilerFunc);
 			il_ProfilerProxy_cctor_.Append(Ldstr15);
 			il_ProfilerProxy_cctor_.Append(Callvirt14);

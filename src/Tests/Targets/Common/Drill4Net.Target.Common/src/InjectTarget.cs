@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("Drill4Net.Target.Tests")]
-[assembly: InternalsVisibleTo("Drill4Net.Target.NetFramework.Tests")]
+[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Common")]
+[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
 
 namespace Drill4Net.Target.Common
 {
@@ -176,7 +176,7 @@ namespace Drill4Net.Target.Common
             Try_Finally(true);
             #endregion
             #region Async
-#if !NET45
+#if !NET461 && !NETSTANDARD2_0
             await Async_Stream();
             await Async_Stream_Cancellation();
 #endif
@@ -866,7 +866,7 @@ namespace Drill4Net.Target.Common
             return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C"), };
         }
 
-        private async Task<GenStr> ProcessElement(GenStr element, bool cond)
+        internal async Task<GenStr> ProcessElement(GenStr element, bool cond)
         {
             return await Task.Run(() =>
             {
@@ -877,7 +877,7 @@ namespace Drill4Net.Target.Common
         }
 
         #region Stream
-#if !NET45
+#if !NET461 && !NETSTANDARD2_0
         #region Simple
         public async Task Async_Stream()
         {
@@ -1284,8 +1284,8 @@ namespace Drill4Net.Target.Common
         private static void PrintInfo()
         {
             var s = "UNKNOWN";
-#if NET45
-            s = "Net45";
+#if NET461
+            s = "Net461";
 #endif
 #if NET48
             s = "Net48";

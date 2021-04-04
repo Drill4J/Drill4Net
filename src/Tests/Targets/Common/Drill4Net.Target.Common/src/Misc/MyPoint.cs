@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Target.Common
 {
-    struct MyPoint
+    public struct MyPoint
 
     {
         public int x;

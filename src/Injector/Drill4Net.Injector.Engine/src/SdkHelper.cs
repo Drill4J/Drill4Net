@@ -28,8 +28,9 @@ namespace Drill4Net.Injector.Engine
 
         private static string[] GetInstalledRefsVersions(string baseRefPath)
         {
-            var dir = Directory.GetDirectories(baseRefPath);
-            return Array.ConvertAll(dir, d => Path.GetRelativePath(baseRefPath, d));
+            throw new NotImplementedException();
+            //var dir = Directory.GetDirectories(baseRefPath);
+            //return Array.ConvertAll(dir, d => Path.GetRelativePath(baseRefPath, d)); //GetRelativePath not in netstandard2.0
         }
 
         public static string GetCoreAssemblyPath(string refVersion, string assemblyName) =>
