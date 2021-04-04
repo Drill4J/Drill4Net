@@ -324,7 +324,7 @@ namespace Drill4Net.Injector.Core
         }
         #endregion
         #region Logger
-        public void PrepareLogger()
+        public static void PrepareLogger()
         {
             Log.Logger = new LoggerConfiguration()
                .MinimumLevel.Verbose()
@@ -333,7 +333,7 @@ namespace Drill4Net.Injector.Core
                .CreateLogger();
         }
 
-        public string GetLogPath()
+        public static string GetLogPath()
         {
             return Path.Combine(GetExecutionDir(), "logs", "log.txt");
         }

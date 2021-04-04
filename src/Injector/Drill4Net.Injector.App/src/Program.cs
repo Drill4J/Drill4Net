@@ -9,6 +9,7 @@ namespace Drill4Net.Injector.App
     {
         static void Main(string[] args)
         {
+            InjectorRepository.PrepareLogger();
             IInjectorRepository rep = null;
             try
             {
@@ -17,7 +18,7 @@ namespace Drill4Net.Injector.App
                 Console.WriteLine($"{name} is started");
 
                 rep = new InjectorRepository(args);
-                rep.PrepareLogger();
+
                 Log.Debug("Arguments: {@Args}", args);
                 Log.Debug("Options: {@Options}", rep.Options);
 

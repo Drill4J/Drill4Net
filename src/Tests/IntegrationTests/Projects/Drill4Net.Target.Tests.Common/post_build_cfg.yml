@@ -29,5 +29,4 @@ Probes: # types of cross-cutting points
     Setter: false
     EventAdd: false
     EventRemove: false
-    Directory: ..\..\TargetApps\ #target dir relatively Test project
 Silent: true #no wait, no questions...

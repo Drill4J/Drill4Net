@@ -60,6 +60,7 @@ namespace Drill4Net.Injection
 			if (assembly == null)
 				throw new ArgumentNullException(nameof(assembly));
 
+			//TODO: check for NetFx!!!
 			var coreLib = isNetFX ? "System.Runtime" : "System.Private.CoreLib";
 
 			#region ClassDeclaration : ProfilerProxy

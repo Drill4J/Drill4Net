@@ -41,7 +41,6 @@ namespace Drill4Net.Injector.Engine
         public InjectorEngine( IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-
             _isNetCore = new ThreadLocal<bool?>();
             _mainVersion = new ThreadLocal<AssemblyVersion>();
             _restrictNamespaces = GetRestrictNamespaces();
@@ -76,11 +75,11 @@ namespace Drill4Net.Injector.Engine
                 DestinationPath = destDir,
             };
 
-            //targets (which in cfg)
+            //targets from in cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
-                var yes = monikers == null || monikers.Any(a =>
+                var yes = monikers == null || monikers.Count == 0 || monikers.Any(a =>
                 {
                     var x = Path.Combine(sourceDir, a.Value.BaseFolder);
                     if (x.EndsWith("\\"))
@@ -959,6 +958,8 @@ namespace Drill4Net.Injector.Engine
             var ar = fullType.Split('=');
             var version = ar[1].Replace("v", null);
             var digit = float.Parse(version, CultureInfo.InvariantCulture);
+            if (fullType.StartsWith(".NETStandard"))
+                return $"netstandard{version}";
             if (fullType.StartsWith(".NETCoreApp"))
                 return digit < 5 ? $"netcoreapp{version}" : $"net{version}";
             return null;

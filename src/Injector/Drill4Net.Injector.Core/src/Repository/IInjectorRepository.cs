@@ -7,9 +7,6 @@ namespace Drill4Net.Injector.Core
     {
         MainOptions Options { get; set; }
 
-        string GetLogPath();
-        void PrepareLogger();
-
         void NormalizePathes(MainOptions opts);
         void ValidateOptions();
         void ValidateOptions(MainOptions opts);
