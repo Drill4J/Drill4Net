@@ -5,7 +5,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Profiling.Tree;
 

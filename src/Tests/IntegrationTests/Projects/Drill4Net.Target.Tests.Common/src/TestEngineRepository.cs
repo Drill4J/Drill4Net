@@ -37,7 +37,9 @@ namespace Drill4Net.Target.Tests.Common
             _opts = _injRep.Options;
             _asmCtxManager = new AssemblyContextManager();
 
-            var baseDir = _opts.Tests.Directory;
+            var baseDir = _opts.Tests?.Directory;
+            if (baseDir == null)
+                Assert.Fail($"Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}");
             if (baseDir.EndsWith("\\"))
                 baseDir = baseDir.Remove(baseDir.Length - 1, 1);
             _targetDir = $"{baseDir}.{_opts.Destination.FolderPostfix}";
