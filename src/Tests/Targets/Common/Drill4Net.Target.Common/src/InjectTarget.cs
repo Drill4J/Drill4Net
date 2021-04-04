@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Common")]
-[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
+//[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
 
 namespace Drill4Net.Target.Common
 {

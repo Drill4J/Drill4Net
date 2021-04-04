@@ -117,7 +117,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal Dictionary<string, AssemblyVersion> DefineTargetVersions( string directory)
+        internal Dictionary<string, AssemblyVersion> DefineTargetVersions(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException($"Source directory not exists: [{directory}]");
@@ -157,7 +157,7 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
 
-        private void ProcessAssembly( string filePath,  Dictionary<string, 
+        private void ProcessAssembly(string filePath,  Dictionary<string, 
             AssemblyVersion> versions,  MainOptions opts,  InjectedSolution tree)
         {
             #region Reading
@@ -987,10 +987,13 @@ namespace Drill4Net.Injector.Engine
                     {
                         var tmp = methodName.Replace("<>", null);
                         if (tmp.Contains("<"))
-                            realMethodName = tmp.Split(' ')[1].Split('<')[1].Split('>')[0];
+                        {
+                            var ar = tmp.Split(' ');
+                            realMethodName = ar[ar.Length-1].Split('<')[1].Split('>')[0];
+                        }
                     }
                 }
-                catch (Exception ex)
+                catch
                 { }
 
                 if (curType.DeclaringType != null)
