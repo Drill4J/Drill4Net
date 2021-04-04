@@ -717,8 +717,8 @@ namespace Drill4Net.Injector.Engine
             //directory of profiler dependencies - for injected target on it's side
             var profilerOpts = opts.Profiler;
             var profDir = profilerOpts.Directory;
-            if (!Directory.EnumerateFiles(profDir).Any() && targetFolder != null)
-                profDir = Path.Combine(profDir, targetFolder) + "\\";
+            //if (!Directory.EnumerateFiles(profDir).Any() && targetFolder != null)
+            //    profDir = Path.Combine(profDir, targetFolder) + "\\";
             var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
                                                             profDir, profilerOpts.AssemblyName, //real profiler
                                                             profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);

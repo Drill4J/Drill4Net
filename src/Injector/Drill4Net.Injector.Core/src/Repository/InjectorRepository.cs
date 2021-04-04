@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using YamlDotNet.Serialization;
+using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
-using Serilog;
-using YamlDotNet.Serialization;
 
 namespace Drill4Net.Injector.Core
 {
