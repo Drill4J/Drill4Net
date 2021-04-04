@@ -8,11 +8,11 @@ namespace Drill4Net.Agent.Testing.Debug
         {
             try
             {
-                var profiler = new TesterProfiler();
+                var profiler = new TestingProfiler();
                 var asmName = $"Drill4Net.Target.Common.dll";
                 var funcSig = "System.Void Drill4Net.Agent.Testing.TesterProfiler::Register(System.String)";
                 profiler.Register($"^{asmName}^{funcSig}^{100}^If_6");
-                var points = TesterProfiler.GetPoints(asmName, funcSig, false);
+                var points = TestingProfiler.GetPoints(asmName, funcSig, false);
                 Console.WriteLine(string.Join(", ", points));
 
                 Console.WriteLine("Done.");

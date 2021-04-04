@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.RnD
     //add this in project's csproj file: 
     //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-    public class LoggerAgent : AbsractAgent
+    public class LoggerAgent : AbstractAgent
     {
         static LoggerAgent()
         {

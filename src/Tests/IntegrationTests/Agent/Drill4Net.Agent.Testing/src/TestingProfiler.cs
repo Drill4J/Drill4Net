@@ -12,7 +12,7 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Agent.Testing
 {
-    public class TesterProfiler : AbsractAgent
+    public class TestingProfiler : AbstractAgent
     {
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly InjectedSolution _tree;
@@ -21,7 +21,7 @@ namespace Drill4Net.Agent.Testing
 
         /*****************************************************************************/
 
-        static TesterProfiler()
+        static TestingProfiler()
         {
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
 
@@ -67,7 +67,6 @@ namespace Drill4Net.Agent.Testing
                 var probeUid = ar[3];
                 var probe = ar[4];
 
-                //if (ClarifyBusinessMethodName(asmName, realmethodName, ref funcName))
                 var businessMethod = GetBusinessMethodName(probeUid);
                 if(businessMethod != null)
                     AddPoint(asmName, businessMethod, $"{probeUid}:{probe}"); //in the prod profiler only uid needed
@@ -152,11 +151,11 @@ namespace Drill4Net.Agent.Testing
         {
             if (!_pointMap.ContainsKey(probeUid))
                 return null;
-            if (!(_pointMap[probeUid] is CrossPoint point))
+            if (_pointMap[probeUid] is not CrossPoint point)
                 return null;
-            if (!(_parentMap[point] is InjectedMethod method))
+            if (_parentMap[point] is not InjectedMethod method)
                 return null;
-            return method.FromMethod ?? method.Fullname;
+            return method.BusinessMethod;
         }
     }
 }

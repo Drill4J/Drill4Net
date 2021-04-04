@@ -2,7 +2,7 @@
 
 namespace Drill4Net.Agent.Abstract
 {
-    public abstract class AbsractAgent
+    public abstract class AbstractAgent
     {
         public abstract void Register(string data);
 

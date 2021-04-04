@@ -13,6 +13,8 @@ namespace Drill4Net.Profiling.Tree
 
         public string FromMethod { get; set; }
 
+        public string BusinessMethod => FromMethod ?? Fullname;
+
         public MethodSource SourceType { get; set; }
 
         /********************************************************************/

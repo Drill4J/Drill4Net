@@ -142,7 +142,7 @@ namespace Drill4Net.Target.Tests.Common
                 var sig = input.Signature;
                 if (funcs.ContainsKey(sig))
                     continue;
-                var probes2 = TesterProfiler.GetPointsIgnoringContext(sig);
+                var probes2 = TestingProfiler.GetPointsIgnoringContext(sig);
                 var links2 = ConvertToLinks(probes2);
                 funcs.Add(sig, links2);
             }
@@ -226,7 +226,7 @@ namespace Drill4Net.Target.Tests.Common
 
         private Dictionary<string, List<PointLinkage>> GetFunctions()
         {
-            var raw = TesterProfiler.GetFunctions(false);
+            var raw = TestingProfiler.GetFunctions(false);
             return ConvertToLinks(raw);
         }
 

@@ -3,7 +3,7 @@ using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.RnD
 {
-    public class PerfAgent : AbsractAgent
+    public class PerfAgent : AbstractAgent
     {
         public static void Do(long cnt)
         {
