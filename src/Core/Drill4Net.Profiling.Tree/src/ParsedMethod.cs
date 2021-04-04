@@ -9,7 +9,7 @@
 
         /*************************************************/
 
-        public ParsedMethod(string @namespace, string name, string @return, string parameters)
+        public ParsedMethod(string @namespace, string @return, string name, string parameters)
         {
             Namespace = @namespace;
             Name = name;

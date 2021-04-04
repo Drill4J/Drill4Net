@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Globalization;
+using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
-using Serilog;
-using System.Globalization;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Engine
@@ -219,7 +219,7 @@ namespace Drill4Net.Injector.Engine
             // read subject assembly with symbols
             using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
-
+            #endregion
             #region Target version
             var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(System.Runtime.Versioning.TargetFrameworkAttribute).Name);
             string targetVersion = null;
@@ -247,7 +247,6 @@ namespace Drill4Net.Injector.Engine
                 treeDir.AddChild(treeAsm);
             }
             #endregion
-            #endregion
             #region Commands
 
             // 1. Command ref
@@ -258,7 +257,7 @@ namespace Drill4Net.Injector.Engine
             var proxyNamespace = $"Injection_{Guid.NewGuid()}".Replace("-", null); //must be unique for each target asm
             var proxyTypeRef = new TypeReference(proxyNamespace, opts.Proxy.Class, module, module);
             var proxyMethRef = new MethodReference(opts.Proxy.Method, proxyReturnTypeRef, proxyTypeRef);
-            var strPar = new ParameterDefinition("data", Mono.Cecil.ParameterAttributes.None, module.TypeSystem.String);
+            var strPar = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
             proxyMethRef.Parameters.Add(strPar);
 
             // 2. 'Call' command
@@ -412,7 +411,7 @@ namespace Drill4Net.Injector.Engine
                             var extName = extOp.Name;
                             if (extName.StartsWith("<") || extTypeFullName.Contains(">d__") || extFullname.Contains("|"))
                             {
-                                Log.Verbose($"Converting [{extOp}]");
+                                //Log.Verbose($"Converting [{extOp}]");
                                 try
                                 {
                                     //null is norm for anonymous types
@@ -439,7 +438,7 @@ namespace Drill4Net.Injector.Engine
                                             foreach (InjectedType nestType in nestTypes)
                                             {
                                                 if (nestType.IsCompilerGenerated)
-                                                    nestType.FromMethod = treeFunc.Fullname;
+                                                    nestType.FromMethod = treeFunc.FromMethod ?? treeFunc.Fullname;
                                             }
                                         }
                                         if (extType != null)
@@ -466,8 +465,6 @@ namespace Drill4Net.Injector.Engine
                                 {
                                     Log.Error(ex, $"Getting real name of func method: [{extOp}]");
                                 }
-                                //
-                                //Log.Verbose($"Converted to: [{treeFunc.FromMethod}]");
                             }
                         }
                         #endregion

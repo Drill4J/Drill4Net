@@ -25,4 +25,10 @@
     <ProjectReference Include="..\Drill4Net.Target.Tests.Common\Drill4Net.Target.Tests.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Drill4Net.Target.Common">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Core22.App\netcoreapp2.2\Drill4Net.Target.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
