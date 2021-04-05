@@ -84,21 +84,32 @@ namespace Drill4Net.Injector.Core
 
                 if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
                 {
-                    //log: is strong name!
+                    Log.Warning($"Assembly [{filePath}] having the strong name");
                     return new AssemblyVersion() { IsStrongName = true };
                 }
 
                 var asm = _asmCtxManager.Load(filePath);
-                var versionAttr = asm.CustomAttributes
-                    .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
-                var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
+                var fs = asm.DefinedTypes.FirstOrDefault(a => a.FullName.Contains("-Target-Common-FSharp"));
+                string versionS;
+                if (fs != null)
+                {
+                    var ar = fs.FullName.Split('$'); //hm...
+                    versionS = "";
+                    throw new NotImplementedException($"Processing of FSharp not implemented yet");
+                }
+                else
+                {
+                    var versionAttr = asm.CustomAttributes
+                        .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
+                    versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
+                }
                 var version = new AssemblyVersion(versionS);
                 _asmCtxManager.Unload(filePath);
                 return version;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Can't get the version of assembly: [{filePath}]");
+                Log.Warning($"Getting assembly version for [{filePath}]: {ex.Message}");
                 return null;
             }
         }

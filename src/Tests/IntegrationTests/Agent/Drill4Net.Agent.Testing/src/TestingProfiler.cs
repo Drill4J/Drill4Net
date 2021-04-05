@@ -26,19 +26,30 @@ namespace Drill4Net.Agent.Testing
         {
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
             PrepareLogger();
+            Log.Debug("Initializing...");
 
-            //rep
-            var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-            var rep = new InjectorRepository(cfg_path);
-            var opts = rep.Options;
+            try
+            {
 
-            //tree info
-            var targetDir = opts.Destination.Directory;
-            var treePath = rep.GenerateTreeFilePath(targetDir);
-            _tree = rep.ReadInjectedTree(treePath);
-            _parentMap = _tree.CalcParentMap();
-            _pointMap = _tree.CalcPointMap(_parentMap);
+                //rep
+                var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
+                var rep = new InjectorRepository(cfg_path);
+                var opts = rep.Options;
+
+                //tree info
+                var targetDir = opts.Destination.Directory;
+                var treePath = rep.GenerateTreeFilePath(targetDir);
+                _tree = rep.ReadInjectedTree(treePath);
+                _parentMap = _tree.CalcParentMap();
+                _pointMap = _tree.CalcPointMap(_parentMap);
+
+                Log.Debug("Initialized.");
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Error of TestingProfiler initializing");
+            }
         }
 
         /*****************************************************************************/
