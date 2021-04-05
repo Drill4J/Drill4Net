@@ -83,6 +83,15 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.IfElse_FullA_HalfB), new object[] { true, true }, new List<string> { "If_6", "If_13" });
                 #endregion
                 #region Switch
+                yield return GetCase(GetInfo(Target.Switch_TwoCases_Into_IfElse), new object[] { 0 }, new List<string> { "If_15" });
+                yield return GetCase(GetInfo(Target.Switch_TwoCases_Into_IfElse), new object[] { 1 }, new List<string> { "If_20" });
+                yield return GetCase(GetInfo(Target.Switch_TwoCases_Into_IfElse), new object[] { -1 }, new List<string> { "If_24" });
+
+                yield return GetCase(GetInfo(Target.Switch_ThreeCases_Into_Switch), new object[] { 0 }, new List<string> { "If_12" });
+                yield return GetCase(GetInfo(Target.Switch_ThreeCases_Into_Switch), new object[] { 1 }, new List<string> { "If_17" });
+                yield return GetCase(GetInfo(Target.Switch_ThreeCases_Into_Switch), new object[] { 2 }, new List<string> { "If_22" });
+                yield return GetCase(GetInfo(Target.Switch_ThreeCases_Into_Switch), new object[] { -1 }, new List<string> { "Switch_9" });
+
                 yield return GetCase(GetInfo(Target.Switch_ExplicitDefault), new object[] { -1 }, new List<string> { "If_15" });
                 yield return GetCase(GetInfo(Target.Switch_ExplicitDefault), new object[] { 0 }, new List<string> { "If_25" });
                 yield return GetCase(GetInfo(Target.Switch_ExplicitDefault), new object[] { 1 }, new List<string> { "If_30" });
@@ -109,7 +118,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Switch_AsReturn), new object[] { 2 }, new List<string> { "Switch_16" });
 #endif
                 yield return GetCase(GetInfo(Target.Switch_When), new object[] { 0 }, new List<string> { "If_20", "If_28" });
-                yield return GetCase(GetInfo(Target.Switch_When), new object[] { 1 }, new List<string> { "If_20", "Else_34" });
+                yield return GetCase(GetInfo(Target.Switch_When), new object[] { 1 }, new List<string> { "If_20", "Else_34", "If_43" });
                 yield return GetCase(GetInfo(Target.Switch_When), new object[] { -1 }, new List<string> { "If_14" });
 
                 yield return GetCase(GetInfo((OneNullBoolFuncStr)Target.Switch_Property), new object[] { null }, new List<string> { "Else_30", "If_45", "If_72" });

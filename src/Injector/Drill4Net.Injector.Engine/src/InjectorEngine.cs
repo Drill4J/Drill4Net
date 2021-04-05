@@ -576,8 +576,10 @@ namespace Drill4Net.Injector.Engine
                             //the number of source 'cases' (two 'cases' - > 'if/else' branches are formed,
                             //and if more - 'switch'). This does not depend on having a 'default' statement,
                             //exiting the function by 'return' directly from 'case', or the compiler option
-                            //'Optimize code'. This also means that it is impossible to determine exactly
-                            //what was in the source code only from the IL code.
+                            //'Optimize code'. The exception only one: 'case' with 'when' condition always
+                            //will be generated whole construction as 'if/else' branches for any framework
+                            //version. This also means that it is impossible to determine exactly what was
+                            //in the source code only from the IL code.
 
                             ifStack.Push(instr);
                             if (code == Code.Switch)

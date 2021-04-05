@@ -61,6 +61,15 @@ namespace Drill4Net.Target.Common
 #endif
             #endregion
             #region Switch
+            Switch_TwoCases_Into_IfElse(-1);
+            Switch_TwoCases_Into_IfElse(0);
+            Switch_TwoCases_Into_IfElse(1);
+
+            Switch_ThreeCases_Into_Switch(-1);
+            Switch_ThreeCases_Into_Switch(0);
+            Switch_ThreeCases_Into_Switch(1);
+            Switch_ThreeCases_Into_Switch(2);
+
             Switch_ExplicitDefault(-1);
             Switch_ExplicitDefault(0);
             Switch_ExplicitDefault(1);
@@ -503,6 +512,31 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Switch
+        public void Switch_TwoCases_Into_IfElse(int a)
+        {
+            var s = "";
+            s = a switch
+            {
+                0 => "A",
+                1 => "B",
+                _ => "explicit default",
+            };
+            Console.WriteLine($"{nameof(Switch_TwoCases_Into_IfElse)}: {a} -> {s}");
+        }
+
+        public void Switch_ThreeCases_Into_Switch(int a)
+        {
+            var s = "";
+            s = a switch
+            {
+                0 => "A",
+                1 => "B",
+                2 => "C",
+                _ => "explicit default",
+            };
+            Console.WriteLine($"{nameof(Switch_ThreeCases_Into_Switch)}: {a} -> {s}");
+        }
+
         public void Switch_ExplicitDefault(int a)
         {
             var s = "";
@@ -541,13 +575,14 @@ namespace Drill4Net.Target.Common
 
         public void Switch_When(int a)
         {
-            //in IL code it presents as set of simply 'if/else',
-            //not as 'switch' statement
+            //in IL code it presents as set of simple 'if/else', not as 'switch'
+            //statement in any cases (not depend from count of these 'cases')
             var s = "default";
             switch (a)
             {
                 case int x when a < 0: s = "A"; x = 6; break;
                 case int x when a == 0: s = "B"; x = 3; break;
+                case int x when a > 0: s = "C"; x = 3; break;
                 default: Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}"); return;
             }
             Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}");
@@ -602,7 +637,6 @@ namespace Drill4Net.Target.Common
             return s;
         }
 #endif
-//#if NET5_0
         //C#9
         internal double Switch_Relational(double sum)
         {
@@ -629,7 +663,6 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Switch_Logical)}: {s}");
             return s;
         }
-//#endif
         #endregion
         #region Cycle
         public bool Cycle_For(int count)
