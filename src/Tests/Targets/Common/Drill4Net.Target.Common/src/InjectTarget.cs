@@ -249,6 +249,8 @@ namespace Drill4Net.Target.Common
             Cycle_For(-1);
             Cycle_For(3);
 
+            Cycle_Foreach();
+
             Cycle_While(-1);
             Cycle_While(3);
 
@@ -672,6 +674,15 @@ namespace Drill4Net.Target.Common
                 s += i;
             Console.WriteLine($"{nameof(Cycle_For)} -> {count}");
             return true;
+        }
+
+        public void Cycle_Foreach()
+        {
+            var ar = new string[] { "a", "b", "c" };
+            string str = null;
+            foreach (var s in ar)
+                str += s;
+            Console.WriteLine($"{nameof(Cycle_Foreach)} -> {str}");
         }
 
         public bool Cycle_While(int count)
