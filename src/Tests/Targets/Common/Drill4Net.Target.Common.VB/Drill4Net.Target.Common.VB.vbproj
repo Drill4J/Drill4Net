@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Drill4Net.Target.Common.VB</RootNamespace>
+	<TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.2;netstandard2.0;netstandard2.1;net461;net48</TargetFrameworks>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Common.VB\</OutputPath>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Common.VB\</OutputPath>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+</Project>

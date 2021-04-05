@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Drill4Net.Target.Common.VB;
 
 [assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Common")]
 //[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
@@ -176,6 +177,9 @@ namespace Drill4Net.Target.Common
             Try_Catch(false);
             Try_Catch(true);
 
+            Try_Catch_VB(false);
+            Try_Catch_VB(true);
+
             Try_CatchWhen(false, false);
             Try_CatchWhen(false, true);
             Try_CatchWhen(true, false);
@@ -183,6 +187,9 @@ namespace Drill4Net.Target.Common
 
             Try_Finally(false);
             Try_Finally(true);
+
+            Try_Finally_VB(false);
+            Try_Finally_VB(true);
             #endregion
             #region Async
 #if !NET461 && !NETSTANDARD2_0
@@ -293,6 +300,8 @@ namespace Drill4Net.Target.Common
 
             WinAPI(false);
             WinAPI(true);
+
+            CallAnotherTarget();
             #endregion
         }
 
@@ -1178,6 +1187,22 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Anonymous_Type)}: {cond} -> {tom.Age}");
         }
         #endregion
+        #region VB.NET
+        public void Try_Catch_VB(bool cond)
+        {
+            var lib = new VBLibrary();
+            lib.Try_Catch_VB(cond);
+        }
+
+        public void Try_Finally_VB(bool cond)
+        {
+            var lib = new VBLibrary();
+            lib.Try_Finally_VB(cond);
+        }
+        #endregion
+        #region F#
+
+        #endregion
         #region Misc
         #region WinAPI
         [DllImport("user32.dll")]
@@ -1243,6 +1268,12 @@ namespace Drill4Net.Target.Common
             return;
         }
         #endregion
+
+        public void CallAnotherTarget()
+        {
+            var s = new Another.AnotherTarget().WhoAreU();
+            Console.WriteLine($"{nameof(CallAnotherTarget)} -> {s}");
+        }
 
         public void Event()
         {
@@ -1348,8 +1379,5 @@ namespace Drill4Net.Target.Common
 
         //TODO: for, foreach, a || b (with PDB), EF, Visual Basic...
         //AutoProperty for F#
-
-        //Switch statement in Core 3.1 - the compiler creates unusual IL with a conditional branches that only has nop instructions, 
-        // no obvious ways to exercise the path and has then inserted a sequence point to boot
     }
 }

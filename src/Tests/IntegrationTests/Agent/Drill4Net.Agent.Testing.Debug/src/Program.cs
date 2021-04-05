@@ -12,8 +12,10 @@ namespace Drill4Net.Agent.Testing.Debug
                 var asmName = $"Drill4Net.Target.Common.dll";
                 var funcSig = "System.Void Drill4Net.Agent.Testing.TesterProfiler::Register(System.String)";
                 profiler.Register($"^{asmName}^{funcSig}^{100}^If_6");
-                var points = TestingProfiler.GetPoints(asmName, funcSig, false);
-                Console.WriteLine(string.Join(", ", points));
+                //
+                var funcs = TestingProfiler.GetFunctions(false);
+                foreach(var f in funcs.Keys)
+                Console.WriteLine($"{f}: {string.Join(", ", funcs[f])}");
 
                 Console.WriteLine("Done.");
             }

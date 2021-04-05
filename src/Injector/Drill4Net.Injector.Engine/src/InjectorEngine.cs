@@ -647,12 +647,17 @@ namespace Drill4Net.Injector.Engine
                             probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
                             var elseInst = GetInstruction(probData);
 
-                            var instr2 = instructions[i + 1];
-                            FixFinallyEnd(instr, elseInst, body.ExceptionHandlers);
-                            ReplaceJump(instr2, elseInst);
-                            processor.InsertBefore(instr2, elseInst);
-                            processor.InsertBefore(instr2, call);
-                            i += 2;
+                            try
+                            {
+                                var instr2 = instructions[i + 1];
+                                FixFinallyEnd(instr, elseInst, body.ExceptionHandlers);
+                                ReplaceJump(instr2, elseInst);
+                                processor.InsertBefore(instr2, elseInst);
+                                processor.InsertBefore(instr2, call);
+                                i += 2;
+                            }
+                            catch (Exception exx)
+                            { }
                             continue;
                         }
                         #endregion
@@ -1203,6 +1208,7 @@ namespace Drill4Net.Injector.Engine
                 "Microsoft",
                 "Windows",
                 "System",
+                "FSharp"
                 //...
             };
             return hash;

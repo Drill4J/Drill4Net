@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Drill4Net.Target.Common;
+using Drill4Net.Target.Common.Another;
 using static Drill4Net.Target.Tests.Common.SourceDataCore;
 
 namespace Drill4Net.Target.Tests.Common
@@ -14,6 +15,7 @@ namespace Drill4Net.Target.Tests.Common
         private const string CATEGORY_MISC = "Misc";
         #endregion
         #region FIELDs
+        private static readonly AnotherTarget _anotherTarget;
         private static readonly GenStr _genStr;
         private static readonly MyPoint _point;
         private static readonly NotEmptyStringEnumerator _strEnumerator;
@@ -25,6 +27,7 @@ namespace Drill4Net.Target.Tests.Common
         static CommonSourceData()
         {
             Target = new InjectTarget();
+            _anotherTarget = new AnotherTarget();
             _genStr = new GenStr("");
             _point = new MyPoint();
             _eventer = new Eventer();
@@ -184,7 +187,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { true }, new List<string> { "If_7" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
-                yield return GetCase(GetInfo(Target.Cycle_Do), System.Array.Empty<object>(), new List<string> { "If_10" }).Ignore("Not realzed proper injection");
+                yield return GetCase(GetInfo(Target.Cycle_Do), System.Array.Empty<object>(), new List<string> { "If_10" }).Ignore("Not realized proper injection yet");
 
                 yield return GetCase(GetInfo(Target.Cycle_For), new object[] { -1 }, new List<string>());
                 yield return GetCase(GetInfo(Target.Cycle_For), new object[] { 3 }, new List<string> { "Cycle_22", "Cycle_22", "Cycle_22" });
@@ -317,19 +320,25 @@ namespace Drill4Net.Target.Tests.Common
                         new TestInfo(GetInfo(Target.Disposable_Finalizer), new List<string>()),
                         new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(TestConstants.INFLUENCE);
                 #endregion
+                #region VB.NET
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Try_Catch_VB), new List<string> { "Throw_7", "Else_13" }));
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Try_Catch_VB),  new List<string> { "Throw_7", "If_18" }));
+
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string> { "Else_12" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string> { "If_17" }));
+                #endregion
                 #region Misc
+                yield return GetCase(System.Array.Empty<object>(), false, new TestInfo(GetInfo(Target.CallAnotherTarget), new List<string>()), new TestInfo(GetInfo(_anotherTarget.WhoAreU), new List<string> { "If_18" }));
+
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Yield), new List<string>()), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Yield), new List<string>()), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "If_49" })).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Else_4" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Extension), new List<string>()), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "If_9" })).SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(new object[0], true,
-                    new TestInfo(GetInfo(Target.Event), new List<string>()),
-                    new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "If_11" }))
-                    .SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[0], true, new TestInfo(GetInfo(Target.Event), new List<string>()), new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "If_11" })) .SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(new object[0], true,
+                yield return GetCase(System.Array.Empty<object>(), true,
                     new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Cycle_21", "Cycle_21", "Cycle_21", "Cycle_21" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
                     new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "Else_22", "Else_22", "Else_22", "Else_22", "If_16" }),

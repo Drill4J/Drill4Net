@@ -49,4 +49,10 @@
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Target.Common.Another\Drill4Net.Target.Common.Another.csproj" />
+    <ProjectReference Include="..\Drill4Net.Target.Common.FSharp\Drill4Net.Target.Common.FSharp.fsproj" />
+    <ProjectReference Include="..\Drill4Net.Target.Common.VB\Drill4Net.Target.Common.VB.vbproj" />
+  </ItemGroup>
+
 </Project>

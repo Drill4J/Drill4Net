@@ -61,7 +61,7 @@ namespace Drill4Net.Agent.Testing
                 }
                 #endregion
 
-                var realmethodName = ar[0];
+                //var realmethodName = ar[0];
                 var asmName = ar[1];
                 var funcName = ar[2];
                 var probeUid = ar[3];
