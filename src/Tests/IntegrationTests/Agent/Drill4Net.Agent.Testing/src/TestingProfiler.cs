@@ -177,7 +177,8 @@ namespace Drill4Net.Agent.Testing
 
         public static string GetLogPath()
         {
-            return Path.Combine(FileUtils.GetExecutionDir(), "logs", "log.txt");
+            var path = Path.Combine(FileUtils.GetExecutionDir(), "logs", "log.txt");
+            return path;
         }
         #endregion
     }

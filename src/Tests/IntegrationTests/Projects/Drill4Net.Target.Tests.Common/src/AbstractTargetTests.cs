@@ -153,11 +153,38 @@ namespace Drill4Net.Target.Tests.Common
                 for (var i = 0; i < inputs.Length; i++)
                 {
                     var data = inputs[i];
-                    var source = string.IsNullOrWhiteSpace(data.Signature) ?
-                        SourceDataCore.GetSourceFromFullSig(target, SourceDataCore.GetFullSignature(data.Info)) : //for child methods exactly data.Info, not for current mi
-                        data.Signature;
-                    Assert.True(funcs.ContainsKey(source));
-                    var points = funcs[source];
+                    string source;
+                    string fullSig = null;
+                    if (!string.IsNullOrWhiteSpace(data.Signature))
+                    {
+                        source = data.Signature;
+                    }
+                    else
+                    {
+                        //for child methods exactly data.Info, not for current mi
+                        fullSig = SourceDataCore.GetFullSignature(data.Info);
+                        source = SourceDataCore.GetSourceFromFullSig(target, fullSig);
+                    }
+
+                    List<PointLinkage> points = null;
+                    if (!funcs.ContainsKey(source)) //rare: another source?
+                    {
+                        //var asmName = SourceDataCore.CreateMethodSource(,fullSig);
+                        foreach (var func in funcs.Keys)
+                        {
+                            var ar = func.Split(';');
+                            if (ar[1] == fullSig)
+                            {
+                                points = funcs[func];
+                                break;
+                            }
+                        }
+                        Assert.NotNull(points);
+                    }
+                    else
+                    {
+                        points = funcs[source];
+                    }
 
                     if (ignoreEnterReturns)
                     {

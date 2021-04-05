@@ -28,6 +28,9 @@
     <Reference Include="Drill4Net.Target.Common">
       <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Core31.App\netcoreapp3.1\Drill4Net.Target.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Drill4Net.Target.Common.Another">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Core31.App\netcoreapp3.1\Drill4Net.Target.Common.Another.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
