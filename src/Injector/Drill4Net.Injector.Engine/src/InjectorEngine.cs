@@ -474,7 +474,7 @@ namespace Drill4Net.Injector.Engine
                             continue;
                         CrossPointType crossType = CrossPointType.Unset;
 
-                        //awaiters in MoveNext as a border
+                        #region Awaiters in MoveNext as a border
                         if (isMoveNext && isCompilerGenerated)
                         {
                             //TODO: caching!!!
@@ -494,6 +494,7 @@ namespace Drill4Net.Injector.Engine
                                     break;
                             }
                         }
+                        #endregion
 
                         if (instr.Operand == lastOp && !strictEnterReturn && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
                         {
@@ -501,7 +502,7 @@ namespace Drill4Net.Injector.Engine
                             instr.Operand = ldstrReturn;
                         }
 
-                        // IF, FOR/SWITCH
+                        #region IF, FOR/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
                             //check for 'using' statement (compiler generated Try/Finally with If-checking)
@@ -530,7 +531,7 @@ namespace Drill4Net.Injector.Engine
                             //
                             var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another branch codes? Hmm...
 
-                            //lock/Monitor
+                            #region lock/Monitor
                             var operand = instr.Operand as Instruction;
                             if (isBrFalse && operand != null && operand.OpCode.Code == Code.Endfinally)
                             {
@@ -540,8 +541,8 @@ namespace Drill4Net.Injector.Engine
                                 if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
                                     continue;
                             }
-
-                            //operators: while/for, do
+                            #endregion
+                            #region Operators: while/for, do
                             if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset)
                             {
                                 if (isEnumeratorMoveNext)
@@ -568,8 +569,16 @@ namespace Drill4Net.Injector.Engine
                                 }
                                 continue;
                             }
+                            #endregion
+                            #region Switch
+                            //Whether the 'if/else' condition branches or the 'switch' instruction will be
+                            //inserted in the IL code does not depend on the Framework version, but depends on
+                            //the number of source 'cases' (two 'cases' - > 'if/else' branches are formed,
+                            //and if more - 'switch'). This does not depend on having a 'default' statement,
+                            //exiting the function by 'return' directly from 'case', or the compiler option
+                            //'Optimize code'. This also means that it is impossible to determine exactly
+                            //what was in the source code only from the IL code.
 
-                            // switch
                             ifStack.Push(instr);
                             if (code == Code.Switch)
                             {
@@ -577,8 +586,8 @@ namespace Drill4Net.Injector.Engine
                                     ifStack.Push(instr);
                                 crossType = CrossPointType.Switch;
                             }
-
-                            // IF
+                            #endregion
+                            #region IF
                             if (code == Code.Switch || instructions[i + 1].OpCode.FlowControl != FlowControl.Branch) //empty IF?
                             {
                                 if (crossType == CrossPointType.Unset)
@@ -591,8 +600,8 @@ namespace Drill4Net.Injector.Engine
                                 processor.InsertAfter(instr, ldstrIf);
                                 i += 2;
                             }
-
-                            //for 'switch when()', etc
+                            #endregion
+                            #region For 'switch when()', etc
                             var prev = operand?.Previous;
                             if (prev == null || _processed.Contains(prev))
                                 continue;
@@ -613,11 +622,12 @@ namespace Drill4Net.Injector.Engine
                                 if (operand.Offset < instr.Offset)
                                     i += 2;
                             }
-                            //
+                            #endregion
+
                             continue;
                         }
-
-                        // ELSE/JUMP
+                        #endregion
+                        #region ELSE/JUMP
                         if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
                         {
                             if (!ifStack.Any())
@@ -643,8 +653,8 @@ namespace Drill4Net.Injector.Engine
                             i += 2;
                             continue;
                         }
-
-                        //THROW
+                        #endregion
+                        #region THROW
                         if (flow == FlowControl.Throw)
                         {
                             probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
@@ -656,8 +666,8 @@ namespace Drill4Net.Injector.Engine
                             i += 2;
                             continue;
                         }
-
-                        //CATCH FILTER
+                        #endregion
+                        #region CATCH FILTER
                         if (code == Code.Endfilter)
                         {
                             probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, i);
@@ -669,8 +679,8 @@ namespace Drill4Net.Injector.Engine
                             i += 2;
                             continue;
                         }
-
-                        //RETURN
+                        #endregion
+                        #region RETURN
                         if (code == Code.Ret && !strictEnterReturn)
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
@@ -681,6 +691,7 @@ namespace Drill4Net.Injector.Engine
                             i += 2;
                             continue;
                         }
+                        #endregion
                     
                     } //cycle
                     #endregion

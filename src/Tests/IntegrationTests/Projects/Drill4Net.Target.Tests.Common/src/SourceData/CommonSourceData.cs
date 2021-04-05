@@ -175,15 +175,13 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { true }, new List<string> { "If_7" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
-                yield return GetCase(GetInfo(Target.Cycle_Do), new object[0], new List<string> { "If_10" });
+                yield return GetCase(GetInfo(Target.Cycle_Do), new object[0], new List<string> { "If_10" }).Ignore("Not realzed proper injection");
 
                 yield return GetCase(GetInfo(Target.Cycle_For), new object[] { -1 }, new List<string>());
                 yield return GetCase(GetInfo(Target.Cycle_For), new object[] { 3 }, new List<string> { "Cycle_22", "Cycle_22", "Cycle_22" });
 
                 yield return GetCase(GetInfo(Target.Cycle_While), new object[] { -1 }, new List<string>());
                 yield return GetCase(GetInfo(Target.Cycle_While), new object[] { 3 }, new List<string> { "Cycle_20", "Cycle_20", "Cycle_20" });
-
-
                 #endregion
                 #region Misc
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { false }, new List<string> { "If_10" }).SetCategory(CATEGORY_MISC);
