@@ -15,8 +15,8 @@ namespace Drill4Net.Agent.Testing.Debug
                 //
                 var funcs = TestingProfiler.GetFunctions(false);
                 foreach(var f in funcs.Keys)
-                Console.WriteLine($"{f}: {string.Join(", ", funcs[f])}");
-
+                    Console.WriteLine($"{f}: {string.Join(", ", funcs[f])}");
+                //
                 Console.WriteLine("Done.");
             }
             catch (Exception ex)

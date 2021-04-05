@@ -24,7 +24,7 @@ namespace Drill4Net.Target.Tests.Common
         public TestEngineRepository()
         {
             //find the cfg path
-            var folderList = InjectorRepository.GetExecutionDir().Split('\\').ToList();
+            var folderList = FileUtils.GetExecutionDir().Split('\\').ToList();
             var targetType = folderList[folderList.Count - 1];
             for (var i=0; i < 2; i++)
                 folderList.RemoveAt(folderList.Count - 1);

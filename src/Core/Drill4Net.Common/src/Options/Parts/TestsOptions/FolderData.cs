@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Data for assemblies and it's classes in folder for testing 

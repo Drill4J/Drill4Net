@@ -4,5 +4,47 @@
         <name>Drill4Net.Common</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Common.FolderData">
+            <summary>
+            Data for assemblies and it's classes in folder for testing 
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.FolderData.Folder">
+            <summary>
+            Current folder(s) of the testing target
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.FolderData.Assemblies">
+            <summary>
+            Testing assemblies in the Folder: key is name of assembly's file, 
+            for example, "Drill4Net.Target.Common.dll", value is list 
+            of full class names (Namespace.Name)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.MonikerData.BaseFolder">
+            <summary>
+            Base folder(s) of the testing target
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.MonikerData.Folders">
+            <summary>
+            Testing folders in the BaseFolder
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.TestsOptions">
+            <summary>
+            Options for Test Engine
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.TestsOptions.Directory">
+            <summary>
+            Base directory of the testing targets
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.TestsOptions.Targets">
+            <summary>
+            What will be tested - by target moniker/assembly/class
+            </summary>
+        </member>
     </members>
 </doc>

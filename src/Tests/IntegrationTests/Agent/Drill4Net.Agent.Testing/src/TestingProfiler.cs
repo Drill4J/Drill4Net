@@ -5,6 +5,7 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
@@ -24,6 +25,7 @@ namespace Drill4Net.Agent.Testing
         static TestingProfiler()
         {
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
+            PrepareLogger();
 
             //rep
             var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -49,14 +51,14 @@ namespace Drill4Net.Agent.Testing
                 #region Checks
                 if (string.IsNullOrWhiteSpace(data))
                 {
-                    Log("Data is empty");
+                    Log.Error("Data is empty");
                     return;
                 }
                 //
                 var ar = data.Split('^');
                 if (ar.Length < 5)
                 {
-                    Log($"Bad format of input: {data}");
+                    Log.Error($"Bad format of input: {data}");
                     return;
                 }
                 #endregion
@@ -73,13 +75,8 @@ namespace Drill4Net.Agent.Testing
             }
             catch (Exception ex)
             {
-                Log($"{data}\n{ex}");
+                Log.Error(ex, $"{data}");
             }
-        }
-
-        internal static void Log(string mess)
-        {
-            //...
         }
 
         public override void Register(string data)
@@ -157,5 +154,20 @@ namespace Drill4Net.Agent.Testing
                 return null;
             return method.BusinessMethod;
         }
+
+        #region Logger
+        public static void PrepareLogger()
+        {
+            Log.Logger = new LoggerConfiguration()
+               .MinimumLevel.Verbose()
+               .WriteTo.File(GetLogPath())
+               .CreateLogger();
+        }
+
+        public static string GetLogPath()
+        {
+            return Path.Combine(FileUtils.GetExecutionDir(), "logs", "log.txt");
+        }
+        #endregion
     }
 }

@@ -13,6 +13,7 @@ using Mono.Cecil.Rocks;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -53,10 +54,10 @@ namespace Drill4Net.Injector.Engine
             return Process(_rep.Options);
         }
 
-        public InjectedSolution Process( MainOptions opts)
+        public InjectedSolution Process(MainOptions opts)
         {
             Log.Information("Process starting...");
-            _rep.ValidateOptions(opts);
+            OptionHelper.ValidateOptions(opts);
 
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
@@ -175,7 +176,7 @@ namespace Drill4Net.Injector.Engine
             var subjectName = Path.GetFileNameWithoutExtension(filePath);
 
             //destinaton
-            var destDir = _rep.GetDestinationDirectory(opts, sourceDir);
+            var destDir = FileUtils.GetDestinationDirectory(opts, sourceDir);
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
 

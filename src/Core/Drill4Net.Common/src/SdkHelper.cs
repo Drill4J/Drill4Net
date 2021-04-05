@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Common
 {
     public static class SdkHelper
     {

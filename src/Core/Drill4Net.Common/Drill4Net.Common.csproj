@@ -14,4 +14,8 @@
     <OutputPath>..\..\..\build\bin\Release\Drill4Net.Common</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" Version="11.0.1" />
+  </ItemGroup>
+
 </Project>

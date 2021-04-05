@@ -18,6 +18,10 @@
      <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Agent.Testing</OutputPath>
    </PropertyGroup>
    <ItemGroup>
+     <PackageReference Include="Serilog" Version="2.10.0" />
+     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+   </ItemGroup>
+   <ItemGroup>
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
      <ProjectReference Include="..\..\..\..\Injector\Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj" />
