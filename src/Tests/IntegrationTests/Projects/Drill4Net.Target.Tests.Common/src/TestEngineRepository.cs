@@ -29,9 +29,9 @@ namespace Drill4Net.Target.Tests.Common
 
             //find the cfg path
             var folderList = FileUtils.GetExecutionDir().Split('\\').ToList();
-#pragma warning disable IDE0056 // Use index operator
+            #pragma warning disable IDE0056 // Use index operator
             var targetType = folderList[folderList.Count - 1];
-#pragma warning restore IDE0056 // Use index operator
+            #pragma warning restore IDE0056 // Use index operator
             for (var i = 0; i < 2; i++)
                 folderList.RemoveAt(folderList.Count - 1);
             var a = string.Join("\\", folderList);

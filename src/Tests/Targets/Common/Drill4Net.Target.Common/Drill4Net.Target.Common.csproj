@@ -8,7 +8,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Common</OutputPath>
-    <DocumentationFile>..\..\..\..\..\doc\xml\Tests\Drill4Net.Target.Common\Drill4Net.Target.Common.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <WarningLevel>5</WarningLevel>
   </PropertyGroup>
 

@@ -1281,12 +1281,12 @@ namespace Drill4Net.Target.Common
         {
             Console.WriteLine($"{nameof(Event)} started");
 
-#pragma warning disable IDE0039 // Use local function
+            #pragma warning disable IDE0039 // Use local function
             NotifyHandler p = delegate (string mes)
             {
                 Console.WriteLine($"{nameof(Event)} -> {mes}");
             };
-#pragma warning restore IDE0039 // Use local function
+            #pragma warning restore IDE0039 // Use local function
 
             var eventer = new Eventer();
             eventer.Notify += p;

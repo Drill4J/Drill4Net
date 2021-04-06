@@ -564,6 +564,13 @@ namespace Drill4Net.Injector.Engine
                                     processor.InsertBefore(targetOp, ldstrIf2);
                                     processor.InsertBefore(targetOp, call);
                                     i += 2;
+
+                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.CycleEnd, i);
+                                    var ldstrIf3 = GetInstruction(probData);
+                                    var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
+                                    processor.InsertAfter(instr, call1);
+                                    processor.InsertAfter(instr, ldstrIf3);
+                                    i += 2;
                                 }
                                 else //do
                                 {

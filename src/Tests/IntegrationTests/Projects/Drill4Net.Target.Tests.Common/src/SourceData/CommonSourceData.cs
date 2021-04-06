@@ -194,19 +194,19 @@ namespace Drill4Net.Target.Tests.Common
                 #region Cycle
                 yield return GetCase(GetInfo(Target.Cycle_Do), Array.Empty<object>(), new List<string> { "Cycle_26", "Cycle_26", "CycleEnd_23" });
 
-                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { -1 }, new List<string>());
-                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { 3 }, new List<string> { "Cycle_22", "Cycle_22", "Cycle_22" });
+                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { -1 }, new List<string> { "CycleEnd_24" });
+                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { 3 }, new List<string> { "Cycle_22", "Cycle_22", "Cycle_22", "CycleEnd_24" });
 
-                yield return GetCase(GetInfo(Target.Cycle_Foreach), System.Array.Empty<object>(), new List<string> { "Cycle_42", "Cycle_42", "Cycle_42" });
+                yield return GetCase(GetInfo(Target.Cycle_Foreach), System.Array.Empty<object>(), new List<string> { "Cycle_42", "Cycle_42", "Cycle_42", "CycleEnd_44" });
 
-                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { -1 }, new List<string>());
-                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { 3 }, new List<string> { "Cycle_20", "Cycle_20", "Cycle_20" });
+                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { -1 }, new List<string> { "CycleEnd_22" });
+                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { 3 }, new List<string> { "Cycle_20", "Cycle_20", "Cycle_20", "CycleEnd_22" });
                 #endregion
                 #region Misc
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { false }, new List<string> { "If_10" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Out), new object[] { false }, new List<string> { "If_19", "Cycle_35", "If_19", "Cycle_35" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Out), new object[] { false }, new List<string> { "If_19", "Cycle_35", "If_19", "Cycle_35", "CycleEnd_37" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Out), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(GetInfo(Target.Lock_Statement), new object[] { false }, new List<string> { "Else_14" }).SetCategory(CATEGORY_MISC);
@@ -344,7 +344,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(Array.Empty<object>(), true, new TestInfo(GetInfo(Target.Event), new List<string>()), new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "If_11" })) .SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(Array.Empty<object>(), true,
-                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Cycle_21", "Cycle_21", "Cycle_21", "Cycle_21" }),
+                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Cycle_21", "Cycle_21", "Cycle_21", "Cycle_21", "CycleEnd_23" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
                     new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "Else_22", "Else_22", "Else_22", "Else_22", "If_16" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false, new List<string> { "Else_6", "Else_6", "Else_6", "Else_6" }),
