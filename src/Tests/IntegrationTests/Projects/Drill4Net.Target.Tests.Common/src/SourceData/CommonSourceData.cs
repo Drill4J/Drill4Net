@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Drill4Net.Target.Common;
 using Drill4Net.Target.Common.Another;
+using Drill4Net.Target.Common.VB;
 using static Drill4Net.Target.Tests.Common.SourceDataCore;
 
 namespace Drill4Net.Target.Tests.Common
@@ -17,6 +18,7 @@ namespace Drill4Net.Target.Tests.Common
         #endregion
         #region FIELDs
         private static readonly AnotherTarget _anotherTarget;
+        private static readonly VBLibrary _vbTarget;
         private static readonly GenStr _genStr;
         private static readonly MyPoint _point;
         private static readonly NotEmptyStringEnumerator _strEnumerator;
@@ -29,6 +31,8 @@ namespace Drill4Net.Target.Tests.Common
         {
             Target = new InjectTarget();
             _anotherTarget = new AnotherTarget();
+            _vbTarget = new VBLibrary();
+
             _genStr = new GenStr("");
             _point = new MyPoint();
             _eventer = new Eventer();
@@ -244,11 +248,11 @@ namespace Drill4Net.Target.Tests.Common
                 #endregion
                 #region Async/await
 #if !NET461
-                yield return GetCase(System.Array.Empty<object>(), true, true,
+                yield return GetCase(Array.Empty<object>(), true, true,
                     new TestInfo(GetInfo(Target.Async_Stream), new List<string> { "If_54" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceAsync()"), false, new List<string> { "Else_24", "Else_24", "Else_24", "If_36", "If_36" }, true));
 
-                yield return GetCase(System.Array.Empty<object>(), true, true,
+                yield return GetCase(Array.Empty<object>(), true, true,
                     new TestInfo(GetInfo(Target.Async_Stream_Cancellation), new List<string> { "If_76" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceWithCancellationAsync(System.Threading.CancellationToken)"), false, new List<string> { "Else_24", "Else_24", "Else_24" }, true));
 #endif
@@ -322,11 +326,11 @@ namespace Drill4Net.Target.Tests.Common
                         new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(TestConstants.INFLUENCE);
                 #endregion
                 #region VB.NET
-                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Try_Catch_VB), new List<string> { "Throw_7", "Else_13" })).Ignore("Will work after pass of the CallAnotherTarget test");
-                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Try_Catch_VB),  new List<string> { "Throw_7", "If_18" })).Ignore("Will work after pass of the CallAnotherTarget test");
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Try_Catch_VB), new List<string>()), new TestInfo(GetInfo(_vbTarget.Try_Catch_VB), new List<string> { "Throw_7", "Else_13" })); //.Ignore("Will work after pass of the CallAnotherTarget test");
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Try_Catch_VB), new List<string>()), new TestInfo(GetInfo(_vbTarget.Try_Catch_VB), new List<string> { "Throw_7", "If_18" })); //.Ignore("Will work after pass of the CallAnotherTarget test");
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string> { "Else_12" })).Ignore("Will work after pass of the CallAnotherTarget test");
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string> { "If_17" })).Ignore("Will work after pass of the CallAnotherTarget test");
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string>()), new TestInfo(GetInfo(_vbTarget.Try_Finally_VB), new List<string> { "Else_11" })); //.Ignore("Will work after pass of the CallAnotherTarget test");
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string>()), new TestInfo(GetInfo(_vbTarget.Try_Finally_VB), new List<string> { "If_16" })); //.Ignore("Will work after pass of the CallAnotherTarget test");
                 #endregion
                 #region Misc
                 yield return GetCase(Array.Empty<object>(), false, new TestInfo(GetInfo(Target.CallAnotherTarget), new List<string>()), new TestInfo(GetInfo(_anotherTarget.WhoAreU), new List<string>()));
