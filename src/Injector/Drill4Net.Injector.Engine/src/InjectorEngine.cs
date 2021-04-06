@@ -412,7 +412,6 @@ namespace Drill4Net.Injector.Engine
                             var extName = extOp.Name;
                             if (extName.StartsWith("<") || extTypeFullName.Contains(">d__") || extFullname.Contains("|"))
                             {
-                                //Log.Verbose($"Converting [{extOp}]");
                                 try
                                 {
                                     //null is norm for anonymous types
@@ -506,6 +505,7 @@ namespace Drill4Net.Injector.Engine
                         #region IF, FOR/SWITCH
                         if (flow == FlowControl.Cond_Branch)
                         {
+                            #region 'Using' statement
                             //check for 'using' statement (compiler generated Try/Finally with If-checking)
                             //There is a possibility that a very similar construction from the business code
                             //may be omitted if the programmer directly implemented Try/Finally with a check
@@ -524,7 +524,8 @@ namespace Drill4Net.Injector.Engine
                                         continue;
                                 }
                             }
-                            //
+                            #endregion
+
                             if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(i))
                                 continue;
                             if (!IsRealCondition(i))
@@ -532,7 +533,7 @@ namespace Drill4Net.Injector.Engine
                             //
                             var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another branch codes? Hmm...
 
-                            #region lock/Monitor
+                            #region Monitor/lock
                             var operand = instr.Operand as Instruction;
                             if (isBrFalse && operand != null && operand.OpCode.Code == Code.Endfinally)
                             {
@@ -566,7 +567,42 @@ namespace Drill4Net.Injector.Engine
                                 }
                                 else //do
                                 {
-                                    //no signaling...
+                                    var back = instr.Operand;
+                                    var next = instr.Next;
+
+                                    // 1.
+                                    crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
+                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
+                                    var ldstrIf = GetInstruction(probData);
+
+                                    var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
+                                    processor.InsertAfter(instr, call1);
+                                    processor.InsertAfter(instr, ldstrIf);
+                                    i += 2;
+
+                                    //jump-1
+                                    var jump = Instruction.Create(OpCodes.Br_S, next);
+                                    processor.InsertAfter(call1, jump);
+                                    jumpers.Add(jump);
+                                    i += 1;
+
+                                    // 2.
+                                    crossType = !isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
+                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
+                                    var ldstrIf2 = GetInstruction(probData);
+
+                                    var call2 = Instruction.Create(OpCodes.Call, proxyMethRef);
+                                    processor.InsertAfter(jump, call2);
+                                    processor.InsertAfter(jump, ldstrIf2);
+                                    i += 2;
+
+                                    //jump-2
+                                    var jump2 = Instruction.Create(OpCodes.Br, back as Instruction);
+                                    processor.InsertAfter(call2, jump2);
+                                    jumpers.Add(jump2);
+                                    i += 1;
+
+                                    instr.Operand = ldstrIf2;
                                 }
                                 continue;
                             }
@@ -604,7 +640,7 @@ namespace Drill4Net.Injector.Engine
                                 i += 2;
                             }
                             #endregion
-                            #region For 'switch when()', etc
+                            #region 'Switch when()', etc
                             var prev = operand?.Previous;
                             if (prev == null || _processed.Contains(prev))
                                 continue;
@@ -724,9 +760,6 @@ namespace Drill4Net.Injector.Engine
                     body.OptimizeMacros();
                 }
             }
-
-
-            //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
             #endregion
             #region Proxy class
             //here we generate proxy class which will be calling of real profiler by cached Reflection
@@ -745,6 +778,7 @@ namespace Drill4Net.Injector.Engine
             if (isNetFx)
             {
                 var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+                //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
                 if (systemPrivateCoreLib != null)
                     module.AssemblyReferences.Remove(systemPrivateCoreLib);
             }

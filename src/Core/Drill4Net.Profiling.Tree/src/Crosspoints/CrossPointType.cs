@@ -15,7 +15,7 @@
 
         //cycles
         Cycle = 10,
-        //While = 11,
+        CycleEnd = 11,
 
         //try/catch
         Throw = 12,

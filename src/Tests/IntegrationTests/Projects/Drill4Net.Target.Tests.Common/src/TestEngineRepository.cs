@@ -60,6 +60,7 @@ namespace Drill4Net.Target.Tests.Common
 
             //target assemblies
             _targets = _opts.Tests.Targets;
+
             Log.Debug("Repository is initialized.");
         }
 
