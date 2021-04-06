@@ -109,7 +109,8 @@ namespace Drill4Net.Injector.Core
             }
             catch (Exception ex)
             {
-                Log.Warning($"Getting assembly version for [{filePath}]: {ex.Message}");
+                if (ex.HResult != -2146234344) //The module was expected to contain an assembly manifest
+                    Log.Warning($"Getting assembly version for [{filePath}]: {ex.Message}");
                 return null;
             }
         }
