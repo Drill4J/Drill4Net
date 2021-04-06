@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Profiling.Tree;
+using Serilog;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -29,6 +30,7 @@ namespace Drill4Net.Target.Tests.Common
         {
             _testsRep = new TestEngineRepository();
             LoadTreeData();
+            Log.Information("Engine is initialized.");
         }
 
         /****************************************************************************/
@@ -229,9 +231,13 @@ namespace Drill4Net.Target.Tests.Common
         #region Auxiliary funcs
         private static void LoadTreeData()
         {
+            Log.Debug("Tree data is loading...");
+
             _tree = _testsRep.LoadTree();
             _parentMap = _tree.CalcParentMap();
             _pointMap = _tree.CalcPointMap(_parentMap);
+
+            Log.Debug("Tree data is loaded.");
         }
 
         private void CheckEnterAndLastReturnOrThrow(List<PointLinkage> links)

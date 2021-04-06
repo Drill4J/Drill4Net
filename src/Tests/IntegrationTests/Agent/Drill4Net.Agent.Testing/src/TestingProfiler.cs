@@ -166,20 +166,11 @@ namespace Drill4Net.Agent.Testing
             return method.BusinessMethod;
         }
 
-        #region Logger
         public static void PrepareLogger()
         {
-            Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Verbose()
-               .WriteTo.File(GetLogPath())
-               .CreateLogger();
+            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\"), $"{nameof(TestingProfiler)}.log"));
+            Log.Logger = cfg.CreateLogger();
         }
-
-        public static string GetLogPath()
-        {
-            var path = Path.Combine(FileUtils.GetExecutionDir(), "logs", "log.txt");
-            return path;
-        }
-        #endregion
     }
 }

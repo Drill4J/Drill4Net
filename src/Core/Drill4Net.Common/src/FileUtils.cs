@@ -82,5 +82,11 @@ namespace Drill4Net.Common
             }
         }
         #endregion
+
+        public static string GetCommonLogDirectory(string relativeBaseDir, string logFoler = "logs")
+        {
+            return Path.Combine(GetFullPath(relativeBaseDir), logFoler);
+
+        }
     }
 }

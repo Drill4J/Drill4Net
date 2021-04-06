@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
+using Serilog;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -23,10 +24,15 @@ namespace Drill4Net.Target.Tests.Common
 
         public TestEngineRepository()
         {
+            PrepareLogger();
+            Log.Debug("Repository is initializing...");
+
             //find the cfg path
             var folderList = FileUtils.GetExecutionDir().Split('\\').ToList();
+#pragma warning disable IDE0056 // Use index operator
             var targetType = folderList[folderList.Count - 1];
-            for (var i=0; i < 2; i++)
+#pragma warning restore IDE0056 // Use index operator
+            for (var i = 0; i < 2; i++)
                 folderList.RemoveAt(folderList.Count - 1);
             var a = string.Join("\\", folderList);
             var dirName = Path.Combine(a, typeof(TestEngineRepository).Namespace, targetType);
@@ -54,6 +60,7 @@ namespace Drill4Net.Target.Tests.Common
 
             //target assemblies
             _targets = _opts.Tests.Targets;
+            Log.Debug("Repository is initialized.");
         }
 
         /*******************************************************************************/
@@ -197,6 +204,13 @@ namespace Drill4Net.Target.Tests.Common
                 Assert.Fail($"File with hint about tree data not found: {treeHintPath}");
             var treePath = File.ReadAllText(treeHintPath);
             return _injRep.ReadInjectedTree(treePath);
+        }
+
+        public void PrepareLogger()
+        {
+            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\"), "TestEngine.log"));
+            Log.Logger = cfg.CreateLogger();
         }
     }
 }

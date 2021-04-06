@@ -27,9 +27,7 @@ namespace Drill4Net.Injector.Core
         {
             if (!File.Exists(cfgPath))
                 throw new FileNotFoundException($"Config not found: {cfgPath}");    
-            
-            OptionHelper.DefaultCfgPath = cfgPath;
-            Options = OptionHelper.GenerateOptions();
+            Options = OptionHelper.GenerateOptions(cfgPath);
         }
 
         public InjectorRepository(string[] args): this()
@@ -64,6 +62,13 @@ namespace Drill4Net.Injector.Core
         public virtual void ValidateOptions()
         {
             OptionHelper.ValidateOptions(Options);
+        }
+
+        public static void PrepareLogger()
+        {
+            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(Injector)}.log"));
+            Log.Logger = cfg.CreateLogger();
         }
 
         #region Assembly
@@ -162,21 +167,6 @@ namespace Drill4Net.Injector.Core
         public string GetTreeFileHintPath(string targetDir)
         {
             return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
-        }
-        #endregion
-        #region Logger
-        public static void PrepareLogger()
-        {
-            Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Verbose()
-               .WriteTo.Console()
-               .WriteTo.File(GetLogPath())
-               .CreateLogger();
-        }
-
-        public static string GetLogPath()
-        {
-            return Path.Combine(FileUtils.GetExecutionDir(), "logs", "log.txt");
         }
         #endregion
     }

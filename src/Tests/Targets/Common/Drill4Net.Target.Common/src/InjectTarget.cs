@@ -1111,7 +1111,9 @@ namespace Drill4Net.Target.Common
             using (var ms = new MemoryStream(GetBytes(cnt)))
             {
                 if (cond)
+#pragma warning disable CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
                     await ms.ReadAsync(res, 0, (int)ms.Length);
+#pragma warning restore CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
             }
             Console.WriteLine($"{nameof(Disposable_Using_AsyncRead)}: {cond}");
         }
@@ -1377,7 +1379,6 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"  *** Version: {s}  ***\n");
         }
 
-        //TODO: for, foreach, a || b (with PDB), EF, Visual Basic...
-        //AutoProperty for F#
+        //TODO: LinqToXML, LinkToEntity, a || b (with PDB)...
     }
 }

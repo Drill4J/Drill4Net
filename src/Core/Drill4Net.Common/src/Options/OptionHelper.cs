@@ -7,7 +7,7 @@ namespace Drill4Net.Common
 {
     public static class OptionHelper
     {
-        public static string DefaultCfgPath { get; set; }
+        private static string DefaultCfgPath { get; set; }
 
         private static readonly Deserializer _deser;
 
@@ -20,8 +20,9 @@ namespace Drill4Net.Common
 
         /********************************************************************/
 
-        public static MainOptions GenerateOptions()
+        public static MainOptions GenerateOptions(string _defaultCfgPath)
         {
+            DefaultCfgPath = _defaultCfgPath;
             return ReadOptions(DefaultCfgPath);
         }
 
