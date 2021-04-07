@@ -144,14 +144,14 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Switch_Logical), new object[] { 10 }, new List<string> { "Else_8", "If_24" });
                 #endregion
                 #region Elvis
-                yield return GetCase(GetInfo(Target.Elvis_NotNull), new object[0], new List<string> { "If_12" });
-                yield return GetCase(GetInfo(Target.Elvis_Null), new object[0], new List<string> { "Else_6" });
+                yield return GetCase(GetInfo(Target.Elvis_NotNull), Array.Empty<object>(), new List<string> { "If_12" });
+                yield return GetCase(GetInfo(Target.Elvis_Null), Array.Empty<object>(), new List<string> { "Else_6" });
 
-                yield return GetCase(GetInfo(Target.Elvis_Sequence_NotNull), new object[0], new List<string> { "If_14", "If_27" });
-                yield return GetCase(GetInfo(Target.Elvis_Sequence_Null), new object[0], new List<string> { "Else_6" });
+                yield return GetCase(GetInfo(Target.Elvis_Sequence_NotNull), Array.Empty<object>(), new List<string> { "If_14", "If_27" });
+                yield return GetCase(GetInfo(Target.Elvis_Sequence_Null), Array.Empty<object>(), new List<string> { "Else_6" });
 
-                yield return GetCase(GetInfo(Target.Elvis_Double_NotNull), new object[0], new List<string>());
-                yield return GetCase(GetInfo(Target.Elvis_Double_Null), new object[0], new List<string> { "Else_7" });
+                yield return GetCase(GetInfo(Target.Elvis_Double_NotNull), Array.Empty<object>(), new List<string>());
+                yield return GetCase(GetInfo(Target.Elvis_Double_Null), Array.Empty<object>(), new List<string> { "Else_7" });
                 #endregion
                 #region Linq
                 yield return GetCase(GetInfo(Target.Linq_Query), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });

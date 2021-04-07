@@ -249,7 +249,7 @@ namespace Drill4Net.Target.Tests.Common
 
         private void RemoveEnterAndLastReturn(List<PointLinkage> links)
         {
-            //Check() not checks Enter and last Return
+            //because further Check() not checks Enter and last Return
             if (links[0].Point.PointType == CrossPointType.Enter)
                 links.RemoveAt(0);
             var lastInd = links.Count - 1;

@@ -894,7 +894,7 @@ namespace Drill4Net.Target.Common
         public void Async_Linq_Blocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
-            var inputs = data.Select(async ev => await ProcessElement((GenStr)ev, cond))
+            var inputs = data.Select(async ev => await ProcessElement(ev, cond))
                    .Select(t => t.GetAwaiter().GetResult().Prop)
                    .Where(i => i != null)
                    .ToList();
@@ -905,7 +905,7 @@ namespace Drill4Net.Target.Common
         public async Task Async_Linq_NonBlocking(bool cond)
         {
             var data = GetDataForAsyncLinq();
-            var tasks = await Task.WhenAll(data.Select(ev => ProcessElement((GenStr)ev, cond)));
+            var tasks = await Task.WhenAll(data.Select(ev => ProcessElement(ev, cond)));
             var inputs = tasks
                 .Select(a => a.Prop)
                 .Where(result => result != null)
@@ -1155,9 +1155,9 @@ namespace Drill4Net.Target.Common
         public void Anonymous_Func()
         {
             int z = 8;
-#pragma warning disable IDE0039 // Use local function
+            #pragma warning disable IDE0039 // Use local function
             Operation operation = delegate (int x, int y)
-#pragma warning restore IDE0039 // Use local function
+            #pragma warning restore IDE0039 // Use local function
             {
                 if (x > 1)
                     x /= 2;

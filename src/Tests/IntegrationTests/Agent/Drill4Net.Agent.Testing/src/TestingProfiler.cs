@@ -30,7 +30,6 @@ namespace Drill4Net.Agent.Testing
 
             try
             {
-
                 //rep
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);

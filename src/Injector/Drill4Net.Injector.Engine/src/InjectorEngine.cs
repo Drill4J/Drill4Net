@@ -399,7 +399,7 @@ namespace Drill4Net.Injector.Engine
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
 
-                        #region Tree
+                        #region Tree (maping business calls)
                         //in any case needed check compiler generated classes
                         if (instr.Operand is MethodReference && 
                            (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Ldfld))
