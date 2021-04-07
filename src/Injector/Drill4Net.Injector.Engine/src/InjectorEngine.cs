@@ -265,14 +265,13 @@ namespace Drill4Net.Injector.Engine
             var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             #endregion
             #region Processing
-            HashSet<Instruction> jumpers;
-            Mono.Collections.Generic.Collection<Instruction> instructions;
-            HashSet<Instruction> compilerInstructions;
             _injClasses = new Dictionary<string, InjectedType>();
             _injMethods = new Dictionary<string, InjectedMethod>();
             _injMethodByClasses = new Dictionary<string, InjectedMethod>();
+
             bool isAsyncStateMachine = false;
             Instruction lastOp;
+            var probData = string.Empty;
 
             foreach (TypeDefinition typeDef in module.Types)
             {
@@ -335,13 +334,10 @@ namespace Drill4Net.Injector.Engine
                     //instructions
                     var body = methodDef.Body;
                     //body.SimplifyMacros(); //buggy (Cecil or me?)
-                    instructions = body.Instructions; //no copy list!
+                    var instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
 
                     var moduleName = module.Name;
-                    var probData = string.Empty;
-                    HashSet<Instruction> _processed = new();
-                    compilerInstructions = new HashSet<Instruction>();
                     #endregion
                     #region Enter/Return
                     //inject 'entering' instruction
@@ -372,24 +368,39 @@ namespace Drill4Net.Injector.Engine
                     var ldstrReturn = GetInstruction(probData); //as object it must be only one
                     lastOp = instructions.Last();
                     #endregion
+                    #region Context
+                    var ctx = new InjectorContext(moduleName, methodFullName, instructions, processor)
+                    {
+                        IsAsyncStateMachine = isAsyncStateMachine,
+                        IsEnumeratorMoveNext = isEnumeratorMoveNext,
+                        IsStrictEnterReturn = strictEnterReturn,
+                        LastOperation = lastOp,
+                        LdstrReturn = ldstrReturn,
+                        ProxyMethRef = proxyMethRef,
+                        ReturnProbData = returnProbData,
+                        ExceptionHandlers = body.ExceptionHandlers,
+                        TreeMethod = treeFunc,
+                        RealMethodName = realMethodName,
+                    };
+                    ctx.Injections.Add(call);
+                    #endregion
                     #region Jumps
-                    //collect jumps. Hash table for addresses is almost useless,
+                    //collect jumps. Hash table for separate addresses is almost useless,
                     //because they may be recalculated inside the processor during inject...
                     //and ideally, there shouldn't be too many of them 
-                    jumpers = new HashSet<Instruction>();
                     for (var i = 1; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
                         var flow = instr.OpCode.FlowControl;
                         if (flow == FlowControl.Branch || flow == FlowControl.Cond_Branch)
-                            jumpers.Add(instr);
+                            ctx.Jumpers.Add(instr);
                     }
                     #endregion
                     #region Injections               
-                    var ifStack = new Stack<Instruction>();
                     var startInd = skipStart ? 12 : 1;
                     for (var i = startInd; i < instructions.Count; i++)
                     {
+                        #region Checks
                         var instr = instructions[i];
                         var opCode = instr.OpCode;
                         var code = opCode.Code;
@@ -466,7 +477,7 @@ namespace Drill4Net.Injector.Engine
                         #endregion
 
                         // for injecting cases
-                        if (_processed.Contains(instr))
+                        if (ctx.Processed.Contains(instr))
                             continue;
 
                         #region Awaiters in MoveNext as a boundary
@@ -492,6 +503,7 @@ namespace Drill4Net.Injector.Engine
                             }
                         }
                         #endregion
+                        #endregion
 
                         //returns in the middle of the method body
                         if (instr.Operand == lastOp && !strictEnterReturn && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
@@ -500,255 +512,16 @@ namespace Drill4Net.Injector.Engine
                             instr.Operand = ldstrReturn;
                         }
 
-                        CrossPointType crossType = CrossPointType.Unset;
-
-                        #region IF, FOR/SWITCH
-                        if (flow == FlowControl.Cond_Branch)
-                        {
-                            #region 'Using' statement
-                            //check for 'using' statement (compiler generated Try/Finally with If-checking)
-                            //There is a possibility that a very similar construction from the business code
-                            //may be omitted if the programmer directly implemented Try/Finally with a check
-                            //and a Dispose() call, instead of the usual 'using', although it is unlikely
-                            if (i > 2 && i < instructions.Count - 2)
-                            {
-                                var prev2 = instructions[i - 2].OpCode.Code;
-                                if (prev2 == Code.Throw)
-                                    continue;
-                                var isWasTry = prev2 == Code.Leave || prev2 == Code.Leave_S;
-                                if (isWasTry)
-                                {
-                                    var b = instructions[i + 2];
-                                    var isDispose = (b.Operand as MemberReference)?.FullName?.EndsWith("IDisposable::Dispose()") == true;
-                                    if (isDispose)
-                                        continue;
-                                }
-                            }
-                            #endregion
-
-                            if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(i, instructions, compilerInstructions))
-                                continue;
-                            if (!IsRealCondition(i, instructions, isAsyncStateMachine))
-                                continue;
-                            //
-                            var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another branch codes? Hmm...
-
-                            #region Monitor/lock
-                            var operand = instr.Operand as Instruction;
-                            if (isBrFalse && operand != null && operand.OpCode.Code == Code.Endfinally)
-                            {
-                                var endFinInd = instructions.IndexOf(operand);
-                                var prevInstr = SkipNop(endFinInd, false, instructions);
-                                var operand2 = prevInstr.Operand as MemberReference;
-                                if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
-                                    continue;
-                            }
-                            #endregion
-                            #region Operators: while/for, do
-                            if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset)
-                            {
-                                if (isEnumeratorMoveNext)
-                                {
-                                    var prevRef = (instr.Previous.Operand as MemberReference).FullName;
-                                    if (prevRef?.Contains("::MoveNext()") == true)
-                                        continue;
-                                }
-                                //
-                                var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
-                                var prevOperand = SkipNop(ind, false, instructions);
-                                if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //for/while
-                                {
-                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Cycle, i);
-                                    var ldstrIf2 = GetInstruction(probData);
-                                    var targetOp = prevOperand.Operand as Instruction;
-                                    processor.InsertBefore(targetOp, ldstrIf2);
-                                    processor.InsertBefore(targetOp, call);
-                                    i += 2;
-
-                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.CycleEnd, i);
-                                    var ldstrIf3 = GetInstruction(probData);
-                                    var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
-                                    processor.InsertAfter(instr, call1);
-                                    processor.InsertAfter(instr, ldstrIf3);
-                                    i += 2;
-                                }
-                                else //do
-                                {
-                                    var back = instr.Operand;
-                                    var next = instr.Next;
-
-                                    // 1.
-                                    crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
-                                    var ldstrIf = GetInstruction(probData);
-
-                                    var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
-                                    processor.InsertAfter(instr, call1);
-                                    processor.InsertAfter(instr, ldstrIf);
-                                    i += 2;
-
-                                    //jump-1
-                                    var jump = Instruction.Create(OpCodes.Br_S, next);
-                                    processor.InsertAfter(call1, jump);
-                                    jumpers.Add(jump);
-                                    i += 1;
-
-                                    // 2.
-                                    crossType = !isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
-                                    var ldstrIf2 = GetInstruction(probData);
-
-                                    var call2 = Instruction.Create(OpCodes.Call, proxyMethRef);
-                                    processor.InsertAfter(jump, call2);
-                                    processor.InsertAfter(jump, ldstrIf2);
-                                    i += 2;
-
-                                    //jump-2
-                                    var jump2 = Instruction.Create(OpCodes.Br, back as Instruction);
-                                    processor.InsertAfter(call2, jump2);
-                                    jumpers.Add(jump2);
-                                    i += 1;
-
-                                    instr.Operand = ldstrIf2;
-                                }
-                                continue;
-                            }
-                            #endregion
-                            #region Switch
-                            //Whether the 'if/else' condition branches or the 'switch' instruction will be
-                            //inserted in the IL code does not depend on the Framework version, but depends on
-                            //the number of source 'cases' (two 'cases' - > 'if/else' branches are formed,
-                            //and if more - 'switch'). This does not depend on having a 'default' statement,
-                            //exiting the function by 'return' directly from 'case', or the compiler option
-                            //'Optimize code'. The exception only one: 'case' with 'when' condition always
-                            //will be generated whole construction as 'if/else' branches for any framework
-                            //version. This also means that it is impossible to determine exactly what was
-                            //in the source code only from the IL code.
-
-                            ifStack.Push(instr);
-                            if (code == Code.Switch)
-                            {
-                                for (var k = 0; k < ((Instruction[])instr.Operand).Length - 1; k++)
-                                    ifStack.Push(instr);
-                                crossType = CrossPointType.Switch;
-                            }
-                            #endregion
-                            #region IF
-                            if (code == Code.Switch || instructions[i + 1].OpCode.FlowControl != FlowControl.Branch) //empty IF?
-                            {
-                                if (crossType == CrossPointType.Unset)
-                                    crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                                probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
-                                var ldstrIf = GetInstruction(probData);
-
-                                //when inserting 'after', must set in desc order
-                                processor.InsertAfter(instr, call);
-                                processor.InsertAfter(instr, ldstrIf);
-                                i += 2;
-                            }
-                            #endregion
-                            #region 'Switch when()', etc
-                            var prev = operand?.Previous;
-                            if (prev == null || _processed.Contains(prev))
-                                continue;
-                            var prevCode = prev.OpCode.Code;
-                            if (prevCode == Code.Br || prevCode == Code.Br_S) //need insert paired call
-                            {
-                                //TODO: совместить с веткой ELSE/JUMP ?
-                                crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
-                                var ind = instructions.IndexOf(operand);
-                                probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ind);
-                                var elseInst = GetInstruction(probData);
-
-                                ReplaceJump(operand, elseInst, jumpers);
-                                processor.InsertBefore(operand, elseInst);
-                                processor.InsertBefore(operand, call);
-
-                                _processed.Add(prev);
-                                if (operand.Offset < instr.Offset)
-                                    i += 2;
-                            }
-                            #endregion
-
-                            continue;
-                        }
-                        #endregion
-                        #region ELSE/JUMP
-                        if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S)) //also may be Code.Leave
-                        {
-                            if (!ifStack.Any())
-                                continue;
-                            if (IsNextReturn(i, instructions, lastOp))
-                                continue;
-                            if (!isAsyncStateMachine && IsCompilerGeneratedBranch(i, instructions, compilerInstructions))
-                                continue;
-                            if (!IsRealCondition(i, instructions, isAsyncStateMachine)) //is real condition's branch?
-                                continue;
-                            //
-                            var ifInst = ifStack.Pop();
-                            var pairedCode = ifInst.OpCode.Code;
-                            crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, i);
-                            var elseInst = GetInstruction(probData);
-
-                            try
-                            {
-                                var instr2 = instructions[i + 1];
-                                FixFinallyEnd(instr, elseInst, body.ExceptionHandlers);
-                                ReplaceJump(instr2, elseInst, jumpers);
-                                processor.InsertBefore(instr2, elseInst);
-                                processor.InsertBefore(instr2, call);
-                                i += 2;
-                            }
-                            catch (Exception exx)
-                            { }
-                            continue;
-                        }
-                        #endregion
-                        #region THROW
-                        if (flow == FlowControl.Throw)
-                        {
-                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
-                            var throwInst = GetInstruction(probData);
-                            FixFinallyEnd(instr, throwInst, body.ExceptionHandlers);
-                            ReplaceJump(instr, throwInst, jumpers);
-                            processor.InsertBefore(instr, throwInst);
-                            processor.InsertBefore(instr, call);
-                            i += 2;
-                            continue;
-                        }
-                        #endregion
-                        #region CATCH FILTER
-                        if (code == Code.Endfilter)
-                        {
-                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, i);
-                            var ldstrFlt = GetInstruction(probData);
-                            FixFinallyEnd(instr, ldstrFlt, body.ExceptionHandlers);
-                            //ReplaceJump(instr, ldstrReturn);
-                            processor.InsertBefore(instr, ldstrFlt);
-                            processor.InsertBefore(instr, call);
-                            i += 2;
-                            continue;
-                        }
-                        #endregion
-                        #region RETURN
-                        if (code == Code.Ret && !strictEnterReturn)
-                        {
-                            ldstrReturn.Operand = $"{returnProbData}{i}";
-                            FixFinallyEnd(instr, ldstrReturn, body.ExceptionHandlers);
-                            ReplaceJump(instr, ldstrReturn, jumpers);
-                            processor.InsertBefore(instr, ldstrReturn);
-                            processor.InsertBefore(instr, call);
-                            i += 2;
-                            continue;
-                        }
-                        #endregion     
+                        //main processing
+                        ctx.SetIndex(i);
+                        Handle(ctx);
+                        i = ctx.CurIndex;
                     }
                     #endregion
                     #region Correct jumps
                     //EACH short form -> to long form (otherwise, you need to recalculate 
                     //again after each necessary conversion)
-                    var jumpersList = jumpers.ToList();
+                    var jumpersList = ctx.Jumpers.ToList();
                     for (var j = 0; j < jumpersList.Count; j++)
                     {
                         var jump = jumpersList[j];
@@ -795,6 +568,291 @@ namespace Drill4Net.Injector.Engine
             assembly.Dispose();
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
+        }
+
+        void Handle(InjectorContext ctx)
+        {
+            #region Init
+            var moduleName = ctx.ModuleName;
+            var methodFullName = ctx.MethodFullName;
+            var treeFunc = ctx.TreeMethod;
+            var realMethodName = ctx.RealMethodName;
+            var initIndex = ctx.CurIndex;
+
+            var processor = ctx.Processor;
+            var instructions = ctx.Instructions;
+            var instr = instructions[ctx.CurIndex];
+            var opCode = instr.OpCode;
+            var code = opCode.Code;
+            var flow = opCode.FlowControl;
+            var lastOp = ctx.LastOperation;
+
+            var isAsyncStateMachine = ctx.IsAsyncStateMachine;
+            var isEnumeratorMoveNext = ctx.IsEnumeratorMoveNext;
+            var strictEnterReturn = ctx.IsStrictEnterReturn;
+
+            var compilerInstructions = ctx.CompilerInstructions;
+            var exceptionHandlers = ctx.ExceptionHandlers;
+            var processed = ctx.Processed;
+            var jumpers = ctx.Jumpers;
+            var ifStack = ctx.IfStack;
+
+            var crossType = CrossPointType.Unset;
+            string probData;
+
+            var call = ctx.Injections[0];
+            var ldstrReturn = ctx.LdstrReturn;
+            var returnProbData = ctx.ReturnProbData;
+            #endregion
+
+            try
+            {
+                #region IF, FOR/SWITCH
+                if (flow == FlowControl.Cond_Branch)
+                {
+                    #region 'Using' statement
+                    //check for 'using' statement (compiler generated Try/Finally with If-checking)
+                    //There is a possibility that a very similar construction from the business code
+                    //may be omitted if the programmer directly implemented Try/Finally with a check
+                    //and a Dispose() call, instead of the usual 'using', although it is unlikely
+                    if (ctx.CurIndex > 2 && ctx.CurIndex < instructions.Count - 2)
+                    {
+                        var prev2 = instructions[ctx.CurIndex - 2].OpCode.Code;
+                        if (prev2 == Code.Throw)
+                            return;
+                        var isWasTry = prev2 == Code.Leave || prev2 == Code.Leave_S;
+                        if (isWasTry)
+                        {
+                            var b = instructions[ctx.CurIndex + 2];
+                            var isDispose = (b.Operand as MemberReference)?.FullName?.EndsWith("IDisposable::Dispose()") == true;
+                            if (isDispose)
+                                return;
+                        }
+                    }
+                    #endregion
+
+                    if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
+                        return;
+                    if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine))
+                        return;
+                    //
+                    var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another branch codes? Hmm...
+
+                    #region Monitor/lock
+                    var operand = instr.Operand as Instruction;
+                    if (isBrFalse && operand != null && operand.OpCode.Code == Code.Endfinally)
+                    {
+                        var endFinInd = instructions.IndexOf(operand);
+                        var prevInstr = SkipNop(endFinInd, false, instructions);
+                        var operand2 = prevInstr.Operand as MemberReference;
+                        if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
+                            return;
+                    }
+                    #endregion
+                    #region Operators: while/for, do
+                    if (operand != null && operand.Offset > 0 && instr.Offset > operand.Offset)
+                    {
+                        if (isEnumeratorMoveNext)
+                        {
+                            var prevRef = (instr.Previous.Operand as MemberReference).FullName;
+                            if (prevRef?.Contains("::MoveNext()") == true)
+                                return;
+                        }
+                        //
+                        var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
+                        var prevOperand = SkipNop(ind, false, instructions);
+                        if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //for/while
+                        {
+                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Cycle, ctx.CurIndex);
+                            var ldstrIf2 = GetInstruction(probData);
+                            var targetOp = prevOperand.Operand as Instruction;
+                            processor.InsertBefore(targetOp, ldstrIf2);
+                            processor.InsertBefore(targetOp, call);
+                            ctx.IncrementIndex(2);
+
+                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.CycleEnd, ctx.CurIndex);
+                            var ldstrIf3 = GetInstruction(probData);
+                            var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+                            processor.InsertAfter(instr, call1);
+                            processor.InsertAfter(instr, ldstrIf3);
+                            ctx.IncrementIndex(2);
+                        }
+                        else //do
+                        {
+                            var back = instr.Operand;
+                            var next = instr.Next;
+
+                            // 1.
+                            crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
+                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ctx.CurIndex);
+                            var ldstrIf = GetInstruction(probData);
+
+                            var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+                            processor.InsertAfter(instr, call1);
+                            processor.InsertAfter(instr, ldstrIf);
+                            ctx.IncrementIndex(2);
+
+                            //jump-1
+                            var jump = Instruction.Create(OpCodes.Br_S, next);
+                            processor.InsertAfter(call1, jump);
+                            jumpers.Add(jump);
+                            ctx.IncrementIndex(1);
+
+                            // 2.
+                            crossType = !isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
+                            probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ctx.CurIndex);
+                            var ldstrIf2 = GetInstruction(probData);
+
+                            var call2 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+                            processor.InsertAfter(jump, call2);
+                            processor.InsertAfter(jump, ldstrIf2);
+                            ctx.IncrementIndex(2);
+
+                            //jump-2
+                            var jump2 = Instruction.Create(OpCodes.Br, back as Instruction);
+                            processor.InsertAfter(call2, jump2);
+                            jumpers.Add(jump2);
+                            ctx.IncrementIndex(1);
+
+                            instr.Operand = ldstrIf2;
+                        }
+                        return;
+                    }
+                    #endregion
+                    #region Switch
+                    //Whether the 'if/else' condition branches or the 'switch' instruction will be
+                    //inserted in the IL code does not depend on the Framework version, but depends on
+                    //the number of source 'cases' (two 'cases' - > 'if/else' branches are formed,
+                    //and if more - 'switch'). This does not depend on having a 'default' statement,
+                    //exiting the function by 'return' directly from 'case', or the compiler option
+                    //'Optimize code'. The exception only one: 'case' with 'when' condition always
+                    //will be generated whole construction as 'if/else' branches for any framework
+                    //version. This also means that it is impossible to determine exactly what was
+                    //in the source code only from the IL code.
+
+                    ifStack.Push(instr);
+                    if (code == Code.Switch)
+                    {
+                        for (var k = 0; k < ((Instruction[])instr.Operand).Length - 1; k++)
+                            ifStack.Push(instr);
+                        crossType = CrossPointType.Switch;
+                    }
+                    #endregion
+                    #region IF
+                    if (code == Code.Switch || instructions[ctx.CurIndex + 1].OpCode.FlowControl != FlowControl.Branch) //empty IF?
+                    {
+                        if (crossType == CrossPointType.Unset)
+                            crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
+                        probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ctx.CurIndex);
+                        var ldstrIf = GetInstruction(probData);
+
+                        //when inserting 'after', must set in desc order
+                        processor.InsertAfter(instr, call);
+                        processor.InsertAfter(instr, ldstrIf);
+                        ctx.IncrementIndex(2);
+                    }
+                    #endregion
+                    #region 'Switch when()', etc
+                    var prev = operand?.Previous;
+                    if (prev == null || processed.Contains(prev))
+                        return;
+                    var prevCode = prev.OpCode.Code;
+                    if (prevCode == Code.Br || prevCode == Code.Br_S) //need insert paired call
+                    {
+                        //TODO: совместить с веткой ELSE/JUMP ?
+                        crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
+                        var ind = instructions.IndexOf(operand);
+                        probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ind);
+                        var elseInst = GetInstruction(probData);
+
+                        ReplaceJump(operand, elseInst, jumpers);
+                        processor.InsertBefore(operand, elseInst);
+                        processor.InsertBefore(operand, call);
+
+                        processed.Add(prev);
+                        if (operand.Offset < instr.Offset)
+                            ctx.IncrementIndex(2);
+                    }
+                    #endregion
+
+                    return;
+                }
+                #endregion
+                #region ELSE/JUMP
+                if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S)) //also may be Code.Leave
+                {
+                    if (!ifStack.Any())
+                        return;
+                    if (IsNextReturn(ctx.CurIndex, instructions, lastOp))
+                        return;
+                    if (!isAsyncStateMachine && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
+                        return;
+                    if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine)) //is real condition's branch?
+                        return;
+                    //
+                    var ifInst = ifStack.Pop();
+                    var pairedCode = ifInst.OpCode.Code;
+                    crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
+                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ctx.CurIndex);
+                    var elseInst = GetInstruction(probData);
+
+                    try
+                    {
+                        var instr2 = instructions[ctx.CurIndex + 1];
+                        FixFinallyEnd(instr, elseInst, exceptionHandlers);
+                        ReplaceJump(instr2, elseInst, jumpers);
+                        processor.InsertBefore(instr2, elseInst);
+                        processor.InsertBefore(instr2, call);
+                        ctx.IncrementIndex(2);
+                    }
+                    catch (Exception exx)
+                    { }
+                    return;
+                }
+                #endregion
+                #region THROW
+                if (flow == FlowControl.Throw)
+                {
+                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Throw, ctx.CurIndex);
+                    var throwInst = GetInstruction(probData);
+                    FixFinallyEnd(instr, throwInst, exceptionHandlers);
+                    ReplaceJump(instr, throwInst, jumpers);
+                    processor.InsertBefore(instr, throwInst);
+                    processor.InsertBefore(instr, call);
+                    ctx.IncrementIndex(2);
+                    return;
+                }
+                #endregion
+                #region CATCH FILTER
+                if (code == Code.Endfilter)
+                {
+                    probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.CatchFilter, ctx.CurIndex);
+                    var ldstrFlt = GetInstruction(probData);
+                    FixFinallyEnd(instr, ldstrFlt, exceptionHandlers);
+                    //ReplaceJump(instr, ldstrReturn);
+                    processor.InsertBefore(instr, ldstrFlt);
+                    processor.InsertBefore(instr, call);
+                    ctx.IncrementIndex(2);
+                    return;
+                }
+                #endregion
+                #region RETURN
+                if (code == Code.Ret && !strictEnterReturn)
+                {
+                    ldstrReturn.Operand = $"{returnProbData}{ctx.CurIndex}";
+                    FixFinallyEnd(instr, ldstrReturn, exceptionHandlers);
+                    ReplaceJump(instr, ldstrReturn, jumpers);
+                    processor.InsertBefore(instr, ldstrReturn);
+                    processor.InsertBefore(instr, call);
+                    ctx.IncrementIndex(2);
+                    return;
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Handle od instruction: {moduleName}; {methodFullName}; index: {initIndex}");
+            }
         }
 
         internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
