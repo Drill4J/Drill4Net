@@ -12,6 +12,9 @@ using Drill4Net.Target.Common.VB;
 [assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Common")]
 //[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
 
+//add this in project's csproj file: 
+//<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
 namespace Drill4Net.Target.Common
 {
     public class InjectTarget

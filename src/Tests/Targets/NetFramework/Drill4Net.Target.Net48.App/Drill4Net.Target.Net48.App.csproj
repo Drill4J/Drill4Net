@@ -9,6 +9,7 @@
     <RootNamespace>Drill4Net.Target.Net48.App</RootNamespace>
     <AssemblyName>Drill4Net.Target.Net48.App</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>

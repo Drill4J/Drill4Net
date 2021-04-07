@@ -10,10 +10,10 @@ using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -298,22 +298,17 @@ namespace Drill4Net.Injector.Engine
                 #endregion
 
                 //collect methods including business & compiler's nested classes
-                //(for async, delegates, anonymous types...)
+                //together (for async, delegates, anonymous types...)
                 var methods = GetAllMethods(treeClass, typeDef, opts);
 
                 //process all methods
                 foreach (var methodDef in methods)
                 {
-                    ////method attrs
-                    //var methAttrs = methodDef.CustomAttributes;
-                    //var isDbgHidden = methAttrs.FirstOrDefault(a => a.AttributeType.Name == dbgHiddenAttrName) != null;
-                    //if (isDbgHidden)
-                    //    continue;
-
                     #region Init
                     var curType = methodDef.DeclaringType;
                     typeName = curType.FullName;
                     typeFullName = curType.FullName;
+
                     var methodName = methodDef.Name;
                     var methodFullName = methodDef.FullName;
 
@@ -325,14 +320,8 @@ namespace Drill4Net.Injector.Engine
                     //the CompilerGeneratedAttribute itself is not enough!
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
 
-                    TryGetRealNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
-                        out string realTypeName, out string realMethodName);
-
                     var isMoveNext = methodName == "MoveNext";
                     var isFinalizer = methodName == "Finalize" && methodDef.IsVirtual;
-                    var moduleName = module.Name;
-                    var probData = string.Empty;
-                    HashSet<Instruction> _processed = new();
 
                     //check for async/await
                     var interfaces = curType.Interfaces;
@@ -340,11 +329,18 @@ namespace Drill4Net.Injector.Engine
                     var isEnumeratorMoveNext = isMoveNext && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
                     var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
 
+                    TryGetRealNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
+                        out string realTypeName, out string realMethodName);
+
                     //instructions
                     var body = methodDef.Body;
                     //body.SimplifyMacros(); //buggy (Cecil or me?)
                     instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
+
+                    var moduleName = module.Name;
+                    var probData = string.Empty;
+                    HashSet<Instruction> _processed = new();
                     compilerInstructions = new HashSet<Instruction>();
                     #endregion
                     #region Enter/Return
@@ -472,7 +468,6 @@ namespace Drill4Net.Injector.Engine
                         // for injecting cases
                         if (_processed.Contains(instr))
                             continue;
-                        CrossPointType crossType = CrossPointType.Unset;
 
                         #region Awaiters in MoveNext as a boundary
                         //we need check: do now current code part is business part
@@ -504,6 +499,8 @@ namespace Drill4Net.Injector.Engine
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             instr.Operand = ldstrReturn;
                         }
+
+                        CrossPointType crossType = CrossPointType.Unset;
 
                         #region IF, FOR/SWITCH
                         if (flow == FlowControl.Cond_Branch)
@@ -794,19 +791,20 @@ namespace Drill4Net.Injector.Engine
             }
             #endregion
             #region Saving
-            Environment.CurrentDirectory = destDir;
-            var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
+            //Environment.CurrentDirectory = destDir;
+            //var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
 
-            // save modified assembly and symbols to new file    
-            var writeParams = new WriterParameters();
-            if (needPdb)
-            {
-                writeParams.SymbolStream = File.Create(pdb);
-                writeParams.WriteSymbols = true;
-                // net core uses portable pdb
-                writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
-            }
-            assembly.Write(modifiedPath, writeParams);
+            //// save modified assembly and symbols to new file    
+            //var writeParams = new WriterParameters();
+            //if (needPdb)
+            //{
+            //    writeParams.SymbolStream = File.Create(pdb);
+            //    writeParams.WriteSymbols = true;
+            //    // net core uses portable pdb
+            //    writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
+            //}
+            //assembly.Write(modifiedPath, writeParams);
+            var modifiedPath = SaveAssembly(assembly, filePath, destDir, needPdb);
             assembly.Dispose();
             #endregion
 
@@ -1009,6 +1007,25 @@ namespace Drill4Net.Injector.Engine
                 return op.OpCode.Name.StartsWith("ldloc") && (op.Next == lastOp || op.Next?.Next == lastOp) ? true : false;
             }
             #endregion
+        }
+
+        internal string SaveAssembly(AssemblyDefinition assembly, string origFilePath, string destDir, bool needPdb)
+        {
+            var ext = Path.GetExtension(origFilePath);
+            var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
+            var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
+
+            var writeParams = new WriterParameters();
+            if (needPdb)
+            {
+                var pdbPath = Path.Combine(destDir, subjectName + ".pdb");
+                writeParams.SymbolStream = File.Create(pdbPath);
+                writeParams.WriteSymbols = true;
+                // net core uses portable pdb
+                writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
+            }
+            assembly.Write(modifiedPath, writeParams);
+            return modifiedPath;
         }
 
         internal string ConvertTargetTypeToFolder(string fullType)
