@@ -79,7 +79,7 @@ namespace Drill4Net.Injector.Core
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public AssemblyVersion GetAssemblyVersion(string filePath)
+        public virtual AssemblyVersion GetAssemblyVersion(string filePath)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace Drill4Net.Injector.Core
         }
         #endregion
         #region Injected Tree
-        public InjectedSolution ReadInjectedTree(string path)
+        public virtual InjectedSolution ReadInjectedTree(string path)
         {
             var types = GetInjectedTreeTypes();
             var ser = new NetSerializer.Serializer(types);
@@ -132,7 +132,7 @@ namespace Drill4Net.Injector.Core
             return tree;
         }
 
-        public void WriteInjectedTree(string path, InjectedSolution tree)
+        public virtual void WriteInjectedTree(string path, InjectedSolution tree)
         {
             var types = GetInjectedTreeTypes();
             var ser = new NetSerializer.Serializer(types);
@@ -141,7 +141,7 @@ namespace Drill4Net.Injector.Core
             File.WriteAllBytes(path, ms.ToArray());
         }
 
-        internal List<Type> GetInjectedTreeTypes()
+        internal virtual List<Type> GetInjectedTreeTypes()
         {
             return new List<Type>
             {
@@ -154,17 +154,17 @@ namespace Drill4Net.Injector.Core
             };
         }
 
-        public string GetTreeFilePath(InjectedSolution tree)
+        public virtual string GetTreeFilePath(InjectedSolution tree)
         {
             return GenerateTreeFilePath(tree.DestinationPath);
         }
 
-        public string GenerateTreeFilePath(string targetDir)
+        public virtual string GenerateTreeFilePath(string targetDir)
         {
             return Path.Combine(targetDir, CoreConstants.TREE_FILE_NAME);
         }
 
-        public string GetTreeFileHintPath(string targetDir)
+        public virtual string GetTreeFileHintPath(string targetDir)
         {
             return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
         }

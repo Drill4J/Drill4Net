@@ -238,10 +238,10 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Generics_Var), new List<string> { "If_20", "If_30" }));
                 #endregion
                 #region Anonymous
-                yield return GetCase(new object[0], new TestInfo(GetInfo(Target.Anonymous_Func), new List<string> { "If_6" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func), new List<string> { "If_6" }));
 
                 //at the moment, we decided not to consider local functions as separate entities 
-                yield return GetCase(new object[0], new TestInfo(GetInfo(Target.Anonymous_Func_WithLocalFunc), new List<string> { "If_6" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_WithLocalFunc), new List<string> { "If_6" }));
 
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "Else_5" }));
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "If_10" }));
@@ -310,7 +310,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string>()));
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
-                yield return GetCase(new object[0], new TestInfo(GetInfo(Target.Disposable_Using_Last_Exception), new List<string> { "Throw_11" })); //in net50 was "Throw_10"
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Disposable_Using_Last_Exception), new List<string> { "Throw_11" })); //in net50 was "Throw_10"
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Disposable_Using_Exception), new List<string>()));
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Disposable_Using_Exception), new List<string> { "If_16", "Throw_21" })); //in net50 was "If_15", "Throw_20"

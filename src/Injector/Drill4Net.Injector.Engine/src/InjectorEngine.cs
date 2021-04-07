@@ -158,8 +158,8 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
 
-        private void ProcessAssembly(string filePath,  Dictionary<string, 
-            AssemblyVersion> versions,  MainOptions opts,  InjectedSolution tree)
+        private void ProcessAssembly(string filePath,  Dictionary<string, AssemblyVersion> versions,  
+            MainOptions opts, InjectedSolution tree)
         {
             #region Reading
             if (!File.Exists(filePath))
@@ -674,7 +674,7 @@ namespace Drill4Net.Injector.Engine
                         }
                         #endregion
                         #region ELSE/JUMP
-                        if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S))
+                        if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S)) //also may be Code.Leave
                         {
                             if (!ifStack.Any())
                                 continue;
@@ -742,9 +742,8 @@ namespace Drill4Net.Injector.Engine
                             i += 2;
                             continue;
                         }
-                        #endregion
-                    
-                    } //cycle
+                        #endregion     
+                    }
                     #endregion
                     #region Correct jumps
                     //EACH short form -> to long form (otherwise, you need to recalculate 
@@ -790,23 +789,10 @@ namespace Drill4Net.Injector.Engine
                     module.AssemblyReferences.Remove(systemPrivateCoreLib);
             }
             #endregion
-            #region Saving
-            //Environment.CurrentDirectory = destDir;
-            //var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
 
-            //// save modified assembly and symbols to new file    
-            //var writeParams = new WriterParameters();
-            //if (needPdb)
-            //{
-            //    writeParams.SymbolStream = File.Create(pdb);
-            //    writeParams.WriteSymbols = true;
-            //    // net core uses portable pdb
-            //    writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
-            //}
-            //assembly.Write(modifiedPath, writeParams);
+            //save modified assembly and symbols to new file    
             var modifiedPath = SaveAssembly(assembly, filePath, destDir, needPdb);
             assembly.Dispose();
-            #endregion
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
 
