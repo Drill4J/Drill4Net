@@ -268,7 +268,6 @@ namespace Drill4Net.Injector.Engine
             HashSet<Instruction> jumpers;
             Mono.Collections.Generic.Collection<Instruction> instructions;
             HashSet<Instruction> compilerInstructions;
-            var dbgHiddenAttrName = typeof(DebuggerHiddenAttribute).Name;
             _injClasses = new Dictionary<string, InjectedType>();
             _injMethods = new Dictionary<string, InjectedMethod>();
             _injMethodByClasses = new Dictionary<string, InjectedMethod>();
@@ -278,9 +277,10 @@ namespace Drill4Net.Injector.Engine
             foreach (TypeDefinition typeDef in module.Types)
             {
                 var typeName = typeDef.Name;
-                //TODO: normal defining of business types (by cfg?)
                 if (typeName == "<Module>")
                     continue;
+
+                //TODO: normal defining of business types (by cfg?)
                 var nameSpace = typeDef.Namespace;
                 var typeFullName = typeDef.FullName;
                 var tAr = typeFullName.Split('.');
@@ -304,13 +304,29 @@ namespace Drill4Net.Injector.Engine
                 //process all methods
                 foreach (var methodDef in methods)
                 {
+                    ////method attrs
+                    //var methAttrs = methodDef.CustomAttributes;
+                    //var isDbgHidden = methAttrs.FirstOrDefault(a => a.AttributeType.Name == dbgHiddenAttrName) != null;
+                    //if (isDbgHidden)
+                    //    continue;
+
                     #region Init
                     var curType = methodDef.DeclaringType;
                     typeName = curType.FullName;
                     typeFullName = curType.FullName;
-
                     var methodName = methodDef.Name;
                     var methodFullName = methodDef.FullName;
+
+                    //Tree
+                    treeClass = _injClasses[typeFullName];
+                    var treeFunc = _injMethods[methodFullName];
+                    var methodType = treeFunc.SourceType.MethodType;
+
+                    //the CompilerGeneratedAttribute itself is not enough!
+                    var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
+
+                    TryGetRealNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
+                        out string realTypeName, out string realMethodName);
 
                     var isMoveNext = methodName == "MoveNext";
                     var isFinalizer = methodName == "Finalize" && methodDef.IsVirtual;
@@ -318,34 +334,18 @@ namespace Drill4Net.Injector.Engine
                     var probData = string.Empty;
                     HashSet<Instruction> _processed = new();
 
+                    //check for async/await
+                    var interfaces = curType.Interfaces;
+                    isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
+                    var isEnumeratorMoveNext = isMoveNext && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
+                    var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
+
                     //instructions
                     var body = methodDef.Body;
                     //body.SimplifyMacros(); //buggy (Cecil or me?)
                     instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
                     compilerInstructions = new HashSet<Instruction>();
-
-                    //method's attributes
-                    var methAttrs = methodDef.CustomAttributes;
-                    var isDbgHidden = methAttrs.FirstOrDefault(a => a.AttributeType.Name == dbgHiddenAttrName) != null;
-                    if (isDbgHidden)
-                        continue;
-
-                    //check for async/await
-                    var interfaces = curType.Interfaces;
-                    isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
-                    var isEnumeratorMoveNext = isMoveNext && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
-                    var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
-                    #endregion
-                    #region Tree
-                    treeClass = _injClasses[typeFullName];
-                    var treeFunc = _injMethods[methodFullName];
-                    var methodType = treeFunc.SourceType.MethodType;
-                    var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
-                    #endregion
-                    #region Real type & method names
-                    TryGetRealNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
-                        out string realTypeName, out string realMethodName);
                     #endregion
                     #region Enter/Return
                     //inject 'entering' instruction
@@ -399,7 +399,7 @@ namespace Drill4Net.Injector.Engine
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
 
-                        #region Tree (maping business calls)
+                        #region Tree (mapping business functions)
                         //in any case needed check compiler generated classes
                         if (instr.Operand is MethodReference && 
                            (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Ldfld))
@@ -419,7 +419,7 @@ namespace Drill4Net.Injector.Engine
                                                       _injClasses[extTypeFullName] :
                                                       (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
 
-                                    //extType found + not local func, not 'class-for-all'
+                                    //extType found, not local func, not 'class-for-all'
                                     if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                                     {
                                         TryGetRealNames(curType, extFullname, extFullname, true, true, 
@@ -474,7 +474,9 @@ namespace Drill4Net.Injector.Engine
                             continue;
                         CrossPointType crossType = CrossPointType.Unset;
 
-                        #region Awaiters in MoveNext as a border
+                        #region Awaiters in MoveNext as a boundary
+                        //we need check: do now current code part is business part
+                        //or is compiler generated part?
                         if (isMoveNext && isCompilerGenerated)
                         {
                             //TODO: caching!!!
@@ -496,6 +498,7 @@ namespace Drill4Net.Injector.Engine
                         }
                         #endregion
 
+                        //returns in the middle of the method body
                         if (instr.Operand == lastOp && !strictEnterReturn && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
@@ -1161,6 +1164,10 @@ namespace Drill4Net.Injector.Engine
                 methods.AddRange(innerMethods);
             }
             #endregion
+
+            methods = methods
+                .Where(a => a.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(DebuggerHiddenAttribute).Name) == null)
+                .ToList();
             return methods;
         }
 

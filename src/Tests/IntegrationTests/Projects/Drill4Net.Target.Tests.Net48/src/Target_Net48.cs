@@ -4,7 +4,7 @@ using Drill4Net.Target.Tests.Common;
 
 namespace Drill4Net.Target.Tests.Net48
 {
-    [TestFixture]
+    //[TestFixture]
     internal class Target_Net48 : AbstractTargetTests
     {
         protected override Dictionary<string, object> LoadTarget()
