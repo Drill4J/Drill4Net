@@ -526,9 +526,9 @@ namespace Drill4Net.Injector.Engine
                             }
                             #endregion
 
-                            if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(i))
+                            if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(i, instructions, compilerInstructions))
                                 continue;
-                            if (!IsRealCondition(i))
+                            if (!IsRealCondition(i, instructions, isAsyncStateMachine))
                                 continue;
                             //
                             var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another branch codes? Hmm...
@@ -538,7 +538,7 @@ namespace Drill4Net.Injector.Engine
                             if (isBrFalse && operand != null && operand.OpCode.Code == Code.Endfinally)
                             {
                                 var endFinInd = instructions.IndexOf(operand);
-                                var prevInstr = SkipNop(endFinInd, false);
+                                var prevInstr = SkipNop(endFinInd, false, instructions);
                                 var operand2 = prevInstr.Operand as MemberReference;
                                 if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
                                     continue;
@@ -555,7 +555,7 @@ namespace Drill4Net.Injector.Engine
                                 }
                                 //
                                 var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
-                                var prevOperand = SkipNop(ind, false);
+                                var prevOperand = SkipNop(ind, false, instructions);
                                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //for/while
                                 {
                                     probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Cycle, i);
@@ -660,7 +660,7 @@ namespace Drill4Net.Injector.Engine
                                 probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, crossType, ind);
                                 var elseInst = GetInstruction(probData);
 
-                                ReplaceJump(operand, elseInst);
+                                ReplaceJump(operand, elseInst, jumpers);
                                 processor.InsertBefore(operand, elseInst);
                                 processor.InsertBefore(operand, call);
 
@@ -678,11 +678,11 @@ namespace Drill4Net.Injector.Engine
                         {
                             if (!ifStack.Any())
                                 continue;
-                            if (IsNextReturn(i))
+                            if (IsNextReturn(i, instructions, lastOp))
                                 continue;
-                            if (!isAsyncStateMachine && IsCompilerGeneratedBranch(i))
+                            if (!isAsyncStateMachine && IsCompilerGeneratedBranch(i, instructions, compilerInstructions))
                                 continue;
-                            if (!IsRealCondition(i)) //is real condition's branch?
+                            if (!IsRealCondition(i, instructions, isAsyncStateMachine)) //is real condition's branch?
                                 continue;
                             //
                             var ifInst = ifStack.Pop();
@@ -695,7 +695,7 @@ namespace Drill4Net.Injector.Engine
                             {
                                 var instr2 = instructions[i + 1];
                                 FixFinallyEnd(instr, elseInst, body.ExceptionHandlers);
-                                ReplaceJump(instr2, elseInst);
+                                ReplaceJump(instr2, elseInst, jumpers);
                                 processor.InsertBefore(instr2, elseInst);
                                 processor.InsertBefore(instr2, call);
                                 i += 2;
@@ -711,7 +711,7 @@ namespace Drill4Net.Injector.Engine
                             probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Throw, i);
                             var throwInst = GetInstruction(probData);
                             FixFinallyEnd(instr, throwInst, body.ExceptionHandlers);
-                            ReplaceJump(instr, throwInst);
+                            ReplaceJump(instr, throwInst, jumpers);
                             processor.InsertBefore(instr, throwInst);
                             processor.InsertBefore(instr, call);
                             i += 2;
@@ -736,7 +736,7 @@ namespace Drill4Net.Injector.Engine
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
                             FixFinallyEnd(instr, ldstrReturn, body.ExceptionHandlers);
-                            ReplaceJump(instr, ldstrReturn);
+                            ReplaceJump(instr, ldstrReturn, jumpers);
                             processor.InsertBefore(instr, ldstrReturn);
                             processor.InsertBefore(instr, call);
                             i += 2;
@@ -795,204 +795,202 @@ namespace Drill4Net.Injector.Engine
             assembly.Dispose();
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
+        }
 
-            #region Local functions
-
-            void FixFinallyEnd(Instruction cur, Instruction on, Mono.Collections.Generic.Collection<ExceptionHandler> handlers)
-            {
-                var prev = cur.Previous;
-                var prevCode = prev.OpCode.Code;
-                if (prevCode == Code.Endfinally)
-                {
-                    foreach (var exc in handlers)
-                    {
-                        if (exc.HandlerEnd == cur)
-                            exc.HandlerEnd = on;
-                    }
-                }
-            }
-
-            OpCode ConvertShortJumpToLong(OpCode opCode)
-            {
-                //TODO: to a dictionary
-                return opCode.Code switch
-                {
-                    Code.Br_S => OpCodes.Br,
-                    Code.Brfalse_S => OpCodes.Brfalse,
-                    Code.Brtrue_S => OpCodes.Brtrue,
-                    Code.Beq_S => OpCodes.Beq,
-                    Code.Bge_S => OpCodes.Bge,
-                    Code.Bge_Un_S => OpCodes.Bge_Un,
-                    Code.Bgt_S => OpCodes.Bgt,
-                    Code.Bgt_Un_S => OpCodes.Bgt_Un,
-                    Code.Ble_S => OpCodes.Ble,
-                    Code.Ble_Un_S => OpCodes.Ble_Un,
-                    Code.Blt_S => OpCodes.Blt,
-                    Code.Blt_Un_S => OpCodes.Blt_Un,
-                    Code.Bne_Un_S => OpCodes.Bne_Un,
-                    Code.Leave_S => OpCodes.Leave,
-                    _ => opCode,
-                };
-            }
-
-            bool IsRealCondition(int ind)
-            {
-                if (ind < 0 || ind >= instructions.Count)
-                    return false;
-                //
-                var op = instructions[ind];
-                if (isAsyncStateMachine)
-                {
-                    var prev = SkipNop(ind, false);
-                    var prevOpS = prev.Operand?.ToString();
-                    var isInternal = prev.OpCode.Code == Code.Call &&
-                                        prevOpS != null &&
-                                        (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"))
-                                        ;
-                    if (isInternal)
-                        return false;
-
-                    //seems not good: skip some state machine's instructions
-
-                    // machine state not init jump block (yeah...)
-                    if (instructions[ind - 1].OpCode.Code == Code.Ldloc_0 &&
-                        instructions[ind + 1].OpCode.FlowControl == FlowControl.Branch &&
-                        instructions[ind + 2].OpCode.FlowControl == FlowControl.Branch &&
-                        instructions[ind + 3].OpCode.Code == Code.Nop &&
-                        op.Operand == instructions[ind + 2] &&
-                        instructions[ind + 1].Operand == instructions[ind + 3]
-                        )
-                        return false;
-
-                    //1. start of finally block of state machine
-                    if (op.OpCode.Code == Code.Bge_S &&
-                        instructions[ind - 1].OpCode.Code == Code.Ldc_I4_0 &&
-                        instructions[ind - 2].OpCode.Code == Code.Ldloc_0 &&
-                        instructions[ind - 3].OpCode.Code == Code.Leave_S
-                        )
-                        return false;
-
-                    //2. end of finally block of state machine
-                    if (op.OpCode.Code == Code.Brfalse_S &&
-                        instructions[ind + 1].OpCode.Code == Code.Ldarg_0 &&
-                        instructions[ind + 2].OpCode.Code == Code.Ldfld &&
-                        instructions[ind + 3].OpCode.Code == Code.Callvirt &&
-                        instructions[ind + 4].OpCode.Code == Code.Nop &&
-                        instructions[ind + 5].OpCode.Code == Code.Endfinally
-                        )
-                        return false;
-                }
-                //
-                var next = SkipNop(ind, true);
-
-                return op.Operand != next; //how far do it jump?
-            }
-
-            Instruction SkipNop(int ind, bool forward)
-            {
-                int start, end, inc;
-                if (forward)
-                {
-                    start = ind + 1;
-                    end = instructions.Count - 1;
-                    inc = 1;
-                }
-                else
-                {
-                    start = ind - 1;
-                    end = 0;
-                    inc = -1;
-                }
-                //
-                for (var i = start; true; i += inc)
-                {
-                    if (i >= instructions.Count || i < 0)
-                        break;
-                    var op = instructions[i];
-                    if (op.OpCode.Code == Code.Nop)
-                        continue;
-                    return op;
-                }
-                return Instruction.Create(OpCodes.Nop);
-            }
-
-            void ReplaceJump(Instruction from, Instruction to)
-            {
-                //direct jumps
-                foreach (var curOp in jumpers.Where(j => j.Operand == from))
-                    curOp.Operand = to;
-
-                //switches
-                foreach (var curOp in jumpers.Where(j => j.OpCode.Code == Code.Switch))
-                {
-                    var switches = (Instruction[])curOp.Operand;
-                    for (int i = 0; i < switches.Length; i++)
-                    {
-                        if (switches[i] == from)
-                            switches[i] = to;
-                    }
-                }
-            }
-
-            bool IsCompilerGeneratedBranch(int ind)
-            {
-                //TODO: optimize (caching 'normal instruction')
-                if (ind < 0 || ind >= instructions.Count)
-                    return false;
-                Instruction instr = instructions[ind];
-                if (instr.OpCode.FlowControl != FlowControl.Cond_Branch)
-                    return false;
-                //
-                Instruction inited = instr;
-                Instruction finish = inited.Operand as Instruction;
-                var localInsts = new List<Instruction>();
-
-                while (true)
-                {
-                    if (instr == null || instr.Offset == 0)
-                        break;
-
-                    //we don't need compiler generated instructions in business code
-                    if (!compilerInstructions.Contains(instr))
-                    {
-                        localInsts.Add(instr);
-                        var operand = instr.Operand as MemberReference;
-                        if (operand?.Name.StartsWith("<") == true) //hm...
-                        {
-                            //add next instructions of branch as 'angled'
-                            var curNext = inited.Next;
-                            while (true)
-                            {
-                                var flow = curNext.OpCode.FlowControl;
-                                if (curNext == null || curNext == finish || flow == FlowControl.Return || flow == FlowControl.Throw)
-                                    break;
-                                localInsts.Add(curNext);
-                                curNext = curNext.Next;
-                            }
-
-                            //add local angled instructions to cache
-                            foreach (var ins in localInsts)
-                                if (!compilerInstructions.Contains(ins))
-                                    compilerInstructions.Add(ins);
-                            return true;
-                        }
-                    }
-                    instr = instr.Previous;
-                }
+        internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
+            bool isAsyncStateMachine)
+        {
+            if (ind < 0 || ind >= instructions.Count)
                 return false;
-            }
-
-            bool IsNextReturn(int ind)
+            //
+            var op = instructions[ind];
+            if (isAsyncStateMachine)
             {
-                var ins = instructions[ind];
-                var op = ins.Operand as Instruction;
-                if (op == null)
+                var prev = SkipNop(ind, false, instructions);
+                var prevOpS = prev.Operand?.ToString();
+                var isInternal = prev.OpCode.Code == Code.Call &&
+                                    prevOpS != null &&
+                                    (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"))
+                                    ;
+                if (isInternal)
                     return false;
-                if (op == lastOp && ins.Next == lastOp)
-                    return true;
-                return op.OpCode.Name.StartsWith("ldloc") && (op.Next == lastOp || op.Next?.Next == lastOp) ? true : false;
+
+                //seems not good: skip some state machine's instructions
+
+                // machine state not init jump block (yeah...)
+                if (instructions[ind - 1].OpCode.Code == Code.Ldloc_0 &&
+                    instructions[ind + 1].OpCode.FlowControl == FlowControl.Branch &&
+                    instructions[ind + 2].OpCode.FlowControl == FlowControl.Branch &&
+                    instructions[ind + 3].OpCode.Code == Code.Nop &&
+                    op.Operand == instructions[ind + 2] &&
+                    instructions[ind + 1].Operand == instructions[ind + 3]
+                    )
+                    return false;
+
+                //1. start of finally block of state machine
+                if (op.OpCode.Code == Code.Bge_S &&
+                    instructions[ind - 1].OpCode.Code == Code.Ldc_I4_0 &&
+                    instructions[ind - 2].OpCode.Code == Code.Ldloc_0 &&
+                    instructions[ind - 3].OpCode.Code == Code.Leave_S
+                    )
+                    return false;
+
+                //2. end of finally block of state machine
+                if (op.OpCode.Code == Code.Brfalse_S &&
+                    instructions[ind + 1].OpCode.Code == Code.Ldarg_0 &&
+                    instructions[ind + 2].OpCode.Code == Code.Ldfld &&
+                    instructions[ind + 3].OpCode.Code == Code.Callvirt &&
+                    instructions[ind + 4].OpCode.Code == Code.Nop &&
+                    instructions[ind + 5].OpCode.Code == Code.Endfinally
+                    )
+                    return false;
             }
-            #endregion
+            //
+            var next = SkipNop(ind, true, instructions);
+
+            return op.Operand != next; //how far do it jump?
+        }
+
+        internal void FixFinallyEnd(Instruction cur, Instruction on, Mono.Collections.Generic.Collection<ExceptionHandler> handlers)
+        {
+            var prev = cur.Previous;
+            var prevCode = prev.OpCode.Code;
+            if (prevCode == Code.Endfinally)
+            {
+                foreach (var exc in handlers)
+                {
+                    if (exc.HandlerEnd == cur)
+                        exc.HandlerEnd = on;
+                }
+            }
+        }
+
+        internal OpCode ConvertShortJumpToLong(OpCode opCode)
+        {
+            //TODO: to a dictionary
+            return opCode.Code switch
+            {
+                Code.Br_S => OpCodes.Br,
+                Code.Brfalse_S => OpCodes.Brfalse,
+                Code.Brtrue_S => OpCodes.Brtrue,
+                Code.Beq_S => OpCodes.Beq,
+                Code.Bge_S => OpCodes.Bge,
+                Code.Bge_Un_S => OpCodes.Bge_Un,
+                Code.Bgt_S => OpCodes.Bgt,
+                Code.Bgt_Un_S => OpCodes.Bgt_Un,
+                Code.Ble_S => OpCodes.Ble,
+                Code.Ble_Un_S => OpCodes.Ble_Un,
+                Code.Blt_S => OpCodes.Blt,
+                Code.Blt_Un_S => OpCodes.Blt_Un,
+                Code.Bne_Un_S => OpCodes.Bne_Un,
+                Code.Leave_S => OpCodes.Leave,
+                _ => opCode,
+            };
+        }
+
+        internal Instruction SkipNop(int ind, bool forward, Mono.Collections.Generic.Collection<Instruction> instructions)
+        {
+            int start, end, inc;
+            if (forward)
+            {
+                start = ind + 1;
+                end = instructions.Count - 1;
+                inc = 1;
+            }
+            else
+            {
+                start = ind - 1;
+                end = 0;
+                inc = -1;
+            }
+            //
+            for (var i = start; true; i += inc)
+            {
+                if (i >= instructions.Count || i < 0)
+                    break;
+                var op = instructions[i];
+                if (op.OpCode.Code == Code.Nop)
+                    continue;
+                return op;
+            }
+            return Instruction.Create(OpCodes.Nop);
+        }
+
+        internal void ReplaceJump(Instruction from, Instruction to, HashSet<Instruction> jumpers)
+        {
+            //direct jumps
+            foreach (var curOp in jumpers.Where(j => j.Operand == from))
+                curOp.Operand = to;
+
+            //switches
+            foreach (var curOp in jumpers.Where(j => j.OpCode.Code == Code.Switch))
+            {
+                var switches = (Instruction[])curOp.Operand;
+                for (int i = 0; i < switches.Length; i++)
+                {
+                    if (switches[i] == from)
+                        switches[i] = to;
+                }
+            }
+        }
+
+        internal bool IsCompilerGeneratedBranch(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
+            HashSet<Instruction> compilerInstructions)
+        {
+            //TODO: optimize (caching 'normal instruction')
+            if (ind < 0 || ind >= instructions.Count)
+                return false;
+            Instruction instr = instructions[ind];
+            if (instr.OpCode.FlowControl != FlowControl.Cond_Branch)
+                return false;
+            //
+            Instruction inited = instr;
+            Instruction finish = inited.Operand as Instruction;
+            var localInsts = new List<Instruction>();
+
+            while (true)
+            {
+                if (instr == null || instr.Offset == 0)
+                    break;
+
+                //we don't need compiler generated instructions in business code
+                if (!compilerInstructions.Contains(instr))
+                {
+                    localInsts.Add(instr);
+                    var operand = instr.Operand as MemberReference;
+                    if (operand?.Name.StartsWith("<") == true) //hm...
+                    {
+                        //add next instructions of branch as 'angled'
+                        var curNext = inited.Next;
+                        while (true)
+                        {
+                            var flow = curNext.OpCode.FlowControl;
+                            if (curNext == null || curNext == finish || flow == FlowControl.Return || flow == FlowControl.Throw)
+                                break;
+                            localInsts.Add(curNext);
+                            curNext = curNext.Next;
+                        }
+
+                        //add local angled instructions to cache
+                        foreach (var ins in localInsts)
+                            if (!compilerInstructions.Contains(ins))
+                                compilerInstructions.Add(ins);
+                        return true;
+                    }
+                }
+                instr = instr.Previous;
+            }
+            return false;
+        }
+
+        internal bool IsNextReturn(int ind, Mono.Collections.Generic.Collection<Instruction> instructions, Instruction lastOp)
+        {
+            var ins = instructions[ind];
+            if (ins.Operand is not Instruction op)
+                return false;
+            if (op == lastOp && ins.Next == lastOp)
+                return true;
+            return op.OpCode.Name.StartsWith("ldloc") && (op.Next == lastOp || op.Next?.Next == lastOp);
         }
 
         internal string SaveAssembly(AssemblyDefinition assembly, string origFilePath, string destDir, bool needPdb)
