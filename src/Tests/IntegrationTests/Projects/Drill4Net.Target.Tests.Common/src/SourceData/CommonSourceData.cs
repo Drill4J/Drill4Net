@@ -247,6 +247,18 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "If_10" }));
                 #endregion
                 #region Async/await
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Async_Lambda), new List<string> { "Else_60" }));
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Async_Lambda), new List<string> { "If_18" }));
+
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Async_Task), new List<string> { "Else_59" }), new TestInfo(GetInfo(Target.Delay100), new List<string>()));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Async_Task), new List<string> { "If_17" }));
+#if !NETFRAMEWORK
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Async_Linq_Blocking), new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string>()));
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Async_Linq_Blocking), new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
+
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string>())).Ignore(TestConstants.INFLUENCE);
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
+#endif
 #if !NET461
                 yield return GetCase(Array.Empty<object>(), true, true,
                     new TestInfo(GetInfo(Target.Async_Stream), new List<string> { "If_54" }),
@@ -256,18 +268,6 @@ namespace Drill4Net.Target.Tests.Common
                     new TestInfo(GetInfo(Target.Async_Stream_Cancellation), new List<string> { "If_76" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceWithCancellationAsync(System.Threading.CancellationToken)"), false, new List<string> { "Else_24", "Else_24", "Else_24" }, true));
 #endif
-#if !NETFRAMEWORK
-                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Async_Linq_Blocking), new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string>()));
-                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Async_Linq_Blocking),  new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
-
-                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string>())).Ignore(TestConstants.INFLUENCE);
-                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string>()), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string> { "If_5", "If_5", "If_5" }));
-#endif
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Async_Task), new List<string> { "Else_59" }), new TestInfo(GetInfo(Target.Delay100), new List<string>()));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Async_Task), new List<string> { "If_17" }));
-
-                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Async_Lambda), new List<string> { "Else_60" }));
-                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Async_Lambda), new List<string> { "If_18" }));
                 #endregion
                 #region Parallel
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Else_16", "Else_16", "Else_16", "Else_16", "Else_16" }));

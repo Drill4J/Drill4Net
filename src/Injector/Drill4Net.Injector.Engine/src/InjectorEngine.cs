@@ -220,6 +220,7 @@ namespace Drill4Net.Injector.Engine
             // read subject assembly with symbols
             using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
+            var moduleName = module.Name;
             #endregion
             #region Target version
             var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(System.Runtime.Versioning.TargetFrameworkAttribute).Name);
@@ -269,7 +270,6 @@ namespace Drill4Net.Injector.Engine
             _injMethods = new Dictionary<string, InjectedMethod>();
             _injMethodByClasses = new Dictionary<string, InjectedMethod>();
 
-            bool isAsyncStateMachine = false;
             Instruction lastOp;
             var probData = string.Empty;
 
@@ -288,17 +288,17 @@ namespace Drill4Net.Injector.Engine
                     continue;
 
                 #region Tree
-                var treeClass = new InjectedType(treeAsm.Name, typeFullName)
+                var treeType = new InjectedType(treeAsm.Name, typeFullName)
                 {
                     SourceType = CreateTypeSource(typeDef)
                 };
-                _injClasses.Add(treeClass.Fullname, treeClass);
-                treeAsm.AddChild(treeClass);
+                _injClasses.Add(treeType.Fullname, treeType);
+                treeAsm.AddChild(treeType);
                 #endregion
 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
-                var methods = GetAllMethods(treeClass, typeDef, opts);
+                var methods = GetAllMethods(treeType, typeDef, opts);
 
                 //process all methods
                 foreach (var methodDef in methods)
@@ -312,22 +312,18 @@ namespace Drill4Net.Injector.Engine
                     var methodFullName = methodDef.FullName;
 
                     //Tree
-                    treeClass = _injClasses[typeFullName];
+                    treeType = _injClasses[typeFullName];
+                    var typeSource = treeType.SourceType;
                     var treeFunc = _injMethods[methodFullName];
-                    var methodType = treeFunc.SourceType.MethodType;
+                    var methodSource = treeFunc.SourceType;
+                    var methodType = methodSource.MethodType;
 
                     //the CompilerGeneratedAttribute itself is not enough!
                     //not use isMoveNext - this class may be own iterator, not compirer's one
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
 
-                    var isMoveNext = methodName == "MoveNext";
-                    var isFinalizer = methodName == "Finalize" && methodDef.IsVirtual;
-
-                    //check for async/await
-                    var interfaces = curType.Interfaces;
-                    isAsyncStateMachine = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
-                    var isEnumeratorMoveNext = isMoveNext && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
-                    var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
+                    var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
+                    var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
 
                     #region RealNames
                     string realTypeName = null;
@@ -350,8 +346,6 @@ namespace Drill4Net.Injector.Engine
                     //body.SimplifyMacros(); //buggy (Cecil or me?)
                     var instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
-
-                    var moduleName = module.Name;
                     #endregion
                     #region Enter/Return
                     //inject 'entering' instruction
@@ -363,7 +357,7 @@ namespace Drill4Net.Injector.Engine
                             isAsyncStateMachine || //async/await
                             isCompilerGenerated ||
                             //Finalyze() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
-                            (_isNetCore.Value == true && isFinalizer)
+                            (_isNetCore.Value == true && methodSource.IsFinalizer)
                         );
 
                     Instruction ldstrEntering = null;
@@ -385,9 +379,8 @@ namespace Drill4Net.Injector.Engine
                     #region Context
                     var ctx = new InjectorContext(moduleName, methodFullName, instructions, processor)
                     {
+                        TreeType = treeType,
                         TreeMethod = treeFunc,
-                        IsAsyncStateMachine = isAsyncStateMachine,
-                        IsEnumeratorMoveNext = isEnumeratorMoveNext,
                         IsStrictEnterReturn = strictEnterReturn,
                         LastOperation = lastOp,
                         LdstrReturn = ldstrReturn,
@@ -495,7 +488,7 @@ namespace Drill4Net.Injector.Engine
                         #region Awaiters in MoveNext as a boundary
                         //we need check: do now current code part is business part
                         //or is compiler generated part?
-                        if (isMoveNext && isCompilerGenerated)
+                        if (methodSource.IsMoveNext && isCompilerGenerated)
                         {
                             //TODO: caching!!!
                             foreach (var catcher in body.ExceptionHandlers)
@@ -587,6 +580,7 @@ namespace Drill4Net.Injector.Engine
             #region Init
             var moduleName = ctx.ModuleName;
             var methodFullName = ctx.MethodFullName;
+            var treeType = ctx.TreeType;
             var treeFunc = ctx.TreeMethod;
             var realMethodName = treeFunc.BusinessMethod;
             var initIndex = ctx.CurIndex;
@@ -599,9 +593,11 @@ namespace Drill4Net.Injector.Engine
             var flow = opCode.FlowControl;
             var lastOp = ctx.LastOperation;
 
-            var isAsyncStateMachine = ctx.IsAsyncStateMachine;
-            var isEnumeratorMoveNext = ctx.IsEnumeratorMoveNext;
-            var strictEnterReturn = ctx.IsStrictEnterReturn;
+            var typeSource = treeType.SourceType;
+            var methodSource = treeFunc.SourceType;
+
+            var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
+            var isEnumeratorMoveNext = methodSource.IsEnumeratorMoveNext;
 
             var compilerInstructions = ctx.CompilerInstructions;
             var exceptionHandlers = ctx.ExceptionHandlers;
@@ -612,6 +608,7 @@ namespace Drill4Net.Injector.Engine
             var crossType = CrossPointType.Unset;
             string probData;
 
+            var strictEnterReturn = ctx.IsStrictEnterReturn;
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             var ldstrReturn = ctx.LdstrReturn;
             var returnProbData = ctx.ReturnProbData;
@@ -1097,7 +1094,7 @@ namespace Drill4Net.Injector.Engine
         }
 
         internal void TryGetBusinessNames(TypeDefinition curType, string typeName, string methodName, 
-            bool isCompilerGenerated, bool isAsyncStateMachine, 
+            bool isCompilerGenerated, bool isAsyncStateMachine,
             out string realTypeName, out string realMethodName)
         {
             //TODO: regex!!!
@@ -1183,8 +1180,8 @@ namespace Drill4Net.Injector.Engine
             return type == MethodType.EventAdd || type == MethodType.EventRemove;
         }
 
-        internal List<MethodDefinition> GetAllMethods( InjectedType treeParentClass,  TypeDefinition type, 
-             MainOptions opts)
+        internal List<MethodDefinition> GetAllMethods(InjectedType treeParentClass, TypeDefinition type, 
+            MainOptions opts)
         {
             var methods = new List<MethodDefinition>();
             var typeFullname = treeParentClass.Fullname;
@@ -1192,6 +1189,12 @@ namespace Drill4Net.Injector.Engine
             #region Own methods
             var probOpts = opts.Probes;
             var isAngleBracket = type.Name.StartsWith("<");
+
+            //check for async/await
+            var interfaces = type.Interfaces;
+            treeParentClass.SourceType.IsAsyncStateMachine = interfaces
+                .FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
+
             var ownMethods = type.Methods
                 .Where(a => a.HasBody)
                 .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
@@ -1202,6 +1205,7 @@ namespace Drill4Net.Injector.Engine
                 .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
                 .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
                 ;
+
             foreach (var ownMethod in ownMethods)
             {
                 //check for setter & getter of properties for anonymous types
@@ -1217,6 +1221,13 @@ namespace Drill4Net.Injector.Engine
                 //
                 var methodSource = CreateMethodSource(ownMethod);
                 var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName, methodSource);
+                //
+                var methodName = ownMethod.Name;
+                methodSource.IsMoveNext = methodName == "MoveNext";
+                methodSource.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
+                methodSource.IsEnumeratorMoveNext = methodSource.IsMoveNext && 
+                    interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
+                //
                 if (!_injMethods.ContainsKey(treeFunc.Fullname)) //strange...
                     _injMethods.Add(treeFunc.Fullname, treeFunc);
                 else { }

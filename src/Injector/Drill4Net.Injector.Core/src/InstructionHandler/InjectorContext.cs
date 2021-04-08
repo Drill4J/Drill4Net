@@ -13,6 +13,7 @@ namespace Drill4Net.Injector.Core
         public string ModuleName { get; set; }
         public string MethodFullName { get; set; }
         public InjectedMethod TreeMethod { get; set; }
+        public InjectedType TreeType { get; set; }
 
         public ILProcessor Processor { get; set; }
         public Collection<Instruction> Instructions { get; }
@@ -20,8 +21,6 @@ namespace Drill4Net.Injector.Core
         public Instruction LastOperation { get; set; }
         public Stack<Instruction> IfStack { get; }
 
-        public bool IsAsyncStateMachine { get; set; }
-        public bool IsEnumeratorMoveNext { get; set; }
         public bool IsStrictEnterReturn { get; set; }
 
         public HashSet<Instruction> Jumpers { get; }
