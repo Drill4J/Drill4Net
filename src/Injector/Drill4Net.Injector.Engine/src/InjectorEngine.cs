@@ -15,6 +15,7 @@ using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Strategies.Flow;
+using Drill4Net.Injector.Strategies.Block;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -36,18 +37,20 @@ namespace Drill4Net.Injector.Engine
         private Dictionary<string, InjectedType> _injClasses;
         private Dictionary<string, InjectedMethod> _injMethods;
         private Dictionary<string, InjectedMethod> _injMethodByClasses;
-        protected ProbeHeper _probeHelper;
+        protected ProbeHelper _probeHelper;
+
         private FlowStrategy _flowStrategy;
+        private BlockStrategy _blockStrategy;
 
         /***************************************************************************************/
 
-        public InjectorEngine( IInjectorRepository rep)
+        public InjectorEngine(IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _isNetCore = new ThreadLocal<bool?>();
             _mainVersion = new ThreadLocal<AssemblyVersion>();
             _restrictNamespaces = GetRestrictNamespaces();
-            _probeHelper = new ProbeHeper();
+            _probeHelper = new ProbeHelper();
             _flowStrategy = new FlowStrategy();
         }
 
@@ -103,8 +106,8 @@ namespace Drill4Net.Injector.Engine
             return tree;
         }
 
-        internal void ProcessDirectory( string directory,  Dictionary<string, AssemblyVersion> versions, 
-             MainOptions opts,  InjectedSolution tree)
+        internal void ProcessDirectory(string directory, Dictionary<string, AssemblyVersion> versions, 
+             MainOptions opts, InjectedSolution tree)
         {
             //files
             var files = _rep.GetAssemblies(directory);
@@ -161,7 +164,7 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
 
-        private void ProcessAssembly(string filePath,  Dictionary<string, AssemblyVersion> versions,  
+        private void ProcessAssembly(string filePath, Dictionary<string, AssemblyVersion> versions,  
             MainOptions opts, InjectedSolution tree)
         {
             #region Reading
@@ -446,10 +449,9 @@ namespace Drill4Net.Injector.Engine
                     #region Correct jumps
                     //EACH short form -> to long form (otherwise, you need to recalculate 
                     //again after each necessary conversion)
-                    var jumpersList = ctx.Jumpers.ToList();
-                    for (var j = 0; j < jumpersList.Count; j++)
+                    var jumpers = ctx.Jumpers.ToArray();
+                    foreach (var jump in jumpers)
                     {
-                        var jump = jumpersList[j];
                         var opCode = jump.OpCode;
                         if (jump.Operand is Instruction operand)
                         {

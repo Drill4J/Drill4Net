@@ -1,4 +1,6 @@
-﻿using Mono.Cecil.Cil;
+﻿using Drill4Net.Profiling.Tree;
+using Mono.Cecil.Cil;
+using System.Linq;
 
 namespace Drill4Net.Injector.Core
 {
@@ -39,6 +41,13 @@ namespace Drill4Net.Injector.Core
                 processor.InsertBefore(instr, ldstrReturn);
                 processor.InsertBefore(instr, call);
                 ctx.IncrementIndex(2);
+                
+                //correcting pointId
+                var point = ctx.TreeMethod.Filter(typeof(CrossPoint), false)
+                    .Cast<CrossPoint>()
+                    .FirstOrDefault(a => a.PointType == CrossPointType.Return && a.PointId == null);
+                if(point != null)
+                    point.PointId = ctx.CurIndex.ToString();
             }
         }
     }

@@ -3,11 +3,11 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
-    public class ProbeHeper
+    public class ProbeHelper
     {
-        public string GetProbeData(InjectedMethod injMeth, string moduleName, CrossPointType pointType, int localId)
+        public virtual string GetProbeData(InjectedMethod injMeth, string moduleName, CrossPointType pointType, int index)
         {
-            var id = localId == -1 ? null : localId.ToString();
+            var id = index == -1 ? null : index.ToString();
             var pointUid = Guid.NewGuid();
 
             var crossPoint = new CrossPoint(pointUid.ToString(), id, pointType)
@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.Core
             };
             injMeth.AddChild(crossPoint);
 
-            return $"{injMeth.BusinessMethod}^{moduleName}^{injMeth.Fullname}^{pointUid}^{pointType}_{id}";
+            return $"{moduleName}^{injMeth.BusinessMethod}^{pointUid}^{pointType}_{id}";
         }
     }
 }

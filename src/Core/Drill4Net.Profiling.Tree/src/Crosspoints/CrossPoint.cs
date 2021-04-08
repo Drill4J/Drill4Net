@@ -6,7 +6,7 @@ namespace Drill4Net.Profiling.Tree
     public class CrossPoint : InjectedSimpleEntity
     {
         public string PointUid { get; set; }
-        public object PointId { get; set; }
+        public string PointId { get; set; }
         public CrossPointType PointType { get; set; }
 
         #region PDB
@@ -18,7 +18,7 @@ namespace Drill4Net.Profiling.Tree
 
         /************************************************************************/
 
-        public CrossPoint(string pointUid, object pointId, CrossPointType pointType): base(null)
+        public CrossPoint(string pointUid, string pointId, CrossPointType pointType): base(null)
         {
             PointUid = pointUid;
             PointId = pointId;
