@@ -20,11 +20,11 @@ namespace Drill4Net.Profiling.Tree
 
         /******************************************************************/
 
-        public InjectedType(string assemblyName, string fullName): 
+        public InjectedType(string assemblyName, string fullName, string businessName = null) : 
             base(GetName(fullName), GetSource(assemblyName, fullName))
         {
             Fullname = fullName;
-            BusinessType = GetBusinessType(fullName);
+            BusinessType = businessName ?? GetBusinessType(fullName);
             IsCompilerGenerated = fullName.Contains("<>");
         }
 
@@ -34,7 +34,7 @@ namespace Drill4Net.Profiling.Tree
         {
             //TODO: regex!!!
             var list = fullName.Split('/').ToList();
-            for(var i = 0; i < list.Count; i++)
+            for (var i = 0; i < list.Count; i++)
             {
                 var a = list[i];
                 if (!a.StartsWith("<>") && !a.Contains(">d__"))

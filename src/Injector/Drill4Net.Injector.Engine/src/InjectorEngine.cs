@@ -288,7 +288,8 @@ namespace Drill4Net.Injector.Engine
                     continue;
 
                 #region Tree
-                var treeType = new InjectedType(treeAsm.Name, typeFullName)
+                var realTypeName = TryGetRealTypeName(typeDef);
+                var treeType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
                 {
                     SourceType = CreateTypeSource(typeDef)
                 };
@@ -325,22 +326,6 @@ namespace Drill4Net.Injector.Engine
                     var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
 
-                    #region RealNames
-                    string realTypeName = null;
-                    string realMethodName = null;
-                    if (isCompilerGenerated)
-                    {
-                        TryGetBusinessNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
-                            out realTypeName, out realMethodName);
-                    }
-                    else
-                    {
-                        realMethodName = methodName;
-                    }
-                    if (realTypeName == null)
-                        realTypeName = typeName;
-                    #endregion
-
                     //instructions
                     var body = methodDef.Body;
                     //body.SimplifyMacros(); //buggy (Cecil or me?)
@@ -363,7 +348,7 @@ namespace Drill4Net.Injector.Engine
                     Instruction ldstrEntering = null;
                     if (!strictEnterReturn)
                     {
-                        probData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Enter, 0);
+                        probData = GetProbeData(treeFunc, moduleName, treeFunc.BusinessMethod, methodFullName, CrossPointType.Enter, 0);
                         ldstrEntering = GetInstruction(probData);
 
                         var firstOp = instructions.First();
@@ -372,7 +357,7 @@ namespace Drill4Net.Injector.Engine
                     }
 
                     //return
-                    var returnProbData = GetProbeData(treeFunc, moduleName, realMethodName, methodFullName, CrossPointType.Return, -1);
+                    var returnProbData = GetProbeData(treeFunc, moduleName, treeFunc.BusinessMethod, methodFullName, CrossPointType.Return, -1);
                     var ldstrReturn = GetInstruction(probData); //as object it must be only one
                     lastOp = instructions.Last();
                     #endregion
@@ -434,8 +419,7 @@ namespace Drill4Net.Injector.Engine
                                     //extType found, not local func, not 'class-for-all'
                                     if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                                     {
-                                        TryGetBusinessNames(curType, extFullname, extFullname, true, true, 
-                                            out string cgRealTypeName, out string cgRealMethodName);
+                                        var cgRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
                                         InjectedType realCgType = null;
                                         var typeKey = realTypeName ?? typeFullName;
                                         if (_injClasses.ContainsKey(typeKey))
@@ -1093,14 +1077,11 @@ namespace Drill4Net.Injector.Engine
             return null;
         }
 
-        internal void TryGetBusinessNames(TypeDefinition curType, string typeName, string methodName, 
-            bool isCompilerGenerated, bool isAsyncStateMachine,
-            out string realTypeName, out string realMethodName)
+        internal string TryGetBusinessMethod(string typeName, string methodName, bool isCompilerGenerated, 
+            bool isAsyncStateMachine)
         {
             //TODO: regex!!!
-            TypeDefinition realType = null;
-            realTypeName = null;
-            realMethodName = null;
+            string realMethodName = null;
             if (isCompilerGenerated || isAsyncStateMachine)
             {
                 try
@@ -1108,7 +1089,7 @@ namespace Drill4Net.Injector.Engine
                     if (methodName.Contains("|")) //local funcs
                     {
                         var a1 = methodName.Split('>')[0];
-                        realMethodName = a1.Substring(1, a1.Length-1);
+                        return a1.Substring(1, a1.Length-1);
                     }
                     else
                     {
@@ -1134,15 +1115,18 @@ namespace Drill4Net.Injector.Engine
                 }
                 catch
                 { }
-
-                if (curType.DeclaringType != null)
-                {
-                    realType = curType;
-                    do realType = realType.DeclaringType;
-                    while (realType.DeclaringType != null && (realType.Name.Contains("c__DisplayClass") || realType.Name.Contains("<>")));
-                }
-                realTypeName = realType?.FullName;
             }
+            return realMethodName;
+        }
+
+        internal string TryGetRealTypeName(TypeDefinition type)
+        {
+            if (type?.DeclaringType != null)
+            {
+                do type = type.DeclaringType;
+                    while (type.DeclaringType != null && (type.Name.Contains("c__DisplayClass") || type.Name.Contains("<>")));
+            }
+            return type?.FullName;
         }
 
         internal MethodType GetMethodType(MethodDefinition def)
@@ -1243,14 +1227,15 @@ namespace Drill4Net.Injector.Engine
             #region Nested classes
             foreach (var nestedType in type.NestedTypes)
             {
-                var treeClass = new InjectedType(nestedType.Module.Name, nestedType.FullName)
+                var realTypeName = TryGetRealTypeName(nestedType);
+                var treeType = new InjectedType(nestedType.Module.Name, nestedType.FullName, realTypeName)
                 {
                     SourceType = CreateTypeSource(nestedType),
                 };
-                _injClasses.Add(treeClass.Fullname, treeClass);
-                treeParentClass.AddChild(treeClass);
+                _injClasses.Add(treeType.Fullname, treeType);
+                treeParentClass.AddChild(treeType);
                 //
-                var innerMethods = GetAllMethods(treeClass, nestedType, opts);
+                var innerMethods = GetAllMethods(treeType, nestedType, opts);
                 methods.AddRange(innerMethods);
             }
             #endregion
