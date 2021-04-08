@@ -12,7 +12,6 @@ namespace Drill4Net.Injector.Core
     {
         public string ModuleName { get; set; }
         public string MethodFullName { get; set; }
-        public string RealMethodName { get; set; }
         public InjectedMethod TreeMethod { get; set; }
 
         public ILProcessor Processor { get; set; }
@@ -29,7 +28,7 @@ namespace Drill4Net.Injector.Core
         public HashSet<Instruction> CompilerInstructions { get; }
         public HashSet<Instruction> Processed { get; }
 
-        public List<Instruction> Injections { get; }
+        //public List<Instruction> Injections { get; }
 
         public MethodReference ProxyMethRef { get; set; }
         public Instruction LdstrReturn { get; set; }
@@ -50,7 +49,7 @@ namespace Drill4Net.Injector.Core
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
             //
             Processed = new HashSet<Instruction>();
-            Injections = new List<Instruction>();
+            //Injections = new List<Instruction>();
             CompilerInstructions = new HashSet<Instruction>();
             Jumpers = new HashSet<Instruction>();
             IfStack = new Stack<Instruction>();

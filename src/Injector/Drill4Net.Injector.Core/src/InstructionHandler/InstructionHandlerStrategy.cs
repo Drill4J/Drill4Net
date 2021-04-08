@@ -2,7 +2,7 @@
 
 namespace Drill4Net.Injector.Core
 {
-    public class InstructionHandlerManager
+    public class InstructionHandlerStrategy
     {
         public string Name { get; set; }
 
@@ -12,7 +12,7 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************/
 
-        public InstructionHandlerManager(List<AbstractInstructionHandler> handlers = null)
+        public InstructionHandlerStrategy(List<AbstractInstructionHandler> handlers = null)
         {
             Handlers = handlers;
         }

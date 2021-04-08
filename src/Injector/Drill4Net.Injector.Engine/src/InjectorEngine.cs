@@ -317,6 +317,7 @@ namespace Drill4Net.Injector.Engine
                     var methodType = treeFunc.SourceType.MethodType;
 
                     //the CompilerGeneratedAttribute itself is not enough!
+                    //not use isMoveNext - this class may be own iterator, not compirer's one
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
 
                     var isMoveNext = methodName == "MoveNext";
@@ -328,8 +329,21 @@ namespace Drill4Net.Injector.Engine
                     var isEnumeratorMoveNext = isMoveNext && interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
                     var skipStart = isAsyncStateMachine || isEnumeratorMoveNext;  //skip state machine init jump block, etc
 
-                    TryGetRealNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
-                        out string realTypeName, out string realMethodName);
+                    #region RealNames
+                    string realTypeName = null;
+                    string realMethodName = null;
+                    if (isCompilerGenerated)
+                    {
+                        TryGetBusinessNames(curType, typeName, methodName, isCompilerGenerated, isAsyncStateMachine,
+                            out realTypeName, out realMethodName);
+                    }
+                    else
+                    {
+                        realMethodName = methodName;
+                    }
+                    if (realTypeName == null)
+                        realTypeName = typeName;
+                    #endregion
 
                     //instructions
                     var body = methodDef.Body;
@@ -371,6 +385,7 @@ namespace Drill4Net.Injector.Engine
                     #region Context
                     var ctx = new InjectorContext(moduleName, methodFullName, instructions, processor)
                     {
+                        TreeMethod = treeFunc,
                         IsAsyncStateMachine = isAsyncStateMachine,
                         IsEnumeratorMoveNext = isEnumeratorMoveNext,
                         IsStrictEnterReturn = strictEnterReturn,
@@ -379,10 +394,7 @@ namespace Drill4Net.Injector.Engine
                         ProxyMethRef = proxyMethRef,
                         ReturnProbData = returnProbData,
                         ExceptionHandlers = body.ExceptionHandlers,
-                        TreeMethod = treeFunc,
-                        RealMethodName = realMethodName,
                     };
-                    ctx.Injections.Add(call);
                     #endregion
                     #region Jumps
                     //collect jumps. Hash table for separate addresses is almost useless,
@@ -429,13 +441,13 @@ namespace Drill4Net.Injector.Engine
                                     //extType found, not local func, not 'class-for-all'
                                     if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                                     {
-                                        TryGetRealNames(curType, extFullname, extFullname, true, true, 
+                                        TryGetBusinessNames(curType, extFullname, extFullname, true, true, 
                                             out string cgRealTypeName, out string cgRealMethodName);
                                         InjectedType realCgType = null;
                                         var typeKey = realTypeName ?? typeFullName;
                                         if (_injClasses.ContainsKey(typeKey))
                                             realCgType = _injClasses[typeKey];
-                                        var methodKey = cgRealMethodName ?? realMethodName;
+                                        var methodKey = cgRealMethodName; // ?? realMethodName;
                                         if (realCgType != null && methodKey != null)
                                         {
                                             var mkey = GetMethodKeyByClass(realCgType.Fullname, methodKey);
@@ -576,7 +588,7 @@ namespace Drill4Net.Injector.Engine
             var moduleName = ctx.ModuleName;
             var methodFullName = ctx.MethodFullName;
             var treeFunc = ctx.TreeMethod;
-            var realMethodName = ctx.RealMethodName;
+            var realMethodName = treeFunc.BusinessMethod;
             var initIndex = ctx.CurIndex;
 
             var processor = ctx.Processor;
@@ -600,7 +612,7 @@ namespace Drill4Net.Injector.Engine
             var crossType = CrossPointType.Unset;
             string probData;
 
-            var call = ctx.Injections[0];
+            var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             var ldstrReturn = ctx.LdstrReturn;
             var returnProbData = ctx.ReturnProbData;
             #endregion
@@ -1084,7 +1096,7 @@ namespace Drill4Net.Injector.Engine
             return null;
         }
 
-        internal void TryGetRealNames(TypeDefinition curType, string typeName, string methodName, 
+        internal void TryGetBusinessNames(TypeDefinition curType, string typeName, string methodName, 
             bool isCompilerGenerated, bool isAsyncStateMachine, 
             out string realTypeName, out string realMethodName)
         {
@@ -1092,26 +1104,34 @@ namespace Drill4Net.Injector.Engine
             TypeDefinition realType = null;
             realTypeName = null;
             realMethodName = null;
-            var isMoveNext = methodName == "MoveNext";
             if (isCompilerGenerated || isAsyncStateMachine)
             {
                 try
                 {
-                    var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
-                    if (isMoveNext || !fromMethodName && typeName.Contains("/"))
+                    if (methodName.Contains("|")) //local funcs
                     {
-                        var ar = typeName.Split('/');
-                        var el = ar[ar.Length - 1];
-                        realMethodName = el.Split('>')[0].Replace("<", null);
+                        var a1 = methodName.Split('>')[0];
+                        realMethodName = a1.Substring(1, a1.Length-1);
                     }
                     else
-                    if (fromMethodName)
                     {
-                        var tmp = methodName.Replace("<>", null);
-                        if (tmp.Contains("<"))
+                        var isMoveNext = methodName == "MoveNext";
+                        var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
+                        if (isMoveNext || !fromMethodName && typeName.Contains("/"))
                         {
-                            var ar = tmp.Split(' ');
-                            realMethodName = ar[ar.Length-1].Split('<')[1].Split('>')[0];
+                            var ar = typeName.Split('/');
+                            var el = ar[ar.Length - 1];
+                            realMethodName = el.Split('>')[0].Replace("<", null);
+                        }
+                        else
+                        if (fromMethodName)
+                        {
+                            var tmp = methodName.Replace("<>", null);
+                            if (tmp.Contains("<"))
+                            {
+                                var ar = tmp.Split(' ');
+                                realMethodName = ar[ar.Length - 1].Split('<')[1].Split('>')[0];
+                            }
                         }
                     }
                 }
