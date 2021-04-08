@@ -14,14 +14,16 @@ namespace Drill4Net.Profiling.Tree
         public string FromMethod { get; set; }
 
         public string BusinessMethod => FromMethod ?? Fullname;
+        public string BusinessType { get; set; }
 
         public MethodSource SourceType { get; set; }
 
         /********************************************************************/
 
-        public InjectedMethod(string typeName, string fullName, MethodSource sourceType)
+        public InjectedMethod(string typeName, string businessTypeName, string fullName, MethodSource sourceType)
         {
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
+            BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             //
             var parts = GetParts(fullName);

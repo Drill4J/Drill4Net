@@ -390,81 +390,14 @@ namespace Drill4Net.Injector.Engine
                     var startInd = skipStart ? 12 : 1;
                     for (var i = startInd; i < instructions.Count; i++)
                     {
-                        #region Checks
                         var instr = instructions[i];
                         var opCode = instr.OpCode;
                         var code = opCode.Code;
                         var flow = opCode.FlowControl;
 
-                        #region Tree (mapping business functions)
-                        //in any case needed check compiler generated classes
-                        if (instr.Operand is MethodReference && 
-                           (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Ldfld))
-                        {
-                            //TODO: cache!
-                            var extOp = instr.Operand as MethodReference;
-                            var extTypeFullName = extOp.DeclaringType.FullName;
-                            var extTypeName = extOp.DeclaringType.Name;
-                            var extFullname = extOp.FullName;
-                            var extName = extOp.Name;
-                            if (extName.StartsWith("<") || extTypeFullName.Contains(">d__") || extFullname.Contains("|"))
-                            {
-                                try
-                                {
-                                    //null is norm for anonymous types
-                                    var extType = _injClasses.ContainsKey(extTypeFullName) ?
-                                                      _injClasses[extTypeFullName] :
-                                                      (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
+                        MapBusinessFunction(instr, treeFunc);
 
-                                    //extType found, not local func, not 'class-for-all'
-                                    if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
-                                    {
-                                        var cgRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
-                                        InjectedType realCgType = null;
-                                        var typeKey = realTypeName ?? typeFullName;
-                                        if (_injClasses.ContainsKey(typeKey))
-                                            realCgType = _injClasses[typeKey];
-                                        var methodKey = cgRealMethodName; // ?? realMethodName;
-                                        if (realCgType != null && methodKey != null)
-                                        {
-                                            var mkey = GetMethodKeyByClass(realCgType.Fullname, methodKey);
-                                            if(_injMethodByClasses.ContainsKey(mkey))
-                                                treeFunc = _injMethodByClasses[mkey];
-                                            var nestTypes = extType.Filter(typeof(InjectedType), true);
-                                            foreach (InjectedType nestType in nestTypes)
-                                            {
-                                                if (nestType.IsCompilerGenerated)
-                                                    nestType.FromMethod = treeFunc.FromMethod ?? treeFunc.Fullname;
-                                            }
-                                        }
-                                        if (extType != null)
-                                        {
-                                            extType.FromMethod = treeFunc.Fullname;
-                                            var extMethods = extType.Filter(typeof(InjectedMethod), true);
-                                            foreach (InjectedMethod meth in extMethods)
-                                            {
-                                                meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (_injMethods.ContainsKey(extFullname))
-                                        {
-                                            var extFunc = _injMethods[extFullname];
-                                            if (extFunc.FromMethod == null)
-                                                extFunc.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
-                                        }
-                                    }
-                                }
-                                catch(Exception ex)
-                                {
-                                    Log.Error(ex, $"Getting real name of func method: [{extOp}]");
-                                }
-                            }
-                        }
-                        #endregion
-
+                        #region Checks
                         // for injecting cases
                         if (ctx.Processed.Contains(instr))
                             continue;
@@ -494,7 +427,7 @@ namespace Drill4Net.Injector.Engine
                         #endregion
                         #endregion
 
-                        //returns in the middle of the method body
+                        //the return in the middle of the method body
                         if (instr.Operand == lastOp && !strictEnterReturn && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
                         {
                             ldstrReturn.Operand = $"{returnProbData}{i}";
@@ -557,6 +490,79 @@ namespace Drill4Net.Injector.Engine
             assembly.Dispose();
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
+        }
+
+        internal void MapBusinessFunction(Instruction instr, InjectedMethod treeFunc)
+        {
+            var flow = instr.OpCode.FlowControl;
+            var code = instr.OpCode.Code;
+
+            //in any case needed check compiler generated classes
+            if (instr.Operand is MethodReference &&
+               (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Ldfld))
+            {
+                //TODO: cache!
+                var extOp = instr.Operand as MethodReference;
+                var extTypeFullName = extOp.DeclaringType.FullName;
+                var extTypeName = extOp.DeclaringType.Name;
+                var extFullname = extOp.FullName;
+                var extName = extOp.Name;
+                if (extName.StartsWith("<") || extTypeFullName.Contains(">d__") || extFullname.Contains("|"))
+                {
+                    try
+                    {
+                        //null is norm for anonymous types
+                        var extType = _injClasses.ContainsKey(extTypeFullName) ?
+                                          _injClasses[extTypeFullName] :
+                                          (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
+
+                        //extType found, not local func, not 'class-for-all'
+                        if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
+                        {
+                            var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
+                            InjectedType realCgType = null;
+                            var typeKey = treeFunc.BusinessType; // realTypeName ?? typeFullName
+                            if (_injClasses.ContainsKey(typeKey))
+                                realCgType = _injClasses[typeKey];
+                            var methodKey = extRealMethodName; // ?? realMethodName;
+                            if (realCgType != null && methodKey != null)
+                            {
+                                var mkey = GetMethodKeyByClass(realCgType.Fullname, methodKey);
+                                if (_injMethodByClasses.ContainsKey(mkey))
+                                    treeFunc = _injMethodByClasses[mkey];
+                                var nestTypes = extType.Filter(typeof(InjectedType), true);
+                                foreach (InjectedType nestType in nestTypes)
+                                {
+                                    if (nestType.IsCompilerGenerated)
+                                        nestType.FromMethod = treeFunc.FromMethod ?? treeFunc.Fullname;
+                                }
+                            }
+                            if (extType != null)
+                            {
+                                extType.FromMethod = treeFunc.Fullname;
+                                var extMethods = extType.Filter(typeof(InjectedMethod), true);
+                                foreach (InjectedMethod meth in extMethods)
+                                {
+                                    meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (_injMethods.ContainsKey(extFullname))
+                            {
+                                var extFunc = _injMethods[extFullname];
+                                if (extFunc.FromMethod == null)
+                                    extFunc.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"Getting real name of func method: [{extOp}]");
+                    }
+                }
+            }
         }
 
         void Handle(InjectorContext ctx)
@@ -1204,7 +1210,7 @@ namespace Drill4Net.Injector.Engine
                 }
                 //
                 var methodSource = CreateMethodSource(ownMethod);
-                var treeFunc = new InjectedMethod(typeFullname, ownMethod.FullName, methodSource);
+                var treeFunc = new InjectedMethod(typeFullname, treeParentClass.BusinessType, ownMethod.FullName, methodSource);
                 //
                 var methodName = ownMethod.Name;
                 methodSource.IsMoveNext = methodName == "MoveNext";
