@@ -90,7 +90,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{DF4173
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Drill4Net.Target.Common.VB", "src\Tests\Targets\Common\Drill4Net.Target.Common.VB\Drill4Net.Target.Common.VB.vbproj", "{425D6D9F-DBC7-4C9B-8010-8E457BB47A9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Common.Another", "src\Tests\Targets\Common\Drill4Net.Target.Common.Another\Drill4Net.Target.Common.Another.csproj", "{22A08859-EA17-4C32-AB3A-805608326CA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Common.Another", "src\Tests\Targets\Common\Drill4Net.Target.Common.Another\Drill4Net.Target.Common.Another.csproj", "{22A08859-EA17-4C32-AB3A-805608326CA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Strategies", "Strategies", "{71A275A8-1DC9-4AD6-AC50-8F3C922FEF1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Injector.Strategies.Flow", "src\Injector\Strategies\Drill4Net.Injector.Strategies.Flow\Drill4Net.Injector.Strategies.Flow.csproj", "{EAE06B6F-2B11-4665-BFFC-240046832096}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -210,6 +214,10 @@ Global
 		{22A08859-EA17-4C32-AB3A-805608326CA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22A08859-EA17-4C32-AB3A-805608326CA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22A08859-EA17-4C32-AB3A-805608326CA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAE06B6F-2B11-4665-BFFC-240046832096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAE06B6F-2B11-4665-BFFC-240046832096}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAE06B6F-2B11-4665-BFFC-240046832096}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAE06B6F-2B11-4665-BFFC-240046832096}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -250,6 +258,8 @@ Global
 		{DF4173DB-3EB9-4E59-A4FB-EC630048C286} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
 		{425D6D9F-DBC7-4C9B-8010-8E457BB47A9F} = {DF4173DB-3EB9-4E59-A4FB-EC630048C286}
 		{22A08859-EA17-4C32-AB3A-805608326CA2} = {DF4173DB-3EB9-4E59-A4FB-EC630048C286}
+		{71A275A8-1DC9-4AD6-AC50-8F3C922FEF1A} = {2FFDD626-2A70-425D-A6D7-5769E16CE0C5}
+		{EAE06B6F-2B11-4665-BFFC-240046832096} = {71A275A8-1DC9-4AD6-AC50-8F3C922FEF1A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

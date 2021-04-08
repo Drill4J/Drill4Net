@@ -1,20 +1,30 @@
-﻿using System.Collections.Generic;
-
-namespace Drill4Net.Injector.Core
+﻿namespace Drill4Net.Injector.Core
 {
     public class InstructionHandlerStrategy
     {
         public string Name { get; set; }
 
-        public List<AbstractInstructionHandler> Handlers { get; set; }
-
         public string Description { get; set; }
+
+        private AbstractInstructionHandler _starter;
+        private AbstractInstructionHandler _last;
 
         /***********************************************************************************/
 
-        public InstructionHandlerStrategy(List<AbstractInstructionHandler> handlers = null)
+        public void ConnectHandler(AbstractInstructionHandler handler)
         {
-            Handlers = handlers;
+            if (_starter == null)
+                _starter = handler;
+            else
+                _last.Successor = handler;
+            //
+            _last = handler;
+        }
+
+        public virtual void Handle(InjectorContext ctx)
+        {
+            if (_starter != null)
+                _starter.HandleRequest(ctx);
         }
     }
 }
