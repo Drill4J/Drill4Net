@@ -1184,6 +1184,7 @@ namespace Drill4Net.Injector.Engine
             var interfaces = type.Interfaces;
             treeParentClass.SourceType.IsAsyncStateMachine = interfaces
                 .FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
+            var isEnumerable = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
 
             var ownMethods = type.Methods
                 .Where(a => a.HasBody)
@@ -1214,13 +1215,12 @@ namespace Drill4Net.Injector.Engine
                 //
                 var methodName = ownMethod.Name;
                 methodSource.IsMoveNext = methodName == "MoveNext";
+                methodSource.IsEnumeratorMoveNext = methodSource.IsMoveNext && isEnumerable;
                 methodSource.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
-                methodSource.IsEnumeratorMoveNext = methodSource.IsMoveNext && 
-                    interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
                 //
-                if (!_injMethods.ContainsKey(treeFunc.Fullname)) //strange...
+                if (!_injMethods.ContainsKey(treeFunc.Fullname))
                     _injMethods.Add(treeFunc.Fullname, treeFunc);
-                else { }
+                else { } //strange..
                 methods.Add(ownMethod);
                 //
                 var method = GetMethodKeyByClass(typeFullname, treeFunc.Name);
