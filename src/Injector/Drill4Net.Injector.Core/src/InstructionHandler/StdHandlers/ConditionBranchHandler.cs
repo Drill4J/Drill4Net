@@ -1,6 +1,7 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
+using System;
 
 namespace Drill4Net.Injector.Core
 {
@@ -102,14 +103,14 @@ namespace Drill4Net.Injector.Core
                 var prevOperand = SkipNop(ind, false, instructions);
                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //for/while
                 {
-                    probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.Cycle, ctx.CurIndex);
+                    probData = GetProbeData(ctx, CrossPointType.Cycle);
                     var ldstrIf2 = GetFirstInstruction(probData);
                     var targetOp = prevOperand.Operand as Instruction;
                     processor.InsertBefore(targetOp, ldstrIf2);
                     processor.InsertBefore(targetOp, call);
                     ctx.IncrementIndex(2);
 
-                    probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.CycleEnd, ctx.CurIndex);
+                    probData = GetProbeData(ctx, CrossPointType.CycleEnd);
                     var ldstrIf3 = GetFirstInstruction(probData);
                     var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                     processor.InsertAfter(instr, call1);
@@ -123,7 +124,7 @@ namespace Drill4Net.Injector.Core
 
                     // 1.
                     crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                    probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
+                    probData = GetProbeData(ctx, crossType);
                     var ldstrIf = GetFirstInstruction(probData);
 
                     var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
@@ -139,7 +140,7 @@ namespace Drill4Net.Injector.Core
 
                     // 2.
                     crossType = !isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                    probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
+                    probData = GetProbeData(ctx, crossType);
                     var ldstrIf2 = GetFirstInstruction(probData);
 
                     var call2 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
@@ -182,7 +183,7 @@ namespace Drill4Net.Injector.Core
             {
                 if (crossType == CrossPointType.Unset)
                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
+                probData = GetProbeData(ctx, crossType);
                 var ldstrIf = GetFirstInstruction(probData);
 
                 //when inserting 'after', must set in desc order
@@ -200,7 +201,7 @@ namespace Drill4Net.Injector.Core
             {
                 crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
                 var ind = instructions.IndexOf(operand);
-                probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ind);
+                probData = GetProbeData(ctx, crossType, ind);
                 var elseInst = GetFirstInstruction(probData);
 
                 ReplaceJump(operand, elseInst, jumpers);

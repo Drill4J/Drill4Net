@@ -6,7 +6,7 @@ namespace Drill4Net.Injector.Core
 {
     public class CatchFilterHandler : AbstractInstructionHandler
     {
-        public CatchFilterHandler(AbstractProbeHelper probeHelper) : 
+        public CatchFilterHandler(AbstractProbeHelper probeHelper): 
             base(C.INSTRUCTION_HANDLER_CATCH_FILTER, probeHelper)
         {
         }
@@ -35,13 +35,18 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            var probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.CatchFilter, ctx.CurIndex);
+            var probData = GetProbeData(ctx);
             
             var ldstr = GetFirstInstruction(probData);
             FixFinallyEnd(instr, ldstr, exceptionHandlers);
             processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
+        }
+
+        protected override string GetProbeData(InjectorContext ctx)
+        {
+            return _probeHelper.PrepareProbeData(ctx, CrossPointType.CatchFilter, ctx.CurIndex);
         }
     }
 }

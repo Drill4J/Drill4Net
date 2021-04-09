@@ -21,8 +21,13 @@ namespace Drill4Net.Injector.Core
         protected override void StartMethodConcrete(InjectorContext ctx)
         {
             //data
-            _initProbData = _probeHelper.PrepareProbeData(ctx.TreeMethod, CrossPointType.Return, -1);
+            _initProbData = GetProbeData(ctx);
             _returnInst = GetFirstInstruction(_initProbData); //as object it must be only one
+        }
+
+        protected override string GetProbeData(InjectorContext ctx)
+        {
+            return _probeHelper.PrepareProbeData(ctx, CrossPointType.Return, -1);
         }
 
         protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)

@@ -1,6 +1,6 @@
-﻿using Mono.Cecil.Cil;
+﻿using System.Linq;
+using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
-using System.Linq;
 
 namespace Drill4Net.Injector.Core
 {
@@ -19,7 +19,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            var probData = _probeHelper.PrepareProbeData(ctx.TreeMethod, CrossPointType.Enter, 0);
+            var probData = GetProbeData(ctx);
             var ldstrEntering = GetFirstInstruction(probData);
 
             //injection
@@ -33,6 +33,11 @@ namespace Drill4Net.Injector.Core
         protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
         {
             needBreak = false;
+        }
+
+        protected override string GetProbeData(InjectorContext ctx)
+        {
+            return _probeHelper.PrepareProbeData(ctx, CrossPointType.Enter, 0);
         }
     }
 }

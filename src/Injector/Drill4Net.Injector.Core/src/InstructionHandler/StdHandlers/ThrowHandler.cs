@@ -36,7 +36,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            var probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.Throw, ctx.CurIndex);
+            var probData = GetProbeData(ctx);
 
             //injection
             var throwInst = GetFirstInstruction(probData);
@@ -45,6 +45,11 @@ namespace Drill4Net.Injector.Core
             processor.InsertBefore(instr, throwInst);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
+        }
+
+        protected override string GetProbeData(InjectorContext ctx)
+        {
+            return _probeHelper.PrepareProbeData(ctx, CrossPointType.Throw, ctx.CurIndex);
         }
     }
 }

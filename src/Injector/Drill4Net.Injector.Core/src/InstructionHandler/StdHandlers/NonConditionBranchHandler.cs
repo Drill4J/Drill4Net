@@ -59,7 +59,7 @@ namespace Drill4Net.Injector.Core
                 //data
                 var pairedCode = ifInst.OpCode.Code;
                 var crossType = pairedCode is Code.Brfalse or Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
+                probData = GetProbeData(ctx, crossType);
 
                 var firstProbeInst = GetFirstInstruction(probData); //probe's first instruction
                 FixFinallyEnd(instr, firstProbeInst,

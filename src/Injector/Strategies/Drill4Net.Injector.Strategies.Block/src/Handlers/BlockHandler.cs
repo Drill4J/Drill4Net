@@ -54,5 +54,10 @@ namespace Drill4Net.Injector.Strategies.Block
                 
             }
         }
+
+        protected override string GetProbeData(InjectorContext ctx)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

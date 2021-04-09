@@ -25,5 +25,7 @@
         //misc
         Call = 15,
         Monitor = 16,
+
+        Block = 100,
     }
 }

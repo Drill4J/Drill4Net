@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Drill4Net.Profiling.Tree;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -57,6 +58,22 @@ namespace Drill4Net.Injector.Core
 
         protected abstract void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak);
         #endregion
+        #endregion
+        #region GetProbeData
+        protected virtual string GetProbeData(InjectorContext ctx)
+        {
+            return GetProbeData(ctx, CrossPointType.Unset);
+        }
+
+        protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType)
+        {
+            return _probeHelper.PrepareProbeData(ctx, pointType, ctx.CurIndex);
+        }
+
+        protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType, int index)
+        {
+            return _probeHelper.PrepareProbeData(ctx, pointType, index);
+        }
         #endregion
 
         internal protected bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
