@@ -66,18 +66,17 @@ namespace Drill4Net.Agent.Testing
                 }
                 //
                 var ar = data.Split('^');
-                if (ar.Length < 5)
+                if (ar.Length < 4)
                 {
                     Log.Error($"Bad format of input: {data}");
                     return;
                 }
                 #endregion
 
-                //var realmethodName = ar[0];
+                var probeUid = ar[0];
                 var asmName = ar[1];
                 var funcName = ar[2];
-                var probeUid = ar[3];
-                var probe = ar[4];
+                var probe = ar[3];
 
                 var businessMethod = GetBusinessMethodName(probeUid);
                 if(businessMethod != null)

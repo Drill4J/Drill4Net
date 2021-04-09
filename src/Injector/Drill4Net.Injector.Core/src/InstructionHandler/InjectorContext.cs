@@ -27,12 +27,7 @@ namespace Drill4Net.Injector.Core
         public HashSet<Instruction> CompilerInstructions { get; }
         public HashSet<Instruction> Processed { get; }
 
-        //public List<Instruction> Injections { get; }
-
         public MethodReference ProxyMethRef { get; set; }
-        public Instruction LdstrReturn { get; set; }
-
-        public string ReturnProbData { get; set; }
 
         public int CurIndex => _curIndex;
         public int _curIndex;

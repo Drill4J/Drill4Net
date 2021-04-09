@@ -19,8 +19,4 @@
     <ProjectReference Include="..\..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="src\Handlers\" />
-  </ItemGroup>
-
 </Project>

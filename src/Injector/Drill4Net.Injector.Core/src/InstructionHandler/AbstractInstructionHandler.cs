@@ -25,21 +25,38 @@ namespace Drill4Net.Injector.Core
         /************************************************************************************/
 
         #region Handle
-        public void HandleRequest(InjectorContext ctx)
+        #region Starting processing the method
+        public virtual void StartMethod(InjectorContext ctx)
+        {
+            try
+            {
+                StartMethodConcrete(ctx);
+            }
+            finally
+            {
+                Successor?.StartMethod(ctx);
+            }
+        }
+
+        protected virtual void StartMethodConcrete(InjectorContext ctx) { }
+        #endregion
+        #region Handle concrete instruction
+        public void HandleInstruction(InjectorContext ctx)
         {
             bool needBreak = false;
             try
             {
-                HandleRequestConcrete(ctx, out needBreak);
+                HandleInstructionConcrete(ctx, out needBreak);
             }
             finally
             {
                 if (!needBreak)
-                    Successor?.HandleRequest(ctx);
+                    Successor?.HandleInstruction(ctx);
             }
         }
 
-        protected abstract void HandleRequestConcrete(InjectorContext ctx, out bool needBreak);
+        protected abstract void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak);
+        #endregion
         #endregion
 
         internal protected bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
@@ -215,7 +232,7 @@ namespace Drill4Net.Injector.Core
             return op.OpCode.Name.StartsWith("ldloc") && (op.Next == lastOp || op.Next?.Next == lastOp);
         }
 
-        protected Instruction GetInstruction(string probeData)
+        protected Instruction GetFirstInstruction(string probeData)
         {
             return Instruction.Create(OpCodes.Ldstr, probeData);
         }

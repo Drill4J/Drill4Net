@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************/
 
-        protected override void HandleRequestConcrete(InjectorContext ctx, out bool needBreak)
+        protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
@@ -32,16 +32,19 @@ namespace Drill4Net.Injector.Core
             #endregion
 
             //THROW
-            if (flow == FlowControl.Throw)
-            {
-                probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Throw, ctx.CurIndex);
-                var throwInst = GetInstruction(probData);
-                FixFinallyEnd(instr, throwInst, exceptionHandlers);
-                ReplaceJump(instr, throwInst, jumpers);
-                processor.InsertBefore(instr, throwInst);
-                processor.InsertBefore(instr, call);
-                ctx.IncrementIndex(2);
-            }
+            if (flow != FlowControl.Throw) 
+                return;
+
+            //data
+            probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Throw, ctx.CurIndex);
+
+            //injection
+            var throwInst = GetFirstInstruction(probData);
+            FixFinallyEnd(instr, throwInst, exceptionHandlers); //need fix statement boundaries for potential tr/finally 
+            ReplaceJump(instr, throwInst, jumpers);
+            processor.InsertBefore(instr, throwInst);
+            processor.InsertBefore(instr, call);
+            ctx.IncrementIndex(2);
         }
     }
 }

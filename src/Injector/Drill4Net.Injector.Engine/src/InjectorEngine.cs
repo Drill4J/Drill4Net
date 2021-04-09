@@ -39,8 +39,7 @@ namespace Drill4Net.Injector.Engine
         private Dictionary<string, InjectedMethod> _injMethodByClasses;
         protected ProbeHelper _probeHelper;
 
-        private FlowStrategy _flowStrategy;
-        private BlockStrategy _blockStrategy;
+        private readonly InstructionHandlerStrategy _strategy;
 
         /***************************************************************************************/
 
@@ -51,7 +50,10 @@ namespace Drill4Net.Injector.Engine
             _mainVersion = new ThreadLocal<AssemblyVersion>();
             _restrictNamespaces = GetRestrictNamespaces();
             _probeHelper = new ProbeHelper();
-            _flowStrategy = new FlowStrategy();
+
+            var flowStrategy = new FlowStrategy();
+            var blockStrategy = new BlockStrategy();
+            _strategy = flowStrategy;
         }
 
         /***************************************************************************************/
@@ -276,9 +278,6 @@ namespace Drill4Net.Injector.Engine
             _injMethods = new Dictionary<string, InjectedMethod>();
             _injMethodByClasses = new Dictionary<string, InjectedMethod>();
 
-            Instruction lastOp;
-            var probData = string.Empty;
-
             foreach (TypeDefinition typeDef in module.Types)
             {
                 var typeName = typeDef.Name;
@@ -332,14 +331,7 @@ namespace Drill4Net.Injector.Engine
                     var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
 
-                    //instructions
-                    var body = methodDef.Body;
-                    //body.SimplifyMacros(); //buggy (Cecil or me?)
-                    var instructions = body.Instructions; //no copy list!
-                    var processor = body.GetILProcessor();
-                    #endregion
-                    #region Enter/Return
-                    //inject 'entering' instruction
+                    //Enter/Return
                     var isSpecFunc = IsSpecialGeneratedMethod(methodType);
                     var strictEnterReturn = //what is principally forbidden
                         !isSpecFunc &&
@@ -351,21 +343,11 @@ namespace Drill4Net.Injector.Engine
                             (_isNetCore.Value == true && methodSource.IsFinalizer)
                         );
 
-                    Instruction ldstrEntering = null;
-                    if (!strictEnterReturn)
-                    {
-                        probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Enter, 0);
-                        ldstrEntering = GetInstruction(probData);
-
-                        var firstOp = instructions.First();
-                        processor.InsertBefore(firstOp, ldstrEntering);
-                        processor.InsertBefore(firstOp, call);
-                    }
-
-                    //return
-                    var returnProbData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Return, -1);
-                    var ldstrReturn = GetInstruction(probData); //as object it must be only one
-                    lastOp = instructions.Last();
+                    //instructions
+                    var body = methodDef.Body;
+                    //body.SimplifyMacros(); //buggy (Cecil or me?)
+                    var instructions = body.Instructions; //no copy list!
+                    var processor = body.GetILProcessor();
                     #endregion
                     #region Context
                     var ctx = new InjectorContext(moduleName, methodFullName, instructions, processor)
@@ -373,10 +355,8 @@ namespace Drill4Net.Injector.Engine
                         TreeType = treeType,
                         TreeMethod = treeFunc,
                         IsStrictEnterReturn = strictEnterReturn,
-                        LastOperation = lastOp,
-                        LdstrReturn = ldstrReturn,
+                        LastOperation = instructions.Last(),
                         ProxyMethRef = proxyMethRef,
-                        ReturnProbData = returnProbData,
                         ExceptionHandlers = body.ExceptionHandlers,
                     };
                     #endregion
@@ -392,7 +372,8 @@ namespace Drill4Net.Injector.Engine
                             ctx.Jumpers.Add(instr);
                     }
                     #endregion
-                    #region Injections               
+                    #region Injections     
+                    _strategy.StartMethod(ctx);
                     var startInd = skipStart ? 12 : 1;
                     for (var i = startInd; i < instructions.Count; i++)
                     {
@@ -433,16 +414,9 @@ namespace Drill4Net.Injector.Engine
                         #endregion
                         #endregion
 
-                        //the return in the middle of the method body
-                        if (instr.Operand == lastOp && !strictEnterReturn && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
-                        {
-                            ldstrReturn.Operand = $"{returnProbData}{i}";
-                            instr.Operand = ldstrReturn;
-                        }
-
                         //main processing
                         ctx.SetIndex(i);
-                        HandleInstructionInContext(ctx);
+                        HandleInstructionForContext(ctx);
                         i = ctx.CurIndex;
                     }
                     #endregion
@@ -592,7 +566,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal void HandleInstructionInContext(InjectorContext ctx)
+        internal void HandleInstructionForContext(InjectorContext ctx)
         {
             if (ctx == null)
                 throw new ArgumentNullException(nameof(ctx));
@@ -600,7 +574,7 @@ namespace Drill4Net.Injector.Engine
             var initIndex = ctx.CurIndex;
             try
             {
-                _flowStrategy.Handle(ctx);
+                _strategy.HandleInstruction(ctx);
             }
             catch (Exception ex)
             {
@@ -867,11 +841,6 @@ namespace Drill4Net.Injector.Engine
             foreach (var p in instructions)
                 s += p.ToString();
             return s.GetHashCode().ToString();
-        }
-
-        private Instruction GetInstruction(string probeData)
-        {
-            return Instruction.Create(OpCodes.Ldstr, probeData);
         }
 
         private HashSet<string> GetRestrictNamespaces()

@@ -13,7 +13,7 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************/
 
-        protected override void HandleRequestConcrete(InjectorContext ctx, out bool needBreak)
+        protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
@@ -40,36 +40,38 @@ namespace Drill4Net.Injector.Core
             #endregion
 
             //ELSE/JUMP
-            if (flow == FlowControl.Branch && (code == Code.Br || code == Code.Br_S)) //also may be Code.Leave
+            if (flow != FlowControl.Branch || (code != Code.Br && code != Code.Br_S)) 
+                return;
+            if (!ifStack.Any())
+                return;
+            if (IsNextReturn(ctx.CurIndex, instructions, lastOp))
+                return;
+            if (!isAsyncStateMachine && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
+                return;
+            if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine)) //is real condition's branch?
+                return;
+            //
+            try
             {
-                if (!ifStack.Any())
-                    return;
-                if (IsNextReturn(ctx.CurIndex, instructions, lastOp))
-                    return;
-                if (!isAsyncStateMachine && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
-                    return;
-                if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine)) //is real condition's branch?
-                    return;
-                //
                 var ifInst = ifStack.Pop();
+
+                //data
                 var pairedCode = ifInst.OpCode.Code;
-                var crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                probData = _probeHelper.GetProbeData(treeFunc, moduleName, crossType, ctx.CurIndex);
-                var elseInst = GetInstruction(probData);
+                var crossType = pairedCode == Code.Brfalse || pairedCode == Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;               
+                probData = _probeHelper.GetProbeData(treeFunc, moduleName, crossType, ctx.CurIndex); 
+                
+                var firstProbeInst = GetFirstInstruction(probData); //probe's first instruction
+                FixFinallyEnd(instr, firstProbeInst, exceptionHandlers); //need fix statement boundaries for potential tr/finally 
 
-                try
-                {
-                    var instr2 = instructions[ctx.CurIndex + 1];
-                    FixFinallyEnd(instr, elseInst, exceptionHandlers);
-                    ReplaceJump(instr2, elseInst, jumpers);
-                    processor.InsertBefore(instr2, elseInst);
-                    processor.InsertBefore(instr2, call);
-                    ctx.IncrementIndex(2);
-                }
-                catch (Exception exx)
-                { }
+                var oldJumpTarget = instructions[ctx.CurIndex + 1]; //where the code jumped earlier
+                ReplaceJump(oldJumpTarget, firstProbeInst, jumpers); //...we change it to our first instruction
+
+                processor.InsertBefore(oldJumpTarget, firstProbeInst);
+                processor.InsertBefore(oldJumpTarget, call);
+                ctx.IncrementIndex(2);
             }
+            catch (Exception exx)
+            { }
         }
-
     }
 }

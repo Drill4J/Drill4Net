@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.Core
             };
             injMeth.AddChild(crossPoint);
 
-            return $"{moduleName}^{injMeth.BusinessMethod}^{pointUid}^{pointType}_{id}";
+            return $"{pointUid}^{moduleName}^{injMeth.BusinessMethod}^{pointType}_{id}";
         }
     }
 }

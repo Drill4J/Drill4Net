@@ -197,7 +197,10 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Cycle_For), new object[] { -1 }, new List<string> { "CycleEnd_24" });
                 yield return GetCase(GetInfo(Target.Cycle_For), new object[] { 3 }, new List<string> { "Cycle_22", "Cycle_22", "Cycle_22", "CycleEnd_24" });
 
-                yield return GetCase(GetInfo(Target.Cycle_Foreach), System.Array.Empty<object>(), new List<string> { "Cycle_42", "Cycle_42", "Cycle_42", "CycleEnd_44" });
+                yield return GetCase(GetInfo(Target.Cycle_For_Break), new object[] { 3 }, new List<string> { "If_16", "Cycle_33", "If_16", "Cycle_33", "If_16", "Cycle_33", "CycleEnd_35" });
+                yield return GetCase(GetInfo(Target.Cycle_For_Break), new object[] { 2 }, new List<string> { "If_16", "Cycle_33", "If_16", "Cycle_33" });
+
+                yield return GetCase(GetInfo(Target.Cycle_Foreach), Array.Empty<object>(), new List<string> { "Cycle_42", "Cycle_42", "Cycle_42", "CycleEnd_44" });
 
                 yield return GetCase(GetInfo(Target.Cycle_While), new object[] { -1 }, new List<string> { "CycleEnd_22" });
                 yield return GetCase(GetInfo(Target.Cycle_While), new object[] { 3 }, new List<string> { "Cycle_20", "Cycle_20", "Cycle_20", "CycleEnd_22" });

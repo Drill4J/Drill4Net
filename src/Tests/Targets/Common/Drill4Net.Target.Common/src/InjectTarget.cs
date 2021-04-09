@@ -259,6 +259,9 @@ namespace Drill4Net.Target.Common
             Cycle_For(-1);
             Cycle_For(3);
 
+            Cycle_For_Break(3); //no break;
+            Cycle_For_Break(2); //with break;
+
             Cycle_Foreach();
 
             Cycle_While(-1);
@@ -684,7 +687,20 @@ namespace Drill4Net.Target.Common
             var s = "";
             for (var i = 0; i < count; i++)
                 s += i;
-            Console.WriteLine($"{nameof(Cycle_For)} -> {count}");
+            Console.WriteLine($"{nameof(Cycle_For)} -> {s}");
+            return true;
+        }
+
+        public bool Cycle_For_Break(int breakInd)
+        {
+            var s = "";
+            for (var i = 0; i < 3; i++)
+            {
+                if (i == breakInd)
+                    break;
+                s += i;
+            }
+            Console.WriteLine($"{nameof(Cycle_For_Break)} -> {s}");
             return true;
         }
 

@@ -21,10 +21,16 @@
             _last = handler;
         }
 
-        public virtual void Handle(InjectorContext ctx)
+        public virtual void StartMethod(InjectorContext ctx)
         {
             if (_starter != null)
-                _starter.HandleRequest(ctx);
+                _starter.StartMethod(ctx);
+        }
+
+        public virtual void HandleInstruction(InjectorContext ctx)
+        {
+            if (_starter != null)
+                _starter.HandleInstruction(ctx);
         }
     }
 }
