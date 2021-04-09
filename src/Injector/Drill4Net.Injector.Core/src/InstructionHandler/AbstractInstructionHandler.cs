@@ -12,7 +12,7 @@ namespace Drill4Net.Injector.Core
 
         public AbstractInstructionHandler Successor { get; set; }
 
-        protected ProbeHelper _probeHelper;
+        protected readonly ProbeHelper _probeHelper;
 
         /************************************************************************************/
 
@@ -129,21 +129,19 @@ namespace Drill4Net.Injector.Core
 
         internal protected Instruction SkipNop(int ind, bool forward, Mono.Collections.Generic.Collection<Instruction> instructions)
         {
-            int start, end, inc;
+            int start, inc;
             if (forward)
             {
                 start = ind + 1;
-                end = instructions.Count - 1;
                 inc = 1;
             }
             else
             {
                 start = ind - 1;
-                end = 0;
                 inc = -1;
             }
             //
-            for (var i = start; true; i += inc)
+            for (var i = start;; i += inc)
             {
                 if (i >= instructions.Count || i < 0)
                     break;
@@ -204,7 +202,7 @@ namespace Drill4Net.Injector.Core
                         while (true)
                         {
                             var flow = curNext.OpCode.FlowControl;
-                            if (curNext == null || curNext == finish || flow == FlowControl.Return || flow == FlowControl.Throw)
+                            if (curNext == finish || flow == FlowControl.Return || flow == FlowControl.Throw)
                                 break;
                             localInsts.Add(curNext);
                             curNext = curNext.Next;

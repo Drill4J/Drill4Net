@@ -616,7 +616,7 @@ namespace Drill4Net.Injector.Engine
                     if (methodName.Contains("|")) //local funcs
                     {
                         var a1 = methodName.Split('>')[0];
-                        return a1.Substring(1, a1.Length-1);
+                        return a1.Substring(1, a1.Length - 1);
                     }
                     else
                     {
@@ -628,8 +628,7 @@ namespace Drill4Net.Injector.Engine
                             var el = ar[ar.Length - 1];
                             realMethodName = el.Split('>')[0].Replace("<", null);
                         }
-                        else
-                        if (fromMethodName)
+                        else if (fromMethodName)
                         {
                             var tmp = methodName.Replace("<>", null);
                             if (tmp.Contains("<"))
@@ -640,8 +639,10 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                 }
-                catch
-                { }
+                catch(Exception ex)
+                {
+                    Log.Error(ex,nameof(TryGetBusinessMethod));
+                }
             }
             return realMethodName;
         }
@@ -768,7 +769,8 @@ namespace Drill4Net.Injector.Engine
             #endregion
 
             methods = methods
-                .Where(a => a.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == nameof(DebuggerHiddenAttribute)) == null)
+                .Where(m => m.CustomAttributes
+                    .FirstOrDefault(attr => attr.AttributeType.Name == nameof(DebuggerHiddenAttribute)) == null)
                 .ToList();
             return methods;
         }
@@ -861,27 +863,16 @@ namespace Drill4Net.Injector.Engine
         internal void NotifyAboutTree(InjectedSolution tree)
         {
             //in each folder create file with path to tree data
-            //if (tree.GetAllDirectories() is not InjectedDirectory[] dirs || !dirs.Any()) 
-            //    return;
-            //var pathInText = _rep.GetTreeFilePath(tree);
-            //Log.Debug($"Tree saved to: [{pathInText}]");
-            //foreach (var dir in dirs)
-            //{
-            //    var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
-            //    File.WriteAllText(hintPath, pathInText);
-            //    Log.Debug($"Hint placed to: [{hintPath}]");
-            //}
-            var dirs = tree.GetAllDirectories();
-            if (dirs.Any())
+            var dirs = tree.GetAllDirectories().ToList();
+            if (!dirs.Any()) 
+                return;
+            var pathInText = _rep.GetTreeFilePath(tree);
+            Log.Debug($"Tree saved to: [{pathInText}]");
+            foreach (var dir in dirs)
             {
-                var pathInText = _rep.GetTreeFilePath(tree);
-                Log.Debug($"Tree saved to: [{pathInText}]");
-                foreach (var dir in dirs)
-                {
-                    var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
-                    File.WriteAllText(hintPath, pathInText);
-                    Log.Debug($"Hint placed to: [{hintPath}]");
-                }
+                var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
+                File.WriteAllText(hintPath, pathInText);
+                Log.Debug($"Hint placed to: [{hintPath}]");
             }
         }
         #endregion
