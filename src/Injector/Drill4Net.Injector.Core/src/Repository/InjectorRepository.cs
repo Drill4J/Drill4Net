@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Core
 
         /**********************************************************************************/
 
-        public InjectorRepository(): 
+        private InjectorRepository(): 
             this(Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_DEFAULT_NAME))
         {
         }
@@ -94,12 +94,12 @@ namespace Drill4Net.Injector.Core
                 }
 
                 var asm = _asmCtxManager.Load(filePath);
-                var fs = asm.DefinedTypes.FirstOrDefault(a => a.FullName.Contains("-Target-Common-FSharp"));
+                var fs = asm.DefinedTypes.FirstOrDefault(a => a.FullName?.Contains("-Target-Common-FSharp") == true);
                 string versionS;
                 if (fs != null)
                 {
-                    var ar = fs.FullName.Split('$'); //hm...
-                    versionS = "";
+                    //var ar = fs.FullName?.Split('$'); //hm...
+                    //versionS = "";
                     throw new NotImplementedException($"Processing of FSharp not implemented yet");
                 }
                 else

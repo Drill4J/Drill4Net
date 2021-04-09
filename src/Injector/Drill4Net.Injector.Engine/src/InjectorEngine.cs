@@ -37,8 +37,6 @@ namespace Drill4Net.Injector.Engine
         private Dictionary<string, InjectedType> _injClasses;
         private Dictionary<string, InjectedMethod> _injMethods;
         private Dictionary<string, InjectedMethod> _injMethodByClasses;
-        protected ProbeHelper _probeHelper;
-
         private readonly InstructionHandlerStrategy _strategy;
 
         /***************************************************************************************/
@@ -49,7 +47,6 @@ namespace Drill4Net.Injector.Engine
             _isNetCore = new ThreadLocal<bool?>();
             _mainVersion = new ThreadLocal<AssemblyVersion>();
             _restrictNamespaces = GetRestrictNamespaces();
-            _probeHelper = new ProbeHelper();
 
             var flowStrategy = new FlowStrategy();
             var blockStrategy = new BlockStrategy();
@@ -135,7 +132,7 @@ namespace Drill4Net.Injector.Engine
             //'exe' must be after 'dll'
             foreach (var file in files.OrderBy(a => a))
             {
-                AssemblyVersion version = null;
+                AssemblyVersion version;
                 if (_isNetCore.Value == true && Path.GetExtension(file) == ".exe")
                 {
                     var dll = Path.Combine(Path.ChangeExtension(file, ".dll"));
@@ -179,7 +176,7 @@ namespace Drill4Net.Injector.Engine
                 return;
 
             //source
-            var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath))}\\";
+            var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath) ?? string.Empty)}\\";
             Environment.CurrentDirectory = sourceDir;
             var subjectName = Path.GetFileNameWithoutExtension(filePath);
 
@@ -206,8 +203,7 @@ namespace Drill4Net.Injector.Engine
             #region PDB
             var pdb = subjectName + ".pdb";
             var isPdbExists = File.Exists(pdb);
-            var needPdb = isPdbExists && (version.Target == AssemblyVersionType.NetCore ||
-                                          version.Target == AssemblyVersionType.NetStandard);
+            var needPdb = isPdbExists && (version.Target is AssemblyVersionType.NetCore or AssemblyVersionType.NetStandard);
             if (needPdb)
             {
                 // netcore uses portable pdb, so we provide appropriate reader
@@ -219,7 +215,10 @@ namespace Drill4Net.Injector.Engine
                 }
                 catch (IOException ex) //may be in VS for NET Core .exe
                 {
-                    //log
+                    if(!Debugger.IsAttached)
+                       // Log.Warning(ex, $"Reading PDB (from IDE): {nameof(ProcessAssembly)}");
+                    //else
+                        Log.Error(ex, $"Reading PDB: {nameof(ProcessAssembly)}");
                 }
             }
             #endregion
@@ -232,13 +231,13 @@ namespace Drill4Net.Injector.Engine
             #endregion
             #region Target version
             var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(System.Runtime.Versioning.TargetFrameworkAttribute).Name);
-            string targetVersion = null;
+            string targetVersion;
             if (targetVersionAtr != null)
             {
                 targetVersion = targetVersionAtr.ConstructorArguments[0].Value?.ToString();
                 Console.WriteLine($"Version = {targetVersion}");
             }
-            var targetFolder = ConvertTargetTypeToFolder(targetVersion);
+            //var targetFolder = ConvertTargetTypeToFolder(targetVersion);
             #endregion
             #region Tree
             //directory
@@ -271,7 +270,7 @@ namespace Drill4Net.Injector.Engine
             proxyMethRef.Parameters.Add(strPar);
 
             // 2. 'Call' command
-            var call = Instruction.Create(OpCodes.Call, proxyMethRef);
+            //var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             #endregion
             #region Processing
             _injClasses = new Dictionary<string, InjectedType>();
@@ -285,7 +284,7 @@ namespace Drill4Net.Injector.Engine
                     continue;
 
                 //TODO: normal defining of business types (by cfg?)
-                var nameSpace = typeDef.Namespace;
+                //var nameSpace = typeDef.Namespace;
                 var typeFullName = typeDef.FullName;
                 var tAr = typeFullName.Split('.');
                 ns1 = tAr[0];
@@ -311,7 +310,7 @@ namespace Drill4Net.Injector.Engine
                 {
                     #region Init
                     var curType = methodDef.DeclaringType;
-                    typeName = curType.FullName;
+                    //typeName = curType.FullName;
                     typeFullName = curType.FullName;
 
                     var methodName = methodDef.Name;
@@ -380,7 +379,7 @@ namespace Drill4Net.Injector.Engine
                         var instr = instructions[i];
                         var opCode = instr.OpCode;
                         var code = opCode.Code;
-                        var flow = opCode.FlowControl;
+                        //var flow = opCode.FlowControl;
 
                         MapBusinessFunction(instr, treeFunc);
 
@@ -395,16 +394,10 @@ namespace Drill4Net.Injector.Engine
                         if (methodSource.IsMoveNext && isCompilerGenerated)
                         {
                             //TODO: caching!!!
-                            foreach (var catcher in body.ExceptionHandlers)
-                            {
-                                if (catcher.TryStart == instr)
-                                {
-                                    i += 8;
-                                    continue;
-                                }
-                            }
+                            var cntExc = body.ExceptionHandlers.Count(a => a.TryStart == instr);
+                            i += 8 * cntExc; //+margin
 
-                            if (code == Code.Callvirt || code == Code.Call)
+                            if (code is Code.Callvirt or Code.Call)
                             {
                                 var s = instr.ToString();
                                 if (s.EndsWith("get_IsCompleted()")) 
@@ -427,12 +420,11 @@ namespace Drill4Net.Injector.Engine
                     foreach (var jump in jumpers)
                     {
                         var opCode = jump.OpCode;
-                        if (jump.Operand is Instruction operand)
-                        {
-                            var newOpCode = ConvertShortJumpToLong(opCode);
-                            if (newOpCode.Code != opCode.Code)
-                                jump.OpCode = newOpCode;
-                        }
+                        if (jump.Operand is not Instruction) 
+                            continue;
+                        var newOpCode = ConvertShortJumpToLong(opCode);
+                        if (newOpCode.Code != opCode.Code)
+                            jump.OpCode = newOpCode;
                     }
                     #endregion
 
@@ -499,69 +491,66 @@ namespace Drill4Net.Injector.Engine
             var code = instr.OpCode.Code;
 
             //in any case needed check compiler generated classes
-            if (instr.Operand is MethodReference &&
-               (flow == FlowControl.Call || code == Code.Ldftn || code == Code.Ldfld))
+            if (instr.Operand is not MethodReference extOp ||
+                (flow != FlowControl.Call && code != Code.Ldftn && code != Code.Ldfld)) 
+                return;
+            
+            //TODO: cache!
+            var extTypeFullName = extOp.DeclaringType.FullName;
+            var extTypeName = extOp.DeclaringType.Name;
+            var extFullname = extOp.FullName;
+            var extName = extOp.Name;
+            if (extName.StartsWith("<") || extTypeFullName.Contains(">d__") || extFullname.Contains("|"))
             {
-                //TODO: cache!
-                var extOp = instr.Operand as MethodReference;
-                var extTypeFullName = extOp.DeclaringType.FullName;
-                var extTypeName = extOp.DeclaringType.Name;
-                var extFullname = extOp.FullName;
-                var extName = extOp.Name;
-                if (extName.StartsWith("<") || extTypeFullName.Contains(">d__") || extFullname.Contains("|"))
+                try
                 {
-                    try
-                    {
-                        //null is norm for anonymous types
-                        var extType = _injClasses.ContainsKey(extTypeFullName) ?
-                                          _injClasses[extTypeFullName] :
-                                          (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
+                    //null is norm for anonymous types
+                    var extType = _injClasses.ContainsKey(extTypeFullName) ?
+                        _injClasses[extTypeFullName] :
+                        (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
 
-                        //extType found, not local func, not 'class-for-all'
-                        if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
-                        {
-                            var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
-                            InjectedType realCgType = null;
-                            var typeKey = treeFunc.BusinessType; // realTypeName ?? typeFullName
-                            if (_injClasses.ContainsKey(typeKey))
-                                realCgType = _injClasses[typeKey];
-                            var methodKey = extRealMethodName; // ?? realMethodName;
-                            if (realCgType != null && methodKey != null)
-                            {
-                                var mkey = GetMethodKeyByClass(realCgType.Fullname, methodKey);
-                                if (_injMethodByClasses.ContainsKey(mkey))
-                                    treeFunc = _injMethodByClasses[mkey];
-                                var nestTypes = extType.Filter(typeof(InjectedType), true);
-                                foreach (InjectedType nestType in nestTypes)
-                                {
-                                    if (nestType.IsCompilerGenerated)
-                                        nestType.FromMethod = treeFunc.FromMethod ?? treeFunc.Fullname;
-                                }
-                            }
-                            if (extType != null)
-                            {
-                                extType.FromMethod = treeFunc.Fullname;
-                                var extMethods = extType.Filter(typeof(InjectedMethod), true);
-                                foreach (InjectedMethod meth in extMethods)
-                                {
-                                    meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (_injMethods.ContainsKey(extFullname))
-                            {
-                                var extFunc = _injMethods[extFullname];
-                                if (extFunc.FromMethod == null)
-                                    extFunc.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
+                    //extType found, not local func, not 'class-for-all'
+                    if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                     {
-                        Log.Error(ex, $"Getting real name of func method: [{extOp}]");
+                        var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
+                        InjectedType realCgType = null;
+                        var typeKey = treeFunc.BusinessType; // realTypeName ?? typeFullName
+                        if (_injClasses.ContainsKey(typeKey))
+                            realCgType = _injClasses[typeKey];
+                        var methodKey = extRealMethodName; // ?? realMethodName;
+                        if (realCgType != null && methodKey != null)
+                        {
+                            var mkey = GetMethodKeyByClass(realCgType.Fullname, methodKey);
+                            if (_injMethodByClasses.ContainsKey(mkey))
+                                treeFunc = _injMethodByClasses[mkey];
+                            var nestTypes = extType.Filter(typeof(InjectedType), true);
+                            foreach (var injectedSimpleEntity in nestTypes)
+                            {
+                                var nestType = (InjectedType) injectedSimpleEntity;
+                                if (nestType.IsCompilerGenerated)
+                                    nestType.FromMethod = treeFunc.FromMethod ?? treeFunc.Fullname;
+                            }
+                        }
+
+                        extType.FromMethod = treeFunc.Fullname;
+                        var extMethods = extType.Filter(typeof(InjectedMethod), true);
+                        foreach (var injectedSimpleEntity in extMethods)
+                        {
+                            var meth = (InjectedMethod) injectedSimpleEntity;
+                            meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                        }
                     }
+                    else
+                    {
+                        if (!_injMethods.ContainsKey(extFullname)) 
+                            return;
+                        var extFunc = _injMethods[extFullname];
+                        extFunc.FromMethod ??= treeFunc.Fullname ?? extType?.FromMethod;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"Getting real name of func method: [{extOp}]");
                 }
             }
         }
@@ -779,7 +768,7 @@ namespace Drill4Net.Injector.Engine
             #endregion
 
             methods = methods
-                .Where(a => a.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(DebuggerHiddenAttribute).Name) == null)
+                .Where(a => a.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == nameof(DebuggerHiddenAttribute)) == null)
                 .ToList();
             return methods;
         }
@@ -872,6 +861,16 @@ namespace Drill4Net.Injector.Engine
         internal void NotifyAboutTree(InjectedSolution tree)
         {
             //in each folder create file with path to tree data
+            //if (tree.GetAllDirectories() is not InjectedDirectory[] dirs || !dirs.Any()) 
+            //    return;
+            //var pathInText = _rep.GetTreeFilePath(tree);
+            //Log.Debug($"Tree saved to: [{pathInText}]");
+            //foreach (var dir in dirs)
+            //{
+            //    var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
+            //    File.WriteAllText(hintPath, pathInText);
+            //    Log.Debug($"Hint placed to: [{hintPath}]");
+            //}
             var dirs = tree.GetAllDirectories();
             if (dirs.Any())
             {
