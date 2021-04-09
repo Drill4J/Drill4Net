@@ -49,14 +49,14 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //the return in the middle of the method body
-            if (instr.Operand == lastOp && !strictEnterReturn && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
+            if (instr.Operand == lastOp && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
             {
                 _returnInst.Operand = $"{_initProbData}{ctx.CurIndex}";
                 instr.Operand = _returnInst;
             }
 
             //RETURN
-            if (code != Code.Ret || strictEnterReturn) 
+            if (code != Code.Ret) 
                 return;
 
             _returnInst.Operand = $"{_initProbData}{ctx.CurIndex}";

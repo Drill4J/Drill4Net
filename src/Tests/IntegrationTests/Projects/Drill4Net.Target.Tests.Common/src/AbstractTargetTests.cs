@@ -18,7 +18,7 @@ namespace Drill4Net.Target.Tests.Common
     [TestFixture]
     public abstract class AbstractTargetTests
     {
-        protected static TestEngineRepository _testsRep;
+        protected static readonly TestEngineRepository _testsRep;
         private static Dictionary<string, InjectedSimpleEntity> _pointMap;
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
@@ -56,7 +56,7 @@ namespace Drill4Net.Target.Tests.Common
         protected abstract Dictionary<string, object> LoadTarget();
         protected abstract void UnloadTarget();
 
-        [TestCaseSource(typeof(CommonSourceData), "Simple")]
+        [TestCaseSource(typeof(CommonSourceData), nameof(CommonSourceData.Simple))]
         public void Base_Simple(MethodInfo mi, object[] args, List<string> checks)
         {
             Assert.NotNull(mi, $"Method info is empty");
@@ -98,7 +98,7 @@ namespace Drill4Net.Target.Tests.Common
             #endregion
         }
 
-        [TestCaseSource(typeof(CommonSourceData), "Parented")]
+        [TestCaseSource(typeof(CommonSourceData), nameof(CommonSourceData.Parented))]
         public void Base_Parented(MethodInfo mi, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {
             #region Arrange
@@ -106,7 +106,6 @@ namespace Drill4Net.Target.Tests.Common
 
             var target = CommonSourceData.Target;
             var parentData = inputs[0];
-            var mName = parentData.Info.Name;
             #endregion
             #region Act
             try
@@ -114,6 +113,8 @@ namespace Drill4Net.Target.Tests.Common
                 if (isAsync)
                 {
                     var task = mi.Invoke(target, args) as Task;
+                    if(task == null)
+                        Assert.Fail("Task for calling is empty");
                     task.Wait();
                 }
                 else
@@ -131,8 +132,8 @@ namespace Drill4Net.Target.Tests.Common
             }
             catch (Exception ex) //it's normal for business throws
             {
-                //if (!inputs.Select(a => a.Checks).Any(a => a.Contains("Throw")))
-                    //Assert.Fail(ex.Message);
+                if (!inputs.SelectMany(a => a.Checks).Any(a => a.Contains("Throw")))
+                    Assert.Fail(ex.Message);
             }
             #endregion
             #region Assert
@@ -243,6 +244,7 @@ namespace Drill4Net.Target.Tests.Common
         private void CheckEnterAndLastReturnOrThrow(List<PointLinkage> links)
         {
             var probes = links.Select(a => a.Probe);
+            Assert.IsNotNull(probes);
             Assert.IsNotNull(probes.FirstOrDefault(a => a == "Enter_0"), "No Enter");
             Assert.IsNotNull(probes.Last(a => a.StartsWith("Return_") || a.StartsWith("Throw_")), "No last Return/Throw");
         }
@@ -290,7 +292,7 @@ namespace Drill4Net.Target.Tests.Common
 
         internal PointLinkage ConvertToLink(string probData)
         {
-            if (probData?.Contains(':') == false)
+            if (probData == null || probData.Contains(':') == false)
                 throw new ArgumentException(nameof(probData));
             //
             var ar = probData.Split(':');
@@ -298,13 +300,14 @@ namespace Drill4Net.Target.Tests.Common
             if (!_pointMap.ContainsKey(uid))
                 Assert.Fail($"No point with Uid = {uid}");
             //
-            var point = _pointMap[uid] as CrossPoint;
-            var method = _parentMap[point] as InjectedMethod;
-            var type = _parentMap[method] as InjectedType;
+            var point = (CrossPoint)_pointMap[uid];
+            var method = (InjectedMethod)_parentMap[point];
+            var type = (InjectedType)_parentMap[method];
 
             InjectedSimpleEntity asmObj = type;
             do { asmObj = _parentMap[asmObj]; }
-            while (asmObj != null && asmObj is not InjectedAssembly);
+            //asmObj != null && asmObj is not InjectedAssembly
+            while (asmObj is { } and not InjectedAssembly); 
             var asm = asmObj as InjectedAssembly;
             //
             var link = new PointLinkage(asm, type, method, point);

@@ -1,5 +1,6 @@
 ﻿using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
+using System.Linq;
 
 namespace Drill4Net.Injector.Core
 {
@@ -13,12 +14,14 @@ namespace Drill4Net.Injector.Core
 
         protected override void StartMethodConcrete(InjectorContext ctx)
         {
-            if (ctx.IsStrictEnterReturn)
+            if (ctx.IsStrictEnterReturn || !ctx.Instructions.Any())
                 return;
 
+            //data
             var probData = _probeHelper.GetProbeData(ctx.TreeMethod, ctx.ModuleName, CrossPointType.Enter, 0);
             var ldstrEntering = GetFirstInstruction(probData);
 
+            //injection
             var firstOp = ctx.Instructions[0];
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
 

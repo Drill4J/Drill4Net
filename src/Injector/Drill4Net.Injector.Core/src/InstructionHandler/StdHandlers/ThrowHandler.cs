@@ -27,7 +27,6 @@ namespace Drill4Net.Injector.Core
 
             var exceptionHandlers = ctx.ExceptionHandlers;
             var jumpers = ctx.Jumpers;
-            string probData;
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             #endregion
 
@@ -36,7 +35,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Throw, ctx.CurIndex);
+            var probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Throw, ctx.CurIndex);
 
             //injection
             var throwInst = GetFirstInstruction(probData);

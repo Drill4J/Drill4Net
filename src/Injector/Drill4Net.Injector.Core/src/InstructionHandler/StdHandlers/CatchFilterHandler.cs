@@ -31,10 +31,11 @@ namespace Drill4Net.Injector.Core
             //CATCH FILTER
             if (code != Code.Endfilter) 
                 return;
+
             var probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.CatchFilter, ctx.CurIndex);
-            var ldstrFlt = GetFirstInstruction(probData);
-            FixFinallyEnd(instr, ldstrFlt, exceptionHandlers);
-            processor.InsertBefore(instr, ldstrFlt);
+            var ldstr = GetFirstInstruction(probData);
+            FixFinallyEnd(instr, ldstr, exceptionHandlers);
+            processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
         }
