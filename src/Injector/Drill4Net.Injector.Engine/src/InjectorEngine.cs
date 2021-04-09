@@ -733,7 +733,8 @@ namespace Drill4Net.Injector.Engine
                 }
                 //
                 var methodSource = CreateMethodSource(ownMethod);
-                var treeFunc = new InjectedMethod(typeFullname, treeParentClass.BusinessType, ownMethod.FullName, methodSource);
+                var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname, 
+                    treeParentClass.BusinessType, ownMethod.FullName, methodSource);
                 //
                 var methodName = ownMethod.Name;
                 methodSource.IsMoveNext = methodName == "MoveNext";
@@ -770,7 +771,7 @@ namespace Drill4Net.Injector.Engine
 
             methods = methods
                 .Where(m => m.CustomAttributes
-                    .FirstOrDefault(attr => attr.AttributeType.Name == nameof(DebuggerHiddenAttribute)) == null)
+                .FirstOrDefault(attr => attr.AttributeType.Name == nameof(DebuggerHiddenAttribute)) == null)
                 .ToList();
             return methods;
         }

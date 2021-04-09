@@ -7,7 +7,8 @@ namespace Drill4Net.Injector.Core
 {
     public class NonConditionBranchHandler : AbstractInstructionHandler
     {
-        public NonConditionBranchHandler(): base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_NONCONDITIONAL)
+        public NonConditionBranchHandler(AbstractProbeHelper probeHelper) : 
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_NONCONDITIONAL, probeHelper)
         {
         }
 
@@ -58,7 +59,7 @@ namespace Drill4Net.Injector.Core
                 //data
                 var pairedCode = ifInst.OpCode.Code;
                 var crossType = pairedCode is Code.Brfalse or Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                probData = _probeHelper.GetProbeData(treeFunc, moduleName, crossType, ctx.CurIndex);
+                probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
 
                 var firstProbeInst = GetFirstInstruction(probData); //probe's first instruction
                 FixFinallyEnd(instr, firstProbeInst,

@@ -6,7 +6,8 @@ namespace Drill4Net.Injector.Core
 {
     public class EnterHandler : AbstractInstructionHandler
     {
-        public EnterHandler() : base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_CONDITIONAL)
+        public EnterHandler(AbstractProbeHelper probeHelper) : 
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_CONDITIONAL, probeHelper)
         {
         }
 
@@ -18,7 +19,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            var probData = _probeHelper.GetProbeData(ctx.TreeMethod, ctx.ModuleName, CrossPointType.Enter, 0);
+            var probData = _probeHelper.PrepareProbeData(ctx.TreeMethod, CrossPointType.Enter, 0);
             var ldstrEntering = GetFirstInstruction(probData);
 
             //injection

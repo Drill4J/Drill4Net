@@ -9,7 +9,7 @@ namespace Drill4Net.Profiling.Tree
 
         /*********************************************************************/
 
-        public InjectedAssembly(string name, string fullName, string path) : base(name, path)
+        public InjectedAssembly(string name, string fullName, string path) : base(name, name, path)
         {
             Fullname = fullName;
         }

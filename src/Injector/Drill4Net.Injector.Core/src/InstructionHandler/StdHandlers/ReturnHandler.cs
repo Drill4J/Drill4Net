@@ -11,7 +11,8 @@ namespace Drill4Net.Injector.Core
 
         /**************************************************************************************/
 
-        public ReturnHandler() : base(InjectorCoreConstants.INSTRUCTION_HANDLER_RETURN)
+        public ReturnHandler(AbstractProbeHelper probeHelper) : 
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_RETURN, probeHelper)
         {          
         }
 
@@ -20,7 +21,7 @@ namespace Drill4Net.Injector.Core
         protected override void StartMethodConcrete(InjectorContext ctx)
         {
             //data
-            _initProbData = _probeHelper.GetProbeData(ctx.TreeMethod, ctx.ModuleName, CrossPointType.Return, -1);
+            _initProbData = _probeHelper.PrepareProbeData(ctx.TreeMethod, CrossPointType.Return, -1);
             _returnInst = GetFirstInstruction(_initProbData); //as object it must be only one
         }
 

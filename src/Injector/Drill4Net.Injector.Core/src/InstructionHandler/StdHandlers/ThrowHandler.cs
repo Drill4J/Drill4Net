@@ -5,7 +5,8 @@ namespace Drill4Net.Injector.Core
 {
     public class ThrowHandler : AbstractInstructionHandler
     {
-        public ThrowHandler() : base(InjectorCoreConstants.INSTRUCTION_HANDLER_THROW)
+        public ThrowHandler(AbstractProbeHelper probeHelper) : 
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_THROW, probeHelper)
         {
         }
 
@@ -35,7 +36,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            var probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Throw, ctx.CurIndex);
+            var probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.Throw, ctx.CurIndex);
 
             //injection
             var throwInst = GetFirstInstruction(probData);

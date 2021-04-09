@@ -21,7 +21,7 @@ namespace Drill4Net.Profiling.Tree
         /******************************************************************/
 
         public InjectedType(string assemblyName, string fullName, string businessName = null) : 
-            base(GetName(fullName), GetSource(assemblyName, fullName))
+            base(assemblyName, GetName(fullName), GetSource(assemblyName, fullName))
         {
             Fullname = fullName;
             BusinessType = businessName ?? GetBusinessType(fullName);

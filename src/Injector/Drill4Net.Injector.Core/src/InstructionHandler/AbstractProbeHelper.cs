@@ -5,7 +5,7 @@ using C = Drill4Net.Injector.Core.InjectorCoreConstants;
 
 namespace Drill4Net.Injector.Core
 {
-    public abstract class ProbeHelper
+    public abstract class AbstractProbeHelper
     {
         public virtual string PrepareProbeData(InjectedMethod injMeth, CrossPointType pointType, 
             Dictionary<string, object> data = null)
@@ -30,11 +30,7 @@ namespace Drill4Net.Injector.Core
             return GenerateProbeData(injMeth, point, pointUid, data);
         }
 
-        protected virtual string GenerateProbeData(InjectedMethod injMeth, CrossPoint point, string pointUid, 
-            Dictionary<string, object> data)
-        {
-            var moduleName = data?.ContainsKey(C.PROBE_KEY_MODULE) == true ? data[C.PROBE_KEY_MODULE] : "unknown";
-            return $"{pointUid}^{moduleName}^{injMeth.BusinessMethod}^{point.PointType}_{point.PointId}"; 
-        }
+        protected abstract string GenerateProbeData(InjectedMethod injMeth, CrossPoint point, string pointUid,
+            Dictionary<string, object> data);
     }
 }

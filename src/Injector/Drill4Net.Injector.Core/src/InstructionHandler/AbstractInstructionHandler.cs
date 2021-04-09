@@ -12,14 +12,14 @@ namespace Drill4Net.Injector.Core
 
         public AbstractInstructionHandler Successor { get; set; }
 
-        protected readonly ProbeHelper _probeHelper;
+        protected readonly AbstractProbeHelper _probeHelper;
 
         /************************************************************************************/
 
-        protected AbstractInstructionHandler(string name)
+        protected AbstractInstructionHandler(string name, AbstractProbeHelper probeHelper)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            _probeHelper = new ProbeHelper();
+            _probeHelper = probeHelper ?? throw new ArgumentNullException(nameof(probeHelper));
         }
 
         /************************************************************************************/

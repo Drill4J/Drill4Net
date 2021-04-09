@@ -20,8 +20,9 @@ namespace Drill4Net.Profiling.Tree
 
         /********************************************************************/
 
-        public InjectedMethod(string typeName, string businessTypeName, string fullName, MethodSource sourceType)
+        public InjectedMethod(string assemblyName, string typeName, string businessTypeName, string fullName, MethodSource sourceType)
         {
+            AssemblyName = assemblyName ?? throw new ArgumentNullException(nameof(assemblyName));
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));

@@ -6,7 +6,8 @@ namespace Drill4Net.Injector.Strategies.Block
 {
     public class BlockHandler : AbstractInstructionHandler
     {
-        public BlockHandler() : base(BlockConstants.INSTRUCTION_HANDLER_BLOCK)
+        public BlockHandler(AbstractProbeHelper probeHelper) : 
+            base(BlockConstants.INSTRUCTION_HANDLER_BLOCK, probeHelper)
         {
         }
 

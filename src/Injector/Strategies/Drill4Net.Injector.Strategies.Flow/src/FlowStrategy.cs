@@ -6,12 +6,14 @@ namespace Drill4Net.Injector.Strategies.Flow
     {
         public FlowStrategy()
         {
-            ConnectHandler(new EnterHandler());
-            ConnectHandler(new ConditionBranchHandler());
-            ConnectHandler(new NonConditionBranchHandler());
-            ConnectHandler(new CatchFilterHandler());
-            ConnectHandler(new ThrowHandler());
-            ConnectHandler(new ReturnHandler());
+            var helper = new FlowProbeHelper();
+            
+            ConnectHandler(new EnterHandler(helper));
+            ConnectHandler(new ConditionBranchHandler(helper));
+            ConnectHandler(new NonConditionBranchHandler(helper));
+            ConnectHandler(new CatchFilterHandler(helper));
+            ConnectHandler(new ThrowHandler(helper));
+            ConnectHandler(new ReturnHandler(helper));
         }
     }
 }

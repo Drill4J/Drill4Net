@@ -1,11 +1,13 @@
 ﻿using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
+using C = Drill4Net.Injector.Core.InjectorCoreConstants;
 
 namespace Drill4Net.Injector.Core
 {
     public class CatchFilterHandler : AbstractInstructionHandler
     {
-        public CatchFilterHandler(): base(InjectorCoreConstants.INSTRUCTION_HANDLER_CATCH_FILTER)
+        public CatchFilterHandler(AbstractProbeHelper probeHelper) : 
+            base(C.INSTRUCTION_HANDLER_CATCH_FILTER, probeHelper)
         {
         }
 
@@ -32,7 +34,9 @@ namespace Drill4Net.Injector.Core
             if (code != Code.Endfilter) 
                 return;
 
-            var probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.CatchFilter, ctx.CurIndex);
+            //data
+            var probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.CatchFilter, ctx.CurIndex);
+            
             var ldstr = GetFirstInstruction(probData);
             FixFinallyEnd(instr, ldstr, exceptionHandlers);
             processor.InsertBefore(instr, ldstr);

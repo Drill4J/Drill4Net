@@ -6,7 +6,8 @@ namespace Drill4Net.Injector.Core
 {
     public class ConditionBranchHandler : AbstractInstructionHandler
     {
-        public ConditionBranchHandler():  base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_CONDITIONAL)
+        public ConditionBranchHandler(AbstractProbeHelper probeHelper) :  
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_CONDITIONAL, probeHelper)
         {
         }
 
@@ -101,14 +102,14 @@ namespace Drill4Net.Injector.Core
                 var prevOperand = SkipNop(ind, false, instructions);
                 if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //for/while
                 {
-                    probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.Cycle, ctx.CurIndex);
+                    probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.Cycle, ctx.CurIndex);
                     var ldstrIf2 = GetFirstInstruction(probData);
                     var targetOp = prevOperand.Operand as Instruction;
                     processor.InsertBefore(targetOp, ldstrIf2);
                     processor.InsertBefore(targetOp, call);
                     ctx.IncrementIndex(2);
 
-                    probData = _probeHelper.GetProbeData(treeFunc, moduleName, CrossPointType.CycleEnd, ctx.CurIndex);
+                    probData = _probeHelper.PrepareProbeData(treeFunc, CrossPointType.CycleEnd, ctx.CurIndex);
                     var ldstrIf3 = GetFirstInstruction(probData);
                     var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                     processor.InsertAfter(instr, call1);
@@ -122,7 +123,7 @@ namespace Drill4Net.Injector.Core
 
                     // 1.
                     crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                    probData = _probeHelper.GetProbeData(treeFunc, moduleName, crossType, ctx.CurIndex);
+                    probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
                     var ldstrIf = GetFirstInstruction(probData);
 
                     var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
@@ -138,7 +139,7 @@ namespace Drill4Net.Injector.Core
 
                     // 2.
                     crossType = !isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                    probData = _probeHelper.GetProbeData(treeFunc, moduleName, crossType, ctx.CurIndex);
+                    probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
                     var ldstrIf2 = GetFirstInstruction(probData);
 
                     var call2 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
@@ -181,7 +182,7 @@ namespace Drill4Net.Injector.Core
             {
                 if (crossType == CrossPointType.Unset)
                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                probData = _probeHelper.GetProbeData(treeFunc, moduleName, crossType, ctx.CurIndex);
+                probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ctx.CurIndex);
                 var ldstrIf = GetFirstInstruction(probData);
 
                 //when inserting 'after', must set in desc order
@@ -199,7 +200,7 @@ namespace Drill4Net.Injector.Core
             {
                 crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
                 var ind = instructions.IndexOf(operand);
-                probData = _probeHelper.GetProbeData(treeFunc, moduleName, crossType, ind);
+                probData = _probeHelper.PrepareProbeData(treeFunc, crossType, ind);
                 var elseInst = GetFirstInstruction(probData);
 
                 ReplaceJump(operand, elseInst, jumpers);
