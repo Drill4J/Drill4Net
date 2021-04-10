@@ -73,7 +73,7 @@ namespace Drill4Net.Injector.Core
                 point.PointId = ctx.CurIndex.ToString();
         }
         
-        protected override string GetProbeData(InjectorContext ctx)
+        protected virtual string GetProbeData(InjectorContext ctx)
         {
             return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1);
         }

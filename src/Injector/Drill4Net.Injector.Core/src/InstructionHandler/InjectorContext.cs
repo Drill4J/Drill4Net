@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Drill4Net.Profiling.Tree;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -10,12 +9,12 @@ namespace Drill4Net.Injector.Core
 {
     public record InjectorContext
     {
-        public string ModuleName { get; set; }
-        public string MethodFullName { get; set; }
+        public string ModuleName { get; }
+        public string MethodFullName { get; }
         public InjectedMethod TreeMethod { get; set; }
         public InjectedType TreeType { get; set; }
 
-        public ILProcessor Processor { get; set; }
+        public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
         public Collection<ExceptionHandler> ExceptionHandlers { get; set; }
         public Instruction LastOperation { get; set; }
@@ -29,8 +28,7 @@ namespace Drill4Net.Injector.Core
 
         public MethodReference ProxyMethRef { get; set; }
 
-        public int CurIndex => _curIndex;
-        public int _curIndex;
+        public int CurIndex { get; private set; }
 
         /***********************************************************************************************/
 
@@ -55,13 +53,13 @@ namespace Drill4Net.Injector.Core
         {
             if (index < 0)
                 throw new ArgumentException("Index must greater zero");
-            _curIndex = index;
+            CurIndex = index;
         }
 
         public int IncrementIndex(int inc = 1)
         {
-            _curIndex += inc;
-            return _curIndex;
+            CurIndex += inc;
+            return CurIndex;
         }
     }
 }

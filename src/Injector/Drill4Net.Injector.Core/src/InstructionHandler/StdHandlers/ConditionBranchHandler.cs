@@ -42,6 +42,7 @@ namespace Drill4Net.Injector.Core
             string probData;
 
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+            var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
             #endregion
             #region Checks
             if (flow != FlowControl.Cond_Branch) 
@@ -67,19 +68,15 @@ namespace Drill4Net.Injector.Core
                 }
             }
             #endregion
-            
+            #region Is this business code?
             if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
                 return;
             if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine))
                 return;
             #endregion
-            
-            //IF, FOR/SWITCH
-            var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
-
             #region Monitor/lock
             var operand = instr.Operand as Instruction;
-            if (isBrFalse && operand != null && operand.OpCode.Code == Code.Endfinally)
+            if (isBrFalse && operand is {OpCode: {Code: Code.Endfinally}})
             {
                 var endFinInd = instructions.IndexOf(operand);
                 var prevInstr = SkipNop(endFinInd, false, instructions);
@@ -88,7 +85,11 @@ namespace Drill4Net.Injector.Core
                     return;
             }
             #endregion
+            #endregion
+            
+            //IF, FOR/SWITCH
             #region Operators: while/for, do
+            int ind;
             if (operand is {Offset: > 0} && instr.Offset > operand.Offset)
             {
                 if (isEnumeratorMoveNext)
@@ -98,18 +99,18 @@ namespace Drill4Net.Injector.Core
                         return;
                 }
                 //
-                var ind = instructions.IndexOf(operand); //inefficient, but it will be rarely...
+                ind = instructions.IndexOf(operand);
                 var prevOperand = SkipNop(ind, false, instructions);
-                if (prevOperand.OpCode.Code == Code.Br || prevOperand.OpCode.Code == Code.Br_S) //for/while
+                if (prevOperand.OpCode.Code is Code.Br or Code.Br_S) //for/while
                 {
-                    probData = GetProbeData(ctx, CrossPointType.Cycle);
+                    probData = _probeHelper.GetProbeData(ctx, CrossPointType.Cycle);
                     var ldstrIf2 = GetFirstInstruction(probData);
                     var targetOp = prevOperand.Operand as Instruction;
                     processor.InsertBefore(targetOp, ldstrIf2);
                     processor.InsertBefore(targetOp, call);
                     ctx.IncrementIndex(2);
 
-                    probData = GetProbeData(ctx, CrossPointType.CycleEnd);
+                    probData = _probeHelper.GetProbeData(ctx, CrossPointType.CycleEnd);
                     var ldstrIf3 = GetFirstInstruction(probData);
                     var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                     processor.InsertAfter(instr, call1);
@@ -123,7 +124,7 @@ namespace Drill4Net.Injector.Core
 
                     // 1.
                     crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                    probData = GetProbeData(ctx, crossType);
+                    probData = _probeHelper.GetProbeData(ctx, crossType);
                     var ldstrIf = GetFirstInstruction(probData);
 
                     var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
@@ -139,7 +140,7 @@ namespace Drill4Net.Injector.Core
 
                     // 2.
                     crossType = !isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                    probData = GetProbeData(ctx, crossType);
+                    probData = _probeHelper.GetProbeData(ctx, crossType);
                     var ldstrIf2 = GetFirstInstruction(probData);
 
                     var call2 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
@@ -182,7 +183,7 @@ namespace Drill4Net.Injector.Core
             {
                 if (crossType == CrossPointType.Unset)
                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
-                probData = GetProbeData(ctx, crossType);
+                probData = _probeHelper.GetProbeData(ctx, crossType);
                 var ldstrIf = GetFirstInstruction(probData);
 
                 //when inserting 'after', must set in desc order
@@ -196,21 +197,22 @@ namespace Drill4Net.Injector.Core
             if (prev == null || processed.Contains(prev))
                 return;
             var prevCode = prev.OpCode.Code;
-            if (prevCode == Code.Br || prevCode == Code.Br_S) //need insert paired call
-            {
-                crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
-                var ind = instructions.IndexOf(operand);
-                probData = GetProbeData(ctx, crossType, ind);
-                var elseInst = GetFirstInstruction(probData);
+            if (prevCode != Code.Br && prevCode != Code.Br_S) 
+                return;
+            
+            //need insert paired call
+            crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
+            ind = instructions.IndexOf(operand);
+            probData = _probeHelper.GetProbeData(ctx, crossType, ind);
+            var elseInst = GetFirstInstruction(probData);
 
-                ReplaceJump(operand, elseInst, jumpers);
-                processor.InsertBefore(operand, elseInst);
-                processor.InsertBefore(operand, call);
+            ReplaceJump(operand, elseInst, jumpers);
+            processor.InsertBefore(operand, elseInst);
+            processor.InsertBefore(operand, call);
 
-                processed.Add(prev);
-                if (operand.Offset < instr.Offset)
-                    ctx.IncrementIndex(2);
-            }
+            processed.Add(prev);
+            if (operand.Offset < instr.Offset)
+                ctx.IncrementIndex(2);
             #endregion
         }
     }

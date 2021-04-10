@@ -50,7 +50,7 @@ namespace Drill4Net.Injector.Engine
 
             var flowStrategy = new FlowStrategy();
             var blockStrategy = new BlockStrategy();
-            _strategy = flowStrategy;
+            _strategy = blockStrategy;
         }
 
         /***************************************************************************************/
@@ -262,7 +262,7 @@ namespace Drill4Net.Injector.Engine
 
             //we will use proxy class (with cached Reflection) leading to real profiler
             //proxy will be inject in each target assembly - let construct the calling of it's method
-            TypeReference proxyReturnTypeRef = module.TypeSystem.Void;
+            var proxyReturnTypeRef = module.TypeSystem.Void;
             var proxyNamespace = $"Injection_{Guid.NewGuid()}".Replace("-", null); //must be unique for each target asm
             var proxyTypeRef = new TypeReference(proxyNamespace, opts.Proxy.Class, module, module);
             var proxyMethRef = new MethodReference(opts.Proxy.Method, proxyReturnTypeRef, proxyTypeRef);

@@ -59,24 +59,19 @@ namespace Drill4Net.Injector.Core
         protected abstract void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak);
         #endregion
         #endregion
-        #region GetProbeData
-        protected virtual string GetProbeData(InjectorContext ctx)
-        {
-            return _probeHelper.GetProbeData(ctx);
-        }
+        // #region GetProbeData
+        // protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType)
+        // {
+        //     return GetProbeData(ctx, pointType, ctx.CurIndex);
+        // }
+        //
+        // protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType, int byIndex)
+        // {
+        //     return _probeHelper.GetProbeData(ctx, pointType, byIndex);
+        // }
+        // #endregion
 
-        protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType)
-        {
-            return _probeHelper.GetProbeData(ctx, pointType);
-        }
-
-        protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType, int byIndex)
-        {
-            return _probeHelper.GetProbeData(ctx, pointType, byIndex);
-        }
-        #endregion
-
-        internal protected bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
+        internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
             bool isAsyncStateMachine)
         {
             if (ind < 0 || ind >= instructions.Count)

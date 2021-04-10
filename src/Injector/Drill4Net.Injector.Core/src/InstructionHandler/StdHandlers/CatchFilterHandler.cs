@@ -44,7 +44,7 @@ namespace Drill4Net.Injector.Core
             ctx.IncrementIndex(2);
         }
 
-        protected override string GetProbeData(InjectorContext ctx)
+        protected virtual string GetProbeData(InjectorContext ctx)
         {
             return _probeHelper.GetProbeData(ctx, CrossPointType.CatchFilter, ctx.CurIndex);
         }

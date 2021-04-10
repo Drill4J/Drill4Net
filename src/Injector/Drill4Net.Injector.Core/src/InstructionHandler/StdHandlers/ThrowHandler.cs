@@ -40,14 +40,14 @@ namespace Drill4Net.Injector.Core
 
             //injection
             var throwInst = GetFirstInstruction(probData);
-            FixFinallyEnd(instr, throwInst, exceptionHandlers); //need fix statement boundaries for potential tr/finally 
+            FixFinallyEnd(instr, throwInst, exceptionHandlers); //need fix statement boundaries for potential try/finally 
             ReplaceJump(instr, throwInst, jumpers);
             processor.InsertBefore(instr, throwInst);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
         }
 
-        protected override string GetProbeData(InjectorContext ctx)
+        protected virtual string GetProbeData(InjectorContext ctx)
         {
             return _probeHelper.GetProbeData(ctx, CrossPointType.Throw, ctx.CurIndex);
         }

@@ -7,7 +7,12 @@ namespace Drill4Net.Injector.Strategies.Block
         public BlockStrategy()
         {
             var helper = new BlockProbeHelper();
-            ConnectHandler(new BlockHandler(helper));
+            //ConnectHandler(new BlockHandler(helper));
+            ConnectHandler(new BlockConditionBranchHandler(helper));
+            ConnectHandler(new BlockNonConditionBranchHandler(helper));
+            ConnectHandler(new BlockCatchFilterHandler(helper));
+            ConnectHandler(new BlockThrowHandler(helper));
+            ConnectHandler(new BlockReturnHandler(helper));
         }
     }
 }

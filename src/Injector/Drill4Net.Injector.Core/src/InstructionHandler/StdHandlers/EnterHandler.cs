@@ -35,7 +35,7 @@ namespace Drill4Net.Injector.Core
             needBreak = false;
         }
 
-        protected override string GetProbeData(InjectorContext ctx)
+        protected virtual string GetProbeData(InjectorContext ctx)
         {
             return _probeHelper.GetProbeData(ctx, CrossPointType.Enter, 0);
         }
