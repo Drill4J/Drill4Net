@@ -50,7 +50,7 @@ namespace Drill4Net.Injector.Engine
 
             var flowStrategy = new FlowStrategy();
             var blockStrategy = new BlockStrategy();
-            _strategy = blockStrategy;
+            _strategy = flowStrategy;
         }
 
         /***************************************************************************************/
