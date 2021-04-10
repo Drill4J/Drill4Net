@@ -208,9 +208,11 @@ namespace Drill4Net.Target.Tests.Common
                 #region Misc
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { false }, new List<string> { "If_10" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
+                
+                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Backward), Array.Empty<object>(), new List<string> { "Else_24", "Else_24", "If_22" }).SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Out), new object[] { false }, new List<string> { "If_19", "Cycle_35", "If_19", "Cycle_35", "CycleEnd_37" }).SetCategory(CATEGORY_MISC);
-                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Out), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Forward), new object[] { false }, new List<string> { "If_19", "Cycle_35", "If_19", "Cycle_35", "CycleEnd_37" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Forward), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(GetInfo(Target.Lock_Statement), new object[] { false }, new List<string> { "Else_14" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(Target.Lock_Statement), new object[] { true }, new List<string> { "If_19" }).SetCategory(CATEGORY_MISC);

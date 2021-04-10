@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Dynamic;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -261,7 +262,7 @@ namespace Drill4Net.Target.Common
 
             Cycle_For_Break(3); //no break;
             Cycle_For_Break(2); //with break;
-
+            
             Cycle_Foreach();
 
             Cycle_While(-1);
@@ -278,9 +279,11 @@ namespace Drill4Net.Target.Common
 
             Goto_Statement(false);
             Goto_Statement(true);
+            
+            Goto_Statement_Cycle_Backward();
 
-            Goto_Statement_Cycle_Out(false);
-            Goto_Statement_Cycle_Out(true);
+            Goto_Statement_Cycle_Forward(false);
+            Goto_Statement_Cycle_Forward(true);
 
             Extension(false);
             Extension(true);
@@ -1268,15 +1271,15 @@ namespace Drill4Net.Target.Common
             if (cond)
                 goto label;
             s = "bbb";
-        label:
+            label:
             Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
             return;
         }
 
-        //Cycle_In is forbidden
-        public void Goto_Statement_Cycle_Out(bool cond)
+        public void Goto_Statement_Cycle_Forward(bool cond)
         {
             var s = "a";
+            //jump inside of cycle is forbidden
             for (var i = 0; i < 2; i++)
             {
                 s += i;
@@ -1284,8 +1287,24 @@ namespace Drill4Net.Target.Common
                     goto label;
                 s += "b";
             }
-        label:
-            Console.WriteLine($"{nameof(Goto_Statement_Cycle_Out)}: {cond} -> {s}");
+            label:
+            Console.WriteLine($"{nameof(Goto_Statement_Cycle_Forward)}: {cond} -> {s}");
+            return;
+        }
+        
+        public void Goto_Statement_Cycle_Backward()
+        {
+            var a = -1;
+            label:
+            a++;
+            var s = a.ToString();
+            while (true)
+            {
+                if(a == 0)
+                    goto label;
+                break;
+            }
+            Console.WriteLine($"{nameof(Goto_Statement_Cycle_Backward)}: -> {s}");
             return;
         }
         #endregion
