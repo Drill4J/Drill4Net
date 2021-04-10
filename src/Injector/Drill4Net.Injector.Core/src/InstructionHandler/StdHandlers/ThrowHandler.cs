@@ -49,7 +49,7 @@ namespace Drill4Net.Injector.Core
 
         protected override string GetProbeData(InjectorContext ctx)
         {
-            return _probeHelper.PrepareProbeData(ctx, CrossPointType.Throw, ctx.CurIndex);
+            return _probeHelper.GetProbeData(ctx, CrossPointType.Throw, ctx.CurIndex);
         }
     }
 }

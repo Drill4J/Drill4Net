@@ -62,17 +62,17 @@ namespace Drill4Net.Injector.Core
         #region GetProbeData
         protected virtual string GetProbeData(InjectorContext ctx)
         {
-            return GetProbeData(ctx, CrossPointType.Unset);
+            return _probeHelper.GetProbeData(ctx);
         }
 
         protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType)
         {
-            return _probeHelper.PrepareProbeData(ctx, pointType, ctx.CurIndex);
+            return _probeHelper.GetProbeData(ctx, pointType);
         }
 
-        protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType, int index)
+        protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType, int byIndex)
         {
-            return _probeHelper.PrepareProbeData(ctx, pointType, index);
+            return _probeHelper.GetProbeData(ctx, pointType, byIndex);
         }
         #endregion
 

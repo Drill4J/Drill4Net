@@ -6,11 +6,10 @@ namespace Drill4Net.Injector.Strategies.Block
 {
     public class BlockProbeHelper : AbstractProbeHelper
     {
-        protected override string GenerateProbeData(InjectorContext ctx, CrossPoint point, string pointUid,
-            Dictionary<string, object> data)
+        protected override string GenerateProbeData(InjectorContext ctx, CrossPoint point)
         {
             var injMeth = ctx.TreeMethod;
-            return $"{pointUid}^{injMeth.AssemblyName}^{injMeth.BusinessMethod}^{point.PointType}_{point.PointId}";
+            return $"{point.PointUid}^{injMeth.AssemblyName}^{injMeth.BusinessMethod}^{point.PointType}_{point.PointId}";
         }
     }
 }

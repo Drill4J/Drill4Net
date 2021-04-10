@@ -27,7 +27,7 @@ namespace Drill4Net.Injector.Core
 
         protected override string GetProbeData(InjectorContext ctx)
         {
-            return _probeHelper.PrepareProbeData(ctx, CrossPointType.Return, -1);
+            return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1);
         }
 
         protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
