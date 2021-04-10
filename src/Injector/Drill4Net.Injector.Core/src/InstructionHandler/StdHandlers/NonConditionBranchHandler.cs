@@ -18,9 +18,7 @@ namespace Drill4Net.Injector.Core
         {
             #region Init
             needBreak = false;
-            var moduleName = ctx.ModuleName;
             var treeType = ctx.TreeType;
-            var treeFunc = ctx.TreeMethod;
 
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
@@ -39,8 +37,7 @@ namespace Drill4Net.Injector.Core
             string probData;
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             #endregion
-
-            //ELSE/JUMP
+            #region Checks
             if (flow != FlowControl.Branch || (code != Code.Br && code != Code.Br_S)) 
                 return;
             if (!ifStack.Any())
@@ -51,7 +48,9 @@ namespace Drill4Net.Injector.Core
                 return;
             if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine)) //is real condition's branch?
                 return;
-            //
+            #endregion
+            
+            //ELSE/JUMP
             try
             {
                 var ifInst = ifStack.Pop();

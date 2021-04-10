@@ -17,7 +17,6 @@ namespace Drill4Net.Injector.Core
         {
             #region Init
             needBreak = false;
-            var moduleName = ctx.ModuleName;
             var treeType = ctx.TreeType;
             var treeFunc = ctx.TreeMethod;
 
@@ -44,8 +43,7 @@ namespace Drill4Net.Injector.Core
 
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             #endregion
-
-            //IF, FOR/SWITCH
+            #region Checks
             if (flow != FlowControl.Cond_Branch) 
                 return;
 
@@ -69,13 +67,15 @@ namespace Drill4Net.Injector.Core
                 }
             }
             #endregion
-
+            
             if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
                 return;
             if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine))
                 return;
-            //
-            var isBrFalse = code == Code.Brfalse || code == Code.Brfalse_S; //TODO: add another branch codes? Hmm...
+            #endregion
+            
+            //IF, FOR/SWITCH
+            var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
 
             #region Monitor/lock
             var operand = instr.Operand as Instruction;
@@ -93,7 +93,7 @@ namespace Drill4Net.Injector.Core
             {
                 if (isEnumeratorMoveNext)
                 {
-                    var prevRef = (instr.Previous.Operand as MemberReference).FullName;
+                    var prevRef = ((MemberReference) instr.Previous.Operand).FullName;
                     if (prevRef?.Contains("::MoveNext()") == true)
                         return;
                 }
@@ -135,7 +135,7 @@ namespace Drill4Net.Injector.Core
                     var jump = Instruction.Create(OpCodes.Br_S, next);
                     processor.InsertAfter(call1, jump);
                     jumpers.Add(jump);
-                    ctx.IncrementIndex(1);
+                    ctx.IncrementIndex();
 
                     // 2.
                     crossType = !isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
@@ -151,7 +151,7 @@ namespace Drill4Net.Injector.Core
                     var jump2 = Instruction.Create(OpCodes.Br, back as Instruction);
                     processor.InsertAfter(call2, jump2);
                     jumpers.Add(jump2);
-                    ctx.IncrementIndex(1);
+                    ctx.IncrementIndex();
 
                     instr.Operand = ldstrIf2;
                 }

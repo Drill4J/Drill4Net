@@ -25,17 +25,10 @@ namespace Drill4Net.Injector.Core
             _returnInst = GetFirstInstruction(_initProbData); //as object it must be only one
         }
 
-        protected override string GetProbeData(InjectorContext ctx)
-        {
-            return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1);
-        }
-
         protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
-            var treeFunc = ctx.TreeMethod;
-            var moduleName = ctx.ModuleName;
 
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
@@ -78,6 +71,11 @@ namespace Drill4Net.Injector.Core
                 .FirstOrDefault(a => a.PointType == CrossPointType.Return && a.PointId == null);
             if(point != null)
                 point.PointId = ctx.CurIndex.ToString();
+        }
+        
+        protected override string GetProbeData(InjectorContext ctx)
+        {
+            return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1);
         }
     }
 }
