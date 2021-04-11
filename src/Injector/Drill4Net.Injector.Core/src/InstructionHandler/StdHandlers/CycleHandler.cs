@@ -103,6 +103,8 @@ namespace Drill4Net.Injector.Core
 
                 instr.Operand = ldstrIf2;
             }
+            
+            needBreak = true;
         }
     }
 }

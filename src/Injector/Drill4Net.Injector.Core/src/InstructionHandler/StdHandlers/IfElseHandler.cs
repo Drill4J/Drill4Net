@@ -33,7 +33,7 @@ namespace Drill4Net.Injector.Core
             var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
             #endregion
             #region Check
-            //if pure if/else, but backward jump -> TODO for 'backward goto' (without condition)!!!
+            //if pure if/else, but backward jump
             var operand = instr.Operand as Instruction;
             if (operand != null && instr.Offset > operand.Offset)
                 return;
@@ -69,6 +69,7 @@ namespace Drill4Net.Injector.Core
                 processor.InsertAfter(instr, call);
                 processor.InsertAfter(instr, ldstrIf);
                 ctx.IncrementIndex(2);
+                needBreak = true;
             }
             #endregion
             #region 'Switch when()', etc
@@ -92,6 +93,7 @@ namespace Drill4Net.Injector.Core
             processed.Add(prev);
             if (operand.Offset < instr.Offset)
                 ctx.IncrementIndex(2);
+            needBreak = true;
             #endregion
         }
     }

@@ -8,12 +8,20 @@ namespace Drill4Net.Injector.Strategies.Flow
         {
             var helper = new FlowProbeHelper();
             
-            ConnectHandler(new EnterHandler(helper));
+            //branches
             ConnectHandler(new IfElseHandler(helper));
             ConnectHandler(new CycleHandler(helper));
             ConnectHandler(new NonConditionBranchHandler(helper));
-            ConnectHandler(new CatchFilterHandler(helper));
+            
+            //jump targets
+            ConnectHandler(new AnchorHandler(helper));
+            
+            //catch, throw
             ConnectHandler(new ThrowHandler(helper));
+            ConnectHandler(new CatchFilterHandler(helper));
+            
+            //enter/return
+            ConnectHandler(new EnterHandler(helper));
             ConnectHandler(new ReturnHandler(helper));
         }
     }

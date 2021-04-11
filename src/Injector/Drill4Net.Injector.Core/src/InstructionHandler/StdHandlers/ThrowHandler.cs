@@ -45,6 +45,8 @@ namespace Drill4Net.Injector.Core
             processor.InsertBefore(instr, throwInst);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
+            
+            needBreak = true;
         }
 
         protected virtual string GetProbeData(InjectorContext ctx)

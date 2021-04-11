@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Drill4Net.Profiling.Tree;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -44,7 +43,7 @@ namespace Drill4Net.Injector.Core
         #region Handle concrete instruction
         public void HandleInstruction(InjectorContext ctx)
         {
-            bool needBreak = false;
+            var needBreak = false;
             try
             {
                 HandleInstructionConcrete(ctx, out needBreak);
@@ -59,17 +58,6 @@ namespace Drill4Net.Injector.Core
         protected abstract void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak);
         #endregion
         #endregion
-        // #region GetProbeData
-        // protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType)
-        // {
-        //     return GetProbeData(ctx, pointType, ctx.CurIndex);
-        // }
-        //
-        // protected virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType, int byIndex)
-        // {
-        //     return _probeHelper.GetProbeData(ctx, pointType, byIndex);
-        // }
-        // #endregion
 
         internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
             bool isAsyncStateMachine)
@@ -125,21 +113,17 @@ namespace Drill4Net.Injector.Core
             return op.Operand != next; //how far do it jump?
         }
 
-        internal protected void FixFinallyEnd(Instruction cur, Instruction on, Mono.Collections.Generic.Collection<ExceptionHandler> handlers)
+        internal void FixFinallyEnd(Instruction cur, Instruction on, IEnumerable<ExceptionHandler> handlers)
         {
-            var prev = cur.Previous;
-            var prevCode = prev.OpCode.Code;
-            if (prevCode == Code.Endfinally)
+            if (cur.Previous.OpCode.Code != Code.Endfinally) 
+                return;
+            foreach (var exc in handlers.Where(exc => exc.HandlerEnd == cur))
             {
-                foreach (var exc in handlers)
-                {
-                    if (exc.HandlerEnd == cur)
-                        exc.HandlerEnd = on;
-                }
+                exc.HandlerEnd = on;
             }
         }
 
-        internal protected Instruction SkipNop(int ind, bool forward, Mono.Collections.Generic.Collection<Instruction> instructions)
+        internal Instruction SkipNop(int ind, bool forward, Mono.Collections.Generic.Collection<Instruction> instructions)
         {
             int start, inc;
             if (forward)
@@ -165,7 +149,7 @@ namespace Drill4Net.Injector.Core
             return Instruction.Create(OpCodes.Nop);
         }
 
-        internal protected void ReplaceJump(Instruction from, Instruction to, HashSet<Instruction> jumpers)
+        internal void ReplaceJump(Instruction from, Instruction to, HashSet<Instruction> jumpers)
         {
             //direct jumps
             foreach (var curOp in jumpers.Where(j => j.Operand == from))
@@ -183,7 +167,7 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        internal protected bool IsCompilerGeneratedBranch(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
+        internal bool IsCompilerGeneratedBranch(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
             HashSet<Instruction> compilerInstructions)
         {
             //TODO: optimize (caching 'normal instruction')
@@ -232,7 +216,7 @@ namespace Drill4Net.Injector.Core
             return false;
         }
 
-        internal protected bool IsNextReturn(int ind, Mono.Collections.Generic.Collection<Instruction> instructions, Instruction lastOp)
+        internal bool IsNextReturn(int ind, Mono.Collections.Generic.Collection<Instruction> instructions, Instruction lastOp)
         {
             var ins = instructions[ind];
             if (ins.Operand is not Instruction op)
@@ -245,6 +229,11 @@ namespace Drill4Net.Injector.Core
         protected Instruction GetFirstInstruction(string probeData)
         {
             return Instruction.Create(OpCodes.Ldstr, probeData);
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

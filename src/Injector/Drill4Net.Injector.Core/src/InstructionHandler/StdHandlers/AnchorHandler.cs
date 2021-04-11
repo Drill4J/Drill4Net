@@ -2,12 +2,12 @@
 using Drill4Net.Injector.Core;
 using Mono.Cecil.Cil;
 
-namespace Drill4Net.Injector.Strategies.Block
+namespace Drill4Net.Injector.Core
 {
-    public class BlockHandler : AbstractInstructionHandler
+    public class AnchorHandler : AbstractInstructionHandler
     {
-        public BlockHandler(AbstractProbeHelper probeHelper) : 
-            base(BlockConstants.INSTRUCTION_HANDLER_BLOCK, probeHelper)
+        public AnchorHandler(AbstractProbeHelper probeHelper) : 
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_ANCHOR, probeHelper)
         {
         }
 
@@ -45,11 +45,8 @@ namespace Drill4Net.Injector.Strategies.Block
             {
             }
 
-            if (   flow == FlowControl.Throw
-                || flow == FlowControl.Return
-                || flow == FlowControl.Branch
-                || flow == FlowControl.Cond_Branch
-                || flow == FlowControl.Break)
+            if (flow is FlowControl.Branch or FlowControl.Cond_Branch or 
+                FlowControl.Throw or FlowControl.Return or FlowControl.Break)
             {
                 
             }

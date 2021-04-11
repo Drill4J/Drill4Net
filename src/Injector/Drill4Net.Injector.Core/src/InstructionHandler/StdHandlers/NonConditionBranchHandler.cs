@@ -69,6 +69,8 @@ namespace Drill4Net.Injector.Core
                 processor.InsertBefore(oldJumpTarget, firstProbeInst);
                 processor.InsertBefore(oldJumpTarget, call);
                 ctx.IncrementIndex(2);
+                
+                needBreak = true;
             }
             catch (Exception exx)
             {

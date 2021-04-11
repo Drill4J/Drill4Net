@@ -64,6 +64,8 @@ namespace Drill4Net.Injector.Core
             processor.InsertBefore(instr, _returnInst);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
+            
+            needBreak = true;
                 
             //correcting pointId
             var point = ctx.TreeMethod.Filter(typeof(CrossPoint), false)
