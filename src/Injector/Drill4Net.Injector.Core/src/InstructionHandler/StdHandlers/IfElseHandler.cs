@@ -73,12 +73,14 @@ namespace Drill4Net.Injector.Core
             }
             #endregion
             #region 'Switch when()', etc
+            #region Checks
             var prev = operand?.Previous;
             if (prev == null || processed.Contains(prev))
                 return;
             var prevCode = prev.OpCode.Code;
             if (prevCode != Code.Br && prevCode != Code.Br_S)
                 return;
+            #endregion
 
             //need insert paired call
             crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;

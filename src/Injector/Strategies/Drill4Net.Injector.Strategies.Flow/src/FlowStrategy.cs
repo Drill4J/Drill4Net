@@ -13,9 +13,6 @@ namespace Drill4Net.Injector.Strategies.Flow
             ConnectHandler(new CycleHandler(helper));
             ConnectHandler(new NonConditionBranchHandler(helper));
             
-            //jump targets
-            ConnectHandler(new AnchorHandler(helper));
-            
             //catch, throw
             ConnectHandler(new ThrowHandler(helper));
             ConnectHandler(new CatchFilterHandler(helper));
@@ -23,6 +20,9 @@ namespace Drill4Net.Injector.Strategies.Flow
             //enter/return
             ConnectHandler(new EnterHandler(helper));
             ConnectHandler(new ReturnHandler(helper));
+            
+            //jump targets
+            ConnectHandler(new AnchorHandler(helper));
         }
     }
 }

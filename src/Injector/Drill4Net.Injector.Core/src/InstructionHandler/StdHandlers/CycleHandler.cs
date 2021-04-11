@@ -73,7 +73,7 @@ namespace Drill4Net.Injector.Core
                 var crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
                 probData = _probeHelper.GetProbeData(ctx, crossType);
                 var ldstrIf = GetFirstInstruction(probData);
-
+                
                 var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                 processor.InsertAfter(instr, call1);
                 processor.InsertAfter(instr, ldstrIf);

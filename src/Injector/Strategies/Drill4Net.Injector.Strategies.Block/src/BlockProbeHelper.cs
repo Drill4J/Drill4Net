@@ -8,7 +8,7 @@ namespace Drill4Net.Injector.Strategies.Block
         #region GetProbeData
         public override string GetProbeData(InjectorContext ctx)
         {
-            return GetProbeData(ctx, CrossPointType.Block, ctx.CurIndex);
+            return GetProbeData(ctx, CrossPointType.Anchor, ctx.CurIndex);
         }
         
         public override string GetProbeData(InjectorContext ctx, CrossPointType pointType)
@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Strategies.Block
 
         public override string GetProbeData(InjectorContext ctx, CrossPointType pointType, int byIndex)
         {
-            var point = CreateCrossPoint(ctx, CrossPointType.Block, byIndex); //yet only one Block type 
+            var point = CreateCrossPoint(ctx, CrossPointType.Anchor, byIndex); //yet only one Block type 
             return GenerateProbeData(ctx, point);
         }
         #endregion

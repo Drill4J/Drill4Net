@@ -23,6 +23,11 @@ namespace Drill4Net.Injector.Core
         public bool IsStrictEnterReturn { get; set; }
 
         public HashSet<Instruction> Jumpers { get; }
+        
+        /// <summary>
+        /// Set of an anchor (target of jumpers, it's Operand)
+        /// </summary>
+        public HashSet<object> Anchors { get; }
         public HashSet<Instruction> CompilerInstructions { get; }
         public HashSet<Instruction> Processed { get; }
 
@@ -44,6 +49,7 @@ namespace Drill4Net.Injector.Core
             //Injections = new List<Instruction>();
             CompilerInstructions = new HashSet<Instruction>();
             Jumpers = new HashSet<Instruction>();
+            Anchors = new HashSet<object> ();
             IfStack = new Stack<Instruction>();
         }
 

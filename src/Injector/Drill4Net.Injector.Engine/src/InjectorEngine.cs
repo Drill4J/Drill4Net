@@ -338,7 +338,7 @@ namespace Drill4Net.Injector.Engine
                             methodName.Contains("|") || //local func                                                        
                             isAsyncStateMachine || //async/await
                             isCompilerGenerated ||
-                            //Finalyze() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
+                            //Finalize() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
                             (_isNetCore.Value == true && methodSource.IsFinalizer)
                         );
 
@@ -359,16 +359,22 @@ namespace Drill4Net.Injector.Engine
                         ExceptionHandlers = body.ExceptionHandlers,
                     };
                     #endregion
-                    #region Jumps
-                    //collect jumps. Hash table for separate addresses is almost useless,
+                    #region Jumpers
+                    //collect jumpers. Hash table for separate addresses is almost useless,
                     //because they may be recalculated inside the processor during inject...
                     //and ideally, there shouldn't be too many of them 
                     for (var i = 1; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
                         var flow = instr.OpCode.FlowControl;
-                        if (flow == FlowControl.Branch || flow == FlowControl.Cond_Branch)
-                            ctx.Jumpers.Add(instr);
+                        if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch)) 
+                            continue;
+                        ctx.Jumpers.Add(instr);
+                        //
+                        var anchor = instr.Operand;
+                        //pseudo-jump?
+                        if(instr.Next != anchor && !ctx.Anchors.Contains(anchor)) 
+                            ctx.Anchors.Add(anchor);
                     }
                     #endregion
                     #region Injections     
@@ -462,7 +468,8 @@ namespace Drill4Net.Injector.Engine
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
         }
-        internal protected OpCode ConvertShortJumpToLong(OpCode opCode)
+        
+        internal OpCode ConvertShortJumpToLong(OpCode opCode)
         {
             //TODO: to a dictionary
             return opCode.Code switch
@@ -608,52 +615,50 @@ namespace Drill4Net.Injector.Engine
             bool isAsyncStateMachine)
         {
             //TODO: regex!!!
+            if (!isCompilerGenerated && !isAsyncStateMachine) 
+                return null;
             string realMethodName = null;
-            if (isCompilerGenerated || isAsyncStateMachine)
+            try
             {
-                try
+                if (methodName.Contains("|")) //local funcs
                 {
-                    if (methodName.Contains("|")) //local funcs
+                    var a1 = methodName.Split('>')[0];
+                    return a1.Substring(1, a1.Length - 1);
+                }
+                else
+                {
+                    var isMoveNext = methodName == "MoveNext";
+                    var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
+                    if (isMoveNext || !fromMethodName && typeName.Contains("/"))
                     {
-                        var a1 = methodName.Split('>')[0];
-                        return a1.Substring(1, a1.Length - 1);
+                        var ar = typeName.Split('/');
+                        var el = ar[ar.Length - 1];
+                        realMethodName = el.Split('>')[0].Replace("<", null);
                     }
-                    else
+                    else if (fromMethodName)
                     {
-                        var isMoveNext = methodName == "MoveNext";
-                        var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
-                        if (isMoveNext || !fromMethodName && typeName.Contains("/"))
+                        var tmp = methodName.Replace("<>", null);
+                        if (tmp.Contains("<"))
                         {
-                            var ar = typeName.Split('/');
-                            var el = ar[ar.Length - 1];
-                            realMethodName = el.Split('>')[0].Replace("<", null);
-                        }
-                        else if (fromMethodName)
-                        {
-                            var tmp = methodName.Replace("<>", null);
-                            if (tmp.Contains("<"))
-                            {
-                                var ar = tmp.Split(' ');
-                                realMethodName = ar[ar.Length - 1].Split('<')[1].Split('>')[0];
-                            }
+                            var ar = tmp.Split(' ');
+                            realMethodName = ar[ar.Length - 1].Split('<')[1].Split('>')[0];
                         }
                     }
                 }
-                catch(Exception ex)
-                {
-                    Log.Error(ex,nameof(TryGetBusinessMethod));
-                }
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex,nameof(TryGetBusinessMethod));
             }
             return realMethodName;
         }
 
         internal string TryGetRealTypeName(TypeDefinition type)
         {
-            if (type?.DeclaringType != null)
-            {
-                do type = type.DeclaringType;
-                    while (type.DeclaringType != null && (type.Name.Contains("c__DisplayClass") || type.Name.Contains("<>")));
-            }
+            if (type?.DeclaringType == null) 
+                return type?.FullName;
+            do type = type.DeclaringType;
+                while (type.DeclaringType != null && (type.Name.Contains("c__DisplayClass") || type.Name.Contains("<>")));
             return type?.FullName;
         }
 
@@ -662,7 +667,7 @@ namespace Drill4Net.Injector.Engine
             string methodFullName = def.FullName;
             var type = def.DeclaringType;
             var declAttrs = type.CustomAttributes;
-            var compGenAttrName = typeof(CompilerGeneratedAttribute).Name;
+            var compGenAttrName = nameof(CompilerGeneratedAttribute);
             var isCompilerGeneratedType = def.Name.StartsWith("<") || 
                 declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; 
             //                                                                                                          
@@ -689,10 +694,10 @@ namespace Drill4Net.Injector.Engine
 
         internal bool IsSpecialGeneratedMethod(MethodType type)
         {
-            return type == MethodType.EventAdd || type == MethodType.EventRemove;
+            return type is MethodType.EventAdd or MethodType.EventRemove;
         }
 
-        internal List<MethodDefinition> GetAllMethods(InjectedType treeParentClass, TypeDefinition type, 
+        internal IEnumerable<MethodDefinition> GetAllMethods(InjectedType treeParentClass, TypeDefinition type, 
             MainOptions opts)
         {
             var methods = new List<MethodDefinition>();

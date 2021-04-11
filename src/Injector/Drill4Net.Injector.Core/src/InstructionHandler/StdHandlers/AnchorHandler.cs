@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Drill4Net.Injector.Core;
+using Drill4Net.Profiling.Tree;
 using Mono.Cecil.Cil;
 
 namespace Drill4Net.Injector.Core
@@ -17,39 +19,54 @@ namespace Drill4Net.Injector.Core
         {
             #region Init
             needBreak = false;
-            var moduleName = ctx.ModuleName;
+            
             var treeType = ctx.TreeType;
-            var treeFunc = ctx.TreeMethod;
-
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
             var instr = instructions[ctx.CurIndex];
             var opCode = instr.OpCode;
-            var code = opCode.Code;
             var flow = opCode.FlowControl;
-
+            
             var typeSource = treeType.SourceType;
-            var methodSource = treeFunc.SourceType;
-
             var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
-            var isEnumeratorMoveNext = methodSource.IsEnumeratorMoveNext;
-
             var compilerInstructions = ctx.CompilerInstructions;
-            var processed = ctx.Processed;
             var jumpers = ctx.Jumpers;
+            var anchors = ctx.Anchors;
 
+            var exceptionHandlers = ctx.ExceptionHandlers;
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             #endregion
+            #region Checks
+            if (flow != FlowControl.Next && flow != FlowControl.Call)
+                return;
+            var prevCode = instr.Previous.OpCode.Code;
+            if(prevCode is Code.Leave or Code.Leave_S)
+                return;
+            if(compilerInstructions.Contains(instr))
+                return;
+            if (!anchors.Contains(instr))
+                return;
+            #endregion
 
-            if (flow == FlowControl.Next)
-            {
-            }
-
-            if (flow is FlowControl.Branch or FlowControl.Cond_Branch or 
-                FlowControl.Throw or FlowControl.Return or FlowControl.Break)
-            {
-                
-            }
+            //data
+            var probData = GetProbeData(ctx);
+            var ldstr = GetFirstInstruction(probData);
+            
+            ReplaceJump(instr, ldstr, jumpers);
+            FixFinallyEnd(instr, ldstr, exceptionHandlers);
+            ReplaceJump(instr, ldstr, jumpers);
+            
+            processor.InsertBefore(instr, ldstr);
+            processor.InsertBefore(instr, call);
+            ctx.IncrementIndex(2);
+            
+            needBreak = true;
         }
+        
+        protected virtual string GetProbeData(InjectorContext ctx)
+        {
+            return _probeHelper.GetProbeData(ctx, CrossPointType.Anchor, ctx.CurIndex);
+        }
+        
     }
 }
