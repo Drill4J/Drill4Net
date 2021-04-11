@@ -16,7 +16,6 @@ namespace Drill4Net.Agent.Testing
     public class TestingProfiler : AbstractAgent
     {
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
-        private static readonly InjectedSolution _tree;
         private static readonly Dictionary<string, InjectedSimpleEntity> _pointMap;
         private static readonly Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
 
@@ -39,9 +38,9 @@ namespace Drill4Net.Agent.Testing
                 //tree info
                 var targetDir = opts.Destination.Directory;
                 var treePath = rep.GenerateTreeFilePath(targetDir);
-                _tree = rep.ReadInjectedTree(treePath);
-                _parentMap = _tree.CalcParentMap();
-                _pointMap = _tree.CalcPointMap(_parentMap);
+                var tree = rep.ReadInjectedTree(treePath);
+                _parentMap = tree.CalcParentMap();
+                _pointMap = tree.CalcPointMap(_parentMap);
 
                 Log.Debug("Initialized.");
             }
@@ -75,7 +74,7 @@ namespace Drill4Net.Agent.Testing
 
                 var probeUid = ar[0];
                 var asmName = ar[1];
-                var funcName = ar[2];
+                //var funcName = ar[2];
                 var probe = ar[3];
 
                 var businessMethod = GetBusinessMethodName(probeUid);
@@ -155,6 +154,8 @@ namespace Drill4Net.Agent.Testing
 
         internal static string GetBusinessMethodName(string probeUid)
         {
+            if (_pointMap == null)
+                return null;
             if (!_pointMap.ContainsKey(probeUid))
                 return null;
             if (_pointMap[probeUid] is not CrossPoint point)

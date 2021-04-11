@@ -338,7 +338,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string>()), new TestInfo(GetInfo(_vbTarget.Try_Finally_VB), new List<string> { "If_16" })); //.Ignore("Will work after pass of the CallAnotherTarget test");
                 #endregion
                 #region Misc
-                yield return GetCase(Array.Empty<object>(), false, new TestInfo(GetInfo(Target.CallAnotherTarget), new List<string>()), new TestInfo(GetInfo(_anotherTarget.WhoAreU), new List<string>()));
+                yield return GetCase(Array.Empty<object>(), false, new TestInfo(GetInfo(Target.CallAnotherTarget), new List<string>()), new TestInfo(GetInfo(_anotherTarget.WhoAreU), new List<string>())).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Yield), new List<string>()), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Yield), new List<string>()), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "If_49" })).SetCategory(CATEGORY_MISC);

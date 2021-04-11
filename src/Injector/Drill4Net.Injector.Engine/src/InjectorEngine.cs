@@ -379,7 +379,32 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                     #region Injections     
                     _strategy.StartMethod(ctx);
-                    var startInd = skipStart ? 12 : 1;
+                    
+                    //define start index
+                    var startInd = 1;
+                    if (skipStart)
+                    {
+                        if (isAsyncStateMachine && body.ExceptionHandlers.Any())
+                        {
+                            var minOffset = body.ExceptionHandlers.Min(a => a.TryStart.Offset);
+                            var asyncInstr = body.ExceptionHandlers
+                                .First(a => a.TryStart.Offset == minOffset).TryStart;
+                            for (var i = 0; i < 3 && asyncInstr.Next != null; i++)
+                                asyncInstr = asyncInstr.Next;
+                            while (true)
+                            {
+                                if (asyncInstr.OpCode.FlowControl == FlowControl.Next || asyncInstr.Next == null)
+                                    break;
+                                asyncInstr = asyncInstr.Next;
+                            }
+                            startInd = instructions.IndexOf(asyncInstr) + 1;
+                        }
+                        else
+                        {
+                            startInd = 12;
+                        }
+                    }
+                    //
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         var instr = instructions[i];
