@@ -171,7 +171,7 @@ namespace Drill4Net.Injector.Engine
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
 
             //filter
-            if (!_typeChecker.CheckByPath(filePath))
+            if (!_typeChecker.CheckByAssemblyPath(filePath))
                 return;
 
             //source
@@ -591,7 +591,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Handle od instruction: {ctx.ModuleName}; {ctx.MethodFullName}; index: {ctx.CurIndex}");
+                Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.MethodFullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
             }
         }
 

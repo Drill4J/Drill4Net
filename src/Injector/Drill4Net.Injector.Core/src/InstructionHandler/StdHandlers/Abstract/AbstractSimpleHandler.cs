@@ -49,7 +49,7 @@ namespace Drill4Net.Injector.Core
         
         protected virtual string GetProbeData(InjectorContext ctx)
         {
-            return _probeHelper.GetProbeData(ctx, PointType, ctx.CurIndex);
+            return _probeHelper.GetProbeData(ctx, PointType);
         }
 
         protected virtual void PostAction(InjectorContext ctx) {}

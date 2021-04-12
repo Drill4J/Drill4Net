@@ -18,7 +18,7 @@ using Drill4Net.Target.Common.VB;
 
                                              /*                                             *
                                               *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
-                                              *   It's needed as it is !!!                  *
+                                              *   It's needed AS it IS !!!                  *
                                               *                                             */
 
 namespace Drill4Net.Target.Common
@@ -51,6 +51,10 @@ namespace Drill4Net.Target.Common
     [SuppressMessage("ReSharper", "TooWideLocalVariableScope")]
     [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
     [SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
+    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
+    [SuppressMessage("ReSharper", "InvertIf")]
+    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
+
     #endregion
     public class InjectTarget
     {

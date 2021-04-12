@@ -29,8 +29,7 @@
 
         public virtual void HandleInstruction(InjectorContext ctx)
         {
-            if (_starter != null)
-                _starter.HandleInstruction(ctx);
+            _starter?.HandleInstruction(ctx);
         }
     }
 }

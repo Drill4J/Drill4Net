@@ -8,12 +8,12 @@ namespace Drill4Net.Injector.Core
         #region GetProbeData
         public virtual string GetProbeData(InjectorContext ctx)
         {
-            return GetProbeData(ctx, CrossPointType.Unset, ctx.CurIndex);
+            return GetProbeData(ctx, CrossPointType.Unset, ctx.SourceIndex);
         }
         
         public virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType)
         {
-            return GetProbeData(ctx, pointType, ctx.CurIndex);
+            return GetProbeData(ctx, pointType, ctx.SourceIndex);
         }
 
         public virtual string GetProbeData(InjectorContext ctx, CrossPointType pointType, int byIndex)

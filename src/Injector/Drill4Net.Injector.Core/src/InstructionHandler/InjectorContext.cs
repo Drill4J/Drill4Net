@@ -26,7 +26,7 @@ namespace Drill4Net.Injector.Core
         public HashSet<Instruction> Jumpers { get; }
         
         /// <summary>
-        /// Set of an anchor (target of jumpers, it's Operand)
+        /// Set of an anchors (targets of <see cref="Jumpers"/>, in fact, their Operands)
         /// </summary>
         public HashSet<object> Anchors { get; }
         public HashSet<Instruction> CompilerInstructions { get; }
@@ -34,7 +34,16 @@ namespace Drill4Net.Injector.Core
 
         public MethodReference ProxyMethRef { get; set; }
 
+        /// <summary>
+        /// Real current instruction index for <see cref="Instructions"/>,
+        /// taking into account the performed injections
+        /// </summary>
         public int CurIndex { get; private set; }
+        
+        /// <summary>
+        /// Current instruction index from source IL code
+        /// </summary>
+        public int SourceIndex { get; private set; }
 
         /***********************************************************************************************/
 
@@ -47,7 +56,6 @@ namespace Drill4Net.Injector.Core
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
             //
             Processed = new HashSet<Instruction>();
-            //Injections = new List<Instruction>();
             CompilerInstructions = new HashSet<Instruction>();
             Jumpers = new HashSet<Instruction>();
             Anchors = new HashSet<object> ();
@@ -56,13 +64,24 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************************/
 
+        /// <summary>
+        /// Set value for both indexes <see cref="SourceIndex"/> and <see cref="CurIndex"/>
+        /// </summary>
+        /// <param name="index">Value of indexes</param>
+        /// <exception cref="ArgumentException"></exception>
         public void SetIndex(int index)
         {
             if (index < 0)
                 throw new ArgumentException("Index must greater zero");
             CurIndex = index;
+            SourceIndex = index;
         }
 
+        /// <summary>
+        /// Increments <see cref="CurIndex"/> - due the injection
+        /// </summary>
+        /// <param name="inc">Increment for changing the <see cref="CurIndex"/></param>
+        /// <returns></returns>
         public int IncrementIndex(int inc = 1)
         {
             CurIndex += inc;

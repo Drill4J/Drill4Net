@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.Core
         
         /***********************************************************************/
 
-        public bool CheckByPath(string filePath)
+        public bool CheckByAssemblyPath(string filePath)
         {
             var ns1 = Path.GetFileNameWithoutExtension(filePath).Split('.')[0];
             return !_restrictNamespaces.Contains(ns1);

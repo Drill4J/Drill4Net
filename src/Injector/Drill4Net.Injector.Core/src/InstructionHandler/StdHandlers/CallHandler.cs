@@ -15,7 +15,7 @@ namespace Drill4Net.Injector.Core
         public CallHandler(AbstractProbeHelper probeHelper): 
             base(C.INSTRUCTION_HANDLER_CALL, CrossPointType.Call, probeHelper)
         {
-            _typeChecker = new();
+            _typeChecker = new TypeChecker();
         }
         
         /*****************************************************************************/
@@ -25,8 +25,8 @@ namespace Drill4Net.Injector.Core
             try
             {
                 var instr = ctx.Instructions[ctx.CurIndex];
-                //1. Callvirt not needed - it's for internal compiler generated member's calls
-                //2. Local func's calls are needed
+                //1. Code.Callvirt isn't needed - it's for internal compiler generated member's calls
+                //2. Local function's calls are needed
                 if (instr.OpCode.Code is not Code.Call and not Code.Calli)
                     return false;
                 var operand = (MethodReference) instr.Operand;

@@ -10,8 +10,8 @@ namespace Drill4Net.Injector.Strategies.Flow
             
             //branches
             ConnectHandler(new IfElseHandler(helper));
-            ConnectHandler(new CycleHandler(helper));
             ConnectHandler(new NonConditionBranchHandler(helper));
+            ConnectHandler(new CycleHandler(helper));
             
             //catch, throw
             ConnectHandler(new ThrowHandler(helper));
