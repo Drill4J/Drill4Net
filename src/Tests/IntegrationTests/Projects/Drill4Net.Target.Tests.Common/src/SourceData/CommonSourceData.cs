@@ -159,6 +159,9 @@ namespace Drill4Net.Target.Tests.Common
 
                 yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });
                 yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { true }, new List<string> { "If_9", "If_9", "If_9" });
+                
+                yield return GetCase(GetInfo(Target.Linq_Fluent_Double), new object[] { false }, new List<string> { "Else_2", "Else_2", "Else_2" });
+                yield return GetCase(GetInfo(Target.Linq_Fluent_Double), new object[] { true }, new List<string> { "If_9", "If_9", "If_9" });
                 #endregion
                 #region Lambda
                 yield return GetCase(GetInfo(Target.Lambda), new object[] { 5 }, new List<string> { "If_9" });
@@ -186,6 +189,9 @@ namespace Drill4Net.Target.Tests.Common
 
                 yield return GetCase(GetInfo(Target.Try_Finally), new object[] { false }, new List<string> { "Else_12" });
                 yield return GetCase(GetInfo(Target.Try_Finally), new object[] { true }, new List<string> { "If_17" });
+                
+                yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { false }, new List<string> { "Throw_7", "Else_13" });
+                yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { true }, new List<string> { "Throw_7", "If_18" });
                 #endregion
                 #region Dynamic
                 yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { false }, new List<string> { "Else_2" }).SetCategory(CATEGORY_DYNAMIC);

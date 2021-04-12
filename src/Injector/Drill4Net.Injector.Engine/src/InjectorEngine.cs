@@ -33,11 +33,11 @@ namespace Drill4Net.Injector.Engine
         private readonly IInjectorRepository _rep;
         private readonly ThreadLocal<bool?> _isNetCore;
         private readonly ThreadLocal<AssemblyVersion> _mainVersion;
-        private readonly HashSet<string> _restrictNamespaces;
         private Dictionary<string, InjectedType> _injClasses;
         private Dictionary<string, InjectedMethod> _injMethods;
         private Dictionary<string, InjectedMethod> _injMethodByClasses;
         private readonly InstructionHandlerStrategy _strategy;
+        private readonly TypeChecker _typeChecker;
 
         /***************************************************************************************/
 
@@ -46,10 +46,10 @@ namespace Drill4Net.Injector.Engine
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _isNetCore = new ThreadLocal<bool?>();
             _mainVersion = new ThreadLocal<AssemblyVersion>();
-            _restrictNamespaces = GetRestrictNamespaces();
+            _typeChecker = new();
 
-            var flowStrategy = new FlowStrategy();
-            var blockStrategy = new BlockStrategy();
+            FlowStrategy flowStrategy = new();
+            BlockStrategy blockStrategy = new();
             _strategy = flowStrategy;
         }
 
@@ -171,8 +171,7 @@ namespace Drill4Net.Injector.Engine
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
 
             //filter
-            var ns1 = Path.GetFileNameWithoutExtension(filePath).Split('.')[0];
-            if (_restrictNamespaces.Contains(ns1))
+            if (!_typeChecker.CheckByPath(filePath))
                 return;
 
             //source
@@ -286,9 +285,7 @@ namespace Drill4Net.Injector.Engine
                 //TODO: normal defining of business types (by cfg?)
                 //var nameSpace = typeDef.Namespace;
                 var typeFullName = typeDef.FullName;
-                var tAr = typeFullName.Split('.');
-                ns1 = tAr[0];
-                if (_restrictNamespaces.Contains(ns1)) //Guanito
+                if (!_typeChecker.CheckByTypeName(typeFullName))
                     continue;
 
                 #region Tree
@@ -351,6 +348,7 @@ namespace Drill4Net.Injector.Engine
                     #region Context
                     var ctx = new InjectorContext(moduleName, methodFullName, instructions, processor)
                     {
+                        ProxyNamespace = proxyNamespace,
                         TreeType = treeType,
                         TreeMethod = treeFunc,
                         IsStrictEnterReturn = strictEnterReturn,
@@ -857,19 +855,6 @@ namespace Drill4Net.Injector.Engine
             foreach (var p in instructions)
                 s += p.ToString();
             return s.GetHashCode().ToString();
-        }
-
-        private HashSet<string> GetRestrictNamespaces()
-        {
-            var hash = new HashSet<string>
-            {
-                "Microsoft",
-                "Windows",
-                "System",
-                "FSharp"
-                //...
-            };
-            return hash;
         }
 
         #region Tree

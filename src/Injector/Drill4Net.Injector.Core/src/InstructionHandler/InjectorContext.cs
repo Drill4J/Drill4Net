@@ -9,6 +9,7 @@ namespace Drill4Net.Injector.Core
 {
     public record InjectorContext
     {
+        public string ProxyNamespace { get; set; }
         public string ModuleName { get; }
         public string MethodFullName { get; }
         public InjectedMethod TreeMethod { get; set; }

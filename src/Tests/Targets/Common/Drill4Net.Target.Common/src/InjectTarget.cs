@@ -16,8 +16,42 @@ using Drill4Net.Target.Common.VB;
 //add this in project's csproj file: 
 //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
+                                             /*                                             *
+                                              *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
+                                              *   It's needed as it is !!!                  *
+                                              *                                             */
+
 namespace Drill4Net.Target.Common
 {
+    #region SuppressMessages
+    [SuppressMessage("ReSharper", "VariableHidesOuterVariable")]
+    [SuppressMessage("ReSharper", "RedundantAssignment")]
+    [SuppressMessage("ReSharper", "EmptyGeneralCatchClause")]
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+    [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
+    [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
+    [SuppressMessage("ReSharper", "UnusedVariable")]
+    [SuppressMessage("ReSharper", "HeapView.ObjectAllocation.Evident")]
+    [SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
+    [SuppressMessage("ReSharper", "ConstantNullCoalescingCondition")]
+    [SuppressMessage("ReSharper", "PatternAlwaysMatches")]
+    [SuppressMessage("ReSharper", "NotAccessedVariable")]
+    [SuppressMessage("ReSharper", "MergeIntoLogicalPattern")]
+    [SuppressMessage("ReSharper", "UnreachableSwitchCaseDueToIntegerAnalysis")]
+    [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
+    [SuppressMessage("ReSharper", "RedundantExplicitArrayCreation")]
+    [SuppressMessage("ReSharper", "ConvertToLocalFunction")]
+    [SuppressMessage("ReSharper", "ConvertToLambdaExpression")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    [SuppressMessage("ReSharper", "UseCancellationTokenForIAsyncEnumerable")]
+    [SuppressMessage("ReSharper", "MethodSupportsCancellation")]
+    [SuppressMessage("ReSharper", "ConvertToUsingDeclaration")]
+    [SuppressMessage("ReSharper", "TooWideLocalVariableScope")]
+    [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
+    [SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Global")]
+    #endregion
     public class InjectTarget
     {
         public async Task RunTests()
@@ -136,6 +170,9 @@ namespace Drill4Net.Target.Common
 
             Linq_Fluent(false);
             Linq_Fluent(true);
+
+            Linq_Fluent_Double(false);
+            Linq_Fluent_Double(true);
             #endregion
             #region Lambda
             Lambda(5);
@@ -188,6 +225,9 @@ namespace Drill4Net.Target.Common
             Try_CatchWhen(false, true);
             Try_CatchWhen(true, false);
             Try_CatchWhen(true, true);
+
+            Try_WithCondition(false);
+            Try_WithCondition(true);
 
             Try_Finally(false);
             Try_Finally(true);
@@ -492,14 +532,14 @@ namespace Drill4Net.Target.Common
         public void Elvis_NotNull()
         {
             var obj = new GenStr("aaa");
-            var prop = obj?.Prop;
+            var prop = obj?.Prop; //need Elvis !
             Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
         }
 
         public void Elvis_Null()
         {
             GenStr obj = null;
-            var prop = obj?.Prop;
+            var prop = obj?.Prop; //need Elvis !
             Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
         }
 
@@ -726,7 +766,7 @@ namespace Drill4Net.Target.Common
 
         public void Cycle_Do()
         {
-            int i = 3;
+            var i = 3;
             Console.WriteLine($"{nameof(Cycle_Do)} -> {i}");
             do { i--; } while (i > 0);
         }
@@ -734,30 +774,39 @@ namespace Drill4Net.Target.Common
         #region Linq
         public void Linq_Query(bool all)
         {
-            var customers = new List<string> { "Paris", "London", "Moscow" };
-            var res = from c in customers where all || c == "London" select c;
+            var cities = new List<string> { "Paris", "London", "Moscow" };
+            var res = from c in cities where all || c == "London" select c;
             Console.WriteLine($"{nameof(Linq_Query)}: {string.Join(",", res)}");
         }
 
         public void Linq_Fluent(bool all)
         {
-            var customers = new List<string> { "Paris", "London", "Moscow" };
-            var res = customers.Where(c => all ? c != null : c == "London");
+            var cities = new List<string> { "Paris", "London", "Moscow" };
+            var res = cities.Where(c => all ? c != null : c == "London");
             Console.WriteLine($"{nameof(Linq_Fluent)}: {string.Join(",", res)}");
+        }
+        
+        public void Linq_Fluent_Double(bool all)
+        {
+            var cities = new List<string> { "Paris", "London", "Moscow" };
+            var res = cities.Where(c => all ? c != null : c == "London");
+            var customers = new List<string> { "Microsoft", "IBM", "Google" };
+            var res2 = customers.Where(a => a.StartsWith("G", StringComparison.CurrentCultureIgnoreCase));
+            Console.WriteLine($"{nameof(Linq_Fluent)}: {string.Join(",", res)} -> {string.Join(",", res2)}");
         }
         #endregion
         #region Lambda
         public void Lambda(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
-            int d = square(x);
+            var d = square(x);
             Console.WriteLine($"{nameof(Lambda)}: {d}");
         }
 
         public void Lambda_AdditionalBranch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
-            int d = square(x);
+            var d = square(x);
             if (d > 100)
                 d /= 2;
             Console.WriteLine($"{nameof(Lambda_AdditionalBranch)}: {d}");
@@ -766,7 +815,7 @@ namespace Drill4Net.Target.Common
         public void Lambda_AdditionalSwitch(int x)
         {
             Func<int, int> square = x => x < 10 ? 0 : x * x;
-            int d = square(x);
+            var d = square(x);
             switch (d)
             {
                 case 100: d = 50; break;
@@ -865,6 +914,20 @@ namespace Drill4Net.Target.Common
             finally
             {
                 s = $"{(cond ? "YES" : "NO")}/{s}";
+            }
+            Console.WriteLine($"{nameof(Try_Finally)}: {s}");
+        }
+        
+        public void Try_WithCondition(bool cond)
+        {
+            string s = null;
+            try
+            {
+                s = cond ? "YES" : throw new Exception("Thrown exception");
+            }
+            catch(Exception ex)
+            {
+                s = ex.Message;
             }
             Console.WriteLine($"{nameof(Try_Finally)}: {s}");
         }
@@ -1100,7 +1163,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Disposable_Using_Last_Exception)}");
             using (var ms = new MemoryStream())
             {
-                throw new Exception($"The exception has been throwed");
+                throw new Exception($"The exception has been thrown");
             }
         }
 
@@ -1110,7 +1173,7 @@ namespace Drill4Net.Target.Common
             using (var ms = new MemoryStream())
             {
                 if (cond)
-                    throw new Exception($"The exception has been throwed");
+                    throw new Exception($"The exception has been thrown");
             }
         }
 
@@ -1273,7 +1336,6 @@ namespace Drill4Net.Target.Common
             s = "bbb";
             label:
             Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
-            return;
         }
 
         public void Goto_Statement_Cycle_Forward(bool cond)
@@ -1289,7 +1351,6 @@ namespace Drill4Net.Target.Common
             }
             label:
             Console.WriteLine($"{nameof(Goto_Statement_Cycle_Forward)}: {cond} -> {s}");
-            return;
         }
         
         public void Goto_Statement_Cycle_Backward()
@@ -1305,7 +1366,6 @@ namespace Drill4Net.Target.Common
                 break;
             }
             Console.WriteLine($"{nameof(Goto_Statement_Cycle_Backward)}: -> {s}");
-            return;
         }
         #endregion
 
@@ -1334,7 +1394,7 @@ namespace Drill4Net.Target.Common
 
         public void LocalFunc(bool cond)
         {
-            //we dont't take into account local func as separate entity
+            //we don't take into account local func as separate entity
             Console.WriteLine($"{nameof(LocalFunc)}: {GetString(cond)}");
 
             string GetString(bool cond)

@@ -11,7 +11,7 @@
 
         /***********************************************************************************/
 
-        public void ConnectHandler(AbstractBaseHandler handler)
+        protected void ConnectHandler(AbstractBaseHandler handler)
         {
             if (_starter == null)
                 _starter = handler;
