@@ -6,15 +6,15 @@
 
         public string Description { get; set; }
 
-        private AbstractBaseHandler _starter;
+        private AbstractBaseHandler _first;
         private AbstractBaseHandler _last;
 
         /***********************************************************************************/
 
         protected void ConnectHandler(AbstractBaseHandler handler)
         {
-            if (_starter == null)
-                _starter = handler;
+            if (_first == null)
+                _first = handler;
             else
                 _last.Successor = handler;
             //
@@ -23,13 +23,13 @@
 
         public virtual void StartMethod(InjectorContext ctx)
         {
-            if (_starter != null)
-                _starter.StartMethod(ctx);
+            if (_first != null)
+                _first.StartMethod(ctx);
         }
 
         public virtual void HandleInstruction(InjectorContext ctx)
         {
-            _starter?.HandleInstruction(ctx);
+            _first?.HandleInstruction(ctx);
         }
     }
 }

@@ -1417,7 +1417,7 @@ namespace Drill4Net.Target.Common
         {
             System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
             var dlg = e.Compile();
-            int d = dlg(x);
+            var d = dlg(x);
             Console.WriteLine($"{nameof(Expression)}: {d}");
         }
 

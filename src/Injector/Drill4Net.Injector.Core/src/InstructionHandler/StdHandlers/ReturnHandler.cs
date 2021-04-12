@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Core
         {
             //data
             _initProbData = GetProbeData(ctx);
-            _returnInst = GetFirstInstruction(_initProbData); //as object it must be only one
+            _returnInst = GetFirstInstruction(ctx, _initProbData); //as object it must be only one
         }
 
         protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
@@ -63,7 +63,7 @@ namespace Drill4Net.Injector.Core
             
             //correction
             FixFinallyEnd(instr, _returnInst, exceptionHandlers);
-            ReplaceJumps(instr, _returnInst, jumpers);
+            ReplaceJumps(instr, _returnInst, ctx);
             
             //injection
             processor.InsertBefore(instr, _returnInst);

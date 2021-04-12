@@ -149,8 +149,11 @@ namespace Drill4Net.Injector.Core
             return Instruction.Create(OpCodes.Nop);
         }
 
-        internal void ReplaceJumps(Instruction from, Instruction to, HashSet<Instruction> jumpers)
+        internal void ReplaceJumps(Instruction from, Instruction to, InjectorContext ctx)
         {
+            ctx.ReplacedJumps.Add(to, from);
+            var jumpers = ctx.Jumpers;
+            
             //direct jumps
             foreach (var curOp in jumpers.Where(j => j.Operand == from))
                 curOp.Operand = to;
@@ -226,9 +229,11 @@ namespace Drill4Net.Injector.Core
             return op.OpCode.Name.StartsWith("ldloc") && (op.Next == lastOp || op.Next?.Next == lastOp);
         }
 
-        protected Instruction GetFirstInstruction(string probeData)
+        protected Instruction GetFirstInstruction(InjectorContext ctx, string probeData)
         {
-            return Instruction.Create(OpCodes.Ldstr, probeData);
+            var instr = Instruction.Create(OpCodes.Ldstr, probeData);
+            ctx.FirstInjectInstructions.Add(instr);
+            return instr;
         }
 
         public override string ToString()

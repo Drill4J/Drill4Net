@@ -20,7 +20,7 @@ namespace Drill4Net.Injector.Core
 
             //data
             var probData = GetProbeData(ctx);
-            var ldstrEntering = GetFirstInstruction(probData);
+            var ldstrEntering = GetFirstInstruction(ctx, probData);
 
             //injection
             var firstOp = ctx.Instructions[0];

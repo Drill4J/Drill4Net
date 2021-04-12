@@ -26,13 +26,13 @@ namespace Drill4Net.Injector.Core
             
             //data
             var probData = GetProbeData(ctx);
-            var ldstr = GetFirstInstruction(probData);
+            var ldstr = GetFirstInstruction(ctx, probData);
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             
             //correction
             var instr = ctx.Instructions[ctx.CurIndex];
             FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
-            ReplaceJumps(instr, ldstr, ctx.Jumpers);
+            ReplaceJumps(instr, ldstr, ctx);
             
             //injection
             var processor = ctx.Processor;

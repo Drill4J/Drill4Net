@@ -25,7 +25,7 @@ namespace Drill4Net.Injector.Strategies.Flow
             ConnectHandler(new CallHandler(helper));
             
             //jump targets
-            ConnectHandler(new AnchorHandler(helper));
+            ConnectHandler(new AnchorHandler(helper, true)); //TODO: automatic check for CycleHandler's existing?
         }
     }
 }

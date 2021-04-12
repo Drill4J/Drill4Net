@@ -64,7 +64,7 @@ namespace Drill4Net.Injector.Core
                 if (crossType == CrossPointType.Unset)
                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
                 probData = _probeHelper.GetProbeData(ctx, crossType);
-                var ldstr = GetFirstInstruction(probData);
+                var ldstr = GetFirstInstruction(ctx, probData);
 
                 //injection
                 processor.InsertAfter(instr, call);
@@ -88,10 +88,10 @@ namespace Drill4Net.Injector.Core
             crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
             var ind = instructions.IndexOf(operand);
             probData = _probeHelper.GetProbeData(ctx, crossType, ind);
-            var ldstr2 = GetFirstInstruction(probData);
+            var ldstr2 = GetFirstInstruction(ctx, probData);
 
             //correction
-            ReplaceJumps(operand, ldstr2, jumpers);
+            ReplaceJumps(operand, ldstr2, ctx);
             
             //injection
             processor.InsertBefore(operand, ldstr2);

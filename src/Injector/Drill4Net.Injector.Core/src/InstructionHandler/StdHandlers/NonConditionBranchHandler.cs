@@ -60,11 +60,11 @@ namespace Drill4Net.Injector.Core
                 var crossType = pairedCode is Code.Brfalse or Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
                 probData = _probeHelper.GetProbeData(ctx, crossType);
 
-                var firstProbeInst = GetFirstInstruction(probData); //probe's first instruction
+                var firstProbeInst = GetFirstInstruction(ctx, probData); //probe's first instruction
                 FixFinallyEnd(instr, firstProbeInst, exceptionHandlers); //need fix statement boundaries for potential tr/finally 
 
                 var oldJumpTarget = instructions[ctx.CurIndex + 1]; //where the code jumped earlier
-                ReplaceJumps(oldJumpTarget, firstProbeInst, jumpers); //...we change it to our first instruction
+                ReplaceJumps(oldJumpTarget, firstProbeInst, ctx); //...we change it to our first instruction
 
                 processor.InsertBefore(oldJumpTarget, firstProbeInst);
                 processor.InsertBefore(oldJumpTarget, call);

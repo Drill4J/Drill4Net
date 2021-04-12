@@ -23,6 +23,8 @@ namespace Drill4Net.Injector.Core
 
         public bool IsStrictEnterReturn { get; set; }
 
+        public HashSet<object> FirstInjectInstructions { get; }
+        public Dictionary<Instruction, Instruction> ReplacedJumps { get; }
         public HashSet<Instruction> Jumpers { get; }
         
         /// <summary>
@@ -56,7 +58,9 @@ namespace Drill4Net.Injector.Core
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
             //
             Processed = new HashSet<Instruction>();
+            FirstInjectInstructions = new HashSet<object>();
             CompilerInstructions = new HashSet<Instruction>();
+            ReplacedJumps = new Dictionary<Instruction, Instruction>();
             Jumpers = new HashSet<Instruction>();
             Anchors = new HashSet<object> ();
             IfStack = new Stack<Instruction>();
