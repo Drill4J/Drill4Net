@@ -60,15 +60,17 @@ namespace Drill4Net.Injector.Core
             #region IF
             if (code == Code.Switch || instructions[ctx.CurIndex + 1].OpCode.FlowControl != FlowControl.Branch) //empty IF?
             {
+                //data
                 if (crossType == CrossPointType.Unset)
                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
                 probData = _probeHelper.GetProbeData(ctx, crossType);
-                var ldstrIf = GetFirstInstruction(probData);
+                var ldstr = GetFirstInstruction(probData);
 
-                //when inserting 'after', must set in desc order
+                //injection
                 processor.InsertAfter(instr, call);
-                processor.InsertAfter(instr, ldstrIf);
+                processor.InsertAfter(instr, ldstr);
                 ctx.IncrementIndex(2);
+                
                 needBreak = true;
             }
             #endregion
@@ -78,23 +80,27 @@ namespace Drill4Net.Injector.Core
             if (prev == null || processed.Contains(prev))
                 return;
             var prevCode = prev.OpCode.Code;
-            if (prevCode != Code.Br && prevCode != Code.Br_S)
+            if (prevCode is not Code.Br and not Code.Br_S)
                 return;
             #endregion
 
-            //need insert paired call
+            //data: need insert paired call
             crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
             var ind = instructions.IndexOf(operand);
             probData = _probeHelper.GetProbeData(ctx, crossType, ind);
-            var elseInst = GetFirstInstruction(probData);
+            var ldstr2 = GetFirstInstruction(probData);
 
-            ReplaceJump(operand, elseInst, jumpers);
-            processor.InsertBefore(operand, elseInst);
+            //correction
+            ReplaceJump(operand, ldstr2, jumpers);
+            
+            //injection
+            processor.InsertBefore(operand, ldstr2);
             processor.InsertBefore(operand, call);
 
             processed.Add(prev);
             if (operand.Offset < instr.Offset)
                 ctx.IncrementIndex(2);
+            
             needBreak = true;
             #endregion
         }

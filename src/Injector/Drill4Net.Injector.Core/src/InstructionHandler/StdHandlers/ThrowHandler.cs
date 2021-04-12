@@ -16,8 +16,6 @@ namespace Drill4Net.Injector.Core
         {
             #region Init
             needBreak = false;
-            var moduleName = ctx.ModuleName;
-            var treeFunc = ctx.TreeMethod;
 
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
@@ -37,12 +35,14 @@ namespace Drill4Net.Injector.Core
 
             //data
             var probData = GetProbeData(ctx);
-
+            var ldstr = GetFirstInstruction(probData);
+            
+            //correction
+            FixFinallyEnd(instr, ldstr, exceptionHandlers); //need fix statement boundaries for potential try/finally 
+            ReplaceJump(instr, ldstr, jumpers);
+            
             //injection
-            var throwInst = GetFirstInstruction(probData);
-            FixFinallyEnd(instr, throwInst, exceptionHandlers); //need fix statement boundaries for potential try/finally 
-            ReplaceJump(instr, throwInst, jumpers);
-            processor.InsertBefore(instr, throwInst);
+            processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
             

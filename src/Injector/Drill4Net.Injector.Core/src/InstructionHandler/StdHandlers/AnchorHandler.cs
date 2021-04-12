@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using Drill4Net.Injector.Core;
-using Drill4Net.Profiling.Tree;
+﻿using Drill4Net.Profiling.Tree;
 using Mono.Cecil.Cil;
 
 namespace Drill4Net.Injector.Core
@@ -20,15 +17,12 @@ namespace Drill4Net.Injector.Core
             #region Init
             needBreak = false;
             
-            var treeType = ctx.TreeType;
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
             var instr = instructions[ctx.CurIndex];
             var opCode = instr.OpCode;
             var flow = opCode.FlowControl;
             
-            var typeSource = treeType.SourceType;
-            var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
             var compilerInstructions = ctx.CompilerInstructions;
             var jumpers = ctx.Jumpers;
             var anchors = ctx.Anchors;
@@ -52,10 +46,11 @@ namespace Drill4Net.Injector.Core
             var probData = GetProbeData(ctx);
             var ldstr = GetFirstInstruction(probData);
             
-            ReplaceJump(instr, ldstr, jumpers);
+            //correction
             FixFinallyEnd(instr, ldstr, exceptionHandlers);
             ReplaceJump(instr, ldstr, jumpers);
-            
+
+            //injection
             processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
@@ -67,6 +62,5 @@ namespace Drill4Net.Injector.Core
         {
             return _probeHelper.GetProbeData(ctx, CrossPointType.Anchor, ctx.CurIndex);
         }
-        
     }
 }

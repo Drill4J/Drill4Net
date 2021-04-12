@@ -58,9 +58,14 @@ namespace Drill4Net.Injector.Core
             if (code != Code.Ret) 
                 return;
 
+            //data
             _returnInst.Operand = $"{_initProbData}{ctx.CurIndex}";
+            
+            //correction
             FixFinallyEnd(instr, _returnInst, exceptionHandlers);
             ReplaceJump(instr, _returnInst, jumpers);
+            
+            //injection
             processor.InsertBefore(instr, _returnInst);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
