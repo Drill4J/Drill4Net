@@ -6,12 +6,12 @@
 
         public string Description { get; set; }
 
-        private AbstractInstructionHandler _starter;
-        private AbstractInstructionHandler _last;
+        private AbstractBaseHandler _starter;
+        private AbstractBaseHandler _last;
 
         /***********************************************************************************/
 
-        public void ConnectHandler(AbstractInstructionHandler handler)
+        public void ConnectHandler(AbstractBaseHandler handler)
         {
             if (_starter == null)
                 _starter = handler;

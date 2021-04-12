@@ -91,7 +91,7 @@ namespace Drill4Net.Injector.Core
             var ldstr2 = GetFirstInstruction(probData);
 
             //correction
-            ReplaceJump(operand, ldstr2, jumpers);
+            ReplaceJumps(operand, ldstr2, jumpers);
             
             //injection
             processor.InsertBefore(operand, ldstr2);

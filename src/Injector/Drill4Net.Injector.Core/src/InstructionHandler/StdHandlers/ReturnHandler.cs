@@ -4,7 +4,7 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
-    public class ReturnHandler : AbstractInstructionHandler
+    public class ReturnHandler : AbstractBaseHandler
     {
         protected string _initProbData;
         protected Instruction _returnInst;
@@ -63,26 +63,26 @@ namespace Drill4Net.Injector.Core
             
             //correction
             FixFinallyEnd(instr, _returnInst, exceptionHandlers);
-            ReplaceJump(instr, _returnInst, jumpers);
+            ReplaceJumps(instr, _returnInst, jumpers);
             
             //injection
             processor.InsertBefore(instr, _returnInst);
             processor.InsertBefore(instr, call);
             ctx.IncrementIndex(2);
             
-            needBreak = true;
-                
             //correcting pointId
             var point = ctx.TreeMethod.Filter(typeof(CrossPoint), false)
                 .Cast<CrossPoint>()
                 .FirstOrDefault(a => a.PointType == CrossPointType.Return && a.PointId == null);
             if(point != null)
                 point.PointId = ctx.CurIndex.ToString();
+            
+            needBreak = true;
         }
         
         protected virtual string GetProbeData(InjectorContext ctx)
         {
-            return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1);
+            return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1); //exactly -1 !
         }
     }
 }

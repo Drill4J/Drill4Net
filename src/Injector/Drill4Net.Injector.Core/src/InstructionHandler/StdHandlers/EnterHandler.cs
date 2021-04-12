@@ -4,7 +4,7 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
-    public class EnterHandler : AbstractInstructionHandler
+    public class EnterHandler : AbstractBaseHandler
     {
         public EnterHandler(AbstractProbeHelper probeHelper) : 
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_CONDITIONAL, probeHelper)
@@ -37,7 +37,7 @@ namespace Drill4Net.Injector.Core
 
         protected virtual string GetProbeData(InjectorContext ctx)
         {
-            return _probeHelper.GetProbeData(ctx, CrossPointType.Enter, 0);
+            return _probeHelper.GetProbeData(ctx, CrossPointType.Enter, 0);//exactly 0 !
         }
     }
 }

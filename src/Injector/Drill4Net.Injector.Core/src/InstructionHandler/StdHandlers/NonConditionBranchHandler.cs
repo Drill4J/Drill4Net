@@ -5,7 +5,7 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
-    public class NonConditionBranchHandler : AbstractInstructionHandler
+    public class NonConditionBranchHandler : AbstractBaseHandler
     {
         public NonConditionBranchHandler(AbstractProbeHelper probeHelper) : 
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_NONCONDITIONAL, probeHelper)
@@ -64,7 +64,7 @@ namespace Drill4Net.Injector.Core
                 FixFinallyEnd(instr, firstProbeInst, exceptionHandlers); //need fix statement boundaries for potential tr/finally 
 
                 var oldJumpTarget = instructions[ctx.CurIndex + 1]; //where the code jumped earlier
-                ReplaceJump(oldJumpTarget, firstProbeInst, jumpers); //...we change it to our first instruction
+                ReplaceJumps(oldJumpTarget, firstProbeInst, jumpers); //...we change it to our first instruction
 
                 processor.InsertBefore(oldJumpTarget, firstProbeInst);
                 processor.InsertBefore(oldJumpTarget, call);

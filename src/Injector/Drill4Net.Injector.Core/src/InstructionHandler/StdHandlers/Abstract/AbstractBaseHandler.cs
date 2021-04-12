@@ -6,17 +6,17 @@ using Mono.Cecil.Cil;
 
 namespace Drill4Net.Injector.Core
 {
-    public abstract class AbstractInstructionHandler
+    public abstract class AbstractBaseHandler
     {
-        public string Name { get; set; }
+        public string Name { get; }
 
-        public AbstractInstructionHandler Successor { get; set; }
+        public AbstractBaseHandler Successor { get; set; }
 
         protected readonly AbstractProbeHelper _probeHelper;
 
         /************************************************************************************/
 
-        protected AbstractInstructionHandler(string name, AbstractProbeHelper probeHelper)
+        protected AbstractBaseHandler(string name, AbstractProbeHelper probeHelper)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _probeHelper = probeHelper ?? throw new ArgumentNullException(nameof(probeHelper));
@@ -149,7 +149,7 @@ namespace Drill4Net.Injector.Core
             return Instruction.Create(OpCodes.Nop);
         }
 
-        internal void ReplaceJump(Instruction from, Instruction to, HashSet<Instruction> jumpers)
+        internal void ReplaceJumps(Instruction from, Instruction to, HashSet<Instruction> jumpers)
         {
             //direct jumps
             foreach (var curOp in jumpers.Where(j => j.Operand == from))
@@ -159,7 +159,7 @@ namespace Drill4Net.Injector.Core
             foreach (var curOp in jumpers.Where(j => j.OpCode.Code == Code.Switch))
             {
                 var switches = (Instruction[])curOp.Operand;
-                for (int i = 0; i < switches.Length; i++)
+                for (var i = 0; i < switches.Length; i++)
                 {
                     if (switches[i] == from)
                         switches[i] = to;
@@ -198,7 +198,7 @@ namespace Drill4Net.Injector.Core
                         while (true)
                         {
                             var flow = curNext.OpCode.FlowControl;
-                            if (curNext == finish || flow == FlowControl.Return || flow == FlowControl.Throw)
+                            if (curNext == finish || flow is FlowControl.Return or FlowControl.Throw)
                                 break;
                             localInsts.Add(curNext);
                             curNext = curNext.Next;
