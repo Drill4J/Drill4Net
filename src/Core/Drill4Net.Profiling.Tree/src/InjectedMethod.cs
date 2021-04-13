@@ -13,6 +13,8 @@ namespace Drill4Net.Profiling.Tree
 
         public string FromMethod { get; set; }
 
+        public int CallIndexForCompilerGenerated { get; set; }
+
         public string BusinessMethod => FromMethod ?? Fullname;
         public string BusinessType { get; set; }
 
@@ -39,12 +41,13 @@ namespace Drill4Net.Profiling.Tree
 
         internal static ParsedMethod GetParts(string fullName)
         {
+            if (string.IsNullOrWhiteSpace(fullName))
+                return new ParsedMethod();
+            
             //TODO: regex !!! AAAAAAAAAA!!!!
-            //System.String Drill4Net.Target.Common.AbstractGen`1::GetDesc(System.Boolean)
+            //Example: System.String Drill4Net.Target.Common.AbstractGen`1::GetDesc(System.Boolean)
             string ns = null; string retType = null; 
             string name = null; string pars = null;
-            if (string.IsNullOrWhiteSpace(fullName))
-                return new ParsedMethod(ns, retType, name, pars);
             //
             if (!fullName.Contains("::")) //it's exactly short name
             {
@@ -76,6 +79,11 @@ namespace Drill4Net.Profiling.Tree
         public InjectedType FindBusinessType(Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parentMap,
             InjectedMethod forEntity)
         {
+            if (parentMap == null)
+                throw new ArgumentNullException(nameof(parentMap));
+            if (forEntity == null)
+                throw new ArgumentNullException(nameof(forEntity));
+            //
             InjectedType type = null;
             InjectedSimpleEntity key = forEntity;
             while (true)
@@ -83,7 +91,7 @@ namespace Drill4Net.Profiling.Tree
                 if (!parentMap.ContainsKey(key))
                     break;
                 type = parentMap[key] as InjectedType;
-                if (!type.IsCompilerGenerated)
+                if (type is {IsCompilerGenerated: false})
                     break;
                 key = type;
             }

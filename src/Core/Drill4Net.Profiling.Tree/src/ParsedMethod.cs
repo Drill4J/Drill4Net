@@ -2,12 +2,16 @@
 {
     public class ParsedMethod
     {
-        public string Namespace { get; set; }
-        public string Name { get; set; }
-        public string Return { get; set; }
-        public string Parameters { get; set; }
+        public string Namespace { get; }
+        public string Name { get; }
+        public string Return { get; }
+        public string Parameters { get; }
 
         /*************************************************/
+        
+        public ParsedMethod()
+        {
+        }
 
         public ParsedMethod(string @namespace, string @return, string name, string parameters)
         {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Globalization;
+using System.Runtime.Versioning;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -179,7 +180,7 @@ namespace Drill4Net.Injector.Engine
             Environment.CurrentDirectory = sourceDir;
             var subjectName = Path.GetFileNameWithoutExtension(filePath);
 
-            //destinaton
+            //destination
             var destDir = FileUtils.GetDestinationDirectory(opts, sourceDir);
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
@@ -191,7 +192,7 @@ namespace Drill4Net.Injector.Engine
                 return;
 
             #region Read params
-            ReaderParameters readerParams = new ReaderParameters
+            var readerParams = new ReaderParameters
             {
                 // we will write to another file, so we don't need this
                 ReadWrite = false,
@@ -200,7 +201,7 @@ namespace Drill4Net.Injector.Engine
             };
 
             #region PDB
-            var pdb = subjectName + ".pdb";
+            var pdb = $"{subjectName}.pdb";
             var isPdbExists = File.Exists(pdb);
             var needPdb = isPdbExists && (version.Target is AssemblyVersionType.NetCore or AssemblyVersionType.NetStandard);
             if (needPdb)
@@ -229,7 +230,7 @@ namespace Drill4Net.Injector.Engine
             var moduleName = module.Name;
             #endregion
             #region Target version
-            var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == typeof(System.Runtime.Versioning.TargetFrameworkAttribute).Name);
+            var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == nameof(TargetFrameworkAttribute));
             string targetVersion;
             if (targetVersionAtr != null)
             {
@@ -322,7 +323,7 @@ namespace Drill4Net.Injector.Engine
 
                     //the CompilerGeneratedAttribute itself is not enough!
                     //not use isMoveNext - this class may be own iterator, not compirer's one
-                    var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
+                    var isCompilerGenerated = methodType == MethodType.CompilerGeneratedPart;
 
                     var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
@@ -352,7 +353,6 @@ namespace Drill4Net.Injector.Engine
                         TreeType = treeType,
                         TreeMethod = treeFunc,
                         IsStrictEnterReturn = strictEnterReturn,
-                        LastOperation = instructions.Last(),
                         ProxyMethRef = proxyMethRef,
                         ExceptionHandlers = body.ExceptionHandlers,
                     };
@@ -404,12 +404,13 @@ namespace Drill4Net.Injector.Engine
                     _strategy.StartMethod(ctx);
                     for (var i = startInd; i < instructions.Count; i++)
                     {
-                        var instr = instructions[i];
-                        var code = instr.OpCode.Code;
-
-                        MapBusinessFunction(instr, treeFunc);
+                        ctx.SetIndex(i);
+                        MapBusinessFunction(ctx); //in any case
 
                         #region Checks
+                        var instr = ctx.CurInstruction;
+                        var code = instr.OpCode.Code;
+                        
                         // for injecting cases
                         if (ctx.Processed.Contains(instr))
                             continue;
@@ -419,24 +420,22 @@ namespace Drill4Net.Injector.Engine
                         //or is compiler generated part?
                         if (methodSource.IsMoveNext && isCompilerGenerated)
                         {
-                            //TODO: caching!!!
-                            var cntExc = body.ExceptionHandlers.Count(a => a.TryStart == instr);
-                            i += 8 * cntExc; //+margin
-
                             if (code is Code.Callvirt or Code.Call)
                             {
                                 var s = instr.ToString();
                                 if (s.EndsWith("get_IsCompleted()")) 
                                     break;
                             }
+                            
+                            //+margin if instruction starts the try/catch
+                            var delta = body.ExceptionHandlers.Any(a => a.TryStart == instr) ? 8 : 0;
+                            i += delta; 
                         }
                         #endregion
                         #endregion
 
-                        //main processing
-                        ctx.SetIndex(i);
-                        HandleInstructionForContext(ctx);
-                        i = ctx.CurIndex;
+                        ctx.SetIndex(i); //just in case, we will assign it here as well
+                        i = HandleInstruction(ctx); //process and correct current index after potential injection
                     }
                     #endregion
                     #region Correct jumps
@@ -512,8 +511,10 @@ namespace Drill4Net.Injector.Engine
             };
         }
 
-        internal void MapBusinessFunction(Instruction instr, InjectedMethod treeFunc)
+        internal void MapBusinessFunction(InjectorContext ctx)
         {
+            var instr = ctx.CurInstruction;
+            var treeFunc = ctx.TreeMethod;
             var flow = instr.OpCode.FlowControl;
             var code = instr.OpCode.Code;
 
@@ -541,13 +542,12 @@ namespace Drill4Net.Injector.Engine
                 {
                     var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
                     InjectedType realCgType = null;
-                    var typeKey = treeFunc.BusinessType; // realTypeName ?? typeFullName
+                    var typeKey = treeFunc.BusinessType;
                     if (_injClasses.ContainsKey(typeKey))
                         realCgType = _injClasses[typeKey];
-                    var methodKey = extRealMethodName; // ?? realMethodName;
-                    if (realCgType != null && methodKey != null)
+                    if (realCgType != null && extRealMethodName != null)
                     {
-                        var mkey = GetMethodKeyByClass(realCgType.Fullname, methodKey);
+                        var mkey = GetMethodKeyByClass(realCgType.Fullname, extRealMethodName);
                         if (_injMethodByClasses.ContainsKey(mkey))
                             treeFunc = _injMethodByClasses[mkey];
                         var nestTypes = extType.Filter(typeof(InjectedType), true);
@@ -581,17 +581,19 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal void HandleInstructionForContext(InjectorContext ctx)
+        internal int HandleInstruction(InjectorContext ctx)
         {
             if (ctx == null)
                 throw new ArgumentNullException(nameof(ctx));
             try
             {
                 _strategy.HandleInstruction(ctx);
+                return ctx.CurIndex;
             }
             catch (Exception ex)
             {
                 Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.MethodFullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
+                throw;
             }
         }
 
@@ -697,7 +699,7 @@ namespace Drill4Net.Injector.Engine
             if (methodFullName.Contains("::remove_"))
                 return MethodType.EventRemove;
             if (isCompilerGeneratedType)
-                return MethodType.CompilerGenerated;
+                return MethodType.CompilerGeneratedPart;
             //
             if (def.IsConstructor)
                 return MethodType.Constructor;
@@ -717,30 +719,30 @@ namespace Drill4Net.Injector.Engine
         internal IEnumerable<MethodDefinition> GetAllMethods(InjectedType treeParentClass, TypeDefinition type, 
             MainOptions opts)
         {
-            var methods = new List<MethodDefinition>();
-            var typeFullname = treeParentClass.Fullname;
-
             #region Own methods
+            #region Filter methods
             var probOpts = opts.Probes;
             var isAngleBracket = type.Name.StartsWith("<");
-
-            //check for async/await
+            var ownMethods = type.Methods
+                    .Where(a => a.HasBody)
+                    .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
+                    .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
+                    .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop")) //do we need property setters?
+                    .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop")) //do we need property getters?
+                    .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
+                    .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
+                    .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
+                ;
+            #endregion
+            
+            //check for type's characteristics
             var interfaces = type.Interfaces;
             treeParentClass.SourceType.IsAsyncStateMachine = interfaces
                 .FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
             var isEnumerable = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
-
-            var ownMethods = type.Methods
-                .Where(a => a.HasBody)
-                .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
-                .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
-                .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop")) //do we need property setters?
-                .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop")) //do we need property getters?
-                .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
-                .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
-                .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
-                ;
-
+            var typeFullname = treeParentClass.Fullname;
+            
+            var methods = new List<MethodDefinition>();
             foreach (var ownMethod in ownMethods)
             {
                 //check for setter & getter of properties for anonymous types

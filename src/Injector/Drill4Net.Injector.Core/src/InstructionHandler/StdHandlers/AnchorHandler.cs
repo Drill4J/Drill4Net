@@ -38,16 +38,26 @@ namespace Drill4Net.Injector.Core
             {
                 foreach (var cur in ctx.Jumpers)
                 {
-                    var anchor = (Instruction)cur.Operand;
-                    if (ctx.FirstInjectInstructions.Contains(anchor) && ctx.ReplacedJumps.ContainsKey(anchor))
-                        anchor = ctx.ReplacedJumps[anchor];
-                    if (anchor != instr)
-                         continue;
-                    var jumpFlow = cur.OpCode.FlowControl;
-                    if (jumpFlow == FlowControl.Cond_Branch)
-                        return false;
-                    if (jumpFlow == FlowControl.Branch && cur.Previous.OpCode.FlowControl == FlowControl.Cond_Branch)
-                        return false;
+                    Instruction[] operands;
+                    if (cur.Operand is Instruction instruction)
+                        operands = new[] {instruction};
+                    else
+                        operands = (Instruction[])cur.Operand; //'switch' statement
+                    //
+                    foreach (var operand in operands)
+                    {
+                        var anchor = operand;
+                        if (ctx.FirstInjectInstructions.Contains(anchor) && ctx.ReplacedJumps.ContainsKey(anchor))
+                            anchor = ctx.ReplacedJumps[anchor];
+                        if (anchor != instr)
+                            continue;
+                        var jumpFlow = cur.OpCode.FlowControl;
+                        if (jumpFlow == FlowControl.Cond_Branch)
+                            return false;
+                        if (jumpFlow == FlowControl.Branch &&
+                            cur.Previous.OpCode.FlowControl == FlowControl.Cond_Branch)
+                            return false;
+                    }
                 }
             }
             //

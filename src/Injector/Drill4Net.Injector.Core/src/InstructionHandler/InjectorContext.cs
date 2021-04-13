@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Drill4Net.Profiling.Tree;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -18,7 +19,7 @@ namespace Drill4Net.Injector.Core
         public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
         public Collection<ExceptionHandler> ExceptionHandlers { get; set; }
-        public Instruction LastOperation { get; set; }
+        public Instruction LastOperation { get; }
         public Stack<Instruction> IfStack { get; }
 
         public bool IsStrictEnterReturn { get; set; }
@@ -41,6 +42,11 @@ namespace Drill4Net.Injector.Core
         /// taking into account the performed injections
         /// </summary>
         public int CurIndex { get; private set; }
+
+        public Instruction CurInstruction => 
+            CurIndex > 0 && CurIndex < Instructions.Count ? 
+                Instructions[CurIndex] : 
+                throw new ArgumentOutOfRangeException($"CurIndex must be in range of Instruction collection");
         
         /// <summary>
         /// Current instruction index from source IL code
@@ -56,6 +62,7 @@ namespace Drill4Net.Injector.Core
             MethodFullName = methodFullName ?? throw new ArgumentNullException(nameof(methodFullName));
             Instructions = instructions ?? throw new ArgumentNullException(nameof(instructions));
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
+            LastOperation = instructions.Last();
             //
             Processed = new HashSet<Instruction>();
             FirstInjectInstructions = new HashSet<object>();
@@ -69,7 +76,7 @@ namespace Drill4Net.Injector.Core
         /***********************************************************************************************/
 
         /// <summary>
-        /// Set value for both indexes <see cref="SourceIndex"/> and <see cref="CurIndex"/>
+        /// Set value for both <see cref="SourceIndex"/> and <see cref="CurIndex"/>
         /// </summary>
         /// <param name="index">Value of indexes</param>
         /// <exception cref="ArgumentException"></exception>
