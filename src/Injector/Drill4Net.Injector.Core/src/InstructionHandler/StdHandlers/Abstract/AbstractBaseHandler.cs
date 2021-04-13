@@ -115,6 +115,8 @@ namespace Drill4Net.Injector.Core
 
         internal void FixFinallyEnd(Instruction cur, Instruction on, IEnumerable<ExceptionHandler> handlers)
         {
+            if (cur.Previous == null)
+                return;
             if (cur.Previous.OpCode.Code != Code.Endfinally) 
                 return;
             foreach (var exc in handlers.Where(exc => exc.HandlerEnd == cur))

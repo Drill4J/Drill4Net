@@ -13,7 +13,9 @@ namespace Drill4Net.Profiling.Tree
 
         public string FromMethod { get; set; }
 
-        public CompilerGeneratedInfo CGInfo { get; set; }
+        public CodeBlock CompilerGeneratedInfo { get; set; }
+
+        public Dictionary<string, int> CalleeIndexes { get; set; }
 
         public string BusinessMethod => FromMethod ?? Fullname;
         public string BusinessType { get; set; }
@@ -28,6 +30,7 @@ namespace Drill4Net.Profiling.Tree
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
+            CalleeIndexes = new Dictionary<string, int>();
             //
             var parts = GetParts(fullName);
             Namespace = parts.Namespace;

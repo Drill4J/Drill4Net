@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Drill4Net.Profiling.Tree;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Collections.Generic;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
     public record InjectorContext
     {
-        public string ProxyNamespace { get; set; }
         public string ModuleName { get; }
+
+        public InjectedType Type { get; set; }
         public InjectedMethod Method { get; set; }
-        public InjectedType MethodType { get; set; }
 
         public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
@@ -34,7 +34,13 @@ namespace Drill4Net.Injector.Core
         public HashSet<Instruction> CompilerInstructions { get; }
         public HashSet<Instruction> Processed { get; }
 
+        public string ProxyNamespace { get; set; }
         public MethodReference ProxyMethRef { get; set; }
+        
+        /// <summary>
+        /// Current instruction index from source IL code
+        /// </summary>
+        public int SourceIndex { get; private set; }
 
         /// <summary>
         /// Real current instruction index for <see cref="Instructions"/>,
@@ -43,14 +49,9 @@ namespace Drill4Net.Injector.Core
         public int CurIndex { get; private set; }
 
         public Instruction CurInstruction => 
-            CurIndex > 0 && CurIndex < Instructions.Count ? 
+            CurIndex >= 0 && CurIndex < Instructions.Count ? 
                 Instructions[CurIndex] : 
                 throw new ArgumentOutOfRangeException($"CurIndex must be in range of Instruction collection");
-        
-        /// <summary>
-        /// Current instruction index from source IL code
-        /// </summary>
-        public int SourceIndex { get; private set; }
 
         /***********************************************************************************************/
 

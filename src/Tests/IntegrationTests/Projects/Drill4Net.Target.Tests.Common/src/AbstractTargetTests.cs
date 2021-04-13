@@ -153,9 +153,8 @@ namespace Drill4Net.Target.Tests.Common
             {
                 Assert.IsTrue(funcs.Count == inputs.Length);
 
-                for (var i = 0; i < inputs.Length; i++)
+                foreach (var data in inputs)
                 {
-                    var data = inputs[i];
                     string source;
                     string fullSig = null;
                     if (!string.IsNullOrWhiteSpace(data.Signature))

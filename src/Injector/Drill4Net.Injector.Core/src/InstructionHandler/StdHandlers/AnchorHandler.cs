@@ -5,7 +5,7 @@ namespace Drill4Net.Injector.Core
 {
     public class AnchorHandler : AbstractSimpleHandler
     {
-        private bool _ignoreCycles;
+        private readonly bool _ignoreCycles;
         
         /************************************************************************************/
         
@@ -24,6 +24,8 @@ namespace Drill4Net.Injector.Core
             //
             if (flow is not FlowControl.Next and not FlowControl.Call)
                 return false;
+            if (instr.Previous == null)
+                return true;
             var prevCode = instr.Previous.OpCode.Code;
             if(prevCode is Code.Leave or Code.Leave_S)
                 return false;

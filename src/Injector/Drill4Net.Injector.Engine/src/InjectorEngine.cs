@@ -323,7 +323,7 @@ namespace Drill4Net.Injector.Engine
                     var methodType = methodSource.MethodType;
 
                     //the CompilerGeneratedAttribute itself is not enough!
-                    //not use isMoveNext - this class may be own iterator, not compirer's one
+                    //not use isMoveNext - this class may be own iterator, not compiler's one
                     var isCompilerGenerated = methodType == MethodType.CompilerGeneratedPart;
 
                     var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
@@ -350,12 +350,12 @@ namespace Drill4Net.Injector.Engine
                     #region Context
                     var ctx = new InjectorContext(moduleName, instructions, processor)
                     {
-                        ProxyNamespace = proxyNamespace,
-                        MethodType = treeMethodType,
+                        Type = treeMethodType,
                         Method = treeFunc,
-                        IsStrictEnterReturn = strictEnterReturn,
-                        ProxyMethRef = proxyMethRef,
                         ExceptionHandlers = body.ExceptionHandlers,
+                        IsStrictEnterReturn = strictEnterReturn,
+                        ProxyNamespace = proxyNamespace,
+                        ProxyMethRef = proxyMethRef,
                     };
                     #endregion
                     #region Jumpers
@@ -377,7 +377,7 @@ namespace Drill4Net.Injector.Engine
                     }
                     #endregion
                     #region Start index
-                    var startInd = 1;
+                    var startInd = 0;
                     if (skipStart)
                     {
                         if (isAsyncStateMachine && body.ExceptionHandlers.Any())
@@ -400,43 +400,43 @@ namespace Drill4Net.Injector.Engine
                             startInd = 12;
                         }
                     }
-
                     #endregion
                     #region Business function mapping
-                    var cgInfo = ctx.Method.CGInfo;
+                    var cgInfo = ctx.Method.CompilerGeneratedInfo;
                     if (cgInfo != null)
-                        cgInfo.FirstIndex = startInd - 1; //correcting to real start
+                        cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
                     //
+                    var allowedInstrs = new HashSet<Instruction>();
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         ctx.SetIndex(i);
                         MapBusinessFunction(ctx); //in any case check each instruction
-
+                        
+                        #region Check
                         var checkRes = CheckInstruction(ctx);
                         if (checkRes == FlowType.NextCycle)
                             continue;
                         if (checkRes == FlowType.BreakCycle)
                             break;
+                        if (checkRes == FlowType.Return)
+                            return;
+                        #endregion
+                        
                         i = ctx.CurIndex; //because it can change
+                        allowedInstrs.Add(instructions[i]);
                     }           
                     //
                     if (cgInfo != null)
                         cgInfo.LastIndex = ctx.SourceIndex;
                     #endregion
                     #region Injections
-                    _strategy.StartMethod(ctx);
+                    _strategy.StartMethod(ctx); //primary actions
                     for (var i = startInd; i < instructions.Count; i++)
                     {
-                        ctx.SetIndex(i);
-                        
-                        var checkRes = CheckInstruction(ctx);
-                        if (checkRes == FlowType.NextCycle)
+                        if (!allowedInstrs.Contains(instructions[i]))
                             continue;
-                        if (checkRes == FlowType.BreakCycle)
-                            break;
-                        
-                        //process and correct current index after potential injection
-                        i = HandleInstruction(ctx); 
+                        ctx.SetIndex(i);
+                        i = HandleInstruction(ctx); //process and correct current index after potential injection
                     }
                     #endregion
                     #region Correct jumps
@@ -493,9 +493,9 @@ namespace Drill4Net.Injector.Engine
         {
             var instr = ctx.CurInstruction;
             var code = instr.OpCode.Code;
-                        
+
             // for injecting cases
-            if (ctx.Processed.Contains(instr))
+            if (code == Code.Nop || ctx.Processed.Contains(instr))
                 return FlowType.NextCycle;
 
             var method = ctx.Method;
@@ -560,6 +560,34 @@ namespace Drill4Net.Injector.Engine
             var extTypeFullName = extOp.DeclaringType.FullName;
             var extTypeName = extOp.DeclaringType.Name;
             var extFullname = extOp.FullName;
+            //
+            if (!treeFunc.CalleeIndexes.ContainsKey(extFullname))
+            {
+                //TODO: regex
+                var isAngledCtor = extFullname.Contains("/<") && extFullname.Contains("__") && extFullname.EndsWith(".ctor()");
+                if (!isAngledCtor)
+                {
+                    var indStart = extFullname.IndexOf(":Start<");
+                    var isAsyncMachineStart = indStart > 0 && extFullname.Contains(".CompilerServices.AsyncTaskMethodBuilder");
+                    if (isAsyncMachineStart)
+                    {
+                        var ind2 = indStart + 7;
+                        var callee = extFullname.Substring(ind2, extFullname.IndexOf("(") - ind2 - 1);
+                        if (_injClasses.ContainsKey(callee))
+                        {
+                            var asyncType = _injClasses[callee];
+                            if (asyncType.Filter(typeof(InjectedMethod), false)
+                                .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
+                            {
+                                treeFunc.CalleeIndexes.Add(asyncMove.Fullname, ctx.SourceIndex);
+                            }
+                        }
+                    }
+                    if (treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodName(extFullname))
+                        treeFunc.CalleeIndexes.Add(extFullname, ctx.SourceIndex);
+                }
+            }
+            //
             var extName = extOp.Name;
             if (!extTypeFullName.Contains(">d__") && !extName.StartsWith("<") && !extFullname.Contains("|")) 
                 return;
@@ -602,8 +630,8 @@ namespace Drill4Net.Injector.Engine
                         meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
                         if (meth.Name != extName) 
                             continue;
-                        if (meth.CGInfo.CallIndex == -1)
-                            meth.CGInfo.CallIndex = ctx.SourceIndex;
+                        if (!treeFunc.CalleeIndexes.ContainsKey(meth.Fullname))
+                            treeFunc.CalleeIndexes.Add(meth.Fullname, ctx.SourceIndex);
                     }
                 }
                 else
@@ -804,7 +832,7 @@ namespace Drill4Net.Injector.Engine
                 methodSource.IsEnumeratorMoveNext = methodSource.IsMoveNext && isEnumerable;
                 methodSource.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
                 if (methodSource.MethodType == MethodType.CompilerGeneratedPart)
-                    treeFunc.CGInfo = new CompilerGeneratedInfo();
+                    treeFunc.CompilerGeneratedInfo = new CodeBlock();
                 //
                 if (!_injMethods.ContainsKey(treeFunc.Fullname))
                     _injMethods.Add(treeFunc.Fullname, treeFunc);
