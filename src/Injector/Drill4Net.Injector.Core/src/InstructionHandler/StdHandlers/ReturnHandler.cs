@@ -71,7 +71,7 @@ namespace Drill4Net.Injector.Core
             ctx.IncrementIndex(2);
             
             //correcting pointId
-            var point = ctx.TreeMethod.Filter(typeof(CrossPoint), false)
+            var point = ctx.Method.Filter(typeof(CrossPoint), false)
                 .Cast<CrossPoint>()
                 .FirstOrDefault(a => a.PointType == CrossPointType.Return && a.PointId == null);
             if(point != null)

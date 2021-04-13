@@ -13,7 +13,7 @@ namespace Drill4Net.Profiling.Tree
 
         public string FromMethod { get; set; }
 
-        public int CallIndexForCompilerGenerated { get; set; }
+        public CompilerGeneratedInfo CGInfo { get; set; }
 
         public string BusinessMethod => FromMethod ?? Fullname;
         public string BusinessType { get; set; }

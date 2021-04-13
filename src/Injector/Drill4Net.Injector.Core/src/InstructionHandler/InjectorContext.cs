@@ -12,9 +12,8 @@ namespace Drill4Net.Injector.Core
     {
         public string ProxyNamespace { get; set; }
         public string ModuleName { get; }
-        public string MethodFullName { get; }
-        public InjectedMethod TreeMethod { get; set; }
-        public InjectedType TreeType { get; set; }
+        public InjectedMethod Method { get; set; }
+        public InjectedType MethodType { get; set; }
 
         public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
@@ -55,11 +54,9 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************************/
 
-        public InjectorContext(string moduleName, string methodFullName, Collection<Instruction> instructions,
-            ILProcessor processor)
+        public InjectorContext(string moduleName, Collection<Instruction> instructions, ILProcessor processor)
         {
             ModuleName = moduleName ?? throw new ArgumentNullException(nameof(moduleName));
-            MethodFullName = methodFullName ?? throw new ArgumentNullException(nameof(methodFullName));
             Instructions = instructions ?? throw new ArgumentNullException(nameof(instructions));
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
             LastOperation = instructions.Last();

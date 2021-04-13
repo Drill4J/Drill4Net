@@ -16,8 +16,8 @@ namespace Drill4Net.Injector.Core
         {
             #region Init
             needBreak = false;
-            var treeType = ctx.TreeType;
-            var treeFunc = ctx.TreeMethod;
+            var treeType = ctx.MethodType;
+            var treeFunc = ctx.Method;
             
             var instructions = ctx.Instructions;
             var instr = instructions[ctx.CurIndex];

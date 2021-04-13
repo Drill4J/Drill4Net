@@ -347,11 +347,11 @@ namespace Drill4Net.Injector.Engine
                     var processor = body.GetILProcessor();
                     #endregion
                     #region Context
-                    var ctx = new InjectorContext(moduleName, methodFullName, instructions, processor)
+                    var ctx = new InjectorContext(moduleName, instructions, processor)
                     {
                         ProxyNamespace = proxyNamespace,
-                        TreeType = treeType,
-                        TreeMethod = treeFunc,
+                        MethodType = treeType,
+                        Method = treeFunc,
                         IsStrictEnterReturn = strictEnterReturn,
                         ProxyMethRef = proxyMethRef,
                         ExceptionHandlers = body.ExceptionHandlers,
@@ -399,13 +399,18 @@ namespace Drill4Net.Injector.Engine
                             startInd = 12;
                         }
                     }
+                    //
+                    if (treeFunc.CGInfo != null)
+                        ctx.Method.CGInfo.FirstIndex = startInd - 1;
                     #endregion
                     #region Injections     
+
                     _strategy.StartMethod(ctx);
+                    //
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         ctx.SetIndex(i);
-                        MapBusinessFunction(ctx); //in any case
+                        MapBusinessFunction(ctx); //in any case check each instruction
 
                         #region Checks
                         var instr = ctx.CurInstruction;
@@ -416,8 +421,8 @@ namespace Drill4Net.Injector.Engine
                             continue;
 
                         #region Awaiters in MoveNext as a boundary
-                        //we need check: do now current code part is business part
-                        //or is compiler generated part?
+                        //find the approximate boundary between the business code
+                        //and the compiler-generated one
                         if (methodSource.IsMoveNext && isCompilerGenerated)
                         {
                             if (code is Code.Callvirt or Code.Call)
@@ -433,13 +438,16 @@ namespace Drill4Net.Injector.Engine
                         }
                         #endregion
                         #endregion
-
+                        
                         ctx.SetIndex(i); //just in case, we will assign it here as well
                         i = HandleInstruction(ctx); //process and correct current index after potential injection
                     }
+                    //
+                    if (treeFunc.CGInfo != null)
+                        ctx.Method.CGInfo.LastIndex = ctx.SourceIndex;
                     #endregion
                     #region Correct jumps
-                    //EACH short form -> to long form (otherwise, you need to recalculate 
+                    //EACH short form -> to long form (otherwise, we need to recalculate 
                     //again after each necessary conversion)
                     var jumpers = ctx.Jumpers.ToArray();
                     foreach (var jump in jumpers)
@@ -514,7 +522,7 @@ namespace Drill4Net.Injector.Engine
         internal void MapBusinessFunction(InjectorContext ctx)
         {
             var instr = ctx.CurInstruction;
-            var treeFunc = ctx.TreeMethod;
+            var treeFunc = ctx.Method;
             var flow = instr.OpCode.FlowControl;
             var code = instr.OpCode.Code;
 
@@ -550,6 +558,7 @@ namespace Drill4Net.Injector.Engine
                         var mkey = GetMethodKeyByClass(realCgType.Fullname, extRealMethodName);
                         if (_injMethodByClasses.ContainsKey(mkey))
                             treeFunc = _injMethodByClasses[mkey];
+                        
                         var nestTypes = extType.Filter(typeof(InjectedType), true);
                         foreach (var injectedSimpleEntity in nestTypes)
                         {
@@ -560,11 +569,16 @@ namespace Drill4Net.Injector.Engine
                     }
 
                     extType.FromMethod = treeFunc.Fullname;
+                    //better process all methods, not filter only extName... may be... check it!
                     var extMethods = extType.Filter(typeof(InjectedMethod), true);
                     foreach (var injectedSimpleEntity in extMethods)
                     {
                         var meth = (InjectedMethod) injectedSimpleEntity;
                         meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                        if (meth.Name != extName) 
+                            continue;
+                        if (meth.CGInfo.CallIndex == -1)
+                            meth.CGInfo.CallIndex = ctx.SourceIndex;
                     }
                 }
                 else
@@ -592,7 +606,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.MethodFullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
+                Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.Method.Fullname}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
                 throw;
             }
         }
@@ -764,6 +778,8 @@ namespace Drill4Net.Injector.Engine
                 methodSource.IsMoveNext = methodName == "MoveNext";
                 methodSource.IsEnumeratorMoveNext = methodSource.IsMoveNext && isEnumerable;
                 methodSource.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
+                if (methodSource.MethodType == MethodType.CompilerGeneratedPart)
+                    treeFunc.CGInfo = new CompilerGeneratedInfo();
                 //
                 if (!_injMethods.ContainsKey(treeFunc.Fullname))
                     _injMethods.Add(treeFunc.Fullname, treeFunc);

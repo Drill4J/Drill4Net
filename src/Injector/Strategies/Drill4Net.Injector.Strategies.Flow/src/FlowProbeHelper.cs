@@ -7,7 +7,7 @@ namespace Drill4Net.Injector.Strategies.Flow
     {
         protected override string GenerateProbeData(InjectorContext ctx, CrossPoint point)
         {
-            var injMeth = ctx.TreeMethod;
+            var injMeth = ctx.Method;
             return $"{point.PointUid}^{injMeth.AssemblyName}^{injMeth.BusinessMethod}^{point.PointType}_{point.PointId}";
         }
     }

@@ -23,8 +23,7 @@
 
         public virtual void StartMethod(InjectorContext ctx)
         {
-            if (_first != null)
-                _first.StartMethod(ctx);
+            _first?.StartMethod(ctx);
         }
 
         public virtual void HandleInstruction(InjectorContext ctx)

@@ -34,7 +34,7 @@ namespace Drill4Net.Injector.Core
             {
                 //TODO: PDB data
             };
-            ctx.TreeMethod.AddChild(point);
+            ctx.Method.AddChild(point);
 
             return point;
         }
