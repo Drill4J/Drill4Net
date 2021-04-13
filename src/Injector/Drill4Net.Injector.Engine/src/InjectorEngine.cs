@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Serilog;
 using Mono.Cecil;
@@ -291,17 +292,17 @@ namespace Drill4Net.Injector.Engine
 
                 #region Tree
                 var realTypeName = TryGetRealTypeName(typeDef);
-                var treeType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
+                var treeMethodType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
                 {
                     SourceType = CreateTypeSource(typeDef)
                 };
-                _injClasses.Add(treeType.Fullname, treeType);
-                treeAsm.AddChild(treeType);
+                _injClasses.Add(treeMethodType.Fullname, treeMethodType);
+                treeAsm.AddChild(treeMethodType);
                 #endregion
 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
-                var methods = GetAllMethods(treeType, typeDef, opts);
+                var methods = GetAllMethods(treeMethodType, typeDef, opts);
 
                 //process all methods
                 foreach (var methodDef in methods)
@@ -315,8 +316,8 @@ namespace Drill4Net.Injector.Engine
                     var methodFullName = methodDef.FullName;
 
                     //Tree
-                    treeType = _injClasses[typeFullName];
-                    var typeSource = treeType.SourceType;
+                    treeMethodType = _injClasses[typeFullName];
+                    var typeSource = treeMethodType.SourceType;
                     var treeFunc = _injMethods[methodFullName];
                     var methodSource = treeFunc.SourceType;
                     var methodType = methodSource.MethodType;
@@ -350,7 +351,7 @@ namespace Drill4Net.Injector.Engine
                     var ctx = new InjectorContext(moduleName, instructions, processor)
                     {
                         ProxyNamespace = proxyNamespace,
-                        MethodType = treeType,
+                        MethodType = treeMethodType,
                         Method = treeFunc,
                         IsStrictEnterReturn = strictEnterReturn,
                         ProxyMethRef = proxyMethRef,
@@ -399,52 +400,44 @@ namespace Drill4Net.Injector.Engine
                             startInd = 12;
                         }
                     }
-                    //
-                    if (treeFunc.CGInfo != null)
-                        ctx.Method.CGInfo.FirstIndex = startInd - 1;
-                    #endregion
-                    #region Injections     
 
-                    _strategy.StartMethod(ctx);
+                    #endregion
+                    #region Business function mapping
+                    var cgInfo = ctx.Method.CGInfo;
+                    if (cgInfo != null)
+                        cgInfo.FirstIndex = startInd - 1; //correcting to real start
                     //
                     for (var i = startInd; i < instructions.Count; i++)
                     {
                         ctx.SetIndex(i);
                         MapBusinessFunction(ctx); //in any case check each instruction
 
-                        #region Checks
-                        var instr = ctx.CurInstruction;
-                        var code = instr.OpCode.Code;
-                        
-                        // for injecting cases
-                        if (ctx.Processed.Contains(instr))
+                        var checkRes = CheckInstruction(ctx);
+                        if (checkRes == FlowType.NextCycle)
                             continue;
-
-                        #region Awaiters in MoveNext as a boundary
-                        //find the approximate boundary between the business code
-                        //and the compiler-generated one
-                        if (methodSource.IsMoveNext && isCompilerGenerated)
-                        {
-                            if (code is Code.Callvirt or Code.Call)
-                            {
-                                var s = instr.ToString();
-                                if (s.EndsWith("get_IsCompleted()")) 
-                                    break;
-                            }
-                            
-                            //+margin if instruction starts the try/catch
-                            var delta = body.ExceptionHandlers.Any(a => a.TryStart == instr) ? 8 : 0;
-                            i += delta; 
-                        }
-                        #endregion
-                        #endregion
-                        
-                        ctx.SetIndex(i); //just in case, we will assign it here as well
-                        i = HandleInstruction(ctx); //process and correct current index after potential injection
-                    }
+                        if (checkRes == FlowType.BreakCycle)
+                            break;
+                        i = ctx.CurIndex; //because it can change
+                    }           
                     //
-                    if (treeFunc.CGInfo != null)
-                        ctx.Method.CGInfo.LastIndex = ctx.SourceIndex;
+                    if (cgInfo != null)
+                        cgInfo.LastIndex = ctx.SourceIndex;
+                    #endregion
+                    #region Injections
+                    _strategy.StartMethod(ctx);
+                    for (var i = startInd; i < instructions.Count; i++)
+                    {
+                        ctx.SetIndex(i);
+                        
+                        var checkRes = CheckInstruction(ctx);
+                        if (checkRes == FlowType.NextCycle)
+                            continue;
+                        if (checkRes == FlowType.BreakCycle)
+                            break;
+                        
+                        //process and correct current index after potential injection
+                        i = HandleInstruction(ctx); 
+                    }
                     #endregion
                     #region Correct jumps
                     //EACH short form -> to long form (otherwise, we need to recalculate 
@@ -495,7 +488,39 @@ namespace Drill4Net.Injector.Engine
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
         }
-        
+
+        internal FlowType CheckInstruction(InjectorContext ctx)
+        {
+            var instr = ctx.CurInstruction;
+            var code = instr.OpCode.Code;
+                        
+            // for injecting cases
+            if (ctx.Processed.Contains(instr))
+                return FlowType.NextCycle;
+
+            var method = ctx.Method;
+            
+            #region Awaiters in MoveNext as a boundary
+            //find the approximate boundary between the business code
+            //and the compiler-generated one
+            if (method.SourceType.IsMoveNext && method.SourceType.MethodType == MethodType.CompilerGeneratedPart)
+            {
+                if (code is Code.Callvirt or Code.Call)
+                {
+                    var s = instr.ToString();
+                    if (s.EndsWith("get_IsCompleted()")) 
+                        return FlowType.BreakCycle;
+                }
+                            
+                //+margin if instruction starts the try/catch
+                var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 8 : 0;
+                ctx.IncrementIndex(delta); 
+            }
+            #endregion
+
+            return FlowType.NextOperand;
+        }
+
         internal OpCode ConvertShortJumpToLong(OpCode opCode)
         {
             //TODO: to a dictionary
