@@ -59,7 +59,7 @@ namespace Drill4Net.Injector.Core
                 }
             }
             //
-            return false; //true TEST!!!!!!!!
+            return true; 
         }
     }
 }

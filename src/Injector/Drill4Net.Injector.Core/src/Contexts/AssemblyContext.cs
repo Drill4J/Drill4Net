@@ -17,8 +17,8 @@ namespace Drill4Net.Injector.Core
         public List<TypeContext> TypeContexts { get; }
 
         public Dictionary<string, InjectedType> InjClasses { get; }
-        public Dictionary<string, InjectedMethod> InjMethods { get; }
-        public Dictionary<string, InjectedMethod> InjMethodByClasses { get; }
+        public Dictionary<string, InjectedMethod> InjMethodByFullname { get; }
+        public Dictionary<string, InjectedMethod> InjMethodByKeys { get; }
 
         /***********************************************************************************/
         
@@ -31,8 +31,8 @@ namespace Drill4Net.Injector.Core
             //
             TypeContexts = new List<TypeContext>();
             InjClasses = new Dictionary<string, InjectedType>();
-            InjMethods = new Dictionary<string, InjectedMethod>();
-            InjMethodByClasses = new Dictionary<string, InjectedMethod>();
+            InjMethodByFullname = new Dictionary<string, InjectedMethod>();
+            InjMethodByKeys = new Dictionary<string, InjectedMethod>();
         }
         
         /***********************************************************************************/

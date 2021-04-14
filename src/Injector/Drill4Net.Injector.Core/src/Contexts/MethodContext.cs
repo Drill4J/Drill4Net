@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.Core
 {
     public record MethodContext
     {
-        public TypeContext TypeCtx { get; set; }
+        public TypeContext TypeCtx { get; }
         public MethodDefinition Definition { get; }
         public string ModuleName => TypeCtx.AssemblyCtx.Module.Name;
 

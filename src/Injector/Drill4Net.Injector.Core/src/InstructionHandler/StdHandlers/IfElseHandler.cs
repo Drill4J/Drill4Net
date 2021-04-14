@@ -37,6 +37,15 @@ namespace Drill4Net.Injector.Core
             var operand = instr.Operand as Instruction;
             if (operand != null && instr.Offset > operand.Offset)
                 return;
+            //
+            var prev = instr.Previous;
+            var prevCode = prev.OpCode.Code;
+            if (prevCode is Code.Callvirt or Code.Call)
+            {
+                var s = prev.ToString();
+                if (s.EndsWith("get_IsCompleted()"))
+                    return;
+            }
             #endregion
             #region Switch
             //Whether the 'if/else' condition branches or the 'switch' instruction will be
@@ -76,10 +85,10 @@ namespace Drill4Net.Injector.Core
             #endregion
             #region 'Switch when()', etc
             #region Checks
-            var prev = operand?.Previous;
+            prev = operand?.Previous;
             if (prev == null || processed.Contains(prev))
                 return;
-            var prevCode = prev.OpCode.Code;
+            prevCode = prev.OpCode.Code;
             if (prevCode is not Code.Br and not Code.Br_S)
                 return;
             #endregion

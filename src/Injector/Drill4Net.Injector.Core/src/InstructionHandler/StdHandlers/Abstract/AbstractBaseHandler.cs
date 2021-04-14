@@ -70,10 +70,8 @@ namespace Drill4Net.Injector.Core
             {
                 var prev = SkipNop(ind, false, instructions);
                 var prevOpS = prev.Operand?.ToString();
-                var isInternal = prev.OpCode.Code == Code.Call &&
-                                    prevOpS != null &&
-                                    (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"))
-                                    ;
+                var isInternal = prev.OpCode.Code == Code.Call && prevOpS != null &&
+                                 (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"));
                 if (isInternal)
                     return false;
 
@@ -178,7 +176,7 @@ namespace Drill4Net.Injector.Core
             //TODO: optimize (caching 'normal instruction')
             if (ind < 0 || ind >= instructions.Count)
                 return false;
-            Instruction instr = instructions[ind];
+            var instr = instructions[ind];
             if (instr.OpCode.FlowControl != FlowControl.Cond_Branch)
                 return false;
             //

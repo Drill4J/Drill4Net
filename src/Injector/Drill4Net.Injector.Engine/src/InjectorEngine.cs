@@ -277,6 +277,7 @@ namespace Drill4Net.Injector.Engine
             var asmCtx = new AssemblyContext(filePath, version, assembly, treeAsm);
             
             #region 1. Tree's entities & Contexts
+            //by type
             foreach (var typeDef in types)
             {
                 var typeFullName = typeDef.FullName;
@@ -299,7 +300,7 @@ namespace Drill4Net.Injector.Engine
                 var methods = GetMethods(typeCtx, typeDef, opts);
                 typeCtx.Methods = methods;
 
-                //methods
+                //by methods
                 foreach (var methodDef in methods)
                 {
                     #region Init
@@ -312,7 +313,7 @@ namespace Drill4Net.Injector.Engine
                     //Tree
                     treeMethodType = asmCtx.InjClasses[typeFullName];
                     var typeSource = treeMethodType.SourceType;
-                    var treeFunc = asmCtx.InjMethods[methodFullName];
+                    var treeFunc = asmCtx.InjMethodByFullname[methodFullName];
                     var methodSource = treeFunc.SourceType;
                     var methodType = methodSource.MethodType;
 
@@ -400,14 +401,39 @@ namespace Drill4Net.Injector.Engine
                         
                         i = methodCtx.CurIndex; //because it can change
                         methodCtx.AllowedInstructions.Add(instructions[i]);
-                    }           
+                    }
                     //
                     if (cgInfo != null)
                         cgInfo.LastIndex = methodCtx.SourceIndex;
                     #endregion
                 }
             }
+            #region MoveNext methods
+            var moveNextmethods = treeAsm.Filter(typeof(InjectedMethod), true)
+                .Cast<InjectedMethod>()
+                .Where(x => x.IsCompilerGenerated && x.Name == "MoveNext");
+            foreach (var meth in moveNextmethods)
+            {
+                // Owner type
+                var fullName = meth.Fullname;
+                var mkey = fullName.Split(' ')[1].Split(':')[0];
+                if (asmCtx.InjClasses.ContainsKey(mkey))
+                {
+                    var treeType = asmCtx.InjClasses[mkey];
+                    treeType.AddChild(meth);
+                }
+                // Business method
+                 var extRealMethodName = TryGetBusinessMethod(meth.Fullname, meth.Name, true, true);
+                 mkey = GetMethodKey(meth.TypeName, extRealMethodName);
+                 if (!asmCtx.InjMethodByKeys.ContainsKey(mkey)) 
+                     continue;
+                 var treeFunc = asmCtx.InjMethodByKeys[mkey];
+                 meth.FromMethod = treeFunc.Fullname;
+                //treeFunc.AddChild(meth); //???!!!
+            }
             #endregion
+            #endregion
+            var a = 1;
             #region 2. Injection
             foreach (var typeCtx in asmCtx.TypeContexts)
             {
@@ -450,9 +476,9 @@ namespace Drill4Net.Injector.Engine
                     {
                         foreach (var calleName in caller.CalleeIndexes.Keys)
                         {
-                            if (asmCtx.InjMethods.ContainsKey(calleName))
+                            if (asmCtx.InjMethodByFullname.ContainsKey(calleName))
                             {
-                                var callee = asmCtx.InjMethods[calleName];
+                                var callee = asmCtx.InjMethodByFullname[calleName];
                                 var cgInfo = callee.CompilerGeneratedInfo;
                                 if (cgInfo == null) //null is normal (business method)
                                     continue;
@@ -570,6 +596,8 @@ namespace Drill4Net.Injector.Engine
             //and the compiler-generated one
             if (method.SourceType.IsMoveNext && method.SourceType.MethodType == MethodType.CompilerGeneratedPart)
             {
+                //TODO: this wrong!!! Нельзя тут прерывать, бизнес-код может быть ниже...
+                //возможно, он может находиться только в первом уровне try/catch
                 if (code is Code.Callvirt or Code.Call)
                 {
                     var s = instr.ToString();
@@ -617,7 +645,7 @@ namespace Drill4Net.Injector.Engine
             var code = instr.OpCode.Code;
             var asmCtx = ctx.TypeCtx.AssemblyCtx;
 
-            //in any case needed check compiler generated classes
+            //calls
             if (instr.Operand is not MethodReference extOp ||
                 (flow != FlowControl.Call && code != Code.Ldftn && code != Code.Ldfld)) 
                 return;
@@ -632,11 +660,12 @@ namespace Drill4Net.Injector.Engine
             var isAngledCtor = extFullname.Contains("/<") && extFullname.Contains("__") && extFullname.EndsWith(".ctor()");
             if (!isAngledCtor)
             {
-                var indStart = extFullname.IndexOf(":Start<");
+                var tokenStart = ":Start<";
+                var indStart = extFullname.IndexOf(tokenStart);
                 var isAsyncMachineStart = indStart > 0 && extFullname.Contains(".CompilerServices.AsyncTaskMethodBuilder");
                 if (isAsyncMachineStart)
                 {
-                    var ind2 = indStart + 7;
+                    var ind2 = indStart + tokenStart.Length;
                     var asyncCallee = extFullname.Substring(ind2, extFullname.IndexOf("(") - ind2 - 1);
                     if (asmCtx.InjClasses.ContainsKey(asyncCallee))
                     {
@@ -653,7 +682,7 @@ namespace Drill4Net.Injector.Engine
             }
             #endregion
 
-            // is compiler generated method?
+            // is compiler generated the external method?
             var extName = extOp.Name;
             if (!extTypeFullName.Contains(">d__") && !extName.StartsWith("<") && !extFullname.Contains("|")) 
                 return;
@@ -675,9 +704,9 @@ namespace Drill4Net.Injector.Engine
                         realCgType = asmCtx.InjClasses[typeKey];
                     if (realCgType != null && extRealMethodName != null)
                     {
-                        var mkey = GetMethodKeyByClass(realCgType.Fullname, extRealMethodName);
-                        if (asmCtx.InjMethodByClasses.ContainsKey(mkey))
-                            treeFunc = asmCtx.InjMethodByClasses[mkey];
+                        var mkey = GetMethodKey(realCgType.Fullname, extRealMethodName);
+                        if (asmCtx.InjMethodByKeys.ContainsKey(mkey))
+                            treeFunc = asmCtx.InjMethodByKeys[mkey];
                         
                         var nestTypes = extType.Filter(typeof(InjectedType), true);
                         foreach (var injectedSimpleEntity in nestTypes)
@@ -703,9 +732,9 @@ namespace Drill4Net.Injector.Engine
                 }
                 else
                 {
-                    if (!asmCtx.InjMethods.ContainsKey(extFullname)) 
+                    if (!asmCtx.InjMethodByFullname.ContainsKey(extFullname)) 
                         return;
-                    var extFunc = asmCtx.InjMethods[extFullname];
+                    var extFunc = asmCtx.InjMethodByFullname[extFullname];
                     extFunc.FromMethod ??= treeFunc.Fullname ?? extType?.FromMethod;
                 }
             }
@@ -881,6 +910,7 @@ namespace Drill4Net.Injector.Engine
             var methods = new List<MethodDefinition>();
             foreach (var ownMethod in ownMethods)
             {
+                #region Check
                 //check for setter & getter of properties for anonymous types
                 //is it useless? But for custom weaving it's very interesting idea...
                 if (treeParentClass.IsCompilerGenerated)
@@ -891,26 +921,27 @@ namespace Drill4Net.Injector.Engine
                     if (ownMethod.IsGetter && !name.StartsWith("get_Prop"))
                         continue;
                 }
-                //
-                var methodSource = CreateMethodSource(ownMethod);
+                #endregion
+                
+                var source = CreateMethodSource(ownMethod);
                 var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname, 
-                    treeParentClass.BusinessType, ownMethod.FullName, methodSource);
+                    treeParentClass.BusinessType, ownMethod.FullName, source);
                 //
                 var methodName = ownMethod.Name;
-                methodSource.IsMoveNext = methodName == "MoveNext";
-                methodSource.IsEnumeratorMoveNext = methodSource.IsMoveNext && isEnumerable;
-                methodSource.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
-                if (methodSource.MethodType == MethodType.CompilerGeneratedPart)
+                source.IsMoveNext = methodName == "MoveNext";
+                source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
+                source.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
+                if (source.MethodType == MethodType.CompilerGeneratedPart)
                     treeFunc.CompilerGeneratedInfo = new CalleeCodeBlock();
                 //
-                if (!asmCtx.InjMethods.ContainsKey(treeFunc.Fullname))
-                    asmCtx.InjMethods.Add(treeFunc.Fullname, treeFunc);
+                if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.Fullname))
+                    asmCtx.InjMethodByFullname.Add(treeFunc.Fullname, treeFunc);
                 else { } //strange..
                 methods.Add(ownMethod);
                 //
-                var method = GetMethodKeyByClass(typeFullname, treeFunc.Name);
-                if (!asmCtx.InjMethodByClasses.ContainsKey(method))
-                    asmCtx.InjMethodByClasses.Add(method, treeFunc);
+                var methodKey = GetMethodKey(typeFullname, treeFunc.Name);
+                if (!asmCtx.InjMethodByKeys.ContainsKey(methodKey))
+                    asmCtx.InjMethodByKeys.Add(methodKey, treeFunc);
                 else { }
 
                 // //debug
@@ -946,7 +977,7 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
-        private string GetMethodKeyByClass(string typeFullname, string methodShortName)
+        private string GetMethodKey(string typeFullname, string methodShortName)
         {
             return $"{typeFullname}::{methodShortName}";
         }

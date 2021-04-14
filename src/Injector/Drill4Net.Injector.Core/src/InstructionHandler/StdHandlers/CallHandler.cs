@@ -25,14 +25,20 @@ namespace Drill4Net.Injector.Core
             try
             {
                 var instr = ctx.Instructions[ctx.CurIndex];
+                var code = instr.OpCode.Code;
                 //1. Code.Callvirt isn't needed - it's for internal compiler generated member's calls
                 //2. Local function's calls are needed
-                if (instr.OpCode.Code is not Code.Call and not Code.Calli)
+                if (code is not Code.Call and not Code.Calli and not Code.Callvirt)
                     return false;
                 var operand = (MethodReference) instr.Operand;
-                if (operand.FullName.Contains(ctx.ProxyNamespace))
+                var fullname = operand.FullName;
+                if (code is Code.Callvirt)
+                    return fullname.Contains(">::GetAwaiter()");
+                if (fullname.Contains(ctx.ProxyNamespace))
                     return false;
-                var res = _typeChecker.CheckByMethodName(operand.FullName);
+                if (fullname.Contains("Task::Run("))
+                    return true;
+                var res = _typeChecker.CheckByMethodName(fullname);
                 return res;
             }
             catch (Exception e)
