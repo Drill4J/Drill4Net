@@ -13,7 +13,7 @@ namespace Drill4Net.Injector.Core
         public List<MethodDefinition> Methods { get; set; }
         public List<MethodContext> MethodContexts { get; set; }
 
-        /****************************************************************************/
+        /*****************************************************************************************/
         
         public TypeContext(AssemblyContext asmCtx, TypeDefinition typeDef, InjectedType injType)
         {
@@ -22,6 +22,13 @@ namespace Drill4Net.Injector.Core
             InjType = injType ?? throw new ArgumentNullException(nameof(injType)); 
             //
             MethodContexts = new List<MethodContext>();
+        }
+        
+        /*****************************************************************************************/
+        
+        public override string ToString()
+        {
+            return InjType.Fullname;
         }
     }
 }

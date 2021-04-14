@@ -4,6 +4,31 @@
         <name>Drill4Net.Profiling.Tree</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Profiling.Tree.CalleeCodeBlock">
+            <summary>
+            Info for compiler generated methods (caller, indexes, etc)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.CalleeCodeBlock.Caller">
+            <summary>
+            Caller of current (compiler generated) method
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.CalleeCodeBlock.CallerIndex">
+            <summary>
+            The instruction index of the caller's IL code where this callee is called (in fact, parent index) 
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.CalleeCodeBlock.FirstIndex">
+            <summary>
+            The first index in the compiler generated code which considered as 'business part'
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.CalleeCodeBlock.LastIndex">
+            <summary>
+            The last index in the compiler generated code which considered as 'business part'
+            </summary>
+        </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedType.FromMethod">
             <summary>
             For compiler generated classes which was created 

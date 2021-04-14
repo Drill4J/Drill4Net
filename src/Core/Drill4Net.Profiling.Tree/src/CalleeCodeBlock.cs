@@ -1,19 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Drill4Net.Profiling.Tree
 {
+    /// <summary>
+    /// Info for compiler generated methods (caller, indexes, etc)
+    /// </summary>
     [Serializable]
     public class CalleeCodeBlock
     {
-        public Dictionary<InjectedMethod, int> CallerIndexes { get; }
-        public int FirstIndex { get; set; } = -1;
-        public int LastIndex { get; set; } = -1;
+        /// <summary>
+        /// Caller of current (compiler generated) method
+        /// </summary>
+        public InjectedMethod Caller { get; set;}
         
-        public CalleeCodeBlock()
-        {
-            CallerIndexes = new Dictionary<InjectedMethod, int>();
-        }
-
+        /// <summary>
+        /// The instruction index of the caller's IL code where this callee is called (in fact, parent index) 
+        /// </summary>
+        public int CallerIndex { get; set;}
+        
+        /// <summary>
+        /// The first index in the compiler generated code which considered as 'business part'
+        /// </summary>
+        public int FirstIndex { get; set; } = -1;
+        
+        /// <summary>
+        /// The last index in the compiler generated code which considered as 'business part'
+        /// </summary>
+        public int LastIndex { get; set; } = -1;
     }
 }

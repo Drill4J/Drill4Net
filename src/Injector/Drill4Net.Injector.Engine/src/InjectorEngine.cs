@@ -453,10 +453,11 @@ namespace Drill4Net.Injector.Engine
                             if (asmCtx.InjMethods.ContainsKey(calleName))
                             {
                                 var callee = asmCtx.InjMethods[calleName];
-                                if (callee.CompilerGeneratedInfo == null) //null is normal (business method)
+                                var cgInfo = callee.CompilerGeneratedInfo;
+                                if (cgInfo == null) //null is normal (business method)
                                     continue;
-                                var ind = caller.CalleeIndexes[calleName];
-                                callee.CompilerGeneratedInfo.CallerIndexes.Add(caller, ind);
+                                cgInfo.Caller = caller;
+                                cgInfo.CallerIndex = caller.CalleeIndexes[calleName];
                             }
                             else { } //hmmm... check, WTF...
                         }

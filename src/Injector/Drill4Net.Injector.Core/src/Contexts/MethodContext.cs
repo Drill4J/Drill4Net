@@ -102,5 +102,10 @@ namespace Drill4Net.Injector.Core
             CurIndex += inc;
             return CurIndex;
         }
+        
+        public override string ToString()
+        {
+            return Method.Fullname;
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace Drill4Net.Injector.Core
         public Dictionary<string, InjectedMethod> InjMethods { get; }
         public Dictionary<string, InjectedMethod> InjMethodByClasses { get; }
 
-        /********************************************************************************/
+        /***********************************************************************************/
         
         public AssemblyContext(string filePath, AssemblyVersion version, AssemblyDefinition asmDef, InjectedAssembly injAssembly)
         {
@@ -33,6 +33,13 @@ namespace Drill4Net.Injector.Core
             InjClasses = new Dictionary<string, InjectedType>();
             InjMethods = new Dictionary<string, InjectedMethod>();
             InjMethodByClasses = new Dictionary<string, InjectedMethod>();
+        }
+        
+        /***********************************************************************************/
+
+        public override string ToString()
+        {
+            return Module.Name;
         }
     }
 }
