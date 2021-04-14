@@ -572,10 +572,10 @@ namespace Drill4Net.Injector.Engine
                     if (isAsyncMachineStart)
                     {
                         var ind2 = indStart + 7;
-                        var callee = extFullname.Substring(ind2, extFullname.IndexOf("(") - ind2 - 1);
-                        if (_injClasses.ContainsKey(callee))
+                        var asyncCallee = extFullname.Substring(ind2, extFullname.IndexOf("(") - ind2 - 1);
+                        if (_injClasses.ContainsKey(asyncCallee))
                         {
-                            var asyncType = _injClasses[callee];
+                            var asyncType = _injClasses[asyncCallee];
                             if (asyncType.Filter(typeof(InjectedMethod), false)
                                 .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
                             {
@@ -583,7 +583,7 @@ namespace Drill4Net.Injector.Engine
                             }
                         }
                     }
-                    if (treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodName(extFullname))
+                    if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodName(extFullname))
                         treeFunc.CalleeIndexes.Add(extFullname, ctx.SourceIndex);
                 }
             }
