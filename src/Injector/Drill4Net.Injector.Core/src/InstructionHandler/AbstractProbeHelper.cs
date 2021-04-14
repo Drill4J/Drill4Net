@@ -29,14 +29,36 @@ namespace Drill4Net.Injector.Core
         {
             var id = localId == -1 ? null : localId.ToString();
             var pointUid = Guid.NewGuid().ToString();
+            var businessIndex = CalsBusinessIndex(ctx, localId);
 
-            var point = new CrossPoint(pointUid, id, pointType)
+            var point = new CrossPoint(pointUid, id, businessIndex, pointType)
             {
                 //TODO: PDB data
             };
             ctx.Method.AddChild(point);
-
+            
             return point;
+        }
+
+        internal virtual int CalsBusinessIndex(MethodContext ctx, int localIndex)
+        {
+            if (localIndex == -1) //TODO: what about tis case?!!!
+                return localIndex;
+            var ind = localIndex;
+            var method = ctx.Method;
+            while (true)
+            {
+                var info = method.CompilerGeneratedInfo;
+                var caller = info?.Caller;
+                if (caller == null)
+                    break;
+                var indexes = caller.CalleeIndexes;
+                if (!indexes.ContainsKey(method.Fullname))
+                    break;
+                ind += indexes[method.Fullname];
+                method = caller;
+            }
+            return ind;
         }
     }
 }

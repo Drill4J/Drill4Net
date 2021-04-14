@@ -24,10 +24,7 @@ namespace Drill4Net.Injector.Core
             //
             if (flow is not FlowControl.Next and not FlowControl.Call)
                 return false;
-            if (instr.Previous == null)
-                return true;
-            var prevCode = instr.Previous.OpCode.Code;
-            if(prevCode is Code.Leave or Code.Leave_S)
+            if (instr.Previous is {OpCode: {Code: Code.Leave or Code.Leave_S}}) 
                 return false;
             if(ctx.CompilerInstructions.Contains(instr))
                 return false;
@@ -56,14 +53,13 @@ namespace Drill4Net.Injector.Core
                         var jumpFlow = cur.OpCode.FlowControl;
                         if (jumpFlow == FlowControl.Cond_Branch)
                             return false;
-                        if (jumpFlow == FlowControl.Branch &&
-                            cur.Previous.OpCode.FlowControl == FlowControl.Cond_Branch)
+                        if (jumpFlow == FlowControl.Branch && cur.Previous is {OpCode: {FlowControl: FlowControl.Cond_Branch}})
                             return false;
                     }
                 }
             }
             //
-            return true;
+            return false; //true TEST!!!!!!!!
         }
     }
 }

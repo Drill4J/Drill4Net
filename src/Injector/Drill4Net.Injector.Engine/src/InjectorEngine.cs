@@ -467,8 +467,14 @@ namespace Drill4Net.Injector.Engine
                     _strategy.StartMethod(methodCtx); //primary actions
                     for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
                     {
-                        if (!methodCtx.AllowedInstructions.Contains(instructions[i]))
+                        #region Checks
+                        var instr = instructions[i];
+                        if (!methodCtx.AllowedInstructions.Contains(instr))
                             continue;
+                        if (methodCtx.Processed.Contains(instr))
+                            continue;
+                        #endregion
+                        
                         methodCtx.SetIndex(i);
                         i = HandleInstruction(methodCtx); //process and correct current index after potential injection
                     }
