@@ -442,12 +442,24 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                     #region CG method's global call index
                     //these methods are only of the current assembly, but this is enough to work with CG methods
+                    //This should be done here, for an already gathered dependency tree
                     var treeMethods = tree.Filter(typeof(InjectedMethod), true)
                         .Cast<InjectedMethod>()
                         .Where(a => a.CalleeIndexes.Count > 0);
-                    foreach (var callers in treeMethods)
+                    foreach (var caller in treeMethods)
                     {
-                        
+                        foreach (var calleName in caller.CalleeIndexes.Keys)
+                        {
+                            if (asmCtx.InjMethods.ContainsKey(calleName))
+                            {
+                                var callee = asmCtx.InjMethods[calleName];
+                                if (callee.CompilerGeneratedInfo == null) //null is normal (business method)
+                                    continue;
+                                var ind = caller.CalleeIndexes[calleName];
+                                callee.CompilerGeneratedInfo.CallerIndexes.Add(caller, ind);
+                            }
+                            else { } //hmmm... check, WTF...
+                        }
                     }
                     #endregion
                     #region Injections
@@ -882,7 +894,7 @@ namespace Drill4Net.Injector.Engine
                 methodSource.IsEnumeratorMoveNext = methodSource.IsMoveNext && isEnumerable;
                 methodSource.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
                 if (methodSource.MethodType == MethodType.CompilerGeneratedPart)
-                    treeFunc.CompilerGeneratedInfo = new CodeBlock();
+                    treeFunc.CompilerGeneratedInfo = new CalleeCodeBlock();
                 //
                 if (!asmCtx.InjMethods.ContainsKey(treeFunc.Fullname))
                     asmCtx.InjMethods.Add(treeFunc.Fullname, treeFunc);
