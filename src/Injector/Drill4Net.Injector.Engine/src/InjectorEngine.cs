@@ -8,6 +8,7 @@ using System.Threading;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Xml.Serialization;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -18,6 +19,7 @@ using Drill4Net.Injection;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Strategies.Flow;
 using Drill4Net.Injector.Strategies.Block;
+using Mono.Collections.Generic;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -35,9 +37,6 @@ namespace Drill4Net.Injector.Engine
         private readonly IInjectorRepository _rep;
         private readonly ThreadLocal<bool?> _isNetCore;
         private readonly ThreadLocal<AssemblyVersion> _mainVersion;
-        private Dictionary<string, InjectedType> _injClasses;
-        private Dictionary<string, InjectedMethod> _injMethods;
-        private Dictionary<string, InjectedMethod> _injMethodByClasses;
         private readonly InstructionHandlerStrategy _strategy;
         private readonly TypeChecker _typeChecker;
 
@@ -274,51 +273,46 @@ namespace Drill4Net.Injector.Engine
             //var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             #endregion
             #region Processing
-            _injClasses = new Dictionary<string, InjectedType>();
-            _injMethods = new Dictionary<string, InjectedMethod>();
-            _injMethodByClasses = new Dictionary<string, InjectedMethod>();
-
-            foreach (TypeDefinition typeDef in module.Types)
+            var types = FilterTypes(module.Types);
+            var asmCtx = new AssemblyContext(filePath, version, assembly, treeAsm);
+            
+            #region 1. Tree's entities & Contexts
+            foreach (var typeDef in types)
             {
-                var typeName = typeDef.Name;
-                if (typeName == "<Module>")
-                    continue;
-
-                //TODO: normal defining of business types (by cfg?)
-                //var nameSpace = typeDef.Namespace;
                 var typeFullName = typeDef.FullName;
-                if (!_typeChecker.CheckByTypeName(typeFullName))
-                    continue;
-
+                
                 #region Tree
                 var realTypeName = TryGetRealTypeName(typeDef);
                 var treeMethodType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
                 {
                     SourceType = CreateTypeSource(typeDef)
                 };
-                _injClasses.Add(treeMethodType.Fullname, treeMethodType);
+                asmCtx.InjClasses.Add(treeMethodType.Fullname, treeMethodType);
                 treeAsm.AddChild(treeMethodType);
                 #endregion
 
+                var typeCtx = new TypeContext(asmCtx, typeDef, treeMethodType);
+                asmCtx.TypeContexts.Add(typeCtx);
+                
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
-                var methods = GetAllMethods(treeMethodType, typeDef, opts);
+                var methods = GetMethods(typeCtx, typeDef, opts);
+                typeCtx.Methods = methods;
 
-                //process all methods
+                //methods
                 foreach (var methodDef in methods)
                 {
                     #region Init
                     var curType = methodDef.DeclaringType;
-                    //typeName = curType.FullName;
                     typeFullName = curType.FullName;
 
                     var methodName = methodDef.Name;
                     var methodFullName = methodDef.FullName;
 
                     //Tree
-                    treeMethodType = _injClasses[typeFullName];
+                    treeMethodType = asmCtx.InjClasses[typeFullName];
                     var typeSource = treeMethodType.SourceType;
-                    var treeFunc = _injMethods[methodFullName];
+                    var treeFunc = asmCtx.InjMethods[methodFullName];
                     var methodSource = treeFunc.SourceType;
                     var methodType = methodSource.MethodType;
 
@@ -328,7 +322,7 @@ namespace Drill4Net.Injector.Engine
 
                     var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
-
+                    
                     //Enter/Return
                     var isSpecFunc = IsSpecialGeneratedMethod(methodType);
                     var strictEnterReturn = //what is principally forbidden
@@ -340,41 +334,11 @@ namespace Drill4Net.Injector.Engine
                             //Finalize() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
                             (_isNetCore.Value == true && methodSource.IsFinalizer)
                         );
-
+                    
                     //instructions
                     var body = methodDef.Body;
-                    //body.SimplifyMacros(); //buggy (Cecil or me?)
                     var instructions = body.Instructions; //no copy list!
                     var processor = body.GetILProcessor();
-                    #endregion
-                    #region Context
-                    var ctx = new InjectorContext(moduleName, instructions, processor)
-                    {
-                        Type = treeMethodType,
-                        Method = treeFunc,
-                        ExceptionHandlers = body.ExceptionHandlers,
-                        IsStrictEnterReturn = strictEnterReturn,
-                        ProxyNamespace = proxyNamespace,
-                        ProxyMethRef = proxyMethRef,
-                    };
-                    #endregion
-                    #region Jumpers
-                    //collect jumpers. Hash table for separate addresses is almost useless,
-                    //because they may be recalculated inside the processor during inject...
-                    //and ideally, there shouldn't be too many of them 
-                    for (var i = 1; i < instructions.Count; i++)
-                    {
-                        var instr = instructions[i];
-                        var flow = instr.OpCode.FlowControl;
-                        if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch)) 
-                            continue;
-                        ctx.Jumpers.Add(instr);
-                        //
-                        var anchor = instr.Operand;
-                        //pseudo-jump?
-                        if(instr.Next != anchor && !ctx.Anchors.Contains(anchor)) 
-                            ctx.Anchors.Add(anchor);
-                    }
                     #endregion
                     #region Start index
                     var startInd = 0;
@@ -401,19 +365,31 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                     #endregion
+                    #region Method context
+                    var methodCtx = new MethodContext(typeCtx, methodDef, instructions, processor)
+                    {
+                        Type = treeMethodType,
+                        Method = treeFunc,
+                        StartIndex = startInd,
+                        ExceptionHandlers = body.ExceptionHandlers,
+                        IsStrictEnterReturn = strictEnterReturn,
+                        ProxyNamespace = proxyNamespace,
+                        ProxyMethRef = proxyMethRef,
+                    };
+                    typeCtx.MethodContexts.Add(methodCtx);
+                    #endregion
                     #region Business function mapping
-                    var cgInfo = ctx.Method.CompilerGeneratedInfo;
+                    var cgInfo = methodCtx.Method.CompilerGeneratedInfo;
                     if (cgInfo != null)
                         cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
                     //
-                    var allowedInstrs = new HashSet<Instruction>();
                     for (var i = startInd; i < instructions.Count; i++)
                     {
-                        ctx.SetIndex(i);
-                        MapBusinessFunction(ctx); //in any case check each instruction
+                        methodCtx.SetIndex(i);
+                        MapBusinessFunction(methodCtx); //in any case check each instruction
                         
                         #region Check
-                        var checkRes = CheckInstruction(ctx);
+                        var checkRes = CheckInstruction(methodCtx);
                         if (checkRes == FlowType.NextCycle)
                             continue;
                         if (checkRes == FlowType.BreakCycle)
@@ -422,27 +398,72 @@ namespace Drill4Net.Injector.Engine
                             return;
                         #endregion
                         
-                        i = ctx.CurIndex; //because it can change
-                        allowedInstrs.Add(instructions[i]);
+                        i = methodCtx.CurIndex; //because it can change
+                        methodCtx.AllowedInstructions.Add(instructions[i]);
                     }           
                     //
                     if (cgInfo != null)
-                        cgInfo.LastIndex = ctx.SourceIndex;
+                        cgInfo.LastIndex = methodCtx.SourceIndex;
+                    #endregion
+                }
+            }
+            #endregion
+            #region 2. Injection
+            foreach (var typeCtx in asmCtx.TypeContexts)
+            {
+                //process methods
+                foreach (var methodCtx in typeCtx.MethodContexts)
+                {
+                    #region Init
+                    var methodDef = methodCtx.Definition;
+
+                    //instructions
+                    var body = methodDef.Body;
+                    //body.SimplifyMacros(); //buggy (Cecil or me?)
+                    var instructions = methodCtx.Instructions; //no copy list!
+                    #endregion
+                    #region Jumpers
+                    //collect jumpers. Hash table for separate addresses is almost useless,
+                    //because they may be recalculated inside the processor during inject...
+                    //and ideally, there shouldn't be too many of them 
+                    for (var i = 1; i < instructions.Count; i++)
+                    {
+                        var instr = instructions[i];
+                        var flow = instr.OpCode.FlowControl;
+                        if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch)) 
+                            continue;
+                        methodCtx.Jumpers.Add(instr);
+                        //
+                        var anchor = instr.Operand;
+                        //pseudo-jump?
+                        if(instr.Next != anchor && !methodCtx.Anchors.Contains(anchor)) 
+                            methodCtx.Anchors.Add(anchor);
+                    }
+                    #endregion
+                    #region CG method's global call index
+                    //these methods are only of the current assembly, but this is enough to work with CG methods
+                    var treeMethods = tree.Filter(typeof(InjectedMethod), true)
+                        .Cast<InjectedMethod>()
+                        .Where(a => a.CalleeIndexes.Count > 0);
+                    foreach (var callers in treeMethods)
+                    {
+                        
+                    }
                     #endregion
                     #region Injections
-                    _strategy.StartMethod(ctx); //primary actions
-                    for (var i = startInd; i < instructions.Count; i++)
+                    _strategy.StartMethod(methodCtx); //primary actions
+                    for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
                     {
-                        if (!allowedInstrs.Contains(instructions[i]))
+                        if (!methodCtx.AllowedInstructions.Contains(instructions[i]))
                             continue;
-                        ctx.SetIndex(i);
-                        i = HandleInstruction(ctx); //process and correct current index after potential injection
+                        methodCtx.SetIndex(i);
+                        i = HandleInstruction(methodCtx); //process and correct current index after potential injection
                     }
                     #endregion
                     #region Correct jumps
                     //EACH short form -> to long form (otherwise, we need to recalculate 
                     //again after each necessary conversion)
-                    var jumpers = ctx.Jumpers.ToArray();
+                    var jumpers = methodCtx.Jumpers.ToArray();
                     foreach (var jump in jumpers)
                     {
                         var opCode = jump.OpCode;
@@ -458,6 +479,7 @@ namespace Drill4Net.Injector.Engine
                     body.OptimizeMacros();
                 }
             }
+            #endregion
             #endregion
             #region Proxy class
             //here we generate proxy class which will be calling of real profiler by cached Reflection
@@ -489,7 +511,31 @@ namespace Drill4Net.Injector.Engine
             Log.Information($"Modified assembly is created: {modifiedPath}");
         }
 
-        internal FlowType CheckInstruction(InjectorContext ctx)
+        /// <summary>
+        /// Get all types of assembly for filtering
+        /// </summary>
+        /// <param name="allTypes"></param>
+        /// <returns></returns>
+        internal IEnumerable<TypeDefinition> FilterTypes(Collection<TypeDefinition> allTypes)
+        {
+            var res = new List<TypeDefinition>();
+            foreach (var typeDef in allTypes)
+            {
+                var typeName = typeDef.Name;
+                if (typeName == "<Module>")
+                    continue;
+
+                //TODO: normal defining of business types (by cfg?)
+                //var nameSpace = typeDef.Namespace;
+                var typeFullName = typeDef.FullName;
+                if (!_typeChecker.CheckByTypeName(typeFullName))
+                    continue;
+                res.Add(typeDef);
+            }
+            return res;
+        }
+
+        internal FlowType CheckInstruction(MethodContext ctx)
         {
             var instr = ctx.CurInstruction;
             var code = instr.OpCode.Code;
@@ -544,12 +590,13 @@ namespace Drill4Net.Injector.Engine
             };
         }
 
-        internal void MapBusinessFunction(InjectorContext ctx)
+        internal void MapBusinessFunction(MethodContext ctx)
         {
             var instr = ctx.CurInstruction;
             var treeFunc = ctx.Method;
             var flow = instr.OpCode.FlowControl;
             var code = instr.OpCode.Code;
+            var asmCtx = ctx.TypeCtx.AssemblyCtx;
 
             //in any case needed check compiler generated classes
             if (instr.Operand is not MethodReference extOp ||
@@ -560,43 +607,44 @@ namespace Drill4Net.Injector.Engine
             var extTypeFullName = extOp.DeclaringType.FullName;
             var extTypeName = extOp.DeclaringType.Name;
             var extFullname = extOp.FullName;
-            //
-            if (!treeFunc.CalleeIndexes.ContainsKey(extFullname))
+            
+            #region Callee's indexes
+            //TODO: regex
+            var isAngledCtor = extFullname.Contains("/<") && extFullname.Contains("__") && extFullname.EndsWith(".ctor()");
+            if (!isAngledCtor)
             {
-                //TODO: regex
-                var isAngledCtor = extFullname.Contains("/<") && extFullname.Contains("__") && extFullname.EndsWith(".ctor()");
-                if (!isAngledCtor)
+                var indStart = extFullname.IndexOf(":Start<");
+                var isAsyncMachineStart = indStart > 0 && extFullname.Contains(".CompilerServices.AsyncTaskMethodBuilder");
+                if (isAsyncMachineStart)
                 {
-                    var indStart = extFullname.IndexOf(":Start<");
-                    var isAsyncMachineStart = indStart > 0 && extFullname.Contains(".CompilerServices.AsyncTaskMethodBuilder");
-                    if (isAsyncMachineStart)
+                    var ind2 = indStart + 7;
+                    var asyncCallee = extFullname.Substring(ind2, extFullname.IndexOf("(") - ind2 - 1);
+                    if (asmCtx.InjClasses.ContainsKey(asyncCallee))
                     {
-                        var ind2 = indStart + 7;
-                        var asyncCallee = extFullname.Substring(ind2, extFullname.IndexOf("(") - ind2 - 1);
-                        if (_injClasses.ContainsKey(asyncCallee))
+                        var asyncType = asmCtx.InjClasses[asyncCallee];
+                        if (asyncType.Filter(typeof(InjectedMethod), false)
+                            .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
                         {
-                            var asyncType = _injClasses[asyncCallee];
-                            if (asyncType.Filter(typeof(InjectedMethod), false)
-                                .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
-                            {
-                                treeFunc.CalleeIndexes.Add(asyncMove.Fullname, ctx.SourceIndex);
-                            }
+                            treeFunc.CalleeIndexes.Add(asyncMove.Fullname, ctx.SourceIndex);
                         }
                     }
-                    if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodName(extFullname))
-                        treeFunc.CalleeIndexes.Add(extFullname, ctx.SourceIndex);
                 }
+                if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodName(extFullname))
+                    treeFunc.CalleeIndexes.Add(extFullname, ctx.SourceIndex);
             }
-            //
+            #endregion
+
+            // is compiler generated method?
             var extName = extOp.Name;
             if (!extTypeFullName.Contains(">d__") && !extName.StartsWith("<") && !extFullname.Contains("|")) 
                 return;
+            
             try
             {
                 //null is norm for anonymous types
-                var extType = _injClasses.ContainsKey(extTypeFullName) ?
-                    _injClasses[extTypeFullName] :
-                    (_injClasses.ContainsKey(extTypeName) ? _injClasses[extTypeName] : null);
+                var extType = asmCtx.InjClasses.ContainsKey(extTypeFullName) ?
+                    asmCtx.InjClasses[extTypeFullName] :
+                    (asmCtx.InjClasses.ContainsKey(extTypeName) ? asmCtx.InjClasses[extTypeName] : null);
 
                 //extType found, not local func, not 'class-for-all'
                 if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
@@ -604,20 +652,20 @@ namespace Drill4Net.Injector.Engine
                     var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
                     InjectedType realCgType = null;
                     var typeKey = treeFunc.BusinessType;
-                    if (_injClasses.ContainsKey(typeKey))
-                        realCgType = _injClasses[typeKey];
+                    if (asmCtx.InjClasses.ContainsKey(typeKey))
+                        realCgType = asmCtx.InjClasses[typeKey];
                     if (realCgType != null && extRealMethodName != null)
                     {
                         var mkey = GetMethodKeyByClass(realCgType.Fullname, extRealMethodName);
-                        if (_injMethodByClasses.ContainsKey(mkey))
-                            treeFunc = _injMethodByClasses[mkey];
+                        if (asmCtx.InjMethodByClasses.ContainsKey(mkey))
+                            treeFunc = asmCtx.InjMethodByClasses[mkey];
                         
                         var nestTypes = extType.Filter(typeof(InjectedType), true);
                         foreach (var injectedSimpleEntity in nestTypes)
                         {
                             var nestType = (InjectedType) injectedSimpleEntity;
                             if (nestType.IsCompilerGenerated)
-                                nestType.FromMethod = treeFunc.FromMethod ?? treeFunc.Fullname;
+                                nestType.FromMethod = treeFunc.BusinessMethod;
                         }
                     }
 
@@ -636,9 +684,9 @@ namespace Drill4Net.Injector.Engine
                 }
                 else
                 {
-                    if (!_injMethods.ContainsKey(extFullname)) 
+                    if (!asmCtx.InjMethods.ContainsKey(extFullname)) 
                         return;
-                    var extFunc = _injMethods[extFullname];
+                    var extFunc = asmCtx.InjMethods[extFullname];
                     extFunc.FromMethod ??= treeFunc.Fullname ?? extType?.FromMethod;
                 }
             }
@@ -648,7 +696,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal int HandleInstruction(InjectorContext ctx)
+        internal int HandleInstruction(MethodContext ctx)
         {
             if (ctx == null)
                 throw new ArgumentNullException(nameof(ctx));
@@ -783,8 +831,7 @@ namespace Drill4Net.Injector.Engine
             return type is MethodType.EventAdd or MethodType.EventRemove;
         }
 
-        internal IEnumerable<MethodDefinition> GetAllMethods(InjectedType treeParentClass, TypeDefinition type, 
-            MainOptions opts)
+        internal List<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, MainOptions opts)
         {
             #region Own methods
             #region Filter methods
@@ -801,6 +848,9 @@ namespace Drill4Net.Injector.Engine
                     .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
                 ;
             #endregion
+            
+            var treeParentClass = typeCtx.InjType;
+            var asmCtx = typeCtx.AssemblyCtx;
             
             //check for type's characteristics
             var interfaces = type.Interfaces;
@@ -834,15 +884,23 @@ namespace Drill4Net.Injector.Engine
                 if (methodSource.MethodType == MethodType.CompilerGeneratedPart)
                     treeFunc.CompilerGeneratedInfo = new CodeBlock();
                 //
-                if (!_injMethods.ContainsKey(treeFunc.Fullname))
-                    _injMethods.Add(treeFunc.Fullname, treeFunc);
+                if (!asmCtx.InjMethods.ContainsKey(treeFunc.Fullname))
+                    asmCtx.InjMethods.Add(treeFunc.Fullname, treeFunc);
                 else { } //strange..
                 methods.Add(ownMethod);
                 //
                 var method = GetMethodKeyByClass(typeFullname, treeFunc.Name);
-                if (!_injMethodByClasses.ContainsKey(method))
-                    _injMethodByClasses.Add(method, treeFunc);
+                if (!asmCtx.InjMethodByClasses.ContainsKey(method))
+                    asmCtx.InjMethodByClasses.Add(method, treeFunc);
                 else { }
+
+                // //debug
+                // var funcs = treeParentClass.Filter(typeof(InjectedMethod), true)
+                //     .Cast<InjectedMethod>()
+                //     .Select(a => a.Fullname).ToList();
+                // var func = funcs
+                //     .FirstOrDefault(a => a == treeFunc.Fullname);
+                
                 treeParentClass.AddChild(treeFunc);
             }
             #endregion
@@ -854,10 +912,10 @@ namespace Drill4Net.Injector.Engine
                 {
                     SourceType = CreateTypeSource(nestedType),
                 };
-                _injClasses.Add(treeType.Fullname, treeType);
+                asmCtx.InjClasses.Add(treeType.Fullname, treeType);
                 treeParentClass.AddChild(treeType);
                 //
-                var innerMethods = GetAllMethods(treeType, nestedType, opts);
+                var innerMethods = GetMethods(typeCtx, nestedType, opts);
                 methods.AddRange(innerMethods);
             }
             #endregion

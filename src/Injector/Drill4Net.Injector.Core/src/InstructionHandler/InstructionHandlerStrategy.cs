@@ -21,12 +21,12 @@
             _last = handler;
         }
 
-        public virtual void StartMethod(InjectorContext ctx)
+        public virtual void StartMethod(MethodContext ctx)
         {
             _first?.StartMethod(ctx);
         }
 
-        public virtual void HandleInstruction(InjectorContext ctx)
+        public virtual void HandleInstruction(MethodContext ctx)
         {
             _first?.HandleInstruction(ctx);
         }

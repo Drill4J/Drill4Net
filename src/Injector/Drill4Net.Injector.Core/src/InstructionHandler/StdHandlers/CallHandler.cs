@@ -20,7 +20,7 @@ namespace Drill4Net.Injector.Core
         
         /*****************************************************************************/
 
-        protected override bool IsCondition(InjectorContext ctx)
+        protected override bool IsCondition(MethodContext ctx)
         {
             try
             {

@@ -13,7 +13,7 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************/
 
-        protected override void StartMethodConcrete(InjectorContext ctx)
+        protected override void StartMethodConcrete(MethodContext ctx)
         {
             if (ctx.IsStrictEnterReturn || !ctx.Instructions.Any())
                 return;
@@ -30,12 +30,12 @@ namespace Drill4Net.Injector.Core
             ctx.Processor.InsertBefore(firstOp, call);
         }
 
-        protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
+        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             needBreak = false;
         }
 
-        protected virtual string GetProbeData(InjectorContext ctx)
+        protected virtual string GetProbeData(MethodContext ctx)
         {
             return _probeHelper.GetProbeData(ctx, CrossPointType.Enter, 0);//exactly 0 !
         }

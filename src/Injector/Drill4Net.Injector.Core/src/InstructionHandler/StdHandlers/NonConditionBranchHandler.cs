@@ -14,7 +14,7 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************/
 
-        protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
+        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;

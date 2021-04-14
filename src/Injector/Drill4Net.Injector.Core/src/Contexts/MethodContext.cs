@@ -8,15 +8,19 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
-    public record InjectorContext
+    public record MethodContext
     {
-        public string ModuleName { get; }
+        public TypeContext TypeCtx { get; set; }
+        public MethodDefinition Definition { get; }
+        public string ModuleName => TypeCtx.AssemblyCtx.Module.Name;
 
         public InjectedType Type { get; set; }
         public InjectedMethod Method { get; set; }
 
         public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
+        public HashSet<Instruction> AllowedInstructions { get; }
+        public int StartIndex { get; set; }
         public Collection<ExceptionHandler> ExceptionHandlers { get; set; }
         public Instruction LastOperation { get; }
         public Stack<Instruction> IfStack { get; }
@@ -55,13 +59,15 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************************/
 
-        public InjectorContext(string moduleName, Collection<Instruction> instructions, ILProcessor processor)
+        public MethodContext(TypeContext typeCtx, MethodDefinition methodDef, Collection<Instruction> instructions, ILProcessor processor)
         {
-            ModuleName = moduleName ?? throw new ArgumentNullException(nameof(moduleName));
+            TypeCtx = typeCtx ?? throw new ArgumentNullException(nameof(typeCtx));
+            Definition = methodDef ?? throw new ArgumentNullException(nameof(methodDef));
             Instructions = instructions ?? throw new ArgumentNullException(nameof(instructions));
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
             LastOperation = instructions.Last();
             //
+            AllowedInstructions = new HashSet<Instruction>();
             Processed = new HashSet<Instruction>();
             FirstInjectInstructions = new HashSet<object>();
             CompilerInstructions = new HashSet<Instruction>();

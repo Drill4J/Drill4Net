@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.Strategies.Block
         
     //    /*******************************************************************************/
         
-    //    protected virtual string GetProbeData(InjectorContext ctx)
+    //    protected virtual string GetProbeData(MethodContext ctx)
     //    {
     //        return _probeHelper.GetProbeData(ctx);
     //    }

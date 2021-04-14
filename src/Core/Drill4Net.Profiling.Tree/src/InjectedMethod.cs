@@ -12,6 +12,7 @@ namespace Drill4Net.Profiling.Tree
         public string TypeName { get; set; }
 
         public string FromMethod { get; set; }
+        public bool IsCompilerGenerated => SourceType.MethodType == MethodType.CompilerGeneratedPart;
 
         public CodeBlock CompilerGeneratedInfo { get; set; }
 

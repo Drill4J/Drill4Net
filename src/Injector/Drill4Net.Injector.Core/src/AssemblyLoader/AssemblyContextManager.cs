@@ -27,7 +27,7 @@ namespace Drill4Net.Injector.Core
             WeakReference refCtx;
             if (!_contexts.ContainsKey(assemblyPath))
             {
-                var asmCtx = new AssemblyContext(assemblyPath);
+                var asmCtx = new AssemblyLoaderContext(assemblyPath);
                 refCtx = new WeakReference(asmCtx, trackResurrection: true);
                 _contexts.Add(assemblyPath, refCtx);
             }
@@ -35,7 +35,7 @@ namespace Drill4Net.Injector.Core
             {
                 refCtx = _contexts[assemblyPath];
             }
-            var asm = ((AssemblyContext)refCtx.Target).LoadFromAssemblyPath(assemblyPath);
+            var asm = ((AssemblyLoaderContext)refCtx.Target).LoadFromAssemblyPath(assemblyPath);
             return asm;
         }
 
@@ -48,7 +48,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
-            var asmCtx = (AssemblyContext)refCtx.Target;
+            var asmCtx = (AssemblyLoaderContext)refCtx.Target;
             if (refCtx.IsAlive)
                 asmCtx.Unload();
             for (var i = 0; refCtx.IsAlive && i < 10; i++)

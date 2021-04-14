@@ -18,14 +18,14 @@ namespace Drill4Net.Injector.Core
 
         /**************************************************************************************/
 
-        protected override void StartMethodConcrete(InjectorContext ctx)
+        protected override void StartMethodConcrete(MethodContext ctx)
         {
             //data
             _initProbData = GetProbeData(ctx);
             _returnInst = GetFirstInstruction(ctx, _initProbData); //as object it must be only one
         }
 
-        protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
+        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
@@ -80,7 +80,7 @@ namespace Drill4Net.Injector.Core
             needBreak = true;
         }
         
-        protected virtual string GetProbeData(InjectorContext ctx)
+        protected virtual string GetProbeData(MethodContext ctx)
         {
             return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1); //exactly -1 !
         }

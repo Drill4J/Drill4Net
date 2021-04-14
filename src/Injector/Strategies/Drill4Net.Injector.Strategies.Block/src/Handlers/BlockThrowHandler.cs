@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.Strategies.Block
         
         /*******************************************************************************/
         
-        protected override string GetProbeData(InjectorContext ctx)
+        protected override string GetProbeData(MethodContext ctx)
         {
             return _probeHelper.GetProbeData(ctx);
         }

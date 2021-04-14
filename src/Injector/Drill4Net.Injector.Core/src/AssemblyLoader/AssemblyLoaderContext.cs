@@ -6,13 +6,13 @@ using System.Runtime.Loader;
 namespace Drill4Net.Injector.Core
 {
     //https://docs.microsoft.com/ru-ru/dotnet/core/tutorials/creating-app-with-plugin-support
-    public class AssemblyContext : AssemblyLoadContext
+    public class AssemblyLoaderContext : AssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _resolver;
 
         /*************************************************************/
 
-        public AssemblyContext(string asmPath) : base(isCollectible: true)
+        public AssemblyLoaderContext(string asmPath) : base(isCollectible: true)
         {
             _resolver = new AssemblyDependencyResolver(asmPath);
             Resolving += AssemblyContext_Resolving;

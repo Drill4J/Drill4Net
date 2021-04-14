@@ -26,7 +26,7 @@ namespace Drill4Net.Injector.Core
 
         #region Handle
         #region Starting processing the method
-        public virtual void StartMethod(InjectorContext ctx)
+        public virtual void StartMethod(MethodContext ctx)
         {
             try
             {
@@ -38,10 +38,10 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        protected virtual void StartMethodConcrete(InjectorContext ctx) { }
+        protected virtual void StartMethodConcrete(MethodContext ctx) { }
         #endregion
         #region Handle concrete instruction
-        public void HandleInstruction(InjectorContext ctx)
+        public void HandleInstruction(MethodContext ctx)
         {
             var needBreak = false;
             try
@@ -55,7 +55,7 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        protected abstract void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak);
+        protected abstract void HandleInstructionConcrete(MethodContext ctx, out bool needBreak);
         #endregion
         #endregion
 
@@ -151,7 +151,7 @@ namespace Drill4Net.Injector.Core
             return Instruction.Create(OpCodes.Nop);
         }
 
-        internal void ReplaceJumps(Instruction from, Instruction to, InjectorContext ctx)
+        internal void ReplaceJumps(Instruction from, Instruction to, MethodContext ctx)
         {
             ctx.ReplacedJumps.Add(to, from);
             var jumpers = ctx.Jumpers;
@@ -231,7 +231,7 @@ namespace Drill4Net.Injector.Core
             return op.OpCode.Name.StartsWith("ldloc") && (op.Next == lastOp || op.Next?.Next == lastOp);
         }
 
-        protected Instruction GetFirstInstruction(InjectorContext ctx, string probeData)
+        protected Instruction GetFirstInstruction(MethodContext ctx, string probeData)
         {
             var instr = Instruction.Create(OpCodes.Ldstr, probeData);
             ctx.FirstInjectInstructions.Add(instr);

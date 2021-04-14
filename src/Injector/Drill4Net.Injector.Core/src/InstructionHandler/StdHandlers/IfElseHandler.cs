@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************************/
 
-        protected override void ProcessConditionInstruction(InjectorContext ctx, out bool needBreak)
+        protected override void ProcessConditionInstruction(MethodContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;

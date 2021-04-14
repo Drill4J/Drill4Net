@@ -17,7 +17,7 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************/
 
-        protected override void HandleInstructionConcrete(InjectorContext ctx, out bool needBreak)
+        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             needBreak = false;
             
@@ -45,13 +45,13 @@ namespace Drill4Net.Injector.Core
             needBreak = true;
         }
 
-        protected abstract bool IsCondition(InjectorContext ctx);
+        protected abstract bool IsCondition(MethodContext ctx);
         
-        protected virtual string GetProbeData(InjectorContext ctx)
+        protected virtual string GetProbeData(MethodContext ctx)
         {
             return _probeHelper.GetProbeData(ctx, PointType);
         }
 
-        protected virtual void PostAction(InjectorContext ctx) {}
+        protected virtual void PostAction(MethodContext ctx) {}
     }
 }
