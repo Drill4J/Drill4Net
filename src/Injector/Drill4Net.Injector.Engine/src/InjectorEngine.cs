@@ -410,8 +410,9 @@ namespace Drill4Net.Injector.Engine
                     #region Init
                     var startInd = methodCtx.StartIndex;
                     var instructions = methodCtx.Instructions;
-
-                    var cgInfo = methodCtx.Method.CompilerGeneratedInfo;
+                    var injMethod = methodCtx.Method;
+                    
+                    var cgInfo = injMethod.CompilerGeneratedInfo;
                     if (cgInfo != null)
                         cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
                     #endregion
@@ -434,7 +435,9 @@ namespace Drill4Net.Injector.Engine
                         i = methodCtx.CurIndex; //because it can change
                         methodCtx.BusinessInstructions.Add(instructions[i]);
                     }
-                    methodCtx.Method.BusinessCount = methodCtx.BusinessInstructions.Count;
+                    var cnt = methodCtx.BusinessInstructions.Count;
+                    injMethod.BusinessCount = cnt;
+                    injMethod.OwnBusinessCount = cnt;
                 }
             }
             #endregion
@@ -444,7 +447,7 @@ namespace Drill4Net.Injector.Engine
             foreach (var caller in bizCallers)
             {
                 foreach (var calleeName in caller.CalleeIndexes.Keys)
-                    CalcBusinessCount(asmCtx, caller, calleeName);
+                    CorrectMethodBusinessSize(asmCtx.InjMethodByFullname, caller, calleeName);
             }
             #endregion
             #endregion
@@ -571,21 +574,26 @@ namespace Drill4Net.Injector.Engine
             Log.Information($"Modified assembly is created: {modifiedPath}");
         }
 
-        internal int CalcBusinessCount(AssemblyContext asmCtx, InjectedMethod caller, string calleeName)
+        internal void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods, InjectedMethod caller, 
+            string calleeName)
         {
-            if (!asmCtx.InjMethodByFullname.ContainsKey(calleeName))
-                return 0;
-            var callee = asmCtx.InjMethodByFullname[calleeName];
+            if (methods == null)
+                throw new ArgumentNullException(nameof(methods));
+            if (!methods.ContainsKey(calleeName))
+                return;
+            var callee = methods[calleeName];
             if (!callee.IsCompilerGenerated)
-                return 0;
+                return;
+            
+            //at first, children - callees
             foreach(var subCalleeName in callee.CalleeIndexes.Keys)
             {
-                CalcBusinessCount(asmCtx, callee, subCalleeName);
+                CorrectMethodBusinessSize(methods, callee, subCalleeName);
             }
-            //the size of caller consists of own size + all it's callee sizes
-            //(already included in it)
+            
+            //the size of caller consists of own size + all sizes of it's CG callees
+            //(already included in them)
             caller.BusinessCount += callee.BusinessCount;
-            return caller.BusinessCount;
         }
 
         /// <summary>

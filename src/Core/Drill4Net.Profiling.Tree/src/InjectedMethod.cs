@@ -25,10 +25,16 @@ namespace Drill4Net.Profiling.Tree
         public MethodSource SourceType { get; set; }
         
         /// <summary>
-        /// BusinessCount instructions in various 'business parts' of IL code in total
-        /// (including compiler generated classes and functions)
+        /// Count of instructions in various 'business parts' of the IL code
+        /// (including compiler generated classes and functions) at the own level
+        /// of hierarchy of calls CG members
         /// </summary>
         public int BusinessCount { get; set; } = -1;
+        
+        /// <summary>
+        /// Count of only own 'business parts' of the IL code
+        /// </summary>
+        public int OwnBusinessCount { get; set; } = -1;
 
         /********************************************************************/
 
