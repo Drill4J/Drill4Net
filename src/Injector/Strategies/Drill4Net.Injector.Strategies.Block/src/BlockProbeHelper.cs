@@ -13,7 +13,10 @@ namespace Drill4Net.Injector.Strategies.Block
 
         public override string GenerateProbeData(MethodContext ctx, CrossPoint point)
         {
-            return $"{point.PointType}_{point.PointId}_{point.BusinessIndex}";
+            var str = point.PointType;
+            return point.PointId == point.BusinessIndex.ToString()
+                ? $"{str}_{point.BusinessIndex}"
+                : $"{str}_{point.PointId}/{point.BusinessIndex}";
         }
     }
 }
