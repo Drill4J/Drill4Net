@@ -275,8 +275,9 @@ namespace Drill4Net.Injector.Engine
             #region Processing
             var types = FilterTypes(module.Types);
             var asmCtx = new AssemblyContext(filePath, version, assembly, treeAsm);
-            
+
             #region 1. Tree's entities & Contexts
+            #region Creating contexts
             //by type
             foreach (var typeDef in types)
             {
@@ -298,7 +299,6 @@ namespace Drill4Net.Injector.Engine
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
                 var methods = GetMethods(typeCtx, typeDef, opts);
-                typeCtx.Methods = methods;
 
                 //by methods
                 foreach (var methodDef in methods)
@@ -379,40 +379,14 @@ namespace Drill4Net.Injector.Engine
                     };
                     typeCtx.MethodContexts.Add(methodCtx);
                     #endregion
-                    #region Business function mapping
-                    var cgInfo = methodCtx.Method.CompilerGeneratedInfo;
-                    if (cgInfo != null)
-                        cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
-                    //
-                    for (var i = startInd; i < instructions.Count; i++)
-                    {
-                        methodCtx.SetIndex(i);
-                        MapBusinessFunction(methodCtx); //in any case check each instruction
-                        
-                        #region Check
-                        var checkRes = CheckInstruction(methodCtx);
-                        if (checkRes == FlowType.NextCycle)
-                            continue;
-                        if (checkRes == FlowType.BreakCycle)
-                            break;
-                        if (checkRes == FlowType.Return)
-                            return;
-                        #endregion
-                        
-                        i = methodCtx.CurIndex; //because it can change
-                        methodCtx.AllowedInstructions.Add(instructions[i]);
-                    }
-                    //
-                    if (cgInfo != null)
-                        cgInfo.LastIndex = methodCtx.SourceIndex;
-                    #endregion
                 }
             }
+            #endregion
             #region MoveNext methods
-            var moveNextmethods = treeAsm.Filter(typeof(InjectedMethod), true)
+            var moveNextMethods = treeAsm.Filter(typeof(InjectedMethod), true)
                 .Cast<InjectedMethod>()
                 .Where(x => x.IsCompilerGenerated && x.Name == "MoveNext");
-            foreach (var meth in moveNextmethods)
+            foreach (var meth in moveNextMethods)
             {
                 // Owner type
                 var fullName = meth.Fullname;
@@ -429,7 +403,44 @@ namespace Drill4Net.Injector.Engine
                      continue;
                  var treeFunc = asmCtx.InjMethodByKeys[mkey];
                  meth.FromMethod = treeFunc.Fullname;
-                //treeFunc.AddChild(meth); //???!!!
+            }
+            #endregion
+            #region Business function mapping
+            foreach (var typeCtx in asmCtx.TypeContexts)
+            {
+                foreach (var methodCtx in typeCtx.MethodContexts)
+                {
+                    #region Init
+                    var startInd = methodCtx.StartIndex;
+                    var instructions = methodCtx.Instructions;
+
+                    var cgInfo = methodCtx.Method.CompilerGeneratedInfo;
+                    if (cgInfo != null)
+                        cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
+                    #endregion
+
+                    for (var i = startInd; i < instructions.Count; i++)
+                    {
+                        methodCtx.SetIndex(i);
+                        MapBusinessFunction(methodCtx); //in any case check each instruction for mapping
+
+                        #region Check
+                        var checkRes = CheckInstruction(methodCtx);
+                        if (checkRes == FlowType.NextCycle)
+                            continue;
+                        if (checkRes == FlowType.BreakCycle)
+                            break;
+                        if (checkRes == FlowType.Return)
+                            return;
+                        #endregion
+
+                        i = methodCtx.CurIndex; //because it can change
+                        methodCtx.BusinessInstructions.Add(instructions[i]);
+                    }
+                    //
+                    if (cgInfo != null)
+                        cgInfo.LastIndex = methodCtx.SourceIndex;
+                }
             }
             #endregion
             #endregion
@@ -495,7 +506,7 @@ namespace Drill4Net.Injector.Engine
                     {
                         #region Checks
                         var instr = instructions[i];
-                        if (!methodCtx.AllowedInstructions.Contains(instr))
+                        if (!methodCtx.BusinessInstructions.Contains(instr))
                             continue;
                         if (methodCtx.Processed.Contains(instr))
                             continue;

@@ -17,6 +17,7 @@ namespace Drill4Net.Profiling.Tree
         public CalleeCodeBlock CompilerGeneratedInfo { get; set; }
 
         public Dictionary<string, int> CalleeIndexes { get; set; }
+        //public string MoveNextMethod { get; set; }
 
         public string BusinessMethod => FromMethod ?? Fullname;
         public string BusinessType { get; set; }

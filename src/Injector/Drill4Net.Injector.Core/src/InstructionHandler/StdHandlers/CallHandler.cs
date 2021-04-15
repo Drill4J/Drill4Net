@@ -32,12 +32,12 @@ namespace Drill4Net.Injector.Core
                     return false;
                 var operand = (MethodReference) instr.Operand;
                 var fullname = operand.FullName;
-                if (code is Code.Callvirt)
-                    return fullname.Contains(">::GetAwaiter()");
+                //if (code is Code.Callvirt)
+                //    return fullname.Contains(">::GetAwaiter()");
                 if (fullname.Contains(ctx.ProxyNamespace))
                     return false;
-                if (fullname.Contains("Task::Run("))
-                    return true;
+                //if (fullname.Contains("Task::Run("))
+                //    return true;
                 var res = _typeChecker.CheckByMethodName(fullname);
                 return res;
             }

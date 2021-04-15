@@ -11,22 +11,20 @@ namespace Drill4Net.Injector.Core
     public record MethodContext
     {
         public TypeContext TypeCtx { get; }
-        public MethodDefinition Definition { get; }
         public string ModuleName => TypeCtx.AssemblyCtx.Module.Name;
-
         public InjectedType Type { get; set; }
+
+        public MethodDefinition Definition { get; }
         public InjectedMethod Method { get; set; }
 
         public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
-        public HashSet<Instruction> AllowedInstructions { get; }
+        public HashSet<Instruction> BusinessInstructions { get; }
         public int StartIndex { get; set; }
         public Collection<ExceptionHandler> ExceptionHandlers { get; set; }
         public Instruction LastOperation { get; }
         public Stack<Instruction> IfStack { get; }
-
         public bool IsStrictEnterReturn { get; set; }
-
         public HashSet<object> FirstInjectInstructions { get; }
         public Dictionary<Instruction, Instruction> ReplacedJumps { get; }
         public HashSet<Instruction> Jumpers { get; }
@@ -67,7 +65,7 @@ namespace Drill4Net.Injector.Core
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
             LastOperation = instructions.Last();
             //
-            AllowedInstructions = new HashSet<Instruction>();
+            BusinessInstructions = new HashSet<Instruction>();
             Processed = new HashSet<Instruction>();
             FirstInjectInstructions = new HashSet<object>();
             CompilerInstructions = new HashSet<Instruction>();
@@ -105,7 +103,7 @@ namespace Drill4Net.Injector.Core
         
         public override string ToString()
         {
-            return Method.Fullname;
+            return Method.ToString();
         }
     }
 }

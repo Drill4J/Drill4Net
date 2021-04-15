@@ -8,7 +8,7 @@ namespace Drill4Net.Injector.Strategies.Block
         protected override string GenerateProbeData(MethodContext ctx, CrossPoint point)
         {
             var injMeth = ctx.Method;
-            return $"{point.PointUid}^{injMeth.AssemblyName}^{injMeth.BusinessMethod}^{point.PointType}_{point.PointId}";
+            return $"{point.PointUid}^{injMeth.AssemblyName}^{injMeth.BusinessMethod}^{point.PointType}_{point.BusinessIndex}";
         }
     }
 }

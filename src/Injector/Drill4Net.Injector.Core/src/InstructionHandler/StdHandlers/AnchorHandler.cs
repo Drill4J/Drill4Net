@@ -20,14 +20,26 @@ namespace Drill4Net.Injector.Core
         protected override bool IsCondition(MethodContext ctx)
         {
             var instr = ctx.Instructions[ctx.CurIndex];
+            var code = instr.OpCode.Code;
             var flow = instr.OpCode.FlowControl;
             //
             if (flow is not FlowControl.Next and not FlowControl.Call)
                 return false;
             if (instr.Previous is {OpCode: {Code: Code.Leave or Code.Leave_S}}) 
                 return false;
-            if(ctx.CompilerInstructions.Contains(instr))
+            if (ctx.CompilerInstructions.Contains(instr))
                 return false;
+            var desc = instr.Operand?.ToString();
+            if (desc != null)
+            {
+                if (desc.Contains(":Start<") || desc.Contains(".Task::Run("))
+                    return true;
+                if (code is Code.Callvirt)
+                {
+                    if (/*desc.Contains(">::MoveNextAsync()") ||*/ desc.Contains(">::GetAwaiter()")) //"::GetAwaiter()"
+                        return true;
+                }
+            }
             if (!ctx.Anchors.Contains(instr))
                 return false;
             

@@ -10,7 +10,6 @@ namespace Drill4Net.Injector.Core
         public AssemblyContext AssemblyCtx { get; set; }
         public TypeDefinition Definition { get; }
         public InjectedType InjType { get; }
-        public List<MethodDefinition> Methods { get; set; }
         public List<MethodContext> MethodContexts { get; set; }
 
         /*****************************************************************************************/
@@ -28,7 +27,7 @@ namespace Drill4Net.Injector.Core
         
         public override string ToString()
         {
-            return InjType.Fullname;
+            return InjType.ToString();
         }
     }
 }
