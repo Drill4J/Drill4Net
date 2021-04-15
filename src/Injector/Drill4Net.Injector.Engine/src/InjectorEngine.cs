@@ -436,18 +436,26 @@ namespace Drill4Net.Injector.Engine
                         methodCtx.BusinessInstructions.Add(instructions[i]);
                     }
                     var cnt = methodCtx.BusinessInstructions.Count;
-                    injMethod.BusinessCount = cnt;
-                    injMethod.OwnBusinessCount = cnt;
+                    injMethod.BusinessSize = cnt;
+                    injMethod.OwnBusinessSize = cnt;
                 }
             }
             #endregion
-            #region Size of business code
-            var bizCallers = asmCtx.InjMethodByFullname.Values
-                .Where(a => !a.IsCompilerGenerated && a.CalleeIndexes.Count > 0);
-            foreach (var caller in bizCallers)
+            #region Size of the business code parts
+            var bizMethods = asmCtx.InjMethodByFullname.Values
+                .Where(a => !a.IsCompilerGenerated).ToArray();
+            foreach (var caller in bizMethods.Where(a => a.CalleeIndexes.Count > 0))
             {
                 foreach (var calleeName in caller.CalleeIndexes.Keys)
                     CorrectMethodBusinessSize(asmCtx.InjMethodByFullname, caller, calleeName);
+            }
+            #endregion
+            #region Blocks for the methods
+            foreach (var bizMethod in bizMethods)
+            {
+                var blocks = bizMethod.Blocks;
+                var calleeInds = bizMethod.CalleeIndexes;
+                
             }
             #endregion
             #endregion
@@ -577,6 +585,7 @@ namespace Drill4Net.Injector.Engine
         internal void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods, InjectedMethod caller, 
             string calleeName)
         {
+            #region Check
             if (methods == null)
                 throw new ArgumentNullException(nameof(methods));
             if (!methods.ContainsKey(calleeName))
@@ -584,6 +593,7 @@ namespace Drill4Net.Injector.Engine
             var callee = methods[calleeName];
             if (!callee.IsCompilerGenerated)
                 return;
+            #endregion
             
             //at first, children - callees
             foreach(var subCalleeName in callee.CalleeIndexes.Keys)
@@ -593,7 +603,7 @@ namespace Drill4Net.Injector.Engine
             
             //the size of caller consists of own size + all sizes of it's CG callees
             //(already included in them)
-            caller.BusinessCount += callee.BusinessCount;
+            caller.BusinessSize += callee.BusinessSize;
         }
 
         /// <summary>

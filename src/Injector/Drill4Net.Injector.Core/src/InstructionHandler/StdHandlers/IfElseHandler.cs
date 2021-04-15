@@ -105,10 +105,11 @@ namespace Drill4Net.Injector.Core
             //injection
             processor.InsertBefore(operand, ldstr2);
             processor.InsertBefore(operand, call);
-
-            processed.Add(prev);
             if (operand.Offset < instr.Offset)
                 ctx.IncrementIndex(2);
+            
+            //paired injected instructions are must be labeled as processed
+            processed.Add(prev);
             
             needBreak = true;
             #endregion

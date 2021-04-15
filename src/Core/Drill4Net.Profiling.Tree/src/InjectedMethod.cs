@@ -17,7 +17,6 @@ namespace Drill4Net.Profiling.Tree
         public CalleeCodeBlock CompilerGeneratedInfo { get; set; }
 
         public Dictionary<string, int> CalleeIndexes { get; set; }
-        //public string MoveNextMethod { get; set; }
 
         public string BusinessMethod => FromMethod ?? Fullname;
         public string BusinessType { get; set; }
@@ -29,12 +28,14 @@ namespace Drill4Net.Profiling.Tree
         /// (including compiler generated classes and functions) at the own level
         /// of hierarchy of calls CG members
         /// </summary>
-        public int BusinessCount { get; set; } = -1;
+        public int BusinessSize { get; set; } = -1;
         
         /// <summary>
         /// Count of only own 'business parts' of the IL code
         /// </summary>
-        public int OwnBusinessCount { get; set; } = -1;
+        public int OwnBusinessSize { get; set; } = -1;
+
+        public List<int> Blocks { get; }
 
         /********************************************************************/
 
@@ -45,6 +46,7 @@ namespace Drill4Net.Profiling.Tree
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             CalleeIndexes = new Dictionary<string, int>();
+            Blocks = new List<int>();
             //
             var parts = GetParts(fullName);
             Namespace = parts.Namespace;

@@ -55,6 +55,7 @@ namespace Drill4Net.Injector.Core
                 return localIndex;
             var ind = localIndex;
             var method = ctx.Method;
+            //go up to business method and sum the real index shift (business index)
             while (true)
             {
                 var info = method.CompilerGeneratedInfo;
