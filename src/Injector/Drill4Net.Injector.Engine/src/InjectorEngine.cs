@@ -47,7 +47,7 @@ namespace Drill4Net.Injector.Engine
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _isNetCore = new ThreadLocal<bool?>();
             _mainVersion = new ThreadLocal<AssemblyVersion>();
-            _typeChecker = new();
+            _typeChecker = new TypeChecker();
 
             FlowStrategy flowStrategy = new();
             BlockStrategy blockStrategy = new();
@@ -670,7 +670,7 @@ namespace Drill4Net.Injector.Engine
             var isAngledCtor = extFullname.Contains("/<") && extFullname.Contains("__") && extFullname.EndsWith(".ctor()");
             if (!isAngledCtor)
             {
-                var tokenStart = ":Start<";
+                const string tokenStart = ":Start<";
                 var indStart = extFullname.IndexOf(tokenStart);
                 var isAsyncMachineStart = indStart > 0 && extFullname.Contains(".CompilerServices.AsyncTaskMethodBuilder");
                 if (isAsyncMachineStart)

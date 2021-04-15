@@ -37,8 +37,6 @@ namespace Drill4Net.Injector.Core
             var code = opCode.Code;
 
             var exceptionHandlers = ctx.ExceptionHandlers;
-            var jumpers = ctx.Jumpers;
-
             var strictEnterReturn = ctx.IsStrictEnterReturn;
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             var lastOp = ctx.LastOperation;
@@ -47,36 +45,44 @@ namespace Drill4Net.Injector.Core
             if (strictEnterReturn)
                 return;
 
-            //the return in the middle of the method body
-            if (instr.Operand == lastOp && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
-            {
-                _returnInst.Operand = $"{_initProbData}{ctx.CurIndex}";
-                instr.Operand = _returnInst;
-            }
-
-            //RETURN
-            if (code != Code.Ret) 
-                return;
-
-            //data
-            _returnInst.Operand = $"{_initProbData}{ctx.CurIndex}";
-            
-            //correction
-            FixFinallyEnd(instr, _returnInst, exceptionHandlers);
-            ReplaceJumps(instr, _returnInst, ctx);
-            
-            //injection
-            processor.InsertBefore(instr, _returnInst);
-            processor.InsertBefore(instr, call);
-            ctx.IncrementIndex(2);
-            
-            //correcting pointId
             var point = ctx.Method.Filter(typeof(CrossPoint), false)
                 .Cast<CrossPoint>()
-                .FirstOrDefault(a => a.PointType == CrossPointType.Return && a.PointId == null);
-            if(point != null)
-                point.PointId = ctx.CurIndex.ToString();
-            
+                .FirstOrDefault(a => a.PointType == CrossPointType.Return);
+            if (point != null)
+            {
+
+                //the return in the middle of the method body
+                if (instr.Operand == lastOp &&
+                    lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
+                {
+                    _returnInst.Operand = $"{_initProbData}{_probeHelper.GenerateProbeData(ctx, point)}";
+                    instr.Operand = _returnInst;
+                }
+
+                //RETURN
+                if (code != Code.Ret)
+                    return;
+
+                //correcting pointId
+                if (point.BusinessIndex == -1)
+                {
+                    point.PointId = ctx.CurIndex.ToString();
+                    point.BusinessIndex = ctx.SourceIndex;
+                }
+
+                //data
+                _returnInst.Operand = $"{_initProbData}{_probeHelper.GenerateProbeData(ctx, point)}";
+
+                //correction
+                FixFinallyEnd(instr, _returnInst, exceptionHandlers);
+                ReplaceJumps(instr, _returnInst, ctx);
+
+                //injection
+                processor.InsertBefore(instr, _returnInst);
+                processor.InsertBefore(instr, call);
+                ctx.IncrementIndex(2);
+            }
+
             needBreak = true;
         }
         

@@ -19,11 +19,20 @@ namespace Drill4Net.Injector.Core
         public virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int byIndex)
         {
             var point = CreateCrossPoint(ctx, pointType, byIndex);
-            return GenerateProbeData(ctx, point);
+            return GenerateProbe(ctx, point);
         }
         #endregion
+        #region GenerateProbe
+        protected virtual string GenerateProbe(MethodContext ctx, CrossPoint point)
+        {
+            return point.BusinessIndex == -1 
+                ? GenerateProbePrefix(ctx, point)
+                : $"{GenerateProbePrefix(ctx, point)}{GenerateProbeData(ctx, point)}";
+        }
 
-        protected abstract string GenerateProbeData(MethodContext ctx, CrossPoint point);
+        protected abstract string GenerateProbePrefix(MethodContext ctx, CrossPoint point);
+        public abstract string GenerateProbeData(MethodContext ctx, CrossPoint point);
+        #endregion
 
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
@@ -42,7 +51,7 @@ namespace Drill4Net.Injector.Core
 
         internal virtual int CalsBusinessIndex(MethodContext ctx, int localIndex)
         {
-            if (localIndex == -1) //TODO: what about tis case?!!!
+            if (localIndex == -1) //TODO: what about this case?!!!
                 return localIndex;
             var ind = localIndex;
             var method = ctx.Method;
