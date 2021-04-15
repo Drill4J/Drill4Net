@@ -607,12 +607,11 @@ namespace Drill4Net.Injector.Engine
             //and the compiler-generated one
             if (method.SourceType.IsMoveNext && method.SourceType.MethodType == MethodType.CompilerGeneratedPart)
             {
-                //TODO: this wrong!!! Нельзя тут прерывать, бизнес-код может быть ниже...
-                //возможно, он может находиться только в первом уровне try/catch
+                //TODO: this wrong!!! Нельзя тут прерывать, бизнес-код может быть ниже!!!
                 if (code is Code.Callvirt or Code.Call)
                 {
-                    var s = instr.ToString();
-                    if (s.EndsWith("get_IsCompleted()")) 
+                    var s = instr.Previous?.ToString();
+                    if (s.EndsWith("get_IsCompleted()"))
                         return FlowType.BreakCycle;
                 }
                             

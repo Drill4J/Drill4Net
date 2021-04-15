@@ -251,6 +251,8 @@ namespace Drill4Net.Target.Tests.Common
                 #region Anonymous
                 yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func), new List<string> { "If_6" }));
 
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_Invoke), new List<string> { "If_6" }));
+
                 //at the moment, we decided not to consider local functions as separate entities 
                 yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_WithLocalFunc), new List<string> { "If_6" }));
 

@@ -200,6 +200,7 @@ namespace Drill4Net.Target.Common
             #endregion
             #region Anonymous, Expression
             Anonymous_Func();
+            Anonymous_Func_Invoke();
             Anonymous_Func_WithLocalFunc();
 
             Anonymous_Type(false);
@@ -963,7 +964,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Async_Task)}: {cond}");
         }
 
-        public Task Delay100()
+        internal Task Delay100()
         {
             return Task.Delay(100);
         }
@@ -1003,7 +1004,7 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Async_Linq_NonBlocking)}: {string.Join(", ", inputs)}");
         }
 
-        public List<GenStr> GetDataForAsyncLinq()
+        internal List<GenStr> GetDataForAsyncLinq()
         {
             return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C"), };
         }
@@ -1253,6 +1254,21 @@ namespace Drill4Net.Target.Common
                 return x + y + z;
             };
             int d = operation(4, 5);
+            Console.WriteLine($"{nameof(Anonymous_Func)}: {d}"); // 15
+        }
+
+        public void Anonymous_Func_Invoke()
+        {
+            int z = 8;
+#pragma warning disable IDE0039 // Use local function
+            Operation operation = delegate (int x, int y)
+#pragma warning restore IDE0039 // Use local function
+            {
+                if (x > 1)
+                    x /= 2;
+                return x + y + z;
+            };
+            int d = operation.Invoke(4, 5);
             Console.WriteLine($"{nameof(Anonymous_Func)}: {d}"); // 15
         }
 

@@ -32,13 +32,15 @@ namespace Drill4Net.Injector.Core
             var desc = instr.Operand?.ToString();
             if (desc != null)
             {
-                if (desc.Contains(":Start<") || desc.Contains(".Task::Run("))
+                if (desc.Contains("get_IsCompleted()"))
                     return true;
-                if (code is Code.Callvirt)
-                {
-                    if (/*desc.Contains(">::MoveNextAsync()") ||*/ desc.Contains(">::GetAwaiter()")) //"::GetAwaiter()"
-                        return true;
-                }
+                //if (desc.Contains(":Start<") || desc.Contains("Task::Run"))
+                //    return true;
+                //if (code is Code.Callvirt)
+                //{
+                //    if (/*desc.Contains(">::MoveNextAsync()") ||*/ desc.Contains(">::GetAwaiter()")) //"::GetAwaiter()"
+                //        return true;
+                //}
             }
             if (!ctx.Anchors.Contains(instr))
                 return false;
