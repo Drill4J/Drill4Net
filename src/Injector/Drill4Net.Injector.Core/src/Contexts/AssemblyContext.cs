@@ -14,7 +14,7 @@ namespace Drill4Net.Injector.Core
         public AssemblyVersion Version { get; }
         public InjectedAssembly InjAssembly { get; }
 
-        public List<TypeContext> TypeContexts { get; }
+        public Dictionary<string, TypeContext> TypeContexts { get; }
 
         public Dictionary<string, InjectedType> InjClasses { get; }
         public Dictionary<string, InjectedMethod> InjMethodByFullname { get; }
@@ -29,7 +29,7 @@ namespace Drill4Net.Injector.Core
             Definition = asmDef ?? throw new ArgumentNullException(nameof(asmDef));
             InjAssembly = injAssembly ?? throw new ArgumentNullException(nameof(injAssembly));
             //
-            TypeContexts = new List<TypeContext>();
+            TypeContexts = new Dictionary<string, TypeContext>();
             InjClasses = new Dictionary<string, InjectedType>();
             InjMethodByFullname = new Dictionary<string, InjectedMethod>();
             InjMethodByKeys = new Dictionary<string, InjectedMethod>();

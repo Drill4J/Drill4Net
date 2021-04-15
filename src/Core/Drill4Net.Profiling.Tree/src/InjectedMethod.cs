@@ -23,6 +23,12 @@ namespace Drill4Net.Profiling.Tree
         public string BusinessType { get; set; }
 
         public MethodSource SourceType { get; set; }
+        
+        /// <summary>
+        /// BusinessCount instructions in various 'business parts' of IL code in total
+        /// (including compiler generated classes and functions)
+        /// </summary>
+        public int BusinessCount { get; set; } = -1;
 
         /********************************************************************/
 

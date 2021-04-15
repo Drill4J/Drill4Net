@@ -6,9 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using System.Xml.Serialization;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -163,7 +161,7 @@ namespace Drill4Net.Injector.Engine
             }
             return versions;
         }
-
+        
         private void ProcessAssembly(string filePath, Dictionary<string, AssemblyVersion> versions,  
             MainOptions opts, InjectedSolution tree)
         {
@@ -257,7 +255,6 @@ namespace Drill4Net.Injector.Engine
             }
             #endregion
             #region Commands
-
             // 1. Command ref
 
             //we will use proxy class (with cached Reflection) leading to real profiler
@@ -294,7 +291,7 @@ namespace Drill4Net.Injector.Engine
                 #endregion
 
                 var typeCtx = new TypeContext(asmCtx, typeDef, treeMethodType);
-                asmCtx.TypeContexts.Add(typeCtx);
+                asmCtx.TypeContexts.Add(typeFullName, typeCtx);
                 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
@@ -377,7 +374,7 @@ namespace Drill4Net.Injector.Engine
                         ProxyNamespace = proxyNamespace,
                         ProxyMethRef = proxyMethRef,
                     };
-                    typeCtx.MethodContexts.Add(methodCtx);
+                    typeCtx.MethodContexts.Add(methodFullName, methodCtx);
                     #endregion
                 }
             }
@@ -406,9 +403,9 @@ namespace Drill4Net.Injector.Engine
             }
             #endregion
             #region Business function mapping
-            foreach (var typeCtx in asmCtx.TypeContexts)
+            foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
-                foreach (var methodCtx in typeCtx.MethodContexts)
+                foreach (var methodCtx in typeCtx.MethodContexts.Values)
                 {
                     #region Init
                     var startInd = methodCtx.StartIndex;
@@ -437,19 +434,26 @@ namespace Drill4Net.Injector.Engine
                         i = methodCtx.CurIndex; //because it can change
                         methodCtx.BusinessInstructions.Add(instructions[i]);
                     }
-                    //
-                    if (cgInfo != null)
-                        cgInfo.LastIndex = methodCtx.SourceIndex;
+                    methodCtx.Method.BusinessCount = methodCtx.BusinessInstructions.Count;
                 }
             }
             #endregion
+            #region Size of business code
+            var bizCallers = asmCtx.InjMethodByFullname.Values
+                .Where(a => !a.IsCompilerGenerated && a.CalleeIndexes.Count > 0);
+            foreach (var caller in bizCallers)
+            {
+                foreach (var calleeName in caller.CalleeIndexes.Keys)
+                    CalcBusinessCount(asmCtx, caller, calleeName);
+            }
             #endregion
-            var a = 1;
+            #endregion
+            var debug = 1;
             #region 2. Injection
-            foreach (var typeCtx in asmCtx.TypeContexts)
+            foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 //process methods
-                foreach (var methodCtx in typeCtx.MethodContexts)
+                foreach (var methodCtx in typeCtx.MethodContexts.Values)
                 {
                     #region Init
                     var methodDef = methodCtx.Definition;
@@ -565,6 +569,23 @@ namespace Drill4Net.Injector.Engine
             assembly.Dispose();
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
+        }
+
+        internal int CalcBusinessCount(AssemblyContext asmCtx, InjectedMethod caller, string calleeName)
+        {
+            if (!asmCtx.InjMethodByFullname.ContainsKey(calleeName))
+                return 0;
+            var callee = asmCtx.InjMethodByFullname[calleeName];
+            if (!callee.IsCompilerGenerated)
+                return 0;
+            foreach(var subCalleeName in callee.CalleeIndexes.Keys)
+            {
+                CalcBusinessCount(asmCtx, callee, subCalleeName);
+            }
+            //the size of caller consists of own size + all it's callee sizes
+            //(already included in it)
+            caller.BusinessCount += callee.BusinessCount;
+            return caller.BusinessCount;
         }
 
         /// <summary>
@@ -889,7 +910,7 @@ namespace Drill4Net.Injector.Engine
             return type is MethodType.EventAdd or MethodType.EventRemove;
         }
 
-        internal List<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, MainOptions opts)
+        internal IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, MainOptions opts)
         {
             #region Own methods
             #region Filter methods

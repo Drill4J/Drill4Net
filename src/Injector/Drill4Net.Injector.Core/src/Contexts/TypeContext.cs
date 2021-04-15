@@ -7,10 +7,10 @@ namespace Drill4Net.Injector.Core
 {
     public class TypeContext
     {
-        public AssemblyContext AssemblyCtx { get; set; }
+        public AssemblyContext AssemblyCtx { get; }
         public TypeDefinition Definition { get; }
         public InjectedType InjType { get; }
-        public List<MethodContext> MethodContexts { get; set; }
+        public Dictionary<string, MethodContext> MethodContexts { get; }
 
         /*****************************************************************************************/
         
@@ -20,7 +20,7 @@ namespace Drill4Net.Injector.Core
             Definition = typeDef ?? throw new ArgumentNullException(nameof(typeDef));
             InjType = injType ?? throw new ArgumentNullException(nameof(injType)); 
             //
-            MethodContexts = new List<MethodContext>();
+            MethodContexts = new Dictionary<string, MethodContext>();
         }
         
         /*****************************************************************************************/

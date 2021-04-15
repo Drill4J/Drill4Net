@@ -22,10 +22,5 @@ namespace Drill4Net.Profiling.Tree
         /// The first index in the compiler generated code which considered as 'business part'
         /// </summary>
         public int FirstIndex { get; set; } = -1;
-        
-        /// <summary>
-        /// The last index in the compiler generated code which considered as 'business part'
-        /// </summary>
-        public int LastIndex { get; set; } = -1;
     }
 }
