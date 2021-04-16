@@ -543,11 +543,20 @@ namespace Drill4Net.Injector.Engine
             {
                 //var calleeInds = bizMethod.CalleeIndexes;
                 //var blocks = bizMethod.Blocks;
-                bizMethod.Blocks = bizMethod.Points
+
+                var ranges = bizMethod.Points
                     .Select(a => a.BusinessIndex)
-                    .Where(c => c != 0)
+                    .Where(c => c != 0) //Enter not needed
                     .OrderBy(b => b)
                     .ToList();
+                float origSize = ranges.Last() + 1;
+                var prev = -1;
+                foreach (var range in ranges)
+                {
+                    bizMethod.Blocks.Add(range, (range - prev) / origSize);
+                    prev = range;
+                }
+                //var sum = bizMethod.Blocks.Values.Sum(); //must be ~1.0
             }
             #endregion
             #endregion
@@ -610,7 +619,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="allTypes"></param>
         /// <returns></returns>
-        internal IEnumerable<TypeDefinition> FilterTypes(Collection<TypeDefinition> allTypes)
+        internal IEnumerable<TypeDefinition> FilterTypes(IEnumerable<TypeDefinition> allTypes)
         {
             var res = new List<TypeDefinition>();
             foreach (var typeDef in allTypes)
@@ -896,7 +905,7 @@ namespace Drill4Net.Injector.Engine
 
         internal MethodType GetMethodType(MethodDefinition def)
         {
-            string methodFullName = def.FullName;
+            var methodFullName = def.FullName;
             var type = def.DeclaringType;
             var declAttrs = type.CustomAttributes;
             var compGenAttrName = nameof(CompilerGeneratedAttribute);

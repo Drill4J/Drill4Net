@@ -43,6 +43,11 @@
             Count of only own 'business parts' of the IL code
             </summary>
         </member>
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Blocks">
+            <summary>
+            Dictionary of code blocks: key is point Id, value - coverage part of code by this block
+            </summary>
+        </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedType.FromMethod">
             <summary>
             For compiler generated classes which was created 
