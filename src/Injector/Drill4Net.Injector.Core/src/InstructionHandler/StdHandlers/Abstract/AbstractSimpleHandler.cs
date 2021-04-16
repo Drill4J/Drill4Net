@@ -37,7 +37,7 @@ namespace Drill4Net.Injector.Core
             var processor = ctx.Processor;
             processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
-            ctx.IncrementIndex(2);
+            ctx.CorrectIndex(2);
 
             PostAction(ctx);
             

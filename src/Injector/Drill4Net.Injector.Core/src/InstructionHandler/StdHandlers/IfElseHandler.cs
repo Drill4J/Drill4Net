@@ -75,7 +75,7 @@ namespace Drill4Net.Injector.Core
                 //injection
                 processor.InsertAfter(instr, call);
                 processor.InsertAfter(instr, ldstr);
-                ctx.IncrementIndex(2);
+                ctx.CorrectIndex(2);
                 
                 needBreak = true;
             }
@@ -92,8 +92,17 @@ namespace Drill4Net.Injector.Core
 
             //data: need insert paired call
             crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
-            var ind = instructions.IndexOf(operand);
-            var ldstr2 = Register(ctx, crossType, ind);
+            var ind = 0;
+            while (true)
+            {
+                if (operand == null)
+                    break;
+                ind = ctx.OrigInstructions.IndexOf(operand);
+                if (ind >= 0)
+                    break;
+                operand = operand.Previous;
+            }
+            var ldstr2 = Register(ctx, crossType, ind - 1); //need sub for prev index
 
             //correction
             ReplaceJumps(operand, ldstr2, ctx);
@@ -101,8 +110,8 @@ namespace Drill4Net.Injector.Core
             //injection
             processor.InsertBefore(operand, ldstr2);
             processor.InsertBefore(operand, call);
-            if (operand.Offset < instr.Offset)
-                ctx.IncrementIndex(2);
+            if (((Instruction)instr.Operand).Offset < instr.Offset)
+                ctx.CorrectIndex(2);
             
             //paired injected instructions are must be labeled as processed
             processed.Add(prev);

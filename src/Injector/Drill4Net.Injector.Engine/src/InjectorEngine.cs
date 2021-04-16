@@ -655,7 +655,7 @@ namespace Drill4Net.Injector.Engine
                             
                 //+margin if instruction starts the try/catch
                 var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 8 : 0;
-                ctx.IncrementIndex(delta); 
+                ctx.CorrectIndex(delta); 
             }
             #endregion
 

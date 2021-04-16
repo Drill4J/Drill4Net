@@ -54,13 +54,13 @@ namespace Drill4Net.Injector.Core
                 var targetOp = prevOperand.Operand as Instruction;
                 processor.InsertBefore(targetOp, ldstrIf2);
                 processor.InsertBefore(targetOp, call);
-                ctx.IncrementIndex(2);
+                ctx.CorrectIndex(2);
 
                 var ldstrIf3 = Register(ctx, CrossPointType.CycleEnd);
                 var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                 processor.InsertAfter(instr, call1);
                 processor.InsertAfter(instr, ldstrIf3);
-                ctx.IncrementIndex(2);
+                ctx.CorrectIndex(2);
             }
             else //do
             {
@@ -74,13 +74,13 @@ namespace Drill4Net.Injector.Core
                 var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                 processor.InsertAfter(instr, call1);
                 processor.InsertAfter(instr, ldstrIf);
-                ctx.IncrementIndex(2);
+                ctx.CorrectIndex(2);
 
                 //jump-1
                 var jump = Instruction.Create(OpCodes.Br_S, next);
                 processor.InsertAfter(call1, jump);
                 jumpers.Add(jump);
-                ctx.IncrementIndex();
+                ctx.CorrectIndex();
 
                 // 2.
                 crossType = isBrFalse ? CrossPointType.CycleEnd : CrossPointType.Cycle;
@@ -89,13 +89,13 @@ namespace Drill4Net.Injector.Core
                 var call2 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                 processor.InsertAfter(jump, call2);
                 processor.InsertAfter(jump, ldstrIf2);
-                ctx.IncrementIndex(2);
+                ctx.CorrectIndex(2);
 
                 //jump-2
                 var jump2 = Instruction.Create(OpCodes.Br, back as Instruction);
                 processor.InsertAfter(call2, jump2);
                 jumpers.Add(jump2);
-                ctx.IncrementIndex();
+                ctx.CorrectIndex();
 
                 instr.Operand = ldstrIf2;
             }

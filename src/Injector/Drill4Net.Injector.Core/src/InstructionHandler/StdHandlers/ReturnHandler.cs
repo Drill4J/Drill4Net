@@ -34,7 +34,7 @@ namespace Drill4Net.Injector.Core
             //injection
             processor.InsertBefore(instr, returnInst);
             processor.InsertBefore(instr, call);
-            ctx.IncrementIndex(2);
+            ctx.CorrectIndex(2);
         }
         
         protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)

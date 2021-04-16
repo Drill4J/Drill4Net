@@ -105,7 +105,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="inc">Increment for changing the <see cref="CurIndex"/></param>
         /// <returns></returns>
-        public int IncrementIndex(int inc = 1)
+        public int CorrectIndex(int inc = 1)
         {
             CurIndex += inc;
             return CurIndex;
