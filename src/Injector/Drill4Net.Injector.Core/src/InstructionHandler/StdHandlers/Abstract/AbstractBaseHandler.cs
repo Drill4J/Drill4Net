@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
@@ -12,9 +13,9 @@ namespace Drill4Net.Injector.Core
 
         public AbstractBaseHandler Successor { get; set; }
 
-        protected readonly AbstractProbeHelper _probeHelper;
+        private readonly AbstractProbeHelper _probeHelper;
 
-        /************************************************************************************/
+        /**************************************************************************************/
 
         protected AbstractBaseHandler(string name, AbstractProbeHelper probeHelper)
         {
@@ -22,7 +23,7 @@ namespace Drill4Net.Injector.Core
             _probeHelper = probeHelper ?? throw new ArgumentNullException(nameof(probeHelper));
         }
 
-        /************************************************************************************/
+        /**************************************************************************************/
 
         #region Handle
         #region Starting processing the method
@@ -57,6 +58,23 @@ namespace Drill4Net.Injector.Core
 
         protected abstract void HandleInstructionConcrete(MethodContext ctx, out bool needBreak);
         #endregion
+        #endregion
+        #region  Register
+        protected virtual Instruction Register(MethodContext ctx, CrossPointType type)
+        {
+            return Register(ctx, type, ctx.SourceIndex);
+        }
+
+        protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int localId)
+        {
+            var probeData = GetProbeData(ctx, type, localId); 
+            return GetFirstInstruction(ctx, probeData);
+        }
+        
+        protected virtual string GetProbeData(MethodContext ctx, CrossPointType type, int localId)
+        {
+            return _probeHelper.GetProbeData(ctx, type, localId);
+        }
         #endregion
 
         internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,

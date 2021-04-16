@@ -25,8 +25,7 @@ namespace Drill4Net.Injector.Core
                 return;
             
             //data
-            var probData = GetProbeData(ctx);
-            var ldstr = GetFirstInstruction(ctx, probData);
+            var ldstr = Register(ctx, PointType);
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             
             //correction
@@ -46,11 +45,6 @@ namespace Drill4Net.Injector.Core
         }
 
         protected abstract bool IsCondition(MethodContext ctx);
-        
-        protected virtual string GetProbeData(MethodContext ctx)
-        {
-            return _probeHelper.GetProbeData(ctx, PointType);
-        }
 
         protected virtual void PostAction(MethodContext ctx) {}
     }

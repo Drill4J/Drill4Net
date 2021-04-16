@@ -32,9 +32,7 @@ namespace Drill4Net.Injector.Core
             var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
             var compilerInstructions = ctx.CompilerInstructions;
             var exceptionHandlers = ctx.ExceptionHandlers;
-            var jumpers = ctx.Jumpers;
             var ifStack = ctx.IfStack;
-            string probData;
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             #endregion
             #region Checks
@@ -58,14 +56,14 @@ namespace Drill4Net.Injector.Core
                 //data
                 var pairedCode = ifInst.OpCode.Code;
                 var crossType = pairedCode is Code.Brfalse or Code.Brfalse_S ? CrossPointType.Else : CrossPointType.If;
-                probData = _probeHelper.GetProbeData(ctx, crossType);
+                var firstProbeInst = Register(ctx, crossType);
 
-                var firstProbeInst = GetFirstInstruction(ctx, probData); //probe's first instruction
+                //correction
                 FixFinallyEnd(instr, firstProbeInst, exceptionHandlers); //need fix statement boundaries for potential tr/finally 
-
                 var oldJumpTarget = instructions[ctx.CurIndex + 1]; //where the code jumped earlier
                 ReplaceJumps(oldJumpTarget, firstProbeInst, ctx); //...we change it to our first instruction
 
+                //injection
                 processor.InsertBefore(oldJumpTarget, firstProbeInst);
                 processor.InsertBefore(oldJumpTarget, call);
                 ctx.IncrementIndex(2);

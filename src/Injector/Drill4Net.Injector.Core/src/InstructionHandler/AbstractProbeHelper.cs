@@ -26,12 +26,12 @@ namespace Drill4Net.Injector.Core
         protected virtual string GenerateProbe(MethodContext ctx, CrossPoint point)
         {
             return point.BusinessIndex == -1 
-                ? GenerateProbePrefix(ctx, point)
-                : $"{GenerateProbePrefix(ctx, point)}{GenerateProbeData(ctx, point)}";
+                ? $"{GenerateProbePrefix(ctx, point)}{point.PointType}"
+                : $"{GenerateProbePrefix(ctx, point)}{GenerateProbeData(point)}";
         }
 
         protected abstract string GenerateProbePrefix(MethodContext ctx, CrossPoint point);
-        public abstract string GenerateProbeData(MethodContext ctx, CrossPoint point);
+        public abstract string GenerateProbeData(CrossPoint point);
         #endregion
 
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)

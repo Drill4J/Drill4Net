@@ -16,7 +16,6 @@ using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Strategies.Flow;
-using Drill4Net.Injector.Strategies.Block;
 using Mono.Collections.Generic;
 
 namespace Drill4Net.Injector.Engine
@@ -48,7 +47,6 @@ namespace Drill4Net.Injector.Engine
             _typeChecker = new TypeChecker();
 
             FlowStrategy flowStrategy = new();
-            BlockStrategy blockStrategy = new();
             _strategy = flowStrategy;
         }
 

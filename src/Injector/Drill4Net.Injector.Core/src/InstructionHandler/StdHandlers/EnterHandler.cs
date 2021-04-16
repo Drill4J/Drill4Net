@@ -19,8 +19,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            var probData = GetProbeData(ctx);
-            var ldstrEntering = GetFirstInstruction(ctx, probData);
+            var ldstrEntering = Register(ctx, CrossPointType.Enter, 0);//exactly 0 !
 
             //injection
             var firstOp = ctx.Instructions[0];
@@ -33,11 +32,6 @@ namespace Drill4Net.Injector.Core
         protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             needBreak = false;
-        }
-
-        protected virtual string GetProbeData(MethodContext ctx)
-        {
-            return _probeHelper.GetProbeData(ctx, CrossPointType.Enter, 0);//exactly 0 !
         }
     }
 }

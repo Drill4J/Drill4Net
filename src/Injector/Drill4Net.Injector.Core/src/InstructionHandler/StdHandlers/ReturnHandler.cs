@@ -6,8 +6,7 @@ namespace Drill4Net.Injector.Core
 {
     public class ReturnHandler : AbstractBaseHandler
     {
-        protected string _initProbData;
-        protected Instruction _returnInst;
+        protected Instruction _returnInst; //must be persistent
 
         /**************************************************************************************/
 
@@ -21,8 +20,7 @@ namespace Drill4Net.Injector.Core
         protected override void StartMethodConcrete(MethodContext ctx)
         {
             //data
-            _initProbData = GetProbeData(ctx);
-            _returnInst = GetFirstInstruction(ctx, _initProbData); //as object it must be only one
+            _returnInst = Register(ctx, CrossPointType.Return, -1); //as object it must be only one and localId AT THIS MOMENT is exactly -1 !
         }
 
         protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
@@ -50,12 +48,10 @@ namespace Drill4Net.Injector.Core
                 .FirstOrDefault(a => a.PointType == CrossPointType.Return);
             if (point != null)
             {
-
                 //the return in the middle of the method body
-                if (instr.Operand == lastOp &&
-                    lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
+                if (instr.Operand == lastOp && lastOp.OpCode.Code != Code.Endfinally) //jump to the end for return from function
                 {
-                    _returnInst.Operand = $"{_initProbData}{_probeHelper.GenerateProbeData(ctx, point)}";
+                    _returnInst.Operand = Register(ctx, CrossPointType.Return, point.BusinessIndex); // $"{_initProbData}{_probeHelper.GenerateProbeData(point)}";
                     instr.Operand = _returnInst;
                 }
 
@@ -67,11 +63,11 @@ namespace Drill4Net.Injector.Core
                 if (point.BusinessIndex == -1)
                 {
                     point.PointId = ctx.CurIndex.ToString();
-                    point.BusinessIndex = ctx.SourceIndex;
+                    point.BusinessIndex = ctx.SourceIndex; //it's properly only for the business method (but Return not injected into CG methods...)
                 }
 
                 //data
-                _returnInst.Operand = $"{_initProbData}{_probeHelper.GenerateProbeData(ctx, point)}";
+                _returnInst.Operand = GetProbeData(ctx, CrossPointType.Return, point.BusinessIndex); // $"{_initProbData}{_probeHelper.GenerateProbeData(point)}";
 
                 //correction
                 FixFinallyEnd(instr, _returnInst, exceptionHandlers);
@@ -84,11 +80,6 @@ namespace Drill4Net.Injector.Core
             }
 
             needBreak = true;
-        }
-        
-        protected virtual string GetProbeData(MethodContext ctx)
-        {
-            return _probeHelper.GetProbeData(ctx, CrossPointType.Return, -1); //exactly -1 !
         }
     }
 }
