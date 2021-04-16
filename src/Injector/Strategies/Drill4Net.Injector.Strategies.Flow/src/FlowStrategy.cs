@@ -18,9 +18,9 @@ namespace Drill4Net.Injector.Strategies.Flow
             ConnectHandler(new CatchFilterHandler(helper));
             
             //enter/return
+            ConnectHandler(new ReturnHandler(helper)); 
             ConnectHandler(new EnterHandler(helper));
-            ConnectHandler(new ReturnHandler(helper));
-
+            
             //methods' calls (must be prior AnchorHandler)
             ConnectHandler(new CallHandler(helper));
 

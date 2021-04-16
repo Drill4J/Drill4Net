@@ -65,16 +65,36 @@ namespace Drill4Net.Injector.Core
             return Register(ctx, type, ctx.SourceIndex);
         }
 
-        protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int localId)
+        protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int localId, bool asProcessed = true)
         {
-            ctx.Processed.Add(ctx.CurInstruction);
-            var probeData = GetProbeData(ctx, type, localId); 
+            if (asProcessed)
+                ctx.Processed.Add(ctx.CurInstruction);
+            //
+            var probeData = GetProbeData(ctx, type, localId, out var point); 
+            Register(ctx, point);
             return GetFirstInstruction(ctx, probeData);
         }
         
-        protected virtual string GetProbeData(MethodContext ctx, CrossPointType type, int localId)
+        protected virtual void Register(MethodContext ctx, CrossPoint point)
         {
-            return _probeHelper.GetProbeData(ctx, type, localId);
+            if (!ctx.Method.Points.Contains(point))
+                ctx.Method.Points.Add(point);
+        }
+        
+        protected virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int byIndex, out CrossPoint point)
+        {
+            point = GetPoint(ctx, pointType, byIndex);
+            return _probeHelper.GenerateProbe(ctx, point);
+        }
+        
+        protected virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int byIndex)
+        {
+            return _probeHelper.GetPoint(ctx, pointType, byIndex);
+        }
+
+        protected virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int byIndex)
+        {
+            return GetProbeData(ctx, pointType, byIndex, out var _);
         }
         #endregion
 

@@ -54,7 +54,6 @@ namespace Drill4Net.Target.Common
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
     [SuppressMessage("ReSharper", "InvertIf")]
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-
     #endregion
     public class InjectTarget
     {
@@ -278,12 +277,7 @@ namespace Drill4Net.Target.Common
             {
                 Disposable_Using_Exception(false);
                 Disposable_Using_Exception(true);
-            }
-            catch
-            { }
 
-            try
-            {
                 Disposable_Using_Last_Exception();
             }
             catch

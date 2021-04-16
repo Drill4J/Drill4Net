@@ -35,7 +35,8 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public int OwnBusinessSize { get; set; } = -1;
 
-        public List<int> Blocks { get; }
+        public List<CrossPoint> Points { get; }
+        public List<int> Blocks { get; set; }
 
         /********************************************************************/
 
@@ -46,6 +47,7 @@ namespace Drill4Net.Profiling.Tree
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             CalleeIndexes = new Dictionary<string, int>();
+            Points = new List<CrossPoint>();
             Blocks = new List<int>();
             //
             var parts = GetParts(fullName);

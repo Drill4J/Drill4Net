@@ -451,9 +451,13 @@ namespace Drill4Net.Injector.Engine
             #region Blocks for the methods
             foreach (var bizMethod in bizMethods)
             {
-                var blocks = bizMethod.Blocks;
-                var calleeInds = bizMethod.CalleeIndexes;
-                
+                //var calleeInds = bizMethod.CalleeIndexes;
+                //var blocks = bizMethod.Blocks;
+                bizMethod.Blocks = bizMethod.Points
+                    .Select(a => a.BusinessIndex)
+                    .Where(c => c != 0)
+                    .OrderBy(b => b)
+                    .ToList();
             }
             #endregion
             #endregion

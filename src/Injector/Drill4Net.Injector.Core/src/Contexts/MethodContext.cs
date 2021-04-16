@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Core
         public HashSet<Instruction> BusinessInstructions { get; }
         public int StartIndex { get; set; }
         public Collection<ExceptionHandler> ExceptionHandlers { get; set; }
-        public Instruction LastOperation { get; }
+        public Instruction LastOperation { get; set; }
         public Stack<Instruction> IfStack { get; }
         public bool IsStrictEnterReturn { get; set; }
         public HashSet<object> FirstInjectInstructions { get; }
@@ -50,6 +50,8 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public int CurIndex { get; private set; }
 
+        public int OrigSize { get; }
+
         public Instruction CurInstruction => 
             CurIndex >= 0 && CurIndex < Instructions.Count ? 
                 Instructions[CurIndex] : 
@@ -63,6 +65,7 @@ namespace Drill4Net.Injector.Core
             Definition = methodDef ?? throw new ArgumentNullException(nameof(methodDef));
             Instructions = instructions ?? throw new ArgumentNullException(nameof(instructions));
             Processor = processor ?? throw new ArgumentNullException(nameof(processor));
+            OrigSize = instructions.Count;
             LastOperation = instructions.Last();
             //
             BusinessInstructions = new HashSet<Instruction>();

@@ -1,29 +1,13 @@
 ﻿using System;
+using System.Linq;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
     public abstract class AbstractProbeHelper
     {
-        #region GetProbeData
-        public virtual string GetProbeData(MethodContext ctx)
-        {
-            return GetProbeData(ctx, CrossPointType.Unset, ctx.SourceIndex);
-        }
-        
-        public virtual string GetProbeData(MethodContext ctx, CrossPointType pointType)
-        {
-            return GetProbeData(ctx, pointType, ctx.SourceIndex);
-        }
-
-        public virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int byIndex)
-        {
-            var point = CreateCrossPoint(ctx, pointType, byIndex);
-            return GenerateProbe(ctx, point);
-        }
-        #endregion
         #region GenerateProbe
-        protected virtual string GenerateProbe(MethodContext ctx, CrossPoint point)
+        public virtual string GenerateProbe(MethodContext ctx, CrossPoint point)
         {
             return point.BusinessIndex == -1 
                 ? $"{GenerateProbePrefix(ctx, point)}{point.PointType}"
@@ -33,6 +17,14 @@ namespace Drill4Net.Injector.Core
         protected abstract string GenerateProbePrefix(MethodContext ctx, CrossPoint point);
         public abstract string GenerateProbeData(CrossPoint point);
         #endregion
+        #region CrossPoint
+        public virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int localId)
+        {
+            var existingPoint = ctx.Method.Filter(typeof(CrossPoint), true)
+                .Cast<CrossPoint>()
+                .FirstOrDefault(a => a.PointId == localId.ToString());
+            return existingPoint ?? CreateCrossPoint(ctx, pointType, localId);
+        }
 
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
@@ -44,10 +36,9 @@ namespace Drill4Net.Injector.Core
             {
                 //TODO: PDB data
             };
-            ctx.Method.AddChild(point);
-            
             return point;
         }
+        #endregion
 
         internal virtual int CalsBusinessIndex(MethodContext ctx, int localIndex)
         {

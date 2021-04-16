@@ -29,7 +29,6 @@
     <ProjectReference Include="..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
     <ProjectReference Include="..\..\Injection\Drill4Net.Injection\Drill4Net.Injection.csproj" />
     <ProjectReference Include="..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
-    <ProjectReference Include="..\Strategies\Drill4Net.Injector.Strategies.Block\Drill4Net.Injector.Strategies.Block.csproj" />
     <ProjectReference Include="..\Strategies\Drill4Net.Injector.Strategies.Flow\Drill4Net.Injector.Strategies.Flow.csproj" />
   </ItemGroup>
 

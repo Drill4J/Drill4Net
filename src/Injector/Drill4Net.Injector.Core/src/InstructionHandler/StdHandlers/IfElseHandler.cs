@@ -23,11 +23,9 @@ namespace Drill4Net.Injector.Core
             var code = opCode.Code;
 
             var processed = ctx.Processed;
-            var jumpers = ctx.Jumpers;
             var ifStack = ctx.IfStack;
-
             var crossType = CrossPointType.Unset;
-            string probData;
+
 
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
@@ -35,7 +33,7 @@ namespace Drill4Net.Injector.Core
             #region Check
             //if pure if/else, but backward jump
             var operand = instr.Operand as Instruction;
-            if (operand != null && instr.Offset > operand.Offset)
+            if (operand is {Offset: > 0} && instr.Offset > operand.Offset)
                 return;
             //
             var prev = instr.Previous;
