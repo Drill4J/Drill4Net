@@ -39,8 +39,8 @@ namespace Drill4Net.Injector.Core
             if (!ctx.Anchors.Contains(instr))
                 return false;
             
-            // //we need use only 'pure jumps', for example, 'goto' statement,
-            // //not if/else or cycles jumps, there are special handlers for these purposes
+            //we need use only 'pure jumps', for example, 'goto' statement,
+            //not if/else or cycles jumps, there are special handlers for these purposes
             // if (_ignoreCycles)
             // {
             //     foreach (var cur in ctx.Jumpers)
@@ -66,7 +66,7 @@ namespace Drill4Net.Injector.Core
             //         }
             //     }
             // }
-            //
+            
             return true; 
         }
     }

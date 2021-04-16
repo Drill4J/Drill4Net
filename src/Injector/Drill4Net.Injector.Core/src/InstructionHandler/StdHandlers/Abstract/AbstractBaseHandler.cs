@@ -65,12 +65,12 @@ namespace Drill4Net.Injector.Core
             return Register(ctx, type, ctx.SourceIndex);
         }
 
-        protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int localId, bool asProcessed = true)
+        protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int ind, bool asProcessed = true)
         {
             if (asProcessed)
-                ctx.Processed.Add(ctx.CurInstruction);
+                ctx.Processed.Add(ctx.Instructions[ind]);
             //
-            var probeData = GetProbeData(ctx, type, localId, out var point); 
+            var probeData = GetProbeData(ctx, type, ind, out var point); 
             Register(ctx, point);
             return GetFirstInstruction(ctx, probeData);
         }

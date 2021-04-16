@@ -448,20 +448,7 @@ namespace Drill4Net.Injector.Engine
                     CorrectMethodBusinessSize(asmCtx.InjMethodByFullname, caller, calleeName);
             }
             #endregion
-            #region Blocks for the methods
-            foreach (var bizMethod in bizMethods)
-            {
-                //var calleeInds = bizMethod.CalleeIndexes;
-                //var blocks = bizMethod.Blocks;
-                bizMethod.Blocks = bizMethod.Points
-                    .Select(a => a.BusinessIndex)
-                    .Where(c => c != 0)
-                    .OrderBy(b => b)
-                    .ToList();
-            }
             #endregion
-            #endregion
-            var debug = 1;
             #region 2. Injection
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
@@ -551,6 +538,18 @@ namespace Drill4Net.Injector.Engine
                     body.Optimize();
                     body.OptimizeMacros();
                 }
+            }
+            #endregion
+            #region 3. Blocks for the methods
+            foreach (var bizMethod in bizMethods)
+            {
+                //var calleeInds = bizMethod.CalleeIndexes;
+                //var blocks = bizMethod.Blocks;
+                bizMethod.Blocks = bizMethod.Points
+                    .Select(a => a.BusinessIndex)
+                    .Where(c => c != 0)
+                    .OrderBy(b => b)
+                    .ToList();
             }
             #endregion
             #endregion
