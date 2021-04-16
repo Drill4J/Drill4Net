@@ -20,7 +20,7 @@ namespace Drill4Net.Injector.Core
         {
             var point = ctx.Method.Points
                 .FirstOrDefault(a => a.PointId == localId.ToString());
-            if (point != null)
+            if (point != null) 
                 return point;
             point = CreateCrossPoint(ctx, pointType, localId);
             if (!ctx.Method.Points.Contains(point))
@@ -38,7 +38,6 @@ namespace Drill4Net.Injector.Core
             };
             return point;
         }
-        #endregion
 
         internal virtual int CalsBusinessIndex(MethodContext ctx, int localIndex)
         {
@@ -59,5 +58,6 @@ namespace Drill4Net.Injector.Core
             }
             return ind;
         }
+        #endregion
     }
 }

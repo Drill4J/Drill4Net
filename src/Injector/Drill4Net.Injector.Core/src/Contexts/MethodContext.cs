@@ -19,6 +19,7 @@ namespace Drill4Net.Injector.Core
 
         public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
+        public List<Instruction> OrigInstructions { get; }
         public HashSet<Instruction> BusinessInstructions { get; }
         public int StartIndex { get; set; }
         public Collection<ExceptionHandler> ExceptionHandlers { get; }
@@ -69,6 +70,7 @@ namespace Drill4Net.Injector.Core
             Processor = body.GetILProcessor();
             var instructions = body.Instructions;
             Instructions = instructions ?? throw new ArgumentNullException(nameof(instructions));
+            OrigInstructions = instructions.ToList();
             OrigSize = instructions.Count;
             LastOperation = instructions.Last();
             //
@@ -85,16 +87,17 @@ namespace Drill4Net.Injector.Core
         /***********************************************************************************************/
 
         /// <summary>
-        /// Set value for both <see cref="SourceIndex"/> and <see cref="CurIndex"/>
+        /// Set init value for both <see cref="SourceIndex"/> and <see cref="CurIndex"/>
         /// </summary>
         /// <param name="index">Value of indexes</param>
         /// <exception cref="ArgumentException"></exception>
-        public void SetIndex(int index)
+        public void SetPosition(int index)
         {
             if (index < 0)
                 throw new ArgumentException("Index must greater zero");
             CurIndex = index;
-            SourceIndex = index;
+            var origInd = OrigInstructions.IndexOf(Instructions[index]); 
+            SourceIndex = origInd;
         }
 
         /// <summary>

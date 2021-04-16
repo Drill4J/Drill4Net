@@ -415,7 +415,7 @@ namespace Drill4Net.Injector.Engine
 
                     for (var i = startInd; i < instructions.Count; i++)
                     {
-                        methodCtx.SetIndex(i);
+                        methodCtx.SetPosition(i);
                         MapBusinessFunction(methodCtx); //in any case check each instruction for mapping
 
                         #region Check
@@ -514,7 +514,7 @@ namespace Drill4Net.Injector.Engine
                             continue;
                         #endregion
                         
-                        methodCtx.SetIndex(i);
+                        methodCtx.SetPosition(i);
                         i = HandleInstruction(methodCtx); //process and correct current index after potential injection
                     }
                     #endregion
