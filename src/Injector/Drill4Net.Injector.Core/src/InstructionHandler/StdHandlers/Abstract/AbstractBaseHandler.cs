@@ -67,6 +67,7 @@ namespace Drill4Net.Injector.Core
 
         protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int localId)
         {
+            ctx.Processed.Add(ctx.CurInstruction);
             var probeData = GetProbeData(ctx, type, localId); 
             return GetFirstInstruction(ctx, probeData);
         }

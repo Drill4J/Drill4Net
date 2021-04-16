@@ -63,12 +63,13 @@ namespace Drill4Net.Injector.Core
                 if (point.BusinessIndex == -1)
                 {
                     point.PointId = ctx.CurIndex.ToString();
-                    point.BusinessIndex = ctx.SourceIndex; //it's properly only for the business method (but Return not injected into CG methods...)
+                    point.BusinessIndex = ctx.SourceIndex; //it's properly only for the business method (but Enter/Return not injected into CG methods...)
                 }
 
                 //data
                 _returnInst.Operand = GetProbeData(ctx, CrossPointType.Return, point.BusinessIndex); // $"{_initProbData}{_probeHelper.GenerateProbeData(point)}";
-
+                //Register(ctx, point);
+                
                 //correction
                 FixFinallyEnd(instr, _returnInst, exceptionHandlers);
                 ReplaceJumps(instr, _returnInst, ctx);
