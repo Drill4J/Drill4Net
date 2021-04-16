@@ -10,15 +10,14 @@ namespace Drill4Net.Profiling.Tree
         public string ReturnType { get; set; }
         public string Parameters { get; set; }
         public string TypeName { get; set; }
-
-        public string FromMethod { get; set; }
+        
         public bool IsCompilerGenerated => SourceType.MethodType == MethodType.CompilerGeneratedPart;
 
-        public CalleeCodeBlock CompilerGeneratedInfo { get; set; }
+        public CompilerGeneratedInfo CGInfo { get; set; }
 
         public Dictionary<string, int> CalleeIndexes { get; set; }
 
-        public string BusinessMethod => FromMethod ?? Fullname;
+        public string BusinessMethod => CGInfo?.FromMethod ?? Fullname;
         public string BusinessType { get; set; }
 
         public MethodSource SourceType { get; set; }

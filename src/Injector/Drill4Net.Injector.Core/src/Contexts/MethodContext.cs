@@ -12,16 +12,16 @@ namespace Drill4Net.Injector.Core
     {
         public TypeContext TypeCtx { get; }
         public string ModuleName => TypeCtx.AssemblyCtx.Module.Name;
-        public InjectedType Type { get; set; }
+        public InjectedType Type => TypeCtx.InjType;
 
         public MethodDefinition Definition { get; }
-        public InjectedMethod Method { get; set; }
+        public InjectedMethod Method { get; }
 
         public ILProcessor Processor { get; }
         public Collection<Instruction> Instructions { get; }
         public HashSet<Instruction> BusinessInstructions { get; }
         public int StartIndex { get; set; }
-        public Collection<ExceptionHandler> ExceptionHandlers { get; set; }
+        public Collection<ExceptionHandler> ExceptionHandlers { get; }
         public Instruction LastOperation { get; set; }
         public Stack<Instruction> IfStack { get; }
         public bool IsStrictEnterReturn { get; set; }
@@ -59,12 +59,16 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************************/
 
-        public MethodContext(TypeContext typeCtx, MethodDefinition methodDef, Collection<Instruction> instructions, ILProcessor processor)
+        public MethodContext(TypeContext typeCtx, InjectedMethod method, MethodDefinition methodDef)
         {
             TypeCtx = typeCtx ?? throw new ArgumentNullException(nameof(typeCtx));
             Definition = methodDef ?? throw new ArgumentNullException(nameof(methodDef));
+            Method = method ?? throw new ArgumentNullException(nameof(method));
+            var body = methodDef.Body;
+            ExceptionHandlers = body.ExceptionHandlers;
+            Processor = body.GetILProcessor();
+            var instructions = body.Instructions;
             Instructions = instructions ?? throw new ArgumentNullException(nameof(instructions));
-            Processor = processor ?? throw new ArgumentNullException(nameof(processor));
             OrigSize = instructions.Count;
             LastOperation = instructions.Last();
             //

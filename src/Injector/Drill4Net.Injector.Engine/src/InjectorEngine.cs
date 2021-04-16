@@ -362,12 +362,9 @@ namespace Drill4Net.Injector.Engine
                     }
                     #endregion
                     #region Method context
-                    var methodCtx = new MethodContext(typeCtx, methodDef, instructions, processor)
+                    var methodCtx = new MethodContext(typeCtx, treeFunc, methodDef)
                     {
-                        Type = treeMethodType,
-                        Method = treeFunc,
                         StartIndex = startInd,
-                        ExceptionHandlers = body.ExceptionHandlers,
                         IsStrictEnterReturn = strictEnterReturn,
                         ProxyNamespace = proxyNamespace,
                         ProxyMethRef = proxyMethRef,
@@ -397,7 +394,8 @@ namespace Drill4Net.Injector.Engine
                  if (!asmCtx.InjMethodByKeys.ContainsKey(mkey)) 
                      continue;
                  var treeFunc = asmCtx.InjMethodByKeys[mkey];
-                 meth.FromMethod = treeFunc.Fullname;
+                 if (meth.CGInfo != null)
+                    meth.CGInfo.FromMethod = treeFunc.Fullname;
             }
             #endregion
             #region Business function mapping
@@ -410,7 +408,7 @@ namespace Drill4Net.Injector.Engine
                     var instructions = methodCtx.Instructions;
                     var injMethod = methodCtx.Method;
                     
-                    var cgInfo = injMethod.CompilerGeneratedInfo;
+                    var cgInfo = injMethod.CGInfo;
                     if (cgInfo != null)
                         cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
                     #endregion
@@ -494,7 +492,7 @@ namespace Drill4Net.Injector.Engine
                             if (asmCtx.InjMethodByFullname.ContainsKey(calleName))
                             {
                                 var callee = asmCtx.InjMethodByFullname[calleName];
-                                var cgInfo = callee.CompilerGeneratedInfo;
+                                var cgInfo = callee.CGInfo;
                                 if (cgInfo == null) //null is normal (business method)
                                     continue;
                                 cgInfo.Caller = caller;
@@ -773,7 +771,8 @@ namespace Drill4Net.Injector.Engine
                     foreach (var injectedSimpleEntity in extMethods)
                     {
                         var meth = (InjectedMethod) injectedSimpleEntity;
-                        meth.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                        if (meth.CGInfo!=null)
+                            meth.CGInfo.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
                         if (meth.Name != extName) 
                             continue;
                         if (!treeFunc.CalleeIndexes.ContainsKey(meth.Fullname))
@@ -785,7 +784,8 @@ namespace Drill4Net.Injector.Engine
                     if (!asmCtx.InjMethodByFullname.ContainsKey(extFullname)) 
                         return;
                     var extFunc = asmCtx.InjMethodByFullname[extFullname];
-                    extFunc.FromMethod ??= treeFunc.Fullname ?? extType?.FromMethod;
+                    if (extFunc.CGInfo != null)
+                        extFunc.CGInfo.FromMethod ??= treeFunc.Fullname ?? extType?.FromMethod;
                 }
             }
             catch (Exception ex)
@@ -982,7 +982,7 @@ namespace Drill4Net.Injector.Engine
                 source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
                 source.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
                 if (source.MethodType == MethodType.CompilerGeneratedPart)
-                    treeFunc.CompilerGeneratedInfo = new CalleeCodeBlock();
+                    treeFunc.CGInfo = new CompilerGeneratedInfo();
                 //
                 if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.Fullname))
                     asmCtx.InjMethodByFullname.Add(treeFunc.Fullname, treeFunc);

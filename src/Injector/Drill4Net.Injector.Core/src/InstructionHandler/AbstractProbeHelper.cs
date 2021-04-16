@@ -49,7 +49,7 @@ namespace Drill4Net.Injector.Core
             //go up to business method and sum the real index shift (business index)
             while (true)
             {
-                var info = method.CompilerGeneratedInfo;
+                var info = method.CGInfo;
                 var caller = info?.Caller;
                 if (caller == null)
                     break;

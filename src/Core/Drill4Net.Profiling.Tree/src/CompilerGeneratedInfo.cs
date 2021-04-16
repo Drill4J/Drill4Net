@@ -6,8 +6,10 @@ namespace Drill4Net.Profiling.Tree
     /// Info for compiler generated methods (caller, indexes, etc)
     /// </summary>
     [Serializable]
-    public class CalleeCodeBlock
+    public class CompilerGeneratedInfo
     {
+        public string FromMethod { get; set; }
+        
         /// <summary>
         /// Caller of current (compiler generated) method
         /// </summary>
