@@ -71,18 +71,10 @@ namespace Drill4Net.Injector.Core
                 throw new ArgumentException(nameof(ind));
             if (asProcessed)
                 ctx.Processed.Add(ctx.Instructions[ind]);
-            //
-            var probeData = GetProbeData(ctx, type, ind, out var point); 
-            Register(ctx, point);
+            var probeData = GetProbeData(ctx, type, ind, out var point);
             return GetFirstInstruction(ctx, probeData);
         }
-        
-        protected virtual void Register(MethodContext ctx, CrossPoint point)
-        {
-            if (!ctx.Method.Points.Contains(point))
-                ctx.Method.Points.Add(point);
-        }
-        
+
         protected virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int byIndex, out CrossPoint point)
         {
             point = GetPoint(ctx, pointType, byIndex);

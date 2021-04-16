@@ -18,10 +18,14 @@ namespace Drill4Net.Injector.Core
         #region CrossPoint
         public virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
-            var existingPoint = ctx.Method.Filter(typeof(CrossPoint), true)
-                .Cast<CrossPoint>()
+            var point = ctx.Method.Points
                 .FirstOrDefault(a => a.PointId == localId.ToString());
-            return existingPoint ?? CreateCrossPoint(ctx, pointType, localId);
+            if (point != null)
+                return point;
+            point = CreateCrossPoint(ctx, pointType, localId);
+            if (!ctx.Method.Points.Contains(point))
+                ctx.Method.Points.Add(point);
+            return point;
         }
 
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
