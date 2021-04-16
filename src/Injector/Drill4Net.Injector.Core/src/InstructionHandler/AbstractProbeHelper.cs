@@ -9,13 +9,11 @@ namespace Drill4Net.Injector.Core
         #region GenerateProbe
         public virtual string GenerateProbe(MethodContext ctx, CrossPoint point)
         {
-            return point.BusinessIndex == -1 
-                ? $"{GenerateProbePrefix(ctx, point)}{point.PointType}"
-                : $"{GenerateProbePrefix(ctx, point)}{GenerateProbeData(point)}";
+            return $"{GenerateProbePrefix(ctx, point)}{GenerateProbeData(point)}";
         }
 
         protected abstract string GenerateProbePrefix(MethodContext ctx, CrossPoint point);
-        public abstract string GenerateProbeData(CrossPoint point);
+        protected abstract string GenerateProbeData(CrossPoint point);
         #endregion
         #region CrossPoint
         public virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int localId)
@@ -28,11 +26,9 @@ namespace Drill4Net.Injector.Core
 
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
-            var id = localId == -1 ? null : localId.ToString();
             var pointUid = Guid.NewGuid().ToString();
             var businessIndex = CalsBusinessIndex(ctx, localId);
-
-            var point = new CrossPoint(pointUid, id, businessIndex, pointType)
+            var point = new CrossPoint(pointUid, localId.ToString(), businessIndex, pointType)
             {
                 //TODO: PDB data
             };
@@ -42,8 +38,6 @@ namespace Drill4Net.Injector.Core
 
         internal virtual int CalsBusinessIndex(MethodContext ctx, int localIndex)
         {
-            if (localIndex == -1) //TODO: what about this case?!!!
-                return localIndex;
             var ind = localIndex;
             var method = ctx.Method;
             //go up to business method and sum the real index shift (business index)

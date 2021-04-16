@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Strategies.Flow
             return $"{point.PointUid}^{injMeth.AssemblyName}^{injMeth.BusinessMethod}^";
         }
 
-        public override string GenerateProbeData(CrossPoint point)
+        protected override string GenerateProbeData(CrossPoint point)
         {
             var str = point.PointType;
             return point.PointId == point.BusinessIndex.ToString()

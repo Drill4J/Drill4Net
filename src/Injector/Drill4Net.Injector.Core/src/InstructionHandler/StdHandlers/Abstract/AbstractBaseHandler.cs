@@ -67,6 +67,8 @@ namespace Drill4Net.Injector.Core
 
         protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int ind, bool asProcessed = true)
         {
+            if (ind < 0)
+                throw new ArgumentException(nameof(ind));
             if (asProcessed)
                 ctx.Processed.Add(ctx.Instructions[ind]);
             //
