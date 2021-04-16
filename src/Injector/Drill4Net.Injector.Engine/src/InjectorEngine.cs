@@ -549,14 +549,17 @@ namespace Drill4Net.Injector.Engine
                     .Where(c => c != 0) //Enter not needed
                     .OrderBy(b => b)
                     .ToList();
-                float origSize = ranges.Last() + 1;
-                var prev = -1;
-                foreach (var range in ranges)
+                if (ranges.Any())
                 {
-                    bizMethod.Blocks.Add(range, (range - prev) / origSize);
-                    prev = range;
+                    float origSize = ranges.Last() + 1;
+                    var prev = -1;
+                    foreach (var range in ranges)
+                    {
+                        bizMethod.Blocks.Add(range, (range - prev) / origSize);
+                        prev = range;
+                    }
+                    //var sum = bizMethod.Blocks.Values.Sum(); //must be ~1.0
                 }
-                //var sum = bizMethod.Blocks.Values.Sum(); //must be ~1.0
             }
             #endregion
             #endregion
