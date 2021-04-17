@@ -86,7 +86,7 @@ namespace Drill4Net.Injector.Core
             if (prev == null || processed.Contains(prev))
                 return;
             prevCode = prev.OpCode.Code;
-            if (prevCode is not Code.Br and not Code.Br_S)
+            if (prevCode is not Code.Br and not Code.Br_S and not Code.Throw)
                 return;
             #endregion
 
@@ -102,7 +102,7 @@ namespace Drill4Net.Injector.Core
                     break;
                 operand = operand.Previous;
             }
-            var ldstr2 = Register(ctx, crossType, ind - 1); //need sub for prev index
+            var ldstr2 = Register(ctx, crossType, prevCode == Code.Throw ? ind : ind - 1); //need sub for prev index if no Throw unstruction
 
             //correction
             ReplaceJumps(operand, ldstr2, ctx);
@@ -114,7 +114,8 @@ namespace Drill4Net.Injector.Core
                 ctx.CorrectIndex(2);
             
             //paired injected instructions are must be labeled as processed
-            processed.Add(prev);
+            if(prevCode != Code.Throw)
+                processed.Add(prev);
             
             needBreak = true;
             #endregion

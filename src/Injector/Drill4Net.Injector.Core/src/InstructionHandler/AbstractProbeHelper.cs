@@ -19,19 +19,18 @@ namespace Drill4Net.Injector.Core
         public virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
             var point = ctx.Method.Points
-                .FirstOrDefault(a => a.PointId == localId.ToString());
+                .FirstOrDefault(a => a.PointType == pointType && a.PointId == localId.ToString()); //check for PointType need to use also
             if (point != null) 
                 return point;
             point = CreateCrossPoint(ctx, pointType, localId);
-            if (!ctx.Method.Points.Contains(point))
-                ctx.Method.AddChild(point);
+            ctx.Method.AddChild(point);
             return point;
         }
 
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
             var pointUid = Guid.NewGuid().ToString();
-            var businessIndex = CalsBusinessIndex(ctx, localId);
+            var businessIndex = CalcBusinessIndex(ctx, localId);
             var point = new CrossPoint(pointUid, localId.ToString(), businessIndex, pointType)
             {
                 //TODO: PDB data
@@ -39,7 +38,7 @@ namespace Drill4Net.Injector.Core
             return point;
         }
 
-        internal virtual int CalsBusinessIndex(MethodContext ctx, int localIndex)
+        internal virtual int CalcBusinessIndex(MethodContext ctx, int localIndex)
         {
             var ind = localIndex;
             var method = ctx.Method;

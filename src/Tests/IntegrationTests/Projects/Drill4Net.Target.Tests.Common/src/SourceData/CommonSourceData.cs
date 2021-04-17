@@ -191,7 +191,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Try_Finally), new object[] { true }, new List<string> { "If_12", "Anchor_14", "Anchor_20" });
                 
                 yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { false }, new List<string> { "Else_5", "Throw_8" });
-                yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { true }, new List<string> { "Throw_7", "If_18" });
+                yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { true }, new List<string> { "If_9" });
                 #endregion
                 #region Dynamic
                 yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { false }, new List<string> { "Call_40", "Call_72", "Else_2", "Anchor_6" }).SetCategory(CATEGORY_DYNAMIC);

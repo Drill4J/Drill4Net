@@ -111,7 +111,7 @@ namespace Drill4Net.Injector.Engine
                 .Where(a => a.CGInfo == null)
                 .ToList();
             var emptyBusinessMeths = cgWrongMeths
-                .Where(a => a.BusinessMethod == null || a.BusinessMethod == a.Fullname)
+                .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.Fullname))
                 .ToList();
             //
             return tree;
@@ -570,6 +570,10 @@ namespace Drill4Net.Injector.Engine
                     var prev = -1;
                     foreach (var range in ranges)
                     {
+                        if (bizMethod.Blocks.ContainsKey(range)) //ERROR in definition of localId!!!!
+                        {
+                            continue;
+                        }
                         bizMethod.Blocks.Add(range, (range - prev) / origSize);
                         prev = range;
                     }
@@ -938,7 +942,8 @@ namespace Drill4Net.Injector.Engine
             var declAttrs = type.CustomAttributes;
             var compGenAttrName = nameof(CompilerGeneratedAttribute);
             var fullName = def.FullName;
-            var isCompilerGeneratedType = def.Name.StartsWith("<") || fullName.EndsWith(">d::MoveNext()") ||
+            var isCompilerGeneratedType = def.IsPrivate &&
+                def.Name.StartsWith("<") || fullName.EndsWith(">d::MoveNext()") ||
                 fullName.Contains(">b__") || fullName.Contains(">c__") || fullName.Contains(">d__") ||
                 fullName.Contains(">f__") || fullName.Contains("|") ||
                 declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null;
