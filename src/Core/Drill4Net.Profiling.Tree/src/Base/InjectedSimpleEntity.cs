@@ -36,7 +36,9 @@ namespace Drill4Net.Profiling.Tree
             foreach (var pointPair in pointPairs)
             {
                 var point = (CrossPoint)pointPair.Key;
-                pointMap.Add((point).PointUid, point);
+                var uid = point.PointUid;
+                if(!pointMap.ContainsKey(uid))
+                    pointMap.Add(uid, point);
             }
             return pointMap;
         }

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Serilog;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Profiling.Tree;
-using Serilog;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -22,7 +22,6 @@ namespace Drill4Net.Target.Tests.Common
         private static Dictionary<string, InjectedSimpleEntity> _pointMap;
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
-        //private Dictionary<string, object> _types;
 
         /****************************************************************************/
 
@@ -304,9 +303,7 @@ namespace Drill4Net.Target.Tests.Common
             var type = (InjectedType)_parentMap[method];
 
             InjectedSimpleEntity asmObj = type;
-            do { asmObj = _parentMap[asmObj]; }
-            //asmObj != null && asmObj is not InjectedAssembly
-            while (asmObj is { } and not InjectedAssembly); 
+            do { asmObj = _parentMap[asmObj]; } while (asmObj is { } and not InjectedAssembly); 
             var asm = asmObj as InjectedAssembly;
             //
             var link = new PointLinkage(asm, type, method, point);

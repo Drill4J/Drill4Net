@@ -38,11 +38,16 @@ namespace Drill4Net.Profiling.Tree
                 .Cast<InjectedAssembly>();
         }
 
+        public IEnumerable<InjectedMethod> GetAllMethods()
+        {
+            return Flatten(typeof(CrossPoint))
+                .Where(a => a.GetType().Name == nameof(InjectedMethod))
+                .Cast<InjectedMethod>();
+        }
+
         public IEnumerable<CrossPoint> GetAllPoints()
         {
-            return Flatten()
-                .Where(a => a.GetType().Name == nameof(CrossPoint))
-                .Cast<CrossPoint>();
+            return Filter(typeof(InjectedMethod), true).Cast<CrossPoint>();
         }
 
         public InjectedDirectory GetDirectory(string path)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Drill4Net.Profiling.Tree
 {
@@ -34,7 +35,7 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public int OwnBusinessSize { get; set; } = -1;
 
-        public List<CrossPoint> Points { get; }
+        public IEnumerable<CrossPoint> Points => Filter(typeof(CrossPoint), false).Cast<CrossPoint>();
         
         /// <summary>
         /// Dictionary of code blocks: key is point Id, value - coverage part of code by this block
@@ -50,7 +51,6 @@ namespace Drill4Net.Profiling.Tree
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             CalleeIndexes = new Dictionary<string, int>();
-            Points = new List<CrossPoint>();
             Blocks = new Dictionary<int, float>();
             //
             var parts = GetParts(fullName);

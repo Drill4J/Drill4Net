@@ -24,7 +24,7 @@ namespace Drill4Net.Injector.Core
                 return point;
             point = CreateCrossPoint(ctx, pointType, localId);
             if (!ctx.Method.Points.Contains(point))
-                ctx.Method.Points.Add(point);
+                ctx.Method.AddChild(point);
             return point;
         }
 

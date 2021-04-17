@@ -98,6 +98,21 @@ namespace Drill4Net.Injector.Engine
             //copying tree data to target root directories
             InjectTree(tree);
             tree.FinishTime = DateTime.Now;
+            
+            // debug
+            var methods = tree.GetAllMethods().ToList();
+            var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
+            var cgWrongMeths = methods
+                .Where(a => (a.IsCompilerGenerated || a.Name == "MoveNext") && 
+                             a.CGInfo?.FromMethod == null && 
+                             !a.TypeName.Contains("NotEmptyStringEnumerator"))
+                .ToList();
+            var emtyCGInfoMeths = cgWrongMeths
+                .Where(a => a.CGInfo == null)
+                .ToList();
+            var emptyBusinessMeths = cgWrongMeths
+                .Where(a => a.CGInfo != null && a.CGInfo.FromMethod == null)
+                .ToList();
             //
             return tree;
         }

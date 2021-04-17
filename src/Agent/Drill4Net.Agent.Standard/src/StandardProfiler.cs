@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.Standard
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly Dictionary<string, InjectedSimpleEntity> _pointMap;
         private static readonly Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
-        
+
         /*****************************************************************************/
 
         static StandardProfiler()
@@ -142,9 +142,7 @@ namespace Drill4Net.Agent.Standard
                 return null;
             if (!_pointMap.ContainsKey(probeUid))
                 return null;
-            if (_pointMap[probeUid] is not CrossPoint point)
-                return null;
-            if (_parentMap[point] is not InjectedMethod method)
+            if (_pointMap[probeUid] is not InjectedMethod method)
                 return null;
             return method.BusinessMethod;
         }
