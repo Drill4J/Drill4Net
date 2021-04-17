@@ -33,12 +33,9 @@ namespace Drill4Net.Agent.Testing
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
                 var rep = new InjectorRepository(cfg_path);
-                var opts = rep.Options;
 
                 //tree info
-                var targetDir = opts.Destination.Directory;
-                var treePath = rep.GenerateTreeFilePath(targetDir);
-                var tree = rep.ReadInjectedTree(treePath);
+                var tree = rep.ReadInjectedTree();
                 _parentMap = tree.CalcParentMap();
                 _pointMap = tree.CalcPointMap(_parentMap);
 
@@ -46,7 +43,7 @@ namespace Drill4Net.Agent.Testing
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Error of TestingProfiler initializing");
+                Log.Fatal(ex, $"Error of {nameof(TestingProfiler)} initializing");
             }
         }
 

@@ -5,8 +5,23 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Standard.Demo</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Standard.Demo</OutputPath>
+      <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Standard.Demo\Drill4Net.Agent.Standard.Demo.xml</DocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\Drill4Net.Agent.Standard\Drill4Net.Agent.Standard.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="std_cfg.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

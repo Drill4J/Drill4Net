@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using Serilog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard
 {
-    public class StandardAgent : AbstractAgent
+    public class StandardProfiler : AbstractAgent
     {
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly Dictionary<string, InjectedSimpleEntity> _pointMap;
@@ -18,7 +21,7 @@ namespace Drill4Net.Agent.Standard
         
         /*****************************************************************************/
 
-        static StandardAgent()
+        static StandardProfiler()
         {
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
             PrepareLogger();
@@ -28,14 +31,11 @@ namespace Drill4Net.Agent.Standard
             {
                 //rep
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
+                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
                 var rep = new InjectorRepository(cfg_path);
-                var opts = rep.Options;
 
                 //tree info
-                var targetDir = opts.Destination.Directory;
-                var treePath = rep.GenerateTreeFilePath(targetDir);
-                var tree = rep.ReadInjectedTree(treePath);
+                var tree = rep.ReadInjectedTree();
                 _parentMap = tree.CalcParentMap();
                 _pointMap = tree.CalcPointMap(_parentMap);
 
@@ -43,7 +43,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Error of TestingProfiler initializing");
+                Log.Fatal(ex, $"Error of {nameof(StandardProfiler)} initializing");
             }
         }
 
@@ -89,6 +89,53 @@ namespace Drill4Net.Agent.Standard
             RegisterStatic(data);
         }
         
+        internal static void AddPoint(string asmName, string funcSig, string point)
+        {
+            var points = GetPoints(asmName, funcSig);
+            points.Add(point);
+        }
+        
+        public static List<string> GetPoints(string asmName, string funcSig, bool withPointRemoving = false)
+        {
+            var byFunctions = GetFunctions(!withPointRemoving);
+            List<string> points;
+            var funcPath = $"{asmName};{funcSig}";
+            if (byFunctions.ContainsKey(funcPath))
+            {
+                points = byFunctions[funcPath];
+            }
+            else
+            {
+                points = new List<string>();
+                byFunctions.Add(funcPath, points);
+            }
+            //
+            if (withPointRemoving)
+                byFunctions.Remove(funcPath);
+            return points;
+        }
+        
+        public static Dictionary<string, List<string>> GetFunctions(bool createNotExistedBranch)
+        {
+            //This defines the logical execution path of function callers regardless
+            //of whether threads are created in async/await or Parallel.For
+            var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
+            Debug.WriteLine($"Profiler({createNotExistedBranch}): id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
+
+            Dictionary<string, List<string>> byFunctions;
+            if (_clientPoints.ContainsKey(id))
+            {
+                _clientPoints.TryGetValue(id, out byFunctions);
+            }
+            else
+            {
+                byFunctions = new Dictionary<string, List<string>>();
+                if(createNotExistedBranch)
+                    _clientPoints.TryAdd(id, byFunctions);
+            }
+            return byFunctions;
+        }
+        
         internal static string GetBusinessMethodName(string probeUid)
         {
             if (_pointMap == null)
@@ -105,7 +152,8 @@ namespace Drill4Net.Agent.Standard
         public static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\"), $"{nameof(StandardAgent)}.log"));
+            //common log
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(StandardProfiler)}.log"));
             Log.Logger = cfg.CreateLogger();
         }
     }

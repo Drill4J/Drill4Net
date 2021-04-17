@@ -4,6 +4,12 @@
         <name>Drill4Net.Common</name>
     </assembly>
     <members>
+        <member name="M:Drill4Net.Common.LoggerHelper.GetCommonFilePath">
+            <summary>
+            Get the common folder to log events (for all components of system)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Drill4Net.Common.FolderData">
             <summary>
             Data for assemblies and it's classes in folder for testing 

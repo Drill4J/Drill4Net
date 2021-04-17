@@ -2,10 +2,27 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Standard</OutputPath>
+      <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Standard\Drill4Net.Agent.Standard.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Standard</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+      <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+      <ProjectReference Include="..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Serilog" Version="2.10.0" />
+      <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     </ItemGroup>
 
 </Project>

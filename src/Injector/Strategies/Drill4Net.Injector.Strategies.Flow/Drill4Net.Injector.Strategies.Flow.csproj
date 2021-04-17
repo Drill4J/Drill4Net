@@ -7,7 +7,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
     <OutputPath>..\..\..\..\build\bin\Debug\Drill4Net.Injector.Strategies.Flow</OutputPath>
-    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Injector.Strategies.Flow\Drill4Net.Injector.Strategies.Flow.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\..\doc\xml\Drill4Net.Injector.Strategies.Flow\Drill4Net.Injector.Strategies.Flow.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">

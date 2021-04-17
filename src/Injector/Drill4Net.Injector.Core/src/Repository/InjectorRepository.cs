@@ -67,6 +67,7 @@ namespace Drill4Net.Injector.Core
         public static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+            //common folder - TODO: from local cfg!
             cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(Injector)}.log"));
             Log.Logger = cfg.CreateLogger();
         }
@@ -121,6 +122,16 @@ namespace Drill4Net.Injector.Core
         }
         #endregion
         #region Injected Tree
+
+        public virtual InjectedSolution ReadInjectedTree()
+        {
+            if (Options == null)
+                throw new Exception("Options is empty");
+            var targetDir = Options.Destination.Directory;
+            var treePath =GenerateTreeFilePath(targetDir);
+            return ReadInjectedTree(treePath);
+        }
+
         public virtual InjectedSolution ReadInjectedTree(string path)
         {
             var types = GetInjectedTreeTypes();

@@ -1,7 +1,7 @@
 ﻿using System;
+using Serilog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
-using Serilog;
 
 namespace Drill4Net.Injector.App
 {
