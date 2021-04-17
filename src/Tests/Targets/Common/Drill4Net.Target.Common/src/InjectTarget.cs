@@ -1160,7 +1160,9 @@ namespace Drill4Net.Target.Common
         public void Disposable_Using_Last_Exception()
         {
             Console.WriteLine($"{nameof(Disposable_Using_Last_Exception)}");
+            #pragma warning disable IDE0063 // Use simple 'using' statement
             using (var ms = new MemoryStream())
+            #pragma warning restore IDE0063 // Use simple 'using' statement
             {
                 throw new Exception($"The exception has been thrown");
             }
@@ -1169,7 +1171,9 @@ namespace Drill4Net.Target.Common
         public void Disposable_Using_Exception(bool cond)
         {
             Console.WriteLine($"{nameof(Disposable_Using_Exception)}: {cond}");
+            #pragma warning disable IDE0063 // Use simple 'using' statement
             using (var ms = new MemoryStream())
+            #pragma warning restore IDE0063 // Use simple 'using' statement
             {
                 if (cond)
                     throw new Exception($"The exception has been thrown");
@@ -1195,9 +1199,9 @@ namespace Drill4Net.Target.Common
             using (var ms = new MemoryStream(GetBytes(cnt)))
             {
                 if (cond)
-#pragma warning disable CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
+                    #pragma warning disable CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
                     await ms.ReadAsync(res, 0, (int)ms.Length);
-#pragma warning restore CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
+                    #pragma warning restore CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
             }
             Console.WriteLine($"{nameof(Disposable_Using_AsyncRead)}: {cond}");
         }

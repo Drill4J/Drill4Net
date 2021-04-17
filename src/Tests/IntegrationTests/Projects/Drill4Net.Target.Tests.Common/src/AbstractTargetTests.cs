@@ -204,12 +204,15 @@ namespace Drill4Net.Target.Tests.Common
             }
             else
             {
-                var data = inputs[0];
+                var checks = inputs.SelectMany(a => a.Checks).ToList();
                 var points = funcs.Values.SelectMany(a => a).ToList();
                 RemoveEnterReturns(points);
-                if (data.NeedSort)
+                if (inputs[0].NeedSort)
+                {
                     points.Sort();
-                Check(points, data.Checks);
+                    checks.Sort();
+                }
+                Check(points, checks);
             }
 
             //local funcs

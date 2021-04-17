@@ -283,24 +283,29 @@ namespace Drill4Net.Target.Tests.Common
 #endif
                 #endregion
                 #region Parallel
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Else_16", "Else_16", "Else_16", "Else_16", "Else_16" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "If_2", "If_2", "If_2", "If_2", "If_2", "If_7", "If_7", "If_7", "If_7", "If_7" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "Else_13", "Else_13", "Else_13", "Else_13", "Else_13" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "If_2", "If_2", "If_2", "If_2", "If_2", "If_5", "If_5", "If_5", "If_5", "If_5" }, true));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_For), new List<string> { "Else_17", "Else_17", "Else_17", "Else_17", "Else_17", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_For), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_For), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Else_14", "Else_14", "Else_14", "Else_14", "Else_14", "If_18", "If_18", "If_18", "If_18", "If_18" }, true));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_For), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "If_18", "If_18", "If_18", "If_3", "If_3", "If_3", "If_3", "If_3", "If_6", "If_6", "If_6", "If_6", "If_6" }, true));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Foreach), new List<string> { "Else_17", "Else_17", "Else_17", "Else_17", "Else_17", "If_26", "If_26", "If_26", "If_26", "If_26" }, true));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_Foreach), new List<string> { "If_26", "If_26", "If_26", "If_3", "If_3", "If_3", "If_3", "If_3", "If_8", "If_8", "If_8", "If_8", "If_8" }, true));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Foreach), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Else_14", "Else_14", "Else_14", "Else_14", "Else_14", "If_18", "If_18", "If_18", "If_18", "If_18" }, true));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_Foreach), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "If_18", "If_18", "If_18", "If_3", "If_3", "If_3", "If_3", "If_3", "If_6", "If_6", "If_6", "If_6", "If_6" }, true));
 
                 //data migrates from one func to another depending on running other similar tests... See next option for execute them
                 //yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "Else_11"}), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "Else_4" }));
                 //yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "If_3" }), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "If_12" }));
 
-                yield return GetCase(new object[] { false }, false, true, true, new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Else_12", "Else_4" }, true));
-                yield return GetCase(new object[] { true }, false, true, true, new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "If_13", "If_3" }, true));
+                yield return GetCase(new object[] { false }, false, true, true, 
+                    new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_5", "Else_9", "Anchor_15" }, true),
+                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Else_2", "Anchor_14" }, true));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "Else_4" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string>()), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "If_13" }));
+                yield return GetCase(new object[] { true }, false, true, true, 
+                    new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_5", "If_3", "Anchor_15" }, true),
+                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "If_8", "Anchor_14" }, true));
+
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "Else_2", "Anchor_14" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "If_8", "Anchor_14" }));
                 #endregion
                 #region Dynamic
                 yield return GetCase(new object[] { false },
@@ -314,8 +319,8 @@ namespace Drill4Net.Target.Tests.Common
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
                 #endregion
                 #region Disposable
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Disposable_Using_SyncRead), new List<string>()));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Disposable_Using_SyncRead), new List<string> { "If_17" }));
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Disposable_Using_SyncRead), new List<string> { "Call_8", "Anchor_32" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Disposable_Using_SyncRead), new List<string> { "Call_8", "If_15", "Anchor_32" }));
 
                 yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncRead), new List<string>()));
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncRead), new List<string> { "If_34" }));
@@ -323,10 +328,10 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string>()));
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
 
-                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Disposable_Using_Last_Exception), new List<string> { "Throw_11" })); //in net50 was "Throw_10"
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Disposable_Using_Last_Exception), new List<string> { "Throw_9" })); //in net50 was "Throw_10"
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Disposable_Using_Exception), new List<string>()));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Disposable_Using_Exception), new List<string> { "If_16", "Throw_21" })); //in net50 was "If_15", "Throw_20"
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Disposable_Using_Exception), new List<string> { "Else_18" }));
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Disposable_Using_Exception), new List<string> { "If_14", "Throw_17" })); //in net50 was "If_15", "Throw_20"
 
                 //class::Finalize() is the thing-in-itself
                 yield return GetCase(new object[] { (ushort)17 }, true,
@@ -348,8 +353,8 @@ namespace Drill4Net.Target.Tests.Common
                 #region Misc
                 yield return GetCase(Array.Empty<object>(), false, new TestInfo(GetInfo(Target.CallAnotherTarget), new List<string> { "Call_2" }), new TestInfo(GetInfo(_anotherTarget.WhoAreU), new List<string>())).SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Yield), new List<string>()), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Yield), new List<string>()), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "If_49" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Yield), new List<string> { "Call_3" }), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Else_44" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Yield), new List<string> { "Call_3" }), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "If_46" })).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Extension), new List<string> { "Call_3" }), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Else_2", "Anchor_6" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Extension), new List<string> { "Call_3" }), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "If_4", "Anchor_6" })).SetCategory(CATEGORY_MISC);
@@ -357,10 +362,10 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(Array.Empty<object>(), true, new TestInfo(GetInfo(Target.Event), new List<string> { "Call_18", "Call_22", "Call_26" }), new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "If_6", "Call_8" })) .SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(Array.Empty<object>(), true,
-                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Cycle_21", "Cycle_21", "Cycle_21", "Cycle_21", "CycleEnd_23" }),
+                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Call_7", "Anchor_17", "Cycle_19", "Anchor_17", "Cycle_19", "Anchor_17", "Cycle_19", "Anchor_17", "Cycle_19", "Anchor_17", "CycleEnd_19", "Anchor_27" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
-                    new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "Else_22", "Else_22", "Else_22", "Else_22", "If_16" }),
-                    new TestInfo(GetSourceFromFullSig(Target, "System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false, new List<string> { "Else_6", "Else_6", "Else_6", "Else_6" }),
+                    new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "Else_17", "Call_20", "Anchor_25", "Else_17", "Call_20", "Anchor_25", "Else_17", "Call_20", "Anchor_25", "Else_17", "Call_20", "Anchor_25", "If_14", "Anchor_25"}),
+                    new TestInfo(GetSourceFromFullSig(Target, "System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false, new List<string> { "Else_4", "Anchor_16", "Else_21", "Else_4", "Anchor_16", "Else_21", "Else_4", "Anchor_16", "Else_21", "Else_4", "Anchor_16", "Else_21" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.NotEmptyStringEnumerator::Dispose()"), false, new List<string>()))
                     .SetCategory(CATEGORY_MISC);
 
