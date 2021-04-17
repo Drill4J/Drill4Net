@@ -304,12 +304,12 @@ namespace Drill4Net.Target.Tests.Common
                 #endregion
                 #region Dynamic
                 yield return GetCase(new object[] { false },
-                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "Else_2" }),
+                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "Call_40", "Call_72", "Else_2", "Anchor_6" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
 
                 yield return GetCase(new object[] { true },
-                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "If_7" }),
+                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "Call_40", "Call_72", "If_4", "Anchor_6" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string>()),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string>()));
                 #endregion
@@ -330,13 +330,13 @@ namespace Drill4Net.Target.Tests.Common
 
                 //class::Finalize() is the thing-in-itself
                 yield return GetCase(new object[] { (ushort)17 }, true,
-                        new TestInfo(GetInfo(Target.Disposable_Finalizer), new List<string>()),
-                        new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "If_10", "If_33" }, true)); //in net5 was "If_31", "If_8"
+                        new TestInfo(GetInfo(Target.Disposable_Finalizer), new List<string> {"Call_3" }),
+                        new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Anchor_12", "If_8", "If_24" }, true)); //in net5 was "If_31", "If_8"
 
                 //still not work togeteher with previous call
                 yield return GetCase(new object[] { (ushort)18 }, true,
-                        new TestInfo(GetInfo(Target.Disposable_Finalizer), new List<string>()),
-                        new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Else_12", "If_30" }, true)).Ignore(TestConstants.INFLUENCE);
+                        new TestInfo(GetInfo(Target.Disposable_Finalizer), new List<string> { "Call_3" }),
+                        new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.Finalizer::Finalize()"), true, new List<string> { "Anchor_12", "Else_10", "If_24" }, true)); //.Ignore(TestConstants.INFLUENCE);
                 #endregion
                 #region VB.NET
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Try_Catch_VB), new List<string> { "Call_5" }), new TestInfo(GetInfo(_vbTarget.Try_Catch_VB), new List<string> { "Throw_5", "Else_9", "Anchor_13" })); //.Ignore("Will work after pass of the CallAnotherTarget test");

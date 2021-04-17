@@ -1435,7 +1435,7 @@ namespace Drill4Net.Target.Common
         {
             var enumerable = new StringEnumerable();
             var s = "";
-            foreach (var a in enumerable) //While_21
+            foreach (var a in enumerable)
                 s += a;
             Console.WriteLine($"{nameof(Enumerator_Implementation)}: {s}");
         }

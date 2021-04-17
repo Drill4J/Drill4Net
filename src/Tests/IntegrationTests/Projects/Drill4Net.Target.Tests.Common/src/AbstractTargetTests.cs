@@ -193,9 +193,13 @@ namespace Drill4Net.Target.Tests.Common
                         RemoveEnterAndLastReturn(points);
                     }
 
+                    var checks = data.Checks;
                     if (data.NeedSort)
+                    {
                         points.Sort(new PointLinkageProbeComparer());
-                    Check(points, data.Checks);
+                        checks.Sort();
+                    }
+                    Check(points, checks);
                 }
             }
             else
