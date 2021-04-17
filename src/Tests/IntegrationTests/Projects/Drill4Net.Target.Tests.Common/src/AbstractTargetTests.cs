@@ -76,11 +76,7 @@ namespace Drill4Net.Target.Tests.Common
             {
                 Assert.Fail(tex.Message);
             }
-            catch (Exception ex) //it's normal for business throws
-            {
-                if (!checks.Any(a => a.Contains("Throw")))
-                    Assert.Fail(ex.Message);
-            }
+            catch { } //it's normal for business throws
             #endregion
             #region Assert
             var funcs = GetFunctions();

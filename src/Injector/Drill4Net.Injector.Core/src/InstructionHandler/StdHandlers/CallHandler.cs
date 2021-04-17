@@ -32,12 +32,12 @@ namespace Drill4Net.Injector.Core
                     return false;
                 var operand = (MethodReference) instr.Operand;
                 var fullname = operand.FullName;
+                var isOwn = _typeChecker.CheckByMethodName(fullname);
                 if (code is Code.Callvirt)
-                    return fullname.Contains("::Invoke(");
+                    return isOwn || fullname.Contains("::Invoke(");
                 if (fullname.Contains(ctx.ProxyNamespace))
                     return false;
-                var res = _typeChecker.CheckByMethodName(fullname);
-                return res;
+                return isOwn;
             }
             catch (Exception e)
             {
