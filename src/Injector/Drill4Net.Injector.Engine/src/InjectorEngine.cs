@@ -111,7 +111,7 @@ namespace Drill4Net.Injector.Engine
                 .Where(a => a.CGInfo == null)
                 .ToList();
             var emptyBusinessMeths = cgWrongMeths
-                .Where(a => a.CGInfo != null && a.CGInfo.FromMethod == null)
+                .Where(a => a.BusinessMethod == null || a.BusinessMethod == a.Fullname)
                 .ToList();
             //
             return tree;
@@ -923,21 +923,25 @@ namespace Drill4Net.Injector.Engine
 
         internal MethodType GetMethodType(MethodDefinition def)
         {
-            var methodFullName = def.FullName;
-            var type = def.DeclaringType;
-            var declAttrs = type.CustomAttributes;
-            var compGenAttrName = nameof(CompilerGeneratedAttribute);
-            var isCompilerGeneratedType = def.Name.StartsWith("<") || 
-                declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null; 
-            //                                                                                                          
             if (def.IsSetter)
                 return MethodType.Setter;
             if (def.IsGetter)
                 return MethodType.Getter;
+            //
+            var methodFullName = def.FullName;
             if (methodFullName.Contains("::add_"))
                 return MethodType.EventAdd;
             if (methodFullName.Contains("::remove_"))
                 return MethodType.EventRemove;
+            //
+            var type = def.DeclaringType;
+            var declAttrs = type.CustomAttributes;
+            var compGenAttrName = nameof(CompilerGeneratedAttribute);
+            var fullName = def.FullName;
+            var isCompilerGeneratedType = def.Name.StartsWith("<") || fullName.EndsWith(">d::MoveNext()") ||
+                fullName.Contains(">b__") || fullName.Contains(">c__") || fullName.Contains(">d__") ||
+                fullName.Contains(">f__") || fullName.Contains("|") ||
+                declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null;
             if (isCompilerGeneratedType)
                 return MethodType.CompilerGeneratedPart;
             //
@@ -947,7 +951,7 @@ namespace Drill4Net.Injector.Engine
                 return MethodType.Destructor;
             if (methodFullName.Contains("|"))
                 return MethodType.Local; 
-
+            //
             return MethodType.Normal;
         }
 
@@ -1008,8 +1012,6 @@ namespace Drill4Net.Injector.Engine
                 source.IsMoveNext = methodName == "MoveNext";
                 source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
                 source.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
-                if (source.MethodType == MethodType.CompilerGeneratedPart)
-                    treeFunc.CGInfo = new CompilerGeneratedInfo();
                 //
                 if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.Fullname))
                     asmCtx.InjMethodByFullname.Add(treeFunc.Fullname, treeFunc);

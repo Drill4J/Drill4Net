@@ -11,14 +11,14 @@ namespace Drill4Net.Profiling.Tree
         public string ReturnType { get; set; }
         public string Parameters { get; set; }
         public string TypeName { get; set; }
-        
+
         public bool IsCompilerGenerated => SourceType.MethodType == MethodType.CompilerGeneratedPart;
 
-        public CompilerGeneratedInfo CGInfo { get; set; }
+        public CompilerGeneratedInfo CGInfo { get; }
 
         public Dictionary<string, int> CalleeIndexes { get; set; }
 
-        public string BusinessMethod => CGInfo?.FromMethod ?? Fullname;
+        public string BusinessMethod => GetBusinessMethod();
         public string BusinessType { get; set; }
 
         public MethodSource SourceType { get; set; }
@@ -50,6 +50,8 @@ namespace Drill4Net.Profiling.Tree
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
+            if (sourceType.MethodType == MethodType.CompilerGeneratedPart)
+                CGInfo = new CompilerGeneratedInfo();
             CalleeIndexes = new Dictionary<string, int>();
             Blocks = new Dictionary<int, float>();
             //
@@ -120,6 +122,20 @@ namespace Drill4Net.Profiling.Tree
                 key = type;
             }
             return type;
+        }
+
+        internal virtual string GetBusinessMethod()
+        {
+            var method = this;
+            while (true)
+            {
+                var cgInfo = method?.CGInfo;
+                if (cgInfo == null)
+                    return method.Fullname;
+                if (cgInfo.FromMethod != null || cgInfo.Caller == null)
+                    return cgInfo.FromMethod;
+                method = cgInfo.Caller;
+            }
         }
 
         public override string ToString()
