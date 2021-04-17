@@ -198,18 +198,18 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { true }, new List<string> { "Call_40", "Call_72", "If_4", "Anchor_6" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
-                yield return GetCase(GetInfo(Target.Cycle_Do), Array.Empty<object>(), new List<string> { "Cycle_26", "Cycle_26", "CycleEnd_23" });
+                yield return GetCase(GetInfo(Target.Cycle_Do), Array.Empty<object>(), new List<string> { "Cycle_21", "Cycle_21", "CycleEnd_21" }); //IDs may match
 
-                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { -1 }, new List<string> { "CycleEnd_24" });
-                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { 3 }, new List<string> { "Cycle_22", "Cycle_22", "Cycle_22", "CycleEnd_24" });
+                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { -1 }, new List<string> { "Anchor_15", "CycleEnd_20" });
+                yield return GetCase(GetInfo(Target.Cycle_For), new object[] { 3 }, new List<string> { "Anchor_15", "Cycle_20", "Anchor_15", "Cycle_20", "Anchor_15", "Cycle_20", "Anchor_15", "CycleEnd_20" });
 
-                yield return GetCase(GetInfo(Target.Cycle_For_Break), new object[] { 3 }, new List<string> { "If_16", "Cycle_33", "If_16", "Cycle_33", "If_16", "Cycle_33", "CycleEnd_35" });
-                yield return GetCase(GetInfo(Target.Cycle_For_Break), new object[] { 2 }, new List<string> { "If_16", "Cycle_33", "If_16", "Cycle_33" });
+                yield return GetCase(GetInfo(Target.Cycle_For_Break), new object[] { 2 }, new List<string> { "Anchor_24", "If_13", "Cycle_29", "Anchor_24", "If_13", "Cycle_29", "Anchor_24" });
+                yield return GetCase(GetInfo(Target.Cycle_For_Break), new object[] { 3 }, new List<string> { "Anchor_24", "If_13", "Cycle_29", "Anchor_24", "If_13", "Cycle_29", "Anchor_24", "If_13", "Cycle_29", "Anchor_24", "CycleEnd_29" });
 
-                yield return GetCase(GetInfo(Target.Cycle_Foreach), Array.Empty<object>(), new List<string> { "Cycle_42", "Cycle_42", "Cycle_42", "CycleEnd_44" });
+                yield return GetCase(GetInfo(Target.Cycle_Foreach), Array.Empty<object>(), new List<string> { "Anchor_36", "Cycle_40", "Anchor_36", "Cycle_40", "Anchor_36", "Cycle_40", "Anchor_36", "CycleEnd_40" });
 
-                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { -1 }, new List<string> { "CycleEnd_22" });
-                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { 3 }, new List<string> { "Cycle_20", "Cycle_20", "Cycle_20", "CycleEnd_22" });
+                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { -1 }, new List<string> { "Anchor_13", "CycleEnd_18" });
+                yield return GetCase(GetInfo(Target.Cycle_While), new object[] { 3 }, new List<string> { "Anchor_13", "Cycle_18", "Anchor_13", "Cycle_18", "Anchor_13", "Cycle_18", "Anchor_13", "CycleEnd_18" });
                 #endregion
                 #region Misc
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { false }, new List<string> { "If_7" }).SetCategory(CATEGORY_MISC);
@@ -217,8 +217,8 @@ namespace Drill4Net.Target.Tests.Common
                 
                 yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Backward), Array.Empty<object>(), new List<string> { "Else_20", "Anchor_21", "Else_20", "Anchor_21", "If_19", "Anchor_24" }).SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Forward), new object[] { false }, new List<string> { "If_19", "Cycle_35", "If_19", "Cycle_35", "CycleEnd_37" }).SetCategory(CATEGORY_MISC);
-                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Forward), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Forward), new object[] { false }, new List<string> { "Anchor_26", "If_16", "Cycle_31", "Anchor_26", "If_16", "Cycle_31", "Anchor_26", "CycleEnd_31" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Forward), new object[] { true }, new List<string> { "Anchor_26" }).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(GetInfo(Target.Lock_Statement), new object[] { false }, new List<string> { "Else_12", "Anchor_16", "Anchor_25" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(Target.Lock_Statement), new object[] { true }, new List<string> { "If_14", "Anchor_16", "Anchor_25" }).SetCategory(CATEGORY_MISC);

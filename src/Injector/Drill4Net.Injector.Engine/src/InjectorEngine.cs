@@ -561,8 +561,9 @@ namespace Drill4Net.Injector.Engine
 
                 var ranges = bizMethod.Points
                     .Select(a => a.BusinessIndex)
-                    .Where(c => c != 0) //Enter not needed
+                    .Where(c => c != 0) //Enter not needed in any case
                     .OrderBy(b => b)
+                    .Distinct() //need for exclude in fact fictive (for coverage) injections: CycleEnd, etc
                     .ToList();
                 if (ranges.Any())
                 {
@@ -570,10 +571,6 @@ namespace Drill4Net.Injector.Engine
                     var prev = -1;
                     foreach (var range in ranges)
                     {
-                        if (bizMethod.Blocks.ContainsKey(range)) //ERROR in definition of localId!!!!
-                        {
-                            continue;
-                        }
                         bizMethod.Blocks.Add(range, (range - prev) / origSize);
                         prev = range;
                     }

@@ -68,8 +68,10 @@ namespace Drill4Net.Injector.Core
                 var next = instr.Next;
 
                 // 1.
+                //it's fictive instruction - for coverage not needed (but for debug?) 
+                //it's LocalId will be match with paired instruction
                 var crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
-                var ldstrIf = Register(ctx, crossType);
+                var ldstrIf = Register(ctx, crossType); 
 
                 var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
                 processor.InsertAfter(instr, call1);
