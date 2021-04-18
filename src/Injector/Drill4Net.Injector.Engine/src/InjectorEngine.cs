@@ -357,14 +357,6 @@ namespace Drill4Net.Injector.Engine
                             var minOffset = body.ExceptionHandlers.Min(a => a.TryStart.Offset);
                             var asyncInstr = body.ExceptionHandlers
                                 .First(a => a.TryStart.Offset == minOffset).TryStart;
-                            //for (var i = 0; i < 3 && asyncInstr.Next != null; i++)
-                            //    asyncInstr = asyncInstr.Next;
-                            //while (true)
-                            //{
-                            //    if (asyncInstr.OpCode.FlowControl == FlowControl.Next || asyncInstr.Next == null)
-                            //        break;
-                            //    asyncInstr = asyncInstr.Next;
-                            //}
                             startInd = instructions.IndexOf(asyncInstr) + 1;
                             while (true)
                             {
@@ -494,8 +486,11 @@ namespace Drill4Net.Injector.Engine
                         methodCtx.Jumpers.Add(instr);
                         //
                         var anchor = instr.Operand;
-                        //pseudo-jump?
-                        if(instr.Next != anchor && !methodCtx.Anchors.Contains(anchor)) 
+                        //need this jump for handle?
+                        var curCode = instr.OpCode.Code;
+                        if (curCode == Code.Leave || curCode == Code.Leave_S)
+                            continue;
+                        if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor)) 
                             methodCtx.Anchors.Add(anchor);
                     }
                     #endregion

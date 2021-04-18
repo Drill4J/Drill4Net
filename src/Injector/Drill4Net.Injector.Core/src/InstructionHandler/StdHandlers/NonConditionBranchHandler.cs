@@ -18,7 +18,6 @@ namespace Drill4Net.Injector.Core
         {
             #region Init
             needBreak = false;
-            var treeType = ctx.Type;
 
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;

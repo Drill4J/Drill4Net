@@ -29,7 +29,7 @@ namespace Drill4Net.Injector.Core
         public HashSet<object> FirstInjectInstructions { get; }
         public Dictionary<Instruction, Instruction> ReplacedJumps { get; }
         public HashSet<Instruction> Jumpers { get; }
-        
+
         /// <summary>
         /// Set of an anchors (targets of <see cref="Jumpers"/>, in fact, their Operands)
         /// </summary>

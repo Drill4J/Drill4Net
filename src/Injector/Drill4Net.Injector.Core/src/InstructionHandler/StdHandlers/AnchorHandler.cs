@@ -28,12 +28,6 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (ctx.CompilerInstructions.Contains(instr))
                 return false;
-            //var desc = instr.Operand?.ToString();
-            //if (desc != null)
-            //{
-            //    if (desc.Contains("get_IsCompleted()"))
-            //        return true;
-            //}
             if (ctx.Processed.Contains(instr)) //may be 'IF' or 'ELS' it yet are processed
                 return false;
             if (!ctx.Anchors.Contains(instr))

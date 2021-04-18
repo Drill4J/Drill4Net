@@ -51,7 +51,7 @@ namespace Drill4Net.Injector.Core
             if (prevOperand.OpCode.Code is Code.Br or Code.Br_S) //for/while
             {
                 var ldstrIf2 = Register(ctx, CrossPointType.Cycle); 
-                var targetOp = prevOperand.Operand as Instruction;
+                var targetOp = prevOperand.Operand as Instruction; //prevOperand.Operand
                 processor.InsertBefore(targetOp, ldstrIf2);
                 processor.InsertBefore(targetOp, call);
                 ctx.CorrectIndex(2);
