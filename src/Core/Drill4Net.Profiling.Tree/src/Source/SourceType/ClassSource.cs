@@ -6,6 +6,5 @@ namespace Drill4Net.Profiling.Tree
     public class ClassSource : BaseSource
     {
         public bool IsValueType { get; set; }
-        public bool IsAsyncStateMachine { get; set; }
      }
 }

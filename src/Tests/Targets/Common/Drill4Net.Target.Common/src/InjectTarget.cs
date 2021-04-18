@@ -209,16 +209,6 @@ namespace Drill4Net.Target.Common
             Expression(10);
             #endregion
             #region Try/cath/finally
-            try
-            {
-                Try_Exception_Conditional(false);
-                Try_Exception_Conditional(true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"\n{ex}");
-            }
-
             Try_Catch(false);
             Try_Catch(true);
 
@@ -854,26 +844,6 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Try/cath/finally
-        public void Try_Exception_Conditional(bool isException)
-        {
-            try
-            {
-                Console.WriteLine(nameof(Try_Exception_Conditional));
-            }
-            //exception rethrow is not crack the injection
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                throw;
-            }
-
-            //exception throw is not crack the injection
-            if (isException)
-            {
-                throw new Exception("Throw!");
-            }
-        }
-
         public void Try_Catch(bool cond)
         {
             var s = "none";

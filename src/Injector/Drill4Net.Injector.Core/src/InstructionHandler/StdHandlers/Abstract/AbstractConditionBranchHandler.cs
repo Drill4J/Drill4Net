@@ -25,10 +25,8 @@ namespace Drill4Net.Injector.Core
             var code = opCode.Code;
             var flow = opCode.FlowControl;
 
-            var typeSource = treeType.SourceType;
             var methodSource = treeFunc.SourceType;
-
-            var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
+            var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
             var isEnumeratorMoveNext = methodSource.IsEnumeratorMoveNext;
 
             var compilerInstructions = ctx.CompilerInstructions;

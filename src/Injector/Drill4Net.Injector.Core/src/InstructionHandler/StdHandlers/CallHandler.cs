@@ -32,6 +32,8 @@ namespace Drill4Net.Injector.Core
                     return false;
                 var operand = (MethodReference) instr.Operand;
                 var fullname = operand.FullName;
+                //if (fullname.Contains(":Start<"))
+                //    return true;
                 var isOwn = _typeChecker.CheckByMethodName(fullname);
                 if (code is Code.Callvirt)
                     return isOwn || fullname.Contains("::Invoke(");

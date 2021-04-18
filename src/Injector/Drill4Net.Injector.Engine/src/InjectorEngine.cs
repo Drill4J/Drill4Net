@@ -327,11 +327,8 @@ namespace Drill4Net.Injector.Engine
                     var methodSource = treeFunc.SourceType;
                     var methodType = methodSource.MethodType;
 
-                    //the CompilerGeneratedAttribute itself is not enough!
-                    //not use isMoveNext - this class may be own iterator, not compiler's one
                     var isCompilerGenerated = methodType == MethodType.CompilerGeneratedPart;
-
-                    var isAsyncStateMachine = typeSource.IsAsyncStateMachine;
+                    var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
                     
                     //Enter/Return
@@ -360,15 +357,23 @@ namespace Drill4Net.Injector.Engine
                             var minOffset = body.ExceptionHandlers.Min(a => a.TryStart.Offset);
                             var asyncInstr = body.ExceptionHandlers
                                 .First(a => a.TryStart.Offset == minOffset).TryStart;
-                            for (var i = 0; i < 3 && asyncInstr.Next != null; i++)
-                                asyncInstr = asyncInstr.Next;
+                            //for (var i = 0; i < 3 && asyncInstr.Next != null; i++)
+                            //    asyncInstr = asyncInstr.Next;
+                            //while (true)
+                            //{
+                            //    if (asyncInstr.OpCode.FlowControl == FlowControl.Next || asyncInstr.Next == null)
+                            //        break;
+                            //    asyncInstr = asyncInstr.Next;
+                            //}
+                            startInd = instructions.IndexOf(asyncInstr) + 1;
                             while (true)
                             {
-                                if (asyncInstr.OpCode.FlowControl == FlowControl.Next || asyncInstr.Next == null)
+                                var curAsyncCode = asyncInstr.OpCode.Code;
+                                if (curAsyncCode == Code.Nop || curAsyncCode == Code.Stfld || curAsyncCode.ToString().StartsWith("Ldarg"))
                                     break;
                                 asyncInstr = asyncInstr.Next;
+                                startInd++;
                             }
-                            startInd = instructions.IndexOf(asyncInstr) + 1;
                         }
                         else
                         {
@@ -563,7 +568,7 @@ namespace Drill4Net.Injector.Engine
                     .Select(a => a.BusinessIndex)
                     .Where(c => c != 0) //Enter not needed in any case
                     .OrderBy(b => b)
-                    .Distinct() //need for exclude in fact fictive (for coverage) injections: CycleEnd, etc
+                    .Distinct() //need for exclude in fact some fictive (for coverage) injections: CycleEnd, etc
                     .ToList();
                 if (ranges.Any())
                 {
@@ -939,7 +944,9 @@ namespace Drill4Net.Injector.Engine
             var declAttrs = type.CustomAttributes;
             var compGenAttrName = nameof(CompilerGeneratedAttribute);
             var fullName = def.FullName;
-            var isCompilerGeneratedType = def.IsPrivate &&
+            //the CompilerGeneratedAttribute itself is not enough!
+            //not use isMoveNext - this class may be own iterator, not compiler's one
+            var isCompilerGeneratedType = /*def.IsPrivate &&*/
                 def.Name.StartsWith("<") || fullName.EndsWith(">d::MoveNext()") ||
                 fullName.Contains(">b__") || fullName.Contains(">c__") || fullName.Contains(">d__") ||
                 fullName.Contains(">f__") || fullName.Contains("|") ||
@@ -985,8 +992,9 @@ namespace Drill4Net.Injector.Engine
             
             //check for type's characteristics
             var interfaces = type.Interfaces;
-            treeParentClass.SourceType.IsAsyncStateMachine = interfaces
-                .FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
+            var isAsyncStateMachine =
+                type.Methods.FirstOrDefault(a => a.Name == "SetStateMachine") != null ||
+                interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
             var isEnumerable = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
             var typeFullname = treeParentClass.Fullname;
             
@@ -1011,6 +1019,7 @@ namespace Drill4Net.Injector.Engine
                     treeParentClass.BusinessType, ownMethod.FullName, source);
                 //
                 var methodName = ownMethod.Name;
+                source.IsAsyncStateMachine = isAsyncStateMachine;
                 source.IsMoveNext = methodName == "MoveNext";
                 source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
                 source.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
