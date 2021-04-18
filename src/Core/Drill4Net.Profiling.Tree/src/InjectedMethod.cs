@@ -129,13 +129,11 @@ namespace Drill4Net.Profiling.Tree
             var method = this;
             while (true)
             {
-                var cgInfo = method?.CGInfo;
+                var cgInfo = method.CGInfo;
                 if (cgInfo == null)
                     return method.Fullname;
-                if (cgInfo.FromMethod != null)
-                    return cgInfo.FromMethod;
                 if (cgInfo.Caller == null)
-                    return method.Fullname;
+                    return cgInfo.FromMethod ?? method.Fullname;
                 method = cgInfo.Caller;
             }
         }

@@ -266,8 +266,8 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Async_Linq_Blocking), new List<string> { "Call_10", "Call_15", "Call_5", "Call_15", "Call_5", "Call_15", "Call_5" }), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string>()));
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Async_Linq_Blocking), new List<string> { "Call_10", "Call_15", "Call_5", "Call_15", "Call_5", "Call_15", "Call_5" }), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string> { "If_5", "Call_9", "Call_12", "If_5", "Call_9", "Call_12", "If_5", "Call_9", "Call_12" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string> { "Call_24", "Call_15", "Call_5", "Call_15", "Else_83", "Else_93" }), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string>())); //.Ignore(TestConstants.INFLUENCE);
-                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string> { "Call_24", "Call_15", "Call_5", "Call_15", "Else_83", "Else_93" }), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string> { "If_5", "Call_9", "Call_12", "If_5", "Call_9", "Call_12", "If_5", "Call_9", "Call_12" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string> { "Call_24", "Call_5", "Call_5", "Call_5", "Else_83", "Else_93", "Call_1", "Call_1", "Call_1" }, true), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string>())).Ignore(TestConstants.INFLUENCE);
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Async_Linq_NonBlocking), new List<string> { "Call_24", "Call_5", "Call_5", "Call_5", "Else_83", "Else_93", "Call_1", "Call_1", "Call_1" }, true), new TestInfo(GetInfo(Target.GetDataForAsyncLinq), new List<string>()), new TestInfo(GetInfo(Target.ProcessElement), new List<string> { "If_5", "Call_9", "Call_12", "If_5", "Call_9", "Call_12", "If_5", "Call_9", "Call_12" }));
 #endif
 #if !NET461
                 yield return GetCase(Array.Empty<object>(), true, true,
@@ -322,8 +322,8 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncRead), new List<string> { "Call_21", "Anchor_94" }));
                 yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncRead), new List<string> { "Call_21", "If_34", "Anchor_94" }));
 
-                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string>()));
-                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string> { "If_34" }));
+                yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string> { "Call_21", "Anchor_87" }));
+                yield return GetCase(new object[] { true }, true, true, new TestInfo(GetInfo(Target.Disposable_Using_AsyncTask), new List<string> { "Call_21", "If_34", "Call_37", "Anchor_87" }));
 
                 yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Disposable_Using_Last_Exception), new List<string> { "Throw_9" })); //in net50 was "Throw_10"
 
