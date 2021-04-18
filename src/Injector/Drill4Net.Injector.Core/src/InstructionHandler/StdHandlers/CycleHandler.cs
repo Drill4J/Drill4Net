@@ -34,6 +34,9 @@ namespace Drill4Net.Injector.Core
             var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
             #endregion
             #region Check
+            var nextCode = instr.Next.OpCode.Code;
+            if (nextCode == Code.Leave || nextCode == Code.Leave_S)
+                return;
             var operand = instr.Operand as Instruction;
             if (operand is not { Offset: > 0 } || instr.Offset < operand.Offset)
                 return;

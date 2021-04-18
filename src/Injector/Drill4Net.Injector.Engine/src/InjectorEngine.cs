@@ -488,6 +488,7 @@ namespace Drill4Net.Injector.Engine
                         var anchor = instr.Operand;
                         //need this jump for handle?
                         var curCode = instr.OpCode.Code;
+                        //not needed jumps from by Leave from try/catch/finally semantically
                         if (curCode == Code.Leave || curCode == Code.Leave_S)
                             continue;
                         if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor)) 

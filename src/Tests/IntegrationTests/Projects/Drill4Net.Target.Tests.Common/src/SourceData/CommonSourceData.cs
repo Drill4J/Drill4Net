@@ -271,11 +271,11 @@ namespace Drill4Net.Target.Tests.Common
 #endif
 #if !NET461
                 yield return GetCase(Array.Empty<object>(), true, true,
-                    new TestInfo(GetInfo(Target.Async_Stream), new List<string> { "Call_16", "Anchor_64", "Cycle_108", "Anchor_64", "If_54", "Cycle_108", "Anchor_64", "CycleEnd_108", "If_117" }),
+                    new TestInfo(GetInfo(Target.Async_Stream), new List<string> { "Call_16", "Anchor_64", "Anchor_64", "If_54", "Anchor_64", "If_117" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceAsync()"), false, new List<string> { "Anchor_103", "Else_24", "If_34", "Anchor_103", "Else_24", "If_34", "Anchor_103", "Else_24", "Anchor_103" }, true));
 
                 yield return GetCase(Array.Empty<object>(), true, true,
-                    new TestInfo(GetInfo(Target.Async_Stream_Cancellation), new List<string> { "Call_22", "Anchor_92", "Cycle_136", "Anchor_92", "If_76", "Cycle_136", "Anchor_92", "If_145", "If_191", "If_199", }),
+                    new TestInfo(GetInfo(Target.Async_Stream_Cancellation), new List<string> { "Call_22", "Anchor_92", "Anchor_92", "If_76", "Anchor_92", "If_145", "If_191", "If_199", }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IAsyncEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GenerateSequenceWithCancellationAsync(System.Threading.CancellationToken)"), false, new List<string> { "Anchor_96", "Else_24", "Anchor_96", "Else_24", "Anchor_96", "Else_24" }, true));
 #endif
                 #endregion
@@ -359,7 +359,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(Array.Empty<object>(), true, new TestInfo(GetInfo(Target.Event), new List<string> { "Call_18", "Call_22", "Call_26" }), new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "If_6", "Call_8" })) .SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(Array.Empty<object>(), true,
-                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Call_7", "Anchor_17", "Cycle_19", "Anchor_17", "Cycle_19", "Anchor_17", "Cycle_19", "Anchor_17", "Cycle_19", "Anchor_17", "CycleEnd_19" }),
+                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Call_7", "Anchor_17", "Anchor_17",  "Anchor_17",  "Anchor_17", "Anchor_17" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string>()),
                     new TestInfo(GetInfo(_strEnumerator.MoveNext), new List<string> { "Else_17", "Call_20", "Anchor_25", "Else_17", "Call_20", "Anchor_25", "Else_17", "Call_20", "Anchor_25", "Else_17", "Call_20", "Anchor_25", "If_14", "Anchor_25"}),
                     new TestInfo(GetSourceFromFullSig(Target, "System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false, new List<string> { "Else_4", "Anchor_16", "Else_21", "Else_4", "Anchor_16", "Else_21", "Else_4", "Anchor_16", "Else_21", "Else_4", "Anchor_16", "Else_21" }),
