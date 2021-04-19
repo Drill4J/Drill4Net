@@ -1,18 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract
 {
+    /// <summary>
+    /// Class for presentation of method metadata for transferring to the Drill site
+    /// </summary>
     public class AstMethod
     {
         /// <summary>
         /// Namespace? Full source?
         /// </summary>
-        public string Path { get; set; }
+        public string Path { get; }
 
         /// <summary>
         /// Name of the method.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get;  }
 
         /// <summary>
         /// Lists the parameters.
@@ -22,18 +26,39 @@ namespace Drill4Net.Agent.Abstract
         /// <summary>
         /// The return type.
         /// </summary>
-        public string ReturnType { get; set; }
+        public string ReturnType { get; }
 
         /// <summary>
         /// The identifiers of the probes added to the method.
         /// </summary>
-        public List<bool> Probes { get; set; }
+        public List<bool> Probes { get; }
 
         /// <summary>
         /// The count of probes added to the method.
         /// </summary>
-        public int Count { get; set; } //don't used?
+        public int Count { get; } //don't used?
 
-        public string Checksum { get; set; }
+        public string Checksum { get; }
+        
+        /******************************************************************************/
+        public AstMethod() { }
+
+        public AstMethod(string path, string name, string returnType, int probeCount, string checksum)
+        {
+            Path = path ?? throw new ArgumentNullException(nameof(path));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
+            Count = probeCount;
+            Checksum = checksum ?? throw new ArgumentNullException(nameof(checksum));
+            Params = new List<string>();
+            Probes = new List<bool>();
+        }
+        
+        /******************************************************************************/
+        
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

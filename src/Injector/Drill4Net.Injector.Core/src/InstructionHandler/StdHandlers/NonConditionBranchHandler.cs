@@ -27,7 +27,7 @@ namespace Drill4Net.Injector.Core
             var flow = opCode.FlowControl;
             var lastOp = ctx.LastOperation;
 
-            var source = ctx.Method.SourceType;
+            var source = ctx.Method.Source;
             var isAsyncStateMachine = source.IsAsyncStateMachine;
             var compilerInstructions = ctx.CompilerInstructions;
             var exceptionHandlers = ctx.ExceptionHandlers;

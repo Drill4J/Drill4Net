@@ -12,7 +12,7 @@ namespace Drill4Net.Profiling.Tree
         public string Parameters { get; set; }
         public string TypeName { get; set; }
 
-        public bool IsCompilerGenerated => SourceType.MethodType == MethodType.CompilerGenerated;
+        public bool IsCompilerGenerated => Source.MethodType == MethodType.CompilerGenerated;
 
         public CompilerGeneratedInfo CGInfo { get; }
 
@@ -21,7 +21,7 @@ namespace Drill4Net.Profiling.Tree
         public string BusinessMethod => GetBusinessMethod();
         public string BusinessType { get; set; }
 
-        public MethodSource SourceType { get; set; }
+        public MethodSource Source { get; set; }
         
         /// <summary>
         /// Count of instructions in various 'business parts' of the IL code
@@ -49,7 +49,7 @@ namespace Drill4Net.Profiling.Tree
             AssemblyName = assemblyName ?? throw new ArgumentNullException(nameof(assemblyName));
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
-            SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
+            Source = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
             CalleeIndexes = new Dictionary<string, int>();
@@ -60,7 +60,7 @@ namespace Drill4Net.Profiling.Tree
             Name = parts.Name;
             ReturnType = parts.Return;
             Parameters = parts.Parameters;
-            Fullname = fullName;
+            FullName = fullName;
         }
 
         /********************************************************************/
@@ -131,16 +131,16 @@ namespace Drill4Net.Profiling.Tree
             {
                 var cgInfo = method.CGInfo;
                 if (cgInfo == null)
-                    return method.Fullname;
+                    return method.FullName;
                 if (cgInfo.Caller == null)
-                    return cgInfo.FromMethod ?? method.Fullname;
+                    return cgInfo.FromMethod ?? method.FullName;
                 method = cgInfo.Caller;
             }
         }
 
         public override string ToString()
         {
-            return $"M: {Fullname}";
+            return $"M: {FullName}";
         }
     }
 }

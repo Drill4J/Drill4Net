@@ -34,8 +34,15 @@ namespace Drill4Net.Profiling.Tree
         public IEnumerable<InjectedAssembly> GetAllAssemblies()
         {
             return Flatten(typeof(InjectedType))
-                .Where(a => a.GetType().Name == nameof(InjectedDirectory))
+                .Where(a => a.GetType().Name == nameof(InjectedAssembly))
                 .Cast<InjectedAssembly>();
+        }
+        
+        public IEnumerable<InjectedType> GetAllTypes()
+        {
+            return Flatten(typeof(InjectedMethod))
+                .Where(a => a.GetType().Name == nameof(InjectedType))
+                .Cast<InjectedType>();
         }
 
         public IEnumerable<InjectedMethod> GetAllMethods()
@@ -47,7 +54,7 @@ namespace Drill4Net.Profiling.Tree
 
         public IEnumerable<CrossPoint> GetAllPoints()
         {
-            return Filter(typeof(InjectedMethod), true).Cast<CrossPoint>();
+            return Filter(typeof(CrossPoint), true).Cast<CrossPoint>();
         }
 
         public InjectedDirectory GetDirectory(string path)

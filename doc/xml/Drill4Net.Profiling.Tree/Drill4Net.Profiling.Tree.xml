@@ -15,7 +15,7 @@
             <summary>
             Get parent map of <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/> by corresponding <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 
             </summary>
-            <param name="parentMap">Parent hiearchy map of entities. If empty it will calc</param>
+            <param name="parentMap">The hierarchy map of entity parents. If empty it will calc</param>
             <returns></returns>
         </member>
         <member name="T:Drill4Net.Profiling.Tree.CompilerGeneratedInfo">

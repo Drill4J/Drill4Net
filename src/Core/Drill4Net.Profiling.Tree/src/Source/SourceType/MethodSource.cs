@@ -13,6 +13,5 @@ namespace Drill4Net.Profiling.Tree
         public bool IsMoveNext { get; set; }
         public bool IsEnumeratorMoveNext { get; set; }
         public bool IsFinalizer { get; set; }
-
     }
 }

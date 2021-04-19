@@ -8,10 +8,9 @@ namespace Drill4Net.Agent.Standard.Demo
         {
             try
             {
-                var profiler = new StandardProfiler();
                 var asmName = $"Drill4Net.Target.Common.dll";
-                var funcSig = "System.Void Drill4Net.Agent.Standard.StandardProfiler::Register(System.String)";
-                profiler.Register($"^{asmName}^{funcSig}^{100}^If_6");
+                const string funcSig = "System.Void Drill4Net.Agent.Standard.StandardProfiler::Register(System.String)";
+                StandardProfiler.RegisterStatic($"^{asmName}^{funcSig}^100^If_6");
                 //
                 var funcs = StandardProfiler.GetFunctions(false);
                 foreach(var f in funcs.Keys)

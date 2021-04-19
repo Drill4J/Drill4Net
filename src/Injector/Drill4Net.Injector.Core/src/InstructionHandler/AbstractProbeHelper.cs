@@ -50,9 +50,9 @@ namespace Drill4Net.Injector.Core
                 if (caller == null)
                     break;
                 var indexes = caller.CalleeIndexes;
-                if (!indexes.ContainsKey(method.Fullname))
+                if (!indexes.ContainsKey(method.FullName))
                     break;
-                ind += indexes[method.Fullname];
+                ind += indexes[method.FullName];
                 method = caller;
             }
             return ind;

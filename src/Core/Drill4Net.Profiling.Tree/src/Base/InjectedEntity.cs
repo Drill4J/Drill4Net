@@ -6,7 +6,7 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class InjectedEntity : InjectedSimpleEntity
     {
-        public string Fullname { get; set; }
+        public string FullName { get; set; }
         public string AssemblyName { get; set; }
 
         /****************************************************************/
@@ -28,7 +28,7 @@ namespace Drill4Net.Profiling.Tree
 
         public InjectedSimpleEntity GetByFullname(string fullname)
         {
-            return _children.Cast<InjectedEntity>().FirstOrDefault(a => a.Fullname == fullname);
+            return _children.Cast<InjectedEntity>().FirstOrDefault(a => a.FullName == fullname);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Drill4Net.Profiling.Tree
@@ -16,19 +17,18 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public string FromMethod { get; set; }
 
-        public ClassSource SourceType { get; set; }
+        public TypeSource Source { get; set; }
 
-        /******************************************************************/
+        /**************************************************************************************/
 
         public InjectedType(string assemblyName, string fullName, string businessName = null) : 
             base(assemblyName, GetName(fullName), GetSource(assemblyName, fullName))
         {
-            Fullname = fullName;
+            FullName = fullName;
             BusinessType = businessName ?? GetBusinessType(fullName);
-            IsCompilerGenerated = fullName.Contains("<>");
         }
 
-        /******************************************************************/
+        /**************************************************************************************/
 
         internal string GetBusinessType(string fullName)
         {
@@ -46,6 +46,18 @@ namespace Drill4Net.Profiling.Tree
             }
             return string.Join("/", list);
         }
+        
+        public IEnumerable<InjectedType> GetNestedTypes()
+        {
+            return _children.Where(a => a.GetType().Name == nameof(InjectedType))
+                .Cast<InjectedType>();
+        }
+        
+        public IEnumerable<InjectedMethod> GetMethods()
+        {
+            return _children.Where(a => a.GetType().Name == nameof(InjectedMethod))
+                .Cast<InjectedMethod>();
+        }
 
         internal static string GetName(string fullName)
         {
@@ -62,7 +74,7 @@ namespace Drill4Net.Profiling.Tree
 
         public override string ToString()
         {
-            return $"T: {Fullname}";
+            return $"T: {FullName}";
         }
     }
 }

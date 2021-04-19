@@ -10,6 +10,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using System.Linq;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -17,6 +18,9 @@ namespace Drill4Net.Agent.Standard
     {
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
+
+        private static readonly StandardAgent _agent;
+        private static readonly TreeConverter _converter;
 
         /*****************************************************************************/
 
@@ -37,6 +41,10 @@ namespace Drill4Net.Agent.Standard
                 var tree = rep.ReadInjectedTree();
                 _pointToMethods = tree.MapPointToMethods();
 
+                _converter = new TreeConverter();
+                var astEntities = _converter.ToAstEntities(tree);
+                _agent = new StandardAgent(astEntities);
+                
                 Log.Debug("Initialized.");
             }
             catch (Exception ex)

@@ -105,9 +105,9 @@ namespace Drill4Net.Injector.Engine
             //    .Where(a => a.CGInfo == null)
             //    .ToList();
             //var emptyBusinessMeths = cgMeths
-            //    .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.Fullname))
+            //    .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.FullName))
             //    .ToList();
-            //var nonBlokings = cgMeths.FirstOrDefault(a => a.Fullname == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
+            //var nonBlokings = cgMeths.FirstOrDefault(a => a.FullName == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
             //
             return tree;
         }
@@ -292,9 +292,9 @@ namespace Drill4Net.Injector.Engine
                 var realTypeName = TryGetRealTypeName(typeDef);
                 var treeMethodType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
                 {
-                    SourceType = CreateTypeSource(typeDef)
+                    Source = CreateTypeSource(typeDef)
                 };
-                asmCtx.InjClasses.Add(treeMethodType.Fullname, treeMethodType);
+                asmCtx.InjClasses.Add(treeMethodType.FullName, treeMethodType);
                 treeAsm.AddChild(treeMethodType);
                 #endregion
 
@@ -309,17 +309,12 @@ namespace Drill4Net.Injector.Engine
                 foreach (var methodDef in methods)
                 {
                     #region Init
-                    var curType = methodDef.DeclaringType;
-                    typeFullName = curType.FullName;
-
                     var methodName = methodDef.Name;
                     var methodFullName = methodDef.FullName;
 
                     //Tree
-                    treeMethodType = asmCtx.InjClasses[typeFullName];
-                    var typeSource = treeMethodType.SourceType;
                     var treeFunc = asmCtx.InjMethodByFullname[methodFullName];
-                    var methodSource = treeFunc.SourceType;
+                    var methodSource = treeFunc.Source;
                     var methodType = methodSource.MethodType;
 
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
@@ -356,7 +351,7 @@ namespace Drill4Net.Injector.Engine
                             while (true)
                             {
                                 var curAsyncCode = asyncInstr.OpCode.Code;
-                                if (curAsyncCode == Code.Nop || curAsyncCode == Code.Stfld || curAsyncCode.ToString().StartsWith("Ldarg"))
+                                if (curAsyncCode is Code.Nop or Code.Stfld || curAsyncCode.ToString().StartsWith("Ldarg"))
                                     break;
                                 asyncInstr = asyncInstr.Next;
                                 startInd++;
@@ -388,7 +383,7 @@ namespace Drill4Net.Injector.Engine
             foreach (var meth in moveNextMethods)
             {
                 // Owner type
-                var fullName = meth.Fullname;
+                var fullName = meth.FullName;
                 var mkey = fullName.Split(' ')[1].Split(':')[0];
                 if (asmCtx.InjClasses.ContainsKey(mkey))
                 {
@@ -396,13 +391,13 @@ namespace Drill4Net.Injector.Engine
                     treeType.AddChild(meth);
                 }
                 // Business method
-                 var extRealMethodName = TryGetBusinessMethod(meth.Fullname, meth.Name, true, true);
-                 mkey = GetMethodKey(meth.TypeName, extRealMethodName);
-                 if (!asmCtx.InjMethodByKeys.ContainsKey(mkey)) 
-                     continue;
-                 var treeFunc = asmCtx.InjMethodByKeys[mkey];
-                 if (meth.CGInfo != null)
-                    meth.CGInfo.FromMethod = treeFunc.Fullname;
+                var extRealMethodName = TryGetBusinessMethod(meth.FullName, meth.Name, true, true);
+                mkey = GetMethodKey(meth.TypeName, extRealMethodName);
+                if (!asmCtx.InjMethodByKeys.ContainsKey(mkey)) 
+                    continue;
+                var treeFunc = asmCtx.InjMethodByKeys[mkey];
+                if (meth.CGInfo != null)
+                   meth.CGInfo.FromMethod = treeFunc.FullName;
             }
             #endregion
             #region Business function mapping (first pass)
@@ -438,6 +433,7 @@ namespace Drill4Net.Injector.Engine
                         i = methodCtx.CurIndex; //because it can change
                         methodCtx.BusinessInstructions.Add(instructions[i]);
                     }
+                    //
                     var cnt = methodCtx.BusinessInstructions.Count;
                     injMethod.BusinessSize = cnt;
                     injMethod.OwnBusinessSize = cnt;
@@ -453,7 +449,7 @@ namespace Drill4Net.Injector.Engine
                     var meth = methodCtx.Method;
                     if (meth.IsCompilerGenerated)
                     {
-                        var methFullName = meth.Fullname;
+                        var methFullName = meth.FullName;
                         if (meth.BusinessMethod == methFullName)
                         {
                             var bizFunc = typeCtx.MethodContexts.Values.Select(a => a.Method)
@@ -469,7 +465,7 @@ namespace Drill4Net.Injector.Engine
 
             // the removing methods for which business method is not defined 
             foreach (var ctx in badCtxs)
-                ctx.TypeCtx.MethodContexts.Remove(ctx.Method.Fullname);
+                ctx.TypeCtx.MethodContexts.Remove(ctx.Method.FullName);
             #endregion
             #region Size of the business code parts
             var bizMethods = asmCtx.InjMethodByFullname.Values
@@ -579,25 +575,26 @@ namespace Drill4Net.Injector.Engine
             #region 3. Blocks for the methods
             foreach (var bizMethod in bizMethods)
             {
-                //var calleeInds = bizMethod.CalleeIndexes;
-                //var blocks = bizMethod.Blocks;
-
                 var ranges = bizMethod.Points
                     .Select(a => a.BusinessIndex)
                     .Where(c => c != 0) //Enter not needed in any case
                     .OrderBy(b => b)
                     .Distinct() //need for exclude in fact some fictive (for coverage) injections: CycleEnd, etc
                     .ToList();
-                if (ranges.Any())
+                if (!ranges.Any())
+                    continue;
+                //
+                float origSize = ranges.Last() + 1;
+                var prev = -1;
+                foreach (var range in ranges)
                 {
-                    float origSize = ranges.Last() + 1;
-                    var prev = -1;
-                    foreach (var range in ranges)
-                    {
-                        bizMethod.Blocks.Add(range, (range - prev) / origSize);
-                        prev = range;
-                    }
-                    //var sum = bizMethod.Blocks.Values.Sum(); //must be ~1.0
+                    bizMethod.Blocks.Add(range, (range - prev) / origSize);
+                    prev = range;
+                }
+                //
+                var sum = bizMethod.Blocks.Values.Sum(); //must be 1.0
+                if (Math.Abs(sum - 1) > 0.0001)
+                {
                 }
             }
             #endregion
@@ -693,7 +690,7 @@ namespace Drill4Net.Injector.Engine
             
             #region Awaiters in MoveNext as a boundary
             //find the boundary between the business code and the compiler-generated one
-            if (method.SourceType.IsMoveNext && method.SourceType.MethodType == MethodType.CompilerGenerated)
+            if (method.Source.IsMoveNext && method.Source.MethodType == MethodType.CompilerGenerated)
             {
                 if (IsFoundIsCompleted(instr))
                 {
@@ -806,7 +803,7 @@ namespace Drill4Net.Injector.Engine
                             .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
                         {
                             asyncMove.CGInfo.Caller = treeFunc;
-                            treeFunc.CalleeIndexes.Add(asyncMove.Fullname, ctx.SourceIndex);
+                            treeFunc.CalleeIndexes.Add(asyncMove.FullName, ctx.SourceIndex);
                         }
                     }
                 }
@@ -837,7 +834,7 @@ namespace Drill4Net.Injector.Engine
                         realCgType = asmCtx.InjClasses[typeKey];
                     if (realCgType != null && extRealMethodName != null)
                     {
-                        var mkey = GetMethodKey(realCgType.Fullname, extRealMethodName);
+                        var mkey = GetMethodKey(realCgType.FullName, extRealMethodName);
                         if (asmCtx.InjMethodByKeys.ContainsKey(mkey))
                             treeFunc = asmCtx.InjMethodByKeys[mkey];
 
@@ -850,18 +847,18 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
 
-                    extType.FromMethod = treeFunc.Fullname;
+                    extType.FromMethod = treeFunc.FullName;
                     //better process all methods, not filter only extName... may be... check it!
                     var extMethods = extType.Filter(typeof(InjectedMethod), true);
                     foreach (var injectedSimpleEntity in extMethods)
                     {
                         var meth = (InjectedMethod) injectedSimpleEntity;
                         if (meth.CGInfo!=null)
-                            meth.CGInfo.FromMethod = treeFunc.Fullname ?? extType.FromMethod;
+                            meth.CGInfo.FromMethod = treeFunc.FullName ?? extType.FromMethod;
                         if (meth.Name != extName) 
                             continue;
-                        if (!treeFunc.CalleeIndexes.ContainsKey(meth.Fullname))
-                            treeFunc.CalleeIndexes.Add(meth.Fullname, ctx.SourceIndex);
+                        if (!treeFunc.CalleeIndexes.ContainsKey(meth.FullName))
+                            treeFunc.CalleeIndexes.Add(meth.FullName, ctx.SourceIndex);
                     }
                 }
                 else
@@ -870,7 +867,7 @@ namespace Drill4Net.Injector.Engine
                         return;
                     var extFunc = asmCtx.InjMethodByFullname[extFullname];
                     if (extFunc.CGInfo != null)
-                        extFunc.CGInfo.FromMethod ??= treeFunc.Fullname ?? extType?.FromMethod;
+                        extFunc.CGInfo.FromMethod ??= treeFunc.FullName ?? extType?.FromMethod;
                 }
             }
             catch (Exception ex)
@@ -890,7 +887,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.Method.Fullname}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
+                Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.Method.FullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
                 throw;
             }
         }
@@ -1048,7 +1045,7 @@ namespace Drill4Net.Injector.Engine
                 type.Methods.FirstOrDefault(a => a.Name == "SetStateMachine") != null ||
                 interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
             var isEnumerable = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
-            var typeFullname = treeParentClass.Fullname;
+            var typeFullname = treeParentClass.FullName;
             
             var methods = new List<MethodDefinition>();
             foreach (var ownMethod in ownMethods)
@@ -1078,8 +1075,8 @@ namespace Drill4Net.Injector.Engine
                 source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
                 source.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
                 //
-                if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.Fullname))
-                    asmCtx.InjMethodByFullname.Add(treeFunc.Fullname, treeFunc);
+                if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.FullName))
+                    asmCtx.InjMethodByFullname.Add(treeFunc.FullName, treeFunc);
                 else { } //strange..
                 methods.Add(ownMethod);
                 //
@@ -1091,9 +1088,9 @@ namespace Drill4Net.Injector.Engine
                 // //debug
                 // var funcs = treeParentClass.Filter(typeof(InjectedMethod), true)
                 //     .Cast<InjectedMethod>()
-                //     .Select(a => a.Fullname).ToList();
+                //     .Select(a => a.FullName).ToList();
                 // var func = funcs
-                //     .FirstOrDefault(a => a == treeFunc.Fullname);
+                //     .FirstOrDefault(a => a == treeFunc.FullName);
                 
                 treeParentClass.AddChild(treeFunc);
             }
@@ -1104,9 +1101,9 @@ namespace Drill4Net.Injector.Engine
                 var realTypeName = TryGetRealTypeName(nestedType);
                 var treeType = new InjectedType(nestedType.Module.Name, nestedType.FullName, realTypeName)
                 {
-                    SourceType = CreateTypeSource(nestedType),
+                    Source = CreateTypeSource(nestedType),
                 };
-                asmCtx.InjClasses.Add(treeType.Fullname, treeType);
+                asmCtx.InjClasses.Add(treeType.FullName, treeType);
                 treeParentClass.AddChild(treeType);
                 //
                 var innerMethods = GetMethods(typeCtx, nestedType, opts);
@@ -1126,10 +1123,11 @@ namespace Drill4Net.Injector.Engine
             return $"{typeFullname}::{methodShortName}";
         }
 
-        private ClassSource CreateTypeSource(TypeDefinition def)
+        private TypeSource CreateTypeSource(TypeDefinition def)
         {
-            return new ClassSource
+            return new TypeSource
             {
+                FilePath = def.Module.FileName,
                 AccessType = GetAccessType(def),
                 IsAbstract = def.IsAbstract,
                 IsGeneric = def.IsGenericInstance,

@@ -24,7 +24,7 @@ namespace Drill4Net.Profiling.Tree
             return _children.Where(a => a.GetType().Name == nameof(InjectedDirectory))
                  .Cast<InjectedDirectory>();
         }
-
+        
         public IEnumerable<InjectedAssembly> GetAssemblies()
         {
             return _children.Where(a => a.GetType().Name == nameof(InjectedAssembly))
@@ -34,7 +34,7 @@ namespace Drill4Net.Profiling.Tree
         public InjectedAssembly GetAssembly(string fullName)
         {
             return GetAssemblies()
-                .Where(a => a.Fullname.Equals(fullName, StringComparison.CurrentCultureIgnoreCase)) 
+                .Where(a => a.FullName.Equals(fullName, StringComparison.CurrentCultureIgnoreCase)) 
                 as InjectedAssembly;
         }
 

@@ -3,8 +3,9 @@
 namespace Drill4Net.Profiling.Tree
 {
     [Serializable]
-    public class ClassSource : BaseSource
+    public class TypeSource : BaseSource
     {
+        public string FilePath { get; set; }
         public bool IsValueType { get; set; }
      }
 }

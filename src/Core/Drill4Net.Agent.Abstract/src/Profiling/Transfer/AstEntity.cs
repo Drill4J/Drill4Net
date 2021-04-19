@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -10,16 +11,32 @@ namespace Drill4Net.Agent.Abstract
         /// <summary>
         /// The assembly where the class is located.
         /// </summary>
-        public string Path { get; set; }
+        public string Path { get;  }
 
         /// <summary>
-        /// The name of the class, with namespace.
+        /// The fullName of the class, with namespace.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <summary>
         /// Information about methods in the class.
         /// </summary>
-        public List<AstMethod> Methods { get; set; }
+        public List<AstMethod> Methods { get; }
+        
+        /**************************************************************************/
+        
+        public AstEntity(string path, string fullName)
+        {
+            Path = path ?? throw new ArgumentNullException(nameof(path));
+            Name = fullName ?? throw new ArgumentNullException(nameof(fullName));
+            Methods = new List<AstMethod>();
+        }
+        
+        /**************************************************************************/
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

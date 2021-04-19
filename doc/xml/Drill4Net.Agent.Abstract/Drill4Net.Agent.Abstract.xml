@@ -26,12 +26,17 @@
         </member>
         <member name="P:Drill4Net.Agent.Abstract.AstEntity.Name">
             <summary>
-            The name of the class, with namespace.
+            The fullName of the class, with namespace.
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.AstEntity.Methods">
             <summary>
             Information about methods in the class.
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.AstMethod">
+            <summary>
+            Class for presentation of method metadata for transferring to the Drill site
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.AstMethod.Path">
@@ -64,9 +69,19 @@
             The count of probes added to the method.
             </summary>
         </member>
+        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.TestName">
+            <summary>
+            Name of the test (session)
+            </summary>
+        </member>
         <member name="P:Drill4Net.Agent.Abstract.ExecClassData.ClassName">
             <summary>
             Full class name
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.Probes">
+            <summary>
+            List of probe data
             </summary>
         </member>
     </members>

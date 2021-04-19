@@ -24,7 +24,7 @@ namespace Drill4Net.Injector.Core
             var opCode = instr.OpCode;
             var code = opCode.Code;
 
-            var methodSource = treeFunc.SourceType;
+            var methodSource = treeFunc.Source;
             var isEnumeratorMoveNext = methodSource.IsEnumeratorMoveNext;
 
             var jumpers = ctx.Jumpers;

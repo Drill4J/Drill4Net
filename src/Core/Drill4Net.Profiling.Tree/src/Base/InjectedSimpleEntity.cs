@@ -53,7 +53,7 @@ namespace Drill4Net.Profiling.Tree
         /// <summary>
         /// Get parent map of <see cref="InjectedMethod"/> by corresponding <see cref="CrossPoint.PointUid"/>. 
         /// </summary>
-        /// <param name="parentMap">Parent hiearchy map of entities. If empty it will calc</param>
+        /// <param name="parentMap">The hierarchy map of entity parents. If empty it will calc</param>
         /// <returns></returns>
         public Dictionary<string, InjectedMethod> MapPointToMethods(Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parentMap = null)
         {
