@@ -16,7 +16,6 @@ using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Strategies.Flow;
-using Mono.Collections.Generic;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -406,7 +405,7 @@ namespace Drill4Net.Injector.Engine
                     meth.CGInfo.FromMethod = treeFunc.Fullname;
             }
             #endregion
-            #region Business function mapping
+            #region Business function mapping (first pass)
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 foreach (var methodCtx in typeCtx.MethodContexts.Values)
@@ -445,7 +444,7 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             #endregion
-            #region Bad business methods
+            #region Business function mapping (second pass)
             var badCtxs = new List<MethodContext>();
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
@@ -468,7 +467,7 @@ namespace Drill4Net.Injector.Engine
                 }
             }
 
-            // remove methods which not defined business method for
+            // the removing methods for which business method is not defined 
             foreach (var ctx in badCtxs)
                 ctx.TypeCtx.MethodContexts.Remove(ctx.Method.Fullname);
             #endregion

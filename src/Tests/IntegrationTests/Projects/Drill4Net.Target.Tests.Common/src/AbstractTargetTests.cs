@@ -19,7 +19,7 @@ namespace Drill4Net.Target.Tests.Common
     public abstract class AbstractTargetTests
     {
         protected static readonly TestEngineRepository _testsRep;
-        private static Dictionary<string, InjectedSimpleEntity> _pointMap;
+        private static Dictionary<string, CrossPoint> _pointMap;
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
 
@@ -237,7 +237,7 @@ namespace Drill4Net.Target.Tests.Common
 
             _tree = _testsRep.LoadTree();
             _parentMap = _tree.CalcParentMap();
-            _pointMap = _tree.CalcPointMap(_parentMap);
+            _pointMap = _tree.MapPoints(_parentMap);
 
             Log.Debug("Tree data is loaded.");
         }

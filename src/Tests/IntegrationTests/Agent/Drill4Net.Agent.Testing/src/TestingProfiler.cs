@@ -16,8 +16,7 @@ namespace Drill4Net.Agent.Testing
     public class TestingProfiler : AbstractAgent
     {
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
-        private static readonly Dictionary<string, InjectedSimpleEntity> _pointMap;
-        private static readonly Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
+        private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
 
         /*****************************************************************************/
 
@@ -36,8 +35,7 @@ namespace Drill4Net.Agent.Testing
 
                 //tree info
                 var tree = rep.ReadInjectedTree();
-                _parentMap = tree.CalcParentMap();
-                _pointMap = tree.CalcPointMap(_parentMap);
+                _pointToMethods = tree.MapPointToMethods();
 
                 Log.Debug("Initialized.");
             }
@@ -151,15 +149,9 @@ namespace Drill4Net.Agent.Testing
 
         internal static string GetBusinessMethodName(string probeUid)
         {
-            if (_pointMap == null)
+            if (_pointToMethods == null || !_pointToMethods.ContainsKey(probeUid))
                 return null;
-            if (!_pointMap.ContainsKey(probeUid))
-                return null;
-            if (_pointMap[probeUid] is not CrossPoint point)
-                return null;
-            if (_parentMap[point] is not InjectedMethod method)
-                return null;
-            return method.BusinessMethod;
+            return _pointToMethods[probeUid].BusinessMethod;
         }
 
         public static void PrepareLogger()

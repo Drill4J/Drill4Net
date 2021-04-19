@@ -4,6 +4,20 @@
         <name>Drill4Net.Profiling.Tree</name>
     </assembly>
     <members>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedSimpleEntity.MapPoints(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
+            <summary>
+            Get parent map of <see cref="T:Drill4Net.Profiling.Tree.CrossPoint"/> by it's <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 
+            </summary>
+            <param name="parentMap">Parent hiearchy map of entities. If empty it will calc</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedSimpleEntity.MapPointToMethods(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
+            <summary>
+            Get parent map of <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/> by corresponding <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 
+            </summary>
+            <param name="parentMap">Parent hiearchy map of entities. If empty it will calc</param>
+            <returns></returns>
+        </member>
         <member name="T:Drill4Net.Profiling.Tree.CompilerGeneratedInfo">
             <summary>
             Info for compiler generated methods (caller, indexes, etc)
