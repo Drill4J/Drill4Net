@@ -87,7 +87,7 @@ namespace Drill4Net.Injector.Core
         /***********************************************************************************************/
 
         /// <summary>
-        /// Set init value for both <see cref="SourceIndex"/> and <see cref="CurIndex"/>
+        /// Set value for both <see cref="SourceIndex"/> and <see cref="CurIndex"/>
         /// </summary>
         /// <param name="index">Value of indexes</param>
         /// <exception cref="ArgumentException"></exception>

@@ -102,15 +102,10 @@ namespace Drill4Net.Injector.Engine
             // debug
             var methods = tree.GetAllMethods().ToList();
             var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
-            var cgWrongMeths = methods
-                .Where(a => (a.IsCompilerGenerated || a.Name == "MoveNext") && 
-                             a.CGInfo?.FromMethod == null && 
-                             !a.TypeName.Contains("NotEmptyStringEnumerator"))
-                .ToList();
-            var emtyCGInfoMeths = cgWrongMeths
+            var emtyCGInfoMeths = cgMeths
                 .Where(a => a.CGInfo == null)
                 .ToList();
-            var emptyBusinessMeths = cgWrongMeths
+            var emptyBusinessMeths = cgMeths
                 .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.Fullname))
                 .ToList();
             //
@@ -327,7 +322,7 @@ namespace Drill4Net.Injector.Engine
                     var methodSource = treeFunc.SourceType;
                     var methodType = methodSource.MethodType;
 
-                    var isCompilerGenerated = methodType == MethodType.CompilerGeneratedPart;
+                    var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
                     var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
                     
@@ -670,25 +665,58 @@ namespace Drill4Net.Injector.Engine
             var method = ctx.Method;
             
             #region Awaiters in MoveNext as a boundary
-            //find the approximate boundary between the business code
-            //and the compiler-generated one
-            if (method.SourceType.IsMoveNext && method.SourceType.MethodType == MethodType.CompilerGeneratedPart)
+            //find the boundary between the business code and the compiler-generated one
+            if (method.SourceType.IsMoveNext && method.SourceType.MethodType == MethodType.CompilerGenerated)
             {
-                //TODO: this wrong!!! Нельзя тут прерывать, бизнес-код может быть ниже!!!
-                if (code is Code.Callvirt or Code.Call)
+                if (IsFoundIsCompleted(instr))
                 {
-                    var s = instr.Previous?.ToString();
-                    if (s.EndsWith("get_IsCompleted()"))
-                        return FlowType.BreakCycle;
+                    //leave the current first try/catch
+                    var res = LeaveTryCatch(ctx);
+
+                    //is second one exists (for example, for 'async stream' method)?
+                    if (res)
+                    {
+                        var instructions = ctx.Instructions;
+                        for (var i = ctx.CurIndex + 1; i < instructions.Count; i++)
+                        {
+                            if (!IsFoundIsCompleted(instructions[i]))
+                                continue;
+                            ctx.SetPosition(i);
+                            LeaveTryCatch(ctx);
+                        }
+                    }
                 }
-                            
-                //+margin if instruction starts the try/catch
-                var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 8 : 0;
-                ctx.CorrectIndex(delta); 
+                else
+                {
+                    //+margin if instruction starts the try/catch
+                    var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 8 : 0;
+                    ctx.CorrectIndex(delta);
+                }
             }
             #endregion
 
             return FlowType.NextOperand;
+
+            //local funcs
+            static bool LeaveTryCatch(MethodContext ctx)
+            {
+                var instr = ctx.CurInstruction;
+                var curTryCactches = ctx.ExceptionHandlers.Where(a => a.TryStart.Offset < instr.Offset && instr.Offset < a.HandlerEnd.Offset);
+                if (curTryCactches.Any())
+                {
+                    var maxStart = curTryCactches.Max(a => a.TryStart.Offset);
+                    var curTryCactch = curTryCactches.First(b => b.TryStart.Offset == maxStart);
+                    var endInd = ctx.Instructions.IndexOf(curTryCactch.HandlerEnd) + 1;
+                    ctx.SetPosition(endInd);
+                    return true;
+                }
+                return false;
+            }
+
+            static bool IsFoundIsCompleted(Instruction instr)
+            {
+                return instr.Operand?.ToString().Contains("::get_IsCompleted()") == true;
+            }
         }
 
         internal OpCode ConvertShortJumpToLong(OpCode opCode)
@@ -948,7 +976,7 @@ namespace Drill4Net.Injector.Engine
                 fullName.Contains(">f__") || fullName.Contains("|") ||
                 declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null;
             if (isCompilerGeneratedType)
-                return MethodType.CompilerGeneratedPart;
+                return MethodType.CompilerGenerated;
             //
             if (def.IsConstructor)
                 return MethodType.Constructor;

@@ -12,7 +12,7 @@ namespace Drill4Net.Profiling.Tree
         public string Parameters { get; set; }
         public string TypeName { get; set; }
 
-        public bool IsCompilerGenerated => SourceType.MethodType == MethodType.CompilerGeneratedPart;
+        public bool IsCompilerGenerated => SourceType.MethodType == MethodType.CompilerGenerated;
 
         public CompilerGeneratedInfo CGInfo { get; }
 
@@ -50,7 +50,7 @@ namespace Drill4Net.Profiling.Tree
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
-            if (sourceType.MethodType == MethodType.CompilerGeneratedPart)
+            if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
             CalleeIndexes = new Dictionary<string, int>();
             Blocks = new Dictionary<int, float>();
