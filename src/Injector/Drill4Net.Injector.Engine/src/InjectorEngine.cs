@@ -108,6 +108,7 @@ namespace Drill4Net.Injector.Engine
             var emptyBusinessMeths = cgMeths
                 .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.Fullname))
                 .ToList();
+            var nonBlokings = cgMeths.FirstOrDefault(a => a.Fullname == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
             //
             return tree;
         }
@@ -444,6 +445,33 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             #endregion
+            #region Bad business methods
+            var badCtxs = new List<MethodContext>();
+            foreach (var typeCtx in asmCtx.TypeContexts.Values)
+            {
+                foreach (var methodCtx in typeCtx.MethodContexts.Values)
+                {
+                    var meth = methodCtx.Method;
+                    if (meth.IsCompilerGenerated)
+                    {
+                        var methFullName = meth.Fullname;
+                        if (meth.BusinessMethod == methFullName)
+                        {
+                            var bizFunc = typeCtx.MethodContexts.Values.Select(a => a.Method)
+                                .FirstOrDefault(a => a.CalleeIndexes.ContainsKey(methFullName));
+                            if (bizFunc != null)
+                                meth.CGInfo.Caller = bizFunc;
+                            else
+                                badCtxs.Add(methodCtx);
+                        }
+                    }
+                }
+            }
+
+            // remove methods which not defined business method for
+            foreach (var ctx in badCtxs)
+                ctx.TypeCtx.MethodContexts.Remove(ctx.Method.Fullname);
+            #endregion
             #region Size of the business code parts
             var bizMethods = asmCtx.InjMethodByFullname.Values
                 .Where(a => !a.IsCompilerGenerated).ToArray();
@@ -673,7 +701,7 @@ namespace Drill4Net.Injector.Engine
                     //leave the current first try/catch
                     var res = LeaveTryCatch(ctx);
 
-                    //is second one exists (for example, for 'async stream' method)?
+                    //is second 'get_IsCompleted' exists(for example, for 'async stream' method)?
                     if (res)
                     {
                         var instructions = ctx.Instructions;
@@ -778,6 +806,7 @@ namespace Drill4Net.Injector.Engine
                         if (asyncType.Filter(typeof(InjectedMethod), false)
                             .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
                         {
+                            asyncMove.CGInfo.Caller = treeFunc;
                             treeFunc.CalleeIndexes.Add(asyncMove.Fullname, ctx.SourceIndex);
                         }
                     }
@@ -812,7 +841,7 @@ namespace Drill4Net.Injector.Engine
                         var mkey = GetMethodKey(realCgType.Fullname, extRealMethodName);
                         if (asmCtx.InjMethodByKeys.ContainsKey(mkey))
                             treeFunc = asmCtx.InjMethodByKeys[mkey];
-                        
+
                         var nestTypes = extType.Filter(typeof(InjectedType), true);
                         foreach (var injectedSimpleEntity in nestTypes)
                         {
@@ -1034,6 +1063,8 @@ namespace Drill4Net.Injector.Engine
                     if (ownMethod.IsSetter && !name.StartsWith("set_Prop"))
                         continue;
                     if (ownMethod.IsGetter && !name.StartsWith("get_Prop"))
+                        continue;
+                    if (isAsyncStateMachine && name != "MoveNext")
                         continue;
                 }
                 #endregion
