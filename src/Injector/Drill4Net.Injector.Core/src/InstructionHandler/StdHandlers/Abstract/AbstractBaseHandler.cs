@@ -70,7 +70,7 @@ namespace Drill4Net.Injector.Core
             if (ind < 0)
                 throw new ArgumentException(nameof(ind));
             if (asProcessed)
-                ctx.Processed.Add(ctx.Instructions[ind]);
+                ctx.AheadProcessed.Add(ctx.Instructions[ind]);
             var probeData = GetProbeData(ctx, type, ind, out var point);
             return GetFirstInstruction(ctx, probeData);
         }

@@ -35,7 +35,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public HashSet<object> Anchors { get; }
         public HashSet<Instruction> CompilerInstructions { get; }
-        public HashSet<Instruction> Processed { get; }
+        public HashSet<Instruction> AheadProcessed { get; }
 
         public string ProxyNamespace { get; set; }
         public MethodReference ProxyMethRef { get; set; }
@@ -75,7 +75,7 @@ namespace Drill4Net.Injector.Core
             LastOperation = instructions.Last();
             //
             BusinessInstructions = new HashSet<Instruction>();
-            Processed = new HashSet<Instruction>();
+            AheadProcessed = new HashSet<Instruction>();
             FirstInjectInstructions = new HashSet<object>();
             CompilerInstructions = new HashSet<Instruction>();
             ReplacedJumps = new Dictionary<Instruction, Instruction>();

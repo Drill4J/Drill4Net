@@ -549,7 +549,7 @@ namespace Drill4Net.Injector.Engine
                         var instr = instructions[i];
                         if (!methodCtx.BusinessInstructions.Contains(instr))
                             continue;
-                        if (methodCtx.Processed.Contains(instr))
+                        if (methodCtx.AheadProcessed.Contains(instr))
                             continue;
                         #endregion
                         
@@ -687,7 +687,7 @@ namespace Drill4Net.Injector.Engine
             var code = instr.OpCode.Code;
 
             // for injecting cases
-            if (code == Code.Nop || ctx.Processed.Contains(instr))
+            if (code == Code.Nop || ctx.AheadProcessed.Contains(instr))
                 return FlowType.NextCycle;
 
             var method = ctx.Method;

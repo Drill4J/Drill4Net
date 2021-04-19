@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Core
             var opCode = instr.OpCode;
             var code = opCode.Code;
 
-            var processed = ctx.Processed;
+            var processed = ctx.AheadProcessed;
             var ifStack = ctx.IfStack;
             var crossType = CrossPointType.Unset;
 

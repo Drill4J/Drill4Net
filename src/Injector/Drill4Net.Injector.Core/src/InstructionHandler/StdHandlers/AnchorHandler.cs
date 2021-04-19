@@ -28,7 +28,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (ctx.CompilerInstructions.Contains(instr))
                 return false;
-            if (ctx.Processed.Contains(instr)) //may be 'IF' or 'ELS' it yet are processed
+            if (ctx.AheadProcessed.Contains(instr)) //may be 'IF' or 'ELS' it yet are processed
                 return false;
             if (!ctx.Anchors.Contains(instr))
                 return false;
