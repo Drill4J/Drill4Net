@@ -44,7 +44,6 @@ namespace Drill4Net.Injector.Core
                 Console.WriteLine(e);
                 throw;
             }
-
         }
     }
 }

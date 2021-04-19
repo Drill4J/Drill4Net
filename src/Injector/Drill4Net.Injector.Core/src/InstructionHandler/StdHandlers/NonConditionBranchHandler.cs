@@ -43,7 +43,7 @@ namespace Drill4Net.Injector.Core
                 return;
             if (!isAsyncStateMachine && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
                 return;
-            if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine)) //is real condition's branch?
+            if (!IsRealCondition(ctx.CurIndex, instructions)) //is real condition's branch?
                 return;
             #endregion
             

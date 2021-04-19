@@ -59,7 +59,7 @@ namespace Drill4Net.Injector.Core
             #region Is this business code?
             if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
                 return;
-            if (!IsRealCondition(ctx.CurIndex, instructions, isAsyncStateMachine))
+            if (!IsRealCondition(ctx.CurIndex, instructions))
                 return;
             #endregion
             #region Monitor/lock

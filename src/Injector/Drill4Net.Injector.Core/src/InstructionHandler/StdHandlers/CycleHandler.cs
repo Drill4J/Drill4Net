@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.Core
         {
         }
 
-        /***********************************************************************************************/
+        /******************************************************************************************/
 
         protected override void ProcessConditionInstruction(MethodContext ctx, out bool needBreak)
         {

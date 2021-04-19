@@ -92,55 +92,13 @@ namespace Drill4Net.Injector.Core
         }
         #endregion
 
-        internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
-            bool isAsyncStateMachine)
+        internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions)
         {
             if (ind < 0 || ind >= instructions.Count)
                 return false;
             //
             var op = instructions[ind];
-            if (isAsyncStateMachine)
-            {
-                var prev = SkipNop(ind, false, instructions);
-                var prevOpS = prev.Operand?.ToString();
-                var isInternal = prev.OpCode.Code == Code.Call && prevOpS != null &&
-                                 (prevOpS.EndsWith("TaskAwaiter::get_IsCompleted()") || prevOpS.Contains("TaskAwaiter`1"));
-                if (isInternal)
-                    return false;
-
-                //seems not good: skip some state machine's instructions
-
-                // machine state not init jump block (yeah...)
-                if (instructions[ind - 1].OpCode.Code == Code.Ldloc_0 &&
-                    instructions[ind + 1].OpCode.FlowControl == FlowControl.Branch &&
-                    instructions[ind + 2].OpCode.FlowControl == FlowControl.Branch &&
-                    instructions[ind + 3].OpCode.Code == Code.Nop &&
-                    op.Operand == instructions[ind + 2] &&
-                    instructions[ind + 1].Operand == instructions[ind + 3]
-                    )
-                    return false;
-
-                //1. start of finally block of state machine
-                if (op.OpCode.Code == Code.Bge_S &&
-                    instructions[ind - 1].OpCode.Code == Code.Ldc_I4_0 &&
-                    instructions[ind - 2].OpCode.Code == Code.Ldloc_0 &&
-                    instructions[ind - 3].OpCode.Code == Code.Leave_S
-                    )
-                    return false;
-
-                //2. end of finally block of state machine
-                if (op.OpCode.Code == Code.Brfalse_S &&
-                    instructions[ind + 1].OpCode.Code == Code.Ldarg_0 &&
-                    instructions[ind + 2].OpCode.Code == Code.Ldfld &&
-                    instructions[ind + 3].OpCode.Code == Code.Callvirt &&
-                    instructions[ind + 4].OpCode.Code == Code.Nop &&
-                    instructions[ind + 5].OpCode.Code == Code.Endfinally
-                    )
-                    return false;
-            }
-            //
             var next = SkipNop(ind, true, instructions);
-
             return op.Operand != next; //how far do it jump?
         }
 

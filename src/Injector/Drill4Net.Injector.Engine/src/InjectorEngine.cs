@@ -100,15 +100,15 @@ namespace Drill4Net.Injector.Engine
             tree.FinishTime = DateTime.Now;
             
             // debug
-            var methods = tree.GetAllMethods().ToList();
-            var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
-            var emtyCGInfoMeths = cgMeths
-                .Where(a => a.CGInfo == null)
-                .ToList();
-            var emptyBusinessMeths = cgMeths
-                .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.Fullname))
-                .ToList();
-            var nonBlokings = cgMeths.FirstOrDefault(a => a.Fullname == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
+            //var methods = tree.GetAllMethods().ToList();
+            //var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
+            //var emtyCGInfoMeths = cgMeths
+            //    .Where(a => a.CGInfo == null)
+            //    .ToList();
+            //var emptyBusinessMeths = cgMeths
+            //    .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.Fullname))
+            //    .ToList();
+            //var nonBlokings = cgMeths.FirstOrDefault(a => a.Fullname == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
             //
             return tree;
         }
