@@ -11,6 +11,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Transport;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -19,8 +20,8 @@ namespace Drill4Net.Agent.Standard
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
 
-        private static ConcurrentDictionary<int, string> _execCtxToTestUids;
-        private static ConcurrentDictionary<string, int> _testUidToExecCtxs;
+        private static readonly ConcurrentDictionary<int, string> _execCtxToTestUids;
+        private static readonly ConcurrentDictionary<string, int> _testUidToExecCtxs;
             
         private static ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _execCtxToExecData;
 
@@ -58,11 +59,12 @@ namespace Drill4Net.Agent.Standard
                 _converter = new TreeConverter();
                 var astEntities = _converter.ToAstEntities(tree);
                 //
-                _receiver = new();
+                var communicator = new Communicator(); //TODO: to external factory
+                _receiver = new(communicator);
                 _receiver.SessionStarted += SessionStarted;
                 _receiver.SessionFinished += SessionFinished;
                 //
-                _sender = new();
+                _sender = new(communicator);
                 //
                 Log.Debug("Initialized.");
             }

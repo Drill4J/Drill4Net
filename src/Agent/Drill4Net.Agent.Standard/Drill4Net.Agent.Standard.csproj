@@ -18,6 +18,7 @@
       <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
       <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
       <ProjectReference Include="..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+      <ProjectReference Include="..\Drill4Net.Agent.Transport\Drill4Net.Agent.Transport.csproj" />
     </ItemGroup>
 
     <ItemGroup>

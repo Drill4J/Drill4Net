@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Standard
@@ -7,36 +8,43 @@ namespace Drill4Net.Agent.Standard
     
     public class AgentSender
     {
-        //also SCOPE_INITIALIZED ?? or it event from plugin?
-        
-        public void SendInitInfoMessage()
+        private readonly ISender _sender;
+
+        /************************************************************************/
+
+        public AgentSender(ISender sender)
         {
-            
+            _sender = sender ?? throw new ArgumentNullException(nameof(sender));
         }
-        
+
+        /************************************************************************/
+
+        /// <summary>
+        /// "Agent is initialized" message ("INITIALIZED")
+        /// </summary>
         public void SendInitializedMessage()
         {
-            
+            const string data = "Initialized"; //can be any string "Initialized"
+
         }
 
-        public void SendStartClassesTransferMessage()
-        {
-            
-        }
-
+        /// <summary>
+        /// "INIT_DATA_PART"
+        /// </summary>
+        /// <param name="entities"></param>
         public void SendClassesDataMessage(IEnumerable<AstEntity> entities)
         {
-            foreach (var entity in entities)
-            {
-                
-            }
+
         }
-        
-        public void SendFinishClassesTransferMessage()
+
+        /// <summary>
+        /// Send coverage data to the admin part ("COVERAGE_DATA_PART")
+        /// </summary>
+        public void SendCoverageData(List<ExecClassData> data)
         {
             
         }
-        
+
         //???
         public void SendSessionFinishedMessage()
         {

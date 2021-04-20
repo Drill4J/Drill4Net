@@ -5,7 +5,7 @@ using System.Linq;
 namespace Drill4Net.Agent.Abstract
 {
     /// <summary>
-    /// Classes for including to the scope of collecting data
+    /// Probes of instrumented assemblies for sending of collecting data to admin side
     /// </summary>
     public class ExecClassData
     {
@@ -14,6 +14,9 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public string TestName { get; }
         
+        /// <summary>
+        /// Can ignore
+        /// </summary>
         public long? Id { get; }
 
         /// <summary>
@@ -28,9 +31,9 @@ namespace Drill4Net.Agent.Abstract
         
         /**************************************************************************/
         
-        public ExecClassData(string testName, long? id, string className, int probeCnt)
+        public ExecClassData(string testName, string className, int probeCnt)
         {
-            Id = id;
+            Id = className.GetHashCode();
             TestName = testName ?? throw new ArgumentNullException(nameof(testName));
             ClassName = className ?? throw new ArgumentNullException(nameof(className));
             Probes = Enumerable.Repeat(false, probeCnt).ToList();
