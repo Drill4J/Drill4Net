@@ -2,6 +2,6 @@
 {
     public class StdAgentConstants
     {
-        
+        public const string TESTNAME_DEFAULT = "Default";
     }
 }

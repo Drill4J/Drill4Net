@@ -69,6 +69,11 @@
             The count of probes added to the method.
             </summary>
         </member>
+        <member name="T:Drill4Net.Agent.Abstract.ExecClassData">
+            <summary>
+            Classes for including to the scope of collecting data
+            </summary>
+        </member>
         <member name="P:Drill4Net.Agent.Abstract.ExecClassData.TestName">
             <summary>
             Name of the test (session)

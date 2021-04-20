@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Drill4Net.Agent.Abstract
 {
+    /// <summary>
+    /// Classes for including to the scope of collecting data
+    /// </summary>
     public class ExecClassData
     {
         /// <summary>
@@ -20,15 +24,16 @@ namespace Drill4Net.Agent.Abstract
         /// <summary>
         /// List of probe data
         /// </summary>
-        public List<bool> Probes { get; set; }
+        public List<bool> Probes { get; }
         
         /**************************************************************************/
         
-        public ExecClassData(string testName, long? id, string className)
+        public ExecClassData(string testName, long? id, string className, int probeCnt)
         {
             Id = id;
             TestName = testName ?? throw new ArgumentNullException(nameof(testName));
             ClassName = className ?? throw new ArgumentNullException(nameof(className));
+            Probes = Enumerable.Repeat(false, probeCnt).ToList();
         }
 
         /**************************************************************************/

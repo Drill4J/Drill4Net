@@ -15,7 +15,7 @@ Profiler: # data collector/processor in separate assembly
   Directory: ..\..\Drill4Net.Agent.Standard\
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard
-  Class: StandardProfiler
+  Class: StandardAgent
   Method: RegisterStatic
   Static: true
 Proxy: # the injecting for transfer data to profiler

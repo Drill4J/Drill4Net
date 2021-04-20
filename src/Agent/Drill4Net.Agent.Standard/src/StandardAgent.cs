@@ -14,13 +14,15 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard
 {
-    public class StandardProfiler : AbstractAgent
+    public class StandardAgent : AbstractAgent
     {
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
 
-        private static Dictionary<int, string> _execCtxToTestNames;
-        private static Dictionary<int, Dictionary<string, ExecClassData>> _execCtxToExecData;
+        private static ConcurrentDictionary<int, string> _execCtxToTestUids;
+        private static ConcurrentDictionary<string, int> _testUidToExecCtxs;
+            
+        private static ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _execCtxToExecData;
 
         private static readonly AgentReceiver _receiver;
         private static readonly AgentSender _sender;
@@ -28,14 +30,19 @@ namespace Drill4Net.Agent.Standard
 
         /*****************************************************************************/
 
-        static StandardProfiler()
+        static StandardAgent()
         {
             PrepareLogger();
             Log.Debug("Initializing...");
             
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
-            _execCtxToTestNames = new Dictionary<int, string>();
-            _execCtxToExecData = new Dictionary<int, Dictionary<string, ExecClassData>>();
+            
+            //test names vs. session ids
+            _execCtxToTestUids = new ConcurrentDictionary<int, string>();
+            _testUidToExecCtxs = new ConcurrentDictionary<string, int>();
+            
+            // execution data by session ids
+            _execCtxToExecData = new ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>>();
 
             try
             {
@@ -50,23 +57,60 @@ namespace Drill4Net.Agent.Standard
 
                 _converter = new TreeConverter();
                 var astEntities = _converter.ToAstEntities(tree);
-                
                 //
                 _receiver = new();
-                _receiver.TestStarted += TestStarted;
+                _receiver.SessionStarted += SessionStarted;
+                _receiver.SessionFinished += SessionFinished;
                 //
                 _sender = new();
-                
+                //
                 Log.Debug("Initialized.");
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Error of {nameof(StandardProfiler)} initializing");
+                Log.Fatal(ex, $"Error of {nameof(StandardAgent)} initializing");
             }
         }
 
         /*****************************************************************************/
         
+        #region Test session
+        private static void SessionStarted(string sessionUid, string testType, bool isRealTime, long startTime)
+        {
+            RemoveTest();
+            AddTest(sessionUid);
+        }
+        
+        private static void SessionFinished(string sessionUid, long finishTime)
+        {
+            //TODO: send data...
+            
+            //removing
+            RemoveTest();
+        }
+        
+        internal static void AddTest(string testName)
+        {
+            var id = GetSessionId();
+            if (!_execCtxToTestUids.ContainsKey(id))
+                return;
+            _execCtxToTestUids.TryAdd(id, testName);
+        }
+        
+        internal static void RemoveTest()
+        {
+            RemoveTest(GetSessionId());
+        }
+        
+        internal static void RemoveTest(int sessionId)
+        {
+            if (!_execCtxToTestUids.ContainsKey(sessionId))
+                return;
+            _execCtxToTestUids.TryRemove(sessionId, out var _);
+            _execCtxToExecData.TryRemove(sessionId, out var _);
+        }
+        #endregion
+        #region Register
         // ReSharper disable once MemberCanBePrivate.Global
         public static void RegisterStatic(string data)
         {
@@ -106,6 +150,7 @@ namespace Drill4Net.Agent.Standard
         {
             RegisterStatic(data);
         }
+        #endregion
         
         internal static void AddPoint(string asmName, string funcSig, string point)
         {
@@ -137,7 +182,7 @@ namespace Drill4Net.Agent.Standard
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
-            var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
+            var id = GetSessionId();
             Debug.WriteLine($"Profiler({createNotExistedBranch}): id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
 
             Dictionary<string, List<string>> byFunctions;
@@ -153,7 +198,12 @@ namespace Drill4Net.Agent.Standard
             }
             return byFunctions;
         }
-        
+
+        private static int GetSessionId()
+        {
+            return Thread.CurrentThread.ExecutionContext.GetHashCode();
+        }
+
         internal static string GetBusinessMethodName(string probeUid)
         {
             if (_pointToMethods == null || !_pointToMethods.ContainsKey(probeUid))
@@ -161,16 +211,11 @@ namespace Drill4Net.Agent.Standard
             return _pointToMethods[probeUid].BusinessMethod;
         }
         
-        private static void TestStarted(string testname)
-        {
-            throw new NotImplementedException();
-        }
-        
         public static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
             //common log
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(StandardProfiler)}.log"));
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(StandardAgent)}.log"));
             Log.Logger = cfg.CreateLogger();
         }
     }
