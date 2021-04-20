@@ -24,7 +24,7 @@ namespace Drill4Net.Agent.Abstract
             if (injType == null)
                 throw new ArgumentNullException(nameof(injType));
             //
-            var entity = new AstEntity(injType.Source.FilePath, injType.BusinessType);
+            var entity = new AstEntity(injType.Path, injType.BusinessType);
             var injMethods = injType.GetMethods()
                 .Where(a => !a.IsCompilerGenerated);
             foreach (var injMethod in injMethods)

@@ -292,7 +292,8 @@ namespace Drill4Net.Injector.Engine
                 var realTypeName = TryGetRealTypeName(typeDef);
                 var treeMethodType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
                 {
-                    Source = CreateTypeSource(typeDef)
+                    Source = CreateTypeSource(typeDef),
+                    Path = treeAsm.Path,
                 };
                 asmCtx.InjClasses.Add(treeMethodType.FullName, treeMethodType);
                 treeAsm.AddChild(treeMethodType);
@@ -1102,6 +1103,7 @@ namespace Drill4Net.Injector.Engine
                 var treeType = new InjectedType(nestedType.Module.Name, nestedType.FullName, realTypeName)
                 {
                     Source = CreateTypeSource(nestedType),
+                    Path = typeCtx.AssemblyCtx.InjAssembly.Path,
                 };
                 asmCtx.InjClasses.Add(treeType.FullName, treeType);
                 treeParentClass.AddChild(treeType);
@@ -1127,7 +1129,6 @@ namespace Drill4Net.Injector.Engine
         {
             return new TypeSource
             {
-                FilePath = def.Module.FileName,
                 AccessType = GetAccessType(def),
                 IsAbstract = def.IsAbstract,
                 IsGeneric = def.IsGenericInstance,

@@ -7,7 +7,7 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class InjectedType : InjectedEntity
     {
-        public bool IsCompilerGenerated { get; set; }
+        public bool IsCompilerGenerated => BusinessType != FullName || FullName.StartsWith("<>");
 
         public string BusinessType { get; set; }
 
