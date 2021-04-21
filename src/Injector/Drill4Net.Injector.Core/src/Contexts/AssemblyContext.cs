@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Drill4Net.Profiling.Tree;
 using Mono.Cecil;
+using Drill4Net.Common;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
@@ -11,7 +12,7 @@ namespace Drill4Net.Injector.Core
         public AssemblyDefinition Definition { get; }
         
         public ModuleDefinition Module => Definition.MainModule;
-        public AssemblyVersion Version { get; }
+        public AssemblyVersioning Version { get; }
         public InjectedAssembly InjAssembly { get; }
 
         public Dictionary<string, TypeContext> TypeContexts { get; }
@@ -22,7 +23,7 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************/
         
-        public AssemblyContext(string filePath, AssemblyVersion version, AssemblyDefinition asmDef, InjectedAssembly injAssembly)
+        public AssemblyContext(string filePath, AssemblyVersioning version, AssemblyDefinition asmDef, InjectedAssembly injAssembly)
         {
             FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
             Version = version ?? throw new ArgumentNullException(nameof(version));

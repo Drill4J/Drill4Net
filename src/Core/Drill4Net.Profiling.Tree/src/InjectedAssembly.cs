@@ -1,11 +1,12 @@
 ﻿using System;
+using Drill4Net.Common;
 
 namespace Drill4Net.Profiling.Tree
 {
     [Serializable]
     public class InjectedAssembly : InjectedEntity
     {
-        public AssemblyVersion Version { get; set; }
+        public AssemblyVersioning Version { get; set; }
 
         /*********************************************************************/
 

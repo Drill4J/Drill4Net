@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Profiling.Tree
+﻿namespace Drill4Net.Common
 {
     public enum AssemblyVersionType
     {

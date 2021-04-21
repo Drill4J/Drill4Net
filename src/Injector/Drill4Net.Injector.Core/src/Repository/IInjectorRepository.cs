@@ -12,7 +12,7 @@ namespace Drill4Net.Injector.Core
         void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers);
 
         IEnumerable<string> GetAssemblies(string directory);
-        AssemblyVersion GetAssemblyVersion(string filePath);
+        AssemblyVersioning GetAssemblyVersion(string filePath);
 
         InjectedSolution ReadInjectedTree(string path);
         void WriteInjectedTree(string path, InjectedSolution tree);

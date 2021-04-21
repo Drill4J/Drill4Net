@@ -32,7 +32,7 @@ namespace Drill4Net.Injector.Engine
 
         private readonly IInjectorRepository _rep;
         private readonly ThreadLocal<bool?> _isNetCore;
-        private readonly ThreadLocal<AssemblyVersion> _mainVersion;
+        private readonly ThreadLocal<AssemblyVersioning> _mainVersion;
         private readonly InstructionHandlerStrategy _strategy;
         private readonly TypeChecker _typeChecker;
 
@@ -42,7 +42,7 @@ namespace Drill4Net.Injector.Engine
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _isNetCore = new ThreadLocal<bool?>();
-            _mainVersion = new ThreadLocal<AssemblyVersion>();
+            _mainVersion = new ThreadLocal<AssemblyVersioning>();
             _typeChecker = new TypeChecker();
 
             FlowStrategy flowStrategy = new();
@@ -112,7 +112,7 @@ namespace Drill4Net.Injector.Engine
             return tree;
         }
 
-        internal void ProcessDirectory(string directory, Dictionary<string, AssemblyVersion> versions, 
+        internal void ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 
              MainOptions opts, InjectedSolution tree)
         {
             //files
@@ -130,21 +130,21 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal Dictionary<string, AssemblyVersion> DefineTargetVersions(string directory)
+        internal Dictionary<string, AssemblyVersioning> DefineTargetVersions(string directory)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException($"Source directory not exists: [{directory}]");
             var files = _rep.GetAssemblies(directory);
-            var versions = new Dictionary<string, AssemblyVersion>();
+            var versions = new Dictionary<string, AssemblyVersioning>();
             //'exe' must be after 'dll'
             foreach (var file in files.OrderBy(a => a))
             {
-                AssemblyVersion version;
+                AssemblyVersioning version;
                 if (_isNetCore.Value == true && Path.GetExtension(file) == ".exe")
                 {
                     var dll = Path.Combine(Path.ChangeExtension(file, ".dll"));
                     var dllVer = versions.FirstOrDefault(a => a.Key == dll).Value;
-                    version = dllVer ?? new AssemblyVersion() { Target = AssemblyVersionType.NetCore };
+                    version = dllVer ?? new AssemblyVersioning() { Target = AssemblyVersionType.NetCore };
                     _mainVersion.Value = version;
                     versions.Add(file, version);
                     continue;
@@ -170,7 +170,7 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
         
-        private void ProcessAssembly(string filePath, Dictionary<string, AssemblyVersion> versions,  
+        private void ProcessAssembly(string filePath, Dictionary<string, AssemblyVersioning> versions,  
             MainOptions opts, InjectedSolution tree)
         {
             #region Reading
@@ -192,11 +192,24 @@ namespace Drill4Net.Injector.Engine
                 Directory.CreateDirectory(destDir);
 
             //must process? need to know the version of the assembly before reading it via cecil
+            #region Version
             var ext = Path.GetExtension(filePath);
-            var version = versions.ContainsKey(filePath) ? versions[filePath] : _rep.GetAssemblyVersion(filePath);
-            if (version == null || (ext == ".exe" && version.Target == AssemblyVersionType.NetCore))
+            AssemblyVersioning version;
+            if (versions.ContainsKey(filePath))
+            {
+                version = versions[filePath];
+            }
+            else
+            {
+                version = _rep.GetAssemblyVersion(filePath);
+                if (version != null)
+                    versions.Add(filePath, version);
+            }
+            if (version == null || version.Target == AssemblyVersionType.NotIL || 
+                (ext == ".exe" && version.Target == AssemblyVersionType.NetCore))
                 return;
-
+            Console.WriteLine($"Version = {version}");
+            #endregion
             #region Read params
             var readerParams = new ReaderParameters
             {
@@ -234,16 +247,6 @@ namespace Drill4Net.Injector.Engine
             using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
             var moduleName = module.Name;
-            #endregion
-            #region Target version
-            var targetVersionAtr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == nameof(TargetFrameworkAttribute));
-            string targetVersion;
-            if (targetVersionAtr != null)
-            {
-                targetVersion = targetVersionAtr.ConstructorArguments[0].Value?.ToString();
-                Console.WriteLine($"Version = {targetVersion}");
-            }
-            //var targetFolder = ConvertTargetTypeToFolder(targetVersion);
             #endregion
             #region Tree
             //directory

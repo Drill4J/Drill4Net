@@ -80,36 +80,23 @@ namespace Drill4Net.Injector.Core
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public virtual AssemblyVersion GetAssemblyVersion(string filePath)
+        public virtual AssemblyVersioning GetAssemblyVersion(string filePath)
         {
             try
             {
                 var asmName = AssemblyName.GetAssemblyName(filePath);
                 if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
-                    return new AssemblyVersion() { Target = AssemblyVersionType.NotIL };
+                    return new AssemblyVersioning() { Target = AssemblyVersionType.NotIL };
 
                 if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
                 {
                     Log.Warning($"Assembly [{filePath}] having the strong name");
-                    return new AssemblyVersion() { IsStrongName = true };
+                    return new AssemblyVersioning() { IsStrongName = true };
                 }
 
                 var asm = _asmCtxManager.Load(filePath);
-                var fs = asm.DefinedTypes.FirstOrDefault(a => a.FullName?.Contains("-Target-Common-FSharp") == true);
-                string versionS;
-                if (fs != null)
-                {
-                    //var ar = fs.FullName?.Split('$'); //hm...
-                    //versionS = "";
-                    throw new NotImplementedException($"Processing of FSharp not implemented yet");
-                }
-                else
-                {
-                    var versionAttr = asm.CustomAttributes
-                        .FirstOrDefault(a => a.AttributeType == typeof(System.Runtime.Versioning.TargetFrameworkAttribute));
-                    versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
-                }
-                var version = new AssemblyVersion(versionS);
+                var versionS = CommonUtils.GetAssemblyVersion(asm);
+                var version = new AssemblyVersioning(versionS);
                 _asmCtxManager.Unload(filePath);
                 return version;
             }
@@ -122,7 +109,6 @@ namespace Drill4Net.Injector.Core
         }
         #endregion
         #region Injected Tree
-
         public virtual InjectedSolution ReadInjectedTree()
         {
             if (Options == null)

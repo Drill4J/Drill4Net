@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Drill4Net.Profiling.Tree
+namespace Drill4Net.Common
 {
     [Serializable]
-    public class AssemblyVersion
+    public class AssemblyVersioning
     {
         public AssemblyVersionType Target { get; set; }
         public string Version { get; set; }
@@ -11,11 +11,11 @@ namespace Drill4Net.Profiling.Tree
 
         /*************************************************************************/
 
-        public AssemblyVersion()
+        public AssemblyVersioning()
         {
         }
 
-        public AssemblyVersion(string rawVersion)
+        public AssemblyVersioning(string rawVersion)
         {
             if (string.IsNullOrWhiteSpace(rawVersion))
                 return;

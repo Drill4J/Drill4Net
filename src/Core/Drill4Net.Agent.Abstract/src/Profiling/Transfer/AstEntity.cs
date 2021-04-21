@@ -36,7 +36,7 @@ namespace Drill4Net.Agent.Abstract
 
         public override string ToString()
         {
-            return Name;
+            return $"{Path}.{Name}";
         }
     }
 }
