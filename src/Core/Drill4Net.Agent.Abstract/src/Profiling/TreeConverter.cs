@@ -7,7 +7,7 @@ namespace Drill4Net.Agent.Abstract
 {
     public class TreeConverter
     {
-        public IEnumerable<AstEntity> ToAstEntities(InjectedSolution tree)
+        public List<AstEntity> ToAstEntities(InjectedSolution tree)
         {
             if (tree == null)
                 throw new ArgumentNullException(nameof(tree));
@@ -15,7 +15,7 @@ namespace Drill4Net.Agent.Abstract
                 .Where(a => !a.IsCompilerGenerated);
             var res = new List<AstEntity>();
             foreach (var type in injTypes)
-                res.Add( ToAstEntity(type));
+                res.Add(ToAstEntity(type));
             return res;
         }
         

@@ -71,12 +71,17 @@
         </member>
         <member name="T:Drill4Net.Agent.Abstract.ExecClassData">
             <summary>
-            Classes for including to the scope of collecting data
+            Probes of instrumented assemblies for sending of collecting data to admin side
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.ExecClassData.TestName">
             <summary>
             Name of the test (session)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.Id">
+            <summary>
+            Can ignore
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.ExecClassData.ClassName">

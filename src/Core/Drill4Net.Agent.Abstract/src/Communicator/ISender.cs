@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Drill4Net.Agent.Standard
+﻿namespace Drill4Net.Agent.Abstract
 {
     public interface ISender
     {

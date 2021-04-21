@@ -1,4 +1,5 @@
 ﻿using System;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -75,11 +76,17 @@ namespace Drill4Net.Agent.Standard
 
         /************************************************************************/
 
-        public AgentReceiver(IReceiver sender)
+        public AgentReceiver(IReceiver receiver)
         {
-            _receiver = sender ?? throw new ArgumentNullException(nameof(_receiver));
+            _receiver = receiver ?? throw new ArgumentNullException(nameof(_receiver));
+            _receiver.ReceivedHandler += ReceivedHandler;
         }
 
         /************************************************************************/
+
+        private void ReceivedHandler(string message)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

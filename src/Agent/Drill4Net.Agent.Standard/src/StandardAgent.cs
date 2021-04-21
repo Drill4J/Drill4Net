@@ -27,7 +27,6 @@ namespace Drill4Net.Agent.Standard
 
         private static readonly AgentReceiver _receiver;
         private static readonly AgentSender _sender;
-        private static readonly TreeConverter _converter;
 
         /*****************************************************************************/
 
@@ -47,24 +46,24 @@ namespace Drill4Net.Agent.Standard
 
             try
             {
-                //rep
-                var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
-                var rep = new InjectorRepository(cfg_path);
-
-                //tree info
-                var tree = rep.ReadInjectedTree();
-                _pointToMethods = tree.MapPointToMethods();
-
-                _converter = new TreeConverter();
-                var astEntities = _converter.ToAstEntities(tree);
+                var rep = new StandardAgentRepository();
                 //
-                var communicator = new Communicator(); //TODO: to external factory
+                var communicator = rep.GetCommunicator();
                 _receiver = new(communicator);
                 _receiver.SessionStarted += SessionStarted;
                 _receiver.SessionFinished += SessionFinished;
+                _receiver.SessionCancelled += SessionCancelled;
+                _receiver.AllSessionsCancelled += AllSessionsCancelled;
                 //
                 _sender = new(communicator);
+
+                //1. Classes to admin side
+                _pointToMethods = rep.MapPointToMethods();
+                var entities = rep.GetEntities();
+                _sender.SendClassesDataMessage(entities);
+
+                //2. "Initialized" message to admin side
+                _sender.SendInitializedMessage();
                 //
                 Log.Debug("Initialized.");
             }
@@ -75,8 +74,8 @@ namespace Drill4Net.Agent.Standard
         }
 
         /*****************************************************************************/
-        
-        #region Test session
+
+        #region Session
         private static void SessionStarted(string sessionUid, string testType, bool isRealTime, long startTime)
         {
             RemoveTest();
@@ -110,6 +109,16 @@ namespace Drill4Net.Agent.Standard
                 return;
             _execCtxToTestUids.TryRemove(sessionId, out var _);
             _execCtxToExecData.TryRemove(sessionId, out var _);
+        }
+
+        private static void AllSessionsCancelled()
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void SessionCancelled(string sessionUid, long cancelTime)
+        {
+            throw new NotImplementedException();
         }
         #endregion
         #region Register

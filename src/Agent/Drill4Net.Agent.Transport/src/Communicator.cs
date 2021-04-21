@@ -1,10 +1,9 @@
-﻿using Drill4Net.Agent.Standard;
+﻿using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
 {
-    public class Communicator : ISender, IReceiver
+    public class Communicator : ICommunicator
     {
-
         public event MessageReceivedHandler ReceivedHandler;
 
         /***********************************************************/

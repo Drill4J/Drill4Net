@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Agent.Standard
+﻿namespace Drill4Net.Agent.Abstract
 {
     public delegate void MessageReceivedHandler(string message);
 
