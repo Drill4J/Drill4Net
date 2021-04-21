@@ -261,7 +261,7 @@ namespace Drill4Net.Injector.Engine
             var treeAsm = treeDir.GetAssembly(assembly.FullName);
             if (treeAsm == null)
             {
-                treeAsm = new InjectedAssembly(module.Name, assembly.FullName, filePath);
+                treeAsm = new InjectedAssembly(version, module.Name, assembly.FullName, filePath);
                 treeDir.AddChild(treeAsm);
             }
             #endregion

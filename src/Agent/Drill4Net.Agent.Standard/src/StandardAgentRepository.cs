@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Versioning;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
 using Drill4Net.Common;
@@ -43,7 +42,6 @@ namespace Drill4Net.Agent.Standard
 
         public List<AstEntity> GetEntities()
         {
-            var ver = CommonUtils.GetEntryTargetVersioning();
             var converter = new TreeConverter();
             return converter.ToAstEntities(_tree);
         }

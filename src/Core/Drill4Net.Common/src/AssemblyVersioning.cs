@@ -7,6 +7,7 @@ namespace Drill4Net.Common
     {
         public AssemblyVersionType Target { get; set; }
         public string Version { get; set; }
+        public string RawVersion { get; set; }
         public bool IsStrongName { get; set; }
 
         /*************************************************************************/
@@ -20,6 +21,7 @@ namespace Drill4Net.Common
             if (string.IsNullOrWhiteSpace(rawVersion))
                 return;
 
+            RawVersion = rawVersion;
             var ar = rawVersion.Split(',');
             if (ar.Length != 2)
                 throw new ArgumentException(nameof(rawVersion));

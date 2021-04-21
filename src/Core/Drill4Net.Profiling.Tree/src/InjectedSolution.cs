@@ -57,6 +57,12 @@ namespace Drill4Net.Profiling.Tree
             return Filter(typeof(CrossPoint), true).Cast<CrossPoint>();
         }
 
+        public IEnumerable<InjectedDirectory> GetDirectories()
+        {
+            return _children.Where(a => a.GetType().Name == nameof(InjectedDirectory))
+                 .Cast<InjectedDirectory>();
+        }
+
         public InjectedDirectory GetDirectory(string path)
         {
             return Flatten(typeof(InjectedType))
