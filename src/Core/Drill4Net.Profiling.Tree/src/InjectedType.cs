@@ -7,6 +7,8 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class InjectedType : InjectedEntity
     {
+        public string Namespace { get; set; }
+
         public bool IsCompilerGenerated => BusinessType != FullName || FullName.StartsWith("<>");
 
         public string BusinessType { get; set; }
@@ -24,7 +26,10 @@ namespace Drill4Net.Profiling.Tree
         public InjectedType(string assemblyName, string fullName, string businessName = null) : 
             base(assemblyName, GetName(fullName), GetSource(assemblyName, fullName))
         {
-            FullName = fullName;
+            FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
+            var lastPointInd = FullName.LastIndexOf(".");
+            if(lastPointInd != -1)
+                Namespace = FullName.Substring(0, lastPointInd);
             BusinessType = businessName ?? GetBusinessType(fullName);
         }
 
