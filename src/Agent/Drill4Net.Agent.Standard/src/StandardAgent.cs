@@ -86,7 +86,7 @@ namespace Drill4Net.Agent.Standard
         #region Finished
         private static void SessionFinished(string sessionUid, long finishTime)
         {
-            //TODO: send remaining data...
+            //TODO: send remaining data... ??
             
             //removing
             RemoveSession(sessionUid);

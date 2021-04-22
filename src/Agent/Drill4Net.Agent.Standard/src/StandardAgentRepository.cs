@@ -13,7 +13,6 @@ namespace Drill4Net.Agent.Standard
     public class StandardAgentRepository : IAgentRepository
     {
         private readonly TreeConverter _converter;
-        private readonly InjectedSolution _tree;
         private readonly IEnumerable<InjectedType> _injTypes;
 
         /**************************************************************************************/
@@ -28,8 +27,8 @@ namespace Drill4Net.Agent.Standard
 
             //tree info
             //TODO: filter by framework version !!!
-            _tree = injRep.ReadInjectedTree();
-            _injTypes = FilterTypes();
+            var tree = injRep.ReadInjectedTree();
+            _injTypes = FilterTypes(tree);
         }
 
         /**************************************************************************************/
@@ -39,18 +38,13 @@ namespace Drill4Net.Agent.Standard
             return new Communicator();
         }
 
-        public Dictionary<string, InjectedMethod> MapPointToMethods()
-        {
-            return _tree.MapPointToMethods();
-        }
-
-        internal IEnumerable<InjectedType> FilterTypes()
+        internal IEnumerable<InjectedType> FilterTypes(InjectedSolution tree)
         {
             IEnumerable<InjectedType> injTypes = null;
 
             // check for different compiling target version 
             //we need only one for current runtime
-            var rootDirs = _tree.GetDirectories();
+            var rootDirs = tree.GetDirectories();
             if (rootDirs.Count() > 1)
             {
                 var asmNameByDirs = (from dir in rootDirs
@@ -90,7 +84,7 @@ namespace Drill4Net.Agent.Standard
             }
             else
             {
-                injTypes = _tree.GetAllTypes();
+                injTypes = tree.GetAllTypes();
             }
             injTypes = injTypes.Where(a => !a.IsCompilerGenerated);
             return injTypes;
