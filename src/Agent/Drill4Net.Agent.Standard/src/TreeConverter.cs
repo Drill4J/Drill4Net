@@ -50,6 +50,7 @@ namespace Drill4Net.Agent.Standard
         #region ExecClassData
         public CoverageDispatcher CreateCoverageDispatcher(string testName, IEnumerable<InjectedType> injTypes)
         {
+            //TODO: cloning from Template object?
             var disp = new CoverageDispatcher();
             foreach(var type in injTypes)
             {

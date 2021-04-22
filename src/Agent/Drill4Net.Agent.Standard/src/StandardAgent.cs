@@ -12,15 +12,14 @@ namespace Drill4Net.Agent.Standard
 {
     public class StandardAgent : AbstractAgent
     {
-        private static readonly ConcurrentDictionary<int, string> _execCtxToTestUids;
-        private static readonly ConcurrentDictionary<string, int> _testUidToExecCtxs;
-            
-        private static ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _execCtxToExecData;
+        private static readonly ConcurrentDictionary<int, string> _ctxToSession;
+        private static readonly ConcurrentDictionary<string, int> _sessionToCtx;
+        private static readonly ConcurrentDictionary<int, CoverageDispatcher> _ctxToCoverage;
+        private static readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
         private static readonly AgentReceiver _receiver;
         private static readonly AgentSender _sender;
 
-        private static readonly ConcurrentDictionary<int, CoverageDispatcher> _coverageDisps;
         private static readonly StandardAgentRepository _rep;
 
         /*****************************************************************************/
@@ -31,12 +30,12 @@ namespace Drill4Net.Agent.Standard
             Log.Debug("Initializing...");
             
             //test names vs. session ids
-            _execCtxToTestUids = new ConcurrentDictionary<int, string>();
-            _testUidToExecCtxs = new ConcurrentDictionary<string, int>();
-            _coverageDisps = new ConcurrentDictionary<int, CoverageDispatcher>();
+            _ctxToSession = new ConcurrentDictionary<int, string>();
+            _sessionToCtx = new ConcurrentDictionary<string, int>();
+            _ctxToCoverage = new ConcurrentDictionary<int, CoverageDispatcher>();
 
             // execution data by session ids
-            _execCtxToExecData = new ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>>();
+            _ctxToExecData = new ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>>();
 
             try
             {
@@ -69,41 +68,42 @@ namespace Drill4Net.Agent.Standard
         /*****************************************************************************/
 
         #region Session
+        #region Started
         private static void SessionStarted(string sessionUid, string testType, bool isRealTime, long startTime)
         {
-            RemoveTest();
-            AddTest(sessionUid);
-        }
-        
-        private static void SessionFinished(string sessionUid, long finishTime)
-        {
-            //TODO: send data...
-            
-            //removing
-            RemoveTest();
-        }
-        
-        internal static void AddTest(string testName)
-        {
-            var id = GetSessionId();
-            if (!_execCtxToTestUids.ContainsKey(id))
-                return;
-            _execCtxToTestUids.TryAdd(id, testName);
-        }
-        
-        internal static void RemoveTest()
-        {
-            RemoveTest(GetSessionId());
-        }
-        
-        internal static void RemoveTest(int sessionId)
-        {
-            if (!_execCtxToTestUids.ContainsKey(sessionId))
-                return;
-            _execCtxToTestUids.TryRemove(sessionId, out var _);
-            _execCtxToExecData.TryRemove(sessionId, out var _);
+            RemoveSession(sessionUid);
+            AddSession(sessionUid);
         }
 
+        internal static void AddSession(string sessionUid)
+        {
+            var ctxId = GetContextId();
+            if (!_ctxToSession.ContainsKey(ctxId))
+                return;
+            _ctxToSession.TryAdd(ctxId, sessionUid);
+        }
+        #endregion
+        #region Finished
+        private static void SessionFinished(string sessionUid, long finishTime)
+        {
+            //TODO: send remaining data...
+            
+            //removing
+            RemoveSession(sessionUid);
+        }
+         
+        internal static void RemoveSession(string sessionUid)
+        {
+            if (!_sessionToCtx.ContainsKey(sessionUid))
+                return;
+            //
+            var ctxId = _sessionToCtx[sessionUid];
+            _ctxToSession.TryRemove(ctxId, out var _);
+            _ctxToExecData.TryRemove(ctxId, out var _);
+            _ctxToCoverage.TryRemove(ctxId, out var _);
+        }
+        #endregion
+        #region Cancelled
         private static void AllSessionsCancelled()
         {
             throw new NotImplementedException();
@@ -113,6 +113,7 @@ namespace Drill4Net.Agent.Standard
         {
             throw new NotImplementedException();
         }
+        #endregion
         #endregion
         #region Register
         // ReSharper disable once MemberCanBePrivate.Global
@@ -152,34 +153,34 @@ namespace Drill4Net.Agent.Standard
         {
             RegisterStatic(data);
         }
-        #endregion
         
         public static CoverageDispatcher GetCoverageDispather()
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
-            var id = GetSessionId();
-            Debug.WriteLine($"Profiler: id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
+            var ctxId = GetContextId();
+            Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
 
             CoverageDispatcher disp;
-            if (_coverageDisps.ContainsKey(id))
+            if (_ctxToCoverage.ContainsKey(ctxId))
             {
-                _coverageDisps.TryGetValue(id, out disp);
+                _ctxToCoverage.TryGetValue(ctxId, out disp);
             }
             else
             {
-                var testName = $"test_{id}"; //TODO: real name is...????
+                var testName = $"test_{ctxId}"; //TODO: real name is...????
                 disp = _rep.CreateCoverageDispatcher(testName);
-                _coverageDisps.TryAdd(id, disp);
+                _ctxToCoverage.TryAdd(ctxId, disp);
             }
             return disp;
         }
 
-        private static int GetSessionId()
+        private static int GetContextId()
         {
             return Thread.CurrentThread.ExecutionContext.GetHashCode();
         }
-        
+        #endregion
+
         public static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
