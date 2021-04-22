@@ -42,8 +42,56 @@ namespace Drill4Net.Agent.Standard
 
         public List<AstEntity> GetEntities()
         {
+            IEnumerable<InjectedType> injTypes = null;
+
+            // check for different compiling target version 
+            //we need only one for current runtime
+            var rootDirs = _tree.GetDirectories();
+            if (rootDirs.Count() > 1)
+            {
+                var asmNameByDirs = (from dir in rootDirs
+                                     select dir.GetAssemblies()
+                                               .Select(a => a.Name)
+                                               .Where(a => a.EndsWith(".dll"))
+                                               .ToList())
+                                     .ToList();
+                if (asmNameByDirs[0].Count > 0)
+                {
+                    var multi = true;
+                    for (var i = 1; i < asmNameByDirs.Count; i++)
+                    {
+                        var prev = asmNameByDirs[i - 1];
+                        var cur = asmNameByDirs[i];
+                        if (prev.Count != cur.Count || prev.Intersect(cur).Count() == 0)
+                        {
+                            multi = false;
+                            break;
+                        }
+                    }
+                    if (multi) //here many copies of target for diferent runtimes
+                    {
+                        var execVer = CommonUtils.GetEntryTargetVersioning();
+                        InjectedDirectory targetDir = null;
+                        foreach (var dir in rootDirs)
+                        {
+                            var asms = dir.GetAssemblies().ToList();
+                            if (asms[0].Version.Version != execVer.Version)
+                                continue;
+                            targetDir = dir;
+                            break;
+                        }
+                        injTypes = targetDir.GetAssemblies().SelectMany(a => a.GetAllTypes());
+                    }
+                }
+            }
+            else
+            {
+                injTypes = _tree.GetAllTypes();
+            }
+            injTypes = injTypes.Where(a => !a.IsCompilerGenerated);
+            //
             var converter = new TreeConverter();
-            return converter.ToAstEntities(_tree);
+            return converter.ToAstEntities(injTypes);
         }
     }
 }
