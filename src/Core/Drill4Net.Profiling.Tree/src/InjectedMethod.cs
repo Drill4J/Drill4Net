@@ -36,11 +36,8 @@ namespace Drill4Net.Profiling.Tree
         public int OwnBusinessSize { get; set; } = -1;
 
         public IEnumerable<CrossPoint> Points => Filter(typeof(CrossPoint), false).Cast<CrossPoint>();
-        
-        /// <summary>
-        /// Dictionary of code blocks: key is point Id, value - coverage part of code by this block
-        /// </summary>
-        public Dictionary<int, float> Blocks { get; }
+
+        public CoverageData Coverage { get; }
 
         /********************************************************************/
 
@@ -53,7 +50,7 @@ namespace Drill4Net.Profiling.Tree
             if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
             CalleeIndexes = new Dictionary<string, int>();
-            Blocks = new Dictionary<int, float>();
+            Coverage = new CoverageData();
             //
             var parts = GetParts(fullName);
             Namespace = parts.Namespace;

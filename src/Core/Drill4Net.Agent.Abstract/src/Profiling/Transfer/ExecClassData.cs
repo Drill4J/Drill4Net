@@ -27,19 +27,23 @@ namespace Drill4Net.Agent.Abstract
         /// <summary>
         /// List of probe data
         /// </summary>
-        public List<bool> Probes { get; }
+        public List<bool> Probes { get; private set; }
         
         /**************************************************************************/
         
-        public ExecClassData(string testName, string className, int probeCnt)
+        public ExecClassData(string testName, string className)
         {
             Id = className.GetHashCode();
             TestName = testName ?? throw new ArgumentNullException(nameof(testName));
             ClassName = className ?? throw new ArgumentNullException(nameof(className));
-            Probes = Enumerable.Repeat(false, probeCnt).ToList();
         }
 
         /**************************************************************************/
+
+        public void InitProbes(int probeCnt)
+        {
+            Probes = Enumerable.Repeat(false, probeCnt).ToList();
+        }
 
         public override string ToString()
         {

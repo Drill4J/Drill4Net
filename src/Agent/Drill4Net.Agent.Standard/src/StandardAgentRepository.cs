@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
 using Drill4Net.Common;
@@ -12,7 +12,9 @@ namespace Drill4Net.Agent.Standard
 {
     public class StandardAgentRepository : IAgentRepository
     {
+        private readonly TreeConverter _converter;
         private readonly InjectedSolution _tree;
+        private readonly IEnumerable<InjectedType> _injTypes;
 
         /**************************************************************************************/
 
@@ -22,10 +24,12 @@ namespace Drill4Net.Agent.Standard
             var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
             var injRep = new InjectorRepository(cfg_path);
+            _converter = new TreeConverter();
 
             //tree info
             //TODO: filter by framework version !!!
             _tree = injRep.ReadInjectedTree();
+            _injTypes = FilterTypes();
         }
 
         /**************************************************************************************/
@@ -40,7 +44,7 @@ namespace Drill4Net.Agent.Standard
             return _tree.MapPointToMethods();
         }
 
-        public List<AstEntity> GetEntities()
+        internal IEnumerable<InjectedType> FilterTypes()
         {
             IEnumerable<InjectedType> injTypes = null;
 
@@ -89,9 +93,17 @@ namespace Drill4Net.Agent.Standard
                 injTypes = _tree.GetAllTypes();
             }
             injTypes = injTypes.Where(a => !a.IsCompilerGenerated);
-            //
-            var converter = new TreeConverter();
-            return converter.ToAstEntities(injTypes);
+            return injTypes;
+        }
+
+        public List<AstEntity> GetEntities()
+        {
+            return _converter.ToAstEntities(_injTypes);
+        }
+
+        public CoverageDispatcher CreateCoverageDispatcher(string testName)
+        {
+            return _converter.CreateCoverageDispatcher(testName, _injTypes);
         }
     }
 }

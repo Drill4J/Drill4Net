@@ -38,6 +38,11 @@
             The first index in the compiler generated code which considered as 'business part'
             </summary>
         </member>
+        <member name="P:Drill4Net.Profiling.Tree.CoverageData.BlockByPart">
+            <summary>
+            Dictionary of code blocks: key is point Id, value - coverage part of code by this block
+            </summary>
+        </member>
         <member name="T:Drill4Net.Profiling.Tree.CrossPoint">
             <summary>
             Cross-cutting point for injection code into <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/>
@@ -70,11 +75,6 @@
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.OwnBusinessSize">
             <summary>
             Count of only own 'business parts' of the IL code
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Blocks">
-            <summary>
-            Dictionary of code blocks: key is point Id, value - coverage part of code by this block
             </summary>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedType.FromMethod">

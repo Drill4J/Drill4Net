@@ -576,10 +576,11 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             #endregion
-            #region 3. Blocks for the methods
+            #region 3. Coverage blocks for the methods
             foreach (var bizMethod in bizMethods)
             {
-                var ranges = bizMethod.Points
+                var points = bizMethod.Points;
+                var ranges = points
                     .Select(a => a.BusinessIndex)
                     .Where(c => c != 0) //Enter not needed in any case
                     .OrderBy(b => b)
@@ -588,15 +589,25 @@ namespace Drill4Net.Injector.Engine
                 if (!ranges.Any())
                     continue;
                 //
+                var coverage = bizMethod.Coverage;
+                foreach (var ind in ranges)
+                {
+                    var points2 = points.Where(a => a.BusinessIndex == ind).ToList();
+                    if (points2.Count() > 1)
+                        points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
+                    coverage.PointUidToEndRange.Add(points2[0].PointUid, ind);
+                }
+
+                //by parts
                 float origSize = ranges.Last() + 1;
                 var prev = -1;
                 foreach (var range in ranges)
                 {
-                    bizMethod.Blocks.Add(range, (range - prev) / origSize);
+                    coverage.BlockByPart.Add(range, (range - prev) / origSize);
                     prev = range;
                 }
                 //
-                var sum = bizMethod.Blocks.Values.Sum(); //must be 1.0
+                var sum = coverage.BlockByPart.Values.Sum(); //must be 1.0
                 if (Math.Abs(sum - 1) > 0.0001)
                 {
                 }
