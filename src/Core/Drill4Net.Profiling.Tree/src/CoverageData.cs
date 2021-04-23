@@ -11,14 +11,14 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public Dictionary<int, float> BlockByPart { get; }
 
-        public Dictionary<string, int> PointUidToEndRange { get; set; }
+        public Dictionary<string, int> PointUidToEndIndex { get; set; }
 
         /**********************************************************/
 
         public CoverageData()
         {
             BlockByPart = new Dictionary<int, float>();
-            PointUidToEndRange = new Dictionary<string, int>();
+            PointUidToEndIndex = new Dictionary<string, int>();
         }
 
     }

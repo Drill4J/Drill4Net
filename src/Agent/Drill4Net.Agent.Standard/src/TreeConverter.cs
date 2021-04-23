@@ -15,8 +15,11 @@ namespace Drill4Net.Agent.Standard
                 throw new ArgumentNullException(nameof(injTypes));
             //
             var res = new List<AstEntity>();
-            foreach (var type in injTypes)
-                res.Add(ToAstEntity(type));
+            foreach (var type in injTypes.AsParallel())
+            {
+                lock (res)
+                    res.Add(ToAstEntity(type));
+            }
             return res;
         }
         
@@ -52,7 +55,7 @@ namespace Drill4Net.Agent.Standard
         {
             //TODO: cloning from Template object?
             var disp = new CoverageDispatcher();
-            foreach(var type in injTypes)
+            foreach(var type in injTypes.AsParallel())
             {
                 var typeName = type.FullName;
                 var data = new ExecClassData(testName, typeName);
@@ -60,9 +63,9 @@ namespace Drill4Net.Agent.Standard
                 if (methods.Any())
                 {
                     var ind = 0;
-                    foreach (var meth in methods)
+                    foreach (var meth in methods) //don't parallel here
                     {
-                        var inds = meth.Coverage.PointUidToEndRange;
+                        var inds = meth.Coverage.PointUidToEndIndex;
                         foreach (var pointUid in inds.Keys)
                         {
                             var localEnd = inds[pointUid];

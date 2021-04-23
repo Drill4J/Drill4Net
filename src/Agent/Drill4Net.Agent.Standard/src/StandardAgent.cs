@@ -12,11 +12,6 @@ namespace Drill4Net.Agent.Standard
 {
     public class StandardAgent : AbstractAgent
     {
-        private static readonly ConcurrentDictionary<int, string> _ctxToSession;
-        private static readonly ConcurrentDictionary<string, int> _sessionToCtx;
-        private static readonly ConcurrentDictionary<int, CoverageDispatcher> _ctxToCoverage;
-        private static readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
-
         private static readonly AgentReceiver _receiver;
         private static readonly AgentSender _sender;
 
@@ -28,14 +23,6 @@ namespace Drill4Net.Agent.Standard
         {
             PrepareLogger();
             Log.Debug("Initializing...");
-            
-            //test names vs. session ids
-            _ctxToSession = new ConcurrentDictionary<int, string>();
-            _sessionToCtx = new ConcurrentDictionary<string, int>();
-            _ctxToCoverage = new ConcurrentDictionary<int, CoverageDispatcher>();
-
-            // execution data by session ids
-            _ctxToExecData = new ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>>();
 
             try
             {
@@ -68,42 +55,16 @@ namespace Drill4Net.Agent.Standard
         /*****************************************************************************/
 
         #region Session
-        #region Started
         private static void SessionStarted(string sessionUid, string testType, bool isRealTime, long startTime)
         {
-            RemoveSession(sessionUid);
-            AddSession(sessionUid);
+            _rep.SessionStarted(sessionUid, testType, isRealTime, startTime);
         }
 
-        internal static void AddSession(string sessionUid)
-        {
-            var ctxId = GetContextId();
-            if (!_ctxToSession.ContainsKey(ctxId))
-                return;
-            _ctxToSession.TryAdd(ctxId, sessionUid);
-        }
-        #endregion
-        #region Finished
         private static void SessionFinished(string sessionUid, long finishTime)
         {
-            //TODO: send remaining data... ??
-            
-            //removing
-            RemoveSession(sessionUid);
+            _rep.SessionFinished(sessionUid, finishTime);
         }
-         
-        internal static void RemoveSession(string sessionUid)
-        {
-            if (!_sessionToCtx.ContainsKey(sessionUid))
-                return;
-            //
-            var ctxId = _sessionToCtx[sessionUid];
-            _ctxToSession.TryRemove(ctxId, out var _);
-            _ctxToExecData.TryRemove(ctxId, out var _);
-            _ctxToCoverage.TryRemove(ctxId, out var _);
-        }
-        #endregion
-        #region Cancelled
+
         private static void AllSessionsCancelled()
         {
             throw new NotImplementedException();
@@ -113,7 +74,6 @@ namespace Drill4Net.Agent.Standard
         {
             throw new NotImplementedException();
         }
-        #endregion
         #endregion
         #region Register
         // ReSharper disable once MemberCanBePrivate.Global
@@ -141,7 +101,7 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
 
-                GetCoverageDispather().RegisterCoverage(probeUid);
+                _rep.GetCoverageDispather().RegisterCoverage(probeUid);
             }
             catch (Exception ex)
             {
@@ -152,32 +112,6 @@ namespace Drill4Net.Agent.Standard
         public override void Register(string data)
         {
             RegisterStatic(data);
-        }
-        
-        public static CoverageDispatcher GetCoverageDispather()
-        {
-            //This defines the logical execution path of function callers regardless
-            //of whether threads are created in async/await or Parallel.For
-            var ctxId = GetContextId();
-            Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
-
-            CoverageDispatcher disp;
-            if (_ctxToCoverage.ContainsKey(ctxId))
-            {
-                _ctxToCoverage.TryGetValue(ctxId, out disp);
-            }
-            else
-            {
-                var testName = $"test_{ctxId}"; //TODO: real name is...????
-                disp = _rep.CreateCoverageDispatcher(testName);
-                _ctxToCoverage.TryAdd(ctxId, disp);
-            }
-            return disp;
-        }
-
-        private static int GetContextId()
-        {
-            return Thread.CurrentThread.ExecutionContext.GetHashCode();
         }
         #endregion
 

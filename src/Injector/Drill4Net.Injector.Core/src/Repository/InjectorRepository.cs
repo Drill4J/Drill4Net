@@ -64,14 +64,6 @@ namespace Drill4Net.Injector.Core
             OptionHelper.ValidateOptions(Options);
         }
 
-        public static void PrepareLogger()
-        {
-            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            //common folder - TODO: from local cfg!
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(Injector)}.log"));
-            Log.Logger = cfg.CreateLogger();
-        }
-
         #region Assembly
         public virtual IEnumerable<string> GetAssemblies(string directory)
         {
@@ -166,5 +158,13 @@ namespace Drill4Net.Injector.Core
             return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
         }
         #endregion
+
+        public static void PrepareLogger()
+        {
+            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+            //common folder - TODO: from local cfg!
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(Injector)}.log"));
+            Log.Logger = cfg.CreateLogger();
+        }
     }
 }

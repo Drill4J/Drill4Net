@@ -595,7 +595,7 @@ namespace Drill4Net.Injector.Engine
                     var points2 = points.Where(a => a.BusinessIndex == ind).ToList();
                     if (points2.Count() > 1)
                         points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
-                    coverage.PointUidToEndRange.Add(points2[0].PointUid, ind);
+                    coverage.PointUidToEndIndex.Add(points2[0].PointUid, ind);
                 }
 
                 //by parts
