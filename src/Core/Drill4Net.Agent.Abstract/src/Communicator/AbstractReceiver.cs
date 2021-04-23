@@ -1,12 +1,10 @@
-﻿using System;
-using Drill4Net.Agent.Abstract;
-
-namespace Drill4Net.Agent.Standard
+﻿namespace Drill4Net.Agent.Abstract
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=881283184
 
+    #region Delegates
     /// <summary>
-    /// Handler for <see cref="AgentReceiver.SessionStarted"/>
+    /// Handler for <see cref="AbstractReceiver.SessionStarted"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="testType">MANUAL or AUTO</param>
@@ -15,38 +13,40 @@ namespace Drill4Net.Agent.Standard
     public delegate void SessionStartedHandler(string sessionUid, string testType, bool isRealTime, long startTime);
 
     /// <summary>
-    /// Handler for <see cref="AgentReceiver.SessionStop"/>
+    /// Handler for <see cref="AbstractReceiver.SessionStop"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="finishTime">currentTimeMillis when session finished</param>
     public delegate void SessionStopHandler(string sessionUid, long finishTime);
 
     /// <summary>
-    /// Handler for <see cref="AgentReceiver.SessionCancelled"/>
+    /// Handler for <see cref="AbstractReceiver.SessionCancelled"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="cancelTime">currentTimeMillis when session cancelled</param>
     public delegate void SessionCancelledHandler(string sessionUid, long cancelTime);
 
     /// <summary>
-    /// Handler for <see cref="AgentReceiver.SessionChanged"/>
+    /// Handler for <see cref="AbstractReceiver.SessionChanged"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="probeCnt"></param>
     public delegate void SessionChangedHandler(string sessionUid, int probeCnt);
 
     /// <summary>
-    /// Handler for <see cref="AgentReceiver.AllSessionsCancelled"/>
+    /// Handler for <see cref="AbstractReceiver.AllSessionsCancelled"/>
     /// </summary>
     public delegate void AllSessionsCancelledHandler();
-    
-    /*****************************************************************************************/
-    
+    #endregion
+
+    /****************************************************************************/
+
     /// <summary>
     /// Receiver of data from admin side
     /// </summary>
-    public class AgentReceiver
+    public abstract class AbstractReceiver : IReceiver
     {
+        #region Events
         /// <summary>
         /// Session is started on admin side
         /// </summary>
@@ -71,22 +71,6 @@ namespace Drill4Net.Agent.Standard
         /// All sessions are cancelled on admin side
         /// </summary>
         public event AllSessionsCancelledHandler AllSessionsCancelled;
-
-        private readonly IReceiver _receiver;
-
-        /************************************************************************/
-
-        public AgentReceiver(IReceiver receiver)
-        {
-            _receiver = receiver ?? throw new ArgumentNullException(nameof(_receiver));
-            _receiver.ReceivedHandler += ReceivedHandler;
-        }
-
-        /************************************************************************/
-
-        private void ReceivedHandler(string message)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

@@ -4,48 +4,55 @@ using System.Linq;
 using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Standard
 {
     public class StandardAgent : AbstractAgent
     {
-        private static readonly AgentReceiver _receiver;
-        private static readonly AgentSender _sender;
-
+        private static readonly ICommunicator _comm;
+        private static IReceiver Receiver => _comm.Receiver;
+        private static ISender Sender => _comm.Sender;
         private static readonly StandardAgentRepository _rep;
+        private static object _initLock;
 
         /*****************************************************************************/
 
         static StandardAgent()
         {
-            PrepareLogger();
-            Log.Debug("Initializing...");
-
-            try
+            _initLock = new object();
+            lock (_initLock)
             {
-                _rep = new StandardAgentRepository();
-                //
-                var communicator = _rep.GetCommunicator();
-                _receiver = new(communicator);
-                _receiver.SessionStarted += SessionStarted;
-                _receiver.SessionStop += SessionStop;
-                _receiver.SessionCancelled += SessionCancelled;
-                _receiver.AllSessionsCancelled += AllSessionsCancelled;
-                //
-                _sender = new(communicator);
+                PrepareLogger();
+                Log.Debug("Initializing...");
 
-                //1. Classes to admin side
-                var entities = _rep.GetEntities();
-                _sender.SendClassesDataMessage(entities);
+                try
+                {
+                    _rep = new StandardAgentRepository();
+                    _comm = _rep.Communicator;
 
-                //2. "Initialized" message to admin side
-                _sender.SendInitializedMessage();
-                //
-                Log.Debug("Initialized.");
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, $"Error of {nameof(StandardAgent)} initializing");
+                    Receiver.SessionStarted += SessionStarted;
+                    Receiver.SessionStop += SessionStop;
+                    Receiver.SessionCancelled += SessionCancelled;
+                    Receiver.AllSessionsCancelled += AllSessionsCancelled;
+                    Receiver.SessionChanged += SessionChanged;
+
+                    //1. Classes to admin side
+                    var entities = _rep.GetEntities();
+                    Sender.SendClassesDataMessage(entities);
+
+                    //2. "Initialized" message to admin side
+                    Sender.SendInitializedMessage();
+                    //
+                    Log.Debug("Initialized.");
+                    //
+                    //test
+                    Task.Run(() => Sender.Send("aaa", "bbb"));
+                }
+                catch (Exception ex)
+                {
+                    Log.Fatal(ex, $"Error of {nameof(StandardAgent)} initializing");
+                }
             }
         }
 
@@ -60,7 +67,7 @@ namespace Drill4Net.Agent.Standard
         private static void SessionStop(string sessionUid, long finishTime)
         {
             _rep.SessionStop(sessionUid, finishTime);
-            _sender.SendSessionFinishedMessage(sessionUid, GetCurrentUnixTimeMs());
+            Sender.SendSessionFinishedMessage(sessionUid, GetCurrentUnixTimeMs());
         }
 
         private static void AllSessionsCancelled()
@@ -69,6 +76,11 @@ namespace Drill4Net.Agent.Standard
         }
 
         private static void SessionCancelled(string sessionUid, long cancelTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void SessionChanged(string sessionUid, int probeCnt)
         {
             throw new NotImplementedException();
         }
@@ -98,8 +110,10 @@ namespace Drill4Net.Agent.Standard
                 //var asmName = ar[1];
                 //var funcName = ar[2];
                 //var probe = ar[3];
-
-                _rep.GetCoverageDispather().RegisterCoverage(probeUid);
+                lock (_initLock)
+                {
+                    _rep.GetCoverageDispather().RegisterCoverage(probeUid);
+                }
             }
             catch (Exception ex)
             {

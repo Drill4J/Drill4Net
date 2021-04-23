@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
@@ -16,6 +17,8 @@ namespace Drill4Net.Agent.Standard
 {
     public class StandardAgentRepository : IAgentRepository
     {
+        public ICommunicator Communicator { get; }
+
         private readonly ConcurrentDictionary<int, string> _ctxToSession;
         private readonly ConcurrentDictionary<string, int> _sessionToCtx;
         private readonly ConcurrentDictionary<int, CoverageDispatcher> _ctxToDispatcher;
@@ -45,6 +48,7 @@ namespace Drill4Net.Agent.Standard
             var injRep = new InjectorRepository(cfg_path);
             _converter = new TreeConverter();
             _sendLocker = new object();
+            Communicator = GetCommunicator();
 
             //target class tree
             var tree = injRep.ReadInjectedTree();
@@ -58,9 +62,14 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         #region Init
-        public ICommunicator GetCommunicator()
+        protected virtual ICommunicator GetCommunicator()
         {
-            return new Communicator();
+            return new Communicator(GetAddress());
+        }
+
+        internal virtual string GetAddress()
+        {
+            return "wss://xxx";
         }
 
         internal IEnumerable<InjectedType> FilterTypes(InjectedSolution tree)
@@ -145,9 +154,10 @@ namespace Drill4Net.Agent.Standard
         #region Finished
         public void SessionStop(string sessionUid, long finishTime)
         {
-            //TODO: send remaining data... ??
+            //send remaining data
+            SendCoverages();
 
-            //removing
+            //removing session/data
             RemoveSession(sessionUid);
             StopSendCycleIfNeeded();
         }
@@ -185,8 +195,22 @@ namespace Drill4Net.Agent.Standard
         {
             lock (_sendLocker)
             {
-
+                var execClasses = _ctxToDispatcher.Values.SelectMany(a => a.PointToClass.Values).ToList();
+                var cnt = execClasses.Count();
+                if (cnt > 65535)
+                {
+                    //TODO: implement by cycles
+                }
+                else
+                {
+                    Communicator.Sender.Send(AgentConstants.MESSAGE_COVERAGE_DATA_PART, ConvertCoverageToString(execClasses));
+                }
             }
+        }
+
+        internal string ConvertCoverageToString(List<ExecClassData> data)
+        {
+            return JsonConvert.SerializeObject(data);
         }
         #endregion
 
@@ -215,7 +239,7 @@ namespace Drill4Net.Agent.Standard
             }
             else
             {
-                var testName = $"test_{ctxId}"; //TODO: real name is...????
+                var testName = $"{AgentConstants.TESTNAME_DEFAULT}_{ctxId}"; //TODO: real name is...????
                 disp = CreateCoverageDispatcher(testName);
                 _ctxToDispatcher.TryAdd(ctxId, disp);
             }

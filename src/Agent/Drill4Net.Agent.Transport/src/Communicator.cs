@@ -1,22 +1,25 @@
-﻿using Drill4Net.Agent.Abstract;
+﻿using System;
+using Websocket.Client;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
 {
-    public class Communicator : ICommunicator
+    //https://github.com/Marfusios/websocket-client
+
+    public class Communicator : AbstractCommunicator
     {
-        public event MessageReceivedHandler ReceivedHandler;
-
-        /***********************************************************/
-
-        public Communicator()
+        public Communicator(string url)
         {
-        }
-
-        /***********************************************************/
-
-        public void Send(string messageType, string message)
-        {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentNullException(nameof(url));
+            //
+            var client = new WebsocketClient(new Uri(url))
+            {
+                ReconnectTimeout = TimeSpan.FromSeconds(15),
+                ErrorReconnectTimeout = TimeSpan.FromSeconds(15),
+            };
+            Receiver = new AgentReceiver(client);
+            Sender = new AgentSender(client);
         }
     }
 }

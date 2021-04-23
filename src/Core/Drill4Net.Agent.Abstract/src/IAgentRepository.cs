@@ -2,6 +2,6 @@
 {
     public interface IAgentRepository
     {
-        ICommunicator GetCommunicator();
+        ICommunicator Communicator { get; }
     }
 }
