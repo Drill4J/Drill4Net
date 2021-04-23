@@ -13,9 +13,9 @@
             <param name="isRealTime"></param>
             <param name="startTime">currentTimeMillis when session start</param>
         </member>
-        <member name="T:Drill4Net.Agent.Standard.SessionFinishedHandler">
+        <member name="T:Drill4Net.Agent.Standard.SessionStopHandler">
             <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Standard.AgentReceiver.SessionFinished"/>
+            Handler for <see cref="E:Drill4Net.Agent.Standard.AgentReceiver.SessionStop"/>
             </summary>
             <param name="sessionUid"></param>
             <param name="finishTime">currentTimeMillis when session finished</param>
@@ -49,9 +49,9 @@
             Session is started on admin side
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Standard.AgentReceiver.SessionFinished">
+        <member name="E:Drill4Net.Agent.Standard.AgentReceiver.SessionStop">
             <summary>
-            Session is finished on admin side
+            Session must stopped
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Standard.AgentReceiver.SessionChanged">

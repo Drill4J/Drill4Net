@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Serilog;
-using Drill4Net.Agent.Abstract;
 using Drill4Net.Common;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -31,7 +28,7 @@ namespace Drill4Net.Agent.Standard
                 var communicator = _rep.GetCommunicator();
                 _receiver = new(communicator);
                 _receiver.SessionStarted += SessionStarted;
-                _receiver.SessionFinished += SessionFinished;
+                _receiver.SessionStop += SessionStop;
                 _receiver.SessionCancelled += SessionCancelled;
                 _receiver.AllSessionsCancelled += AllSessionsCancelled;
                 //
@@ -60,9 +57,10 @@ namespace Drill4Net.Agent.Standard
             _rep.SessionStarted(sessionUid, testType, isRealTime, startTime);
         }
 
-        private static void SessionFinished(string sessionUid, long finishTime)
+        private static void SessionStop(string sessionUid, long finishTime)
         {
-            _rep.SessionFinished(sessionUid, finishTime);
+            _rep.SessionStop(sessionUid, finishTime);
+            _sender.SendSessionFinishedMessage(sessionUid, GetCurrentUnixTimeMs());
         }
 
         private static void AllSessionsCancelled()

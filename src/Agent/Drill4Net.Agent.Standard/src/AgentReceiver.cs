@@ -15,11 +15,11 @@ namespace Drill4Net.Agent.Standard
     public delegate void SessionStartedHandler(string sessionUid, string testType, bool isRealTime, long startTime);
 
     /// <summary>
-    /// Handler for <see cref="AgentReceiver.SessionFinished"/>
+    /// Handler for <see cref="AgentReceiver.SessionStop"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="finishTime">currentTimeMillis when session finished</param>
-    public delegate void SessionFinishedHandler(string sessionUid, long finishTime);
+    public delegate void SessionStopHandler(string sessionUid, long finishTime);
 
     /// <summary>
     /// Handler for <see cref="AgentReceiver.SessionCancelled"/>
@@ -53,9 +53,9 @@ namespace Drill4Net.Agent.Standard
         public event SessionStartedHandler SessionStarted;
 
         /// <summary>
-        /// Session is finished on admin side
+        /// Session must stopped
         /// </summary>
-        public event SessionFinishedHandler SessionFinished;
+        public event SessionStopHandler SessionStop;
 
         /// <summary>
         /// ???

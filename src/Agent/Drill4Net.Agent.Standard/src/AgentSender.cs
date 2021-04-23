@@ -45,10 +45,9 @@ namespace Drill4Net.Agent.Standard
             
         }
 
-        //???
-        public void SendSessionFinishedMessage()
+        public void SendSessionFinishedMessage(string seesionUid, long ts)
         {
-            
+            //"SESSION_FINISHED"
         }
     }
 }

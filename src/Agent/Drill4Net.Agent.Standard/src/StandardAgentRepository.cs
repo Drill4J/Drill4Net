@@ -6,11 +6,11 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Transport;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Transport;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -23,6 +23,8 @@ namespace Drill4Net.Agent.Standard
 
         private readonly TreeConverter _converter;
         private readonly IEnumerable<InjectedType> _injTypes;
+
+        private readonly System.Timers.Timer _sendTimer;
         private readonly object _sendLocker;
 
         /**************************************************************************************/
@@ -47,6 +49,10 @@ namespace Drill4Net.Agent.Standard
             //target class tree
             var tree = injRep.ReadInjectedTree();
             _injTypes = FilterTypes(tree);
+
+            //timer for periodically sending coverage data to admin side
+            _sendTimer = new System.Timers.Timer(5000);
+            _sendTimer.Elapsed += Timer_Elapsed;
         }
 
         /**************************************************************************************/
@@ -125,6 +131,7 @@ namespace Drill4Net.Agent.Standard
         {
             RemoveSession(sessionUid);
             AddSession(sessionUid);
+            StartSendCycle();
         }
 
         internal void AddSession(string sessionUid)
@@ -136,12 +143,13 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Finished
-        public void SessionFinished(string sessionUid, long finishTime)
+        public void SessionStop(string sessionUid, long finishTime)
         {
             //TODO: send remaining data... ??
 
             //removing
             RemoveSession(sessionUid);
+            StopSendCycleIfNeeded();
         }
 
         internal void RemoveSession(string sessionUid)
@@ -167,6 +175,31 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
+        #region Send coverage data
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            SendCoverages();
+        }
+
+        public void SendCoverages()
+        {
+            lock (_sendLocker)
+            {
+
+            }
+        }
+        #endregion
+
+        internal void StartSendCycle()
+        {
+            _sendTimer.Enabled = true;
+        }
+
+        internal void StopSendCycleIfNeeded()
+        {
+            if(_ctxToDispatcher.Count == 0)
+                _sendTimer.Enabled = false;
+        }
 
         public CoverageDispatcher GetCoverageDispather()
         {
@@ -192,14 +225,6 @@ namespace Drill4Net.Agent.Standard
         public int GetContextId()
         {
             return Thread.CurrentThread.ExecutionContext.GetHashCode();
-        }
-
-        public void SendCoverages()
-        {
-            lock(_sendLocker)
-            {
-
-            }
         }
     }
 }
