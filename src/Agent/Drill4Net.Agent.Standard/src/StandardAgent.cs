@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Standard
         private static IReceiver Receiver => _comm.Receiver;
         private static ISender Sender => _comm.Sender;
         private static readonly StandardAgentRepository _rep;
-        private static object _initLock;
+        private static readonly object _initLock;
 
         /*****************************************************************************/
 
@@ -43,11 +43,11 @@ namespace Drill4Net.Agent.Standard
 
                     //2. "Initialized" message to admin side
                     Sender.SendInitializedMessage();
+                    
+                    //Test
+                    Sender.SendTest("TYPE", "MESS");
                     //
                     Log.Debug("Initialized.");
-                    //
-                    //test
-                    Task.Run(() => Sender.Send("aaa", "bbb"));
                 }
                 catch (Exception ex)
                 {

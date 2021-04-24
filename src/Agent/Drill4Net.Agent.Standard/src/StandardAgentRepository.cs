@@ -15,7 +15,7 @@ using Drill4Net.Agent.Transport;
 
 namespace Drill4Net.Agent.Standard
 {
-    public class StandardAgentRepository : IAgentRepository
+    public sealed class StandardAgentRepository : IAgentRepository
     {
         public ICommunicator Communicator { get; }
 
@@ -55,20 +55,22 @@ namespace Drill4Net.Agent.Standard
             _injTypes = FilterTypes(tree);
 
             //timer for periodically sending coverage data to admin side
-            _sendTimer = new System.Timers.Timer(5000);
+            _sendTimer = new System.Timers.Timer(2000);
             _sendTimer.Elapsed += Timer_Elapsed;
         }
 
         /**************************************************************************************/
 
         #region Init
-        protected virtual ICommunicator GetCommunicator()
+
+        private ICommunicator GetCommunicator()
         {
             return new Communicator(GetAddress());
         }
 
-        internal virtual string GetAddress()
+        internal string GetAddress()
         {
+            //TODO: real from cfg
             return "wss://xxx";
         }
 
@@ -81,6 +83,7 @@ namespace Drill4Net.Agent.Standard
             var rootDirs = tree.GetDirectories();
             if (rootDirs.Count() > 1)
             {
+                //investigate the versionable copies of target
                 var asmNameByDirs = (from dir in rootDirs
                                      select dir.GetAssemblies()
                                                .Select(a => a.Name)
@@ -100,8 +103,10 @@ namespace Drill4Net.Agent.Standard
                             break;
                         }
                     }
-                    if (multi) //here many copies of target for diferent runtimes
+                    if (multi) 
                     {
+                        //here many copies of target for diferent runtimes
+                        //we need only one
                         var execVer = CommonUtils.GetEntryTargetVersioning();
                         InjectedDirectory targetDir = null;
                         foreach (var dir in rootDirs)
@@ -149,9 +154,10 @@ namespace Drill4Net.Agent.Standard
             if (!_ctxToSession.ContainsKey(ctxId))
                 return;
             _ctxToSession.TryAdd(ctxId, sessionUid);
+            _sessionToCtx.TryAdd(sessionUid, ctxId);
         }
         #endregion
-        #region Finished
+        #region Stop
         public void SessionStop(string sessionUid, long finishTime)
         {
             //send remaining data
@@ -169,6 +175,7 @@ namespace Drill4Net.Agent.Standard
             //
             var ctxId = _sessionToCtx[sessionUid];
             _ctxToSession.TryRemove(ctxId, out var _);
+            _sessionToCtx.TryRemove(sessionUid, out var _);
             _ctxToExecData.TryRemove(ctxId, out var _);
             _ctxToDispatcher.TryRemove(ctxId, out var _);
         }

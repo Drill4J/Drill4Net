@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="entities"></param>
         public virtual void SendClassesDataMessage(IEnumerable<AstEntity> entities)
         {
-            Send(AgentConstants.MESSAGE_INIT_DATA_PART, "Initialized");
+            Send(AgentConstants.MESSAGE_INIT_DATA_PART, entities);
         }
 
         /// <summary>
@@ -28,14 +28,27 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public virtual void SendCoverageData(List<ExecClassData> data)
         {
-
+            Send(AgentConstants.MESSAGE_COVERAGE_DATA_PART, data);
         }
 
         public virtual void SendSessionFinishedMessage(string sessionUid, long ts)
         {
-            //"SESSION_FINISHED"
+            Send(AgentConstants.MESSAGE_SESSION_FINISHED, sessionUid);
         }
 
-        public abstract void Send(string messageType, string message);
+        #region Send
+        public void Send(string messageType, object message)
+        {
+            SendConcrete(ConvertToPayload(messageType, message));
+        }
+
+        protected abstract void SendConcrete(string payload);
+
+        protected abstract string ConvertToPayload(string messageType, object message);
+        
+        public virtual void SendTest(string messageType, object data)
+        {
+        }
+        #endregion
     }
 }
