@@ -7,6 +7,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// <summary>
     /// Probes of instrumented assemblies for sending of collecting data to admin side
     /// </summary>
+    [Serializable]
     public class ExecClassData
     {
         /// <summary>
