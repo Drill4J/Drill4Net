@@ -4,7 +4,7 @@
     
     #region Delegates
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionStart"/>
+    /// Handler for <see cref="IReceiver.StartSession"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="testType">MANUAL or AUTO</param>
@@ -13,26 +13,26 @@
     public delegate void SessionStartHandler(string sessionUid, string testType, bool isRealTime, long startTime);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionStop"/>
+    /// Handler for <see cref="IReceiver.StopSession"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="finishTime">currentTimeMillis when session finished</param>
     public delegate void SessionStopHandler(string sessionUid, long finishTime);
     
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionCancel"/>
+    /// Handler for <see cref="IReceiver.CancelSession"/>
     /// </summary>
     public delegate void SessionStopAllHandler(long finishTime);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionCancel"/>
+    /// Handler for <see cref="IReceiver.CancelSession"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="cancelTime">currentTimeMillis when session cancelled</param>
     public delegate void SessionCancelHandler(string sessionUid, long cancelTime);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionCancelAll"/>
+    /// Handler for <see cref="IReceiver.CancelAllSessions"/>
     /// </summary>
     public delegate void SessionCancelAllHandler();
     #endregion
@@ -42,26 +42,26 @@
         /// <summary>
         /// Session is started on admin side
         /// </summary>
-        event SessionStartHandler SessionStart;
+        event SessionStartHandler StartSession;
 
         /// <summary>
         /// Session must stopped
         /// </summary>
-        event SessionStopHandler SessionStop;
+        event SessionStopHandler StopSession;
         
         /// <summary>
         /// All session must stopped
         /// </summary>
-        event SessionStopAllHandler SessionStopAll;
+        event SessionStopAllHandler StopAllSessions;
 
         /// <summary>
         /// Session is cancelled on admin side
         /// </summary>
-        event SessionCancelHandler SessionCancel;
+        event SessionCancelHandler CancelSession;
 
         /// <summary>
         /// All sessions are cancelled on admin side
         /// </summary>
-        event SessionCancelAllHandler SessionCancelAll;
+        event SessionCancelAllHandler CancelAllSessions;
     }
 }

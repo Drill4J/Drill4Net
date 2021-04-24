@@ -9,27 +9,27 @@
         /// <summary>
         /// Session is started on admin side
         /// </summary>
-        public event SessionStartHandler SessionStart;
+        public event SessionStartHandler StartSession;
 
         /// <summary>
         /// Session must stopped
         /// </summary>
-        public event SessionStopHandler SessionStop;
+        public event SessionStopHandler StopSession;
         
         /// <summary>
         /// All session must stopped
         /// </summary>
-        public event SessionStopAllHandler SessionStopAll;
+        public event SessionStopAllHandler StopAllSessions;
 
         /// <summary>
         /// Session is cancelled on admin side
         /// </summary>
-        public event SessionCancelHandler SessionCancel;
+        public event SessionCancelHandler CancelSession;
 
         /// <summary>
         /// All sessions are cancelled on admin side
         /// </summary>
-        public event SessionCancelAllHandler SessionCancelAll;
+        public event SessionCancelAllHandler CancelAllSessions;
         #endregion
     }
 }

@@ -8,6 +8,7 @@ using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Standard
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class StandardAgent : AbstractAgent
     {
         private static readonly ICommunicator _comm;
@@ -28,18 +29,21 @@ namespace Drill4Net.Agent.Standard
                 _rep = new StandardAgentRepository();
                 _comm = _rep.Communicator;
 
-                Receiver.SessionStart += SessionStarted;
-                Receiver.SessionCancel += SessionCancelled;
-                Receiver.SessionCancelAll += AllSessionsCancelled;
-                Receiver.SessionStop += SessionStop;
-                Receiver.SessionStopAll += SessionStopAll;
+                //handler of events from admin side
+                Receiver.StartSession += StartSession;
+                Receiver.CancelSession += CancelSession;
+                Receiver.CancelAllSessions += CancelAllSessions;
+                Receiver.StopSession += StopSession;
+                Receiver.StopAllSessions += StopAllSessions;
 
-                //1. Classes to admin side
+                //1. Send injected class info to admin side
                 var entities = _rep.GetEntities();
                 Sender.SendClassesDataMessage(entities);
 
-                //2. "Initialized" message to admin side
+                //2. Send "Initialized" message to admin side
                 Sender.SendInitializedMessage();
+                
+                //3. Waiting events from admin side...
 
                 //Test
                 Sender.SendTest("TYPE", "MESS");
@@ -59,28 +63,28 @@ namespace Drill4Net.Agent.Standard
         /*****************************************************************************/
 
         #region Session
-        private static void SessionStarted(string sessionUid, string testType, bool isRealTime, long startTime)
+        private static void StartSession(string sessionUid, string testType, bool isRealTime, long startTime)
         {
             _rep.SessionStarted(sessionUid, testType, isRealTime, startTime);
         }
 
-        private static void SessionStop(string sessionUid, long finishTime)
+        private static void StopSession(string sessionUid, long finishTime)
         {
             _rep.SessionStop(sessionUid, finishTime);
             Sender.SendSessionFinishedMessage(sessionUid, GetCurrentUnixTimeMs());
         }
 
-        private static void AllSessionsCancelled()
+        private static void CancelAllSessions()
         {
             throw new NotImplementedException();
         }
 
-        private static void SessionCancelled(string sessionUid, long cancelTime)
+        private static void CancelSession(string sessionUid, long cancelTime)
         {
             throw new NotImplementedException();
         }
 
-        private static void SessionStopAll(long finishtime)
+        private static void StopAllSessions(long finishtime)
         {
             throw new NotImplementedException();
         }
@@ -111,7 +115,7 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
                 
-                //block will be only one tome on init
+                //in fact, block will be only one time on init
                 _initEvent.WaitOne();
                 _rep.GetCoverageDispather().RegisterCoverage(probeUid);
 
@@ -128,7 +132,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        public static void PrepareLogger()
+        private static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
             //common log
