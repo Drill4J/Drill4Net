@@ -142,30 +142,33 @@ namespace Drill4Net.Agent.Standard
         #endregion
         #region Session
         #region Started
-        public void SessionStarted(string sessionUid, string testType, bool isRealTime, long startTime)
+        public void StartSession(StartAgentSession info)
         {
-            RemoveSession(sessionUid);
-            AddSession(sessionUid);
+            var uid = info.Payload.SessionId;
+            RemoveSession(uid);
+            AddSession(uid);
             StartSendCycle();
         }
 
         internal void AddSession(string sessionUid)
         {
             var ctxId = GetContextId();
-            if (!_ctxToSession.ContainsKey(ctxId))
+            if (_ctxToSession.ContainsKey(ctxId))
                 return;
             _ctxToSession.TryAdd(ctxId, sessionUid);
             _sessionToCtx.TryAdd(sessionUid, ctxId);
         }
         #endregion
         #region Stop
-        public void SessionStop(string sessionUid, long finishTime)
+        public void SessionStop(StopAgentSession info)
         {
+            var uid = info.Payload.SessionId;
+            
             //send remaining data
             SendCoverages();
 
             //removing session/data
-            RemoveSession(sessionUid);
+            RemoveSession(uid);
             StopSendCycleIfNeeded();
         }
 
@@ -205,13 +208,16 @@ namespace Drill4Net.Agent.Standard
             {
                 var execClasses = _ctxToDispatcher.Values.SelectMany(a => a.PointToClass.Values).ToList();
                 var cnt = execClasses.Count();
-                if (cnt > 65535)
+                switch (cnt)
                 {
-                    //TODO: implement by cycles
-                }
-                else
-                {
-                    Communicator.Sender.Send(AgentConstants.MESSAGE_OUT_COVERAGE_DATA_PART, ConvertCoverageToString(execClasses));
+                    case 0:
+                        return;
+                    case > 65535:
+                        //TODO: implement by cycles
+                        break;
+                    default:
+                        Communicator.Sender.Send(AgentConstants.MESSAGE_OUT_COVERAGE_DATA_PART, ConvertCoverageToString(execClasses));
+                        break;
                 }
             }
         }
@@ -257,6 +263,21 @@ namespace Drill4Net.Agent.Standard
         public int GetContextId()
         {
             return Thread.CurrentThread.ExecutionContext.GetHashCode();
+        }
+
+        public void CancelSession(CancelAgentSession info)
+        {
+            
+        }
+
+        public void CancelAllSessions()
+        {
+            
+        }
+
+        public void StopAllSessions()
+        {
+            
         }
     }
 }

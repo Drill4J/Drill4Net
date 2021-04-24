@@ -30,6 +30,21 @@ namespace Drill4Net.Agent.Abstract
             Send(AgentConstants.MESSAGE_OUT_SESSION_STARTED, sessionUid);
         }
 
+        public void SendCancelAllSessionsMessage(long getCurrentUnixTimeMs)
+        {
+           
+        }
+
+        public void SendSessionCanceledMessage(string uid, long getCurrentUnixTimeMs)
+        {
+            Send(AgentConstants.MESSAGE_OUT_SESSION_CANCELLED, uid);
+        }
+
+        public void SendStopAllSessionsMessage(long getCurrentUnixTimeMs)
+        {
+            
+        }
+
         /// <summary>
         /// Send coverage data to the admin part ("COVERAGE_DATA_PART")
         /// </summary>

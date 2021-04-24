@@ -9,36 +9,6 @@
             Constants for Agent subsystem
             </summary>
         </member>
-        <member name="T:Drill4Net.Agent.Abstract.AbstractReceiver">
-            <summary>
-            Receiver of data from admin side
-            </summary>
-        </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.StartSession">
-            <summary>
-            Session is started on admin side
-            </summary>
-        </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.StopSession">
-            <summary>
-            Session must stopped
-            </summary>
-        </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.StopAllSessions">
-            <summary>
-            All session must stopped
-            </summary>
-        </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.CancelSession">
-            <summary>
-            Session is cancelled on admin side
-            </summary>
-        </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.CancelAllSessions">
-            <summary>
-            All sessions are cancelled on admin side
-            </summary>
-        </member>
         <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendInitializedMessage">
             <summary>
             "Agent is initialized" message ("INITIALIZED")
@@ -59,17 +29,13 @@
             <summary>
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.StartSession"/>
             </summary>
-            <param name="sessionUid"></param>
-            <param name="testType">MANUAL or AUTO</param>
-            <param name="isRealTime"></param>
-            <param name="startTime">currentTimeMillis when session start</param>
+            <param name="info"></param>
         </member>
         <member name="T:Drill4Net.Agent.Abstract.StopSessionHandler">
             <summary>
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.StopSession"/>
             </summary>
-            <param name="sessionUid"></param>
-            <param name="finishTime">currentTimeMillis when session finished</param>
+            <param name="info"></param>
         </member>
         <member name="T:Drill4Net.Agent.Abstract.StopAllSessionsHandler">
             <summary>
@@ -80,8 +46,7 @@
             <summary>
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.CancelSession"/>
             </summary>
-            <param name="sessionUid"></param>
-            <param name="cancelTime">currentTimeMillis when session cancelled</param>
+            <param name="info"></param>
         </member>
         <member name="T:Drill4Net.Agent.Abstract.CancelAllSessionsHandler">
             <summary>
@@ -111,6 +76,11 @@
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.CancelAllSessions">
             <summary>
             Command for cancel the all sessions
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.StartSessionPayload.TestType">
+            <summary>
+            MANUAL or AUTO
             </summary>
         </member>
         <member name="T:Drill4Net.Agent.Abstract.Transfer.AstEntity">

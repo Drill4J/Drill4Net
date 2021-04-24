@@ -12,5 +12,9 @@ namespace Drill4Net.Agent.Abstract
         void SendCoverageData(List<ExecClassData> data);
         void SendInitializedMessage();
         void SendSessionFinishedMessage(string sessionUid, long ts);
+        void SendSessionStartedMessage(string uid, long ts);
+        void SendCancelAllSessionsMessage(long getCurrentUnixTimeMs);
+        void SendSessionCanceledMessage(string uid, long getCurrentUnixTimeMs);
+        void SendStopAllSessionsMessage(long getCurrentUnixTimeMs);
     }
 }

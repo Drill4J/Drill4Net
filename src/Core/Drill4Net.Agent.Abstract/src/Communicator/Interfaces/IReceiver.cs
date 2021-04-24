@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Agent.Abstract
+﻿using Drill4Net.Agent.Abstract.Transfer;
+
+namespace Drill4Net.Agent.Abstract
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=881283184
     
@@ -6,30 +8,25 @@
     /// <summary>
     /// Handler for <see cref="IReceiver.StartSession"/>
     /// </summary>
-    /// <param name="sessionUid"></param>
-    /// <param name="testType">MANUAL or AUTO</param>
-    /// <param name="isRealTime"></param>
-    /// <param name="startTime">currentTimeMillis when session start</param>
-    public delegate void StartSessionHandler(string sessionUid, string testType, bool isRealTime, long startTime);
+    /// <param name="info"></param>
+    public delegate void StartSessionHandler(StartAgentSession info);
 
     /// <summary>
     /// Handler for <see cref="IReceiver.StopSession"/>
     /// </summary>
-    /// <param name="sessionUid"></param>
-    /// <param name="finishTime">currentTimeMillis when session finished</param>
-    public delegate void StopSessionHandler(string sessionUid, long finishTime);
+    /// <param name="info"></param>
+    public delegate void StopSessionHandler(StopAgentSession info);
     
     /// <summary>
     /// Handler for <see cref="IReceiver.CancelSession"/>
     /// </summary>
-    public delegate void StopAllSessionsHandler(long finishTime);
+    public delegate void StopAllSessionsHandler();
 
     /// <summary>
     /// Handler for <see cref="IReceiver.CancelSession"/>
     /// </summary>
-    /// <param name="sessionUid"></param>
-    /// <param name="cancelTime">currentTimeMillis when session cancelled</param>
-    public delegate void CancelSessionHandler(string sessionUid, long cancelTime);
+    /// <param name="info"></param>
+    public delegate void CancelSessionHandler(CancelAgentSession info);
 
     /// <summary>
     /// Handler for <see cref="IReceiver.CancelAllSessions"/>

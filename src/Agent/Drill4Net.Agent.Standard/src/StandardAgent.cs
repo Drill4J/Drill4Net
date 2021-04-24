@@ -114,30 +114,37 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Session
-        private static void StartSession(string sessionUid, string testType, bool isRealTime, long startTime)
+        private static void StartSession(StartAgentSession info)
         {
-            _rep.SessionStarted(sessionUid, testType, isRealTime, startTime);
+            var uid = info.Payload.SessionId;
+            _rep.StartSession(info);
+            Sender.SendSessionStartedMessage(uid, GetCurrentUnixTimeMs());
         }
 
-        private static void StopSession(string sessionUid, long finishTime)
+        private static void StopSession(StopAgentSession info)
         {
-            _rep.SessionStop(sessionUid, finishTime);
-            Sender.SendSessionFinishedMessage(sessionUid, GetCurrentUnixTimeMs());
+            var uid = info.Payload.SessionId;
+            _rep.SessionStop(info);
+            Sender.SendSessionFinishedMessage(uid, GetCurrentUnixTimeMs());
         }
 
         private static void CancelAllSessions()
         {
-            throw new NotImplementedException();
+            _rep.CancelAllSessions();
+            Sender.SendCancelAllSessionsMessage(GetCurrentUnixTimeMs());
         }
 
-        private static void CancelSession(string sessionUid, long cancelTime)
+        private static void CancelSession(CancelAgentSession info)
         {
-            throw new NotImplementedException();
+            var uid = info.Payload.SessionId;
+            _rep.CancelSession(info);
+            Sender.SendSessionCanceledMessage(uid, GetCurrentUnixTimeMs());
         }
 
-        private static void StopAllSessions(long finishtime)
+        private static void StopAllSessions()
         {
-            throw new NotImplementedException();
+            _rep.StopAllSessions();
+            Sender.SendStopAllSessionsMessage(GetCurrentUnixTimeMs());
         }
         #endregion
         #region Register
@@ -166,10 +173,8 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
                 
-                //in fact, block will be only one time on init
-                _initEvent.WaitOne();
+                _initEvent.WaitOne(); //in fact, block will be only one time on init
                 _rep.GetCoverageDispather().RegisterCoverage(probeUid);
-
             }
             catch (Exception ex)
             {
