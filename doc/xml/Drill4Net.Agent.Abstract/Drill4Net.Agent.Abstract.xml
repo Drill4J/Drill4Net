@@ -29,12 +29,12 @@
             All session must stopped
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancell">
+        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancel">
             <summary>
             Session is cancelled on admin side
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancellAll">
+        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancelAll">
             <summary>
             All sessions are cancelled on admin side
             </summary>
@@ -73,19 +73,19 @@
         </member>
         <member name="T:Drill4Net.Agent.Abstract.SessionStopAllHandler">
             <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancell"/>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancel"/>
             </summary>
         </member>
-        <member name="T:Drill4Net.Agent.Abstract.SessionCancellHandler">
+        <member name="T:Drill4Net.Agent.Abstract.SessionCancelHandler">
             <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancell"/>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancel"/>
             </summary>
             <param name="sessionUid"></param>
             <param name="cancelTime">currentTimeMillis when session cancelled</param>
         </member>
-        <member name="T:Drill4Net.Agent.Abstract.SessionCancellAllHandler">
+        <member name="T:Drill4Net.Agent.Abstract.SessionCancelAllHandler">
             <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancellAll"/>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancelAll"/>
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionStart">
@@ -103,12 +103,12 @@
             All session must stopped
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancell">
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancel">
             <summary>
             Session is cancelled on admin side
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancellAll">
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancelAll">
             <summary>
             All sessions are cancelled on admin side
             </summary>

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -14,45 +14,48 @@ namespace Drill4Net.Agent.Standard
         private static IReceiver Receiver => _comm.Receiver;
         private static ISender Sender => _comm.Sender;
         private static readonly StandardAgentRepository _rep;
-        private static readonly object _initLock;
+        private static SpinLock _initSpinlock;
 
         /*****************************************************************************/
 
         static StandardAgent()
         {
-            _initLock = new object();
-            lock (_initLock)
+            var lockTaken = false;
+            try
             {
+                _initSpinlock.Enter(ref lockTaken);
                 PrepareLogger();
                 Log.Debug("Initializing...");
 
-                try
-                {
-                    _rep = new StandardAgentRepository();
-                    _comm = _rep.Communicator;
+                _rep = new StandardAgentRepository();
+                _comm = _rep.Communicator;
 
-                    Receiver.SessionStart += SessionStarted;
-                    Receiver.SessionCancell += SessionCancelled;
-                    Receiver.SessionCancellAll += AllSessionsCancelled;
-                    Receiver.SessionStop += SessionStop;
-                    Receiver.SessionStopAll += SessionStopAll;
-                    
-                    //1. Classes to admin side
-                    var entities = _rep.GetEntities();
-                    Sender.SendClassesDataMessage(entities);
+                Receiver.SessionStart += SessionStarted;
+                Receiver.SessionCancel += SessionCancelled;
+                Receiver.SessionCancelAll += AllSessionsCancelled;
+                Receiver.SessionStop += SessionStop;
+                Receiver.SessionStopAll += SessionStopAll;
 
-                    //2. "Initialized" message to admin side
-                    Sender.SendInitializedMessage();
-                    
-                    //Test
-                    Sender.SendTest("TYPE", "MESS");
-                    //
-                    Log.Debug("Initialized.");
-                }
-                catch (Exception ex)
-                {
-                    Log.Fatal(ex, $"Error of {nameof(StandardAgent)} initializing");
-                }
+                //1. Classes to admin side
+                var entities = _rep.GetEntities();
+                Sender.SendClassesDataMessage(entities);
+
+                //2. "Initialized" message to admin side
+                Sender.SendInitializedMessage();
+
+                //Test
+                Sender.SendTest("TYPE", "MESS");
+                //
+                Log.Debug("Initialized.");
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, $"Error of {nameof(StandardAgent)} initializing");
+            }
+            finally
+            {
+                if (lockTaken) 
+                    _initSpinlock.Exit(false);
             }
         }
 
@@ -110,9 +113,22 @@ namespace Drill4Net.Agent.Standard
                 //var asmName = ar[1];
                 //var funcName = ar[2];
                 //var probe = ar[3];
-                lock (_initLock)
+                
+                var lockTaken = false;
+                try
                 {
+                    //block will be only one tome on init
+                    _initSpinlock.Enter(ref lockTaken);
                     _rep.GetCoverageDispather().RegisterCoverage(probeUid);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, $"{data}");
+                }
+                finally
+                {
+                    if (lockTaken) 
+                        _initSpinlock.Exit(false);
                 }
             }
             catch (Exception ex)

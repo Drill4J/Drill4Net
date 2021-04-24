@@ -24,12 +24,12 @@
         /// <summary>
         /// Session is cancelled on admin side
         /// </summary>
-        public event SessionCancellHandler SessionCancell;
+        public event SessionCancelHandler SessionCancel;
 
         /// <summary>
         /// All sessions are cancelled on admin side
         /// </summary>
-        public event SessionCancellAllHandler SessionCancellAll;
+        public event SessionCancelAllHandler SessionCancelAll;
         #endregion
     }
 }

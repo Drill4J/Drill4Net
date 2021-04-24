@@ -20,21 +20,21 @@
     public delegate void SessionStopHandler(string sessionUid, long finishTime);
     
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionCancell"/>
+    /// Handler for <see cref="IReceiver.SessionCancel"/>
     /// </summary>
     public delegate void SessionStopAllHandler(long finishTime);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionCancell"/>
+    /// Handler for <see cref="IReceiver.SessionCancel"/>
     /// </summary>
     /// <param name="sessionUid"></param>
     /// <param name="cancelTime">currentTimeMillis when session cancelled</param>
-    public delegate void SessionCancellHandler(string sessionUid, long cancelTime);
+    public delegate void SessionCancelHandler(string sessionUid, long cancelTime);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.SessionCancellAll"/>
+    /// Handler for <see cref="IReceiver.SessionCancelAll"/>
     /// </summary>
-    public delegate void SessionCancellAllHandler();
+    public delegate void SessionCancelAllHandler();
     #endregion
     
     public interface IReceiver
@@ -57,11 +57,11 @@
         /// <summary>
         /// Session is cancelled on admin side
         /// </summary>
-        event SessionCancellHandler SessionCancell;
+        event SessionCancelHandler SessionCancel;
 
         /// <summary>
         /// All sessions are cancelled on admin side
         /// </summary>
-        event SessionCancellAllHandler SessionCancellAll;
+        event SessionCancelAllHandler SessionCancelAll;
     }
 }
