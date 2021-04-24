@@ -2,6 +2,7 @@
 using Websocket.Client;
 using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Abstract.Messages;
 
 namespace Drill4Net.Agent.Transport
 {
@@ -22,7 +23,12 @@ namespace Drill4Net.Agent.Transport
 
         protected override string ConvertToPayload(string messageType, object data)
         {
-            return JsonConvert.SerializeObject(data); //and messageType??
+            var payload = new ConnectorQueueItem()
+            {
+                Destination =  messageType,
+                Message = JsonConvert.SerializeObject(data)
+            };
+            return JsonConvert.SerializeObject(payload);
         }
 
         protected override void SendConcrete(string payload)

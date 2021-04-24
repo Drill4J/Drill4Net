@@ -9,7 +9,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
         public List<string> IDs { get; set; }
         public long Ts { get; set; }
 
-        public SessionsCancelled(string type) : base(AgentConstants.MESSAGE_OUT_SESSION_ALL_CANCELLED)
+        public SessionsCancelled() : base(AgentConstants.MESSAGE_OUT_SESSION_ALL_CANCELLED)
         {
         }
     }

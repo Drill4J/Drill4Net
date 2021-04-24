@@ -10,9 +10,9 @@
         #region Message incoming
         public const string MESSAGE_IN_START_SESSION = "START_AGENT_SESSION";
         public const string MESSAGE_IN_ADD_SESSION_DATA = "ADD_SESSION_DATA"; //???
-        public const string MESSAGE_IN_STOP = "STOP";
+        public const string MESSAGE_IN_STOP_SESSION = "STOP";
         public const string MESSAGE_IN_STOP_ALL = "STOP_ALL";
-        public const string MESSAGE_IN_CANCEL = "CANCEL";
+        public const string MESSAGE_IN_CANCEL_SESSION = "CANCEL";
         public const string MESSAGE_IN_CANCEL_ALL = "CANCEL_ALL";
         #endregion
         #region Messages outgoing

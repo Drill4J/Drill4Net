@@ -5,6 +5,7 @@ using System.Threading;
 using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -46,7 +47,12 @@ namespace Drill4Net.Agent.Standard
                 //3. Waiting events from admin side...
 
                 //Test
-                Sender.SendTest("TYPE", "MESS");
+                var testUid = Guid.NewGuid().ToString();
+                SendTest_StartSession(testUid);
+                SendTest_StopSession(testUid);
+                SendTest_StopAllSessions();
+                SendTest_CancelSession(testUid);
+                SendTest_CancelAllSessions();
                 //
                 Log.Debug("Initialized.");
             }
@@ -62,6 +68,51 @@ namespace Drill4Net.Agent.Standard
 
         /*****************************************************************************/
 
+        #region Temporary tests
+        private static void SendTest_StartSession(string sessionUid)
+        {
+            var payload = new StartSessionPayload()
+            {
+                IsGlobal = false,
+                IsRealtime = true,
+                SessionId = sessionUid,
+                TestName = "TEST1",
+                TestType = "AUTO",
+            };
+            var data = new StartAgentSession {Payload = payload};
+            Sender.SendTest(AgentConstants.MESSAGE_IN_START_SESSION, data);
+        }
+        
+        private static void SendTest_StopSession(string sessionUid)
+        {
+            var payload = new AgentSessionPayload()
+            {
+                SessionId = sessionUid,
+            };
+            var data = new StopAgentSession {Payload = payload};
+            Sender.SendTest(AgentConstants.MESSAGE_IN_STOP_SESSION, data);
+        }
+        
+        private static void SendTest_StopAllSessions()
+        {
+            Sender.SendTest(AgentConstants.MESSAGE_IN_STOP_ALL, null);
+        }
+        
+        private static void SendTest_CancelSession(string sessionUid)
+        {
+            var payload = new AgentSessionPayload()
+            {
+                SessionId = sessionUid,
+            };
+            var data = new CancelAgentSession {Payload = payload};
+            Sender.SendTest(AgentConstants.MESSAGE_IN_CANCEL_SESSION, data);
+        }
+        
+        private static void SendTest_CancelAllSessions()
+        {
+            Sender.SendTest(AgentConstants.MESSAGE_IN_CANCEL_ALL, null);
+        }
+        #endregion
         #region Session
         private static void StartSession(string sessionUid, string testType, bool isRealTime, long startTime)
         {

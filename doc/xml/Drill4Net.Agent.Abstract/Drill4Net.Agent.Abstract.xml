@@ -113,16 +113,6 @@
             Command for cancel the all sessions
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.ProfilingData.MethodByProbUid">
-            <summary>
-            Get the method full name (by Injector standard) against Guid of cross-point (probe).
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Agent.Abstract.ProfilingData.AstMethodByName">
-            <summary>
-            Get the AstMethod for transfer to the API by full name (by Injector standard).
-            </summary>
-        </member>
         <member name="T:Drill4Net.Agent.Abstract.Transfer.AstEntity">
             <summary>
             Data about a class sent to Drill admin.
@@ -201,6 +191,31 @@
         <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.Probes">
             <summary>
             List of probe data
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.Messages.ConnectorQueueItem">
+            <summary>
+            Represents a message from Drill admin.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.Messages.ConnectorQueueItem.Destination">
+            <summary>
+            Type of the message.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.Messages.ConnectorQueueItem.Message">
+            <summary>
+            The message payload.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.ProfilingData.MethodByProbUid">
+            <summary>
+            Get the method full name (by Injector standard) against Guid of cross-point (probe).
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.ProfilingData.AstMethodByName">
+            <summary>
+            Get the AstMethod for transfer to the API by full name (by Injector standard).
             </summary>
         </member>
     </members>
