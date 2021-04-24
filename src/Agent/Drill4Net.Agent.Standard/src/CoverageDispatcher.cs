@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
 {

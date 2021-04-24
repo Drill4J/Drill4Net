@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Drill4Net.Agent.Abstract
+namespace Drill4Net.Agent.Abstract.Transfer
 {
     /// <summary>
     /// Data about a class sent to Drill admin.

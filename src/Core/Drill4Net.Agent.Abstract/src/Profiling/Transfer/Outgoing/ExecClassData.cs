@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Drill4Net.Agent.Abstract
+namespace Drill4Net.Agent.Abstract.Transfer
 {
     /// <summary>
     /// Probes of instrumented assemblies for sending of collecting data to admin side

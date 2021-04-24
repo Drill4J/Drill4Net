@@ -11,6 +11,7 @@ using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Agent.Transport;
 
 namespace Drill4Net.Agent.Standard

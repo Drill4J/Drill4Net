@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Drill4Net.Agent.Abstract
+namespace Drill4Net.Agent.Abstract.Transfer
 {
     /// <summary>
     /// Class for presentation of method metadata for transferring to the Drill site

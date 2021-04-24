@@ -40,27 +40,27 @@
     public interface IReceiver
     {
         /// <summary>
-        /// Session is started on admin side
+        /// Command for start session
         /// </summary>
         event StartSessionHandler StartSession;
 
         /// <summary>
-        /// Session must stopped
+        /// Command for stop the session
         /// </summary>
         event StopSessionHandler StopSession;
         
         /// <summary>
-        /// All session must stopped
+        /// Command for stop the all sessions
         /// </summary>
         event StopAllSessionsHandler StopAllSessions;
 
         /// <summary>
-        /// Session is cancelled on admin side
+        /// Command for cancel the session
         /// </summary>
         event CancelSessionHandler CancelSession;
 
         /// <summary>
-        /// All sessions are cancelled on admin side
+        /// Command for cancel the all sessions
         /// </summary>
         event CancelAllSessionsHandler CancelAllSessions;
     }

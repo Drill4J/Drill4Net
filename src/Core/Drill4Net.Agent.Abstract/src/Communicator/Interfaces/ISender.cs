@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Abstract
 {

@@ -44,13 +44,13 @@
             "Agent is initialized" message ("INITIALIZED")
             </summary>
         </member>
-        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendClassesDataMessage(System.Collections.Generic.IEnumerable{Drill4Net.Agent.Abstract.AstEntity})">
+        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendClassesDataMessage(System.Collections.Generic.IEnumerable{Drill4Net.Agent.Abstract.Transfer.AstEntity})">
             <summary>
             "INIT_DATA_PART"
             </summary>
             <param name="entities"></param>
         </member>
-        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendCoverageData(System.Collections.Generic.List{Drill4Net.Agent.Abstract.ExecClassData})">
+        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendCoverageData(System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.ExecClassData})">
             <summary>
             Send coverage data to the admin part ("COVERAGE_DATA_PART")
             </summary>
@@ -90,27 +90,27 @@
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.StartSession">
             <summary>
-            Session is started on admin side
+            Command for start session
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.StopSession">
             <summary>
-            Session must stopped
+            Command for stop the session
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.StopAllSessions">
             <summary>
-            All session must stopped
+            Command for stop the all sessions
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.CancelSession">
             <summary>
-            Session is cancelled on admin side
+            Command for cancel the session
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.CancelAllSessions">
             <summary>
-            All sessions are cancelled on admin side
+            Command for cancel the all sessions
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.ProfilingData.MethodByProbUid">
@@ -123,82 +123,82 @@
             Get the AstMethod for transfer to the API by full name (by Injector standard).
             </summary>
         </member>
-        <member name="T:Drill4Net.Agent.Abstract.AstEntity">
+        <member name="T:Drill4Net.Agent.Abstract.Transfer.AstEntity">
             <summary>
             Data about a class sent to Drill admin.
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstEntity.Path">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstEntity.Path">
             <summary>
             The assembly where the class is located.
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstEntity.Name">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstEntity.Name">
             <summary>
             The fullName of the class, with namespace.
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstEntity.Methods">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstEntity.Methods">
             <summary>
             Information about methods in the class.
             </summary>
         </member>
-        <member name="T:Drill4Net.Agent.Abstract.AstMethod">
+        <member name="T:Drill4Net.Agent.Abstract.Transfer.AstMethod">
             <summary>
             Class for presentation of method metadata for transferring to the Drill site
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Path">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstMethod.Path">
             <summary>
             Namespace? Full source?
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Name">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstMethod.Name">
             <summary>
             Name of the method.
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Params">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstMethod.Params">
             <summary>
             Lists the parameters.
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstMethod.ReturnType">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstMethod.ReturnType">
             <summary>
             The return type.
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Probes">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstMethod.Probes">
             <summary>
             The identifiers of the probes added to the method.
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.AstMethod.Count">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.AstMethod.Count">
             <summary>
             The count of probes added to the method.
             </summary>
         </member>
-        <member name="T:Drill4Net.Agent.Abstract.ExecClassData">
+        <member name="T:Drill4Net.Agent.Abstract.Transfer.ExecClassData">
             <summary>
             Probes of instrumented assemblies for sending of collecting data to admin side
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.TestName">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.TestName">
             <summary>
             Name of the test (session)
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.Id">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.Id">
             <summary>
             Can ignore
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.ClassName">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.ClassName">
             <summary>
             Full class name
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Abstract.ExecClassData.Probes">
+        <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.Probes">
             <summary>
             List of probe data
             </summary>
