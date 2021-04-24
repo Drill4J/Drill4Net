@@ -14,16 +14,14 @@ namespace Drill4Net.Agent.Standard
         private static IReceiver Receiver => _comm.Receiver;
         private static ISender Sender => _comm.Sender;
         private static readonly StandardAgentRepository _rep;
-        private static SpinLock _initSpinlock;
+        private static readonly ManualResetEvent _initEvent = new(false);
 
         /*****************************************************************************/
 
         static StandardAgent()
         {
-            var lockTaken = false;
             try
             {
-                _initSpinlock.Enter(ref lockTaken);
                 PrepareLogger();
                 Log.Debug("Initializing...");
 
@@ -54,8 +52,7 @@ namespace Drill4Net.Agent.Standard
             }
             finally
             {
-                if (lockTaken) 
-                    _initSpinlock.Exit(false);
+                _initEvent.Set();
             }
         }
 
@@ -114,22 +111,10 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
                 
-                var lockTaken = false;
-                try
-                {
-                    //block will be only one tome on init
-                    _initSpinlock.Enter(ref lockTaken);
-                    _rep.GetCoverageDispather().RegisterCoverage(probeUid);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, $"{data}");
-                }
-                finally
-                {
-                    if (lockTaken) 
-                        _initSpinlock.Exit(false);
-                }
+                //block will be only one tome on init
+                _initEvent.WaitOne();
+                _rep.GetCoverageDispather().RegisterCoverage(probeUid);
+
             }
             catch (Exception ex)
             {
