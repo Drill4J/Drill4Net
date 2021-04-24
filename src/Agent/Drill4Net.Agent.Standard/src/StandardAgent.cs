@@ -31,12 +31,12 @@ namespace Drill4Net.Agent.Standard
                     _rep = new StandardAgentRepository();
                     _comm = _rep.Communicator;
 
-                    Receiver.SessionStarted += SessionStarted;
+                    Receiver.SessionStart += SessionStarted;
+                    Receiver.SessionCancell += SessionCancelled;
+                    Receiver.SessionCancellAll += AllSessionsCancelled;
                     Receiver.SessionStop += SessionStop;
-                    Receiver.SessionCancelled += SessionCancelled;
-                    Receiver.AllSessionsCancelled += AllSessionsCancelled;
-                    Receiver.SessionChanged += SessionChanged;
-
+                    Receiver.SessionStopAll += SessionStopAll;
+                    
                     //1. Classes to admin side
                     var entities = _rep.GetEntities();
                     Sender.SendClassesDataMessage(entities);
@@ -80,7 +80,7 @@ namespace Drill4Net.Agent.Standard
             throw new NotImplementedException();
         }
 
-        private static void SessionChanged(string sessionUid, int probeCnt)
+        private static void SessionStopAll(long finishtime)
         {
             throw new NotImplementedException();
         }

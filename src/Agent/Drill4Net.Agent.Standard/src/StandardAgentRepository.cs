@@ -210,7 +210,7 @@ namespace Drill4Net.Agent.Standard
                 }
                 else
                 {
-                    Communicator.Sender.Send(AgentConstants.MESSAGE_COVERAGE_DATA_PART, ConvertCoverageToString(execClasses));
+                    Communicator.Sender.Send(AgentConstants.MESSAGE_OUT_COVERAGE_DATA_PART, ConvertCoverageToString(execClasses));
                 }
             }
         }
@@ -246,7 +246,7 @@ namespace Drill4Net.Agent.Standard
             }
             else
             {
-                var testName = $"{AgentConstants.TESTNAME_DEFAULT}_{ctxId}"; //TODO: real name is...????
+                var testName = $"{AgentConstants.TEST_NAME_DEFAULT}_{ctxId}"; //TODO: real name is...????
                 disp = CreateCoverageDispatcher(testName);
                 _ctxToDispatcher.TryAdd(ctxId, disp);
             }

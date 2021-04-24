@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Transport
 
         private void ReconnectHandler(ReconnectionInfo info)
         {
-
+            //need resubscribe??? 
         }
     }
 }

@@ -4,39 +4,9 @@
         <name>Drill4Net.Agent.Abstract</name>
     </assembly>
     <members>
-        <member name="T:Drill4Net.Agent.Abstract.SessionStartedHandler">
+        <member name="T:Drill4Net.Agent.Abstract.AgentConstants">
             <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionStarted"/>
-            </summary>
-            <param name="sessionUid"></param>
-            <param name="testType">MANUAL or AUTO</param>
-            <param name="isRealTime"></param>
-            <param name="startTime">currentTimeMillis when session start</param>
-        </member>
-        <member name="T:Drill4Net.Agent.Abstract.SessionStopHandler">
-            <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionStop"/>
-            </summary>
-            <param name="sessionUid"></param>
-            <param name="finishTime">currentTimeMillis when session finished</param>
-        </member>
-        <member name="T:Drill4Net.Agent.Abstract.SessionCancelledHandler">
-            <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancelled"/>
-            </summary>
-            <param name="sessionUid"></param>
-            <param name="cancelTime">currentTimeMillis when session cancelled</param>
-        </member>
-        <member name="T:Drill4Net.Agent.Abstract.SessionChangedHandler">
-            <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionChanged"/>
-            </summary>
-            <param name="sessionUid"></param>
-            <param name="probeCnt"></param>
-        </member>
-        <member name="T:Drill4Net.Agent.Abstract.AllSessionsCancelledHandler">
-            <summary>
-            Handler for <see cref="E:Drill4Net.Agent.Abstract.AbstractReceiver.AllSessionsCancelled"/>
+            Constants for Agent subsystem
             </summary>
         </member>
         <member name="T:Drill4Net.Agent.Abstract.AbstractReceiver">
@@ -44,7 +14,7 @@
             Receiver of data from admin side
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionStarted">
+        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionStart">
             <summary>
             Session is started on admin side
             </summary>
@@ -54,17 +24,17 @@
             Session must stopped
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionChanged">
+        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionStopAll">
             <summary>
-            ???
+            All session must stopped
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancelled">
+        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancell">
             <summary>
             Session is cancelled on admin side
             </summary>
         </member>
-        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.AllSessionsCancelled">
+        <member name="E:Drill4Net.Agent.Abstract.AbstractReceiver.SessionCancellAll">
             <summary>
             All sessions are cancelled on admin side
             </summary>
@@ -83,6 +53,64 @@
         <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendCoverageData(System.Collections.Generic.List{Drill4Net.Agent.Abstract.ExecClassData})">
             <summary>
             Send coverage data to the admin part ("COVERAGE_DATA_PART")
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.SessionStartHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionStart"/>
+            </summary>
+            <param name="sessionUid"></param>
+            <param name="testType">MANUAL or AUTO</param>
+            <param name="isRealTime"></param>
+            <param name="startTime">currentTimeMillis when session start</param>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.SessionStopHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionStop"/>
+            </summary>
+            <param name="sessionUid"></param>
+            <param name="finishTime">currentTimeMillis when session finished</param>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.SessionStopAllHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancell"/>
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.SessionCancellHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancell"/>
+            </summary>
+            <param name="sessionUid"></param>
+            <param name="cancelTime">currentTimeMillis when session cancelled</param>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.SessionCancellAllHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancellAll"/>
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionStart">
+            <summary>
+            Session is started on admin side
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionStop">
+            <summary>
+            Session must stopped
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionStopAll">
+            <summary>
+            All session must stopped
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancell">
+            <summary>
+            Session is cancelled on admin side
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.SessionCancellAll">
+            <summary>
+            All sessions are cancelled on admin side
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.ProfilingData.MethodByProbUid">
