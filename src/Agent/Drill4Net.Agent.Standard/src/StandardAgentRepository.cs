@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.Standard
 {
     public sealed class StandardAgentRepository : IAgentRepository
     {
-        public ICommunicator Communicator { get; }
+        public AbstractCommunicator Communicator { get; }
 
         private readonly ConcurrentDictionary<int, string> _ctxToSession;
         private readonly ConcurrentDictionary<string, int> _sessionToCtx;
@@ -64,7 +64,7 @@ namespace Drill4Net.Agent.Standard
 
         #region Init
 
-        private ICommunicator GetCommunicator()
+        private AbstractCommunicator GetCommunicator()
         {
             return new Communicator(GetAddress());
         }
@@ -81,8 +81,8 @@ namespace Drill4Net.Agent.Standard
 
             // check for different compiling target version 
             //we need only one for current runtime
-            var rootDirs = tree.GetDirectories();
-            if (rootDirs.Count() > 1)
+            var rootDirs = tree.GetDirectories().ToList();
+            if (rootDirs.Count > 1)
             {
                 //investigate the versionable copies of target
                 var asmNameByDirs = (from dir in rootDirs
@@ -98,11 +98,10 @@ namespace Drill4Net.Agent.Standard
                     {
                         var prev = asmNameByDirs[i - 1];
                         var cur = asmNameByDirs[i];
-                        if (prev.Count != cur.Count || prev.Intersect(cur).Count() == 0)
-                        {
-                            multi = false;
-                            break;
-                        }
+                        if (prev.Count == cur.Count && prev.Intersect(cur).Any()) //the same structure
+                            continue;
+                        multi = false;
+                        break;
                     }
                     if (multi) 
                     {
@@ -118,7 +117,7 @@ namespace Drill4Net.Agent.Standard
                             targetDir = dir;
                             break;
                         }
-                        injTypes = targetDir.GetAssemblies().SelectMany(a => a.GetAllTypes());
+                        injTypes = targetDir?.GetAssemblies().SelectMany(a => a.GetAllTypes());
                     }
                 }
             }
@@ -126,7 +125,7 @@ namespace Drill4Net.Agent.Standard
             {
                 injTypes = tree.GetAllTypes();
             }
-            injTypes = injTypes.Where(a => !a.IsCompilerGenerated);
+            injTypes = injTypes?.Where(a => !a.IsCompilerGenerated);
             return injTypes;
         }
 
@@ -206,34 +205,34 @@ namespace Drill4Net.Agent.Standard
         {
             lock (_sendLocker)
             {
-                var execClasses = _ctxToDispatcher.Values.SelectMany(a => a.PointToClass.Values).ToList();
-                var cnt = execClasses.Count();
-                switch (cnt)
+                foreach (var ctxId in _ctxToDispatcher.Keys)
                 {
-                    case 0:
-                        return;
-                    case > 65535:
-                        //TODO: implement by cycles
-                        break;
-                    default:
-                        Communicator.Sender.Send(AgentConstants.MESSAGE_OUT_COVERAGE_DATA_PART, ConvertCoverageToString(execClasses));
-                        break;
+                    var sessionUid = _ctxToSession[ctxId];
+                    var disp = _ctxToDispatcher[ctxId];
+                    var execClasses = disp.PointToClass.Values.ToList();
+                    var cnt = execClasses.Count();
+                    switch (cnt)
+                    {
+                        case 0:
+                            return;
+                        case > 65535:
+                            //TODO: implement by cycles
+                            break;
+                        default:
+                            Communicator.Sender.SendCoverageData(sessionUid, execClasses);
+                            break;
+                    }
                 }
             }
         }
-
-        internal string ConvertCoverageToString(List<ExecClassData> data)
-        {
-            return JsonConvert.SerializeObject(data);
-        }
         #endregion
 
-        internal void StartSendCycle()
+        private void StartSendCycle()
         {
             _sendTimer.Enabled = true;
         }
 
-        internal void StopSendCycleIfNeeded()
+        private void StopSendCycleIfNeeded()
         {
             if(_ctxToDispatcher.Count == 0)
                 _sendTimer.Enabled = false;
@@ -262,7 +261,8 @@ namespace Drill4Net.Agent.Standard
 
         public int GetContextId()
         {
-            return Thread.CurrentThread.ExecutionContext.GetHashCode();
+            var ctx = Thread.CurrentThread.ExecutionContext;
+            return ctx?.GetHashCode() ?? 0;
         }
 
         public void CancelSession(CancelAgentSession info)
@@ -270,14 +270,18 @@ namespace Drill4Net.Agent.Standard
             
         }
 
-        public void CancelAllSessions()
+        public List<string> CancelAllSessions()
         {
-            
+            var uids = _sessionToCtx.Keys.ToList();
+            // TODO: cancel
+            return uids;
         }
 
-        public void StopAllSessions()
+        public List<string> StopAllSessions()
         {
-            
+            var uids = _sessionToCtx.Keys.ToList();
+            // TODO: stopping
+            return uids;
         }
     }
 }

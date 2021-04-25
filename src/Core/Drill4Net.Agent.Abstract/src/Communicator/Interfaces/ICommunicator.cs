@@ -3,6 +3,6 @@
     public interface ICommunicator
     {
         IReceiver Receiver { get; }
-        ISender Sender { get; }
+        AbstractSender Sender { get; }
     }
 }

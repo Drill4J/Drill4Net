@@ -80,7 +80,7 @@ namespace Drill4Net.Agent.Standard
                 TestType = "AUTO",
             };
             var data = new StartAgentSession {Payload = payload};
-            Sender.SendTest(AgentConstants.MESSAGE_IN_START_SESSION, data);
+            Sender.SendTest(data);
         }
         
         private static void SendTest_StopSession(string sessionUid)
@@ -90,12 +90,12 @@ namespace Drill4Net.Agent.Standard
                 SessionId = sessionUid,
             };
             var data = new StopAgentSession {Payload = payload};
-            Sender.SendTest(AgentConstants.MESSAGE_IN_STOP_SESSION, data);
+            Sender.SendTest(data);
         }
         
         private static void SendTest_StopAllSessions()
         {
-            Sender.SendTest(AgentConstants.MESSAGE_IN_STOP_ALL, null);
+            Sender.SendTest(new StopAllAgentSessions());
         }
         
         private static void SendTest_CancelSession(string sessionUid)
@@ -105,12 +105,12 @@ namespace Drill4Net.Agent.Standard
                 SessionId = sessionUid,
             };
             var data = new CancelAgentSession {Payload = payload};
-            Sender.SendTest(AgentConstants.MESSAGE_IN_CANCEL_SESSION, data);
+            Sender.SendTest(data);
         }
         
         private static void SendTest_CancelAllSessions()
         {
-            Sender.SendTest(AgentConstants.MESSAGE_IN_CANCEL_ALL, null);
+            Sender.SendTest(new CancelAllAgentSessions());
         }
         #endregion
         #region Session
@@ -130,21 +130,21 @@ namespace Drill4Net.Agent.Standard
 
         private static void CancelAllSessions()
         {
-            _rep.CancelAllSessions();
-            Sender.SendCancelAllSessionsMessage(GetCurrentUnixTimeMs());
+            var uids = _rep.CancelAllSessions();
+            Sender.SendAllSessionCancelledMessage(uids, GetCurrentUnixTimeMs());
         }
 
         private static void CancelSession(CancelAgentSession info)
         {
             var uid = info.Payload.SessionId;
             _rep.CancelSession(info);
-            Sender.SendSessionCanceledMessage(uid, GetCurrentUnixTimeMs());
+            Sender.SendSessionCancelledMessage(uid, GetCurrentUnixTimeMs());
         }
 
         private static void StopAllSessions()
         {
-            _rep.StopAllSessions();
-            Sender.SendStopAllSessionsMessage(GetCurrentUnixTimeMs());
+            var uids = _rep.StopAllSessions();
+            Sender.SendAllSessionFinishedMessage(uids, GetCurrentUnixTimeMs());
         }
         #endregion
         #region Register

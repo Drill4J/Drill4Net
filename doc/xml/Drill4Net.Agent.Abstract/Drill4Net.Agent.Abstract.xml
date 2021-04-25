@@ -14,13 +14,13 @@
             "Agent is initialized" message ("INITIALIZED")
             </summary>
         </member>
-        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendClassesDataMessage(System.Collections.Generic.IEnumerable{Drill4Net.Agent.Abstract.Transfer.AstEntity})">
+        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendClassesDataMessage(System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.AstEntity})">
             <summary>
             "INIT_DATA_PART"
             </summary>
             <param name="entities"></param>
         </member>
-        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendCoverageData(System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.ExecClassData})">
+        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendCoverageData(System.String,System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.ExecClassData})">
             <summary>
             Send coverage data to the admin part ("COVERAGE_DATA_PART")
             </summary>
@@ -76,6 +76,28 @@
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.CancelAllSessions">
             <summary>
             Command for cancel the all sessions
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Abstract.ISender.SendInitializedMessage">
+            <summary>
+            "Agent is initialized" message ("INITIALIZED")
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Abstract.ISender.SendClassesDataMessage(System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.AstEntity})">
+            <summary>
+            "INIT_DATA_PART"
+            </summary>
+            <param name="entities"></param>
+        </member>
+        <member name="M:Drill4Net.Agent.Abstract.ISender.SendCoverageData(System.String,System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.ExecClassData})">
+            <summary>
+            Send coverage data to the admin part ("COVERAGE_DATA_PART")
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.Transfer.IncomingMessage">
+            <summary>
+            The class as label for incoming messages
+            (AgentAction class on Kotlin on admin side)
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.Transfer.StartSessionPayload.TestType">

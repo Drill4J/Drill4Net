@@ -2,7 +2,7 @@
 using Websocket.Client;
 using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Abstract.Messages;
+using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Transport
 {
@@ -21,25 +21,30 @@ namespace Drill4Net.Agent.Transport
 
         /************************************************************************/
 
-        protected override string ConvertToPayload(string messageType, object data)
+        protected override string Serialize(object data)
         {
-            var payload = new ConnectorQueueItem()
-            {
-                Destination =  messageType,
-                Message = JsonConvert.SerializeObject(data)
-            };
-            return JsonConvert.SerializeObject(payload);
+            return JsonConvert.SerializeObject(data);
         }
 
-        protected override void SendConcrete(string payload)
+        protected override void SendConcrete(string data)
         {
-            _sender.Send(payload);
+            _sender.Send(data);
         }
 
-        public override void SendTest(string messageType, object data)
+        public override void SendTest(AbstractOutgoingMessage data)
         {
-            var payload = ConvertToPayload(messageType, data);
-            var mess = ResponseMessage.TextMessage(payload);
+            SendFakeMessage(data);
+        }
+        
+        public override void SendTest(IncomingMessage data)
+        {
+            SendFakeMessage(data);
+        }
+
+        private void SendFakeMessage(object data)
+        {
+            var serData = Serialize(data);
+            var mess = ResponseMessage.TextMessage(serData);
             _sender.StreamFakeMessage(mess);
         }
     }

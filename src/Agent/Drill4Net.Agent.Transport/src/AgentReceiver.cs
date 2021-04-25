@@ -58,32 +58,34 @@ namespace Drill4Net.Agent.Transport
         {
             try
             {
-                var mess = JsonConvert.DeserializeObject<ConnectorQueueItem>(message.Text);
-                var payload = mess?.Message;
-                switch (mess?.Destination)
-                {
-                    case AgentConstants.MESSAGE_IN_START_SESSION:
-                        var startInfo = Deserialize<StartAgentSession>(payload);
-                        StartSession?.Invoke(startInfo);
-                        break;
-                    case AgentConstants.MESSAGE_IN_STOP_SESSION:
-                        var stopInfo = Deserialize<StopAgentSession>(payload);
-                        StopSession?.Invoke(stopInfo);
-                        break;
-                    case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
-                        StopAllSessions?.Invoke();
-                        break;
-                    case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
-                        var cancelInfo = Deserialize<CancelAgentSession>(payload);
-                        CancelSession?.Invoke(cancelInfo);
-                        break;
-                    case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
-                        CancelAllSessions?.Invoke();
-                        break;
-                    default:
-                        //log
-                        break;
-                }
+                // var mess = JsonConvert.DeserializeObject<ConnectorQueueItem>(message.Text);
+                // var payload = mess?.Message;
+                // switch (mess?.Destination)
+                // {
+                //     case AgentConstants.MESSAGE_IN_START_SESSION:
+                //         var startInfo = Deserialize<StartAgentSession>(payload);
+                //         StartSession?.Invoke(startInfo);
+                //         break;
+                //     case AgentConstants.MESSAGE_IN_STOP_SESSION:
+                //         var stopInfo = Deserialize<StopAgentSession>(payload);
+                //         StopSession?.Invoke(stopInfo);
+                //         break;
+                //     case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
+                //         StopAllSessions?.Invoke();
+                //         break;
+                //     case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
+                //         var cancelInfo = Deserialize<CancelAgentSession>(payload);
+                //         CancelSession?.Invoke(cancelInfo);
+                //         break;
+                //     case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
+                //         CancelAllSessions?.Invoke();
+                //         break;
+                //     default:
+                //         //log
+                //         break;
+                //}
+                
+                var mess = JsonConvert.DeserializeObject<IncomingMessage>(message.Text);
             }
             catch (Exception e)
             {

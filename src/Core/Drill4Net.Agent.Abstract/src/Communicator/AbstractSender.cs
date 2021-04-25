@@ -3,8 +3,6 @@ using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Abstract
 {
-    //https://kb.epam.com/pages/viewpage.action?pageId=881283184
-
     public abstract class AbstractSender : ISender
     {
         #region Send messages
@@ -13,82 +11,86 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public virtual void SendInitializedMessage()
         {
-            Send(AgentConstants.MESSAGE_OUT_INITIALIZED, "Initialized"); //can be any string
+            var mess = new Initialized {Msg = "Initialized"}; //can be any string
+            Send(mess);
         }
 
         /// <summary>
         /// "INIT_DATA_PART"
         /// </summary>
         /// <param name="entities"></param>
-        public virtual void SendClassesDataMessage(IEnumerable<AstEntity> entities)
+        public virtual void SendClassesDataMessage(List<AstEntity> entities)
         {
-            Send(AgentConstants.MESSAGE_OUT_INIT_DATA_PART, entities);
+            var mess = new InitDataPart {AstEntities = entities};
+            Send(mess);
         }
         
         public virtual void SendSessionStartedMessage(string sessionUid, long ts)
         {
-            Send(AgentConstants.MESSAGE_OUT_SESSION_STARTED, sessionUid);
+            var mess = new SessionStarted 
+            { 
+                SessionId  = sessionUid, 
+                Ts = ts,
+                //IsRealtime = ...
+                //TestType = ...
+            };
+            Send(mess);
+        }
+        
+        public virtual void SendSessionFinishedMessage(string sessionUid, long ts)
+        {
+            var mess = new SessionFinished { SessionId = sessionUid, Ts = ts };
+            Send(mess);
+        }
+        
+        public virtual void SendAllSessionFinishedMessage(List<string> sessionUids, long ts)
+        {
+            var mess = new SessionsFinished { IDs = sessionUids, Ts = ts };
+            Send(mess);
+        }
+        
+        public virtual void SendSessionCancelledMessage(string uid, long ts)
+        {
+            var mess = new SessionCancelled { SessionId  = uid, Ts = ts };
+            Send(mess);
         }
 
-        public void SendCancelAllSessionsMessage(long getCurrentUnixTimeMs)
+        public virtual void SendAllSessionCancelledMessage(List<string> uids, long ts)
         {
-           
-        }
-
-        public void SendSessionCanceledMessage(string uid, long getCurrentUnixTimeMs)
-        {
-            Send(AgentConstants.MESSAGE_OUT_SESSION_CANCELLED, uid);
-        }
-
-        public void SendStopAllSessionsMessage(long getCurrentUnixTimeMs)
-        {
-            
+            var mess = new SessionsCancelled { IDs = uids, Ts = ts };
+            Send(mess);
         }
 
         /// <summary>
         /// Send coverage data to the admin part ("COVERAGE_DATA_PART")
         /// </summary>
-        public virtual void SendCoverageData(List<ExecClassData> data)
+        public virtual void SendCoverageData(string sessionUid, List<ExecClassData> data)
         {
-            Send(AgentConstants.MESSAGE_OUT_COVERAGE_DATA_PART, data);
+            var mess = new CoverDataPart { Data = data, SessionId = sessionUid };
+            Send(mess);
         }
         
-        public virtual void SendSessionChangedMessage(string sessionUid, long ts)
+        public virtual void SendSessionChangedMessage(string sessionUid, int probeCount)
         {
-            Send(AgentConstants.MESSAGE_OUT_SESSION_CHANGED, sessionUid);
-        }
-        
-        public virtual void SendSessionCancelledMessage(string sessionUid, long ts)
-        {
-            Send(AgentConstants.MESSAGE_OUT_SESSION_CANCELLED, sessionUid);
-        }
-        
-        public virtual void SendAllSessionsCancelledMessage(List<string> sessionUids, long ts)
-        {
-            Send(AgentConstants.MESSAGE_OUT_SESSION_ALL_CANCELLED, null);
-        }        
-
-        public virtual void SendSessionFinishedMessage(string sessionUid, long ts)
-        {
-            Send(AgentConstants.MESSAGE_OUT_SESSION_FINISHED, sessionUid);
-        }
-        
-        public virtual void SendAllSessionFinishedMessage(List<string> sessionUids, long ts)
-        {
-            Send(AgentConstants.MESSAGE_OUT_SESSION_ALL_FINISHED, null);
+            var mess = new SessionChanged { SessionId  = sessionUid, ProbeCount = probeCount };
+            Send(mess);
         }
         #endregion
         #region Send API
-        public void Send(string messageType, object message)
+        public void Send(AbstractOutgoingMessage message)
         {
-            SendConcrete(ConvertToPayload(messageType, message));
+            SendConcrete(Serialize(message));
         }
-
-        protected abstract void SendConcrete(string payload);
-
-        protected abstract string ConvertToPayload(string messageType, object message);
         
-        public virtual void SendTest(string messageType, object data)
+        protected abstract void SendConcrete(string data);
+
+        protected abstract string Serialize(object message);
+        
+        public virtual void SendTest(AbstractOutgoingMessage data)
+        {
+        }
+        
+        public virtual void SendTest(IncomingMessage message)
         {
         }
         #endregion
