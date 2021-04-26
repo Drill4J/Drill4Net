@@ -77,7 +77,7 @@ namespace Drill4Net.Agent.Abstract
         }
         #endregion
         #region Send API
-        public void Send(AbstractOutgoingMessage message)
+        public void Send(AbstractMessage message)
         {
             SendConcrete(Serialize(message));
         }
@@ -86,7 +86,7 @@ namespace Drill4Net.Agent.Abstract
 
         protected abstract string Serialize(object message);
         
-        public virtual void SendTest(AbstractOutgoingMessage data)
+        public virtual void SendTest(AbstractMessage data)
         {
         }
         

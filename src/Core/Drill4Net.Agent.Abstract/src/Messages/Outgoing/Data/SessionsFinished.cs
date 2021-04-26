@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
-    public class SessionsFinished : AbstractOutgoingMessage
+    public class SessionsFinished : AbstractMessage
     {
         public List<string> IDs { get; set; }
         public long Ts { get; set; }

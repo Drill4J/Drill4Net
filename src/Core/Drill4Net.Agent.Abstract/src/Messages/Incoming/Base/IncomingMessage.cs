@@ -4,5 +4,10 @@
     /// The class as label for incoming messages
     /// (AgentAction class on Kotlin on admin side)
     /// </summary>
-    public class IncomingMessage { }
+    public class IncomingMessage : AbstractMessage
+    {
+        public IncomingMessage(string type): base(type)
+        {
+        }
+    }
 }

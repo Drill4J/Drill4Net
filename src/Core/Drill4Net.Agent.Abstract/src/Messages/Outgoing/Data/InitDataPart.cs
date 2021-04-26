@@ -2,7 +2,7 @@
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
-    public class InitDataPart: AbstractOutgoingMessage
+    public class InitDataPart: AbstractMessage
     {
         public List<AstEntity> AstEntities { get; set; }
 

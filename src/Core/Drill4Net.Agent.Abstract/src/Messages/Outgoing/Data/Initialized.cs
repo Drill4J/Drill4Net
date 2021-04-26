@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Abstract.Transfer
 {
-    public class Initialized : AbstractOutgoingMessage
+    public class Initialized : AbstractMessage
     {
         public string Msg { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Websocket.Client;
-using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -23,7 +24,7 @@ namespace Drill4Net.Agent.Transport
 
         protected override string Serialize(object data)
         {
-            return JsonConvert.SerializeObject(data);
+            return JsonSerializer.Serialize(data);
         }
 
         protected override void SendConcrete(string data)
@@ -31,7 +32,7 @@ namespace Drill4Net.Agent.Transport
             _sender.Send(data);
         }
 
-        public override void SendTest(AbstractOutgoingMessage data)
+        public override void SendTest(AbstractMessage data)
         {
             SendFakeMessage(data);
         }

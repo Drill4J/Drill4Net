@@ -1,5 +1,7 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Net.Mime;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Websocket.Client;
 using Websocket.Client.Models;
 using Drill4Net.Agent.Abstract;
@@ -58,34 +60,33 @@ namespace Drill4Net.Agent.Transport
         {
             try
             {
-                // var mess = JsonConvert.DeserializeObject<ConnectorQueueItem>(message.Text);
-                // var payload = mess?.Message;
-                // switch (mess?.Destination)
-                // {
-                //     case AgentConstants.MESSAGE_IN_START_SESSION:
-                //         var startInfo = Deserialize<StartAgentSession>(payload);
-                //         StartSession?.Invoke(startInfo);
-                //         break;
-                //     case AgentConstants.MESSAGE_IN_STOP_SESSION:
-                //         var stopInfo = Deserialize<StopAgentSession>(payload);
-                //         StopSession?.Invoke(stopInfo);
-                //         break;
-                //     case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
-                //         StopAllSessions?.Invoke();
-                //         break;
-                //     case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
-                //         var cancelInfo = Deserialize<CancelAgentSession>(payload);
-                //         CancelSession?.Invoke(cancelInfo);
-                //         break;
-                //     case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
-                //         CancelAllSessions?.Invoke();
-                //         break;
-                //     default:
-                //         //log
-                //         break;
-                //}
-                
-                var mess = JsonConvert.DeserializeObject<IncomingMessage>(message.Text);
+                var txt = message.Text;
+                var mess = JsonSerializer.Deserialize<IncomingMessage>(txt);
+                var type = mess?.Type;
+                 switch (type)
+                 {
+                     case AgentConstants.MESSAGE_IN_START_SESSION:
+                         var startInfo = JsonSerializer.Deserialize<StartAgentSession>(txt);
+                         StartSession?.Invoke(startInfo);
+                         break;
+                     case AgentConstants.MESSAGE_IN_STOP_SESSION:
+                         var stopInfo = JsonSerializer.Deserialize<StopAgentSession>(txt);
+                         StopSession?.Invoke(stopInfo);
+                         break;
+                     case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
+                         StopAllSessions?.Invoke();
+                         break;
+                     case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
+                         var cancelInfo = JsonSerializer.Deserialize<CancelAgentSession>(txt);
+                         CancelSession?.Invoke(cancelInfo);
+                         break;
+                     case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
+                         CancelAllSessions?.Invoke();
+                         break;
+                     default:
+                         //log
+                         break;
+                }
             }
             catch (Exception e)
             {
@@ -95,7 +96,7 @@ namespace Drill4Net.Agent.Transport
 
         internal T Deserialize<T>(string obj) where T : class, new()
         {
-            return JsonConvert.DeserializeObject<T>(obj);
+            return JsonSerializer.Deserialize<T>(obj);
         }
 
         private void ReconnectHandler(ReconnectionInfo info)
