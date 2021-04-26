@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Net.Mime;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Websocket.Client;
 using Websocket.Client.Models;
 using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Abstract.Messages;
 using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Transport
@@ -61,23 +58,23 @@ namespace Drill4Net.Agent.Transport
             try
             {
                 var txt = message.Text;
-                var mess = JsonSerializer.Deserialize<IncomingMessage>(txt);
+                var mess = Deserialize<IncomingMessage>(txt);
                 var type = mess?.Type;
                  switch (type)
                  {
                      case AgentConstants.MESSAGE_IN_START_SESSION:
-                         var startInfo = JsonSerializer.Deserialize<StartAgentSession>(txt);
+                         var startInfo = Deserialize<StartAgentSession>(txt);
                          StartSession?.Invoke(startInfo);
                          break;
                      case AgentConstants.MESSAGE_IN_STOP_SESSION:
-                         var stopInfo = JsonSerializer.Deserialize<StopAgentSession>(txt);
+                         var stopInfo = Deserialize<StopAgentSession>(txt);
                          StopSession?.Invoke(stopInfo);
                          break;
                      case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
                          StopAllSessions?.Invoke();
                          break;
                      case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
-                         var cancelInfo = JsonSerializer.Deserialize<CancelAgentSession>(txt);
+                         var cancelInfo = Deserialize<CancelAgentSession>(txt);
                          CancelSession?.Invoke(cancelInfo);
                          break;
                      case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
