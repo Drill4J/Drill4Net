@@ -1,0 +1,5 @@
+EXPORTS
+agent_connector_symbols
+initialize_agent
+sendMessage
+sendPluginMessage

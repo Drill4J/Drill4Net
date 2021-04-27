@@ -37,22 +37,26 @@ namespace Drill4Net.Agent.Standard
                 Receiver.StopSession += StopSession;
                 Receiver.StopAllSessions += StopAllSessions;
 
-                //1. Send injected class info to admin side
                 var entities = _rep.GetEntities();
+
+                //1. Init message
+                Sender.SendInitMessage(entities.Count);
+
+                //2. Send injected class info to admin side
                 Sender.SendClassesDataMessage(entities);
 
-                //2. Send "Initialized" message to admin side
+                //3. Send "Initialized" message to admin side
                 Sender.SendInitializedMessage();
                 
-                //3. Waiting events from admin side...
+                //4. Waiting events from admin side...
 
-                //Test
-                var testUid = Guid.NewGuid().ToString();
-                SendTest_StartSession(testUid);
-                SendTest_StopSession(testUid);
-                SendTest_StopAllSessions();
-                SendTest_CancelSession(testUid);
-                SendTest_CancelAllSessions();
+                //5. Test
+                // var testUid = Guid.NewGuid().ToString();
+                // SendTest_StartSession(testUid);
+                // SendTest_StopSession(testUid);
+                // SendTest_StopAllSessions();
+                // SendTest_CancelSession(testUid);
+                // SendTest_CancelAllSessions();
                 //
                 Log.Debug("Initialized.");
             }

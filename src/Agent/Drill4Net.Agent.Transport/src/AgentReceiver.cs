@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Text.Json;
-using Websocket.Client;
-using Websocket.Client.Models;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -39,50 +37,45 @@ namespace Drill4Net.Agent.Transport
         public event CancelAllSessionsHandler CancelAllSessions;
         #endregion
 
-        private readonly WebsocketClient _receiver;
+        private readonly Connector _connector;
 
         /************************************************************************/
 
-        public AgentReceiver(WebsocketClient receiver)
+        public AgentReceiver(Connector receiver)
         {
-            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
-            _receiver.ReconnectionHappened.Subscribe(info => ReconnectHandler(info));
-            _receiver.MessageReceived.Subscribe(msg => ReceivedHandler(msg));
-            _receiver.Start();
+            _connector = receiver ?? throw new ArgumentNullException(nameof(_connector));
+            _connector.MessageReceived += Connector_MessageReceived;
         }
 
         /************************************************************************/
 
-        private void ReceivedHandler(ResponseMessage message)
+        private void Connector_MessageReceived(string category, string message)
         {
             try
             {
-                var txt = message.Text;
-                var mess = Deserialize<IncomingMessage>(txt);
-                var type = mess?.Type;
-                 switch (type)
-                 {
-                     case AgentConstants.MESSAGE_IN_START_SESSION:
-                         var startInfo = Deserialize<StartAgentSession>(txt);
-                         StartSession?.Invoke(startInfo);
-                         break;
-                     case AgentConstants.MESSAGE_IN_STOP_SESSION:
-                         var stopInfo = Deserialize<StopAgentSession>(txt);
-                         StopSession?.Invoke(stopInfo);
-                         break;
-                     case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
-                         StopAllSessions?.Invoke();
-                         break;
-                     case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
-                         var cancelInfo = Deserialize<CancelAgentSession>(txt);
-                         CancelSession?.Invoke(cancelInfo);
-                         break;
-                     case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
-                         CancelAllSessions?.Invoke();
-                         break;
-                     default:
-                         //log
-                         break;
+                switch (category)
+                {
+                    case AgentConstants.MESSAGE_IN_START_SESSION:
+                        var startInfo = Deserialize<StartAgentSession>(message);
+                        StartSession?.Invoke(startInfo);
+                        break;
+                    case AgentConstants.MESSAGE_IN_STOP_SESSION:
+                        var stopInfo = Deserialize<StopAgentSession>(message);
+                        StopSession?.Invoke(stopInfo);
+                        break;
+                    case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
+                        StopAllSessions?.Invoke();
+                        break;
+                    case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
+                        var cancelInfo = Deserialize<CancelAgentSession>(message);
+                        CancelSession?.Invoke(cancelInfo);
+                        break;
+                    case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
+                        CancelAllSessions?.Invoke();
+                        break;
+                    default:
+                        //log
+                        break;
                 }
             }
             catch (Exception e)
@@ -94,11 +87,6 @@ namespace Drill4Net.Agent.Transport
         internal T Deserialize<T>(string obj) where T : class, new()
         {
             return JsonSerializer.Deserialize<T>(obj);
-        }
-
-        private void ReconnectHandler(ReconnectionInfo info)
-        {
-            //need resubscribe??? 
         }
     }
 }

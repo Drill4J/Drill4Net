@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Drill4Net.Common
 {
@@ -28,6 +29,14 @@ namespace Drill4Net.Common
                 versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
             }
             return versionS;
+        }
+
+        public static string ToHexString(string s)
+        {
+            byte[] ba = Encoding.Default.GetBytes(s);
+            var hexString = BitConverter.ToString(ba);
+            hexString = hexString.Replace("-", "");
+            return hexString;
         }
     }
 }

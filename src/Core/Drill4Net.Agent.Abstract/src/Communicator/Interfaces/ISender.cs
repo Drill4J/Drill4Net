@@ -7,6 +7,8 @@ namespace Drill4Net.Agent.Abstract
 
     public interface ISender
     {
+        void SendInitMessage(int classesCount);
+
         /// <summary>
         /// "Agent is initialized" message ("INITIALIZED")
         /// </summary>
@@ -30,7 +32,7 @@ namespace Drill4Net.Agent.Abstract
         void SendCoverageData(string sessionUid, List<ExecClassData> data);
 
         void SendSessionChangedMessage(string sessionUid, int probeCount);
-        void Send(AbstractMessage message);
+        void Send(string topic, AbstractMessage message);
         void SendTest(IncomingMessage message);
         void SendTest(AbstractMessage data);
     }

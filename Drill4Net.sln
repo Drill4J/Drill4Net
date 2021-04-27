@@ -102,7 +102,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard.Demo", "src\Agent\Drill4Net.Agent.Standard.Demo\Drill4Net.Agent.Standard.Demo.csproj", "{4B1EB40F-A71F-402E-AF74-054A311D92C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Transport", "src\Agent\Drill4Net.Agent.Transport\Drill4Net.Agent.Transport.csproj", "{B68F2651-1CF5-4F08-BB95-D32B153F4B42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transport", "src\Agent\Drill4Net.Agent.Transport\Drill4Net.Agent.Transport.csproj", "{B68F2651-1CF5-4F08-BB95-D32B153F4B42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -66,13 +66,19 @@ namespace Drill4Net.Agent.Standard
 
         private AbstractCommunicator GetCommunicator()
         {
-            return new Communicator(GetAddress());
+            return new Communicator(GetBaseAddress(), GetAgentPartConfig());
         }
 
-        internal string GetAddress()
+        internal string GetBaseAddress()
         {
             //TODO: real from cfg
-            return "wss://xxx";
+            //return "ws://localhost:8090/agent/attach";
+            return "localhost:8090";
+        }
+
+        internal AgentPartConfig GetAgentPartConfig()
+        {
+            return new AgentPartConfig("PROG_A", "0.0.1");
         }
 
         internal IEnumerable<InjectedType> FilterTypes(InjectedSolution tree)
@@ -201,7 +207,7 @@ namespace Drill4Net.Agent.Standard
             SendCoverages();
         }
 
-        public void SendCoverages()
+        internal void SendCoverages()
         {
             lock (_sendLocker)
             {

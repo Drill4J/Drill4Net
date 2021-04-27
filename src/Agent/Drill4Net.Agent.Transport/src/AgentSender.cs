@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Websocket.Client;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -11,13 +9,13 @@ namespace Drill4Net.Agent.Transport
     
     public class AgentSender : AbstractSender
     {
-        private readonly WebsocketClient _sender;
+        private readonly Connector _connector;
 
         /************************************************************************/
 
-        public AgentSender(WebsocketClient sender)
+        public AgentSender(Connector connector)
         {
-            _sender = sender ?? throw new ArgumentNullException(nameof(sender));
+            _connector = connector ?? throw new ArgumentNullException(nameof(connector));
         }
 
         /************************************************************************/
@@ -27,26 +25,33 @@ namespace Drill4Net.Agent.Transport
             return JsonSerializer.Serialize(data);
         }
 
-        protected override void SendConcrete(string data)
+        protected override void SendConcrete(string messageType, string topic, string message)
         {
-            _sender.Send(data);
+            _connector.SendMessage(messageType, topic, message);
+        }
+
+        protected override void SendToPluginConcrete(string topic, string message)
+        {
+            _connector.SendPluginMessage(topic, message);
         }
 
         public override void SendTest(AbstractMessage data)
         {
-            SendFakeMessage(data);
+            //SendFakeMessage(data);
         }
         
         public override void SendTest(IncomingMessage data)
         {
-            SendFakeMessage(data);
+            //SendFakeMessage(data);
         }
 
         private void SendFakeMessage(object data)
         {
-            var serData = Serialize(data);
-            var mess = ResponseMessage.TextMessage(serData);
-            _sender.StreamFakeMessage(mess);
+            //var serData = Serialize(data);
+            //var mess = ResponseMessage.TextMessage(serData);
+            //_sender.StreamFakeMessage(mess);
         }
+
+
     }
 }

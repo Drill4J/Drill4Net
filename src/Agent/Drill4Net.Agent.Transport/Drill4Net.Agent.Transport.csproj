@@ -6,11 +6,16 @@
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
-    <PackageReference Include="Websocket.Client" Version="4.3.30" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="agent_connector.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

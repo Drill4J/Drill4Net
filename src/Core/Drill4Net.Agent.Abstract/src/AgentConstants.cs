@@ -6,7 +6,13 @@
     public static class AgentConstants
     {
         public const string TEST_NAME_DEFAULT = "Default";
+        public const string ADMIN_PLUGIN_NAME = "test2code";
 
+        #region Topics
+        public const string TOPIC_AGENT_LOAD = "/agent/load";
+        public const string TOPIC_AGENT_NAMESPACES = "/agent/set-packages-prefixes";
+        public const string TOPIC_PLUGIN_ACTION = "/plugin/action";
+        #endregion
         #region Message incoming
         public const string MESSAGE_IN_START_SESSION = "START_AGENT_SESSION";
         public const string MESSAGE_IN_ADD_SESSION_DATA = "ADD_SESSION_DATA"; //???
@@ -16,6 +22,7 @@
         public const string MESSAGE_IN_CANCEL_ALL = "CANCEL_ALL";
         #endregion
         #region Messages outgoing
+        public const string MESSAGE_OUT_INIT = "INIT";
         public const string MESSAGE_OUT_INITIALIZED = "INITIALIZED";
         public const string MESSAGE_OUT_INIT_DATA_PART = "INIT_DATA_PART";
         public const string MESSAGE_OUT_SESSION_STARTED = "SESSION_STARTED";

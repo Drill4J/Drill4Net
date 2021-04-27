@@ -9,6 +9,11 @@
             Constants for Agent subsystem
             </summary>
         </member>
+        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendInitMessage(System.Int32)">
+            <summary>
+            "Agent is starting init process" message ("INIT")
+            </summary>
+        </member>
         <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendInitializedMessage">
             <summary>
             "Agent is initialized" message ("INITIALIZED")
@@ -92,6 +97,49 @@
         <member name="M:Drill4Net.Agent.Abstract.ISender.SendCoverageData(System.String,System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.ExecClassData})">
             <summary>
             Send coverage data to the admin part ("COVERAGE_DATA_PART")
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.AgentPartConfig">
+            <summary>
+            Config for admin side about Agent and instrumented application instances,
+            applied during connect (header 'AgentConfig' for WebSocket handshake).
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AgentPartConfig.Id">
+            <summary>
+            Some ID or Name of instrumented App
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AgentPartConfig.InstanceId">
+            <summary>
+            Instance ID of current Agent unit (to distinguish between different agent 
+            instances that collect data from the same instrumented application instance, 
+            for example, for load balancing purposes)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AgentPartConfig.BuildVersion">
+            <summary>
+            Build version of instrumented application instance
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AgentPartConfig.ServiceGroupId">
+            <summary>
+            Service group Id
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AgentPartConfig.AgentType">
+            <summary>
+            Always 'DOTNET'
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AgentPartConfig.NeedSync">
+            <summary>
+            ??? Must be, as a rule, true
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AgentPartConfig.PackagesPrefixes">
+            <summary>
+            Namespaces for instrumenting (not used in DotNet?)
             </summary>
         </member>
         <member name="T:Drill4Net.Agent.Abstract.Transfer.IncomingMessage">
@@ -183,21 +231,6 @@
         <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.Probes">
             <summary>
             List of probe data
-            </summary>
-        </member>
-        <member name="T:Drill4Net.Agent.Abstract.Messages.ConnectorQueueItem">
-            <summary>
-            Represents a message from Drill admin.
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Agent.Abstract.Messages.ConnectorQueueItem.Destination">
-            <summary>
-            Type of the message.
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Agent.Abstract.Messages.ConnectorQueueItem.Message">
-            <summary>
-            The message payload.
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.ProfilingData.MethodByProbUid">
