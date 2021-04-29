@@ -36,6 +36,8 @@ namespace Drill4Net.Agent.Abstract
     
     public interface IReceiver
     {
+        void MessageReceived(string topic, string message);
+
         /// <summary>
         /// Command for start session
         /// </summary>

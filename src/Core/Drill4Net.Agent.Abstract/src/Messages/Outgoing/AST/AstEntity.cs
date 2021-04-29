@@ -6,37 +6,38 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// <summary>
     /// Data about a class sent to Drill admin.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class AstEntity
     {
         /// <summary>
         /// The assembly where the class is located.
         /// </summary>
-        public string Path { get;  }
+        public string path { get;  }
 
         /// <summary>
         /// The fullName of the class, with namespace.
         /// </summary>
-        public string Name { get; }
+        public string name { get; }
 
         /// <summary>
         /// Information about methods in the class.
         /// </summary>
-        public List<AstMethod> Methods { get; }
+        public List<AstMethod> methods { get; }
         
         /**************************************************************************/
         
-        public AstEntity(string path, string fullName)
+        public AstEntity(string entityPath, string fullName)
         {
-            Path = path ?? throw new ArgumentNullException(nameof(path));
-            Name = fullName ?? throw new ArgumentNullException(nameof(fullName));
-            Methods = new List<AstMethod>();
+            path = entityPath ?? throw new ArgumentNullException(nameof(entityPath));
+            name = fullName ?? throw new ArgumentNullException(nameof(fullName));
+            methods = new List<AstMethod>();
         }
         
         /**************************************************************************/
 
         public override string ToString()
         {
-            return $"{Path}.{Name}";
+            return $"{path}.{name}";
         }
     }
 }

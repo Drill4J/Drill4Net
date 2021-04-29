@@ -63,7 +63,6 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         #region Init
-
         private AbstractCommunicator GetCommunicator()
         {
             return new Communicator(GetBaseAddress(), GetAgentPartConfig());

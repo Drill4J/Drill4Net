@@ -1,9 +1,10 @@
 ﻿using System.Runtime.InteropServices;
+using System.Threading;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
 {
-    public delegate void ReceivedMessageHandler(string category, string message);
+    public delegate void ReceivedMessageHandler(string topic, string message);
 
     public class Connector
     {
@@ -17,11 +18,9 @@ namespace Drill4Net.Agent.Transport
         [DllImport("agent_connector")]
         extern static int sendPluginMessage(string pluginId, string content);
 
-        public event ReceivedMessageHandler MessageReceived;
-
         /***********************************************************************************/
 
-        public Connector(string url, AgentPartConfig agentCfg)
+        public void Connect(string url, AgentPartConfig agentCfg, ReceivedMessageHandler received)
         {
             initialize_agent(
                 agentCfg.Id,
@@ -29,14 +28,8 @@ namespace Drill4Net.Agent.Transport
                 agentCfg.BuildVersion,
                 agentCfg.ServiceGroupId,
                 agentCfg.InstanceId,
-                ReceiveMessage);
-        }
-
-        /***********************************************************************************/
-
-        private void ReceiveMessage(string category, string message)
-        {
-            MessageReceived?.Invoke(category, message);
+                received);
+            Thread.Sleep(2000);
         }
 
         public void SendMessage(string messageType, string topic, string message)

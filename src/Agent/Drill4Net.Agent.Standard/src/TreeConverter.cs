@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.Standard
                 .Where(a => !a.IsCompilerGenerated);
             foreach (var injMethod in injMethods)
             {
-                entity.Methods.Add(ToAstMethod(injMethod));
+                entity.methods.Add(ToAstMethod(injMethod));
             }
             return entity;
         }
@@ -43,10 +43,9 @@ namespace Drill4Net.Agent.Standard
             if (injMethod == null)
                 throw new ArgumentNullException(nameof(injMethod));
             //
-            var astMethod = new AstMethod(injMethod.Namespace, injMethod.Name, injMethod.ReturnType,
-                0, injMethod.Source.HashCode);
+            var astMethod = new AstMethod(injMethod.Name, injMethod.ReturnType, 0, injMethod.Source.HashCode);
             if (injMethod.Parameters != null)
-                astMethod.Params = injMethod.Parameters.Split(',').Select(a => a.Trim()).ToList();
+                astMethod.@params = injMethod.Parameters.Split(',').Select(a => a.Trim()).ToList();
             return astMethod;
         }
         #endregion

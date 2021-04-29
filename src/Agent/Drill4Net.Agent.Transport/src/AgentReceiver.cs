@@ -44,16 +44,15 @@ namespace Drill4Net.Agent.Transport
         public AgentReceiver(Connector receiver)
         {
             _connector = receiver ?? throw new ArgumentNullException(nameof(_connector));
-            _connector.MessageReceived += Connector_MessageReceived;
         }
 
         /************************************************************************/
 
-        private void Connector_MessageReceived(string category, string message)
+        public virtual void MessageReceived(string topic, string message)
         {
             try
             {
-                switch (category)
+                switch (topic)
                 {
                     case AgentConstants.MESSAGE_IN_START_SESSION:
                         var startInfo = Deserialize<StartAgentSession>(message);

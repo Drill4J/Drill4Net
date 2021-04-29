@@ -8,47 +8,48 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// Probes of instrumented assemblies for sending of collecting data to admin side
     /// </summary>
     [Serializable]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class ExecClassData
     {
         /// <summary>
         /// Name of the test (session)
         /// </summary>
-        public string TestName { get; }
+        public string testName { get; }
         
         /// <summary>
         /// Can ignore
         /// </summary>
-        public long? Id { get; }
+        public long? id { get; }
 
         /// <summary>
         /// Full class name
         /// </summary>
-        public string ClassName { get; }
+        public string className { get; }
 
         /// <summary>
         /// List of probe data
         /// </summary>
-        public List<bool> Probes { get; private set; }
+        public List<bool> probes { get; private set; }
         
         /**************************************************************************/
         
         public ExecClassData(string testName, string className)
         {
-            Id = className.GetHashCode();
-            TestName = testName ?? throw new ArgumentNullException(nameof(testName));
-            ClassName = className ?? throw new ArgumentNullException(nameof(className));
+            id = className.GetHashCode();
+            this.testName = testName ?? throw new ArgumentNullException(nameof(testName));
+            this.className = className ?? throw new ArgumentNullException(nameof(className));
         }
 
         /**************************************************************************/
 
         public void InitProbes(int probeCnt)
         {
-            Probes = Enumerable.Repeat(false, probeCnt).ToList();
+            probes = Enumerable.Repeat(false, probeCnt).ToList();
         }
 
         public override string ToString()
         {
-            return $"{TestName} -> {Id}: {ClassName}";
+            return $"{testName} -> {id}: {className}";
         }
     }
 }

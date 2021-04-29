@@ -42,7 +42,7 @@ namespace Drill4Net.Agent.Standard
                 return;
             if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
                 return;
-            var probes = classData.Probes;
+            var probes = classData.probes;
             var start = range.Start;
             var end = range.End;
             if (start > end || start < 0 || start >= probes.Count || end < 0 || end >= probes.Count)

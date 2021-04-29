@@ -2,11 +2,14 @@
 
 namespace Drill4Net.Agent.Abstract
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class InitInfo : AbstractMessage
     {
-        public string Message { get; set; }
-        public int ClassesCount { get; set; }
-        public bool Init { get; set; }
+        public string message { get; set; }
+
+        public int classesCount { get; set; }
+
+        public bool init { get; set; }
 
         /*****************************************************************/
 
@@ -14,9 +17,9 @@ namespace Drill4Net.Agent.Abstract
 
         public InitInfo(int classesCount) : this()
         {
-            ClassesCount = classesCount;
-            Message = "Init";
-            Init = true; //yes, it is very strange))
+            this.classesCount = classesCount;
+            message = "Init";
+            init = true; //yes, it is very strange))
         }
     }
 }

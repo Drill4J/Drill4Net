@@ -17,21 +17,21 @@ namespace Drill4Net.Agent.Abstract
         }
 
         /// <summary>
-        /// "Agent is initialized" message ("INITIALIZED")
-        /// </summary>
-        public virtual void SendInitializedMessage()
-        {
-            var mess = new Initialized {Msg = "Initialized"}; //can be any string
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
-        }
-
-        /// <summary>
         /// "INIT_DATA_PART"
         /// </summary>
         /// <param name="entities"></param>
         public virtual void SendClassesDataMessage(List<AstEntity> entities)
         {
-            var mess = new InitDataPart {AstEntities = entities};
+            var mess = new InitDataPart { astEntities = entities };
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+        }
+
+        /// <summary>
+        /// "Agent is initialized" message ("INITIALIZED")
+        /// </summary>
+        public virtual void SendInitializedMessage()
+        {
+            var mess = new Initialized {msg = "Initialized"}; //can be any string
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
         #endregion
@@ -40,8 +40,8 @@ namespace Drill4Net.Agent.Abstract
         {
             var mess = new SessionStarted 
             { 
-                SessionId  = sessionUid, 
-                Ts = ts,
+                sessionId  = sessionUid, 
+                ts = ts,
                 //IsRealtime = ...
                 //TestType = ...
             };
@@ -50,25 +50,25 @@ namespace Drill4Net.Agent.Abstract
         
         public virtual void SendSessionFinishedMessage(string sessionUid, long ts)
         {
-            var mess = new SessionFinished { SessionId = sessionUid, Ts = ts };
+            var mess = new SessionFinished { sessionId = sessionUid, ts = ts };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
         
         public virtual void SendAllSessionFinishedMessage(List<string> sessionUids, long ts)
         {
-            var mess = new SessionsFinished { IDs = sessionUids, Ts = ts };
+            var mess = new SessionsFinished { ids = sessionUids, ts = ts };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
         
         public virtual void SendSessionCancelledMessage(string uid, long ts)
         {
-            var mess = new SessionCancelled { SessionId  = uid, Ts = ts };
+            var mess = new SessionCancelled { sessionId  = uid, ts = ts };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
 
         public virtual void SendAllSessionCancelledMessage(List<string> uids, long ts)
         {
-            var mess = new SessionsCancelled { IDs = uids, Ts = ts };
+            var mess = new SessionsCancelled { ids = uids, ts = ts };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
 
@@ -77,13 +77,13 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public virtual void SendCoverageData(string sessionUid, List<ExecClassData> data)
         {
-            var mess = new CoverDataPart { Data = data, SessionId = sessionUid };
+            var mess = new CoverDataPart { data = data, sessionId = sessionUid };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
         
         public virtual void SendSessionChangedMessage(string sessionUid, int probeCount)
         {
-            var mess = new SessionChanged { SessionId  = sessionUid, ProbeCount = probeCount };
+            var mess = new SessionChanged { sessionId  = sessionUid, probeCount = probeCount };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
         #endregion
@@ -91,7 +91,7 @@ namespace Drill4Net.Agent.Abstract
         #region Send
         public void Send(string topic, AbstractMessage message)
         {
-            SendConcrete(message.Type, topic, Serialize(message));
+            SendConcrete(message.type, topic, Serialize(message));
         }
         
         protected abstract void SendConcrete(string messageType, string topic, string message);

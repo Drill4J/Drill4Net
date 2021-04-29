@@ -6,59 +6,54 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// <summary>
     /// Class for presentation of method metadata for transferring to the Drill site
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class AstMethod
     {
         /// <summary>
-        /// Namespace? Full source?
-        /// </summary>
-        public string Path { get; }
-
-        /// <summary>
         /// Name of the method.
         /// </summary>
-        public string Name { get;  }
+        public string name { get;  }
 
         /// <summary>
         /// Lists the parameters.
         /// </summary>
-        public List<string> Params { get; set; }
+        public List<string> @params { get; set; }
 
         /// <summary>
         /// The return type.
         /// </summary>
-        public string ReturnType { get; }
+        public string returnType { get; }
 
         /// <summary>
         /// The identifiers of the probes added to the method.
         /// </summary>
-        public List<bool> Probes { get; }
+        public List<bool> probes { get; }
 
         /// <summary>
         /// The count of probes added to the method.
         /// </summary>
-        public int Count { get; } //don't used?
+        public int count { get; } //don't used?
 
-        public string Checksum { get; }
+        public string checksum { get; }
         
         /******************************************************************************/
         public AstMethod() { }
 
-        public AstMethod(string path, string name, string returnType, int probeCount, string checksum)
+        public AstMethod(string name, string returnType, int probeCount, string checksum)
         {
-            Path = path ?? throw new ArgumentNullException(nameof(path));
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            ReturnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
-            Count = probeCount;
-            Checksum = checksum ?? throw new ArgumentNullException(nameof(checksum));
-            Params = new List<string>();
-            Probes = new List<bool>();
+            this.name = name ?? throw new ArgumentNullException(nameof(name));
+            this.returnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
+            count = probeCount;
+            this.checksum = checksum ?? throw new ArgumentNullException(nameof(checksum));
+            @params = new List<string>();
+            probes = new List<bool>();
         }
         
         /******************************************************************************/
         
         public override string ToString()
         {
-            return Name;
+            return name;
         }
     }
 }

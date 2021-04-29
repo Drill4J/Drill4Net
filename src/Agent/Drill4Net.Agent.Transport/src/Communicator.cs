@@ -12,9 +12,10 @@ namespace Drill4Net.Agent.Transport
             if(agentCfg == null)
                 throw new ArgumentNullException(nameof(agentCfg));
             //
-            var connector = new Connector(url, agentCfg);
+            var connector = new Connector();
             Receiver = new AgentReceiver(connector);
             Sender = new AgentSender(connector);
+            connector.Connect(url, agentCfg, Receiver.MessageReceived);
         }
     }
 }
