@@ -6,6 +6,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// <summary>
     /// Data about a class sent to Drill admin.
     /// </summary>
+    [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class AstEntity
     {

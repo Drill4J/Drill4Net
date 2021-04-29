@@ -43,6 +43,12 @@
             Dictionary of code blocks: key is point Id, value - coverage part of code by this block
             </summary>
         </member>
+        <member name="M:Drill4Net.Profiling.Tree.CoverageData.CoverageLength">
+            <summary>
+            Get "count of probes",it means in fact length of code in termins Injector
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Drill4Net.Profiling.Tree.CrossPoint">
             <summary>
             Cross-cutting point for injection code into <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/>

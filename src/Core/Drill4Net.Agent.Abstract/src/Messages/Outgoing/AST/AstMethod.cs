@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     /// <summary>
     /// Class for presentation of method metadata for transferring to the Drill site
     /// </summary>
+    [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class AstMethod
     {
@@ -27,7 +29,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
         /// <summary>
         /// The identifiers of the probes added to the method.
         /// </summary>
-        public List<bool> probes { get; }
+        public List<int> probes { get; }
 
         /// <summary>
         /// The count of probes added to the method.
@@ -36,7 +38,8 @@ namespace Drill4Net.Agent.Abstract.Transfer
 
         public string checksum { get; }
         
-        /******************************************************************************/
+        /****************************************************************************************/
+
         public AstMethod() { }
 
         public AstMethod(string name, string returnType, int probeCount, string checksum)
@@ -46,11 +49,11 @@ namespace Drill4Net.Agent.Abstract.Transfer
             count = probeCount;
             this.checksum = checksum ?? throw new ArgumentNullException(nameof(checksum));
             @params = new List<string>();
-            probes = new List<bool>();
+            probes = (new int[probeCount]).ToList();
         }
-        
-        /******************************************************************************/
-        
+
+        /****************************************************************************************/
+
         public override string ToString()
         {
             return name;
