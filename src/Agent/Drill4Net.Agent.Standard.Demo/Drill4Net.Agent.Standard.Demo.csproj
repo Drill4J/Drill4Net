@@ -13,6 +13,7 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
       <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Standard.Demo</OutputPath>
       <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Standard.Demo\Drill4Net.Agent.Standard.Demo.xml</DocumentationFile>
+      <PlatformTarget>AnyCPU</PlatformTarget>
     </PropertyGroup>
 
     <ItemGroup>

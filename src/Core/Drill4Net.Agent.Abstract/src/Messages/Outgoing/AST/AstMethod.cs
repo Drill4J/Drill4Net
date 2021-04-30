@@ -46,6 +46,8 @@ namespace Drill4Net.Agent.Abstract.Transfer
         {
             this.name = name ?? throw new ArgumentNullException(nameof(name));
             this.returnType = returnType ?? throw new ArgumentNullException(nameof(returnType));
+            if (probeCount == -1)
+                probeCount = 0;
             count = probeCount;
             this.checksum = checksum ?? throw new ArgumentNullException(nameof(checksum));
             @params = new List<string>();
