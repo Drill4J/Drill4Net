@@ -43,7 +43,7 @@ namespace Drill4Net.Agent.Standard
             if (injMethod == null)
                 throw new ArgumentNullException(nameof(injMethod));
             //
-            var astMethod = new AstMethod(injMethod.Name, injMethod.ReturnType, injMethod.Coverage.CoverageLength(), injMethod.Source.HashCode);
+            var astMethod = new AstMethod(injMethod.Name, injMethod.ReturnType, injMethod.OwnBusinessSize, injMethod.Source.HashCode);
             if (injMethod.Parameters != null)
                 astMethod.@params = injMethod.Parameters.Split(',').Select(a => a.Trim()).ToList();
             return astMethod;

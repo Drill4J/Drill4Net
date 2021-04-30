@@ -47,8 +47,9 @@ namespace Drill4Net.Agent.Standard
 
                 //3. Send "Initialized" message to admin side
                 Sender.SendInitializedMessage();
-                
-                //4. Waiting events from admin side...
+
+                //4. After return will we wait events from admin side
+                //and probe data from instrumented code on RegisterStatic...
 
                 //5. Test
                 // var testUid = Guid.NewGuid().ToString();

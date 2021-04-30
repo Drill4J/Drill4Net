@@ -21,16 +21,5 @@ namespace Drill4Net.Profiling.Tree
             BlockByPart = new Dictionary<int, float>();
             PointUidToEndIndex = new Dictionary<string, int>();
         }
-
-        /**********************************************************/
-
-        /// <summary>
-        /// Get "count of probes",it means in fact length of code in termins Injector
-        /// </summary>
-        /// <returns></returns>
-        public int CoverageLength()
-        {
-            return BlockByPart.Keys.Any() ? BlockByPart.Keys.Max() + 1 : 0;
-        }
     }
 }
