@@ -35,7 +35,7 @@ namespace Drill4Net.Agent.Transport
             _connector.SendPluginMessage(topic, message);
         }
 
-        public override void SendTest(AbstractMessage data)
+        public override void SendTest(BaseMessage data)
         {
             //SendFakeMessage(data);
         }

@@ -3,7 +3,7 @@
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class InitDataPart: AbstractMessage
+    public class InitDataPart: BaseMessage
     {
         public List<AstEntity> astEntities { get; set; }
 

@@ -3,7 +3,7 @@
 namespace Drill4Net.Agent.Abstract
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class InitInfo : AbstractMessage
+    public class InitInfo : BaseMessage
     {
         public string message { get; set; }
 
