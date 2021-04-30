@@ -15,7 +15,7 @@ namespace Drill4Net.Agent.Transport
             var connector = new Connector();
             Receiver = new AgentReceiver(connector);
             Sender = new AgentSender(connector);
-            connector.Connect(url, agentCfg, Receiver.MessageReceived);
+            connector.Connect(url, agentCfg);
         }
     }
 }

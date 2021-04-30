@@ -44,6 +44,7 @@ namespace Drill4Net.Agent.Transport
         public AgentReceiver(Connector receiver)
         {
             _connector = receiver ?? throw new ArgumentNullException(nameof(_connector));
+            _connector.MessageReceived += MessageReceived;
         }
 
         /************************************************************************/
@@ -54,23 +55,26 @@ namespace Drill4Net.Agent.Transport
             {
                 switch (topic)
                 {
-                    case AgentConstants.MESSAGE_IN_START_SESSION:
-                        var startInfo = Deserialize<StartAgentSession>(message);
-                        StartSession?.Invoke(startInfo);
-                        break;
-                    case AgentConstants.MESSAGE_IN_STOP_SESSION:
-                        var stopInfo = Deserialize<StopAgentSession>(message);
-                        StopSession?.Invoke(stopInfo);
-                        break;
-                    case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
-                        StopAllSessions?.Invoke();
-                        break;
-                    case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
-                        var cancelInfo = Deserialize<CancelAgentSession>(message);
-                        CancelSession?.Invoke(cancelInfo);
-                        break;
-                    case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
-                        CancelAllSessions?.Invoke();
+                    //case AgentConstants.MESSAGE_IN_START_SESSION:
+                    //    var startInfo = Deserialize<StartAgentSession>(message);
+                    //    StartSession?.Invoke(startInfo);
+                    //    break;
+                    //case AgentConstants.MESSAGE_IN_STOP_SESSION:
+                    //    var stopInfo = Deserialize<StopAgentSession>(message);
+                    //    StopSession?.Invoke(stopInfo);
+                    //    break;
+                    //case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
+                    //    StopAllSessions?.Invoke();
+                    //    break;
+                    //case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
+                    //    var cancelInfo = Deserialize<CancelAgentSession>(message);
+                    //    CancelSession?.Invoke(cancelInfo);
+                    //    break;
+                    //case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
+                    //    CancelAllSessions?.Invoke();
+                    //    break;
+                    case AgentConstants.TOPIC_PLUGIN_ACTION:
+
                         break;
                     default:
                         //log
