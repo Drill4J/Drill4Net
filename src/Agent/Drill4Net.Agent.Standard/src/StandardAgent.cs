@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,6 +18,8 @@ namespace Drill4Net.Agent.Standard
         private static ISender Sender => _comm.Sender;
         private static readonly StandardAgentRepository _rep;
         private static readonly ManualResetEvent _initEvent = new(false);
+        private static List<AstEntity> _entities;
+        private static readonly object _entLocker = new object();
 
         /*****************************************************************************/
 
@@ -31,12 +34,13 @@ namespace Drill4Net.Agent.Standard
                 _comm = _rep.Communicator;
 
                 //handler of events from admin side
-                Receiver.RequestClassesData += SendClassesData;
-                Receiver.StartSession += StartSession;
-                Receiver.CancelSession += CancelSession;
-                Receiver.CancelAllSessions += CancelAllSessions;
-                Receiver.StopSession += StopSession;
-                Receiver.StopAllSessions += StopAllSessions;
+                Receiver.TogglePlugin += OnTogglePlugin;
+                Receiver.RequestClassesData += OnSendClassesData;
+                Receiver.StartSession += OnStartSession;
+                Receiver.CancelSession += OnCancelSession;
+                Receiver.CancelAllSessions += OnCancelAllSessions;
+                Receiver.StopSession += OnStopSession;
+                Receiver.StopAllSessions += OnStopAllSessions;
 
                 //wait events from admin side and probe data from instrumented code on RegisterStatic
 
@@ -108,49 +112,63 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        private static void SendClassesData()
+        private static void OnSendClassesData()
         {
-            var entities = _rep.GetEntities();
+            lock (_entLocker)
+            {
+                _entities = _rep.GetEntities();
+            }
+        }
+        
+        private static void OnTogglePlugin(string plugin)
+        {
+            lock (_entLocker)
+            {
+                if (_entities == null)
+                    return; //log??
 
-            //1. Init message
-            Sender.SendInitMessage(entities.Count);
+                //1. Init message
+                Sender.SendInitMessage(_entities.Count);
 
-            //2. Send injected classes info to admin side
-            Sender.SendClassesDataMessage(entities);
+                //2. Send injected classes info to admin side
+                Sender.SendClassesDataMessage(_entities);
+                _entities.Clear();
+                _entities = null;
+            }
 
             //3. Send "Initialized" message to admin side
             Sender.SendInitializedMessage();
         }
 
         #region Session
-        private static void StartSession(StartAgentSession info)
+        private static void OnStartSession(StartAgentSession info)
         {
             var uid = info.Payload.SessionId;
             _rep.StartSession(info);
             Sender.SendSessionStartedMessage(uid, GetCurrentUnixTimeMs());
         }
 
-        private static void StopSession(StopAgentSession info)
+        private static void OnStopSession(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
             _rep.SessionStop(info);
             Sender.SendSessionFinishedMessage(uid, GetCurrentUnixTimeMs());
         }
 
-        private static void CancelAllSessions()
+        private static void OnCancelAllSessions()
         {
             var uids = _rep.CancelAllSessions();
             Sender.SendAllSessionCancelledMessage(uids, GetCurrentUnixTimeMs());
         }
 
-        private static void CancelSession(CancelAgentSession info)
+        private static void OnCancelSession(CancelAgentSession info)
         {
             var uid = info.Payload.SessionId;
             _rep.CancelSession(info);
             Sender.SendSessionCancelledMessage(uid, GetCurrentUnixTimeMs());
         }
 
-        private static void StopAllSessions()
+        private static void OnStopAllSessions()
         {
             var uids = _rep.StopAllSessions();
             Sender.SendAllSessionFinishedMessage(uids, GetCurrentUnixTimeMs());

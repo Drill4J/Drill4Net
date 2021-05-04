@@ -17,6 +17,11 @@ namespace Drill4Net.Agent.Transport
         public event RequestClassesDataHandler RequestClassesData;
 
         /// <summary>
+        /// On admin side toggled some plugin
+        /// </summary>
+        public event TogglePluginHandler TogglePlugin;
+
+        /// <summary>
         /// Session is started on admin side
         /// </summary>
         public event StartSessionHandler StartSession;
@@ -44,7 +49,6 @@ namespace Drill4Net.Agent.Transport
         #endregion
 
         private readonly JsonSerializerOptions _deserOpts;
-        private readonly Connector _connector;
 
         /************************************************************************/
 
@@ -56,20 +60,30 @@ namespace Drill4Net.Agent.Transport
                 PropertyNameCaseInsensitive = true,
             };
 
-            _connector = receiver ?? throw new ArgumentNullException(nameof(_connector));
-            _connector.MessageReceived += MessageReceived;
+            var connector = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            connector.MessageReceived += MessageReceived;
         }
 
         /************************************************************************/
 
-        public virtual void MessageReceived(string topic, string message)
+        protected virtual void MessageReceived(string topic, string message)
         {
             try
             {
                 switch (topic)
                 {
+                    case AgentConstants.TOPIC_HEADER_CHANGE: 
+                        break;
+                    case AgentConstants.TOPIC_AGENT_NAMESPACES: //TODO: additional filter for probes?
+                        break;
+                    case AgentConstants.TOPIC_AGENT_LOAD: //needed?
+                        break;
                     case AgentConstants.TOPIC_CLASSES_LOAD:
                         RequestClassesData?.Invoke();
+                        break;
+                    case AgentConstants.TOPIC_TOGGLE_PLUGIN:
+                        var plugin = message; //TODO: processing
+                        TogglePlugin?.Invoke(plugin);
                         break;
                     case AgentConstants.TOPIC_PLUGIN_ACTION:
                         message = message.Substring(message.IndexOf('{')); //crunch: bug in messages on admin side

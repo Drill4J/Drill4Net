@@ -9,6 +9,11 @@ namespace Drill4Net.Agent.Abstract
     /// Handler for <see cref="IReceiver.RequestClassesData"/>
     /// </summary>
     public delegate void RequestClassesDataHandler();
+    
+    /// <summary>
+    /// Handler for <see cref="IReceiver.TogglePlugin"/> 
+    /// </summary>
+    public delegate void TogglePluginHandler(string plugin);
 
     /// <summary>
     /// Handler for <see cref="IReceiver.StartSession"/>
@@ -45,6 +50,11 @@ namespace Drill4Net.Agent.Abstract
         /// Command for start session
         /// </summary>
         event RequestClassesDataHandler RequestClassesData;
+        
+        /// <summary>
+        /// On admin side toggled some plugin
+        /// </summary>
+        event TogglePluginHandler TogglePlugin;
 
         /// <summary>
         /// Command for start session

@@ -9,10 +9,12 @@
         public const string ADMIN_PLUGIN_NAME = "test2code";
 
         #region Topics
+        public const string TOPIC_HEADER_CHANGE = "/agent/change-header-name";
         public const string TOPIC_AGENT_LOAD = "/agent/load";
         public const string TOPIC_CLASSES_LOAD = "/agent/load-classes-data";
         public const string TOPIC_AGENT_NAMESPACES = "/agent/set-packages-prefixes";
         public const string TOPIC_PLUGIN_ACTION = "/plugin/action";
+        public const string TOPIC_TOGGLE_PLUGIN = "/plugin/togglePlugin";
         #endregion
         #region Message incoming
         public const string MESSAGE_IN_START_SESSION = "START_AGENT_SESSION";

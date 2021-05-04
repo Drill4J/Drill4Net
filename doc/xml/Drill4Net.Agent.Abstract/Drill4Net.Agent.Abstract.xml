@@ -35,6 +35,11 @@
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.RequestClassesData"/>
             </summary>
         </member>
+        <member name="T:Drill4Net.Agent.Abstract.TogglePluginHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.TogglePlugin"/> 
+            </summary>
+        </member>
         <member name="T:Drill4Net.Agent.Abstract.StartSessionHandler">
             <summary>
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.StartSession"/>
@@ -66,6 +71,11 @@
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.RequestClassesData">
             <summary>
             Command for start session
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.TogglePlugin">
+            <summary>
+            On admin side toggled some plugin
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.StartSession">
