@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
@@ -9,6 +8,7 @@ namespace Drill4Net.Agent.Transport
     //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void ReceivedMessageHandler(string topic, string message);
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class Connector
     {
         public event ReceivedMessageHandler MessageReceived;
@@ -26,7 +26,7 @@ namespace Drill4Net.Agent.Transport
         [DllImport("agent_connector")]
         extern static int sendPluginMessage(string pluginId, string content);
 
-        private ReceivedMessageHandler _received; //it's needed for prevent GC collecting
+        private ReceivedMessageHandler _received; //it's needed to prevent GC collecting
 
         /***********************************************************************************/
 

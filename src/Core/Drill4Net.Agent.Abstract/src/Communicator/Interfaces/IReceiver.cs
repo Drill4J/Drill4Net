@@ -3,8 +3,13 @@
 namespace Drill4Net.Agent.Abstract
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=881283184
-    
+
     #region Delegates
+    /// <summary>
+    /// Handler for <see cref="IReceiver.RequestClassesData"/>
+    /// </summary>
+    public delegate void RequestClassesDataHandler();
+
     /// <summary>
     /// Handler for <see cref="IReceiver.StartSession"/>
     /// </summary>
@@ -36,6 +41,11 @@ namespace Drill4Net.Agent.Abstract
     
     public interface IReceiver
     {
+        /// <summary>
+        /// Command for start session
+        /// </summary>
+        event RequestClassesDataHandler RequestClassesData;
+
         /// <summary>
         /// Command for start session
         /// </summary>

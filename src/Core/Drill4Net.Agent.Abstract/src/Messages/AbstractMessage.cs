@@ -4,13 +4,13 @@ namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class BaseMessage //must be CONCRETE type due itself direct deserialization 
+    public abstract class AbstractMessage
     {
         public string type { get; set; }
 
-        public BaseMessage() { }
+        public AbstractMessage() { }
 
-        protected BaseMessage(string type)
+        protected AbstractMessage(string type)
         {
             this.type = type ?? throw new ArgumentNullException(nameof(type));
         }

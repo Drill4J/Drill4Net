@@ -30,6 +30,7 @@ namespace Drill4Net.Agent.Standard
 
         private readonly System.Timers.Timer _sendTimer;
         private readonly object _sendLocker;
+        private bool _inTimer;
 
         /**************************************************************************************/
 
@@ -203,7 +204,18 @@ namespace Drill4Net.Agent.Standard
         #region Send coverage data
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            SendCoverages();
+            if (_inTimer)
+                return;
+            _inTimer = true;
+            try
+            {
+                SendCoverages();
+            }
+            catch { }
+            finally
+            {
+                _inTimer = false;
+            }
         }
 
         internal void SendCoverages()
@@ -212,16 +224,25 @@ namespace Drill4Net.Agent.Standard
             {
                 foreach (var ctxId in _ctxToDispatcher.Keys)
                 {
-                    var sessionUid = _ctxToSession[ctxId];
-                    var disp = _ctxToDispatcher[ctxId];
-                    var execClasses = disp.PointToClass.Values.ToList();
+                    if(!_ctxToDispatcher.TryGetValue(ctxId, out CoverageDispatcher disp))
+                        continue;
+                    if (!_ctxToSession.TryGetValue(ctxId, out string sessionUid))
+                        continue;
+                    var execClasses = disp.ExecClasses.ToList();
                     var cnt = execClasses.Count();
+
+                    //TEST!!!
+                    var r = new Random(DateTime.Now.Millisecond);
+                    var probes = execClasses[r.Next(0, cnt)].probes;
+                    for (var i = 0; i<probes.Count; i++)
+                        probes[i] = true;
+
                     switch (cnt)
                     {
                         case 0:
                             return;
                         case > 65535:
-                            //TODO: implement by cycles
+                            //TODO: implement in cycle by chunk
                             break;
                         default:
                             Communicator.Sender.SendCoverageData(sessionUid, execClasses);

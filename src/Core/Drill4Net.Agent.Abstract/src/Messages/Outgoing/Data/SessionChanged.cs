@@ -4,7 +4,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class SessionChanged : BaseMessage
+    public class SessionChanged : AbstractMessage
     {
         public string sessionId { get; set; }
         public int probeCount { get; set; }

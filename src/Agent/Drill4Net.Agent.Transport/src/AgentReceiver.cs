@@ -12,6 +12,11 @@ namespace Drill4Net.Agent.Transport
     {
         #region Events
         /// <summary>
+        /// Admin side requests the classes metadata
+        /// </summary>
+        public event RequestClassesDataHandler RequestClassesData;
+
+        /// <summary>
         /// Session is started on admin side
         /// </summary>
         public event StartSessionHandler StartSession;
@@ -35,6 +40,7 @@ namespace Drill4Net.Agent.Transport
         /// All sessions are cancelled on admin side
         /// </summary>
         public event CancelAllSessionsHandler CancelAllSessions;
+
         #endregion
 
         private readonly JsonSerializerOptions _deserOpts;
@@ -62,8 +68,12 @@ namespace Drill4Net.Agent.Transport
             {
                 switch (topic)
                 {
+                    case AgentConstants.TOPIC_CLASSES_LOAD:
+                        RequestClassesData?.Invoke();
+                        break;
                     case AgentConstants.TOPIC_PLUGIN_ACTION:
-                        var baseInfo = Deserialize<BaseMessage>(message);
+                        message = message.Substring(message.IndexOf('{')); //crunch: bug in messages on admin side
+                        var baseInfo = Deserialize<IncomingMessage>(message);
                         switch (baseInfo.type)
                         {
                             case AgentConstants.MESSAGE_IN_START_SESSION:

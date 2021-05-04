@@ -10,6 +10,7 @@
 
         #region Topics
         public const string TOPIC_AGENT_LOAD = "/agent/load";
+        public const string TOPIC_CLASSES_LOAD = "/agent/load-classes-data";
         public const string TOPIC_AGENT_NAMESPACES = "/agent/set-packages-prefixes";
         public const string TOPIC_PLUGIN_ACTION = "/plugin/action";
         #endregion

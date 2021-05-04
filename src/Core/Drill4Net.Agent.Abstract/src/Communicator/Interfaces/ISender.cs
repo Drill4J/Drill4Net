@@ -32,8 +32,8 @@ namespace Drill4Net.Agent.Abstract
         void SendCoverageData(string sessionUid, List<ExecClassData> data);
 
         void SendSessionChangedMessage(string sessionUid, int probeCount);
-        void Send(string topic, BaseMessage message);
+        void Send(string topic, AbstractMessage message);
         void SendTest(IncomingMessage message);
-        void SendTest(BaseMessage data);
+        void SendTest(AbstractMessage data);
     }
 }

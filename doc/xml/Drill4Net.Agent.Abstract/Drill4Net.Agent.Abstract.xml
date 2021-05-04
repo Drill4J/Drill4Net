@@ -30,6 +30,11 @@
             Send coverage data to the admin part ("COVERAGE_DATA_PART")
             </summary>
         </member>
+        <member name="T:Drill4Net.Agent.Abstract.RequestClassesDataHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.RequestClassesData"/>
+            </summary>
+        </member>
         <member name="T:Drill4Net.Agent.Abstract.StartSessionHandler">
             <summary>
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.StartSession"/>
@@ -56,6 +61,11 @@
         <member name="T:Drill4Net.Agent.Abstract.CancelAllSessionsHandler">
             <summary>
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.CancelAllSessions"/>
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.RequestClassesData">
+            <summary>
+            Command for start session
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.StartSession">

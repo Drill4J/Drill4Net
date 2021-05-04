@@ -44,6 +44,7 @@ namespace Drill4Net.Agent.Abstract
                 ts = ts,
                 //IsRealtime = ...
                 //TestType = ...
+                testType = "MANUAL", //any string TODO: real value from event
             };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
@@ -89,7 +90,7 @@ namespace Drill4Net.Agent.Abstract
         #endregion
         #region Send API
         #region Send
-        public void Send(string topic, BaseMessage message)
+        public void Send(string topic, AbstractMessage message)
         {
             SendConcrete(message.type, topic, Serialize(message));
         }
@@ -97,7 +98,7 @@ namespace Drill4Net.Agent.Abstract
         protected abstract void SendConcrete(string messageType, string topic, string message);
         #endregion
         #region SendToPlugin
-        public void SendToPlugin(string topic, BaseMessage message)
+        public void SendToPlugin(string topic, AbstractMessage message)
         {
             SendToPluginConcrete(topic, Serialize(message));
         }
@@ -107,7 +108,7 @@ namespace Drill4Net.Agent.Abstract
 
         protected abstract string Serialize(object message);
         
-        public virtual void SendTest(BaseMessage data)
+        public virtual void SendTest(AbstractMessage data)
         {
         }
         

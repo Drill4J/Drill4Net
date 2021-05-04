@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using Drill4Net.Agent.Abstract;
+using System.Collections.Generic;
 using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
@@ -10,6 +9,7 @@ namespace Drill4Net.Agent.Standard
     {
         public ConcurrentDictionary<string, ExecClassData> PointToClass { get; }
         public ConcurrentDictionary<string, (int, int)> PointToRange { get; }
+        public HashSet<ExecClassData> ExecClasses { get; }
 
         /*************************************************************************/
 
@@ -17,6 +17,7 @@ namespace Drill4Net.Agent.Standard
         {
             PointToClass = new ConcurrentDictionary<string, ExecClassData>();
             PointToRange = new ConcurrentDictionary<string, (int, int)>();
+            ExecClasses = new HashSet<ExecClassData>();
         }
 
         /*************************************************************************/
@@ -32,6 +33,14 @@ namespace Drill4Net.Agent.Standard
             if (PointToClass.ContainsKey(pointUid))
                 return;
             PointToClass.TryAdd(pointUid, data);
+
+            if (!ExecClasses.Contains(data))
+            {
+                lock (ExecClasses)
+                {
+                    ExecClasses.Add(data);
+                }
+            }
         }
 
         public void RegisterCoverage(string pointUid)
