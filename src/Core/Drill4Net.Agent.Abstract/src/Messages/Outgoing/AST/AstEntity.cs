@@ -29,7 +29,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
         
         public AstEntity(string entityPath, string fullName)
         {
-            path = entityPath ?? throw new ArgumentNullException(nameof(entityPath));
+            path = entityPath.Replace(".", "/") ?? throw new ArgumentNullException(nameof(entityPath));
             name = fullName ?? throw new ArgumentNullException(nameof(fullName));
             methods = new List<AstMethod>();
         }

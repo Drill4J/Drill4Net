@@ -35,42 +35,44 @@ namespace Drill4Net.Agent.Standard.Demo
                 await Task.Delay(250);
                 StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
 
-                // calling the methods
-                var mess = @"  *** Press 1 for start some portion of target methods
-  *** Press q for exit
-  *** Good luck and... keep on dancing!";
-                Console.WriteLine($"\n{mess}");
+                //              // calling the methods
+                //              var mess = @"  *** Press 1 for start some portion of target methods
+                //*** Press q for exit
+                //*** Good luck and... keep on dancing!";
+                //              Console.WriteLine($"\n{mess}");
 
-                //loading methods
-                //TODO: do norm!!!
-                var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\";
-                var path = $"{dir}Drill4Net.Target.Common.dll";
-                _asm = Assembly.LoadFrom(path);
-                _types = _asm.GetTypes().Where(a => a.IsPublic).ToArray();
-                _methods = new Dictionary<Type, MethodInfo[]>();
-                foreach (var type in _types)
-                    _methods.Add(type, type.GetMethods());
+                //              //loading methods
+                //              //TODO: do norm!!!
+                //              var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\";
+                //              var path = $"{dir}Drill4Net.Target.Common.dll";
+                //              _asm = Assembly.LoadFrom(path);
+                //              _types = _asm.GetTypes().Where(a => a.IsPublic).ToArray();
+                //              _methods = new Dictionary<Type, MethodInfo[]>();
+                //              foreach (var type in _types)
+                //                  _methods.Add(type, type.GetMethods());
 
-                //polling
-                while (true)
-                {
-                    Console.WriteLine("\nInput:");
-                    var expr = Console.ReadLine()?.Trim();
-                    if (string.IsNullOrWhiteSpace(expr))
-                        continue;
-                    if (expr == "q" || expr == "Q")
-                        break;
-                    //
-                    string output = null;
-                    try
-                    {
-                        StartMethods(expr);
-                    }
-                    catch (Exception ex)
-                    {
-                        output = $"error -> {ex.Message}";
-                    }
-                }
+                //              //polling
+                //              while (true)
+                //              {
+                //                  Console.WriteLine("\nInput:");
+                //                  var expr = Console.ReadLine()?.Trim();
+                //                  if (string.IsNullOrWhiteSpace(expr))
+                //                      continue;
+                //                  if (expr == "q" || expr == "Q")
+                //                      break;
+                //                  //
+                //                  string output = null;
+                //                  try
+                //                  {
+                //                      StartMethods(expr);
+                //                  }
+                //                  catch (Exception ex)
+                //                  {
+                //                      output = $"error -> {ex.Message}";
+                //                  }
+                //              }
+
+                Console.ReadKey(true);
             }
             catch (Exception ex)
             {

@@ -103,17 +103,24 @@ namespace Drill4Net.Injector.Core
         #region Injected Tree
         public virtual InjectedSolution ReadInjectedTree()
         {
-            if (Options == null)
-                throw new Exception("Options is empty");
-            var targetDir = Options.Destination.Directory;
-            var treePath =GenerateTreeFilePath(targetDir);
+            string treePath = null;
+            if (Options != null)
+            {
+                var targetDir = Options.Destination.Directory;
+                treePath = GenerateTreeFilePath(targetDir);
+            }
             return ReadInjectedTree(treePath);
         }
 
-        public virtual InjectedSolution ReadInjectedTree(string path)
+        public virtual InjectedSolution ReadInjectedTree(string path = null)
         {
             var types = GetInjectedTreeTypes();
             var ser = new NetSerializer.Serializer(types);
+
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.TREE_FILE_NAME);
+            }
 
             var bytes2 = File.ReadAllBytes(path);
             using var ms2 = new MemoryStream(bytes2);

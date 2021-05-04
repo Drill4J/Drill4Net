@@ -37,7 +37,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
         {
             id = className.GetHashCode();
             this.testName = testName ?? throw new ArgumentNullException(nameof(testName));
-            this.className = className ?? throw new ArgumentNullException(nameof(className));
+            this.className = className.Replace(".","/") ?? throw new ArgumentNullException(nameof(className));
         }
 
         /**************************************************************************/

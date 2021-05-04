@@ -31,17 +31,14 @@ namespace Drill4Net.Agent.Standard
                 _comm = _rep.Communicator;
 
                 //handler of events from admin side
-                Receiver.RequestClassesData += RequestClassesData;
+                Receiver.RequestClassesData += SendClassesData;
                 Receiver.StartSession += StartSession;
                 Receiver.CancelSession += CancelSession;
                 Receiver.CancelAllSessions += CancelAllSessions;
                 Receiver.StopSession += StopSession;
                 Receiver.StopAllSessions += StopAllSessions;
 
-
-
-                //4. After return will we wait events from admin side
-                //and probe data from instrumented code on RegisterStatic...
+                //wait events from admin side and probe data from instrumented code on RegisterStatic
 
                 //5. Test
                 // var testUid = Guid.NewGuid().ToString();
@@ -111,14 +108,14 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        private static void RequestClassesData()
+        private static void SendClassesData()
         {
             var entities = _rep.GetEntities();
 
             //1. Init message
             Sender.SendInitMessage(entities.Count);
 
-            //2. Send injected class info to admin side
+            //2. Send injected classes info to admin side
             Sender.SendClassesDataMessage(entities);
 
             //3. Send "Initialized" message to admin side
