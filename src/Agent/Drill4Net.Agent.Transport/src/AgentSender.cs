@@ -35,23 +35,19 @@ namespace Drill4Net.Agent.Transport
             _connector.SendPluginMessage(topic, message);
         }
 
-        public override void SendTest(AbstractMessage data)
+        public override void SendOutgoingTest(OutgoingMessage data)
         {
-            //SendFakeMessage(data);
+
         }
         
-        public override void SendTest(IncomingMessage data)
+        public override void SendOutgoingTest(string topic, OutgoingMessage data)
         {
-            //SendFakeMessage(data);
+
         }
 
-        private void SendFakeMessage(object data)
+        public override void SendIncomingTest(string topic, IncomingMessage message)
         {
-            //var serData = Serialize(data);
-            //var mess = ResponseMessage.TextMessage(serData);
-            //_sender.StreamFakeMessage(mess);
+            
         }
-
-
     }
 }

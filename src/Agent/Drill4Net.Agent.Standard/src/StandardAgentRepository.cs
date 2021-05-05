@@ -110,7 +110,7 @@ namespace Drill4Net.Agent.Standard
                     }
                     if (multi) 
                     {
-                        //here many copies of target for diferent runtimes
+                        //here many copies of target for different runtimes
                         //we need only one
                         var execVer = CommonUtils.GetEntryTargetVersioning();
                         InjectedDirectory targetDir = null;

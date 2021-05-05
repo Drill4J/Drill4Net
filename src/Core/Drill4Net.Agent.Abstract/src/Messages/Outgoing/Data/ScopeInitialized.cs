@@ -4,7 +4,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     [Serializable]
-    public class ScopeInitialized: AbstractMessage
+    public class ScopeInitialized: OutgoingMessage
     {
         public string id { get; set; }
         public string name { get; set; }

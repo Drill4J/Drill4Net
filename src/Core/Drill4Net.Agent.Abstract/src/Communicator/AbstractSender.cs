@@ -118,11 +118,15 @@ namespace Drill4Net.Agent.Abstract
 
         protected abstract string Serialize(object message);
         
-        public virtual void SendTest(AbstractMessage data)
+        public virtual void SendOutgoingTest(OutgoingMessage data)
         {
         }
         
-        public virtual void SendTest(IncomingMessage message)
+        public virtual void SendOutgoingTest(string topic, OutgoingMessage data)
+        {
+        }
+        
+        public virtual void SendIncomingTest(string topic, IncomingMessage message)
         {
         }
         #endregion

@@ -2,13 +2,13 @@
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
-    [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+    [Serializable]
     public abstract class AbstractMessage
     {
         public string type { get; set; }
 
-        public AbstractMessage() { }
+        protected AbstractMessage() { }
 
         protected AbstractMessage(string type)
         {

@@ -35,7 +35,10 @@ namespace Drill4Net.Agent.Abstract
 
         void SendSessionChangedMessage(string sessionUid, int probeCount);
         void Send(string topic, AbstractMessage message);
-        void SendTest(IncomingMessage message);
-        void SendTest(AbstractMessage data);
+        
+        //for local tests
+        void SendOutgoingTest(OutgoingMessage data);
+        void SendOutgoingTest(string topic, OutgoingMessage data);
+        void SendIncomingTest(string topic, IncomingMessage message);
     }
 }
