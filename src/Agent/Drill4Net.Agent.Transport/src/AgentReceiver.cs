@@ -12,6 +12,11 @@ namespace Drill4Net.Agent.Transport
     {
         #region Events
         /// <summary>
+        /// New scope data is initialized
+        /// </summary>
+        public event InitScopeDataHandler InitScopeData;
+
+        /// <summary>
         /// Admin side requests the classes metadata
         /// </summary>
         public event RequestClassesDataHandler RequestClassesData;
@@ -90,6 +95,10 @@ namespace Drill4Net.Agent.Transport
                         var baseInfo = Deserialize<IncomingMessage>(message);
                         switch (baseInfo.type)
                         {
+                            case AgentConstants.MESSAGE_IN_INIT_ACTIVE_SCOPE:
+                                var scope = Deserialize<InitActiveScope>(message);
+                                InitScopeData?.Invoke(scope);
+                                break;
                             case AgentConstants.MESSAGE_IN_START_SESSION:
                                 var startInfo = Deserialize<StartAgentSession>(message);
                                 StartSession?.Invoke(startInfo);
@@ -107,6 +116,9 @@ namespace Drill4Net.Agent.Transport
                                 break;
                             case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
                                 CancelAllSessions?.Invoke();
+                                break;
+                            default:
+                                //log
                                 break;
                         }
                         break;

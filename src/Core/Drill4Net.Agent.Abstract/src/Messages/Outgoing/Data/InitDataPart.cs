@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+    [Serializable]
     public class InitDataPart: AbstractMessage
     {
         public List<AstEntity> astEntities { get; set; }

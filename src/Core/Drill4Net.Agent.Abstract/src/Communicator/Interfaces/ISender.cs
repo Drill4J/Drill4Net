@@ -7,6 +7,8 @@ namespace Drill4Net.Agent.Abstract
 
     public interface ISender
     {
+        void SendScopeInitialized(InitActiveScope scope, long ts);
+        
         void SendInitMessage(int classesCount);
 
         /// <summary>

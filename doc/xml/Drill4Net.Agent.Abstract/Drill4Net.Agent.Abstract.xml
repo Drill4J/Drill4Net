@@ -9,6 +9,11 @@
             Constants for Agent subsystem
             </summary>
         </member>
+        <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendScopeInitialized(Drill4Net.Agent.Abstract.Transfer.InitActiveScope,System.Int64)">
+            <summary>
+            "Send Scope Initialized" message ("SCOPE_INITIALIZED")
+            </summary>
+        </member>
         <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendInitMessage(System.Int32)">
             <summary>
             "Agent is starting init process" message ("INIT")
@@ -28,6 +33,11 @@
         <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendCoverageData(System.String,System.Collections.Generic.List{Drill4Net.Agent.Abstract.Transfer.ExecClassData})">
             <summary>
             Send coverage data to the admin part ("COVERAGE_DATA_PART")
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.InitScopeDataHandler">
+            <summary>
+            Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.InitScopeData"/>
             </summary>
         </member>
         <member name="T:Drill4Net.Agent.Abstract.RequestClassesDataHandler">
@@ -66,6 +76,11 @@
         <member name="T:Drill4Net.Agent.Abstract.CancelAllSessionsHandler">
             <summary>
             Handler for <see cref="E:Drill4Net.Agent.Abstract.IReceiver.CancelAllSessions"/>
+            </summary>
+        </member>
+        <member name="E:Drill4Net.Agent.Abstract.IReceiver.InitScopeData">
+            <summary>
+            New scope data is initialized
             </summary>
         </member>
         <member name="E:Drill4Net.Agent.Abstract.IReceiver.RequestClassesData">

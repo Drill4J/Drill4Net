@@ -18,7 +18,7 @@
         #endregion
         #region Message incoming
         public const string MESSAGE_IN_START_SESSION = "START_AGENT_SESSION";
-        public const string MESSAGE_IN_ADD_SESSION_DATA = "ADD_SESSION_DATA"; //???
+        public const string MESSAGE_IN_INIT_ACTIVE_SCOPE = "INIT_ACTIVE_SCOPE"; 
         public const string MESSAGE_IN_STOP_SESSION = "STOP";
         public const string MESSAGE_IN_STOP_ALL = "STOP_ALL";
         public const string MESSAGE_IN_CANCEL_SESSION = "CANCEL";
@@ -28,6 +28,7 @@
         public const string MESSAGE_OUT_INIT = "INIT";
         public const string MESSAGE_OUT_INITIALIZED = "INITIALIZED";
         public const string MESSAGE_OUT_INIT_DATA_PART = "INIT_DATA_PART";
+        public const string MESSAGE_OUT_SCOPE_INITIALIZED = "SCOPE_INITIALIZED";
         public const string MESSAGE_OUT_SESSION_STARTED = "SESSION_STARTED";
         
         public const string MESSAGE_OUT_COVERAGE_DATA_PART = "COVERAGE_DATA_PART";

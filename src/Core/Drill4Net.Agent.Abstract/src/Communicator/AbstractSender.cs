@@ -8,6 +8,16 @@ namespace Drill4Net.Agent.Abstract
         #region Send messages
         #region Init
         /// <summary>
+        /// "Send Scope Initialized" message ("SCOPE_INITIALIZED")
+        /// </summary>
+        public virtual void SendScopeInitialized(InitActiveScope scope, long ts)
+        {
+            var load = scope.Payload;
+            var mess = new ScopeInitialized(load.Id, load.Name, load.PrevId, ts);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+        }
+        
+        /// <summary>
         /// "Agent is starting init process" message ("INIT")
         /// </summary>
         public virtual void SendInitMessage(int classesCount)
@@ -43,8 +53,8 @@ namespace Drill4Net.Agent.Abstract
                 sessionId  = sessionUid, 
                 ts = ts,
                 //IsRealtime = ...
-                //TestType = ...
-                testType = "MANUAL", //any string TODO: real value from event
+                //TestType = ... //TODO: real type
+                testType = "MANUAL", //TODO: real value from event
             };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }

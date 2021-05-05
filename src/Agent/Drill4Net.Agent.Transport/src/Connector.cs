@@ -1,30 +1,32 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
 {
     //Delegates are marshalled directly. The only thing you need to take care of is the “calling convention”.
-    //The default calling convention is Winapi (which equals to StdCall on Windows).
+    //The default calling convention is WinApi (which equals to StdCall on Windows).
     //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void ReceivedMessageHandler(string topic, string message);
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+    [SuppressMessage("ReSharper", "ArrangeTypeMemberModifiers")]
     public class Connector
     {
         public event ReceivedMessageHandler MessageReceived;
 
         [DllImport("agent_connector")]
-        extern static int agent_connector_symbols();
+        static extern int agent_connector_symbols();
 
         [DllImport("agent_connector")]
-        extern static void initialize_agent(string agentId, string adminAddress, string buildVersion,
+        static extern void initialize_agent(string agentId, string adminAddress, string buildVersion,
                                             string groupId, string instanceId, ReceivedMessageHandler received);
 
         [DllImport("agent_connector")]
-        extern static int sendMessage(string messageType, string destination, string content);
+        static extern int sendMessage(string messageType, string destination, string content);
 
         [DllImport("agent_connector")]
-        extern static int sendPluginMessage(string pluginId, string content);
+        static extern int sendPluginMessage(string pluginId, string content);
 
         private ReceivedMessageHandler _received; //it's needed to prevent GC collecting
 

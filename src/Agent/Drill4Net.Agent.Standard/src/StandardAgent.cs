@@ -19,6 +19,7 @@ namespace Drill4Net.Agent.Standard
         private static readonly StandardAgentRepository _rep;
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
+        private static InitActiveScope _scope;
         private static readonly object _entLocker = new object();
 
         /*****************************************************************************/
@@ -34,8 +35,9 @@ namespace Drill4Net.Agent.Standard
                 _comm = _rep.Communicator;
 
                 //handler of events from admin side
+                Receiver.InitScopeData += OnInitScopeData;
                 Receiver.TogglePlugin += OnTogglePlugin;
-                Receiver.RequestClassesData += OnSendClassesData;
+                Receiver.RequestClassesData += OnRequestClassesData;
                 Receiver.StartSession += OnStartSession;
                 Receiver.CancelSession += OnCancelSession;
                 Receiver.CancelAllSessions += OnCancelAllSessions;
@@ -111,8 +113,15 @@ namespace Drill4Net.Agent.Standard
             Sender.SendTest(new CancelAllAgentSessions());
         }
         #endregion
+        
+        
+        private static void OnInitScopeData(InitActiveScope scope)
+        {
+            _scope = scope;
+            Sender.SendScopeInitialized(scope, GetCurrentUnixTimeMs());
+        }
 
-        private static void OnSendClassesData()
+        private static void OnRequestClassesData()
         {
             lock (_entLocker)
             {

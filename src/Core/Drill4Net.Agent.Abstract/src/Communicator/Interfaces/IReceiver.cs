@@ -3,8 +3,15 @@
 namespace Drill4Net.Agent.Abstract
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=881283184
+    //https://kb.epam.com/pages/viewpage.action?pageId=1376251876
+    //https://kb.epam.com/pages/viewpage.action?pageId=986565061
 
     #region Delegates
+    /// <summary>
+    /// Handler for <see cref="IReceiver.InitScopeData"/>
+    /// </summary>
+    public delegate void InitScopeDataHandler(InitActiveScope scope);
+    
     /// <summary>
     /// Handler for <see cref="IReceiver.RequestClassesData"/>
     /// </summary>
@@ -46,6 +53,11 @@ namespace Drill4Net.Agent.Abstract
     
     public interface IReceiver
     {
+        /// <summary>
+        /// New scope data is initialized
+        /// </summary>
+        event InitScopeDataHandler InitScopeData;
+        
         /// <summary>
         /// Command for start session
         /// </summary>
