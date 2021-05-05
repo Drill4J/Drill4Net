@@ -69,49 +69,49 @@ namespace Drill4Net.Agent.Standard
         /*****************************************************************************/
 
         #region Temporary tests
-        private static void SendTest_StartSession(string sessionUid)
-        {
-            var payload = new StartSessionPayload()
-            {
-                IsGlobal = false,
-                IsRealtime = true,
-                SessionId = sessionUid,
-                TestName = "TEST1",
-                TestType = "AUTO",
-            };
-            var data = new StartAgentSession {Payload = payload};
-            Sender.SendTest(data);
-        }
-        
-        private static void SendTest_StopSession(string sessionUid)
-        {
-            var payload = new AgentSessionPayload()
-            {
-                SessionId = sessionUid,
-            };
-            var data = new StopAgentSession {Payload = payload};
-            Sender.SendTest(data);
-        }
-        
-        private static void SendTest_StopAllSessions()
-        {
-            Sender.SendTest(new StopAllAgentSessions());
-        }
-        
-        private static void SendTest_CancelSession(string sessionUid)
-        {
-            var payload = new AgentSessionPayload()
-            {
-                SessionId = sessionUid,
-            };
-            var data = new CancelAgentSession {Payload = payload};
-            Sender.SendTest(data);
-        }
-        
-        private static void SendTest_CancelAllSessions()
-        {
-            Sender.SendTest(new CancelAllAgentSessions());
-        }
+        // private static void SendTest_StartSession(string sessionUid)
+        // {
+        //     var payload = new StartSessionPayload()
+        //     {
+        //         IsGlobal = false,
+        //         IsRealtime = true,
+        //         SessionId = sessionUid,
+        //         TestName = "TEST1",
+        //         TestType = "AUTO",
+        //     };
+        //     var data = new StartAgentSession {Payload = payload};
+        //     Sender.SendTest(data);
+        // }
+        //
+        // private static void SendTest_StopSession(string sessionUid)
+        // {
+        //     var payload = new AgentSessionPayload()
+        //     {
+        //         SessionId = sessionUid,
+        //     };
+        //     var data = new StopAgentSession {Payload = payload};
+        //     Sender.SendTest(data);
+        // }
+        //
+        // private static void SendTest_StopAllSessions()
+        // {
+        //     Sender.SendTest(new StopAllAgentSessions());
+        // }
+        //
+        // private static void SendTest_CancelSession(string sessionUid)
+        // {
+        //     var payload = new AgentSessionPayload()
+        //     {
+        //         SessionId = sessionUid,
+        //     };
+        //     var data = new CancelAgentSession {Payload = payload};
+        //     Sender.SendTest(data);
+        // }
+        //
+        // private static void SendTest_CancelAllSessions()
+        // {
+        //     Sender.SendTest(new CancelAllAgentSessions());
+        // }
         #endregion
 
         private static void OnInitScopeData(InitActiveScope scope)
