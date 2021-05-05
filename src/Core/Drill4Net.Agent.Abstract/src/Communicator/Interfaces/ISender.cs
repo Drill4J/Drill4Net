@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="entities"></param>
         void SendClassesDataMessage(List<AstEntity> entities);
 
-        void SendSessionStartedMessage(string sessionUid, long ts);
+        void SendSessionStartedMessage(string sessionUid, string testType, bool isRealTime, long ts);
         void SendSessionFinishedMessage(string sessionUid, long ts);
         void SendAllSessionFinishedMessage(List<string> sessionUids, long ts);
         void SendSessionCancelledMessage(string uid, long ts);

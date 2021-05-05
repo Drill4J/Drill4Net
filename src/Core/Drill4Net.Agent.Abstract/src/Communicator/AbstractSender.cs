@@ -46,15 +46,14 @@ namespace Drill4Net.Agent.Abstract
         }
         #endregion
 
-        public virtual void SendSessionStartedMessage(string sessionUid, long ts)
+        public virtual void SendSessionStartedMessage(string sessionUid, string testType, bool isRealTime, long ts)
         {
             var mess = new SessionStarted 
             { 
-                sessionId  = sessionUid, 
+                sessionId  = sessionUid,
+                isRealtime = isRealTime,
+                testType = testType,
                 ts = ts,
-                //IsRealtime = ...
-                //TestType = ... //TODO: real type
-                testType = "MANUAL", //TODO: real value from event
             };
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
         }
@@ -118,6 +117,7 @@ namespace Drill4Net.Agent.Abstract
 
         protected abstract string Serialize(object message);
         
+        #region Test sendings
         public virtual void SendOutgoingTest(OutgoingMessage data)
         {
         }
@@ -129,6 +129,7 @@ namespace Drill4Net.Agent.Abstract
         public virtual void SendIncomingTest(string topic, IncomingMessage message)
         {
         }
+        #endregion
         #endregion
     }
 }

@@ -46,7 +46,7 @@ namespace Drill4Net.Agent.Standard
 
                 //wait events from admin side and probe data from instrumented code on RegisterStatic
 
-                //5. Test
+                //local tests
                 // var testUid = Guid.NewGuid().ToString();
                 // SendTest_StartSession(testUid);
                 // SendTest_StopSession(testUid);
@@ -154,7 +154,8 @@ namespace Drill4Net.Agent.Standard
         {
             var uid = info.Payload.SessionId;
             _rep.StartSession(info);
-            Sender.SendSessionStartedMessage(uid, GetCurrentUnixTimeMs());
+            var load = info.Payload;
+            Sender.SendSessionStartedMessage(uid, load.TestType, load.IsRealtime, GetCurrentUnixTimeMs());
         }
 
         private static void OnStopSession(StopAgentSession info)
