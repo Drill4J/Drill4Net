@@ -9,6 +9,41 @@
             Constants for Agent subsystem
             </summary>
         </member>
+        <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_HEADER_CHANGE">
+            <summary>
+            The topic is used for agent attaching to the Admin Panel,
+            agent registration, agent system settings changing. 
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_AGENT_LOAD">
+            <summary>
+            The Admin Panel uses the topic for agent registration
+            with plugins and attaching registered with plugins agent.
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_CLASSES_LOAD">
+            <summary>
+            The topic is used for agent registration with/without a plugin, package settings changing.
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_AGENT_NAMESPACES">
+            <summary>
+            The topic is used for package settings changing (namespaces),
+            agent registration with/without plugins. 
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_PLUGIN_ACTION">
+            <summary>
+            The topic is used to send some action to the plugin(s) (e.g. switch active scope,
+            rename scope, switch scope, delete scope, start a new session, cancel a session, stop a session).
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_TOGGLE_PLUGIN">
+            <summary>
+            The topic is used for plugins disabling, plugins activating (agent registration,
+            agent attachment, agent toggle, agent system settings changing).
+            </summary>
+        </member>
         <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendScopeInitialized(Drill4Net.Agent.Abstract.Transfer.InitActiveScope,System.Int64)">
             <summary>
             "Send Scope Initialized" message ("SCOPE_INITIALIZED")

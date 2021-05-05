@@ -139,13 +139,13 @@ namespace Drill4Net.Agent.Standard
             return _converter.ToAstEntities(_injTypes);
         }
 
-        public CoverageDispatcher CreateCoverageDispatcher(string testName)
+        internal CoverageDispatcher CreateCoverageDispatcher(string testName)
         {
             return _converter.CreateCoverageDispatcher(testName, _injTypes);
         }
         #endregion
         #region Session
-        #region Started
+        #region Start
         public void StartSession(StartAgentSession info)
         {
             var uid = info.Payload.SessionId;
@@ -164,6 +164,15 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Stop
+        public List<string> StopAllSessions()
+        {
+            StopSendCycle();
+            SendCoverages();
+            var uids = _sessionToCtx.Keys.ToList();
+            ClearScopeData();
+            return uids;
+        }
+        
         public void SessionStop(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
@@ -175,32 +184,40 @@ namespace Drill4Net.Agent.Standard
             RemoveSession(uid);
             StopSendCycleIfNeeded();
         }
+        #endregion
+        #region Cancel
+        public void CancelSession(CancelAgentSession info)
+        {
+            RemoveSession(info.Payload.SessionId);
+        }
+
+        public List<string> CancelAllSessions()
+        {
+            StopSendCycle();
+            var uids = _sessionToCtx.Keys.ToList();
+            ClearScopeData();
+            return uids;
+        }
+        #endregion
 
         internal void RemoveSession(string sessionUid)
         {
-            if (!_sessionToCtx.ContainsKey(sessionUid))
+            if (!_sessionToCtx.TryRemove(sessionUid, out var ctxId)) 
                 return;
-            //
-            var ctxId = _sessionToCtx[sessionUid];
             _ctxToSession.TryRemove(ctxId, out var _);
-            _sessionToCtx.TryRemove(sessionUid, out var _);
             _ctxToExecData.TryRemove(ctxId, out var _);
             _ctxToDispatcher.TryRemove(ctxId, out var _);
         }
-        #endregion
-        #region Cancelled
-        private void AllSessionsCancelled()
+        
+        internal void ClearScopeData()
         {
-            throw new NotImplementedException();
-        }
-
-        private void SessionCancelled(string sessionUid, long cancelTime)
-        {
-            throw new NotImplementedException();
+            _ctxToSession.Clear();
+            _sessionToCtx.Clear();
+            _ctxToExecData.Clear();
+            _ctxToDispatcher.Clear();
         }
         #endregion
-        #endregion
-        #region Send coverage data
+        #region Coverage data
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (_inTimer)
@@ -210,7 +227,7 @@ namespace Drill4Net.Agent.Standard
             {
                 SendCoverages();
             }
-            catch { }
+            catch { } //TODO: log?
             finally
             {
                 _inTimer = false;
@@ -250,11 +267,15 @@ namespace Drill4Net.Agent.Standard
                 }
             }
         }
-        #endregion
 
         private void StartSendCycle()
         {
             _sendTimer.Enabled = true;
+        }
+        
+        private void StopSendCycle()
+        {
+            _sendTimer.Enabled = false;
         }
 
         private void StopSendCycleIfNeeded()
@@ -283,30 +304,12 @@ namespace Drill4Net.Agent.Standard
             }
             return disp;
         }
-
-        public int GetContextId()
+        #endregion
+        
+        internal int GetContextId()
         {
             var ctx = Thread.CurrentThread.ExecutionContext;
             return ctx?.GetHashCode() ?? 0;
-        }
-
-        public void CancelSession(CancelAgentSession info)
-        {
-            
-        }
-
-        public List<string> CancelAllSessions()
-        {
-            var uids = _sessionToCtx.Keys.ToList();
-            // TODO: cancel
-            return uids;
-        }
-
-        public List<string> StopAllSessions()
-        {
-            var uids = _sessionToCtx.Keys.ToList();
-            // TODO: stopping
-            return uids;
         }
     }
 }

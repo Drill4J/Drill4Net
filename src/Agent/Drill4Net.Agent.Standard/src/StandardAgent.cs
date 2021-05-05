@@ -113,10 +113,10 @@ namespace Drill4Net.Agent.Standard
             Sender.SendTest(new CancelAllAgentSessions());
         }
         #endregion
-        
-        
+
         private static void OnInitScopeData(InitActiveScope scope)
         {
+            _rep.CancelAllSessions(); //just in case
             _scope = scope;
             Sender.SendScopeInitialized(scope, GetCurrentUnixTimeMs());
         }
