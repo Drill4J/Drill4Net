@@ -50,32 +50,31 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region ExecClassData
-        public CoverageDispatcher CreateCoverageDispatcher(string testName, IEnumerable<InjectedType> injTypes)
+        public CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
             //TODO: cloning from Template object?
-            var disp = new CoverageDispatcher();
+            var disp = new CoverageDispatcher(session); //TODO: bind the session!!!!!
             foreach(var type in injTypes.AsParallel())
             {
                 var typeName = type.FullName;
-                var data = new ExecClassData(testName, typeName);
-                var methods = type.GetMethods();
-                if (methods.Any())
+                var data = new ExecClassData(session.TestName, typeName);
+                var methods = type.GetMethods()?.ToList();
+                if (methods?.Any() != true) 
+                    continue;
+                var ind = 0;
+                foreach (var meth in methods) //don't parallel here!
                 {
-                    var ind = 0;
-                    foreach (var meth in methods) //don't parallel here
+                    var inds = meth.Coverage.PointUidToEndIndex;
+                    foreach (var pointUid in inds.Keys)
                     {
-                        var inds = meth.Coverage.PointUidToEndIndex;
-                        foreach (var pointUid in inds.Keys)
-                        {
-                            var localEnd = inds[pointUid];
-                            var start = ind;
-                            var end = start + localEnd;
-                            disp.AddPoint(pointUid, data, start, end);
-                            ind += localEnd + 1;
-                        }
+                        var localEnd = inds[pointUid];
+                        var start = ind;
+                        var end = start + localEnd;
+                        disp.AddPoint(pointUid, data, start, end);
+                        ind += localEnd + 1;
                     }
-                    data.InitProbes(ind);//not needed +1
                 }
+                data.InitProbes(ind);//not needed +1
             }
             return disp;
         }

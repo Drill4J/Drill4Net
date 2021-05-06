@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Standard
                 _rep = new StandardAgentRepository();
                 _comm = _rep.Communicator;
 
-                //handler of events from admin side
+                //events from admin side
                 Receiver.InitScopeData += OnInitScopeData;
                 Receiver.TogglePlugin += OnTogglePlugin;
                 Receiver.RequestClassesData += OnRequestClassesData;
@@ -44,7 +44,8 @@ namespace Drill4Net.Agent.Standard
                 Receiver.StopSession += OnStopSession;
                 Receiver.StopAllSessions += OnStopAllSessions;
 
-                //wait events from admin side and probe data from instrumented code on RegisterStatic
+                //...and now we will wait events from admin side and
+                //probe data from instrumented code on RegisterStatic
 
                 //local tests
                 // var testUid = Guid.NewGuid().ToString();
@@ -152,10 +153,9 @@ namespace Drill4Net.Agent.Standard
         #region Session
         private static void OnStartSession(StartAgentSession info)
         {
-            var uid = info.Payload.SessionId;
             _rep.StartSession(info);
             var load = info.Payload;
-            Sender.SendSessionStartedMessage(uid, load.TestType, load.IsRealtime, GetCurrentUnixTimeMs());
+            Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, GetCurrentUnixTimeMs());
         }
 
         private static void OnStopSession(StopAgentSession info)
@@ -210,8 +210,10 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
                 
-                _initEvent.WaitOne(); //in fact, block will be only one time on init
-                _rep.GetCoverageDispather().RegisterCoverage(probeUid);
+                _initEvent.WaitOne(); //in fact, blocking will be only one time on init
+                var disp = _rep.GetCoverageDispather();
+                if (disp != null)
+                    disp.RegisterCoverage(probeUid);
             }
             catch (Exception ex)
             {

@@ -77,7 +77,7 @@ namespace Drill4Net.Agent.Transport
             {
                 switch (topic)
                 {
-                    case AgentConstants.TOPIC_HEADER_CHANGE: //we don't work with it yet
+                    case AgentConstants.TOPIC_HEADER_CHANGE: //we don't work with it yet (global session mapping?)
                         break;
                     case AgentConstants.TOPIC_AGENT_NAMESPACES: //TODO: additional filter for probes?
                         break;

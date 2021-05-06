@@ -21,6 +21,7 @@ namespace Drill4Net.Agent.Standard
 
         private readonly ConcurrentDictionary<int, string> _ctxToSession;
         private readonly ConcurrentDictionary<string, int> _sessionToCtx;
+        private readonly ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
         private readonly ConcurrentDictionary<int, CoverageDispatcher> _ctxToDispatcher;
         private readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
@@ -37,9 +38,12 @@ namespace Drill4Net.Agent.Standard
         {
             //test names vs. session ids
             _ctxToSession = new ConcurrentDictionary<int, string>();
-            _sessionToCtx = new ConcurrentDictionary<string, int>();
             _ctxToDispatcher = new ConcurrentDictionary<int, CoverageDispatcher>();
-
+            
+            //session maps
+            _sessionToCtx = new ConcurrentDictionary<string, int>();
+            _sessionToObject = new ConcurrentDictionary<string, StartSessionPayload>();
+            
             // execution data by session ids
             _ctxToExecData = new ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>>();
 
@@ -138,27 +142,24 @@ namespace Drill4Net.Agent.Standard
         {
             return _converter.ToAstEntities(_injTypes);
         }
-
-        internal CoverageDispatcher CreateCoverageDispatcher(string testName)
-        {
-            return _converter.CreateCoverageDispatcher(testName, _injTypes);
-        }
         #endregion
         #region Session
         #region Start
         public void StartSession(StartAgentSession info)
         {
-            var uid = info.Payload.SessionId;
-            RemoveSession(uid);
-            AddSession(uid);
+            var load = info.Payload;
+            RemoveSession(load.SessionId);
+            AddSession(load);
             StartSendCycle();
         }
 
-        internal void AddSession(string sessionUid)
+        internal void AddSession(StartSessionPayload session)
         {
             var ctxId = GetContextId();
             if (_ctxToSession.ContainsKey(ctxId))
                 return;
+            var sessionUid = session.SessionId;
+            _sessionToObject.TryAdd(sessionUid, session);
             _ctxToSession.TryAdd(ctxId, sessionUid);
             _sessionToCtx.TryAdd(sessionUid, ctxId);
         }
@@ -207,6 +208,7 @@ namespace Drill4Net.Agent.Standard
             _ctxToSession.TryRemove(ctxId, out var _);
             _ctxToExecData.TryRemove(ctxId, out var _);
             _ctxToDispatcher.TryRemove(ctxId, out var _);
+            _sessionToObject.TryRemove(sessionUid, out var _);
         }
         
         internal void ClearScopeData()
@@ -215,6 +217,7 @@ namespace Drill4Net.Agent.Standard
             _sessionToCtx.Clear();
             _ctxToExecData.Clear();
             _ctxToDispatcher.Clear();
+            _sessionToObject.Clear();
         }
         #endregion
         #region Coverage data
@@ -240,19 +243,23 @@ namespace Drill4Net.Agent.Standard
             {
                 foreach (var ctxId in _ctxToDispatcher.Keys)
                 {
-                    if(!_ctxToDispatcher.TryGetValue(ctxId, out CoverageDispatcher disp))
+                    if(!_ctxToDispatcher.TryGetValue(ctxId, out var disp))
                         continue;
-                    if (!_ctxToSession.TryGetValue(ctxId, out string sessionUid))
+                    if (!_ctxToSession.TryGetValue(ctxId, out var sessionUid))
                         continue;
-                    var execClasses = disp.ExecClasses.ToList();
+                    var execClasses = disp.AffectedExecClasses.ToList();
                     var cnt = execClasses.Count();
 
-                    //TEST!!!
-                    var r = new Random(DateTime.Now.Millisecond);
-                    var probes = execClasses[r.Next(0, cnt)].probes;
-                    for (var i = 0; i<probes.Count; i++)
-                        probes[i] = true;
-
+                    // //TEST!!!
+                    // execClasses = disp.ExecClasses.ToList();
+                    // cnt = execClasses.Count();
+                    // var probes = execClasses.Select(a => a.probes).FirstOrDefault(a => !a[0]);
+                    // if (probes != null)
+                    // {
+                    //     for (var i = 0; i < probes.Count; i++)
+                    //         probes[i] = true;
+                    // }
+                    //
                     switch (cnt)
                     {
                         case 0:
@@ -264,6 +271,9 @@ namespace Drill4Net.Agent.Standard
                             Communicator.Sender.SendCoverageData(sessionUid, execClasses);
                             break;
                     }
+                    var session = disp.Session;
+                    if (session is {IsRealtime: true})
+                        Communicator.Sender.SendSessionChangedMessage(sessionUid, 0); //TODO: REAL COUNTS!!!!
                 }
             }
         }
@@ -298,11 +308,17 @@ namespace Drill4Net.Agent.Standard
             }
             else
             {
-                var testName = $"{AgentConstants.TEST_NAME_DEFAULT}_{ctxId}"; //TODO: real name is...????
-                disp = CreateCoverageDispatcher(testName);
+                //TODO: do it properly! Need right binding ctx to session!
+                var session = _sessionToObject.Values.FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL);
+                disp = CreateCoverageDispatcher(session);
                 _ctxToDispatcher.TryAdd(ctxId, disp);
             }
             return disp;
+        }
+        
+        internal CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session)
+        {
+            return _converter.CreateCoverageDispatcher(session, _injTypes);
         }
         #endregion
         

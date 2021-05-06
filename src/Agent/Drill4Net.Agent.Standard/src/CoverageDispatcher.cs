@@ -7,38 +7,44 @@ namespace Drill4Net.Agent.Standard
 {
     public class CoverageDispatcher
     {
+        public StartSessionPayload Session { get; }
         public ConcurrentDictionary<string, ExecClassData> PointToClass { get; }
         public ConcurrentDictionary<string, (int, int)> PointToRange { get; }
         public HashSet<ExecClassData> ExecClasses { get; }
+        public HashSet<ExecClassData> AffectedExecClasses { get; }
 
         /*************************************************************************/
 
-        public CoverageDispatcher()
+        public CoverageDispatcher(StartSessionPayload session)
         {
+            Session = session; // ?? throw new .....
             PointToClass = new ConcurrentDictionary<string, ExecClassData>();
             PointToRange = new ConcurrentDictionary<string, (int, int)>();
             ExecClasses = new HashSet<ExecClassData>();
+            AffectedExecClasses = new HashSet<ExecClassData>();
         }
 
         /*************************************************************************/
 
         public void AddPoint(string pointUid, ExecClassData data, int start, int end)
         {
-            //PointToRange
+            //link point to range
             if (PointToRange.ContainsKey(pointUid))
                 return;
             PointToRange.TryAdd(pointUid, (start, end));
 
-            // PointToClass
+            //link point (probe) to class
             if (PointToClass.ContainsKey(pointUid))
                 return;
             PointToClass.TryAdd(pointUid, data);
-
+            
+            //list of classes
             if (!ExecClasses.Contains(data))
             {
                 lock (ExecClasses)
                 {
-                    ExecClasses.Add(data);
+                    if (!ExecClasses.Contains(data))
+                        ExecClasses.Add(data);
                 }
             }
         }
@@ -47,7 +53,7 @@ namespace Drill4Net.Agent.Standard
         {
             #region Checks
             //hm... log?
-            if (!PointToClass.TryGetValue(pointUid, out ExecClassData classData))
+            if (!PointToClass.TryGetValue(pointUid, out var classData))
                 return;
             if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
                 return;
@@ -62,6 +68,16 @@ namespace Drill4Net.Agent.Standard
                 return;
             for(var i = start; i <= end; i++)
                 probes[i] = true;
+            
+            //affected classes
+            if (!AffectedExecClasses.Contains(classData))
+            {
+                lock (AffectedExecClasses)
+                {
+                    if (!AffectedExecClasses.Contains(classData))
+                        AffectedExecClasses.Add(classData);
+                }
+            }
         }
     }
 }
