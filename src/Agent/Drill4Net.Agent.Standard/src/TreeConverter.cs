@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Profiling.Tree;
 
@@ -57,7 +58,8 @@ namespace Drill4Net.Agent.Standard
             foreach(var type in injTypes.AsParallel())
             {
                 var typeName = type.FullName;
-                var data = new ExecClassData(session.TestName, typeName);
+                var testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
+                var data = new ExecClassData(testName, typeName);
                 var methods = type.GetMethods()?.ToList();
                 if (methods?.Any() != true) 
                     continue;

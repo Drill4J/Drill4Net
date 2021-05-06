@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Drill4Net.Common;
+using Drill4Net.Injector.Core;
+using Drill4Net.Profiling.Tree;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,9 +12,10 @@ namespace Drill4Net.Agent.Standard.Demo
 {
     class Program
     {
-        private static Assembly _asm;
-        private static Type[] _types;
-        private static Dictionary<Type, MethodInfo[]> _methods;
+        //private static Assembly _asm;
+        //private static Type[] _types;
+        //private static Dictionary<Type, MethodInfo[]> _methods;
+        private static List<CrossPoint> _points;
 
         /*********************************************************************************/
 
@@ -35,42 +40,54 @@ namespace Drill4Net.Agent.Standard.Demo
                 await Task.Delay(250);
                 StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
 
-                //              // calling the methods
-                //              var mess = @"  *** Press 1 for start some portion of target methods
-                //*** Press q for exit
-                //*** Good luck and... keep on dancing!";
-                //              Console.WriteLine($"\n{mess}");
+                //probe data
+                var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
+                var injRep = new InjectorRepository(cfg_path);
+                var tree = injRep.ReadInjectedTree();
+                var moniker = "net5.0";
+                var asmTree = tree.GetFrameworkVersionRootDirectory(moniker);
+                if (asmTree == null)
+                    throw new Exception($"Data for moniker {moniker} not found");
+                _points = asmTree.Filter(typeof(CrossPoint), true).Cast<CrossPoint>().ToList();
 
-                //              //loading methods
-                //              //TODO: do norm!!!
-                //              var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\";
-                //              var path = $"{dir}Drill4Net.Target.Common.dll";
-                //              _asm = Assembly.LoadFrom(path);
-                //              _types = _asm.GetTypes().Where(a => a.IsPublic).ToArray();
-                //              _methods = new Dictionary<Type, MethodInfo[]>();
-                //              foreach (var type in _types)
-                //                  _methods.Add(type, type.GetMethods());
+                // calling the methods
+                var mess = @"  *** Firstly, start session on admin side...
+  *** Press 1 for start some portion of target methods
+  *** Press q for exit
+  *** Good luck and... keep on dancing!";
+                Console.WriteLine($"\n{mess}");
 
-                //              //polling
-                //              while (true)
-                //              {
-                //                  Console.WriteLine("\nInput:");
-                //                  var expr = Console.ReadLine()?.Trim();
-                //                  if (string.IsNullOrWhiteSpace(expr))
-                //                      continue;
-                //                  if (expr == "q" || expr == "Q")
-                //                      break;
-                //                  //
-                //                  string output = null;
-                //                  try
-                //                  {
-                //                      StartMethods(expr);
-                //                  }
-                //                  catch (Exception ex)
-                //                  {
-                //                      output = $"error -> {ex.Message}";
-                //                  }
-                //              }
+                //loading methods
+                //TODO: do norm!!!
+                //var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\";
+                //var path = $"{dir}Drill4Net.Target.Common.dll";
+                //_asm = Assembly.LoadFrom(path);
+                //_types = _asm.GetTypes().Where(a => a.IsPublic).ToArray();
+                //_methods = new Dictionary<Type, MethodInfo[]>();
+                //foreach (var type in _types)
+                //    _methods.Add(type, type.GetMethods());
+
+                //polling
+                while (true)
+                {
+                    Console.WriteLine("\nInput:");
+                    var expr = Console.ReadLine()?.Trim();
+                    if (string.IsNullOrWhiteSpace(expr))
+                        continue;
+                    if (expr == "q" || expr == "Q")
+                        break;
+                    //
+                    string output = null;
+                    try
+                    {
+                        StartMethods(expr);
+                    }
+                    catch (Exception ex)
+                    {
+                        output = $"error -> {ex.Message}";
+                    }
+                }
 
                 Console.ReadKey(true);
             }
@@ -85,16 +102,20 @@ namespace Drill4Net.Agent.Standard.Demo
         {
             if (input != "1")
                 return false;
-            //var r = new Random(DateTime.Now.Millisecond);
-            //var t = _types[r.Next(0, _types.Length)];
-            //var methods = _methods[t];
-            //var method = methods[r.Next(0, methods.Length)];
+            var r = new Random(DateTime.Now.Millisecond);
+            for (var i = 0; i < Math.Min(100, _points.Count); i++)
+            {
+                var ind = r.Next(0, _points.Count);
+                var point = _points[ind];
+                _points.RemoveAt(ind);
+                StandardAgent.RegisterStatic($"{point.PointUid}^asmName^funcSig^probe");
+            }
 
-            var injType = _types.First(a => a.Name == "InjectTarget");
-            var meths = _methods[injType];
-            var meth = meths.First(a => a.Name == "RunTests");
-            var obj = Activator.CreateInstance(injType);
-            meth.Invoke(obj, null);
+            //var injType = _types.First(a => a.Name == "InjectTarget");
+            //var meths = _methods[injType];
+            //var meth = meths.First(a => a.Name == "RunTests");
+            //var obj = Activator.CreateInstance(injType);
+            //meth.Invoke(obj, null);
             return true;
         }
     }

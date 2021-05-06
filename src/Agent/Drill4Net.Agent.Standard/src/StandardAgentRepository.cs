@@ -247,19 +247,9 @@ namespace Drill4Net.Agent.Standard
                         continue;
                     if (!_ctxToSession.TryGetValue(ctxId, out var sessionUid))
                         continue;
+                    //
                     var execClasses = disp.AffectedExecClasses.ToList();
                     var cnt = execClasses.Count();
-
-                    // //TEST!!!
-                    // execClasses = disp.ExecClasses.ToList();
-                    // cnt = execClasses.Count();
-                    // var probes = execClasses.Select(a => a.probes).FirstOrDefault(a => !a[0]);
-                    // if (probes != null)
-                    // {
-                    //     for (var i = 0; i < probes.Count; i++)
-                    //         probes[i] = true;
-                    // }
-                    //
                     switch (cnt)
                     {
                         case 0:
@@ -274,6 +264,7 @@ namespace Drill4Net.Agent.Standard
                     var session = disp.Session;
                     if (session is {IsRealtime: true})
                         Communicator.Sender.SendSessionChangedMessage(sessionUid, 0); //TODO: REAL COUNTS!!!!
+                    disp.AffectedExecClasses.Clear();
                 }
             }
         }
