@@ -296,15 +296,22 @@ namespace Drill4Net.Agent.Standard
             if (_ctxToDispatcher.ContainsKey(ctxId))
             {
                 _ctxToDispatcher.TryGetValue(ctxId, out disp);
+                if(disp is {Session: null})
+                    disp.Session = GetManualSession();
             }
             else
             {
                 //TODO: do it properly! Need right binding ctx to session!
-                var session = _sessionToObject.Values.FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL);
+                var session = GetManualSession();
                 disp = CreateCoverageDispatcher(session);
                 _ctxToDispatcher.TryAdd(ctxId, disp);
             }
             return disp;
+        }
+
+        private StartSessionPayload GetManualSession()
+        {
+            return _sessionToObject.Values.FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL);
         }
         
         internal CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session)

@@ -55,10 +55,10 @@ namespace Drill4Net.Agent.Standard
         {
             //TODO: cloning from Template object?
             var disp = new CoverageDispatcher(session); //TODO: bind the session!!!!!
-            foreach(var type in injTypes.AsParallel())
+            string testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
+            foreach (var type in injTypes.AsParallel())
             {
                 var typeName = type.FullName;
-                var testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
                 var data = new ExecClassData(testName, typeName);
                 var methods = type.GetMethods()?.ToList();
                 if (methods?.Any() != true) 

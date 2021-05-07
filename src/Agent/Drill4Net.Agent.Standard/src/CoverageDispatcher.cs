@@ -7,7 +7,7 @@ namespace Drill4Net.Agent.Standard
 {
     public class CoverageDispatcher
     {
-        public StartSessionPayload Session { get; }
+        public StartSessionPayload Session { get; set; }
         public ConcurrentDictionary<string, ExecClassData> PointToClass { get; }
         public ConcurrentDictionary<string, (int, int)> PointToRange { get; }
         public HashSet<ExecClassData> ExecClasses { get; }

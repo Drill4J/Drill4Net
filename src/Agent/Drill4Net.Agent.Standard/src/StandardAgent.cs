@@ -210,7 +210,7 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
                 
-                _initEvent.WaitOne(); //in fact, blocking will be only one time on init
+                _initEvent.WaitOne(); //in fact, the blocking will be only one time on init
                 var disp = _rep.GetCoverageDispather();
                 if (disp != null)
                     disp.RegisterCoverage(probeUid);
