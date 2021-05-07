@@ -100,7 +100,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{F5B1697D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard", "src\Agent\Drill4Net.Agent.Standard\Drill4Net.Agent.Standard.csproj", "{FCD66AC2-6844-4D76-88AF-C21506D8DE4E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard.Demo", "src\Agent\Drill4Net.Agent.Standard.Demo\Drill4Net.Agent.Standard.Demo.csproj", "{4B1EB40F-A71F-402E-AF74-054A311D92C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard.Debug", "src\Agent\Drill4Net.Agent.Standard.Debug\Drill4Net.Agent.Standard.Debug.csproj", "{4B1EB40F-A71F-402E-AF74-054A311D92C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transport", "src\Agent\Drill4Net.Agent.Transport\Drill4Net.Agent.Transport.csproj", "{B68F2651-1CF5-4F08-BB95-D32B153F4B42}"
 EndProject

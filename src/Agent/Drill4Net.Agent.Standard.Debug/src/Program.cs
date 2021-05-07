@@ -1,20 +1,21 @@
-﻿using Drill4Net.Common;
-using Drill4Net.Injector.Core;
-using Drill4Net.Profiling.Tree;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Drill4Net.Common;
+using Drill4Net.Injector.Core;
+using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Agent.Standard.Demo
+namespace Drill4Net.Agent.Standard.Debug
 {
     class Program
     {
         //private static Assembly _asm;
         //private static Type[] _types;
         //private static Dictionary<Type, MethodInfo[]> _methods;
+        private static int _pointRange = 100;
         private static List<CrossPoint> _points;
 
         /*********************************************************************************/
@@ -40,7 +41,9 @@ namespace Drill4Net.Agent.Standard.Demo
                 await Task.Delay(250);
                 StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
 
-                //probe data
+
+
+                //point data
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
                 var injRep = new InjectorRepository(cfg_path);
@@ -50,8 +53,18 @@ namespace Drill4Net.Agent.Standard.Demo
                 if (asmTree == null)
                     throw new Exception($"Data for moniker {moniker} not found");
                 _points = asmTree.Filter(typeof(CrossPoint), true).Cast<CrossPoint>().ToList();
+                Console.WriteLine($"\nCross points: {_points.Count}");
 
-                // calling the methods
+                //range
+                Console.Write($"Input point count for the simulating execution range [{_pointRange}]: ");
+                var expr = Console.ReadLine()?.Trim();
+                if (int.TryParse(expr, out var pntCnt))
+                {
+                    if (pntCnt > 0)
+                        _pointRange = pntCnt;
+                }
+
+                // info
                 var mess = @"  *** Firstly, start session on admin side...
   *** Press 1 for start some portion of target methods
   *** Press q for exit
@@ -72,7 +85,7 @@ namespace Drill4Net.Agent.Standard.Demo
                 while (true)
                 {
                     Console.WriteLine("\nInput:");
-                    var expr = Console.ReadLine()?.Trim();
+                    expr = Console.ReadLine()?.Trim();
                     if (string.IsNullOrWhiteSpace(expr))
                         continue;
                     if (expr == "q" || expr == "Q")
@@ -103,7 +116,7 @@ namespace Drill4Net.Agent.Standard.Demo
             if (input != "1")
                 return false;
             var r = new Random(DateTime.Now.Millisecond);
-            for (var i = 0; i < Math.Min(100, _points.Count); i++)
+            for (var i = 0; i < Math.Min(_pointRange, _points.Count); i++)
             {
                 var ind = r.Next(0, _points.Count);
                 var point = _points[ind];
