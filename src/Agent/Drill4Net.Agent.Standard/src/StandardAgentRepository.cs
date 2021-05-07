@@ -263,8 +263,8 @@ namespace Drill4Net.Agent.Standard
                     }
                     var session = disp.Session;
                     if (session is {IsRealtime: true})
-                        Communicator.Sender.SendSessionChangedMessage(sessionUid, 0); //TODO: REAL COUNTS!!!!
-                    disp.AffectedExecClasses.Clear();
+                        Communicator.Sender.SendSessionChangedMessage(sessionUid, disp.AffectedProbeCount);
+                    disp.ClearAffectedData();
                 }
             }
         }

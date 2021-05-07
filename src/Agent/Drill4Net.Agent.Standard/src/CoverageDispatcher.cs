@@ -12,6 +12,7 @@ namespace Drill4Net.Agent.Standard
         public ConcurrentDictionary<string, (int, int)> PointToRange { get; }
         public HashSet<ExecClassData> ExecClasses { get; }
         public HashSet<ExecClassData> AffectedExecClasses { get; }
+        public int AffectedProbeCount { get; private set; }
 
         /*************************************************************************/
 
@@ -68,7 +69,8 @@ namespace Drill4Net.Agent.Standard
                 return;
             for(var i = start; i <= end; i++)
                 probes[i] = true;
-            
+            AffectedProbeCount += end - start + 1;
+
             //affected classes
             if (!AffectedExecClasses.Contains(classData))
             {
@@ -78,6 +80,12 @@ namespace Drill4Net.Agent.Standard
                         AffectedExecClasses.Add(classData);
                 }
             }
+        }
+
+        public void ClearAffectedData()
+        {
+            AffectedExecClasses.Clear();
+            AffectedProbeCount = 0;
         }
     }
 }

@@ -115,8 +115,15 @@ namespace Drill4Net.Agent.Standard.Debug
         {
             if (input != "1")
                 return false;
+            if (_points.Count == 0)
+            {
+                Console.WriteLine("No more points!");
+                return false;
+            }
+            //
             var r = new Random(DateTime.Now.Millisecond);
-            for (var i = 0; i < Math.Min(_pointRange, _points.Count); i++)
+            var end = Math.Min(_pointRange, _points.Count);
+            for (var i = 0; i < end; i++)
             {
                 var ind = r.Next(0, _points.Count);
                 var point = _points[ind];
