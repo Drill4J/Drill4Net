@@ -13,6 +13,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Agent.Transport;
 
+//https://github.com/devlooped/GitInfo
 [assembly: AssemblyInformationalVersion(
   ThisAssembly.Git.SemVer.Major + "." +
   ThisAssembly.Git.SemVer.Minor + "." +
@@ -43,7 +44,7 @@ namespace Drill4Net.Agent.Standard
 
         public StandardAgentRepository()
         {
-            //test names vs. session ids
+            //ctx maps
             _ctxToSession = new ConcurrentDictionary<int, string>();
             _ctxToDispatcher = new ConcurrentDictionary<int, CoverageDispatcher>();
             
@@ -66,7 +67,7 @@ namespace Drill4Net.Agent.Standard
 
             //target class tree
             var tree = injRep.ReadInjectedTree();
-            _injTypes = FilterTypes(tree);
+            _injTypes = FilterMonikerTypes(tree);
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(2000);
@@ -104,7 +105,7 @@ namespace Drill4Net.Agent.Standard
             return FileUtils.GetProductVersion(type);
         }
 
-        internal IEnumerable<InjectedType> FilterTypes(InjectedSolution tree)
+        internal IEnumerable<InjectedType> FilterMonikerTypes(InjectedSolution tree)
         {
             IEnumerable<InjectedType> injTypes = null;
 

@@ -15,7 +15,6 @@ Destination: # where copying injected assemblies
 Profiler: # data collector/processor in separate assembly
     Name: RnD agent # name exactly for agent subsystem
     Directory: ..\..\Drill4Net.Agent.RnD\netstandard2.0\
-    #Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.RnD\netstandard2.0\
     AssemblyName: Drill4Net.Agent.RnD.dll
     Namespace: Drill4Net.Agent.RnD
     Class: LoggerAgent

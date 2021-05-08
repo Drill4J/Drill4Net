@@ -114,10 +114,10 @@ namespace Drill4Net.Injector.Core
 
         public virtual InjectedSolution ReadInjectedTree(string path = null)
         {
-            var types = GetInjectedTreeTypes();
+            var types = InjectedSolution.GetInjectedTreeTypes();
             var ser = new NetSerializer.Serializer(types);
 
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
             {
                 path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.TREE_FILE_NAME);
             }
@@ -130,24 +130,11 @@ namespace Drill4Net.Injector.Core
 
         public virtual void WriteInjectedTree(string path, InjectedSolution tree)
         {
-            var types = GetInjectedTreeTypes();
+            var types = InjectedSolution.GetInjectedTreeTypes();
             var ser = new NetSerializer.Serializer(types);
             using var ms = new MemoryStream();
             ser.Serialize(ms, tree);
             File.WriteAllBytes(path, ms.ToArray());
-        }
-
-        internal virtual List<Type> GetInjectedTreeTypes()
-        {
-            return new List<Type>
-            {
-                typeof(InjectedSolution),
-                typeof(InjectedDirectory),
-                typeof(InjectedAssembly),
-                typeof(InjectedType),
-                typeof(InjectedMethod),
-                typeof(CrossPoint),
-            };
         }
 
         public virtual string GetTreeFilePath(InjectedSolution tree)

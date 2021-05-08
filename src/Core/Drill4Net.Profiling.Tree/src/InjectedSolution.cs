@@ -24,6 +24,19 @@ namespace Drill4Net.Profiling.Tree
 
         /************************************************************************/
 
+        public static List<Type> GetInjectedTreeTypes()
+        {
+            return new List<Type>
+            {
+                typeof(InjectedSolution),
+                typeof(InjectedDirectory),
+                typeof(InjectedAssembly),
+                typeof(InjectedType),
+                typeof(InjectedMethod),
+                typeof(CrossPoint),
+            };
+        }
+
         public InjectedDirectory GetFrameworkVersionRootDirectory(string moniker)
         {
             return _children.FirstOrDefault(a => a.Name == moniker) as InjectedDirectory;
