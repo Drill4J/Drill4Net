@@ -67,7 +67,9 @@ namespace Drill4Net.Agent.Standard.Debug
   *** Press 1 for start some portion of target methods
   *** Press q for exit
   *** Good luck and... keep on dancing!";
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"\n{mess}");
+                Console.ForegroundColor = ConsoleColor.Green;
 
                 //loading methods
                 //TODO: do norm!!!

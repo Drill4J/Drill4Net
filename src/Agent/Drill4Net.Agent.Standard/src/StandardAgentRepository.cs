@@ -83,12 +83,12 @@ namespace Drill4Net.Agent.Standard
             return new Communicator(adminOpts.Url, GetAgentPartConfig(targetOpts));
         }
 
-        internal AgentPartConfig GetAgentPartConfig(TargetOptions opts)
+        internal AgentPartConfig GetAgentPartConfig(TargetOptions targOpts)
         {
-            string appVersion = opts.Version;
-            if (string.IsNullOrWhiteSpace(appVersion))
-                appVersion = GetRealTargetVersion();
-            return new AgentPartConfig(opts.Name, appVersion, GetAgentVersion());
+            string targVersion = targOpts.Version;
+            if (string.IsNullOrWhiteSpace(targVersion))
+                targVersion = GetRealTargetVersion();
+            return new AgentPartConfig(targOpts.Name, targVersion, GetAgentVersion());
         }
 
         internal string GetAgentVersion()
