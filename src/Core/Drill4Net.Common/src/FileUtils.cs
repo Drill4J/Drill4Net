@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 namespace Drill4Net.Common
@@ -15,6 +17,11 @@ namespace Drill4Net.Common
         }
 
         /******************************************************************/
+
+        public static string GetProductVersion(Type type)
+        {
+            return FileVersionInfo.GetVersionInfo(type.Assembly.Location).ProductVersion;
+        }
 
         #region Directories
         public static string GetExecutionDir()

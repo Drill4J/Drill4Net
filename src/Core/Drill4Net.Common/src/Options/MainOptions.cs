@@ -9,6 +9,8 @@
 
         public ProfilerOptions Profiler { get; set; }
 
+        public AdminOptions Admin { get; set; }
+
         public CallerOptions Proxy { get; set; }
 
         public ProbesOptions Probes { get; set; }

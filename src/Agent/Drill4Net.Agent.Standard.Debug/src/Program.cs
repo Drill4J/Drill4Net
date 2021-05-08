@@ -41,8 +41,6 @@ namespace Drill4Net.Agent.Standard.Debug
                 await Task.Delay(250);
                 StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
 
-
-
                 //point data
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);

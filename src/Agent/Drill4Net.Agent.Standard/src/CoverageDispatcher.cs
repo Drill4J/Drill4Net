@@ -67,6 +67,7 @@ namespace Drill4Net.Agent.Standard
 
             if (probes[start]) //yet registered
                 return;
+            //
             for(var i = start; i <= end; i++)
                 probes[i] = true;
             AffectedProbeCount += end - start + 1;

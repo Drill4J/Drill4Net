@@ -48,17 +48,21 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public string PackagesPrefixes { get; set; }
 
-        /*********************************************************************/
+        /************************************************************************************/
 
-        public AgentPartConfig(string appId, string appVersion)
+        public AgentPartConfig(string appId, string appVersion, string agentVersion)
         {
+           //App
             Id = appId;
             InstanceId = Guid.NewGuid().ToString();
             BuildVersion = string.IsNullOrWhiteSpace(appVersion) ? "0.0.0" : appVersion;
-            AgentType = "DOTNET"; //".NET"; //"DOTNET";
+            PackagesPrefixes = JsonSerializer.Serialize(new BusinessNamespacer());
+
+            //Agent
+            AgentType = "DOTNET";
             NeedSync = true;
             ServiceGroupId = "";
-            PackagesPrefixes = JsonSerializer.Serialize(new BusinessNamespacer());
+            //AgentVerion = agentVersion;
         }
     }
 }

@@ -13,6 +13,13 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Agent.Transport;
 
+[assembly: AssemblyInformationalVersion(
+  ThisAssembly.Git.SemVer.Major + "." +
+  ThisAssembly.Git.SemVer.Minor + "." +
+  ThisAssembly.Git.SemVer.Patch + "-" +
+  ThisAssembly.Git.Branch + "+" +
+  ThisAssembly.Git.Commit)]
+
 namespace Drill4Net.Agent.Standard
 {
     public sealed class StandardAgentRepository : IAgentRepository
@@ -53,7 +60,9 @@ namespace Drill4Net.Agent.Standard
             var injRep = new InjectorRepository(cfg_path);
             _converter = new TreeConverter();
             _sendLocker = new object();
-            Communicator = GetCommunicator();
+
+            var opts = injRep.Options;
+            Communicator = GetCommunicator(opts.Admin, opts.Target);
 
             //target class tree
             var tree = injRep.ReadInjectedTree();
@@ -67,21 +76,32 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         #region Init
-        private AbstractCommunicator GetCommunicator()
+        private AbstractCommunicator GetCommunicator(AdminOptions adminOpts, TargetOptions targetOpts)
         {
-            return new Communicator(GetBaseAddress(), GetAgentPartConfig());
+            if (adminOpts == null)
+                throw new ArgumentNullException(nameof(adminOpts));
+            return new Communicator(adminOpts.Url, GetAgentPartConfig(targetOpts));
         }
 
-        internal string GetBaseAddress()
+        internal AgentPartConfig GetAgentPartConfig(TargetOptions opts)
         {
-            //TODO: real from cfg
-            //return "ws://localhost:8090/agent/attach";
-            return "localhost:8090";
+            string appVersion = opts.Version;
+            if (string.IsNullOrWhiteSpace(appVersion))
+                appVersion = GetRealTargetVersion();
+            return new AgentPartConfig(opts.Name, appVersion, GetAgentVersion());
         }
 
-        internal AgentPartConfig GetAgentPartConfig()
+        internal string GetAgentVersion()
         {
-            return new AgentPartConfig("PROG_A", "0.0.1");
+            return FileUtils.GetProductVersion(typeof(StandardAgentRepository));
+        }
+
+        internal string GetRealTargetVersion()
+        {
+            //here we get just first type, but real version of real target
+            //will be retrieved only in real injection ;)
+            var type = Assembly.GetExecutingAssembly().GetTypes()[0];
+            return FileUtils.GetProductVersion(type);
         }
 
         internal IEnumerable<InjectedType> FilterTypes(InjectedSolution tree)
@@ -239,8 +259,12 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendCoverages()
         {
+            //Console.ForegroundColor = ConsoleColor.DarkYellow;
+            //Console.WriteLine("Enter into SendCoverages");
             lock (_sendLocker)
             {
+                //Console.ForegroundColor = ConsoleColor.Magenta;
+                //Console.WriteLine("Overpass lock");
                 foreach (var ctxId in _ctxToDispatcher.Keys)
                 {
                     if(!_ctxToDispatcher.TryGetValue(ctxId, out var disp))
@@ -267,6 +291,7 @@ namespace Drill4Net.Agent.Standard
                     disp.ClearAffectedData();
                 }
             }
+            //Console.ForegroundColor = ConsoleColor.White;
         }
 
         private void StartSendCycle()

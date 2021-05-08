@@ -1,6 +1,7 @@
-﻿Description: For standard Agent
+﻿Description: For standard Agent & Target
 Target: # some metadata about target
   Name: Standard Target #optional injection name
+  Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
 Source: # what and how processing
   Directory: ..\..\Tests\TargetApps\
   Filter: # mask for search files, namespaces, classes...
@@ -12,6 +13,7 @@ Destination: # where copying injected assemblies
   Directory: # or full directory...
   FolderPostfix: Injected.Tests #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
+  Name: Standard agent # name exactly for agent subsystem
   Directory: ..\..\Drill4Net.Agent.Standard\
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard
@@ -22,6 +24,8 @@ Proxy: # the injecting for transfer data to profiler
   Class: ProfilerProxy
   Method: Register
   Static: true
+Admin:
+  Url: localhost:8090
 Probes: # types of cross-cutting points
   Private: false
   Ctor: false

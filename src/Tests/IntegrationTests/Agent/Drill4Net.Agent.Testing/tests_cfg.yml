@@ -1,4 +1,4 @@
-﻿Description: For testing Agent
+﻿Description: For testing Agent & standard Target
 Target: # some metadata about target
     Name: Test Target #optional injection name
 Source: # what and how processing
@@ -12,6 +12,7 @@ Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected.Tests #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
+    Name: Test agent # name exactly for agent subsystem
     Directory: ..\..\Drill4Net.Agent.Testing\
     AssemblyName: Drill4Net.Agent.Testing.dll
     Namespace: Drill4Net.Agent.Testing
