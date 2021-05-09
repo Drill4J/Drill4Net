@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Drill4Net.Demo.Blazor.ServerWasm.WebAssembly</name>
+    </assembly>
+    <members>
+        <member name="T:Drill4Net.Demo.Blazor.ServerWasm.WebAssembly.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Demo.Blazor.ServerWasm.WebAssembly.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
