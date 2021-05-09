@@ -23,16 +23,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: c1b3df3</summary>
+            <summary>Commit: e9b5d6f</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: c1b3df336ef93ac081a02dcd7ce430f84715e0ee</summary>
+            <summary>Sha: e9b5d6fdf4852e5e690bcffb0fa8e1d9da2efc8e</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-05-09T15:39:01+03:00</summary>
+            <summary>Commit date: 2021-05-09T17:50:03+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 316</summary>
+            <summary>Commits on top of base version: 317</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -62,7 +62,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 316</summary>
+            <summary>Patch: 317</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

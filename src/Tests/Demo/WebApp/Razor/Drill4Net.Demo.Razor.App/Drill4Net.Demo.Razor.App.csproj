@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>87453f1d-2ec9-443e-a525-4c9e2b74ec65</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.Razor.App</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\doc\xml\Tests\Drill4Net.Demo.Razor.App\Drill4Net.Demo.Razor.App.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Razor.App</OutputPath>
+  </PropertyGroup>
+
+</Project>
