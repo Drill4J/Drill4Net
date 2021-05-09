@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Server
+namespace Drill4Net.Demo.Blazor.WasmApp.Server
 {
     public class Program
     {

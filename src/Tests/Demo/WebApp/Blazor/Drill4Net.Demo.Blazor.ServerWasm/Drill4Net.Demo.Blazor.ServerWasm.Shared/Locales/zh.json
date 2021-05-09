@@ -1,5 +1,5 @@
 ﻿{
-  "Drill4Net.Demo.Blazor.ServerWasm.Shared.Pages.Foo": {
+  "Drill4Net.Demo.Blazor.WasmApp.Shared.Pages.Foo": {
     "Name": "姓名",
     "DateTime": "日期",
     "Address": "地址",
@@ -18,7 +18,7 @@
     "Foo.Address2": "地球、中国、上海市普陀区金沙江路 {0} 弄 这里是超长单元格示例",
     "Foo.BindValue": "绑定值"
   },
-  "Drill4Net.Demo.Blazor.ServerWasm.Shared.Pages.EnumEducation": {
+  "Drill4Net.Demo.Blazor.WasmApp.Shared.Pages.EnumEducation": {
     "PlaceHolder": "请选择 ...",
     "Primary": "小学",
     "Middel": "中学"

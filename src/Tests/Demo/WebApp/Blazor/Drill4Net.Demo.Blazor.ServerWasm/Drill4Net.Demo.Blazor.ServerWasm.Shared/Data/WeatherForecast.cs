@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Shared.Data
+namespace Drill4Net.Demo.Blazor.WasmApp.Shared.Data
 {
     /// <summary>
     /// 

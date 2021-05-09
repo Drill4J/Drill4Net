@@ -1,12 +1,12 @@
-﻿using Drill4Net.Demo.Blazor.ServerWasm.Shared;
-using Drill4Net.Demo.Blazor.ServerWasm.Shared.Data;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Drill4Net.Demo.Blazor.WasmApp.Shared;
+using Drill4Net.Demo.Blazor.WasmApp.Shared.Data;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.WebAssembly
+namespace Drill4Net.Demo.Blazor.WasmApp.WebAssembly
 {
     /// <summary>
     /// 

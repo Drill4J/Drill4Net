@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Shared
+namespace Drill4Net.Demo.Blazor.WasmApp.Shared
 {
     /// <summary>
     /// 

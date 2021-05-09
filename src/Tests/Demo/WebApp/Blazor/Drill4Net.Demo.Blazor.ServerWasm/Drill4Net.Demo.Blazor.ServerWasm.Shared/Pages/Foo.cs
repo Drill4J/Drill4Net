@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Shared.Pages
+namespace Drill4Net.Demo.Blazor.WasmApp.Shared.Pages
 {
     /// <summary>
     ///

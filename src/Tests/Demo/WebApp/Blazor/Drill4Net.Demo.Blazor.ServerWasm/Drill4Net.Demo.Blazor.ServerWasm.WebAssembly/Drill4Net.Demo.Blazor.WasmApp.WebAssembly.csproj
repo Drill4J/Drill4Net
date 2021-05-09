@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.Blazor.ServerWasm.WebAssembly</OutputPath>
-    <DocumentationFile>..\..\..\..\..\..\..\doc\xml\Tests\Drill4Net.Demo.Blazor.ServerWasm.WebAssembly\Drill4Net.Demo.Blazor.ServerWasm.WebAssembly.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.Blazor.WasmApp.WebAssembly</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\..\doc\xml\Tests\Drill4Net.Demo.Blazor.WasmApp.WebAssembly\Drill4Net.Demo.Blazor.WasmApp.WebAssembly.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Blazor.ServerWasm.WebAssembly</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Blazor.WasmApp.WebAssembly</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Drill4Net.Demo.Blazor.ServerWasm.Shared\Drill4Net.Demo.Blazor.ServerWasm.Shared.csproj" />
+    <ProjectReference Include="..\Drill4Net.Demo.Blazor.ServerWasm.Shared\Drill4Net.Demo.Blazor.WasmApp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

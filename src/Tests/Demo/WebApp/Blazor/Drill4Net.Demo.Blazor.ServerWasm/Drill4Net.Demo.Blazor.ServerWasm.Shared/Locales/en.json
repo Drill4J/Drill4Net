@@ -1,5 +1,5 @@
 ﻿{
-  "Drill4Net.Demo.Blazor.ServerWasm.Shared.Pages.Foo": {
+  "Drill4Net.Demo.Blazor.WasmApp.Shared.Pages.Foo": {
     "Name": "Name",
     "DateTime": "DateTime",
     "Address": "Address",
@@ -18,7 +18,7 @@
     "Foo.Address2": "Earth, China, Lane {0} of Jinshajiang Road, Putuo District, Shanghai. Here is an example of super long cell",
     "Foo.BindValue": "BindValue"
   },
-  "Drill4Net.Demo.Blazor.ServerWasm.Shared.Pages.EnumEducation": {
+  "Drill4Net.Demo.Blazor.WasmApp.Shared.Pages.EnumEducation": {
     "PlaceHolder": "Click to select ...",
     "Primary": "Primary",
     "Middel": "Middel"

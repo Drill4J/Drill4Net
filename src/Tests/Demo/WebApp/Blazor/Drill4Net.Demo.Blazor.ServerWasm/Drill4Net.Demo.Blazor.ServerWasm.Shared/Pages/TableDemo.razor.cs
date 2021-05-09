@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Shared.Pages
+namespace Drill4Net.Demo.Blazor.WasmApp.Shared.Pages
 {
     /// <summary>
     /// 

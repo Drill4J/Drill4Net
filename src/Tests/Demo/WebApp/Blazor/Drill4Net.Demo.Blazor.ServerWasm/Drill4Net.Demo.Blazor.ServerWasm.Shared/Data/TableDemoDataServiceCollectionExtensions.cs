@@ -1,5 +1,5 @@
 ﻿using BootstrapBlazor.Components;
-using Drill4Net.Demo.Blazor.ServerWasm.Shared.Pages;
+using Drill4Net.Demo.Blazor.WasmApp.Shared.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Shared.Data
+namespace Drill4Net.Demo.Blazor.WasmApp.Shared.Data
 {
     /// <summary>
     /// BootstrapBlazor 服务扩展类

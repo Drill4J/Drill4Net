@@ -120,11 +120,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{AB5F13
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerWasm", "ServerWasm", "{F484F33B-7897-4C39-91EE-D0E7134018AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Blazor.ServerWasm.Server", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.ServerWasm\Drill4Net.Demo.Blazor.ServerWasm.Server\Drill4Net.Demo.Blazor.ServerWasm.Server.csproj", "{31C694E4-1030-45A1-A6F4-A007159846D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Blazor.WasmApp.Server", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.ServerWasm\Drill4Net.Demo.Blazor.ServerWasm.Server\Drill4Net.Demo.Blazor.WasmApp.Server.csproj", "{31C694E4-1030-45A1-A6F4-A007159846D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Blazor.ServerWasm.WebAssembly", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.ServerWasm\Drill4Net.Demo.Blazor.ServerWasm.WebAssembly\Drill4Net.Demo.Blazor.ServerWasm.WebAssembly.csproj", "{4820D071-4EAD-43A8-A93A-687B4CDA7516}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Blazor.WasmApp.WebAssembly", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.ServerWasm\Drill4Net.Demo.Blazor.ServerWasm.WebAssembly\Drill4Net.Demo.Blazor.WasmApp.WebAssembly.csproj", "{4820D071-4EAD-43A8-A93A-687B4CDA7516}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Blazor.ServerWasm.Shared", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.ServerWasm\Drill4Net.Demo.Blazor.ServerWasm.Shared\Drill4Net.Demo.Blazor.ServerWasm.Shared.csproj", "{E8E27016-CA97-45A7-A694-6DAD5113ECC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Blazor.WasmApp.Shared", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.ServerWasm\Drill4Net.Demo.Blazor.ServerWasm.Shared\Drill4Net.Demo.Blazor.WasmApp.Shared.csproj", "{E8E27016-CA97-45A7-A694-6DAD5113ECC9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{B72B6DDF-7E0B-4AC1-8A06-CCF30C99BE3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Blazor.ServerApp", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.Server\Drill4Net.Demo.Blazor.ServerApp.csproj", "{7B010762-F29E-4D3C-A24C-6449739BCBA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -272,6 +276,10 @@ Global
 		{E8E27016-CA97-45A7-A694-6DAD5113ECC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8E27016-CA97-45A7-A694-6DAD5113ECC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8E27016-CA97-45A7-A694-6DAD5113ECC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B010762-F29E-4D3C-A24C-6449739BCBA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B010762-F29E-4D3C-A24C-6449739BCBA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B010762-F29E-4D3C-A24C-6449739BCBA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B010762-F29E-4D3C-A24C-6449739BCBA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -328,6 +336,8 @@ Global
 		{31C694E4-1030-45A1-A6F4-A007159846D9} = {F484F33B-7897-4C39-91EE-D0E7134018AB}
 		{4820D071-4EAD-43A8-A93A-687B4CDA7516} = {F484F33B-7897-4C39-91EE-D0E7134018AB}
 		{E8E27016-CA97-45A7-A694-6DAD5113ECC9} = {F484F33B-7897-4C39-91EE-D0E7134018AB}
+		{B72B6DDF-7E0B-4AC1-8A06-CCF30C99BE3D} = {AB5F1378-D6DD-4108-BB37-FB8346CB7DFA}
+		{7B010762-F29E-4D3C-A24C-6449739BCBA3} = {B72B6DDF-7E0B-4AC1-8A06-CCF30C99BE3D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Routing;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Shared.Shared
+namespace Drill4Net.Demo.Blazor.WasmApp.Shared.Shared
 {
     /// <summary>
     /// 

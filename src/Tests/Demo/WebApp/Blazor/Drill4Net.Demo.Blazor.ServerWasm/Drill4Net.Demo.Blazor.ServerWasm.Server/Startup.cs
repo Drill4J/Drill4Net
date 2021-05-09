@@ -1,5 +1,5 @@
 ﻿using BootstrapBlazor.Components;
-using Drill4Net.Demo.Blazor.ServerWasm.Shared.Data;
+using Drill4Net.Demo.Blazor.WasmApp.Shared.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Drill4Net.Demo.Blazor.ServerWasm.Server
+namespace Drill4Net.Demo.Blazor.WasmApp.Server
 {
     public class Startup
     {

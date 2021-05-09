@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>3115cd77-46f4-4bd0-b629-85e5a7755760</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.Blazor.ServerApp</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\..\doc\xml\Tests\Drill4Net.Demo.Blazor.ServerApp\Drill4Net.Demo.Blazor.ServerApp.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Blazor.ServerApp</OutputPath>
+  </PropertyGroup>
+
+</Project>
