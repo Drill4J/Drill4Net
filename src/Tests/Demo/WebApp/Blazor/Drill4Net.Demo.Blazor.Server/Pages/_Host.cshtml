@@ -12,9 +12,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Drill4Net.Demo.Blazor.ServerApp</title>
     <base href="~/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="Drill4Net.Demo.Blazor.ServerApp.styles.css" rel="stylesheet" />
+
+    @*Mud components*@
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </head>
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />

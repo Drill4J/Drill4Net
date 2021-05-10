@@ -1,0 +1,131 @@
+﻿@page "/injectChecker"
+
+<MudText Typo="Typo.h4">Inject Checker</MudText>
+<p></p>
+
+@*Alone runers by group*@
+<div class=".align-start" style="max-width: 500px;">
+    <MudExpansionPanels>
+
+        @*BRANCH Panel*@
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Api" class="mr-3"></MudIcon>
+                    <MudText><strong>BRANCH</strong></MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+
+                @*child panels*@
+                <div class="mx-auto" style="max-width: 500px;">
+                    <MudExpansionPanels>
+
+                        @*Panel IF/ELSE*@
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex">
+                                    <MudIcon Icon="@Icons.Material.Filled.Api" class="mr-3"></MudIcon>
+                                    <MudText><strong>If/Else</strong></MudText>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+
+                                <div class="mx-auto" style="max-width: 500px;">
+                                    <MudExpansionPanels>
+                                        @*IF/ELSE components*@
+                                    </MudExpansionPanels>
+                                </div>
+
+                            </ChildContent>
+                        </MudExpansionPanel>
+
+                        @*Panel SWITCH*@
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex">
+                                    <MudIcon Icon="@Icons.Material.Filled.Api" class="mr-3"></MudIcon>
+                                    <MudText><strong>Swith</strong></MudText>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+
+                                <div class="mx-auto" style="max-width: 500px;">
+                                    <MudExpansionPanels>
+                                        @*Swith components*@
+                                    </MudExpansionPanels>
+                                </div>
+
+                            </ChildContent>
+                        </MudExpansionPanel>
+
+                        @*Panel ELVIS*@
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <div class="d-flex">
+                                    <MudIcon Icon="@Icons.Material.Filled.Api" class="mr-3"></MudIcon>
+                                    <MudText><strong>Elvis operator</strong></MudText>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+
+                                <div class="mx-auto" style="max-width: 500px;">
+                                    <MudExpansionPanels>
+                                        @*Elvis components*@
+                                    </MudExpansionPanels>
+                                </div>
+
+                            </ChildContent>
+                        </MudExpansionPanel>
+
+                    </MudExpansionPanels>
+                </div>
+
+            </ChildContent>
+        </MudExpansionPanel>
+
+        @*CYCLE Panel*@
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.RotateRight" class="mr-3"></MudIcon>
+                    <MudText><strong>CYCLE</strong></MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                Panel Content
+            </ChildContent>
+        </MudExpansionPanel>
+
+        @*LINQ Panel*@
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Redeem" class="mr-3"></MudIcon>
+                    <MudText><strong>LINQ</strong></MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                Panel Content
+            </ChildContent>
+        </MudExpansionPanel>
+
+        @*LAMBDA Panel*@
+        <MudExpansionPanel>
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.RoomService" class="mr-3"></MudIcon>
+                    <MudText><strong>LAMBDA</strong></MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                Panel Content
+            </ChildContent>
+        </MudExpansionPanel>
+
+    </MudExpansionPanels>
+</div>
+
+@code {
+
+}

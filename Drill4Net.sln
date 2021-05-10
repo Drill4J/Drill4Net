@@ -130,7 +130,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerApp", "ServerApp", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.Blazor.ServerApp", "src\Tests\Demo\WebApp\Blazor\Drill4Net.Demo.Blazor.Server\Drill4Net.Demo.Blazor.ServerApp.csproj", "{7B010762-F29E-4D3C-A24C-6449739BCBA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Razor.App", "src\Tests\Demo\WebApp\Razor\Drill4Net.Demo.Razor.App\Drill4Net.Demo.Razor.App.csproj", "{BC8A4947-3CB0-4558-8354-0C2DA3279B7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.Razor.App", "src\Tests\Demo\WebApp\Razor\Drill4Net.Demo.Razor.App\Drill4Net.Demo.Razor.App.csproj", "{BC8A4947-3CB0-4558-8354-0C2DA3279B7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

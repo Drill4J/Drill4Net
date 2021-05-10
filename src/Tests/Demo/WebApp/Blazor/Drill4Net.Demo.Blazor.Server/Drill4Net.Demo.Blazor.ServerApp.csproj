@@ -14,4 +14,8 @@
     <OutputPath>..\..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Blazor.ServerApp</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="5.0.8" />
+  </ItemGroup>
+
 </Project>
