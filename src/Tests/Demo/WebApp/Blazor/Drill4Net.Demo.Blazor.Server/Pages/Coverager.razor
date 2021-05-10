@@ -1,50 +1,88 @@
 ﻿@page "/coverager"
 
 <MudText Typo="Typo.h4">Coverager</MudText>
-<p></p>
+<span></span>
 
 @*Group runers*@
 <MudGrid>
     <MudItem xs="12" md="12">
         <MudPaper Class="d-flex flex-row py-2 px-1">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="ButtonOnClick_1">Func 1</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2">MudBlazor is @Text</MudText>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_A">Func 1</MudButton>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-2 px-1">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="ButtonOnClick_2">Func 2</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2">MudBlazor is @Text</MudText>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_B">Func 2</MudButton>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-2 px-1">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="ButtonOnClick_3">Func 3</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2">MudBlazor is @Text</MudText>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_C">Func 3</MudButton>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
+        </MudPaper>
+        <MudPaper Class="d-flex flex-row py-2 px-1">
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_D">Func 3</MudButton>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
     </MudItem>
 </MudGrid>
 
+<MudText Class="pa-2 mx-2" Typo="Typo.body2"><strong>Coverage: @_coverProc%</strong></MudText>
+
 @code {
-    public string Text { get; set; } = "????";
-    public string ButtonText { get; set; } = "Click Me";
-    public int ButtonClicked { get; set; }
-
-    void ButtonOnClick_1()
+    private Dictionary<MethodGroupType, double> _coverages = new Dictionary<MethodGroupType, double>
     {
-        ButtonClicked += 1;
-        Text = $"Awesome x {ButtonClicked}";
-        ButtonText = "Click Me Again";
+        { MethodGroupType.A, 25 }, { MethodGroupType.B, 25 }, { MethodGroupType.C, 25 }, { MethodGroupType.D, 25 }
+    };
+
+    private HashSet<MethodGroupType> _coverGroups = new HashSet<MethodGroupType>();
+    private double _coverProc { get; set; }
+
+    /*******************************************************************/
+
+    string GetGroupCoverageDesc(MethodGroupType group)
+    {
+        return GetGroupCoverage(group) + "%";
     }
 
-    void ButtonOnClick_2()
+    double GetGroupCoverage(MethodGroupType group)
     {
-        ButtonClicked += 1;
-        Text = $"Awesome x {ButtonClicked}";
-        ButtonText = "Click Me Again";
+        return _coverages[group];
     }
 
-    void ButtonOnClick_3()
+    void RunGroup_A()
     {
-        ButtonClicked += 1;
-        Text = $"Awesome x {ButtonClicked}";
-        ButtonText = "Click Me Again";
+        // run...
+
+        RegisterGroup(MethodGroupType.A);
+    }
+
+    void RunGroup_B()
+    {
+        // run...
+
+        RegisterGroup(MethodGroupType.B);
+    }
+
+    void RunGroup_C()
+    {
+        // run...
+
+        RegisterGroup(MethodGroupType.C);
+    }
+
+    void RunGroup_D()
+    {
+        // run...
+
+        RegisterGroup(MethodGroupType.D);
+    }
+
+    void RegisterGroup(MethodGroupType id)
+    {
+        if (!_coverGroups.Contains(id))
+        {
+            _coverGroups.Add(id);
+            _coverProc += GetGroupCoverage(id);
+        }
     }
 }
 
