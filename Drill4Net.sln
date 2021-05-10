@@ -132,6 +132,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.Blazor.Serve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.Razor.App", "src\Tests\Demo\WebApp\Razor\Drill4Net.Demo.Razor.App\Drill4Net.Demo.Razor.App.csproj", "{BC8A4947-3CB0-4558-8354-0C2DA3279B7F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Target", "src\Tests\Demo\Shared\Drill4Net.Demo.Target\Drill4Net.Demo.Target.csproj", "{2DF2921D-8BE5-437F-A3F1-21027595D4F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -286,6 +288,10 @@ Global
 		{BC8A4947-3CB0-4558-8354-0C2DA3279B7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC8A4947-3CB0-4558-8354-0C2DA3279B7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC8A4947-3CB0-4558-8354-0C2DA3279B7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF2921D-8BE5-437F-A3F1-21027595D4F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF2921D-8BE5-437F-A3F1-21027595D4F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF2921D-8BE5-437F-A3F1-21027595D4F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF2921D-8BE5-437F-A3F1-21027595D4F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -345,6 +351,7 @@ Global
 		{B72B6DDF-7E0B-4AC1-8A06-CCF30C99BE3D} = {AB5F1378-D6DD-4108-BB37-FB8346CB7DFA}
 		{7B010762-F29E-4D3C-A24C-6449739BCBA3} = {B72B6DDF-7E0B-4AC1-8A06-CCF30C99BE3D}
 		{BC8A4947-3CB0-4558-8354-0C2DA3279B7F} = {D5E55441-F06F-437B-8CB6-ED26C1938072}
+		{2DF2921D-8BE5-437F-A3F1-21027595D4F4} = {2A4B3CE0-64B8-45F8-BFD9-C78FF5F28287}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

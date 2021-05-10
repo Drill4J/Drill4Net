@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.Blazor.ServerApp</OutputPath>
-    <DocumentationFile>..\..\..\..\..\..\..\doc\xml\Tests\Drill4Net.Demo.Blazor.ServerApp\Drill4Net.Demo.Blazor.ServerApp.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.Blazor.ServerApp</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\doc\xml\Tests\Drill4Net.Demo.Blazor.ServerApp\Drill4Net.Demo.Blazor.ServerApp.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Blazor.ServerApp</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Blazor.ServerApp</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

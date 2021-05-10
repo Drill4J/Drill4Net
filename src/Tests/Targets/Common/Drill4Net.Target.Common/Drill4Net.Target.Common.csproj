@@ -4,7 +4,7 @@
     <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.2;netstandard2.0;netstandard2.1;net461;net48</TargetFrameworks>
     <LangVersion>latest</LangVersion>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-	<NoWarn>NU1701</NoWarn>
+	<NoWarn>1591;1138;NU1701</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,10 +16,6 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Common</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <NoWarn>1591;1138</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">	  

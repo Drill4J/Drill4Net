@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Drill4Net.Demo.Blazor.WasmApp.Server</name>
+        <name>Drill4Net.Demo.Blazor.ServerApp</name>
     </assembly>
     <members>
     </members>
