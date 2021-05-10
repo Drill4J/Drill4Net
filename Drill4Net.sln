@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{15C3D733
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.RnD", "src\RnD\Drill4Net.Agent.RnD\Drill4Net.Agent.RnD.csproj", "{7D2F7D02-BD1D-4811-BCB0-7C44C7332390}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.RnD.Demo", "src\RnD\Drill4Net.Agent.RnD.Demo\Drill4Net.Agent.RnD.Demo.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.RnD.Debug", "src\RnD\Drill4Net.Agent.RnD.Debug\Drill4Net.Agent.RnD.Debug.csproj", "{AFF85CEE-3202-4906-A6B6-EA9B9319C6E2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection", "src\Injection\Drill4Net.Injection\Drill4Net.Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
 EndProject
@@ -132,7 +132,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.Blazor.Serve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.Razor.App", "src\Tests\Demo\WebApp\Razor\Drill4Net.Demo.Razor.App\Drill4Net.Demo.Razor.App.csproj", "{BC8A4947-3CB0-4558-8354-0C2DA3279B7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.Target", "src\Tests\Demo\Shared\Drill4Net.Demo.Target\Drill4Net.Demo.Target.csproj", "{2DF2921D-8BE5-437F-A3F1-21027595D4F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.Target", "src\Tests\Demo\Shared\Drill4Net.Demo.Target\Drill4Net.Demo.Target.csproj", "{2DF2921D-8BE5-437F-A3F1-21027595D4F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

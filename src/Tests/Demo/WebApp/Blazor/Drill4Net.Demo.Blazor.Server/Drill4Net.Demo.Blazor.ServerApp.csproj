@@ -22,4 +22,10 @@
     <ProjectReference Include="..\..\..\Shared\Drill4Net.Demo.Target\Drill4Net.Demo.Target.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="post_build.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

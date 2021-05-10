@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using Drill4Net.Agent.RnD;
 
-namespace Drill4Net.Agent.Demo
+namespace Drill4Net.Agent.RnD.Debug
 {
     public delegate void ProcDlgType(long cnt);
 
