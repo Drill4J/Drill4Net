@@ -3,11 +3,13 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
+	<NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
     <OutputPath>..\..\..\..\build\bin\Debug\Drill4Net.Injector.Strategies.Flow</OutputPath>
     <DocumentationFile>..\..\..\..\doc\xml\Drill4Net.Injector.Strategies.Flow\Drill4Net.Injector.Strategies.Flow.xml</DocumentationFile>
+    <NoWarn>1591;NU1701</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">

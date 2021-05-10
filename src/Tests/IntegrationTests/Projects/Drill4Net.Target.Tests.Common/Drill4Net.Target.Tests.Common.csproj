@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	<LangVersion>latest</LangVersion>
+	 <NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

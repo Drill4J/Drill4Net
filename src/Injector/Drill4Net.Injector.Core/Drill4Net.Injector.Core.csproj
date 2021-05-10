@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
-	<LangVersion>latest</LangVersion>  
+	<LangVersion>latest</LangVersion>
+	<NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -12,6 +13,10 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\build\bin\Release\Drill4Net.Injector.Core</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+    <NoWarn>1591;NU1701</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

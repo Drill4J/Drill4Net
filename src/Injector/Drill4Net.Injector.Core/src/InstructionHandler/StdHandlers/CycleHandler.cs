@@ -28,8 +28,6 @@ namespace Drill4Net.Injector.Core
             var isEnumeratorMoveNext = methodSource.IsEnumeratorMoveNext;
 
             var jumpers = ctx.Jumpers;
-            string probData;
-
             var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
             var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
             #endregion
