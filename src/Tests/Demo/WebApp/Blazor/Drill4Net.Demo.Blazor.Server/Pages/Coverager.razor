@@ -1,0 +1,36 @@
+﻿@page "/coverager"
+
+<h1>Coverager</h1>
+
+<p>Current count: @currentCount</p>
+
+<p>
+    <button class="btn btn-primary" @onclick="IncrementCount">Func 1</button>
+    20%
+</p>
+<p>
+    <button class="btn btn-primary" @onclick="IncrementCount">Func 2</button>
+    20%
+</p>
+<p>
+    <button class="btn btn-primary" @onclick="IncrementCount">Func 3</button>
+    
+    20%
+</p>
+<p>
+    <button class="btn btn-primary" @onclick="IncrementCount">Func 4</button>
+    20%
+</p>
+<p>
+    <button class="btn btn-primary" @onclick="IncrementCount">Func 5</button>
+    20%
+</p>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
