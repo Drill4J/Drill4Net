@@ -1,4 +1,5 @@
 ﻿@page "/coverager"
+@using Drill4Net.Demo.Target
 
 <MudText Typo="Typo.h4">Coverager</MudText>
 <span></span>
@@ -29,7 +30,7 @@
 
 @code {
     private Dictionary<MethodGroupType, double> _coverages = new Dictionary<MethodGroupType, double>
-    {
+{
         { MethodGroupType.A, 25 }, { MethodGroupType.B, 25 }, { MethodGroupType.C, 25 }, { MethodGroupType.D, 25 }
     };
 
@@ -50,29 +51,29 @@
 
     void RunGroup_A()
     {
-        // run...
-
+        var c = new CoverageTarget();
+        c.IfElse_FullSimple_1(false);
         CoverGroup(MethodGroupType.A);
     }
 
     void RunGroup_B()
     {
-        // run...
-
+        var c = new CoverageTarget();
+        c.IfElse_FullSimple_1(true);
         CoverGroup(MethodGroupType.B);
     }
 
     void RunGroup_C()
     {
-        // run...
-
+        var c = new CoverageTarget();
+        c.IfElse_FullSimple_2(false);
         CoverGroup(MethodGroupType.C);
     }
 
     void RunGroup_D()
     {
-        // run...
-
+        var c = new CoverageTarget();
+        c.IfElse_FullSimple_2(true);
         CoverGroup(MethodGroupType.D);
     }
 

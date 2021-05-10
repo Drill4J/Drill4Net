@@ -18,4 +18,8 @@
     <PackageReference Include="MudBlazor" Version="5.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Drill4Net.Demo.Target\Drill4Net.Demo.Target.csproj" />
+  </ItemGroup>
+
 </Project>
