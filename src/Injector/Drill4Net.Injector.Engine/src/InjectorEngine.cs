@@ -685,7 +685,7 @@ namespace Drill4Net.Injector.Engine
                 //TODO: normal defining of business types (by cfg?)
                 //var nameSpace = typeDef.Namespace;
                 var typeFullName = typeDef.FullName;
-                if (!_typeChecker.CheckByTypeName(typeFullName))
+                if (!_typeChecker.CheckByNamespace(typeFullName))
                     continue;
                 res.Add(typeDef);
             }
@@ -822,7 +822,7 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                 }
-                if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodName(extFullname))
+                if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodFullName(extFullname))
                     treeFunc.CalleeIndexes.Add(extFullname, ctx.SourceIndex);
             }
             #endregion

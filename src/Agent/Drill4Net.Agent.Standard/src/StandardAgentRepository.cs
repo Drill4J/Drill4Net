@@ -27,6 +27,8 @@ namespace Drill4Net.Agent.Standard
     {
         public AbstractCommunicator Communicator { get; }
 
+        public bool IsAnySession => _sessionToCtx.Any();
+
         private readonly ConcurrentDictionary<int, string> _ctxToSession;
         private readonly ConcurrentDictionary<string, int> _sessionToCtx;
         private readonly ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;

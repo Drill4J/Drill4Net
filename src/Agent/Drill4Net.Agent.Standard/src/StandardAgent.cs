@@ -191,6 +191,8 @@ namespace Drill4Net.Agent.Standard
             try
             {
                 #region Checks
+                if (!_rep.IsAnySession)
+                    return;
                 if (string.IsNullOrWhiteSpace(data))
                 {
                     Log.Error("Data is empty");
