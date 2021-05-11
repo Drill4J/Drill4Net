@@ -45,6 +45,19 @@ namespace Drill4Net.Common
             opts.Profiler.Directory = FileUtils.GetFullPath(opts.Profiler.Directory);
             if (opts.Tests?.Directory != null)
                 opts.Tests.Directory = FileUtils.GetFullPath(opts.Tests.Directory);
+            
+            //filter for source
+            NormalizeFilterPathes(opts.Source.Filter.Includes);
+            NormalizeFilterPathes(opts.Source.Filter.Excludes);
+        }
+
+        internal static void NormalizeFilterPathes(SourceFilterParams pars)
+        {
+            var dirs = pars?.Directories;
+            if (dirs == null)
+                return;
+            for (var i = 0; i < dirs.Count; i++)
+                dirs[i] = FileUtils.GetFullPath(dirs[i]);
         }
 
         internal static string GetCurrentConfigPath(string[] args)

@@ -1,13 +1,19 @@
-﻿Description: Manual debugging of Injector App (RnD)
+﻿Description: Manual debugging of Injector App (RnD) on Blazor app (Server-Side)
 Target: # some metadata about target
-    Name: Test Target #optional injection name
+    Name: Blazor app (Server-Side) # optional injection name
 Source: # what and how processing
-    Directory: ..\..\Tests\TargetApps\
+    Directory: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp\net5.0\
     Filter: # mask for search files, namespaces, classes...
-       File: 
-       Namespace: 
-       Class:
-       Attribute:
+      Includes:
+        Directories:
+        Files: 
+        Namespaces:
+          - Drill4Net
+        Classes:
+        Attributes:
+      Excludes:
+        Directories:
+          - publish
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
@@ -30,23 +36,23 @@ Probes: # types of cross-cutting points
     Setter: false
     EventAdd: false
     EventRemove: false
-Tests: # what will be tested - by target moniker/assembly/class
-    Directory: ..\..\TargetApps\ #target dir relatively Test project
-    Targets:
-        #net461: #assembly moniker (MonikerData)
-        #  BaseFolder: Drill4Net.Target.Net461.App #folder of app/simple target
-        #  Folders: #list of FolderData
-        #    - Folder: #relatively BaseFolder in deep (empty if files in BaseFolder)
-        #      Assemblies: #dictionary assemblies in folder, values - list of classes
-        #        'Drill4Net.Target.Common.dll':
-        #          - Drill4Net.Target.Common.InjectTarget #full name of class
-        #net48: #default assembly & class if empty
-        #  BaseFolder: Drill4Net.Target.Net48.App
-        netcoreapp2.2:
-          BaseFolder: Drill4Net.Target.Core22.App\netcoreapp2.2\
-        netcoreapp3.1:
-          BaseFolder: Drill4Net.Target.Core31.App\netcoreapp3.1\
-        net5.0:
-          BaseFolder: Drill4Net.Target.Net50.App\net5.0\
+#Tests: # what will be tested - by target moniker/assembly/class
+#    Directory: ..\..\TargetApps\ #target dir relatively Test project
+#    Targets:
+#        #net461: #assembly moniker (MonikerData)
+#        #  BaseFolder: Drill4Net.Target.Net461.App #folder of app/simple target
+#        #  Folders: #list of FolderData
+#        #    - Folder: #relatively BaseFolder in deep (empty if files in BaseFolder)
+#        #      Assemblies: #dictionary assemblies in folder, values - list of classes
+#        #        'Drill4Net.Target.Common.dll':
+#        #          - Drill4Net.Target.Common.InjectTarget #full name of class
+#        #net48: #default assembly & class if empty
+#        #  BaseFolder: Drill4Net.Target.Net48.App
+#        netcoreapp2.2:
+#          BaseFolder: Drill4Net.Target.Core22.App\netcoreapp2.2\
+#        netcoreapp3.1:
+#          BaseFolder: Drill4Net.Target.Core31.App\netcoreapp3.1\
+#        net5.0:
+#          BaseFolder: Drill4Net.Target.Net50.App\net5.0\
 Silent: false # no wait, no questions...
 
