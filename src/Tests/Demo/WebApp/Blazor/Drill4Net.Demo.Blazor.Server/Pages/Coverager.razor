@@ -2,31 +2,34 @@
 @using Drill4Net.Demo.Target
 
 <MudText Typo="Typo.h4">Coverager</MudText>
-<span></span>
+<div style="height:10px;"></div>
 
 @*Group runers*@
 <MudGrid>
-    <MudItem xs="12" md="12">
-        <MudPaper Class="d-flex flex-row py-2 px-1">
+    <MudItem xs="12" md="0">
+        <MudText Color="Color.Info" Typo="Typo.body2"><i>CoverageTarget</i></MudText>
+
+        <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_A">Func 1</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
-        <MudPaper Class="d-flex flex-row py-2 px-1">
+        <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_B">Func 2</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
-        <MudPaper Class="d-flex flex-row py-2 px-1">
+        <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_C">Func 3</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
         </MudPaper>
-        <MudPaper Class="d-flex flex-row py-2 px-1">
+        <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_D">Func 3</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
+        <MudPaper Class="d-flex flex-row py-1">
+            <MudText Class="px-0 py-1" Typo="Typo.body2"><strong>Coverage: @_coverProc%</strong></MudText>
+        </MudPaper>
     </MudItem>
 </MudGrid>
-
-<MudText Class="pa-2 mx-2" Typo="Typo.body2"><strong>Coverage: @_coverProc%</strong></MudText>
 
 @code {
     private Dictionary<MethodGroupType, double> _coverages = new Dictionary<MethodGroupType, double>
