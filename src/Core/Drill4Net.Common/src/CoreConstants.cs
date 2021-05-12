@@ -2,6 +2,7 @@
 {
     public class CoreConstants
     {
+        public const string CONFIG_REDIRECT_NAME = "redirect.yml";
         public const string CONFIG_DEFAULT_NAME = "cfg.yml";
         public const string CONFIG_STD_NAME = "std_cfg.yml";
         public const string CONFIG_TESTS_NAME = "tests_cfg.yml";

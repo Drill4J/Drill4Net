@@ -36,7 +36,7 @@ Probes: # types of cross-cutting points
     EventAdd: false
     EventRemove: false
 Tests: # what will be tested - by target moniker/assembly/class
-    Directory: ..\..\TargetApps\ #target dir relatively Test project
+    Directory: ..\..\TargetApps\ #pure source target dir relatively Test project
     Targets:
         net461: #assembly moniker (MonikerData)
           BaseFolder: Drill4Net.Target.Net461.App #folder of app/simple target

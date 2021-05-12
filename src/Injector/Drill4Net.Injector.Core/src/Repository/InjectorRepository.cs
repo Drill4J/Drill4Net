@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
+using YamlDotNet.Serialization;
 
 namespace Drill4Net.Injector.Core
 {
@@ -18,10 +19,7 @@ namespace Drill4Net.Injector.Core
 
         /**********************************************************************************/
 
-        private InjectorRepository(): 
-            this(Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_DEFAULT_NAME))
-        {
-        }
+        private InjectorRepository(): this(GetCurrentConfigPath()) {}
 
         public InjectorRepository(string cfgPath)
         {
@@ -36,6 +34,20 @@ namespace Drill4Net.Injector.Core
         }
 
         /**********************************************************************************/
+
+        internal static string GetCurrentConfigPath()
+        {
+            var redirectPath = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_REDIRECT_NAME);
+            if (!File.Exists(redirectPath))
+                return Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_DEFAULT_NAME);
+            Deserializer deser = new Deserializer();
+            var cfg = File.ReadAllText(redirectPath);
+            var redirect = deser.Deserialize<RedirectOptions>(cfg);
+            var path = redirect?.Path;
+            if (!path.EndsWith(".yml")) //full path in Windows
+                path += ".yml";
+            return FileUtils.GetFullPath(path);
+        }
 
         public virtual void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {

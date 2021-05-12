@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using Serilog;
 using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
-using Serilog;
 
 namespace Drill4Net.Target.Tests.Common
 {

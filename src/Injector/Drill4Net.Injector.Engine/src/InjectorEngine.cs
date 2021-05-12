@@ -119,6 +119,7 @@ namespace Drill4Net.Injector.Engine
         {
             if (!opts.Source.Filter.IsDirectoryNeed(directory))
                 return;
+            Log.Debug($"Processing dir [{directory}]");
 
             //files
             var files = _rep.GetAssemblies(directory);
@@ -179,15 +180,15 @@ namespace Drill4Net.Injector.Engine
             MainOptions opts, InjectedSolution tree)
         {
             #region Reading
+            #region Filter
             if (!opts.Source.Filter.IsFileNeed(filePath))
                 return;
-
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException($"File not exists: [{filePath}]");
-
-            //filter
             if (!_typeChecker.CheckByAssemblyPath(filePath))
                 return;
+            #endregion
+            #region Paths
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException($"File not exists: [{filePath}]");
 
             //source
             var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath) ?? string.Empty)}\\";
@@ -198,9 +199,9 @@ namespace Drill4Net.Injector.Engine
             var destDir = FileUtils.GetDestinationDirectory(opts, sourceDir);
             if (!Directory.Exists(destDir))
                 Directory.CreateDirectory(destDir);
-
-            //must process? need to know the version of the assembly before reading it via cecil
+            #endregion
             #region Version
+            //need to know the version of the assembly before reading it via cecil
             var ext = Path.GetExtension(filePath);
             AssemblyVersioning version;
             if (versions.ContainsKey(filePath))
@@ -251,11 +252,13 @@ namespace Drill4Net.Injector.Engine
             }
             #endregion
             #endregion
-
+            #region Read file
             // read subject assembly with symbols
+            Log.Debug($"Reading file [{filePath}]");
             using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             var module = assembly.MainModule;
             var moduleName = module.Name;
+            #endregion
             #endregion
             #region Tree
             //directory
@@ -644,7 +647,8 @@ namespace Drill4Net.Injector.Engine
             // ensure we referencing only ref assemblies
             if (isNetFx)
             {
-                var systemPrivateCoreLib = module.AssemblyReferences.FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+                var systemPrivateCoreLib = module.AssemblyReferences
+                    .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
                 //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
                 if (systemPrivateCoreLib != null)
                     module.AssemblyReferences.Remove(systemPrivateCoreLib);

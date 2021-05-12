@@ -18,11 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="cfg_target.yml" />
+    <None Remove="RnD.yml" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="cfg_target.yml">
+    <EmbeddedResource Include="RnD.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -37,7 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="cfg.yml">
+    <None Update="blazor_ss.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="redirect.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
