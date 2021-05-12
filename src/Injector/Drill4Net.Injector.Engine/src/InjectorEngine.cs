@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Globalization;
-using System.Runtime.Versioning;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -300,24 +299,25 @@ namespace Drill4Net.Injector.Engine
             foreach (var typeDef in types)
             {
                 var typeFullName = typeDef.FullName;
-                
-                #region Tree
+
+                //tree
                 var realTypeName = TryGetRealTypeName(typeDef);
                 var treeMethodType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
                 {
                     Source = CreateTypeSource(typeDef),
                     Path = treeAsm.Path,
                 };
-                asmCtx.InjClasses.Add(treeMethodType.FullName, treeMethodType);
-                treeAsm.AddChild(treeMethodType);
-                #endregion
-
                 var typeCtx = new TypeContext(asmCtx, typeDef, treeMethodType);
-                asmCtx.TypeContexts.Add(typeFullName, typeCtx);
                 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
                 var methods = GetMethods(typeCtx, typeDef, opts);
+                if (!methods.Any())
+                    continue;
+
+                asmCtx.TypeContexts.Add(typeFullName, typeCtx);
+                asmCtx.InjClasses.Add(treeMethodType.FullName, treeMethodType);
+                treeAsm.AddChild(treeMethodType);
 
                 //by methods
                 foreach (var methodDef in methods)
@@ -389,6 +389,8 @@ namespace Drill4Net.Injector.Engine
                     #endregion
                 }
             }
+            if (!asmCtx.TypeContexts.Any())
+                return;
             #endregion
             #region MoveNext methods
             var moveNextMethods = treeAsm.Filter(typeof(InjectedMethod), true)
@@ -484,6 +486,8 @@ namespace Drill4Net.Injector.Engine
             #region Size of the business code parts
             var bizMethods = asmCtx.InjMethodByFullname.Values
                 .Where(a => !a.IsCompilerGenerated).ToArray();
+            if (!bizMethods.Any())
+                return;
             foreach (var caller in bizMethods.Where(a => a.CalleeIndexes.Count > 0))
             {
                 foreach (var calleeName in caller.CalleeIndexes.Keys)
@@ -550,7 +554,7 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                     #endregion
-                    #region Injections
+                    #region *** Injections ***
                     _strategy.StartMethod(methodCtx); //primary actions
                     for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
                     {

@@ -27,16 +27,35 @@ namespace Drill4Net.Injector.Core
             WeakReference refCtx;
             if (!_contexts.ContainsKey(assemblyPath))
             {
-                var asmCtx = new AssemblyLoaderContext(assemblyPath);
-                refCtx = new WeakReference(asmCtx, trackResurrection: true);
+                refCtx = LoadAsNew(assemblyPath);
                 _contexts.Add(assemblyPath, refCtx);
             }
             else
             {
                 refCtx = _contexts[assemblyPath];
             }
-            var asm = ((AssemblyLoaderContext)refCtx.Target).LoadFromAssemblyPath(assemblyPath);
-            return asm;
+            //
+            try
+            {
+                var asm = ((AssemblyLoaderContext)refCtx.Target).LoadFromAssemblyPath(assemblyPath);
+                return asm;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("unloaded"))
+                {
+                    _contexts.Remove(assemblyPath);
+                    return Load(assemblyPath);
+                }
+                else
+                    throw;
+            }
+        }
+
+        private WeakReference LoadAsNew(string assemblyPath)
+        {
+            var asmCtx = new AssemblyLoaderContext(assemblyPath);
+            return new WeakReference(asmCtx, trackResurrection: true);
         }
 
         public void Unload(string assemblyPath)
