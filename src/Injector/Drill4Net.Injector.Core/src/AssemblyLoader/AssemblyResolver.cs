@@ -1,4 +1,5 @@
 ﻿using Mono.Cecil;
+using System;
 using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
@@ -31,7 +32,10 @@ namespace Drill4Net.Injector.Core
 
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
         {
+            //TODO: cache!!!
             var path = _helper.FindAssemblyPath(name.Name, name.Version);
+            if (path == null)
+                return null; // throw new Exception($"Assembly [name.Name] is not resolved");
             var def = AssemblyDefinition.ReadAssembly(path, _readerParams);
             _defs.Add(def);
             return def;

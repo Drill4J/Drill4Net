@@ -23,10 +23,24 @@ namespace Drill4Net.Injector.Core
             if(!shortName.EndsWith(".dll"))
                 shortName = $"{shortName}.dll";
             var dirs = Directory.GetDirectories(runtimeRootPath);
+            string firstMatch = null;
             foreach (var dir in dirs)
             {
                 var may = $"{dir}\\{verS}";
-                var verDir = Directory.GetDirectories(dir).FirstOrDefault(a => a.StartsWith(may));
+                var innerDirs = Directory.GetDirectories(dir);
+                //first (oldest) version
+                foreach (var curDir in innerDirs)
+                {
+                    var curFPath = Path.Combine(curDir, shortName);
+                    if (File.Exists(curFPath))
+                    {
+                        firstMatch = curFPath;
+                        break;
+                    }
+                }
+
+                //exact version
+                var verDir = innerDirs.FirstOrDefault(a => a.StartsWith(may));
                 if (verDir == null)
                     continue;
                 var filePath = Path.Combine(verDir, shortName);
@@ -34,7 +48,7 @@ namespace Drill4Net.Injector.Core
                     continue;
                 return filePath;
             }
-            return null;
+            return firstMatch;
         }
     }
 }
