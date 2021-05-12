@@ -1,5 +1,4 @@
 ﻿using Mono.Cecil;
-using System;
 using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
@@ -7,15 +6,15 @@ namespace Drill4Net.Injector.Core
     public class AssemblyResolver : IAssemblyResolver
     {
         private readonly AssemblyHelper _helper;
-        private readonly List<AssemblyDefinition> _defs;
         private readonly ReaderParameters _readerParams;
+        private readonly Dictionary<string, AssemblyDefinition> _cache;
 
         /*************************************************************/
 
         public AssemblyResolver()
         {
+            _cache = new Dictionary<string, AssemblyDefinition>();
             _helper = new AssemblyHelper();
-            _defs = new List<AssemblyDefinition>();
             _readerParams = new ReaderParameters
             {
                 ReadWrite = false,
@@ -30,20 +29,23 @@ namespace Drill4Net.Injector.Core
             return Resolve(name, null);
         }
 
-        public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
+        public AssemblyDefinition Resolve(AssemblyNameReference nameRef, ReaderParameters parameters)
         {
-            //TODO: cache!!!
-            var path = _helper.FindAssemblyPath(name.Name, name.Version);
+            var name = nameRef.Name;
+            if (_cache.ContainsKey(name))
+                return _cache[name];
+            //
+            var path = _helper.FindAssemblyPath(name, nameRef.Version);
             if (path == null)
-                return null; // throw new Exception($"Assembly [name.Name] is not resolved");
+                return null;
             var def = AssemblyDefinition.ReadAssembly(path, _readerParams);
-            _defs.Add(def);
+            _cache.Add(name, def);
             return def;
         }
 
         public void Dispose()
         {
-            foreach (var def in _defs)
+            foreach (var def in _cache.Values)
                 def.Dispose();
         }
     }
