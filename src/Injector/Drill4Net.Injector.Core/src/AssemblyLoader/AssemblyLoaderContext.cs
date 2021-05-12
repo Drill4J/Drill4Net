@@ -1,6 +1,9 @@
 ﻿#if NET5_0
 using System;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 
 namespace Drill4Net.Injector.Core
@@ -8,12 +11,14 @@ namespace Drill4Net.Injector.Core
     //https://docs.microsoft.com/ru-ru/dotnet/core/tutorials/creating-app-with-plugin-support
     public class AssemblyLoaderContext : AssemblyLoadContext
     {
+        private readonly AssemblyHelper _helper;
         private readonly AssemblyDependencyResolver _resolver;
 
         /*************************************************************/
 
         public AssemblyLoaderContext(string asmPath) : base(isCollectible: true)
         {
+            _helper = new AssemblyHelper();
             _resolver = new AssemblyDependencyResolver(asmPath);
             Resolving += AssemblyContext_Resolving;
         }
@@ -35,7 +40,8 @@ namespace Drill4Net.Injector.Core
 
         private Assembly AssemblyContext_Resolving(AssemblyLoadContext arg1, AssemblyName arg2)
         {
-            throw new NotImplementedException();
+            var path = _helper.FindAssemblyPath(arg2.Name, arg2.Version);
+            return path == null ? null : Assembly.LoadFrom(path);
         }
 
         protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)

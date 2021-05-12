@@ -4,10 +4,15 @@ Target: # some metadata about target
 Source: # what and how processing
     Directory: ..\..\Tests\TargetApps\
     Filter: # mask for search files, namespaces, classes...
-       File: 
-       Namespace: 
-       Class:
-       Attribute:
+      Includes:
+        Directories:
+        Files: 
+        Namespaces:
+          - Drill4Net
+        Classes:
+        Attributes:
+      Excludes:
+        Directories:
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected.Tests #...or prefix to source dir

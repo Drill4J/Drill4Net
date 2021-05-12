@@ -4,11 +4,12 @@
         <name>Drill4Net.Injector.Engine</name>
     </assembly>
     <members>
-        <member name="M:Drill4Net.Injector.Engine.InjectorEngine.FilterTypes(System.Collections.Generic.IEnumerable{Mono.Cecil.TypeDefinition})">
+        <member name="M:Drill4Net.Injector.Engine.InjectorEngine.FilterTypes(System.Collections.Generic.IEnumerable{Mono.Cecil.TypeDefinition},Drill4Net.Common.SourceFilterOptions)">
             <summary>
             Get all types of assembly for filtering
             </summary>
             <param name="allTypes"></param>
+            <param name="opts"></param>
             <returns></returns>
         </member>
     </members>

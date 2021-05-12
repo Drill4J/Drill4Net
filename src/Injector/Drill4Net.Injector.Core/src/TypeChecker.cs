@@ -18,21 +18,21 @@ namespace Drill4Net.Injector.Core
 
         public bool CheckByAssemblyPath(string filePath)
         {
-            return CheckByNamespace(Path.GetFileNameWithoutExtension(filePath));
+            return !IsSystemType(Path.GetFileNameWithoutExtension(filePath));
         }
         
         public bool CheckByMethodFullName(string methodFullName)
         {
             var tAr = methodFullName.Split(' ')[1].Split(':');
             var type = tAr[0];
-            return CheckByNamespace(type);
+            return !IsSystemType(type);
         }
         
-        public bool CheckByNamespace(string typeFullName)
+        public bool IsSystemType(string typeFullName)
         {
             var tAr = typeFullName.Split('.');
             var ns1 = tAr[0];
-            return !_restrictNamespaces.Contains(ns1);
+            return _restrictNamespaces.Contains(ns1);
         }
 
         private HashSet<string> GetRestrictNamespaces()

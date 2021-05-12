@@ -2,7 +2,7 @@
 Target: # some metadata about target
     Name: Blazor app (Server-Side) # optional injection name
 Source: # what and how processing
-    Directory: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp\net5.0\
+    Directory: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp\
     Filter: # mask for search files, namespaces, classes...
       Includes:
         Directories:

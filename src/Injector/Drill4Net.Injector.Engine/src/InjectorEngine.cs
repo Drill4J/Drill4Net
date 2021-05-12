@@ -66,9 +66,7 @@ namespace Drill4Net.Injector.Engine
 
             //copying of all needed data in needed targets
             var monikers = opts.Tests?.Targets;
-            _rep.CopySource(sourceDir, destDir, monikers);
-
-            var versions = DefineTargetVersions(sourceDir);
+            _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the filter
             
             //tree
             var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
@@ -78,9 +76,14 @@ namespace Drill4Net.Injector.Engine
             };
 
             //targets from in cfg
+            var versions = DefineTargetVersions(sourceDir);
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
+                //filter by cfg
+                if (!opts.Source.Filter.IsDirectoryNeed(dir))
+                    continue;
+                //filter by target moniker (typed version)
                 var yes = monikers == null || monikers.Count == 0 || monikers.Any(a =>
                 {
                     var x = Path.Combine(sourceDir, a.Value.BaseFolder);
@@ -115,6 +118,9 @@ namespace Drill4Net.Injector.Engine
         internal void ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 
              MainOptions opts, InjectedSolution tree)
         {
+            if (!opts.Source.Filter.IsDirectoryNeed(directory))
+                return;
+
             //files
             var files = _rep.GetAssemblies(directory);
             foreach (var file in files)
@@ -174,6 +180,9 @@ namespace Drill4Net.Injector.Engine
             MainOptions opts, InjectedSolution tree)
         {
             #region Reading
+            if (!opts.Source.Filter.IsFileNeed(filePath))
+                return;
+
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
 
@@ -217,6 +226,7 @@ namespace Drill4Net.Injector.Engine
                 ReadWrite = false,
                 // read everything at once
                 ReadingMode = ReadingMode.Immediate,
+                AssemblyResolver = new AssemblyResolver(),
             };
 
             #region PDB
@@ -281,7 +291,7 @@ namespace Drill4Net.Injector.Engine
             //var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             #endregion
             #region Processing
-            var types = FilterTypes(module.Types);
+            var types = FilterTypes(module.Types, opts.Source.Filter);
             var asmCtx = new AssemblyContext(filePath, version, assembly, treeAsm);
 
             #region 1. Tree's entities & Contexts
@@ -672,8 +682,9 @@ namespace Drill4Net.Injector.Engine
         /// Get all types of assembly for filtering
         /// </summary>
         /// <param name="allTypes"></param>
+        /// <param name="opts"></param>
         /// <returns></returns>
-        internal IEnumerable<TypeDefinition> FilterTypes(IEnumerable<TypeDefinition> allTypes)
+        internal IEnumerable<TypeDefinition> FilterTypes(IEnumerable<TypeDefinition> allTypes, SourceFilterOptions opts)
         {
             var res = new List<TypeDefinition>();
             foreach (var typeDef in allTypes)
@@ -681,12 +692,27 @@ namespace Drill4Net.Injector.Engine
                 var typeName = typeDef.Name;
                 if (typeName == "<Module>")
                     continue;
-
-                //TODO: normal defining of business types (by cfg?)
-                //var nameSpace = typeDef.Namespace;
                 var typeFullName = typeDef.FullName;
-                if (!_typeChecker.CheckByNamespace(typeFullName))
+                if (_typeChecker.IsSystemType(typeFullName)) //system's types not needed any way
                     continue;
+                if (!opts.IsClassNeed(typeFullName))
+                    continue;
+                if (!opts.IsNamespaceNeed(typeDef.Namespace))
+                    continue;
+
+                //attributes
+                var not = false;
+                foreach (var attr in typeDef.CustomAttributes)
+                {
+                    if (!opts.IsNamespaceNeed(typeDef.Namespace))
+                    {
+                        not = true;
+                        break;
+                    }
+                }
+                if (not)
+                    continue;
+                //
                 res.Add(typeDef);
             }
             return res;
