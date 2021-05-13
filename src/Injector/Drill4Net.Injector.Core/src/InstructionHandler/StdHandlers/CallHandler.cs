@@ -33,6 +33,8 @@ namespace Drill4Net.Injector.Core
                 var operand = (MethodReference) instr.Operand;
                 var fullname = operand.FullName;
                 var isOwn = _typeChecker.CheckByMethodFullName(fullname);
+                if (fullname.Contains("get__") || fullname.Contains("set__")) //ASP.NET/Blazor - not needed
+                    return false;
                 if (code is Code.Callvirt)
                     return isOwn || fullname.Contains("::Invoke(");
                 if (fullname.Contains(ctx.ProxyNamespace))

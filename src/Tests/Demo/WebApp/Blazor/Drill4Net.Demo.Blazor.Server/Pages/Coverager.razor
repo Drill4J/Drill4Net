@@ -26,7 +26,7 @@
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudText Class="px-0 py-1" Typo="Typo.body2"><strong>Coverage: @_coverProc%</strong></MudText>
+            <MudText Class="px-0 py-1" Typo="Typo.body2" Color="@_resColor"><strong>Coverage: @_coverProc%</strong></MudText>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -39,6 +39,7 @@
 
     private HashSet<MethodGroupType> _coverGroups = new HashSet<MethodGroupType>();
     private double _coverProc { get; set; }
+    private Color _resColor = Color.Default;
 
     /*******************************************************************/
 
@@ -87,6 +88,8 @@
             _coverGroups.Add(id);
             _coverProc += GetGroupCoverage(id);
         }
+        if (_coverProc == 100)
+            _resColor = Color.Success;
     }
 }
 
