@@ -4,25 +4,29 @@
 <MudText Typo="Typo.h4">Coverager</MudText>
 <div style="height:10px;"></div>
 
+@code {
+    private bool _isTest = true;
+}
+
 @*Group runers*@
 <MudGrid>
     <MudItem xs="12" md="0">
-        <MudText Color="Color.Info" Typo="Typo.body2"><i>CoverageTarget</i></MudText>
+        <MudText Color="Color.Info" Typo="Typo.body2"><i>CoverageTarget @(_isTest ? " (test)" : "")</i></MudText>
 
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_A">Func 1</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_A">@GetButtonCaption(1)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_B">Func 2</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_B">@GetButtonCaption(2)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_C">Func 3</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_C">@GetButtonCaption(3)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RunGroup_D">Func 3</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_D">@GetButtonCaption(4)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
@@ -91,6 +95,23 @@
         if (_coverProc == 100)
             _resColor = Color.Success;
     }
+
+    #region Buttons
+    private string GetButtonCaption(int order = 0)
+    {
+        return $"Fun {order}";
+    }
+
+    private Variant GetButtonVariant()
+    {
+        return Variant.Outlined;
+    }
+
+    private Color GetButtonColor()
+    {
+        return Color.Primary;
+    }
+    #endregion
 }
 
 

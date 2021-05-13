@@ -341,8 +341,12 @@ namespace Drill4Net.Injector.Engine
                     //Enter/Return
                     var isSpecFunc = IsSpecialGeneratedMethod(methodType);
                     var strictEnterReturn = //what is principally forbidden
-                        !isSpecFunc &&
-                        (                           
+                        !isSpecFunc
+                        //ASP.NET & Blazor rendering methods (may contains business logic)
+                        && !methodName.Contains("CreateHostBuilder") 
+                        && !methodName.Contains("BuildRenderTree")
+                        //others
+                        && (                           
                             methodName.Contains("|") || //local func                                                        
                             isAsyncStateMachine || //async/await
                             isCompilerGenerated ||
