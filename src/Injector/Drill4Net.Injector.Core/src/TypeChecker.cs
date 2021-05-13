@@ -23,6 +23,8 @@ namespace Drill4Net.Injector.Core
         
         public bool CheckByMethodFullName(string methodFullName)
         {
+            if (!methodFullName.Contains(" ") || !methodFullName.Contains(":"))
+                return false;
             var tAr = methodFullName.Split(' ')[1].Split(':');
             var type = tAr[0];
             return !IsSystemType(type);
@@ -44,6 +46,17 @@ namespace Drill4Net.Injector.Core
                 "Windows",
                 "WindowsBase",
                 "FSharp",
+                "Accessibility",
+                "PresentationCore",
+                "PresentationFramework",
+                "PresentationUI",
+                "ReachFramework",
+                "UIAutomationClient",
+                "UIAutomationClientSideProviders",
+                "UIAutomationProvider",
+                "UIAutomationTypes",
+                "WindowsFormsIntegration",
+                "DirectWriteForwarder",
                 //...
             };
             return hash;

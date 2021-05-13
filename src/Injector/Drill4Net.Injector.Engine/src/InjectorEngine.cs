@@ -1077,8 +1077,8 @@ namespace Drill4Net.Injector.Engine
                     .Where(a => a.HasBody)
                     .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
                     .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
-                    .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop")) //do we need property setters?
-                    .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop")) //do we need property getters?
+                    .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop" && !a.Name.StartsWith("set_"))) //do we need property setters?
+                    .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop" && !a.Name.StartsWith("get_"))) //do we need property getters?
                     .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
                     .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
                     .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?

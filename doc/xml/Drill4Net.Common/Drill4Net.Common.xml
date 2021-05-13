@@ -10,6 +10,16 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Drill4Net.Common.AdminOptions">
+            <summary>
+            Options for communicate with Admin side of Drill system
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AdminOptions.Url">
+            <summary>
+            Endpoint for communication (address with port)
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.FolderData">
             <summary>
             Data for assemblies and it's classes in folder for testing 
@@ -50,6 +60,16 @@
         <member name="P:Drill4Net.Common.TestsOptions.Targets">
             <summary>
             What will be tested - by target moniker/assembly/class
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.RedirectOptions">
+            <summary>
+            Simple redirection cfg to real Injection cfg
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.RedirectOptions.Path">
+            <summary>
+            Full/relative path or simple name of real injection cfg (in this case with or without extension)
             </summary>
         </member>
     </members>
