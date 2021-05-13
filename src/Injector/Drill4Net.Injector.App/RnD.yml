@@ -30,9 +30,9 @@ Proxy: # the injecting for transfer data to profiler
     Static: true
 Probes: # types of cross-cutting points
     Ctor: false
-    Private: false
-    Getter: false
-    Setter: false
+    Private: true
+    Getter: true
+    Setter: true
     EventAdd: false
     EventRemove: false
 Tests: # what will be tested - by target moniker/assembly/class

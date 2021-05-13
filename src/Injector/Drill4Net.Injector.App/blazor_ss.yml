@@ -30,8 +30,8 @@ Proxy: # the injecting for transfer data to profiler
     Method: Register
     Static: true
 Probes: # types of cross-cutting points
-    Ctor: false
-    Private: false
+    Ctor: true
+    Private: true
     Getter: false
     Setter: false
     EventAdd: false

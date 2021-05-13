@@ -71,16 +71,6 @@ namespace Drill4Net.Agent.Standard.Debug
                 Console.WriteLine($"\n{mess}");
                 Console.ForegroundColor = ConsoleColor.Green;
 
-                //loading methods
-                //TODO: do norm!!!
-                //var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\";
-                //var path = $"{dir}Drill4Net.Target.Common.dll";
-                //_asm = Assembly.LoadFrom(path);
-                //_types = _asm.GetTypes().Where(a => a.IsPublic).ToArray();
-                //_methods = new Dictionary<Type, MethodInfo[]>();
-                //foreach (var type in _types)
-                //    _methods.Add(type, type.GetMethods());
-
                 //polling
                 while (true)
                 {

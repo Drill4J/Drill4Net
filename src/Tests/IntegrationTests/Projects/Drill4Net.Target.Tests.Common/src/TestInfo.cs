@@ -12,7 +12,7 @@ namespace Drill4Net.Target.Tests.Common
         internal List<string> Checks { get; set; }
         internal bool NeedSort { get; set; }
 
-        /*****************************************************/
+        /**********************************************************************************/
 
         public TestInfo(MethodInfo mi, List<string> checks = null, bool needSort = false)
         {
@@ -27,6 +27,13 @@ namespace Drill4Net.Target.Tests.Common
             IgnoreContextForSig = ignoreCtx;
             Checks = checks ?? throw new ArgumentNullException(nameof(checks));
             NeedSort = needSort;
+        }
+
+        /**********************************************************************************/
+
+        public override string ToString()
+        {
+            return Info?.Name ?? Signature;
         }
     }
 }

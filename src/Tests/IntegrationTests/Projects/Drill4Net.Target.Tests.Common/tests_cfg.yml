@@ -28,13 +28,13 @@ Proxy: # the injecting for transfer data to profiler
     Class: ProfilerProxy
     Method: Register
     Static: true
-Probes: # types of cross-cutting points
-    Private: false
-    Ctor: false
-    Getter: false
-    Setter: false
-    EventAdd: false
-    EventRemove: false
+#Probes: # types of cross-cutting points
+#    Private: false
+#    Ctor: false
+#    Getter: true
+#    Setter: true
+#    EventAdd: false
+#    EventRemove: false
 Tests: # what will be tested - by target moniker/assembly/class
     Directory: ..\..\TargetApps\ #pure source target dir relatively Test project
     Targets:

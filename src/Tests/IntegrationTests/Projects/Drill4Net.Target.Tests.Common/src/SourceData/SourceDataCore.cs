@@ -244,6 +244,8 @@ namespace Drill4Net.Target.Tests.Common
 
         public static string GetSourceFromFullSig(object target, string fullSig)
         {
+            if (fullSig.Contains(";"))
+                return fullSig;
             var asmName = GetModuleName(target);
             return CreateMethodSource(asmName, fullSig);
         }

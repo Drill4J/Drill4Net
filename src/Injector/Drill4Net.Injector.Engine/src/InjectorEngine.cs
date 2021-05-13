@@ -1105,9 +1105,9 @@ namespace Drill4Net.Injector.Engine
                 if (treeParentClass.IsCompilerGenerated)
                 {
                     var name = ownMethod.Name;
-                    if (ownMethod.IsSetter && !name.StartsWith("set_Prop"))
+                    if (ownMethod.IsSetter && !name.StartsWith("set_"))
                         continue;
-                    if (ownMethod.IsGetter && !name.StartsWith("get_Prop"))
+                    if (ownMethod.IsGetter && !name.StartsWith("get_"))
                         continue;
                     if (isAsyncStateMachine && name != "MoveNext")
                         continue;

@@ -22,7 +22,6 @@ namespace Drill4Net.Target.Common
         {
             get
             {
-                //"Else_6"
                 if (_position == -1 || _position >= _data.Length)
                     throw new InvalidOperationException();
                 return _data[_position];
