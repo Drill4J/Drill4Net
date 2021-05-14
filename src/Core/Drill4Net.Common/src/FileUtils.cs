@@ -38,7 +38,7 @@ namespace Drill4Net.Common
             return dir1 == dir2;
         }
 
-        public static string GetSourceDirectory(MainOptions opts)
+        public static string GetSourceDirectory(InjectorOptions opts)
         {
             return GetFullPath(opts.Source.Directory);
         }
@@ -52,7 +52,7 @@ namespace Drill4Net.Common
             return path;
         }
 
-        public static string GetDestinationDirectory(MainOptions opts, string currentDir)
+        public static string GetDestinationDirectory(InjectorOptions opts, string currentDir)
         {
             string destDir = GetFullPath(opts.Destination.Directory);
             if (!IsSameDirectories(currentDir, opts.Source.Directory))

@@ -9,7 +9,6 @@ using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Agent.Testing
 {
@@ -31,7 +30,7 @@ namespace Drill4Net.Agent.Testing
                 //rep
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-                var rep = new InjectorRepository(cfg_path);
+                var rep = new AgentRepository(cfg_path);
 
                 //tree info
                 var tree = rep.ReadInjectedTree();

@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="RnD.yml">
+    <EmbeddedResource Include="inj_RnD.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -37,10 +37,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="blazor_ss.yml">
+    <None Update="inj_blazor_ss.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="redirect.yml">
+    <None Update="inj_blazor_ss_file.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_redirect.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

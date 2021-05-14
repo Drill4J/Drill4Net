@@ -17,10 +17,10 @@ namespace Drill4Net.Agent.Standard
         private static IReceiver Receiver => _comm.Receiver;
         private static ISender Sender => _comm.Sender;
         private static readonly StandardAgentRepository _rep;
-        private static readonly ManualResetEvent _initEvent = new(false);
+        private static readonly ManualResetEvent _initEvent = new ManualResetEvent(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
-        private static readonly object _entLocker = new object();
+        private static readonly object _entLocker = new();
 
         /*****************************************************************************/
 
@@ -190,8 +190,10 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
+                _initEvent.WaitOne(); //in fact, the blocking will be only one time on init
+
                 #region Checks
-                if (!_rep.IsAnySession)
+                if (_rep == null || !_rep.IsAnySession)
                     return;
                 if (string.IsNullOrWhiteSpace(data))
                 {
@@ -210,9 +212,8 @@ namespace Drill4Net.Agent.Standard
                 var probeUid = ar[0];
                 //var asmName = ar[1];
                 //var funcName = ar[2];
-                //var probe = ar[3];
-                
-                _initEvent.WaitOne(); //in fact, the blocking will be only one time on init
+                //var probe = ar[3];         
+
                 var disp = _rep.GetCoverageDispather();
                 if (disp != null)
                     disp.RegisterCoverage(probeUid);

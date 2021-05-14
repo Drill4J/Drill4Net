@@ -1,8 +1,6 @@
-﻿Description: For standard Agent & Target
+﻿Description: For testing Agent & Blazor server-side app
 Target: # some metadata about target
-  Name: Standard Target #optional injection name
+  Name: Blazor server-side app #optional injection name
   Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
-TreePath: ..\..\Tests\TargetApps.Injected\
 Admin:
   Url: localhost:8090
-

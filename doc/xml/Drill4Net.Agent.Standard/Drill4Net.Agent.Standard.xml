@@ -4,6 +4,26 @@
         <name>Drill4Net.Agent.Standard</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Agent.Standard.StandardAgentRepository">
+            <summary>
+            Repository for Standard Agent
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.StandardAgentRepository.IsAnySession">
+            <summary>
+            Any sesion is exists?
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.#ctor">
+            <summary>
+            Create repository for Standard Agent with default cfg or cfg founded by _reidrect.yml
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.#ctor(System.String)">
+            <summary>
+            Create repository for Standard Agent
+            </summary>
+        </member>
         <member name="T:ThisAssembly">
             <summary>Provides access to the current assembly information.</summary>
         </member>
@@ -23,16 +43,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: f68090d</summary>
+            <summary>Commit: eb55a92</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: f68090d67be7ef50502e2b40e6fc48e51b180548</summary>
+            <summary>Sha: eb55a92976a1bd04a4bf90cab28ef6073d6ff6a0</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-05-13T08:37:32+03:00</summary>
+            <summary>Commit date: 2021-05-13T16:39:49+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 335</summary>
+            <summary>Commits on top of base version: 339</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -62,7 +82,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 335</summary>
+            <summary>Patch: 339</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

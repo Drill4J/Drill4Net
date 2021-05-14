@@ -1,0 +1,4 @@
+﻿Description: For debugging Agent & Standard Target
+Target: # some metadata about target
+    Name: Debug Target #optional injection name
+TreePath: ..\..\TargetApps.Injected\

@@ -6,7 +6,7 @@ namespace Drill4Net.Injector.Core
 {
     public interface IInjectorRepository
     {
-        MainOptions Options { get; set; }
+        InjectorOptions Options { get; set; }
 
         void ValidateOptions();
         void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers);
@@ -18,6 +18,6 @@ namespace Drill4Net.Injector.Core
         void WriteInjectedTree(string path, InjectedSolution tree);
         string GetTreeFilePath(InjectedSolution tree);
         string GetTreeFileHintPath(string path);
-        string GenerateTreeFilePath(string targetDir);
+        string GetTreeFilePath(string targetDir);
     }
 }

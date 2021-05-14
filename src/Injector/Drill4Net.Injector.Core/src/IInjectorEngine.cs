@@ -6,6 +6,6 @@ namespace Drill4Net.Injector.Core
     public interface IInjectorEngine
     {
         InjectedSolution Process();
-        InjectedSolution Process(MainOptions opts);
+        InjectedSolution Process(InjectorOptions opts);
     }
 }

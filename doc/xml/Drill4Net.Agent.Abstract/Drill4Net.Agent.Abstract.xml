@@ -308,5 +308,15 @@
             Get the AstMethod for transfer to the API by full name (by Injector standard).
             </summary>
         </member>
+        <member name="P:Drill4Net.Agent.Abstract.AbstractCommunicatorRepository.Communicator">
+            <summary>
+            Communicator for transfer probe data to admin side
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.IAgentRepository.Communicator">
+            <summary>
+            Communicator for transfer probe data to admin side
+            </summary>
+        </member>
     </members>
 </doc>

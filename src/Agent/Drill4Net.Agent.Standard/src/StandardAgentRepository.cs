@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Common;
-using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
@@ -23,10 +22,14 @@ using Drill4Net.Agent.Transport;
 
 namespace Drill4Net.Agent.Standard
 {
-    public sealed class StandardAgentRepository : IAgentRepository
+    /// <summary>
+    /// Repository for Standard Agent
+    /// </summary>
+    public sealed class StandardAgentRepository : AbstractCommunicatorRepository
     {
-        public AbstractCommunicator Communicator { get; }
-
+        /// <summary>
+        /// Any sesion is exists?
+        /// </summary>
         public bool IsAnySession => _sessionToCtx.Any();
 
         private readonly ConcurrentDictionary<int, string> _ctxToSession;
@@ -44,7 +47,15 @@ namespace Drill4Net.Agent.Standard
 
         /**************************************************************************************/
 
-        public StandardAgentRepository()
+        /// <summary>
+        /// Create repository for Standard Agent with default cfg or cfg founded by _reidrect.yml
+        /// </summary>
+        public StandardAgentRepository() : this(GetStandardConfigPath()) { }
+
+        /// <summary>
+        /// Create repository for Standard Agent
+        /// </summary>
+        public StandardAgentRepository(string cfgPath): base(cfgPath)
         {
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<int, string>();
@@ -57,18 +68,13 @@ namespace Drill4Net.Agent.Standard
             // execution data by session ids
             _ctxToExecData = new ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>>();
 
-            //Injector rep
-            var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
-            var injRep = new InjectorRepository(cfg_path);
             _converter = new TreeConverter();
             _sendLocker = new object();
 
-            var opts = injRep.Options;
-            Communicator = GetCommunicator(opts.Admin, opts.Target);
+            Communicator = GetCommunicator(Options.Admin, Options.Target);
 
             //target class tree
-            var tree = injRep.ReadInjectedTree();
+            var tree = ReadInjectedTree();
             _injTypes = FilterMonikerTypes(tree);
 
             //timer for periodically sending coverage data to admin side
@@ -79,6 +85,13 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         #region Init
+        internal static string GetStandardConfigPath()
+        {
+            var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
+            return cfg_path;
+        }
+
         private AbstractCommunicator GetCommunicator(AdminOptions adminOpts, TargetOptions targetOpts)
         {
             if (adminOpts == null)

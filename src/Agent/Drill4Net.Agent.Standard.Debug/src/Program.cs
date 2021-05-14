@@ -5,16 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Drill4Net.Common;
-using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard.Debug
 {
     class Program
     {
-        //private static Assembly _asm;
-        //private static Type[] _types;
-        //private static Dictionary<Type, MethodInfo[]> _methods;
         private static int _pointRange = 100;
         private static List<CrossPoint> _points;
 
@@ -31,20 +27,20 @@ namespace Drill4Net.Agent.Standard.Debug
             {
                 Console.WriteLine("Initializing...");
 
-                // emulating the init (primary) instrumented request - it won't included in session, in fact
-                var pointUid = "7848799f-77ee-444d-9a9d-6fd6d90f5d82"; //must be real from Injected Tree
-                var asmName = $"Drill4Net.Target.Common.dll";
-                const string funcSig = "System.Void Drill4Net.Agent.Standard.StandardAgent::Register(System.String)";
-                StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
+                //// emulating the init (primary) instrumented request - in fact, it won't included in session
+                //var pointUid = "7848799f-77ee-444d-9a9d-6fd6d90f5d82"; //must be real from Injected Tree
+                //var asmName = $"Drill4Net.Target.Common.dll";
+                //const string funcSig = "System.Void Drill4Net.Agent.Standard.StandardAgent::Register(System.String)";
+                //StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
 
-                // emulating second request, but it will be skipped, too
-                await Task.Delay(250);
-                StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
+                //// emulating second request, but it will be skipped, too
+                //await Task.Delay(250);
+                //StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
 
                 //point data
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
-                var injRep = new InjectorRepository(cfg_path);
+                var injRep = new StandardAgentRepository(cfg_path);
                 var tree = injRep.ReadInjectedTree();
                 var moniker = "net5.0";
                 var asmTree = tree.GetFrameworkVersionRootDirectory(moniker);
@@ -54,6 +50,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 Console.WriteLine($"\nCross points: {_points.Count}");
 
                 //range
+                await Task.Delay(1500);
                 Console.Write($"Input point count for the simulating execution range [{_pointRange}]: ");
                 var expr = Console.ReadLine()?.Trim();
                 if (int.TryParse(expr, out var pntCnt))

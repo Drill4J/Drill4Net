@@ -14,7 +14,7 @@ namespace Drill4Net.Target.Tests.Common
     public class TestEngineRepository
     {
         private readonly string _targetDir;
-        private readonly MainOptions _opts;
+        private readonly InjectorOptions _opts;
         private readonly FolderData _defaultFolderData;
         private readonly Dictionary<string, MonikerData> _targets;
         private readonly AssemblyContextManager _asmCtxManager;
@@ -41,7 +41,9 @@ namespace Drill4Net.Target.Tests.Common
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
 
             //repository
-            _injRep = new InjectorRepository(cfg_path);
+            //here better exactly InjectorRepository, not some AgentRepository
+            //(for future checking the inhection settings)
+            _injRep = new InjectorRepository(cfg_path); 
             _opts = _injRep.Options;
             _asmCtxManager = new AssemblyContextManager();
 

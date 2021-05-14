@@ -18,4 +18,10 @@
     <ProjectReference Include="..\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="tests_cfg.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

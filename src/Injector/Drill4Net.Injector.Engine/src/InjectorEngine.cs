@@ -55,10 +55,10 @@ namespace Drill4Net.Injector.Engine
             return Process(_rep.Options);
         }
 
-        public InjectedSolution Process(MainOptions opts)
+        public InjectedSolution Process(InjectorOptions opts)
         {
             Log.Information("Process starting...");
-            OptionHelper.ValidateOptions(opts);
+            InjectorOptionsHelper.ValidateOptions(opts);
 
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
@@ -115,7 +115,7 @@ namespace Drill4Net.Injector.Engine
         }
 
         internal void ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 
-             MainOptions opts, InjectedSolution tree)
+             InjectorOptions opts, InjectedSolution tree)
         {
             if (!opts.Source.Filter.IsDirectoryNeed(directory))
                 return;
@@ -177,7 +177,7 @@ namespace Drill4Net.Injector.Engine
         }
         
         private void ProcessAssembly(string filePath, Dictionary<string, AssemblyVersioning> versions,  
-            MainOptions opts, InjectedSolution tree)
+            InjectorOptions opts, InjectedSolution tree)
         {
             #region Reading
             #region Filter
@@ -1071,7 +1071,7 @@ namespace Drill4Net.Injector.Engine
             return type is MethodType.EventAdd or MethodType.EventRemove;
         }
 
-        internal IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, MainOptions opts)
+        internal IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, InjectorOptions opts)
         {
             #region Own methods
             #region Filter methods

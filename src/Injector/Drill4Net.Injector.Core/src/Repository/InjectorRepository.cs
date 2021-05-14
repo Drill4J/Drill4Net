@@ -4,50 +4,29 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using YamlDotNet.Serialization;
 using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Injector.Core
 {
-    public class InjectorRepository : IInjectorRepository
-    {
-        public MainOptions Options { get; set; }
-
+    public class InjectorRepository : AbstractRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
+    { 
         private readonly AssemblyContextManager _asmCtxManager = new();
 
         /**********************************************************************************/
 
-        private InjectorRepository(): this(GetActualConfigPath()) {}
-
-        public InjectorRepository(string cfgPath)
+        public InjectorRepository(string cfgPath): base(cfgPath)
         {
-            if (!File.Exists(cfgPath))
-                throw new FileNotFoundException($"Config not found: {cfgPath}");    
-            Options = OptionHelper.GenerateOptions(cfgPath);
         }
 
-        public InjectorRepository(string[] args): this()
+        public InjectorRepository(string[] args): base()
         {
-            Options = OptionHelper.ClarifyOptions(args);
+            Options = _optHelper.ClarifyOptions(args);
         }
 
         /**********************************************************************************/
-
-        internal static string GetActualConfigPath()
-        {
-            var redirectPath = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_REDIRECT_NAME);
-            if (!File.Exists(redirectPath))
-                return Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_DEFAULT_NAME);
-            Deserializer deser = new();
-            var cfg = File.ReadAllText(redirectPath);
-            var redirect = deser.Deserialize<RedirectOptions>(cfg);
-            var path = redirect?.Path;
-            if (!path.EndsWith(".yml"))
-                path += ".yml";
-            return FileUtils.GetFullPath(path);
-        }
 
         public virtual void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {
@@ -73,7 +52,7 @@ namespace Drill4Net.Injector.Core
 
         public virtual void ValidateOptions()
         {
-            OptionHelper.ValidateOptions(Options);
+            InjectorOptionsHelper.ValidateOptions(Options);
         }
 
         #region Assembly
@@ -116,28 +95,12 @@ namespace Drill4Net.Injector.Core
         public virtual InjectedSolution ReadInjectedTree()
         {
             string treePath = null;
-            if (Options != null)
+            if (Options?.Destination != null)
             {
                 var targetDir = Options.Destination.Directory;
-                treePath = GenerateTreeFilePath(targetDir);
+                treePath = GetTreeFilePath(targetDir);
             }
             return ReadInjectedTree(treePath);
-        }
-
-        public virtual InjectedSolution ReadInjectedTree(string path = null)
-        {
-            var types = InjectedSolution.GetInjectedTreeTypes();
-            var ser = new NetSerializer.Serializer(types);
-
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
-            {
-                path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.TREE_FILE_NAME);
-            }
-
-            var bytes2 = File.ReadAllBytes(path);
-            using var ms2 = new MemoryStream(bytes2);
-            var tree = ser.Deserialize(ms2) as InjectedSolution;
-            return tree;
         }
 
         public virtual void WriteInjectedTree(string path, InjectedSolution tree)
@@ -147,21 +110,6 @@ namespace Drill4Net.Injector.Core
             using var ms = new MemoryStream();
             ser.Serialize(ms, tree);
             File.WriteAllBytes(path, ms.ToArray());
-        }
-
-        public virtual string GetTreeFilePath(InjectedSolution tree)
-        {
-            return GenerateTreeFilePath(tree.DestinationPath);
-        }
-
-        public virtual string GenerateTreeFilePath(string targetDir)
-        {
-            return Path.Combine(targetDir, CoreConstants.TREE_FILE_NAME);
-        }
-
-        public virtual string GetTreeFileHintPath(string targetDir)
-        {
-            return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
         }
         #endregion
 
