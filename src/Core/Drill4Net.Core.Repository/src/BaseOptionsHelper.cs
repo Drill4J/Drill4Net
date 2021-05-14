@@ -51,6 +51,11 @@ namespace Drill4Net.Core.Repository
             return opts;
         }
 
+        /// <summary>
+        /// Post-processing for Options after loading it,
+        /// override if needed in children
+        /// </summary>
+        /// <param name="opts"></param>
         protected virtual void PostProcess(T opts) { }
     }
 }

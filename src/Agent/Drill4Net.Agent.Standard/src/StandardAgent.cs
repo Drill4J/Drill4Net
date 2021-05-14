@@ -72,8 +72,9 @@ namespace Drill4Net.Agent.Standard
         /*****************************************************************************/
 
         /// <summary>
-        /// Empty call running the ctor with main init procedure.
-        /// This function mainly used for debugging
+        /// It is just run the ctor with main init procedure.
+        /// This function mainly used for debugging. It's not necessary
+        /// in real system because ctor will be arised due Register call.
         /// </summary>
         public static void Init() { }
 
@@ -193,6 +194,10 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Register
+        /// <summary>
+        /// Registering probe's data from injected Target app
+        /// </summary>
+        /// <param name="data"></param>
         // ReSharper disable once MemberCanBePrivate.Global
         public static void RegisterStatic(string data)
         {
@@ -232,6 +237,10 @@ namespace Drill4Net.Agent.Standard
             }
         }
 
+        /// <summary>
+        /// Registering probe's data from injected Target app
+        /// </summary>
+        /// <param name="data"></param>
         public override void Register(string data)
         {
             RegisterStatic(data);
