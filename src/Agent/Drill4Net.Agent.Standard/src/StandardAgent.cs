@@ -44,6 +44,8 @@ namespace Drill4Net.Agent.Standard
                 Receiver.StopSession += OnStopSession;
                 Receiver.StopAllSessions += OnStopAllSessions;
 
+                _comm.Connect();
+
                 //...and now we will wait events from admin side and
                 //probe data from instrumented code on RegisterStatic
 
@@ -68,6 +70,12 @@ namespace Drill4Net.Agent.Standard
         }
 
         /*****************************************************************************/
+
+        /// <summary>
+        /// Empty call running the ctor with main init procedure.
+        /// This function mainly used for debugging
+        /// </summary>
+        public static void Init() { }
 
         #region Temporary tests
         // private static void SendTest_StartSession(string sessionUid)

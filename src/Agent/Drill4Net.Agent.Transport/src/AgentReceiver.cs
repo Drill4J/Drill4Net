@@ -73,13 +73,16 @@ namespace Drill4Net.Agent.Transport
 
         protected virtual void MessageReceived(string topic, string message)
         {
+            if (RequestClassesData == null)
+                throw new Exception("Handlers are not attached for recevied events");
+            //
             try
             {
                 switch (topic)
                 {
                     case AgentConstants.TOPIC_HEADER_CHANGE: //we don't work with it yet (global session mapping?)
                         break;
-                    case AgentConstants.TOPIC_AGENT_NAMESPACES: //TODO: additional filter for probes?
+                    case AgentConstants.TOPIC_AGENT_NAMESPACES: //TODO: additional filter for incoming probes?
                         break;
                     case AgentConstants.TOPIC_AGENT_LOAD: //needed?
                         break;

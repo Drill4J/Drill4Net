@@ -4,5 +4,7 @@
     {
         IReceiver Receiver { get; }
         AbstractSender Sender { get; }
+
+        void Connect();
     }
 }

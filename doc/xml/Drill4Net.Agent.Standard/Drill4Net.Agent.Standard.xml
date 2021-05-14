@@ -4,6 +4,12 @@
         <name>Drill4Net.Agent.Standard</name>
     </assembly>
     <members>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgent.Init">
+            <summary>
+            Empty call running the ctor with main init procedure.
+            This function mainly used for debugging
+            </summary>
+        </member>
         <member name="T:Drill4Net.Agent.Standard.StandardAgentRepository">
             <summary>
             Repository for Standard Agent
@@ -43,16 +49,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: eb55a92</summary>
+            <summary>Commit: c5ec02e</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: eb55a92976a1bd04a4bf90cab28ef6073d6ff6a0</summary>
+            <summary>Sha: c5ec02e4c5a30855c5d8ba3fdcd5e0a7f6ca3b25</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-05-13T16:39:49+03:00</summary>
+            <summary>Commit date: 2021-05-14T15:35:57+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 339</summary>
+            <summary>Commits on top of base version: 340</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -82,7 +88,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 339</summary>
+            <summary>Patch: 340</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

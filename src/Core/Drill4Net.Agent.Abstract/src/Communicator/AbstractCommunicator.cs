@@ -6,8 +6,8 @@ namespace Drill4Net.Agent.Abstract
     {
         public IReceiver Receiver { get; protected set; }
         public AbstractSender Sender { get; protected set; }
-
-        /***************************************************************************/
+        
+        /******************************************************************************/
 
         protected AbstractCommunicator() { }
 
@@ -16,5 +16,9 @@ namespace Drill4Net.Agent.Abstract
             Receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             Sender = sender ?? throw new ArgumentNullException(nameof(sender));
         }
+
+        /******************************************************************************/
+
+        public abstract void Connect();
     }
 }

@@ -5,17 +5,27 @@ namespace Drill4Net.Agent.Transport
 {
     public class Communicator : AbstractCommunicator
     {
+        public AgentPartConfig AgentConfig { get; }
+        private string Url { get; }
+
+        private readonly Connector _connector;
+
+        /********************************************************************/
+
         public Communicator(string url, AgentPartConfig agentCfg)
         {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentNullException(nameof(url));
-            if(agentCfg == null)
-                throw new ArgumentNullException(nameof(agentCfg));
-            //
-            var connector = new Connector();
-            Receiver = new AgentReceiver(connector);
-            Sender = new AgentSender(connector);
-            connector.Connect(url, agentCfg);
+            Url = url ?? throw new ArgumentNullException(nameof(url));
+            AgentConfig = agentCfg ?? throw new ArgumentNullException(nameof(agentCfg));
+            _connector = new Connector();
+            Receiver = new AgentReceiver(_connector);
+            Sender = new AgentSender(_connector);
+        }
+
+        /********************************************************************/
+
+        public override void Connect()
+        {
+            _connector.Connect(Url, AgentConfig);
         }
     }
 }
