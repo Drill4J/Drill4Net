@@ -13,7 +13,9 @@ Source: # what and how processing
         Attributes:
       Excludes:
         Directories:
-          - net5.0\publish\
+          #- net5.0\publish\ @ relative path to concrete directory
+        Folders:
+          - publish # name of folder (may be in some paths)
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir

@@ -5,6 +5,7 @@ namespace Drill4Net.Common
     public class SourceFilterParams
     {
         public List<string> Directories { get; set; }
+        public List<string> Folders { get; set; }
         public List<string> Files { get; set; }
         public List<string> Namespaces { get; set; }
         public List<string> Classes { get; set; }
@@ -19,6 +20,13 @@ namespace Drill4Net.Common
             if (!path.EndsWith("\\"))
                 path += "\\";
             return Directories?.Contains(path) == true;
+        }
+
+        public bool IsFolderListed(string folderName)
+        {
+            if (string.IsNullOrWhiteSpace(folderName))
+                return false;
+            return Folders?.Contains(folderName) == true;
         }
 
         public bool IsFileListed(string name)

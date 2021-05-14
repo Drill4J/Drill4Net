@@ -18,6 +18,15 @@ namespace Drill4Net.Common
             return Includes.IsDirectoryListed(path);
         }
 
+        public bool IsFolderNeed(string folder)
+        {
+            if (Excludes?.IsFolderListed(folder) == true)
+                return false;
+            if (Includes?.Folders == null || !Includes.Folders.Any())
+                return true;
+            return Includes.IsFolderListed(folder);
+        }
+
         public bool IsFileNeed(string name)
         {
             if (Excludes?.IsFileListed(name) == true)

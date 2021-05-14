@@ -114,11 +114,14 @@ namespace Drill4Net.Injector.Engine
             return tree;
         }
 
-        internal void ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 
+        internal bool ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 
              InjectorOptions opts, InjectedSolution tree)
         {
             if (!opts.Source.Filter.IsDirectoryNeed(directory))
-                return;
+                return false;
+            var folder = new DirectoryInfo(directory).Name;
+            if (!opts.Source.Filter.IsFolderNeed(folder))
+                return false;
             Log.Debug($"Processing dir [{directory}]");
 
             //files
@@ -134,6 +137,7 @@ namespace Drill4Net.Injector.Engine
             {
                 ProcessDirectory(dir, versions, opts, tree);
             }
+            return true;
         }
 
         internal Dictionary<string, AssemblyVersioning> DefineTargetVersions(string directory)
