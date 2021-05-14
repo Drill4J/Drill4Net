@@ -1,6 +1,4 @@
-﻿using Drill4Net.Core.Repository;
-
-namespace Drill4Net.Agent.Abstract
+﻿namespace Drill4Net.Agent.Abstract
 {
     public abstract class AbstractCommunicatorRepository : AgentRepository, IAgentRepository
     {

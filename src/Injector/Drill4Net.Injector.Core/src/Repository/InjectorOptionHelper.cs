@@ -35,30 +35,30 @@ namespace Drill4Net.Common
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
             //
-            if (opts.Source?.Directory != null)
-                opts.Source.Directory = FileUtils.GetFullPath(opts.Source.Directory);
-            if (opts.Destination?.Directory != null)
-                opts.Destination.Directory = FileUtils.GetFullPath(opts.Destination.Directory);
-            if (opts.Profiler?.Directory != null)
-                opts.Profiler.Directory = FileUtils.GetFullPath(opts.Profiler.Directory);
-            if (opts.Tests?.Directory != null)
+            var sourceDir = opts.Source.Directory;
+            opts.Source.Directory = FileUtils.GetFullPath(sourceDir);
+            var destDir = opts.Destination.Directory;
+            opts.Destination.Directory = FileUtils.GetFullPath(destDir);
+            opts.Profiler.Directory = FileUtils.GetFullPath(opts.Profiler.Directory);
+            if (opts.Tests?.Directory != null) //extract to separate Test Cfg
                 opts.Tests.Directory = FileUtils.GetFullPath(opts.Tests.Directory);
 
             //filter for source
-            if (opts.Source?.Filter != null)
+            var flt = opts.Source?.Filter;
+            if (flt != null)
             {
-                NormalizeFilterPathes(opts.Source.Filter.Includes);
-                NormalizeFilterPathes(opts.Source.Filter.Excludes);
+                NormalizeFilterPathes(flt.Includes, sourceDir);
+                NormalizeFilterPathes(flt.Excludes, sourceDir);
             }
         }
 
-        internal void NormalizeFilterPathes(SourceFilterParams pars)
+        internal void NormalizeFilterPathes(SourceFilterParams pars, string basePath)
         {
             var dirs = pars?.Directories;
             if (dirs == null)
                 return;
             for (var i = 0; i < dirs.Count; i++)
-                dirs[i] = FileUtils.GetFullPath(dirs[i]);
+                dirs[i] = FileUtils.GetFullPath(dirs[i], basePath);
         }
 
         internal string GetArgumentConfigPath(string[] args)

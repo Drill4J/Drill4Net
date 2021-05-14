@@ -14,8 +14,9 @@ namespace Drill4Net.Core.Repository
 
         /**********************************************************************************/
 
-        protected AbstractRepository(string cfgPath) : this()
+        protected AbstractRepository(string cfgPath)// : this()
         {
+            _optHelper = new THelper();
             if (string.IsNullOrWhiteSpace(cfgPath))
                 cfgPath = _optHelper.GetActualConfigPath();
             if (!File.Exists(cfgPath))
@@ -23,10 +24,10 @@ namespace Drill4Net.Core.Repository
             Options = _optHelper.GetOptions(cfgPath);
         }
 
-        protected AbstractRepository()
-        {
-            _optHelper = new THelper();
-        }
+        //protected AbstractRepository()
+        //{
+        //    _optHelper = new THelper();
+        //}
 
         /**********************************************************************************/
 

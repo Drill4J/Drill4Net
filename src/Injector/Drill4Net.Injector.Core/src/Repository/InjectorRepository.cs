@@ -21,7 +21,7 @@ namespace Drill4Net.Injector.Core
         {
         }
 
-        public InjectorRepository(string[] args): base()
+        public InjectorRepository(string[] args): base(null)
         {
             Options = _optHelper.ClarifyOptions(args);
         }

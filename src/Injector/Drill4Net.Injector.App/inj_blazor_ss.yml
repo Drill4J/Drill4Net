@@ -13,7 +13,7 @@ Source: # what and how processing
         Attributes:
       Excludes:
         Directories:
-          - publish
+          - net5.0\publish\
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
@@ -29,8 +29,6 @@ Proxy: # the injecting for transfer data to profiler
   Class: ProfilerProxy
   Method: Register
   Static: true
-Admin:
-  Url: localhost:8090
 Probes: # types of cross-cutting points
     Ctor: true
     Private: true
@@ -57,4 +55,3 @@ Probes: # types of cross-cutting points
 #        net5.0:
 #          BaseFolder: Drill4Net.Target.Net50.App\net5.0\
 Silent: false # no wait, no questions...
-

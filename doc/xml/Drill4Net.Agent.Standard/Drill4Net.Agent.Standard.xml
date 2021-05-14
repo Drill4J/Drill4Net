@@ -6,9 +6,22 @@
     <members>
         <member name="M:Drill4Net.Agent.Standard.StandardAgent.Init">
             <summary>
-            Empty call running the ctor with main init procedure.
-            This function mainly used for debugging
+            It just run the ctor with the main init procedure.
+            This function mainly used for debugging. It's not necessary
+            in a real system because the ctor will be arised due Register call.
             </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgent.RegisterStatic(System.String)">
+            <summary>
+            Registering probe's data from injected Target app
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgent.Register(System.String)">
+            <summary>
+            Registering probe's data from injected Target app
+            </summary>
+            <param name="data"></param>
         </member>
         <member name="T:Drill4Net.Agent.Standard.StandardAgentRepository">
             <summary>
@@ -49,16 +62,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: c5ec02e</summary>
+            <summary>Commit: f361af6</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: c5ec02e4c5a30855c5d8ba3fdcd5e0a7f6ca3b25</summary>
+            <summary>Sha: f361af6631fc79716fab6279f3ccf722c4e4576a</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-05-14T15:35:57+03:00</summary>
+            <summary>Commit date: 2021-05-14T17:05:51+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 340</summary>
+            <summary>Commits on top of base version: 342</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -88,7 +101,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 340</summary>
+            <summary>Patch: 342</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

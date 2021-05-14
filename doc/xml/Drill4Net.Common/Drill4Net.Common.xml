@@ -20,6 +20,12 @@
             Endpoint for communication (address with port)
             </summary>
         </member>
+        <member name="P:Drill4Net.Common.BaseOptions.TreePath">
+            <summary>
+            Path to the Tree data file, if empty, system will try find it 
+            by another ways using "redirect cfg", current dir, etc
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.FolderData">
             <summary>
             Data for assemblies and it's classes in folder for testing 

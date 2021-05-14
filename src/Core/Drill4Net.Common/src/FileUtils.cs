@@ -43,12 +43,12 @@ namespace Drill4Net.Common
             return GetFullPath(opts.Source.Directory);
         }
 
-        public static string GetFullPath(string path)
+        public static string GetFullPath(string path, string basePath = null)
         {
             if (string.IsNullOrWhiteSpace(path))
                 return path;
             if (!Path.IsPathRooted(path))
-                path = Path.GetFullPath(Path.Combine(BaseDir, path));
+                path = Path.GetFullPath(Path.Combine(basePath ?? BaseDir, path));
             return path;
         }
 

@@ -72,9 +72,9 @@ namespace Drill4Net.Agent.Standard
         /*****************************************************************************/
 
         /// <summary>
-        /// It is just run the ctor with main init procedure.
+        /// It just run the ctor with the main init procedure.
         /// This function mainly used for debugging. It's not necessary
-        /// in real system because ctor will be arised due Register call.
+        /// in a real system because the ctor will be arised due Register call.
         /// </summary>
         public static void Init() { }
 

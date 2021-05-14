@@ -16,6 +16,7 @@ namespace Drill4Net.Agent.Transport
         {
             Url = url ?? throw new ArgumentNullException(nameof(url));
             AgentConfig = agentCfg ?? throw new ArgumentNullException(nameof(agentCfg));
+
             _connector = new Connector();
             Receiver = new AgentReceiver(_connector);
             Sender = new AgentSender(_connector);
