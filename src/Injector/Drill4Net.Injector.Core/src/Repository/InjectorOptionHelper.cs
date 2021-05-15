@@ -10,7 +10,7 @@ namespace Drill4Net.Common
         protected override void PostProcess(InjectorOptions opts) 
         {
             SetDestinationDirectory(opts, null);
-            NormalizePathes(opts);
+            NormalizePaths(opts);
         }
 
         internal void SetDestinationDirectory(InjectorOptions opts, string destDir)
@@ -30,15 +30,17 @@ namespace Drill4Net.Common
             opts.Destination.Directory = destDir;
         }
 
-        public void NormalizePathes(InjectorOptions opts)
+        public void NormalizePaths(InjectorOptions opts)
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
             //
             var sourceDir = opts.Source.Directory;
             opts.Source.Directory = FileUtils.GetFullPath(sourceDir);
+
             var destDir = opts.Destination.Directory;
             opts.Destination.Directory = FileUtils.GetFullPath(destDir);
+
             opts.Profiler.Directory = FileUtils.GetFullPath(opts.Profiler.Directory);
             if (opts.Tests?.Directory != null) //extract to separate Test Cfg
                 opts.Tests.Directory = FileUtils.GetFullPath(opts.Tests.Directory);
@@ -47,18 +49,23 @@ namespace Drill4Net.Common
             var flt = opts.Source?.Filter;
             if (flt != null)
             {
-                NormalizeFilterPathes(flt.Includes, sourceDir);
-                NormalizeFilterPathes(flt.Excludes, sourceDir);
+                NormalizeFilterDirs(flt.Includes, sourceDir);
+                NormalizeFilterDirs(flt.Excludes, sourceDir);
             }
         }
 
-        internal void NormalizeFilterPathes(SourceFilterParams pars, string basePath)
+        internal void NormalizeFilterDirs(SourceFilterParams pars, string basePath)
         {
             var dirs = pars?.Directories;
             if (dirs == null)
                 return;
             for (var i = 0; i < dirs.Count; i++)
-                dirs[i] = FileUtils.GetFullPath(dirs[i], basePath);
+            {
+                var dir = FileUtils.GetFullPath(dirs[i], basePath);
+                if (!dir.EndsWith("\\"))
+                    dir += dir + "\\";
+                dirs[i] = dir;
+            }
         }
 
         internal string GetArgumentConfigPath(string[] args)

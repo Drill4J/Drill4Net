@@ -2,7 +2,7 @@
 Target: # some metadata about target
   Name: Standard Target #optional injection name
   Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
-TreePath: ..\..\Tests\TargetApps.Injected\ # if empty, system will try find the tree data by another ways
+TreePath: ..\..\Tests\TargetApps.Injected\ # # were tree data about probes is located - if empty, system will try find it by another ways
 Admin:
   Url: localhost:8090
 
