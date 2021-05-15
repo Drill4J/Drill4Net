@@ -47,7 +47,9 @@ namespace Drill4Net.Core.Repository
             Log.Debug($"Reading config: [{path}]");
             var cfg = File.ReadAllText(path);
             var opts = _deser.Deserialize<T>(cfg);
+            Log.Debug($"Config deserialized.");
             PostProcess(opts);
+            Log.Debug($"Config prepared.");
             return opts;
         }
 

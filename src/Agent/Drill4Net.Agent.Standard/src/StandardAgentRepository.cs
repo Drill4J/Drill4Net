@@ -87,7 +87,7 @@ namespace Drill4Net.Agent.Standard
         #region Init
         internal static string GetStandardConfigPath()
         {
-            var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var dirName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
             return cfg_path;
         }
@@ -129,6 +129,7 @@ namespace Drill4Net.Agent.Standard
             var rootDirs = tree.GetDirectories().ToList();
             if (rootDirs.Count > 1)
             {
+                //TODO: refactor (optimize)!
                 //investigate the versionable copies of target
                 var asmNameByDirs = (from dir in rootDirs
                                      select dir.GetAssemblies()
@@ -281,12 +282,12 @@ namespace Drill4Net.Agent.Standard
             {
                 //Console.ForegroundColor = ConsoleColor.Magenta;
                 //Console.WriteLine("Overpass lock");
-                foreach (var ctxId in _ctxToDispatcher.Keys)
+                //foreach (var ctxId in _ctxToDispatcher.Keys)
+                foreach (var ctxId in _ctxToSession.Keys)
                 {
-                    if(!_ctxToDispatcher.TryGetValue(ctxId, out var disp))
-                        continue;
-                    if (!_ctxToSession.TryGetValue(ctxId, out var sessionUid))
-                        continue;
+                    var sessionUid = _ctxToSession[ctxId];
+                    if (!_ctxToDispatcher.TryGetValue(ctxId, out var disp))
+                        disp = GetCoverageDispather();
                     //
                     var execClasses = disp.AffectedExecClasses.ToList();
                     var cnt = execClasses.Count();

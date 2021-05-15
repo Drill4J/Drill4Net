@@ -27,7 +27,14 @@ namespace Drill4Net.Agent.Standard
 
         /*************************************************************************/
 
-        public void AddPoint(string pointUid, ExecClassData data, int start, int end)
+        /// <summary>
+        /// Bind point Uid to probe's range of target class
+        /// </summary>
+        /// <param name="pointUid"></param>
+        /// <param name="data"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public void BindPoint(string pointUid, ExecClassData data, int start, int end)
         {
             //link point to range
             if (PointToRange.ContainsKey(pointUid))

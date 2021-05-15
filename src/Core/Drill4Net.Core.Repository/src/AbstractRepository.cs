@@ -39,7 +39,7 @@ namespace Drill4Net.Core.Repository
 
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
             {
-                var dir = string.IsNullOrWhiteSpace(Options.TreePath) ? FileUtils.GetExecutionDir() : FileUtils.GetFullPath(Options.TreePath);
+                var dir = string.IsNullOrWhiteSpace(Options.TreePath) ? FileUtils.GetEntryDir() : FileUtils.GetFullPath(Options.TreePath);
                 path = Path.Combine(dir, CoreConstants.TREE_FILE_NAME);
             }
 

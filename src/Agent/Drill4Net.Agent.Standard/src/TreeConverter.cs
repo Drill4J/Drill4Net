@@ -54,7 +54,7 @@ namespace Drill4Net.Agent.Standard
         public CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
             //TODO: cloning from Template object?
-            var disp = new CoverageDispatcher(session); //TODO: bind the session!!!!!
+            var disp = new CoverageDispatcher(session); 
             string testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
             foreach (var type in injTypes.AsParallel())
             {
@@ -72,7 +72,7 @@ namespace Drill4Net.Agent.Standard
                         var localEnd = inds[pointUid];
                         var start = ind;
                         var end = start + localEnd;
-                        disp.AddPoint(pointUid, data, start, end);
+                        disp.BindPoint(pointUid, data, start, end);
                         ind += localEnd + 1;
                     }
                 }
