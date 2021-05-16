@@ -7,6 +7,10 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard
 {
+    /// <summary>
+    /// Converter-helper for DTO entities (<see cref="AstEntity"/>, <see cref="AstMethod"/>) 
+    /// and <see cref="CoverageDispatcher"/> from <see cref="InjectedType"/>
+    /// </summary>
     public class TreeConverter
     {
         #region AstEntities
@@ -51,6 +55,13 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region ExecClassData
+        /// <summary>
+        /// Create <see cref="CoverageDispatcher"/> for session <see cref="StartSessionPayload"/> 
+        /// and bind it to list of <see cref="InjectedType"/>
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="injTypes"></param>
+        /// <returns></returns>
         public CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
             //TODO: cloning from Template object?
@@ -58,25 +69,26 @@ namespace Drill4Net.Agent.Standard
             string testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
             foreach (var type in injTypes.AsParallel())
             {
-                var typeName = type.FullName;
-                var data = new ExecClassData(testName, typeName);
-                var methods = type.GetMethods()?.ToList();
+                var methods = type.GetMethods()?
+                    .Where(a => a.Coverage.PointUidToEndIndex.Any())?
+                    .ToList();
                 if (methods?.Any() != true) 
                     continue;
                 var ind = 0;
+                var execData = new ExecClassData(testName, type.FullName);
                 foreach (var meth in methods) //don't parallel here!
                 {
-                    var inds = meth.Coverage.PointUidToEndIndex;
-                    foreach (var pointUid in inds.Keys)
+                    var inds = meth.Coverage.PointUidToEndIndex.OrderBy(a => a.Value);
+                    foreach (var pair in inds)
                     {
-                        var localEnd = inds[pointUid];
+                        var localEnd = pair.Value;
                         var start = ind;
                         var end = start + localEnd;
-                        disp.BindPoint(pointUid, data, start, end);
+                        disp.BindPoint(pair.Key, execData, start, end);
                         ind += localEnd + 1;
                     }
                 }
-                data.InitProbes(ind);//not needed +1
+                execData.InitProbes(ind); //not needed +1
             }
             return disp;
         }

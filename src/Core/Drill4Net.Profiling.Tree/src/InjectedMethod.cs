@@ -37,6 +37,9 @@ namespace Drill4Net.Profiling.Tree
 
         public IEnumerable<CrossPoint> Points => Filter(typeof(CrossPoint), false).Cast<CrossPoint>();
 
+        /// <summary>
+        /// Data of method coverage
+        /// </summary>
         public CoverageData Coverage { get; }
 
         /********************************************************************/

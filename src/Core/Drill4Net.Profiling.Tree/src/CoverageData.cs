@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Drill4Net.Profiling.Tree
 {
@@ -12,9 +11,12 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public Dictionary<int, float> BlockByPart { get; }
 
+        /// <summary>
+        /// Binding the cross-point by Uid to last index of the block's range in the probe list of method
+        /// </summary>
         public Dictionary<string, int> PointUidToEndIndex { get; set; }
 
-        /**********************************************************/
+        /**************************************************************/
 
         public CoverageData()
         {

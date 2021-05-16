@@ -2,6 +2,6 @@
 Target: # some metadata about target
   Name: Blazor server-side app #optional injection name
   Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
-TreePath: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp.Injected\ # were tree data about probes is located - if empty, system will try find it by another ways
+TreePath: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp.Injected\ # were tree data about probes are located - if empty, system will try find it by another ways
 Admin:
   Url: localhost:8090

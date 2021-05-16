@@ -171,10 +171,14 @@ namespace Drill4Net.Agent.Standard
             {
                 injTypes = tree.GetAllTypes();
             }
-            injTypes = injTypes?.Where(a => !a.IsCompilerGenerated);
+            //injTypes = injTypes?.Where(a => !a.IsCompilerGenerated);
             return injTypes;
         }
 
+        /// <summary>
+        /// Get list of <see cref="AstEntity"/> for list of registered <see cref="InjectedType"/>
+        /// </summary>
+        /// <returns></returns>
         public List<AstEntity> GetEntities()
         {
             return _converter.ToAstEntities(_injTypes);
@@ -276,12 +280,9 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendCoverages()
         {
-            //Console.ForegroundColor = ConsoleColor.DarkYellow;
             //Console.WriteLine("Enter into SendCoverages");
             lock (_sendLocker)
             {
-                //Console.ForegroundColor = ConsoleColor.Magenta;
-                //Console.WriteLine("Overpass lock");
                 //foreach (var ctxId in _ctxToDispatcher.Keys)
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
@@ -308,7 +309,6 @@ namespace Drill4Net.Agent.Standard
                     disp.ClearAffectedData();
                 }
             }
-            //Console.ForegroundColor = ConsoleColor.White;
         }
 
         private void StartSendCycle()
@@ -327,6 +327,10 @@ namespace Drill4Net.Agent.Standard
                 _sendTimer.Enabled = false;
         }
 
+        /// <summary>
+        /// Get the coverage dispatcher by current context if exists and otherwise create it
+        /// </summary>
+        /// <returns></returns>
         public CoverageDispatcher GetCoverageDispather()
         {
             //This defines the logical execution path of function callers regardless

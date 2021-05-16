@@ -4,6 +4,26 @@
         <name>Drill4Net.Agent.Standard</name>
     </assembly>
     <members>
+        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.BindPoint(System.String,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Int32,System.Int32)">
+            <summary>
+            Bind point Uid to probe's range of the target class
+            </summary>
+            <param name="pointUid"></param>
+            <param name="data"></param>
+            <param name="start"></param>
+            <param name="end"></param>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.RegisterCoverage(System.String)">
+            <summary>
+            Register the coverage data by point Uid coming from Target side
+            </summary>
+            <param name="pointUid"></param>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.ClearAffectedData">
+            <summary>
+            Clearing the affected data (classes, probes, etc) after sending it to admin side
+            </summary>
+        </member>
         <member name="M:Drill4Net.Agent.Standard.StandardAgent.Init">
             <summary>
             It just run the ctor with the main init procedure.
@@ -43,6 +63,33 @@
             Create repository for Standard Agent
             </summary>
         </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetEntities">
+            <summary>
+            Get list of <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/> for list of registered <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetCoverageDispather">
+            <summary>
+            Get the coverage dispatcher by current context if exists and otherwise create it
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Agent.Standard.TreeConverter">
+            <summary>
+            Converter-helper for DTO entities (<see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/>, <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstMethod"/>) 
+            and <see cref="T:Drill4Net.Agent.Standard.CoverageDispatcher"/> from <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.CreateCoverageDispatcher(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload,System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedType})">
+            <summary>
+            Create <see cref="T:Drill4Net.Agent.Standard.CoverageDispatcher"/> for session <see cref="T:Drill4Net.Agent.Abstract.Transfer.StartSessionPayload"/> 
+            and bind it to list of <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
+            </summary>
+            <param name="session"></param>
+            <param name="injTypes"></param>
+            <returns></returns>
+        </member>
         <member name="T:ThisAssembly">
             <summary>Provides access to the current assembly information.</summary>
         </member>
@@ -62,16 +109,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 69b04a0</summary>
+            <summary>Commit: 3749ab9</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 69b04a0c38c3f5e3d89d84504b37b5f5e62700ab</summary>
+            <summary>Sha: 3749ab9b1d34ad3e0e80fce49d1f5554affaddb9</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-05-15T09:55:12+03:00</summary>
+            <summary>Commit date: 2021-05-15T16:06:44+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 345</summary>
+            <summary>Commits on top of base version: 346</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -101,7 +148,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 345</summary>
+            <summary>Patch: 346</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

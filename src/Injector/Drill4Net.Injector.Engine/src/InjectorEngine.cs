@@ -97,9 +97,10 @@ namespace Drill4Net.Injector.Engine
             }
 
             //copying tree data to target root directories
+            CleanTree(tree);
             InjectTree(tree);
             tree.FinishTime = DateTime.Now;
-            
+
             // debug
             //var methods = tree.GetAllMethods().ToList();
             //var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
@@ -111,7 +112,13 @@ namespace Drill4Net.Injector.Engine
             //    .ToList();
             //var nonBlokings = cgMeths.FirstOrDefault(a => a.FullName == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
             //
+            //var points = tree.GetAllPoints().ToList();
             return tree;
+        }
+
+        private void CleanTree(InjectedSolution tree)
+        {
+            //TODO: remove empty dir/asm/type
         }
 
         internal bool ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 
@@ -276,10 +283,7 @@ namespace Drill4Net.Injector.Engine
             //assembly
             var treeAsm = treeDir.GetAssembly(assembly.FullName);
             if (treeAsm == null)
-            {
                 treeAsm = new InjectedAssembly(version, module.Name, assembly.FullName, filePath);
-                treeDir.AddChild(treeAsm);
-            }
             #endregion
             #region Commands
             // 1. Command ref
@@ -302,7 +306,6 @@ namespace Drill4Net.Injector.Engine
 
             #region 1. Tree's entities & Contexts
             #region Creating contexts
-            //by type
             foreach (var typeDef in types)
             {
                 var typeFullName = typeDef.FullName;
@@ -402,6 +405,7 @@ namespace Drill4Net.Injector.Engine
             }
             if (!asmCtx.TypeContexts.Any())
                 return;
+            treeDir.AddChild(treeAsm);
             #endregion
             #region MoveNext methods
             var moveNextMethods = treeAsm.Filter(typeof(InjectedMethod), true)
@@ -607,7 +611,7 @@ namespace Drill4Net.Injector.Engine
                 var points = bizMethod.Points;
                 var ranges = points
                     .Select(a => a.BusinessIndex)
-                    .Where(c => c != 0) //Enter not needed in any case
+                    .Where(c => c != 0) //Enter not needed in any case (for the block type of coverage)
                     .OrderBy(b => b)
                     .Distinct() //need for exclude in fact some fictive (for coverage) injections: CycleEnd, etc
                     .ToList();

@@ -28,7 +28,7 @@ namespace Drill4Net.Agent.Standard
         /*************************************************************************/
 
         /// <summary>
-        /// Bind point Uid to probe's range of target class
+        /// Bind point Uid to probe's range of the target class
         /// </summary>
         /// <param name="pointUid"></param>
         /// <param name="data"></param>
@@ -57,6 +57,10 @@ namespace Drill4Net.Agent.Standard
             }
         }
 
+        /// <summary>
+        /// Register the coverage data by point Uid coming from Target side
+        /// </summary>
+        /// <param name="pointUid"></param>
         public void RegisterCoverage(string pointUid)
         {
             #region Checks
@@ -90,6 +94,9 @@ namespace Drill4Net.Agent.Standard
             }
         }
 
+        /// <summary>
+        /// Clearing the affected data (classes, probes, etc) after sending it to admin side
+        /// </summary>
         public void ClearAffectedData()
         {
             AffectedExecClasses.Clear();
