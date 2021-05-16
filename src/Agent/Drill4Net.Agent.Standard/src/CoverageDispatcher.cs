@@ -61,23 +61,23 @@ namespace Drill4Net.Agent.Standard
         /// Register the coverage data by point Uid coming from Target side
         /// </summary>
         /// <param name="pointUid"></param>
-        public void RegisterCoverage(string pointUid)
+        public bool RegisterCoverage(string pointUid)
         {
             #region Checks
             //hm... log?
             if (!PointToClass.TryGetValue(pointUid, out var classData))
-                return;
+                return false; //it's normal, but not the best (for block coverage we not need "Enter" type of cross-points)
             if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
-                return;
+                return false; //it's error
             var probes = classData.probes;
             var start = range.Start;
             var end = range.End;
             if (start > end || start < 0 || start >= probes.Count || end < 0 || end >= probes.Count)
-                return;
+                return false; //it's error
             #endregion
 
             if (probes[start]) //yet registered
-                return;
+                return true;
             //
             for(var i = start; i <= end; i++)
                 probes[i] = true;
@@ -92,6 +92,7 @@ namespace Drill4Net.Agent.Standard
                         AffectedExecClasses.Add(classData);
                 }
             }
+            return true;
         }
 
         /// <summary>

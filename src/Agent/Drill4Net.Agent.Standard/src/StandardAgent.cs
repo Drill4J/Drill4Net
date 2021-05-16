@@ -229,7 +229,11 @@ namespace Drill4Net.Agent.Standard
 
                 var disp = _rep.GetCoverageDispather();
                 if (disp != null)
-                    disp.RegisterCoverage(probeUid);
+                {
+                    var res = disp.RegisterCoverage(probeUid);
+                    if (!res) //for tests
+                    { }
+                }
             }
             catch (Exception ex)
             {
