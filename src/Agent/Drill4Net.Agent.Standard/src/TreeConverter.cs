@@ -67,30 +67,62 @@ namespace Drill4Net.Agent.Standard
             //TODO: cloning from Template object?
             var disp = new CoverageDispatcher(session); 
             string testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
-            foreach (var type in injTypes.AsParallel())
+            if(session != null)
+                session.TestName = testName;
+            var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated);
+            var cgMethods = injTypes.Where(a => a.IsCompilerGenerated)
+                .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
+                .ToDictionary(k => k.FullName);
+
+            foreach (var type in bizTypes.AsParallel())
             {
-                var methods = type.GetMethods()?
-                    .Where(a => a.Coverage.PointUidToEndIndex.Any())?
+                var bizMethods = type.GetMethods()?
+                    .Where(a => a.Coverage.PointToBlockEnds.Any())?
                     .ToList();
-                if (methods?.Any() != true) 
+                if (bizMethods?.Any() != true) 
                     continue;
-                var ind = 0;
+                var ind = 0; //end2end for current type
                 var execData = new ExecClassData(testName, type.FullName);
-                foreach (var meth in methods) //don't parallel here!
-                {
-                    var inds = meth.Coverage.PointUidToEndIndex.OrderBy(a => a.Value);
-                    foreach (var pair in inds)
-                    {
-                        var localEnd = pair.Value;
-                        var start = ind;
-                        var end = start + localEnd;
-                        disp.BindPoint(pair.Key, execData, start, end);
-                        ind += localEnd + 1;
-                    }
-                }
+                bindMethods(disp, execData, bizMethods, ref ind, cgMethods);
                 execData.InitProbes(ind); //not needed +1
             }
             return disp;
+
+            static void bindMethods(CoverageDispatcher disp, ExecClassData execData, List<InjectedMethod> methods, 
+                ref int ind, Dictionary<string, InjectedMethod> cgMethods)
+            {
+                foreach (var meth in methods) //don't parallel here!
+                {
+                    //own data
+                    bindMethod(disp, execData, meth, ref ind);
+
+                    //CG callee data
+                    var cgCallees = meth.CalleeIndexes;
+                    if (cgCallees.Count == 0)
+                        continue;
+                    foreach (var callee in cgCallees.Keys)
+                    {
+                        var cgInd = cgCallees[callee];
+                        if (!cgMethods.ContainsKey(callee))
+                            continue; //it's normal (business methods here are not needed)
+                        var cgMeth = cgMethods[callee];
+                        bindMethod(disp, execData, cgMeth, ref ind);
+                    }
+                }
+            }
+
+            static void bindMethod(CoverageDispatcher disp, ExecClassData execData, InjectedMethod meth, ref int ind)
+            {
+                var inds = meth.Coverage.PointToBlockEnds.OrderBy(a => a.Value);
+                foreach (var pair in inds)
+                {
+                    var localEnd = pair.Value;
+                    var start = ind;
+                    var end = start + localEnd;
+                    disp.BindPoint(pair.Key, execData, start, end);
+                    ind += localEnd + 1;
+                }
+            }
         }
         #endregion
     }

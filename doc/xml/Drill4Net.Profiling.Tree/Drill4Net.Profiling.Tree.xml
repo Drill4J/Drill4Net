@@ -43,7 +43,7 @@
             Dictionary of code blocks: key is point Id, value - coverage part of code by this block
             </summary>
         </member>
-        <member name="P:Drill4Net.Profiling.Tree.CoverageData.PointUidToEndIndex">
+        <member name="P:Drill4Net.Profiling.Tree.CoverageData.PointToBlockEnds">
             <summary>
             Binding the cross-point by Uid to last index of the block's range in the probe list of method
             </summary>
