@@ -1095,6 +1095,7 @@ namespace Drill4Net.Injector.Engine
                     .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
                     .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
                     .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
+                    .Where(a => !a.FullName.Contains("::get__") && !a.FullName.Contains("::set__")) //for example, inner setters/getters for ASP.NET/Blazor (even in business namespace). Is it needed? Doesn't yet...
                 ;
             #endregion
             
@@ -1113,11 +1114,16 @@ namespace Drill4Net.Injector.Engine
             foreach (var ownMethod in ownMethods)
             {
                 #region Check
+                //too small body (no logic, pure set/get)
+                if (ownMethod.Body.Instructions.Count < 5)
+                    continue;
+
+                var name = ownMethod.Name;
+
                 //check for setter & getter of properties for anonymous types
                 //is it useless? But for custom weaving it's very interesting idea...
                 if (treeParentClass.IsCompilerGenerated)
                 {
-                    var name = ownMethod.Name;
                     if (ownMethod.IsSetter && !name.StartsWith("set_"))
                         continue;
                     if (ownMethod.IsGetter && !name.StartsWith("get_"))
@@ -1146,13 +1152,6 @@ namespace Drill4Net.Injector.Engine
                 if (!asmCtx.InjMethodByKeys.ContainsKey(methodKey))
                     asmCtx.InjMethodByKeys.Add(methodKey, treeFunc);
                 else { }
-
-                // //debug
-                // var funcs = treeParentClass.Filter(typeof(InjectedMethod), true)
-                //     .Cast<InjectedMethod>()
-                //     .Select(a => a.FullName).ToList();
-                // var func = funcs
-                //     .FirstOrDefault(a => a == treeFunc.FullName);
                 
                 treeParentClass.AddChild(treeFunc);
             }
