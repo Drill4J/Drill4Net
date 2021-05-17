@@ -1114,11 +1114,14 @@ namespace Drill4Net.Injector.Engine
             foreach (var ownMethod in ownMethods)
             {
                 #region Check
-                //too small body (no logic, pure set/get)
-                if (ownMethod.Body.Instructions.Count < 5)
-                    continue;
-
                 var name = ownMethod.Name;
+
+                //too small body for special functions (no logic: pure set/get, empty .сtor, etc)
+                if (name.StartsWith("set_") || name.StartsWith("get_") || name.StartsWith(".ctor") || name.StartsWith(".cctor"))
+                {
+                    if (ownMethod.Body.Instructions.Count(a => a.OpCode.Code != Code.Nop) < 6)
+                        continue;
+                }
 
                 //check for setter & getter of properties for anonymous types
                 //is it useless? But for custom weaving it's very interesting idea...
