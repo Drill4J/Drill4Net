@@ -32,6 +32,8 @@ namespace Drill4Net.Injector.Core
                     return false;
                 var operand = (MethodReference) instr.Operand;
                 var fullname = operand.FullName;
+                if (fullname.EndsWith("AsyncTaskMethodBuilder::Create()"))
+                    return true; //because it starts the asink machine with its own points
                 var isOwn = _typeChecker.CheckByMethodFullName(fullname);
                 if (fullname.Contains("get__") || fullname.Contains("set__")) //ASP.NET/Blazor - not needed
                     return false;
