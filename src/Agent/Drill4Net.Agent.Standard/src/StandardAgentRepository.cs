@@ -38,6 +38,8 @@ namespace Drill4Net.Agent.Standard
         private readonly ConcurrentDictionary<int, CoverageDispatcher> _ctxToDispatcher;
         private readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
+        private CoverageDispatcher _globalDispatcher;
+
         private readonly TreeConverter _converter;
         private readonly IEnumerable<InjectedType> _injTypes;
 
@@ -199,10 +201,14 @@ namespace Drill4Net.Agent.Standard
             var ctxId = GetContextId();
             if (_ctxToSession.ContainsKey(ctxId))
                 return;
+
             var sessionUid = session.SessionId;
             _sessionToObject.TryAdd(sessionUid, session);
             _ctxToSession.TryAdd(ctxId, sessionUid);
             _sessionToCtx.TryAdd(sessionUid, ctxId);
+
+            if (session.IsGlobal)
+                _globalDispatcher = CreateCoverageDispatcher(session);
         }
         #endregion
         #region Stop
@@ -262,6 +268,25 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Coverage data
+        /// <summary>
+        /// Register coverage from instrumented target by cross-point Uid 
+        /// </summary>
+        /// <param name="pointUid"></param>
+        /// <returns></returns>
+        public bool RegisterCoverage(string pointUid)
+        {
+            //global session
+            if (_globalDispatcher != null)
+                _globalDispatcher.RegisterCoverage(pointUid);
+
+            //exact session
+            var disp = GetCoverageDispather();
+            if (disp != null)
+                return disp.RegisterCoverage(pointUid);
+            else
+                return false;
+        }
+
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (_inTimer)
@@ -280,35 +305,42 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendCoverages()
         {
-            //Console.WriteLine("Enter into SendCoverages");
             lock (_sendLocker)
             {
-                //foreach (var ctxId in _ctxToDispatcher.Keys)
+                if (_globalDispatcher != null)
+                    SendDispatcherCoverageData(_globalDispatcher);
+
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
-                    var sessionUid = _ctxToSession[ctxId];
                     if (!_ctxToDispatcher.TryGetValue(ctxId, out var disp))
                         disp = GetCoverageDispather();
-                    //
-                    var execClasses = disp.AffectedExecClasses.ToList();
-                    var cnt = execClasses.Count();
-                    switch (cnt)
-                    {
-                        case 0:
-                            return;
-                        case > 65535:
-                            //TODO: implement in cycle by chunk
-                            break;
-                        default:
-                            Communicator.Sender.SendCoverageData(sessionUid, execClasses);
-                            break;
-                    }
-                    var session = disp.Session;
-                    if (session is {IsRealtime: true})
-                        Communicator.Sender.SendSessionChangedMessage(sessionUid, disp.AffectedProbeCount);
-                    disp.ClearAffectedData();
+                    SendDispatcherCoverageData(disp);
                 }
             }
+        }
+
+        private void SendDispatcherCoverageData(CoverageDispatcher disp)
+        {
+            var sessionUid = disp.Session?.SessionId;
+            if (sessionUid == null)
+                return;
+            var execClasses = disp.AffectedExecClasses.ToList();
+            var cnt = execClasses.Count();
+            switch (cnt)
+            {
+                case 0:
+                    return;
+                case > 65535:
+                    //TODO: implement in cycle by chunk
+                    break;
+                default:
+                    Communicator.Sender.SendCoverageData(sessionUid, execClasses);
+                    break;
+            }
+            var session = disp.Session;
+            if (session is { IsRealtime: true })
+                Communicator.Sender.SendSessionChangedMessage(sessionUid, disp.AffectedProbeCount);
+            disp.ClearAffectedData();
         }
 
         private void StartSendCycle()

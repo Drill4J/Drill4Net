@@ -88,6 +88,7 @@ namespace Drill4Net.Agent.Standard
             }
             return disp;
 
+            //local methods
             static void bindMethods(CoverageDispatcher disp, ExecClassData execData, List<InjectedMethod> methods, 
                 ref int ind, Dictionary<string, InjectedMethod> cgMethods)
             {
