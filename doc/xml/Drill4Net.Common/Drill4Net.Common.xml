@@ -26,6 +26,11 @@
             by another ways using "redirect cfg", current dir, etc
             </summary>
         </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.SkipEnterType">
+            <summary>
+            Does the Enter type of cross-point needed?
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.FolderData">
             <summary>
             Data for assemblies and it's classes in folder for testing 

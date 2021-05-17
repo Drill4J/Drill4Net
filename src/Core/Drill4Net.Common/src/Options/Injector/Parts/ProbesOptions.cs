@@ -8,5 +8,10 @@
         public bool Setter { get; set; }
         public bool EventAdd { get; set; }
         public bool EventRemove { get; set; }
+
+        /// <summary>
+        /// Does the Enter type of cross-point needed?
+        /// </summary>
+        public bool SkipEnterType { get; set; }
     }
 }

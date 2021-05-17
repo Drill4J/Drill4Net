@@ -44,7 +44,7 @@ namespace Drill4Net.Injector.Engine
             _mainVersion = new ThreadLocal<AssemblyVersioning>();
             _typeChecker = new TypeChecker();
 
-            FlowStrategy flowStrategy = new();
+            FlowStrategy flowStrategy = new(rep.Options.Probes);
             _strategy = flowStrategy;
         }
 

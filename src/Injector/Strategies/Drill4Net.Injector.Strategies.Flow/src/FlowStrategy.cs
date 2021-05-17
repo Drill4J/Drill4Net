@@ -1,10 +1,11 @@
-﻿using Drill4Net.Injector.Core;
+﻿using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Strategies.Flow
 {
     public class FlowStrategy : InstructionHandlerStrategy
     {
-        public FlowStrategy()
+        public FlowStrategy(ProbesOptions opts = null)
         {
             var helper = new FlowProbeHelper();
             
@@ -18,8 +19,9 @@ namespace Drill4Net.Injector.Strategies.Flow
             ConnectHandler(new CatchFilterHandler(helper));
             
             //enter/return
-            ConnectHandler(new ReturnHandler(helper)); 
-            ConnectHandler(new EnterHandler(helper));
+            ConnectHandler(new ReturnHandler(helper));
+            if(opts == null || !opts.SkipEnterType)
+                ConnectHandler(new EnterHandler(helper));
             
             //methods' calls (must be prior AnchorHandler)
             ConnectHandler(new CallHandler(helper));

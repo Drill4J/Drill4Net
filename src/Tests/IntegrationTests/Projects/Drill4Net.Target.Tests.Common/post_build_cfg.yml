@@ -35,4 +35,5 @@ Probes: # types of cross-cutting points
     Setter: true
     EventAdd: false
     EventRemove: false
+    SkipEnterType: true
 Silent: true #no wait, no questions...

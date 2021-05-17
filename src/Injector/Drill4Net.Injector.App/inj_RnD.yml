@@ -35,6 +35,7 @@ Probes: # types of cross-cutting points
     Setter: true
     EventAdd: false
     EventRemove: false
+    SkipEnterType: true
 Tests: # what will be tested - by target moniker/assembly/class
     Directory: ..\..\TargetApps\ #target dir relatively Test project
     Targets:
