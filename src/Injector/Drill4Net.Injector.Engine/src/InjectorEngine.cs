@@ -281,9 +281,9 @@ namespace Drill4Net.Injector.Engine
             }
 
             //assembly
-            var treeAsm = treeDir.GetAssembly(assembly.FullName);
-            if (treeAsm == null)
-                treeAsm = new InjectedAssembly(version, module.Name, assembly.FullName, filePath);
+            var treeAsm = treeDir.GetAssembly(assembly.FullName) ?? 
+                          new InjectedAssembly(version, module.Name, assembly.FullName, filePath);
+
             #endregion
             #region Commands
             // 1. Command ref
@@ -321,7 +321,7 @@ namespace Drill4Net.Injector.Engine
                 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
-                var methods = GetMethods(typeCtx, typeDef, opts);
+                var methods = GetMethods(typeCtx, typeDef, opts).ToArray();
                 if (!methods.Any())
                     continue;
 
@@ -379,7 +379,9 @@ namespace Drill4Net.Injector.Engine
                             while (true)
                             {
                                 var curAsyncCode = asyncInstr.OpCode.Code;
-                                if (curAsyncCode is Code.Nop or Code.Stfld || curAsyncCode.ToString().StartsWith("Ldarg"))
+                                //guanito
+                                if (curAsyncCode is Code.Nop or Code.Stfld or Code.Newobj or Code.Call 
+                                    || curAsyncCode.ToString().StartsWith("Ldarg"))
                                     break;
                                 asyncInstr = asyncInstr.Next;
                                 startInd++;
@@ -513,9 +515,13 @@ namespace Drill4Net.Injector.Engine
             #region 2. Injection
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
+                Debug.WriteLine(typeCtx.InjType.FullName);
+
                 //process methods
                 foreach (var methodCtx in typeCtx.MethodContexts.Values)
                 {
+                    Debug.WriteLine(methodCtx.Method.FullName);
+
                     #region Init
                     var methodDef = methodCtx.Definition;
 
@@ -775,7 +781,7 @@ namespace Drill4Net.Injector.Engine
                 else
                 {
                     //+margin if instruction starts the try/catch
-                    var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 8 : 0;
+                    var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 6 : 0;
                     ctx.CorrectIndex(delta);
                 }
             }
