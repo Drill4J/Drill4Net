@@ -1,8 +1,8 @@
-﻿Description: Manual debugging of Injector App (Standard agent) on Blazor app (Server-Side)
+﻿Description: Manual debugging of Injector App (RnD) on Blazor app (Wasm)
 Target: # some metadata about target
-    Name: Blazor app (Server-Side) # optional injection name
+    Name: Blazor app (Wasm) # optional injection name
 Source: # what and how processing
-    Directory: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp\
+    Directory: ..\..\Tests\BlazorWasm\
     Filter: # mask for search files, namespaces, classes...
       Includes:
         Directories:
@@ -15,7 +15,7 @@ Source: # what and how processing
         Directories:
           #- net5.0\publish\ @ relative path to concrete directory
         Folders:
-          - publish # name of folder (may be in some paths)
+          - publish # or name of folder (may be in some paths)
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir

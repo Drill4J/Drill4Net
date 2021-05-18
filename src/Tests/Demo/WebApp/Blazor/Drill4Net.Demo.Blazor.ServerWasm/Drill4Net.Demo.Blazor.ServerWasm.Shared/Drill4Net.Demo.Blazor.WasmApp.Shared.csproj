@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.Blazor.WasmApp.Shared</OutputPath>
-    <DocumentationFile>..\..\..\..\..\..\..\doc\xml\Tests\Drill4Net.Demo.Blazor.WasmApp.Shared\Drill4Net.Demo.Blazor.WasmApp.Shared.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\..\..\build\bin\Debug\Tests\BlazorWasm\Drill4Net.Demo.Blazor.WasmApp.Shared</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\..\doc\xml\Tests\BlazorWasm\Drill4Net.Demo.Blazor.WasmApp.Shared\Drill4Net.Demo.Blazor.WasmApp.Shared.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Blazor.WasmApp.Shared</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\build\bin\Release\Tests\BlazorWasm\Drill4Net.Demo.Blazor.WasmApp.Shared</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
