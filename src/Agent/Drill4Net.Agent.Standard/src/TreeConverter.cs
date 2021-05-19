@@ -77,9 +77,9 @@ namespace Drill4Net.Agent.Standard
                 .Distinct(new InjectedEntityComparer<InjectedMethod>())
                 .ToDictionary(k => k.FullName);
 
-            var cgMethodsTest = injTypes.Where(a => a.IsCompilerGenerated)
-                .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
-                .OrderBy(a => a.FullName);
+            //var cgMethodsTest = injTypes.Where(a => a.IsCompilerGenerated)
+            //    .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
+            //    .OrderBy(a => a.FullName);
 
             foreach (var type in bizTypes.AsParallel())
             {
