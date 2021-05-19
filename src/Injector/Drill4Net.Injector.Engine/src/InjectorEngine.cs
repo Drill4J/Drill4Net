@@ -30,18 +30,20 @@ namespace Drill4Net.Injector.Engine
         */
 
         private readonly IInjectorRepository _rep;
-        private readonly ThreadLocal<bool?> _isNetCore;
-        private readonly ThreadLocal<AssemblyVersioning> _mainVersion;
+        private ThreadLocal<bool?> _isNetCore;
+        private ThreadLocal<AssemblyVersioning> _mainVersion;
+        private ThreadLocal<Dictionary<string, string>> _paths;
+
         private readonly InstructionHandlerStrategy _strategy;
         private readonly TypeChecker _typeChecker;
+
 
         /***************************************************************************************/
 
         public InjectorEngine(IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            _isNetCore = new ThreadLocal<bool?>();
-            _mainVersion = new ThreadLocal<AssemblyVersioning>();
+
             _typeChecker = new TypeChecker();
 
             FlowStrategy flowStrategy = new(rep.Options.Probes);
@@ -59,6 +61,13 @@ namespace Drill4Net.Injector.Engine
         {
             Log.Information("Process starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
+
+            _isNetCore = new ThreadLocal<bool?>();
+            _mainVersion = new ThreadLocal<AssemblyVersioning>();
+            _paths = new ThreadLocal<Dictionary<string, string>>
+            {
+                Value = new Dictionary<string, string>()
+            };
 
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
@@ -104,13 +113,13 @@ namespace Drill4Net.Injector.Engine
             // debug TODO: to tests
             //var methods = tree.GetAllMethods().ToList();
             //var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
-            //var emtyCGInfoMeths = cgMeths
+            //var emptyCGInfoMeths = cgMeths
             //    .Where(a => a.CGInfo == null)
             //    .ToList();
             //var emptyBusinessMeths = cgMeths
             //    .Where(a => a.CGInfo!= null && a.CGInfo.Caller != null && (a.BusinessMethod == null || a.BusinessMethod == a.FullName))
             //    .ToList();
-            //var nonBlokings = cgMeths.FirstOrDefault(a => a.FullName == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
+            //var nonBlockings = cgMeths.FirstOrDefault(a => a.FullName == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
             //
             //var points = tree.GetAllPoints().ToList();
             return tree;
@@ -182,7 +191,7 @@ namespace Drill4Net.Injector.Engine
             return versions;
         }
         
-        private void ProcessAssembly(string filePath, Dictionary<string, AssemblyVersioning> versions,  
+        private void ProcessAssembly(string filePath, IDictionary<string, AssemblyVersioning> versions,  
             InjectorOptions opts, InjectedSolution tree)
         {
             #region Reading
@@ -275,10 +284,18 @@ namespace Drill4Net.Injector.Engine
                 tree.Add(treeDir);
             }
 
-            //assembly
-            var treeAsm = treeDir.GetAssembly(assembly.FullName) ?? 
+            //assembly (exactly from whole tree, not just current treeDir - for shared dll)
+            var treeAsm = tree.GetAssembly(assembly.FullName, true) ??
                           new InjectedAssembly(version, module.Name, assembly.FullName, filePath);
+            treeDir.Add(treeAsm);
 
+            if (_paths.Value.ContainsKey(assembly.FullName)) //assembly is shared and already is injected
+            {
+                var copyFrom = _paths.Value[assembly.FullName];
+                var copyTo = GetDestFileName(copyFrom, destDir);
+                File.Copy(copyFrom, copyTo, true);
+                return;
+            }
             #endregion
             #region Commands
             // 1. Command ref
@@ -402,14 +419,15 @@ namespace Drill4Net.Injector.Engine
             }
             if (!asmCtx.TypeContexts.Any())
                 return;
-            treeDir.Add(treeAsm);
             #endregion
             #region MoveNext methods
             var moveNextMethods = treeAsm.Filter(typeof(InjectedMethod), true)
                 .Cast<InjectedMethod>()
-                .Where(x => x.IsCompilerGenerated && x.Name == "MoveNext");
-            foreach (var meth in moveNextMethods)
+                .Where(x => x.IsCompilerGenerated && x.Name == "MoveNext")
+                .ToList();
+            for (int i = 0; i < moveNextMethods.Count; i++)
             {
+                InjectedMethod meth = moveNextMethods[i];
                 // Owner type
                 var fullName = meth.FullName;
                 var mkey = fullName.Split(' ')[1].Split(':')[0];
@@ -957,13 +975,11 @@ namespace Drill4Net.Injector.Engine
 
         internal string SaveAssembly(AssemblyDefinition assembly, string origFilePath, string destDir, bool needPdb)
         {
-            var ext = Path.GetExtension(origFilePath);
-            var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
-            var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
-
+            var modifiedPath = GetDestFileName(origFilePath, destDir);
             var writeParams = new WriterParameters();
             if (needPdb)
             {
+                var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
                 var pdbPath = Path.Combine(destDir, subjectName + ".pdb");
                 writeParams.SymbolStream = File.Create(pdbPath);
                 writeParams.WriteSymbols = true;
@@ -971,6 +987,15 @@ namespace Drill4Net.Injector.Engine
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
             }
             assembly.Write(modifiedPath, writeParams);
+            _paths.Value.Add(assembly.FullName, modifiedPath);
+            return modifiedPath;
+        }
+
+        internal string GetDestFileName(string origFilePath, string destDir)
+        {
+            var ext = Path.GetExtension(origFilePath);
+            var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
+            var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
             return modifiedPath;
         }
 

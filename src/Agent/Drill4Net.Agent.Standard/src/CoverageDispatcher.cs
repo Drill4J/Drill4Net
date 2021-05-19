@@ -66,9 +66,10 @@ namespace Drill4Net.Agent.Standard
             #region Checks
             //hm... log?
             if (!PointToClass.TryGetValue(pointUid, out var classData))
-                return false; //it's normal, but not the best (for block coverage we not need "Enter" type of cross-points)
+                return false; //it's normal, but not the best (for block coverage we not need "Enter" type of cross-points, another case is a possible error)
             if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
                 return false; //it's error
+
             var probes = classData.probes;
             var start = range.Start;
             var end = range.End;

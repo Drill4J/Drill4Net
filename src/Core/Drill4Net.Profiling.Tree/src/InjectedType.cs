@@ -79,7 +79,7 @@ namespace Drill4Net.Profiling.Tree
 
         public override string ToString()
         {
-            return $"T: {FullName}";
+            return $"{base.ToString()}T: {FullName}";
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Drill4Net.Profiling.Tree
 
         public override string ToString()
         {
-            return Name;
+            return $"{base.ToString()}{Name}";
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Drill4Net.Profiling.Tree
         public Guid Uid { get; }
 
         public bool IsParentHub { get; set; }
-        public bool IsShared { get; set; }
+        public bool? IsShared { get; set; }
 
         public T this[int index]
         {
@@ -113,16 +113,31 @@ namespace Drill4Net.Profiling.Tree
                     var prev = map[child];
                     if (prev == parent || prev.Contains(parent) || parent.Contains(prev))
                         return;
-                    
+
                     // more than 1 parents for 1 child
-                    var parentHub = new T() { IsParentHub = true };
-                    parentHub.Add(prev);
+                    child.IsShared = true;
+                    T parentHub = null;
+                    if (prev.IsParentHub)
+                    {
+                        parentHub = prev;
+                    }
+                    else
+                    {
+                        parentHub = new T() { IsParentHub = true };
+                        parentHub.Add(prev);
+                    }
                     parentHub.Add(parent);
                     map[child] = parentHub;
-                    child.IsShared = true;
                 }
             });
             return map;
+        }
+
+        public override string ToString()
+        {
+            if (IsShared == true) return "*";
+            if (IsParentHub) return "#";
+            return null;
         }
     }
 }
