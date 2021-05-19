@@ -101,7 +101,7 @@ namespace Drill4Net.Injector.Engine
             InjectTree(tree);
             tree.FinishTime = DateTime.Now;
 
-            // debug
+            // debug TODO: to tests
             //var methods = tree.GetAllMethods().ToList();
             //var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
             //var emtyCGInfoMeths = cgMeths

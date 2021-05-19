@@ -7,6 +7,8 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class GenericTree<T> where T : GenericTree<T>
     {
+        public Guid Uid { get; }
+
         public int Count => _children.Count;
 
         protected List<T> _children;
@@ -15,6 +17,7 @@ namespace Drill4Net.Profiling.Tree
 
         public GenericTree()
         {
+            Uid = Guid.NewGuid();
             _children = new List<T>();
         }
 
