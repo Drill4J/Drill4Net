@@ -23,7 +23,7 @@ namespace Drill4Net.Injector.Core
             if (point != null) 
                 return point;
             point = CreateCrossPoint(ctx, pointType, localId);
-            ctx.Method.AddChild(point);
+            ctx.Method.Add(point);
             return point;
         }
 

@@ -10,18 +10,6 @@ namespace Drill4Net.Profiling.Tree
         public string Name { get; set; } 
         public string Path { get; set; }
 
-        public InjectedSimpleEntity this[int index]
-        {
-            get
-            {
-                return _children[index];
-            }
-            set
-            {
-                _children[index] = value;
-            }
-        }
-
         /*********************************************************************/
 
         public InjectedSimpleEntity()

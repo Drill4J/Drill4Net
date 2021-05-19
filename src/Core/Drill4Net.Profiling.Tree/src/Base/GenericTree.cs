@@ -5,9 +5,24 @@ using System.Linq;
 namespace Drill4Net.Profiling.Tree
 {
     [Serializable]
-    public class GenericTree<T> where T : GenericTree<T>
+    public class GenericTree<T> where T : GenericTree<T>, new()
     {
         public Guid Uid { get; }
+
+        public bool IsParentHub { get; set; }
+        public bool IsShared { get; set; }
+
+        public T this[int index]
+        {
+            get
+            {
+                return _children[index];
+            }
+            set
+            {
+                _children[index] = value;
+            }
+        }
 
         public int Count => _children.Count;
 
@@ -23,26 +38,32 @@ namespace Drill4Net.Profiling.Tree
 
         /*******************************************************************/
 
-        public virtual void AddChild(T newChild)
+        public virtual void Add(T newChild)
         {
             if (newChild == null)
                 throw new ArgumentNullException(nameof(newChild));
-            //
-            //newChild.Parent = this;
             _children.Add(newChild);
         }
 
-        public void AddChild(List<T> range)
+        public void Add(List<T> range)
         {
             if (range == null)
                 throw new ArgumentNullException(nameof(range));
             foreach (var p in range)
-                AddChild(p);
+                Add(p);
         }
 
         public bool Remove(T node)
         {
             return _children.Remove(node);
+        }
+
+        public bool Contains(T child, bool inDeep = false, Type breakOn = null)
+        {
+            if (!inDeep)
+                return _children.Contains(child);
+            var all = Flatten(breakOn);
+            return all.Contains(child);
         }
 
         public IEnumerable<T> Flatten(Type breakOn = null)
@@ -53,6 +74,12 @@ namespace Drill4Net.Profiling.Tree
             return _children.SelectMany(x => x.Flatten(breakOn)).Concat(filter);
         }
 
+        /// <summary>
+        /// Filter children's entities of current entity (as a parent)
+        /// </summary>
+        /// <param name="flt"></param>
+        /// <param name="inDepth"></param>
+        /// <returns></returns>
         public IEnumerable<T> Filter(Type flt, bool inDepth)
         {
             var filter = _children.Where(a => flt == null || a.GetType() == flt);
@@ -74,13 +101,26 @@ namespace Drill4Net.Profiling.Tree
                 child.Traverse(depth + 1, visitor, @this);
         }
 
-        public Dictionary<T, T> CalcParentMap()
+        public virtual Dictionary<T, T> CalcParentMap()
         {
             var map = new Dictionary<T, T>();
             Traverse((_, child, parent) => 
-            { 
-               if (!map.ContainsKey(child)) 
-                    map.Add(child, parent); 
+            {
+                if (!map.ContainsKey(child))
+                    map.Add(child, parent); //child:parent = 1:1
+                else
+                {
+                    var prev = map[child];
+                    if (prev == parent || prev.Contains(parent) || parent.Contains(prev))
+                        return;
+                    
+                    // more than 1 parents for 1 child
+                    var parentHub = new T() { IsParentHub = true };
+                    parentHub.Add(prev);
+                    parentHub.Add(parent);
+                    map[child] = parentHub;
+                    child.IsShared = true;
+                }
             });
             return map;
         }

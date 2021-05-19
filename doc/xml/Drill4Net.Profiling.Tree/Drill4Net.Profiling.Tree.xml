@@ -4,6 +4,14 @@
         <name>Drill4Net.Profiling.Tree</name>
     </assembly>
     <members>
+        <member name="M:Drill4Net.Profiling.Tree.GenericTree`1.Filter(System.Type,System.Boolean)">
+            <summary>
+            Filter children's entities of current entity (as a parent)
+            </summary>
+            <param name="flt"></param>
+            <param name="inDepth"></param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Profiling.Tree.InjectedSimpleEntity.MapPoints(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
             <summary>
             Get parent map of <see cref="T:Drill4Net.Profiling.Tree.CrossPoint"/> by it's <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 

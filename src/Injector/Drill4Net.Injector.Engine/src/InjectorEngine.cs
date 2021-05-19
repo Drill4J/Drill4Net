@@ -272,7 +272,7 @@ namespace Drill4Net.Injector.Engine
             if (treeDir == null)
             {
                 treeDir = new InjectedDirectory(sourceDir, destDir);
-                tree.AddChild(treeDir);
+                tree.Add(treeDir);
             }
 
             //assembly
@@ -322,7 +322,7 @@ namespace Drill4Net.Injector.Engine
 
                 asmCtx.TypeContexts.Add(typeFullName, typeCtx);
                 asmCtx.InjClasses.Add(treeMethodType.FullName, treeMethodType);
-                treeAsm.AddChild(treeMethodType);
+                treeAsm.Add(treeMethodType);
 
                 //by methods
                 foreach (var methodDef in methods)
@@ -402,7 +402,7 @@ namespace Drill4Net.Injector.Engine
             }
             if (!asmCtx.TypeContexts.Any())
                 return;
-            treeDir.AddChild(treeAsm);
+            treeDir.Add(treeAsm);
             #endregion
             #region MoveNext methods
             var moveNextMethods = treeAsm.Filter(typeof(InjectedMethod), true)
@@ -416,7 +416,7 @@ namespace Drill4Net.Injector.Engine
                 if (asmCtx.InjClasses.ContainsKey(mkey))
                 {
                     var treeType = asmCtx.InjClasses[mkey];
-                    treeType.AddChild(meth);
+                    treeType.Add(meth);
                 }
                 // Business method
                 var extRealMethodName = TryGetBusinessMethod(meth.FullName, meth.Name, true, true);
@@ -1157,7 +1157,7 @@ namespace Drill4Net.Injector.Engine
                     asmCtx.InjMethodByKeys.Add(methodKey, treeFunc);
                 else { }
                 
-                treeParentClass.AddChild(treeFunc);
+                treeParentClass.Add(treeFunc);
             }
             #endregion
             #region Nested classes
@@ -1170,7 +1170,7 @@ namespace Drill4Net.Injector.Engine
                     Path = typeCtx.AssemblyCtx.InjAssembly.Path,
                 };
                 asmCtx.InjClasses.Add(treeType.FullName, treeType);
-                treeParentClass.AddChild(treeType);
+                treeParentClass.Add(treeType);
                 //
                 var innerMethods = GetMethods(typeCtx, nestedType, opts);
                 methods.AddRange(innerMethods);
