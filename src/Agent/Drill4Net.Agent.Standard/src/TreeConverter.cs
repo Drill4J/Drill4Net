@@ -69,10 +69,12 @@ namespace Drill4Net.Agent.Standard
             string testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
             if(session != null)
                 session.TestName = testName;
-            var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated);
+            var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated)
+                .Distinct(new InjectedEntityComparer<InjectedType>());
+
             var cgMethods = injTypes.Where(a => a.IsCompilerGenerated)
                 .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
-                .Distinct(new InjectedMethodComparer())
+                .Distinct(new InjectedEntityComparer<InjectedMethod>())
                 .ToDictionary(k => k.FullName);
 
             var cgMethodsTest = injTypes.Where(a => a.IsCompilerGenerated)
