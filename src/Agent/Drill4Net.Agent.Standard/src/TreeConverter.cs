@@ -72,7 +72,12 @@ namespace Drill4Net.Agent.Standard
             var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated);
             var cgMethods = injTypes.Where(a => a.IsCompilerGenerated)
                 .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
+                .Distinct(new InjectedMethodComparer())
                 .ToDictionary(k => k.FullName);
+
+            var cgMethodsTest = injTypes.Where(a => a.IsCompilerGenerated)
+                .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
+                .OrderBy(a => a.FullName);
 
             foreach (var type in bizTypes.AsParallel())
             {

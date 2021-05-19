@@ -17,7 +17,7 @@ namespace Drill4Net.Agent.Standard
         private static IReceiver Receiver => _comm.Receiver;
         private static ISender Sender => _comm.Sender;
         private static readonly StandardAgentRepository _rep;
-        private static readonly ManualResetEvent _initEvent = new ManualResetEvent(false);
+        private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static readonly object _entLocker = new();

@@ -10,6 +10,18 @@ namespace Drill4Net.Profiling.Tree
         public string Name { get; set; } 
         public string Path { get; set; }
 
+        public InjectedSimpleEntity this[int index]
+        {
+            get
+            {
+                return _children[index];
+            }
+            set
+            {
+                _children[index] = value;
+            }
+        }
+
         /*********************************************************************/
 
         public InjectedSimpleEntity()
@@ -71,6 +83,18 @@ namespace Drill4Net.Profiling.Tree
                     methodMap.Add(uid, method);
             }
             return methodMap;
+        }
+
+        internal void CleanEntities(List<InjectedSimpleEntity> list, Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parents)
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                var ent = list[i];
+                if (ent.Count > 0)
+                    continue;
+                var parent = parents[ent];
+                parent.Remove(ent);
+            }
         }
     }
 }

@@ -169,11 +169,10 @@ namespace Drill4Net.Agent.Standard
                     }
                 }
             }
-            else
-            {
+
+            if(injTypes == null)
                 injTypes = tree.GetAllTypes();
-            }
-            //injTypes = injTypes?.Where(a => !a.IsCompilerGenerated);
+
             return injTypes;
         }
 

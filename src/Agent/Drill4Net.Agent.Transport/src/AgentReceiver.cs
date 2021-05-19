@@ -74,7 +74,7 @@ namespace Drill4Net.Agent.Transport
         protected virtual void MessageReceived(string topic, string message)
         {
             if (RequestClassesData == null)
-                throw new Exception("Handlers are not attached for recevied events");
+                throw new Exception("Handlers are not attached for received events");
             //
             try
             {
@@ -132,7 +132,7 @@ namespace Drill4Net.Agent.Transport
             }
             catch (Exception e)
             {
-                //log
+                //TODO: log!!!
             }
         }
 

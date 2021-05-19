@@ -97,7 +97,7 @@ namespace Drill4Net.Injector.Engine
             }
 
             //copying tree data to target root directories
-            CleanTree(tree);
+            tree.RemoveEmpties();
             InjectTree(tree);
             tree.FinishTime = DateTime.Now;
 
@@ -114,11 +114,6 @@ namespace Drill4Net.Injector.Engine
             //
             //var points = tree.GetAllPoints().ToList();
             return tree;
-        }
-
-        private void CleanTree(InjectedSolution tree)
-        {
-            //TODO: remove empty dir/asm/type
         }
 
         internal bool ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 

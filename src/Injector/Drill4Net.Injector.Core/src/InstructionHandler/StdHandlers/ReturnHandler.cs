@@ -1,5 +1,6 @@
 ﻿using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
+using System.Linq;
 
 namespace Drill4Net.Injector.Core
 {
@@ -15,6 +16,8 @@ namespace Drill4Net.Injector.Core
         protected override void StartMethodConcrete(MethodContext ctx)
         {
             if (ctx.IsStrictEnterReturn)
+                return;
+            if (ctx.Instructions.Count(a =>a.OpCode.Code != Code.Nop) < 4)
                 return;
             
             //init

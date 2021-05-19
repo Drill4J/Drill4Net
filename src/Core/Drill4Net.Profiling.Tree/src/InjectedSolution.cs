@@ -87,5 +87,15 @@ namespace Drill4Net.Profiling.Tree
                 .FirstOrDefault(a => a.Path.Equals(path, StringComparison.CurrentCultureIgnoreCase)) 
                 as InjectedDirectory;
         }
+
+        public void RemoveEmpties()
+        {
+            var parents = CalcParentMap();
+
+            CleanEntities(GetAllMethods().Cast<InjectedSimpleEntity>().ToList(), parents);
+            CleanEntities(GetAllTypes().Cast<InjectedSimpleEntity>().ToList(), parents);
+            CleanEntities(GetAllAssemblies().Cast<InjectedSimpleEntity>().ToList(), parents);
+            CleanEntities(GetAllDirectories().Cast<InjectedSimpleEntity>().ToList(), parents);
+        }
     }
 }

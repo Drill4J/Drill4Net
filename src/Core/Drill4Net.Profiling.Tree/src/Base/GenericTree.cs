@@ -7,7 +7,7 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class GenericTree<T> where T : GenericTree<T>
     {
-        //public GenericTree<T> Parent { get; set; }
+        public int Count => _children.Count;
 
         protected List<T> _children;
 
@@ -74,7 +74,11 @@ namespace Drill4Net.Profiling.Tree
         public Dictionary<T, T> CalcParentMap()
         {
             var map = new Dictionary<T, T>();
-            Traverse((_, child, parent) => map.Add(child, parent));
+            Traverse((_, child, parent) => 
+            { 
+               if (!map.ContainsKey(child)) 
+                    map.Add(child, parent); 
+            });
             return map;
         }
     }

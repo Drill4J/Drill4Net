@@ -16,6 +16,7 @@ Source: # what and how processing
           #- net5.0\publish\ @ relative path to concrete directory
         Folders:
           - publish # or name of folder (may be in some paths)
+          - ref
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
