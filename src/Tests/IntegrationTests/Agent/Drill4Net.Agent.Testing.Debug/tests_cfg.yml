@@ -1,4 +1,4 @@
 ﻿Description: For debugging Agent & Standard Target
-Target: # some metadata about target
-    Name: Debug Target #optional injection name
+Target:
+    Name: Debug Target 
 TreePath: ..\..\TargetApps.Injected.Tests\ # if empty, system will try find the tree data by another ways

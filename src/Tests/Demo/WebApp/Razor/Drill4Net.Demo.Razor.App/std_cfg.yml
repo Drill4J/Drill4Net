@@ -1,0 +1,7 @@
+﻿Description: For Standard Agent & Razor app
+Target:
+  Name: Razor app 
+  Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
+TreePath: ..\..\Tests\Drill4Net.Demo.Razor.App.Injected\ # were tree data about probes are located - if empty, system will try find it by another ways
+Admin:
+  Url: localhost:8090

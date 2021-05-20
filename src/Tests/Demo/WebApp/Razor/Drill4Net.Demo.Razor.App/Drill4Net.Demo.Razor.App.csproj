@@ -14,4 +14,10 @@
     <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Razor.App</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="std_cfg.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
-﻿Description: For standard Agent & Target debugging
-Target: # some metadata about target
-  Name: Standard Target #optional injection name
+﻿Description: For Standard Agent & Target debugging
+Target: 
+  Name: Standard Target 
   Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
 TreePath: ..\..\Tests\TargetApps.Injected.Tests\ # were tree data about probes are located - if empty, system will try find it by another ways
 Admin:

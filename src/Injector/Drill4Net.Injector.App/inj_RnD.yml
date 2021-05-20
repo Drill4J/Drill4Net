@@ -20,7 +20,7 @@ Destination: # where copying injected assemblies
     FolderPostfix: Injected #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
     Name: RnD agent # name exactly for agent subsystem
-    Directory: ..\..\Drill4Net.Agent.RnD\netstandard2.0\
+    Directory: ..\..\Drill4Net.Agent.RnD\netstandard2.0\  # absolute path, or relatively Destination dir
     AssemblyName: Drill4Net.Agent.RnD.dll
     Namespace: Drill4Net.Agent.RnD
     Class: LoggerAgent
