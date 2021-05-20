@@ -8,3 +8,26 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+                            @*Button 1*@
+
+@functions{
+    public string GetHello()
+    {
+        return "Hello";
+    }
+}
+
+<button Onclick="RazorFunction()">Click</button>
+
+@section Scripts
+{
+    <script>
+    function RazorFunction() {
+        $("button").html('@GetHello()');
+    }
+
+    </script>
+}
+
+                          @*Button 1 end*@

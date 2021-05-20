@@ -1,0 +1,23 @@
+﻿@page
+@model Drill4Net.Demo.Razor.App.Pages.CoveragePageModel
+@{
+}
+
+<button Onclick="AaaFunction()">AAA</button>
+
+@section Scripts
+{
+    <script>
+        function AaaFunction() {
+        $("button").html('@GetBbb()');
+    }
+
+    </script>
+}
+
+@functions{
+    public string GetBbb()
+    {
+        return "BBB";
+    }
+}
