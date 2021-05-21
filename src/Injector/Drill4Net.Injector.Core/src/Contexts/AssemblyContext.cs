@@ -8,12 +8,19 @@ namespace Drill4Net.Injector.Core
 {
     public class AssemblyContext
     {
-        public string FilePath { get; }
+        public string SubjectName { get; set; }
+        public string SourceDir { get; set; }
+        public string SourceFile { get; }
+        public string DestinationDir { get; set; }
+
         public AssemblyDefinition Definition { get; }
-        
-        public ModuleDefinition Module => Definition.MainModule;
+        public ModuleDefinition Module => Definition?.MainModule;
+
+        public bool IsNeedPdb { get; set; }
+        public bool Skipped { get; set; }
+
         public AssemblyVersioning Version { get; }
-        public InjectedAssembly InjAssembly { get; }
+        public InjectedAssembly InjAssembly { get; set; }
 
         public Dictionary<string, TypeContext> TypeContexts { get; }
 
@@ -22,13 +29,14 @@ namespace Drill4Net.Injector.Core
         public Dictionary<string, InjectedMethod> InjMethodByKeys { get; }
 
         /***********************************************************************************/
-        
-        public AssemblyContext(string filePath, AssemblyVersioning version, AssemblyDefinition asmDef, InjectedAssembly injAssembly)
+
+        internal AssemblyContext() { }
+
+        public AssemblyContext(string filePath, AssemblyVersioning version, AssemblyDefinition asmDef)
         {
-            FilePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
+            SourceFile = filePath ?? throw new ArgumentNullException(nameof(filePath));
             Version = version ?? throw new ArgumentNullException(nameof(version));
             Definition = asmDef ?? throw new ArgumentNullException(nameof(asmDef));
-            InjAssembly = injAssembly ?? throw new ArgumentNullException(nameof(injAssembly));
             //
             TypeContexts = new Dictionary<string, TypeContext>();
             InjClasses = new Dictionary<string, InjectedType>();

@@ -24,11 +24,6 @@ namespace Drill4Net.Core.Repository
             Options = _optHelper.GetOptions(cfgPath);
         }
 
-        //protected AbstractRepository()
-        //{
-        //    _optHelper = new THelper();
-        //}
-
         /**********************************************************************************/
 
         #region Injected Tree
@@ -42,6 +37,8 @@ namespace Drill4Net.Core.Repository
                 var dir = string.IsNullOrWhiteSpace(Options.TreePath) ? FileUtils.GetEntryDir() : FileUtils.GetFullPath(Options.TreePath);
                 path = Path.Combine(dir, CoreConstants.TREE_FILE_NAME);
             }
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Solution Tree not found: [{path}]");
 
             var bytes2 = File.ReadAllBytes(path);
             using var ms2 = new MemoryStream(bytes2);

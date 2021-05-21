@@ -30,20 +30,14 @@ namespace Drill4Net.Injector.Engine
         */
 
         private readonly IInjectorRepository _rep;
-        private ThreadLocal<bool?> _isNetCore;
-        private ThreadLocal<AssemblyVersioning> _mainVersion;
-        private ThreadLocal<Dictionary<string, string>> _paths;
-
         private readonly InstructionHandlerStrategy _strategy;
         private readonly TypeChecker _typeChecker;
-
 
         /***************************************************************************************/
 
         public InjectorEngine(IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-
             _typeChecker = new TypeChecker();
 
             FlowStrategy flowStrategy = new(rep.Options.Probes);
@@ -62,13 +56,6 @@ namespace Drill4Net.Injector.Engine
             Log.Information("Process starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
 
-            _isNetCore = new ThreadLocal<bool?>();
-            _mainVersion = new ThreadLocal<AssemblyVersioning>();
-            _paths = new ThreadLocal<Dictionary<string, string>>
-            {
-                Value = new Dictionary<string, string>()
-            };
-
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
 
@@ -83,14 +70,17 @@ namespace Drill4Net.Injector.Engine
                 DestinationPath = destDir,
             };
 
+            //ctx of this Run
+            var runCtx = new RunContext(_rep, tree);
+
             //targets from in cfg
-            var versions = DefineTargetVersions(sourceDir);
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
                 //filter by cfg
                 if (!opts.Source.Filter.IsDirectoryNeed(dir))
                     continue;
+
                 //filter by target moniker (typed version)
                 var yes = monikers == null || monikers.Count == 0 || monikers.Any(a =>
                 {
@@ -100,16 +90,20 @@ namespace Drill4Net.Injector.Engine
                     var z = Path.Combine(dir, a.Key);
                     return x == z;
                 });
-
-                if(yes) 
-                    ProcessDirectory(dir, versions, opts, tree);
+                
+                if (yes)
+                {
+                    runCtx.SourceDirectory = dir;
+                    ProcessDirectory(runCtx);
+                }
             }
 
-            //copying tree data to target root directories
             tree.RemoveEmpties();
-            InjectTree(tree);
+            var deployer = new TreeDeployer(runCtx.Repository);
+            deployer.InjectTree(tree); //copying tree data to target root directories
             tree.FinishTime = DateTime.Now;
 
+            #region Debug
             // debug TODO: to tests
             //var methods = tree.GetAllMethods().ToList();
             //var cgMeths = methods.Where(a => a.IsCompilerGenerated).ToList();
@@ -122,12 +116,14 @@ namespace Drill4Net.Injector.Engine
             //var nonBlockings = cgMeths.FirstOrDefault(a => a.FullName == "System.String Drill4Net.Target.Common.InjectTarget/<>c::<Async_Linq_NonBlocking>b__54_0(Drill4Net.Target.Common.GenStr)");
             //
             //var points = tree.GetAllPoints().ToList();
+            #endregion
             return tree;
         }
 
-        internal bool ProcessDirectory(string directory, Dictionary<string, AssemblyVersioning> versions, 
-             InjectorOptions opts, InjectedSolution tree)
+        internal bool ProcessDirectory(RunContext runCtx)
         {
+            var opts = runCtx.Options;
+            var directory = runCtx.SourceDirectory;
             if (!opts.Source.Filter.IsDirectoryNeed(directory))
                 return false;
             var folder = new DirectoryInfo(directory).Name;
@@ -139,143 +135,51 @@ namespace Drill4Net.Injector.Engine
             var files = _rep.GetAssemblies(directory);
             foreach (var file in files)
             {
-                ProcessAssembly(file, versions, opts, tree);
+                runCtx.SourceFile = file;
+                ProcessAssembly(runCtx);
             }
 
             //subdirectories
             var dirs = Directory.GetDirectories(directory, "*");
             foreach (var dir in dirs)
             {
-                ProcessDirectory(dir, versions, opts, tree);
+                runCtx.SourceDirectory = dir;
+                ProcessDirectory(runCtx);
             }
             return true;
         }
-
-        internal Dictionary<string, AssemblyVersioning> DefineTargetVersions(string directory)
-        {
-            if (!Directory.Exists(directory))
-                throw new DirectoryNotFoundException($"Source directory not exists: [{directory}]");
-            var files = _rep.GetAssemblies(directory);
-            var versions = new Dictionary<string, AssemblyVersioning>();
-            //'exe' must be after 'dll'
-            foreach (var file in files.OrderBy(a => a))
-            {
-                AssemblyVersioning version;
-                if (_isNetCore.Value == true && Path.GetExtension(file) == ".exe")
-                {
-                    var dll = Path.Combine(Path.ChangeExtension(file, ".dll"));
-                    var dllVer = versions.FirstOrDefault(a => a.Key == dll).Value;
-                    version = dllVer ?? new AssemblyVersioning() { Target = AssemblyVersionType.NetCore };
-                    _mainVersion.Value = version;
-                    versions.Add(file, version);
-                    continue;
-                }
-                version = _rep.GetAssemblyVersion(file);
-                versions.Add(file, version);
-                //
-                if (_isNetCore.Value == null)
-                {
-                    switch (version.Target)
-                    {
-                        case AssemblyVersionType.NetCore:
-                            _mainVersion.Value = version;
-                            _isNetCore.Value = true;
-                            break;
-                        case AssemblyVersionType.NetFramework:
-                            _mainVersion.Value = version;
-                            _isNetCore.Value = false;
-                            break;
-                    }
-                }
-            }
-            return versions;
-        }
         
-        private void ProcessAssembly(string filePath, IDictionary<string, AssemblyVersioning> versions,  
-            InjectorOptions opts, InjectedSolution tree)
+        private void ProcessAssembly(RunContext runCtx)
         {
-            #region Reading
-            #region Filter
+            #region Checks
+            var opts = runCtx.Options;
+            var filePath = runCtx.SourceFile;
+
+            //filter
             if (!opts.Source.Filter.IsFileNeed(filePath))
                 return;
             if (!_typeChecker.CheckByAssemblyPath(filePath))
                 return;
-            #endregion
-            #region Paths
+
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
-
-            //source
-            var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath) ?? string.Empty)}\\";
-            Environment.CurrentDirectory = sourceDir;
-            var subjectName = Path.GetFileNameWithoutExtension(filePath);
-
-            //destination
-            var destDir = FileUtils.GetDestinationDirectory(opts, sourceDir);
-            if (!Directory.Exists(destDir))
-                Directory.CreateDirectory(destDir);
             #endregion
-            #region Version
-            //need to know the version of the assembly before reading it via cecil
-            var ext = Path.GetExtension(filePath);
-            AssemblyVersioning version;
-            if (versions.ContainsKey(filePath))
-            {
-                version = versions[filePath];
-            }
-            else
-            {
-                version = _rep.GetAssemblyVersion(filePath);
-                if (version != null)
-                    versions.Add(filePath, version);
-            }
-            if (version == null || version.Target == AssemblyVersionType.NotIL || 
-                (ext == ".exe" && version.Target == AssemblyVersionType.NetCore))
+
+            var reader = new AssemblyReader();
+            var writer = new AssemblyWriter();
+            var asmCtx = reader.ReadAssembly(runCtx);
+            if (asmCtx.Skipped)
                 return;
-            Console.WriteLine($"Version = {version}");
-            #endregion
-            #region Read params
-            var readerParams = new ReaderParameters
-            {
-                // we will write to another file, so we don't need this
-                ReadWrite = false,
-                // read everything at once
-                ReadingMode = ReadingMode.Immediate,
-                AssemblyResolver = new AssemblyResolver(),
-            };
 
-            #region PDB
-            var pdb = $"{subjectName}.pdb";
-            var isPdbExists = File.Exists(pdb);
-            var needPdb = isPdbExists && (version.Target is AssemblyVersionType.NetCore or AssemblyVersionType.NetStandard);
-            if (needPdb)
-            {
-                // netcore uses portable pdb, so we provide appropriate reader
-                readerParams.SymbolReaderProvider = new PortablePdbReaderProvider();
-                readerParams.ReadSymbols = true;
-                try
-                {
-                    readerParams.SymbolStream = File.Open(pdb, FileMode.Open);
-                }
-                catch (IOException ex) //may be in VS for NET Core .exe
-                {
-                    if(!Debugger.IsAttached)
-                       // Log.Warning(ex, $"Reading PDB (from IDE): {nameof(ProcessAssembly)}");
-                    //else
-                        Log.Error(ex, $"Reading PDB: {nameof(ProcessAssembly)}");
-                }
-            }
-            #endregion
-            #endregion
-            #region Read file
-            // read subject assembly with symbols
-            Log.Debug($"Reading file [{filePath}]");
-            using var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
-            var module = assembly.MainModule;
-            var moduleName = module.Name;
-            #endregion
-            #endregion
+            var sourceDir = asmCtx.SourceDir;
+            var destDir = asmCtx.DestinationDir;
+            var assembly = asmCtx.Definition;
+            var module = asmCtx.Module;
+            var version = asmCtx.Version;
+
             #region Tree
+            var tree = runCtx.Tree;
+
             //directory
             var treeDir = tree.GetDirectory(sourceDir);
             if (treeDir == null)
@@ -289,10 +193,12 @@ namespace Drill4Net.Injector.Engine
                           new InjectedAssembly(version, module.Name, assembly.FullName, filePath);
             treeDir.Add(treeAsm);
 
-            if (_paths.Value.ContainsKey(assembly.FullName)) //assembly is shared and already is injected
+            var paths = runCtx.Paths;
+
+            if (paths.ContainsKey(assembly.FullName)) //assembly is shared and already is injected
             {
-                var copyFrom = _paths.Value[assembly.FullName];
-                var copyTo = GetDestFileName(copyFrom, destDir);
+                var copyFrom = paths[assembly.FullName];
+                var copyTo = writer.GetDestFileName(copyFrom, destDir);
                 File.Copy(copyFrom, copyTo, true);
                 return;
             }
@@ -314,7 +220,7 @@ namespace Drill4Net.Injector.Engine
             #endregion
             #region Processing
             var types = FilterTypes(module.Types, opts.Source.Filter);
-            var asmCtx = new AssemblyContext(filePath, version, assembly, treeAsm);
+            asmCtx.InjAssembly = treeAsm;
 
             #region 1. Tree's entities & Contexts
             #region Creating contexts
@@ -370,7 +276,7 @@ namespace Drill4Net.Injector.Engine
                             isAsyncStateMachine || //async/await
                             isCompilerGenerated ||
                             //Finalize() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
-                            (_isNetCore.Value == true && methodSource.IsFinalizer)
+                            (runCtx.IsNetCore == true && methodSource.IsFinalizer)
                         );
                     
                     //instructions
@@ -688,7 +594,7 @@ namespace Drill4Net.Injector.Engine
             #endregion
 
             //save modified assembly and symbols to new file    
-            var modifiedPath = SaveAssembly(assembly, filePath, destDir, needPdb);
+            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
             assembly.Dispose();
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
@@ -973,32 +879,6 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal string SaveAssembly(AssemblyDefinition assembly, string origFilePath, string destDir, bool needPdb)
-        {
-            var modifiedPath = GetDestFileName(origFilePath, destDir);
-            var writeParams = new WriterParameters();
-            if (needPdb)
-            {
-                var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
-                var pdbPath = Path.Combine(destDir, subjectName + ".pdb");
-                writeParams.SymbolStream = File.Create(pdbPath);
-                writeParams.WriteSymbols = true;
-                // net core uses portable pdb
-                writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
-            }
-            assembly.Write(modifiedPath, writeParams);
-            _paths.Value.Add(assembly.FullName, modifiedPath);
-            return modifiedPath;
-        }
-
-        internal string GetDestFileName(string origFilePath, string destDir)
-        {
-            var ext = Path.GetExtension(origFilePath);
-            var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
-            var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
-            return modifiedPath;
-        }
-
         internal string ConvertTargetTypeToFolder(string fullType)
         {
             if (fullType.StartsWith(".NETFramework"))
@@ -1267,35 +1147,5 @@ namespace Drill4Net.Injector.Engine
                 s += p.ToString();
             return s.GetHashCode().ToString();
         }
-
-        #region Tree
-        internal void InjectTree(InjectedSolution tree)
-        {
-            SaveTree(tree);
-            NotifyAboutTree(tree);
-        }
-
-        internal void SaveTree(InjectedSolution tree)
-        {
-            var path = _rep.GetTreeFilePath(tree);
-            _rep.WriteInjectedTree(path, tree);
-        }
-
-        internal void NotifyAboutTree(InjectedSolution tree)
-        {
-            //in each folder create file with path to tree data
-            var dirs = tree.GetAllDirectories().ToList();
-            if (!dirs.Any()) 
-                return;
-            var pathInText = _rep.GetTreeFilePath(tree);
-            Log.Debug($"Tree saved to: [{pathInText}]");
-            foreach (var dir in dirs)
-            {
-                var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
-                File.WriteAllText(hintPath, pathInText);
-                Log.Debug($"Hint placed to: [{hintPath}]");
-            }
-        }
-        #endregion
     }
 }

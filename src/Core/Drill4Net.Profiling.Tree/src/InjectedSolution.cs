@@ -13,12 +13,14 @@ namespace Drill4Net.Profiling.Tree
 
         /************************************************************************/
 
-        public InjectedSolution(string path) : base(null, path)
+        public InjectedSolution(string path) : this(null, path)
         {
         }
 
-        public InjectedSolution(string name, string path) : base(name, path)
+        public InjectedSolution(string name, string path) : base(path, path)
         {
+            Name = name;
+            Path = path;
         }
 
         /************************************************************************/
