@@ -1,23 +1,30 @@
 ﻿@page
 @model Drill4Net.Demo.Razor.App.Pages.CoveragePageModel
 @{
+    ViewData["Title"] = "Target page";
 }
 
-<button Onclick="AaaFunction()">AAA</button>
+<div class="text-center">
+    <h1 class="display-4">Coverage of Target</h1>
+    <p>Learn about <a href="https://drill4j.github.io/">types of coverage</a>.</p>
+</div>
+
+<button Onclick="OnClicked()">XXX</button>
 
 @section Scripts
 {
     <script>
-        function AaaFunction() {
-        $("button").html('@GetBbb()');
+        function OnClicked() {
+        $("button").html('@ChangeCaption()');
     }
-
     </script>
 }
 
 @functions{
-    public string GetBbb()
+
+    public string ChangeCaption()
     {
-        return "BBB";
+        return "YYY";
     }
+
 }
