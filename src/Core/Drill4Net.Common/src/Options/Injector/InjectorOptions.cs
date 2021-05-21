@@ -12,7 +12,7 @@
 
         public ProbesOptions Probes { get; set; }
 
-        public TestsOptions Tests { get; set; }
+        public VersionOptions Versions { get; set; }
 
         public bool Silent { get; set; }
     }

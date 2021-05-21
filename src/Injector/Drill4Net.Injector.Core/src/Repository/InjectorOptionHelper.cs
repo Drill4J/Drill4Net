@@ -42,8 +42,8 @@ namespace Drill4Net.Common
             opts.Destination.Directory = FileUtils.GetFullPath(destDir);
 
             opts.Profiler.Directory = FileUtils.GetFullPath(opts.Profiler.Directory);
-            if (opts.Tests?.Directory != null) //extract to separate Test Cfg
-                opts.Tests.Directory = FileUtils.GetFullPath(opts.Tests.Directory);
+            if (opts.Versions?.Directory != null) //extract to separate Test Cfg
+                opts.Versions.Directory = FileUtils.GetFullPath(opts.Versions.Directory);
 
             //filter for source
             var flt = opts.Source?.Filter;

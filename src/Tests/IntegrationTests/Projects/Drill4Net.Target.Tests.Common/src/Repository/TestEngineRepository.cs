@@ -8,21 +8,23 @@ using NUnit.Framework;
 using Drill4Net.Injector.Core;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Testing;
 
 namespace Drill4Net.Target.Tests.Common
 {
-    public class TestEngineRepository
+    public class TesterEngineRepository
     {
+        public TesterOptions Options => _tstRep?.Options;
+
         private readonly string _targetDir;
-        private readonly InjectorOptions _opts;
         private readonly FolderData _defaultFolderData;
         private readonly Dictionary<string, MonikerData> _targets;
         private readonly AssemblyContextManager _asmCtxManager;
-        private readonly IInjectorRepository _injRep;
+        private readonly TesterRepository _tstRep;
 
         /*******************************************************************************/
 
-        public TestEngineRepository()
+        public TesterEngineRepository()
         {
             PrepareLogger();
             Log.Debug("Repository is initializing...");
@@ -37,22 +39,21 @@ namespace Drill4Net.Target.Tests.Common
             for (var i = 0; i < 2; i++)
                 folderList.RemoveAt(folderList.Count - 1);
             var a = string.Join("\\", folderList);
-            var dirName = Path.Combine(a, typeof(TestEngineRepository).Namespace, targetType);
+            var dirName = Path.Combine(a, typeof(TesterEngineRepository).Namespace, targetType);
             var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
 
             //repository
             //here better exactly InjectorRepository, not some AgentRepository
             //(for future checking the inhection settings)
-            _injRep = new InjectorRepository(cfg_path); 
-            _opts = _injRep.Options;
+            _tstRep = new TesterRepository(cfg_path); 
             _asmCtxManager = new AssemblyContextManager();
 
-            var baseDir = _opts.Tests?.Directory;
+            var baseDir = Options?.Versions?.Directory;
             if (baseDir == null)
                 Assert.Fail($"Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}");
             if (baseDir.EndsWith("\\"))
                 baseDir = baseDir.Remove(baseDir.Length - 1, 1);
-            _targetDir = $"{baseDir}.{_opts.Destination.FolderPostfix}";
+            _targetDir = $"{baseDir}.{Options.FolderPostfix}";
 
             _defaultFolderData = new FolderData
             {
@@ -63,7 +64,7 @@ namespace Drill4Net.Target.Tests.Common
             };
 
             //target assemblies
-            _targets = _opts.Tests.Targets;
+            _targets = Options.Versions.Targets;
 
             Log.Debug("Repository is initialized.");
         }
@@ -108,8 +109,7 @@ namespace Drill4Net.Target.Tests.Common
             return LoadType(moniker, TestConstants.ASSEMBLY_COMMON);
         }
 
-        public object LoadType(string moniker, string assemblyName, 
-             string className = TestConstants.CLASS_DEFAULT_SHORT)
+        public object LoadType(string moniker, string assemblyName, string className = TestConstants.CLASS_DEFAULT_SHORT)
         {
             var monikerData = GetMoniker(moniker);
 
@@ -204,11 +204,7 @@ namespace Drill4Net.Target.Tests.Common
             }
 
             //read tree data
-            var treeHintPath = _injRep.GetTreeFileHintPath(curDir);
-            if (!File.Exists(treeHintPath))
-                Assert.Fail($"File with hint about tree data not found: {treeHintPath}");
-            var treePath = File.ReadAllText(treeHintPath);
-            return _injRep.ReadInjectedTree(treePath);
+            return _tstRep.ReadInjectedTree(null);
         }
 
         public void PrepareLogger()

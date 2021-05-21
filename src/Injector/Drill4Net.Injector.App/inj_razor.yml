@@ -1,4 +1,5 @@
 ﻿Description: Manual debugging of Injector App (Standard agent) on Razor app
+Type: Injector #type as hint
 Target:
     Name: Razor app
 Source: # what and how processing
@@ -40,7 +41,7 @@ Probes: # types of cross-cutting points
     EventAdd: false
     EventRemove: false
     SkipEnterType: true
-#Tests: # what will be tested - by target moniker/assembly/class
+#Versions: # what will be tested - by target moniker/assembly/class
 #    Directory: ..\..\TargetApps\ #target dir relatively Test project
 #    Targets:
 #        #net461: #assembly moniker (MonikerData)

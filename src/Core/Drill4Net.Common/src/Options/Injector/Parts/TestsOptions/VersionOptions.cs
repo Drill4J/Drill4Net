@@ -5,7 +5,7 @@ namespace Drill4Net.Common
     /// <summary>
     /// Options for Test Engine
     /// </summary>
-    public class TestsOptions
+    public class VersionOptions
     {
         /// <summary>
         /// Base directory of the testing targets
@@ -19,7 +19,7 @@ namespace Drill4Net.Common
 
         /******************************************************/
 
-        public TestsOptions()
+        public VersionOptions()
         {
             Targets = new Dictionary<string, MonikerData>();
         }

@@ -14,7 +14,7 @@ namespace Drill4Net.Core.Repository
 
         /**********************************************************************************/
 
-        protected AbstractRepository(string cfgPath)// : this()
+        protected AbstractRepository(string cfgPath)
         {
             _optHelper = new THelper();
             if (string.IsNullOrWhiteSpace(cfgPath))

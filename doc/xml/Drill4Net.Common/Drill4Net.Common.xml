@@ -20,10 +20,30 @@
             Endpoint for communication (address with port)
             </summary>
         </member>
+        <member name="T:Drill4Net.Common.BaseOptions">
+            <summary>
+            Base options for the Drill4Net system generally
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.BaseOptions.Type">
+            <summary>
+            Descriptive type of config (for Injector, Test Engine, Agent, etc)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.BaseOptions.Target">
+            <summary>
+            Options for the injected target
+            </summary>
+        </member>
         <member name="P:Drill4Net.Common.BaseOptions.TreePath">
             <summary>
             Path to the Tree data file, if empty, system will try find it 
             by another ways using "redirect cfg", current dir, etc
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.BaseOptions.Description">
+            <summary>
+            Description for injection process
             </summary>
         </member>
         <member name="P:Drill4Net.Common.ProbesOptions.SkipEnterType">
@@ -58,17 +78,17 @@
             Testing folders in the BaseFolder
             </summary>
         </member>
-        <member name="T:Drill4Net.Common.TestsOptions">
+        <member name="T:Drill4Net.Common.VersionOptions">
             <summary>
             Options for Test Engine
             </summary>
         </member>
-        <member name="P:Drill4Net.Common.TestsOptions.Directory">
+        <member name="P:Drill4Net.Common.VersionOptions.Directory">
             <summary>
             Base directory of the testing targets
             </summary>
         </member>
-        <member name="P:Drill4Net.Common.TestsOptions.Targets">
+        <member name="P:Drill4Net.Common.VersionOptions.Targets">
             <summary>
             What will be tested - by target moniker/assembly/class
             </summary>

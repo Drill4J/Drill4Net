@@ -1,4 +1,5 @@
 ﻿Description: For post build actions in IDE, forming dirs for testing engine
+Type: Injector #type as hint
 Target: # some metadata about target
     Name: Test Target #optional injection name
 Source: # what and how processing
@@ -23,7 +24,7 @@ Profiler: # data collector/processor in separate assembly
     Directory: ..\..\Tests\Drill4Net.Agent.Testing\netstandard2.0\  # absolute path, or relatively Destination dir
     AssemblyName: Drill4Net.Agent.Testing.dll
     Namespace: Drill4Net.Agent.Testing
-    Class: TestingProfiler
+    Class: TesterProfiler
     Method: RegisterStatic
     Static: true
 Proxy: # the injecting for transfer data to profiler

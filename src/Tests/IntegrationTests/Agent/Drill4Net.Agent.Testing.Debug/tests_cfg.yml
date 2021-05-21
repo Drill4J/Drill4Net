@@ -1,4 +1,5 @@
 ﻿Description: For debugging Agent & Standard Target
+Type: Agent #type as hint
 Target:
     Name: Debug Target 
 TreePath: ..\..\TargetApps.Injected.Tests\ # if empty, system will try find the tree data by another ways

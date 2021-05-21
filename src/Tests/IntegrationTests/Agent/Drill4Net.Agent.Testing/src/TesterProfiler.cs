@@ -12,14 +12,14 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Testing
 {
-    public class TestingProfiler : AbstractAgent
+    public class TesterProfiler : AbstractAgent
     {
         private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
         private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
 
         /*****************************************************************************/
 
-        static TestingProfiler()
+        static TesterProfiler()
         {
             _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
             PrepareLogger();
@@ -30,7 +30,7 @@ namespace Drill4Net.Agent.Testing
                 //rep
                 var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-                var rep = new AgentRepository(cfg_path);
+                var rep = new TesterRepository(cfg_path);
 
                 //tree info
                 var tree = rep.ReadInjectedTree();
@@ -40,7 +40,7 @@ namespace Drill4Net.Agent.Testing
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Error of {nameof(TestingProfiler)} initializing");
+                Log.Fatal(ex, $"Error of {nameof(TesterProfiler)} initializing");
             }
         }
 
@@ -156,7 +156,7 @@ namespace Drill4Net.Agent.Testing
         public static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\"), $"{nameof(TestingProfiler)}.log"));
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\"), $"{nameof(TesterProfiler)}.log"));
             Log.Logger = cfg.CreateLogger();
         }
     }

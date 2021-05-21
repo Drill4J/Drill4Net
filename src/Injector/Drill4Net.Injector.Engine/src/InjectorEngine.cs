@@ -60,7 +60,7 @@ namespace Drill4Net.Injector.Engine
             var destDir = opts.Destination.Directory;
 
             //copying of all needed data in needed targets
-            var monikers = opts.Tests?.Targets;
+            var monikers = opts.Versions?.Targets;
             _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the filter
             
             //tree

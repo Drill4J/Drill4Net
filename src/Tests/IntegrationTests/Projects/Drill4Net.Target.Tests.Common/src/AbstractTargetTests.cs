@@ -18,7 +18,7 @@ namespace Drill4Net.Target.Tests.Common
     [TestFixture]
     public abstract class AbstractTargetTests
     {
-        protected static readonly TestEngineRepository _testsRep;
+        protected static readonly TesterEngineRepository _testsRep;
         private static Dictionary<string, CrossPoint> _pointMap;
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
@@ -27,7 +27,7 @@ namespace Drill4Net.Target.Tests.Common
 
         static AbstractTargetTests()
         {
-            _testsRep = new TestEngineRepository();
+            _testsRep = new TesterEngineRepository();
             LoadTreeData();
             Log.Information("Engine is initialized.");
         }
@@ -87,7 +87,7 @@ namespace Drill4Net.Target.Tests.Common
             Assert.True(funcs.ContainsKey(source));
             var links = funcs[source];
 
-            CheckEnterAndLastReturnOrThrow(links);
+            CheckLastReturnOrEnterOrThrow(links);
             RemoveEnterAndLastReturn(links);
             Check(links, checks);
             #endregion
@@ -140,7 +140,7 @@ namespace Drill4Net.Target.Tests.Common
                 var sig = input.Signature;
                 if (funcs.ContainsKey(sig))
                     continue;
-                var probes2 = TestingProfiler.GetPointsIgnoringContext(sig);
+                var probes2 = TesterProfiler.GetPointsIgnoringContext(sig);
                 var links2 = ConvertToLinks(probes2);
                 funcs.Add(sig, links2);
             }
@@ -189,7 +189,7 @@ namespace Drill4Net.Target.Tests.Common
                     }
                     else
                     {
-                        CheckEnterAndLastReturnOrThrow(points);
+                        CheckLastReturnOrEnterOrThrow(points);
                         RemoveEnterAndLastReturn(points);
                     }
 
@@ -242,11 +242,12 @@ namespace Drill4Net.Target.Tests.Common
             Log.Debug("Tree data is loaded.");
         }
 
-        private void CheckEnterAndLastReturnOrThrow(List<PointLinkage> links)
+        private void CheckLastReturnOrEnterOrThrow(List<PointLinkage> links)
         {
             var probes = links.Select(a => a.Probe);
             Assert.IsNotNull(probes);
-            Assert.IsNotNull(probes.FirstOrDefault(a => a == "Enter_0"), "No Enter");
+            if(!_testsRep.Options.Probes.SkipEnterType)
+                Assert.IsNotNull(probes.FirstOrDefault(a => a == "Enter_0"), "No Enter");
             Assert.IsNotNull(probes.Last(a => a.StartsWith("Return_") || a.StartsWith("Throw_")), "No last Return/Throw");
         }
 
@@ -262,7 +263,7 @@ namespace Drill4Net.Target.Tests.Common
 
         private Dictionary<string, List<PointLinkage>> GetFunctions()
         {
-            var raw = TestingProfiler.GetFunctions(false);
+            var raw = TesterProfiler.GetFunctions(false);
             return ConvertToLinks(raw);
         }
 
