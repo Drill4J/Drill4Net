@@ -118,7 +118,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "English", "morning" }, new List<string> { "If_12", "If_30", "Anchor_46" });
                 yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "English", "evening" }, new List<string> { "If_12", "Else_16", "If_33", "Anchor_46" });
                 yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "German", "morning" }, new List<string> { "Else_7", "If_21", "If_36", "Anchor_46" });
-                yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "German", "evening" }, new List<string> { "Else_7", "If_21", "Else_25", "If_39", "Anchor_46" });
+                yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "German", "evening" }, new List<string> { "Else_7", "If_21", "If_39", "Anchor_46" });
 
                 yield return GetCase(GetInfo(Target.Switch_AsReturn), new object[] { -1 }, new List<string> { "If_15", "Anchor_28" });
                 yield return GetCase(GetInfo(Target.Switch_AsReturn), new object[] { 0 }, new List<string> { "If_18", "Anchor_28" });
