@@ -2,7 +2,7 @@
 
 namespace Drill4Net.Injector.Engine
 {
-    public static class InstructionHelper
+    internal static class InstructionHelper
     {
         public static OpCode ShortJumpToLong(OpCode opCode)
         {

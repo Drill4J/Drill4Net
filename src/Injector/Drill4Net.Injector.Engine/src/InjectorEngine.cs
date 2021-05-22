@@ -189,6 +189,7 @@ namespace Drill4Net.Injector.Engine
             var treeAsm = tree.GetAssembly(assembly.FullName, true) ??
                           new InjectedAssembly(asmCtx.Version, module.Name, assembly.FullName, filePath);
             treeDir.Add(treeAsm);
+            asmCtx.InjAssembly = treeAsm;
 
             var paths = runCtx.Paths;
             if (paths.ContainsKey(assembly.FullName)) //assembly is shared and already is injected
@@ -199,46 +200,36 @@ namespace Drill4Net.Injector.Engine
                 return;
             }
             #endregion
-            #region Commands
-            // 1. Command ref
-
-            //we will use proxy class (with cached Reflection) leading to real profiler
-            //proxy will be inject in each target assembly - let construct the calling of it's method
-            var proxyReturnTypeRef = module.TypeSystem.Void;
-            var proxyNamespace = $"Injection_{Guid.NewGuid()}".Replace("-", null); //must be unique for each target asm
-            var proxyTypeRef = new TypeReference(proxyNamespace, opts.Proxy.Class, module, module);
-            var proxyMethRef = new MethodReference(opts.Proxy.Method, proxyReturnTypeRef, proxyTypeRef);
-            var strPar = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
-            proxyMethRef.Parameters.Add(strPar);
-
-            // 2. 'Call' command
-            //var call = Instruction.Create(OpCodes.Call, proxyMethRef);
-            #endregion
             #region Processing
-            var types = TypeHelper.FilterTypes(module.Types, opts.Source.Filter);
-            asmCtx.InjAssembly = treeAsm;
+            //get the injecting commands
+            var proxyNamespace = CreateProxyNamespace();
+            var proxyMethRef = CreateProxymethodReference(asmCtx, proxyNamespace, opts);
 
-            CreateContextData(runCtx, asmCtx, proxyNamespace, proxyMethRef);
-            FindMoveNextMethods(asmCtx);
-            MapBusinessMethodFirstPass(asmCtx);
-            MapBusinessMethodSecondPass(asmCtx);
-            CalcBusinessPartCodeSizes(asmCtx);
+            //preparing data
+            PrepareContextData(runCtx, asmCtx, proxyNamespace, proxyMethRef);
+
+            AssemblyHelper.FindMoveNextMethods(asmCtx);
+            AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
+            AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
+            AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
+
+            //the injecting here
             Inject(asmCtx, tree);
-            CalcCoverageBlocks(asmCtx);
+
+            //coverage data
+            CoverageHelper.CalcCoverageBlocks(asmCtx);
             #endregion
             #region Proxy class
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
             var profilerOpts = opts.Profiler;
             var profDir = profilerOpts.Directory;
-            //if (!Directory.EnumerateFiles(profDir).Any() && targetFolder != null)
-            //    profDir = Path.Combine(profDir, targetFolder) + "\\";
             var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
                                                             profDir, profilerOpts.AssemblyName, //real profiler
                                                             profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
             var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
             proxyGenerator.InjectTo(assembly, isNetFx);
-            //
+
             // ensure we referencing only ref assemblies
             if (isNetFx)
             {
@@ -257,7 +248,26 @@ namespace Drill4Net.Injector.Engine
             Log.Information($"Modified assembly is created: {modifiedPath}");
         }
 
-        internal void CreateContextData(RunContext runCtx, AssemblyContext asmCtx, string proxyNamespace, MethodReference proxyMethRef)
+        internal string CreateProxyNamespace()
+        {
+            //must be unique for each target asm
+            return $"Injection_{Guid.NewGuid()}".Replace("-", null); 
+        }
+
+        internal MethodReference CreateProxymethodReference(AssemblyContext asmCtx, string proxyNamespace, InjectorOptions opts)
+        {
+            //we will use proxy class (with cached Reflection) leading to real profiler
+            //proxy will be inject in each target assembly - let construct the calling of it's method
+            var module = asmCtx.Module;
+            var proxyReturnTypeRef = module.TypeSystem.Void;
+            var proxyTypeRef = new TypeReference(proxyNamespace, opts.Proxy.Class, module, module);
+            var proxyMethRef = new MethodReference(opts.Proxy.Method, proxyReturnTypeRef, proxyTypeRef);
+            var strPar = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
+            proxyMethRef.Parameters.Add(strPar);
+            return proxyMethRef;
+        }
+
+        internal void PrepareContextData(RunContext runCtx, AssemblyContext asmCtx, string proxyNamespace, MethodReference proxyMethRef)
         {
             var treeAsm = asmCtx.InjAssembly;
             var opts = runCtx.Options;
@@ -366,118 +376,6 @@ namespace Drill4Net.Injector.Engine
                 return;
         }
 
-        internal void FindMoveNextMethods(AssemblyContext asmCtx)
-        {
-            var moveNextMethods = asmCtx.InjAssembly.Filter(typeof(InjectedMethod), true)
-               .Cast<InjectedMethod>()
-               .Where(x => x.IsCompilerGenerated && x.Name == "MoveNext")
-               .ToList();
-            for (int i = 0; i < moveNextMethods.Count; i++)
-            {
-                InjectedMethod meth = moveNextMethods[i];
-                // Owner type
-                var fullName = meth.FullName;
-                var mkey = fullName.Split(' ')[1].Split(':')[0];
-                if (asmCtx.InjClasses.ContainsKey(mkey))
-                {
-                    var treeType = asmCtx.InjClasses[mkey];
-                    treeType.Add(meth);
-                }
-                // Business method
-                var extRealMethodName = MethodHelper.TryGetBusinessMethod(meth.FullName, meth.Name, true, true);
-                mkey = MethodHelper.GetMethodKey(meth.TypeName, extRealMethodName);
-                if (!asmCtx.InjMethodByKeys.ContainsKey(mkey))
-                    continue;
-                var treeFunc = asmCtx.InjMethodByKeys[mkey];
-                if (meth.CGInfo != null)
-                    meth.CGInfo.FromMethod = treeFunc.FullName;
-            }
-        }
-
-        internal void MapBusinessMethodFirstPass(AssemblyContext asmCtx)
-        {
-            foreach (var typeCtx in asmCtx.TypeContexts.Values)
-            {
-                foreach (var methodCtx in typeCtx.MethodContexts.Values)
-                {
-                    #region Init
-                    var startInd = methodCtx.StartIndex;
-                    var instructions = methodCtx.Instructions;
-                    var injMethod = methodCtx.Method;
-
-                    var cgInfo = injMethod.CGInfo;
-                    if (cgInfo != null)
-                        cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
-                    #endregion
-
-                    for (var i = startInd; i < instructions.Count; i++)
-                    {
-                        methodCtx.SetPosition(i);
-                        MethodHelper.MapBusinessFunction(methodCtx); //in any case check each instruction for mapping
-
-                        #region Check
-                        var checkRes = CheckInstruction(methodCtx);
-                        if (checkRes == FlowType.NextCycle)
-                            continue;
-                        if (checkRes == FlowType.BreakCycle)
-                            break;
-                        if (checkRes == FlowType.Return)
-                            return;
-                        #endregion
-
-                        i = methodCtx.CurIndex; //because it can change
-                        methodCtx.BusinessInstructions.Add(instructions[i]);
-                    }
-                    //
-                    var cnt = methodCtx.BusinessInstructions.Count;
-                    injMethod.BusinessSize = cnt;
-                    injMethod.OwnBusinessSize = cnt;
-                }
-            }
-        }
-
-        internal void MapBusinessMethodSecondPass(AssemblyContext asmCtx)
-        {
-            var badCtxs = new List<MethodContext>();
-            foreach (var typeCtx in asmCtx.TypeContexts.Values)
-            {
-                foreach (var methodCtx in typeCtx.MethodContexts.Values)
-                {
-                    var meth = methodCtx.Method;
-                    if (meth.IsCompilerGenerated)
-                    {
-                        var methFullName = meth.FullName;
-                        if (meth.BusinessMethod == methFullName)
-                        {
-                            var bizFunc = typeCtx.MethodContexts.Values.Select(a => a.Method)
-                                .FirstOrDefault(a => a.CalleeIndexes.ContainsKey(methFullName));
-                            if (bizFunc != null)
-                                meth.CGInfo.Caller = bizFunc;
-                            else
-                                badCtxs.Add(methodCtx);
-                        }
-                    }
-                }
-            }
-
-            // the removing methods for which business method is not defined 
-            foreach (var ctx in badCtxs)
-                ctx.TypeCtx.MethodContexts.Remove(ctx.Method.FullName);
-        }
-
-        internal void CalcBusinessPartCodeSizes(AssemblyContext asmCtx)
-        {
-            var bizMethods = asmCtx.InjMethodByFullname.Values
-                .Where(a => !a.IsCompilerGenerated).ToArray();
-            if (!bizMethods.Any())
-                return;
-            foreach (var caller in bizMethods.Where(a => a.CalleeIndexes.Count > 0))
-            {
-                foreach (var calleeName in caller.CalleeIndexes.Keys)
-                    MethodHelper.CorrectMethodBusinessSize(asmCtx.InjMethodByFullname, caller, calleeName);
-            }
-        }
-
         internal void Inject(AssemblyContext asmCtx, InjectedSolution tree)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
@@ -489,14 +387,11 @@ namespace Drill4Net.Injector.Engine
                 {
                     Debug.WriteLine(methodCtx.Method.FullName);
 
-                    #region Init
                     var methodDef = methodCtx.Definition;
-
-                    //instructions
                     var body = methodDef.Body;
                     //body.SimplifyMacros(); //buggy (Cecil or me?)
                     var instructions = methodCtx.Instructions; //no copy list!
-                    #endregion
+
                     #region Jumpers
                     //collect jumpers. Hash table for separate addresses is almost useless,
                     //because they may be recalculated inside the processor during inject...
@@ -579,46 +474,6 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal void CalcCoverageBlocks(AssemblyContext asmCtx)
-        {
-            var allMethods = asmCtx.InjMethodByFullname.Values;
-            foreach (var method in allMethods)
-            {
-                var points = method.Points;
-                var ranges = points
-                    .Select(a => a.BusinessIndex)
-                    .Where(c => c != 0) //Enter not needed in any case (for the block type of coverage)
-                    .OrderBy(b => b)
-                    .Distinct() //need for exclude in fact some fictive (for coverage) injections: CycleEnd, etc
-                    .ToList();
-                if (!ranges.Any())
-                    continue;
-                //
-                var coverage = method.Coverage;
-                foreach (var ind in ranges)
-                {
-                    var points2 = points.Where(a => a.BusinessIndex == ind).ToList();
-                    if (points2.Count() > 1)
-                        points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
-                    coverage.PointToBlockEnds.Add(points2[0].PointUid, ind);
-                }
-
-                //by parts
-                float origSize = ranges.Last() + 1;
-                var prev = -1;
-                foreach (var range in ranges)
-                {
-                    coverage.BlockByPart.Add(range, (range - prev) / origSize);
-                    prev = range;
-                }
-                //
-                var sum = coverage.BlockByPart.Values.Sum(); //must be 1.0
-                if (Math.Abs(sum - 1) > 0.0001)
-                {
-                }
-            }
-        }
-
         internal int HandleInstruction(MethodContext ctx)
         {
             if (ctx == null)
@@ -632,72 +487,6 @@ namespace Drill4Net.Injector.Engine
             {
                 Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.Method.FullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
                 throw;
-            }
-        }
-
-        internal FlowType CheckInstruction(MethodContext ctx)
-        {
-            var instr = ctx.CurInstruction;
-            var code = instr.OpCode.Code;
-
-            // for injecting cases
-            if (code == Code.Nop || ctx.AheadProcessed.Contains(instr))
-                return FlowType.NextCycle;
-
-            var method = ctx.Method;
-            
-            #region Awaiters in MoveNext as a boundary
-            //find the boundary between the business code and the compiler-generated one
-            if (method.Source.IsMoveNext && method.Source.MethodType == MethodType.CompilerGenerated)
-            {
-                if (IsAsyncCompletedOperand(instr))
-                {
-                    //leave the current first try/catch
-                    var res = LeaveTryCatch(ctx);
-
-                    //is second 'get_IsCompleted' exists(for example, for 'async stream' method)?
-                    if (res)
-                    {
-                        var instructions = ctx.Instructions;
-                        for (var i = ctx.CurIndex + 1; i < instructions.Count; i++)
-                        {
-                            if (!IsAsyncCompletedOperand(instructions[i]))
-                                continue;
-                            ctx.SetPosition(i);
-                            LeaveTryCatch(ctx);
-                        }
-                    }
-                }
-                else
-                {
-                    //+margin if instruction starts the try/catch
-                    var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 6 : 0;
-                    ctx.CorrectIndex(delta);
-                }
-            }
-            #endregion
-
-            return FlowType.NextOperand;
-
-            //local funcs
-            static bool LeaveTryCatch(MethodContext ctx)
-            {
-                var instr = ctx.CurInstruction;
-                var curTryCactches = ctx.ExceptionHandlers.Where(a => a.TryStart.Offset < instr.Offset && instr.Offset < a.HandlerEnd.Offset);
-                if (curTryCactches.Any())
-                {
-                    var maxStart = curTryCactches.Max(a => a.TryStart.Offset);
-                    var curTryCactch = curTryCactches.First(b => b.TryStart.Offset == maxStart);
-                    var endInd = ctx.Instructions.IndexOf(curTryCactch.HandlerEnd) + 1;
-                    ctx.SetPosition(endInd);
-                    return true;
-                }
-                return false;
-            }
-
-            static bool IsAsyncCompletedOperand(Instruction instr)
-            {
-                return instr.Operand?.ToString().Contains("::get_IsCompleted()") == true;
             }
         }
     }

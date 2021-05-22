@@ -6,7 +6,7 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Engine
 {
-    public static class TypeHelper
+    internal static class TypeHelper
     {
         private static readonly TypeChecker _typeChecker = new();
 
@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="allTypes"></param>
         /// <param name="opts"></param>
         /// <returns></returns>
-        public static IEnumerable<TypeDefinition> FilterTypes(IEnumerable<TypeDefinition> allTypes, SourceFilterOptions opts)
+        internal static IEnumerable<TypeDefinition> FilterTypes(IEnumerable<TypeDefinition> allTypes, SourceFilterOptions opts)
         {
             var res = new List<TypeDefinition>();
             foreach (var typeDef in allTypes)
@@ -52,7 +52,7 @@ namespace Drill4Net.Injector.Engine
             return res;
         }
 
-        public static string TryGetRealTypeName(TypeDefinition type)
+        internal static string TryGetRealTypeName(TypeDefinition type)
         {
             if (type?.DeclaringType == null)
                 return type?.FullName;
@@ -61,7 +61,7 @@ namespace Drill4Net.Injector.Engine
             return type?.FullName;
         }
 
-        public static TypeSource CreateTypeSource(TypeDefinition def)
+        internal static TypeSource CreateTypeSource(TypeDefinition def)
         {
             return new TypeSource
             {
@@ -74,7 +74,7 @@ namespace Drill4Net.Injector.Engine
             };
         }
 
-        public static AccessType GetAccessType(TypeDefinition def)
+        internal static AccessType GetAccessType(TypeDefinition def)
         {
             if (def.IsNestedPrivate)
                 return AccessType.Private;

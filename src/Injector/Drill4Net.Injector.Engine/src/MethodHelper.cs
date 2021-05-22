@@ -12,13 +12,13 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Engine
 {
-    public static class MethodHelper
+    internal static class MethodHelper
     {
         private static readonly TypeChecker _typeChecker = new();
 
         /*************************************************************************************/
 
-        public static void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods, InjectedMethod caller,
+        internal static void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods, InjectedMethod caller,
             string calleeName)
         {
             #region Check
@@ -42,7 +42,7 @@ namespace Drill4Net.Injector.Engine
             caller.BusinessSize += callee.BusinessSize;
         }
 
-        public static void MapBusinessFunction(MethodContext ctx)
+        internal static void MapBusinessFunction(MethodContext ctx)
         {
             var instr = ctx.CurInstruction;
             var treeFunc = ctx.Method;
@@ -152,7 +152,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        public static string TryGetBusinessMethod(string typeName, string methodName, bool isCompilerGenerated,
+        internal static string TryGetBusinessMethod(string typeName, string methodName, bool isCompilerGenerated,
                 bool isAsyncStateMachine)
         {
             //TODO: regex!!!
@@ -194,7 +194,7 @@ namespace Drill4Net.Injector.Engine
             return realMethodName;
         }
 
-        public static MethodType GetMethodType(MethodDefinition def)
+        internal static MethodType GetMethodType(MethodDefinition def)
         {
             if (def.IsSetter)
                 return MethodType.Setter;
@@ -231,12 +231,12 @@ namespace Drill4Net.Injector.Engine
             return MethodType.Normal;
         }
 
-        public static bool IsSpecialGeneratedMethod(MethodType type)
+        internal static bool IsSpecialGeneratedMethod(MethodType type)
         {
             return type is MethodType.EventAdd or MethodType.EventRemove;
         }
 
-        public static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, InjectorOptions opts)
+        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, InjectorOptions opts)
         {
             #region Own methods
             #region Filter methods
@@ -338,13 +338,13 @@ namespace Drill4Net.Injector.Engine
                 .ToList();
             return methods;
         }
-        
-        public static string GetMethodKey(string typeFullname, string methodShortName)
+
+        internal static string GetMethodKey(string typeFullname, string methodShortName)
         {
             return $"{typeFullname}::{methodShortName}";
         }
 
-        public static MethodSource CreateMethodSource(MethodDefinition def)
+        internal static MethodSource CreateMethodSource(MethodDefinition def)
         {
             return new MethodSource
             {
@@ -359,7 +359,7 @@ namespace Drill4Net.Injector.Engine
             };
         }
 
-        public static AccessType GetAccessType(MethodDefinition def)
+        internal static AccessType GetAccessType(MethodDefinition def)
         {
             if (def.IsPrivate)
                 return AccessType.Private;
@@ -368,7 +368,7 @@ namespace Drill4Net.Injector.Engine
             return AccessType.Internal;
         }
 
-        public static string GetMethodHashcode(Mono.Collections.Generic.Collection<Instruction> instructions)
+        internal static string GetMethodHashcode(Mono.Collections.Generic.Collection<Instruction> instructions)
         {
             var s = "";
             foreach (var p in instructions.Where(a => a.OpCode.Code != Code.Nop))
