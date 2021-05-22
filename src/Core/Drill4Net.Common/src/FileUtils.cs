@@ -40,7 +40,7 @@ namespace Drill4Net.Common
                 dir1 += "\\";
             if (!dir2.EndsWith("\\"))
                 dir2 += "\\";
-            return dir1 == dir2;
+            return dir1.Equals(dir2, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public static string GetSourceDirectory(InjectorOptions opts)
@@ -98,7 +98,6 @@ namespace Drill4Net.Common
         public static string GetCommonLogDirectory(string relativeBaseDir, string logFoler = "logs")
         {
             return Path.Combine(GetFullPath(relativeBaseDir), logFoler);
-
         }
     }
 }

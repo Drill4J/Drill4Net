@@ -71,6 +71,7 @@ namespace Drill4Net.Injector.Core
                 if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
                     return new AssemblyVersioning() { Target = AssemblyVersionType.NotIL };
 
+                //TODO: we don't work with strong names yet (it's possible)
                 if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
                 {
                     Log.Warning($"Assembly [{filePath}] having the strong name");

@@ -37,11 +37,11 @@ namespace Drill4Net.Injector.Core
 
         /***************************************************************************************/
 
-        internal Dictionary<string, AssemblyVersioning> DefineTargetVersions(string directory)
+        internal Dictionary<string, AssemblyVersioning> DefineTargetVersions(string rootDir)
         {
-            if (!Directory.Exists(directory))
-                throw new DirectoryNotFoundException($"Source directory not exists: [{directory}]");
-            var files = Repository.GetAssemblies(directory);
+            if (!Directory.Exists(rootDir))
+                throw new DirectoryNotFoundException($"Source directory not exists: [{rootDir}]");
+            var files = Repository.GetAssemblies(rootDir);
             var versions = new Dictionary<string, AssemblyVersioning>();
 
             //'exe' must be after 'dll'

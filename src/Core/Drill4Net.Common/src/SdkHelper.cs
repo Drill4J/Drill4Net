@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -25,6 +26,20 @@ namespace Drill4Net.Common
         private const string DotNetTool = "dotnet";
 
         /*******************************************************************************/
+
+        public static string ConvertTargetTypeToFolder(string fullType)
+        {
+            if (fullType.StartsWith(".NETFramework"))
+                return null;
+            var ar = fullType.Split('=');
+            var version = ar[1].Replace("v", null);
+            var digit = float.Parse(version, CultureInfo.InvariantCulture);
+            if (fullType.StartsWith(".NETStandard"))
+                return $"netstandard{version}";
+            if (fullType.StartsWith(".NETCoreApp"))
+                return digit < 5 ? $"netcoreapp{version}" : $"net{version}";
+            return null;
+        }
 
         private static string[] GetInstalledRefsVersions(string baseRefPath)
         {
@@ -86,7 +101,7 @@ namespace Drill4Net.Common
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
             })
-                ?.StandardOutput.ReadToEnd()
-                .Trim();
+            ?.StandardOutput.ReadToEnd()
+            .Trim();
     }
 }

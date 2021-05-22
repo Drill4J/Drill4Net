@@ -30,18 +30,19 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************/
 
-        internal AssemblyContext() { }
-
-        public AssemblyContext(string filePath, AssemblyVersioning version, AssemblyDefinition asmDef)
+        internal AssemblyContext() 
         {
-            SourceFile = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            Version = version ?? throw new ArgumentNullException(nameof(version));
-            Definition = asmDef ?? throw new ArgumentNullException(nameof(asmDef));
-            //
             TypeContexts = new Dictionary<string, TypeContext>();
             InjClasses = new Dictionary<string, InjectedType>();
             InjMethodByFullname = new Dictionary<string, InjectedMethod>();
             InjMethodByKeys = new Dictionary<string, InjectedMethod>();
+        }
+
+        public AssemblyContext(string filePath, AssemblyVersioning version, AssemblyDefinition asmDef): this()
+        {
+            SourceFile = filePath ?? throw new ArgumentNullException(nameof(filePath));
+            Version = version ?? throw new ArgumentNullException(nameof(version));
+            Definition = asmDef ?? throw new ArgumentNullException(nameof(asmDef));
         }
         
         /***********************************************************************************/

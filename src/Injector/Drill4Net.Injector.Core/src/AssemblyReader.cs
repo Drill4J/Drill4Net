@@ -47,7 +47,7 @@ namespace Drill4Net.Injector.Core
                 return new AssemblyContext { Skipped = true };
             Console.WriteLine($"Version = {version}");
             #endregion
-            #region Read params
+            #region Params
             var readerParams = new ReaderParameters
             {
                 // we will write to another file, so we don't need this
@@ -81,7 +81,7 @@ namespace Drill4Net.Injector.Core
             }
             #endregion
             #endregion
-
+            #region Reading
             // read subject assembly with symbols
             Log.Debug($"Reading file [{filePath}]");
             var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
@@ -93,6 +93,7 @@ namespace Drill4Net.Injector.Core
                 IsNeedPdb = needPdb,
             };
             return asmCtx;
+            #endregion
         }
     }
 }
