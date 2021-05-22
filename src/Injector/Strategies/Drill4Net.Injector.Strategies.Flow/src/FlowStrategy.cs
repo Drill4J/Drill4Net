@@ -3,7 +3,7 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Strategies.Flow
 {
-    public class FlowStrategy : InstructionHandlerStrategy
+    public class FlowStrategy : CodeHandlerStrategy
     {
         public FlowStrategy(ProbesOptions opts = null)
         {

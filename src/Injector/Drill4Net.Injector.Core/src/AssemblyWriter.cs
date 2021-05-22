@@ -14,6 +14,9 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         public string SaveAssembly(RunContext runCtx, AssemblyContext asmCtx)
         {
+            if (runCtx.AssemblyKeys.ContainsKey(asmCtx.Key))
+                return null;
+            //
             var origFilePath = asmCtx.SourceFile;
             var destDir = asmCtx.DestinationDir;
             var modifiedPath = GetDestFileName(origFilePath, destDir);
@@ -27,9 +30,9 @@ namespace Drill4Net.Injector.Core
                 // net core uses portable pdb
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
             }
-            var asm = asmCtx.Definition;
-            asm.Write(modifiedPath, writeParams);
-            runCtx.Paths.Add(asm.FullName, modifiedPath);
+
+            asmCtx.Definition.Write(modifiedPath, writeParams);
+            runCtx.AssemblyKeys.Add(asmCtx.Key, modifiedPath);
             return modifiedPath;
         }
 

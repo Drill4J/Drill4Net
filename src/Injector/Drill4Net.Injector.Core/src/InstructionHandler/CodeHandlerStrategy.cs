@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Injector.Core
 {
-    public class InstructionHandlerStrategy
+    public class CodeHandlerStrategy
     {
         public string Name { get; set; }
 

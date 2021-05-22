@@ -31,6 +31,8 @@ namespace Drill4Net.Injector.Core
         public string ProxyNamespace { get; set; }
         public MethodReference ProxyMethRef { get; set; }
 
+        public string Key => $"{Definition?.FullName}${Version}";
+
         /***********************************************************************************/
 
         internal AssemblyContext() 

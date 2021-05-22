@@ -1,13 +1,14 @@
-﻿using Drill4Net.Common;
+﻿using System.Collections.Generic;
+using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
-using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
     public interface IInjectorRepository
     {
         InjectorOptions Options { get; set; }
-
+        IInjector GetInjector();
+        CodeHandlerStrategy GetStrategy();
         void ValidateOptions();
         void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers);
 

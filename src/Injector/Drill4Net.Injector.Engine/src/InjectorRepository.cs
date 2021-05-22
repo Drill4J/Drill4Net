@@ -8,8 +8,10 @@ using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
+using Drill4Net.Injector.Core;
+using Drill4Net.Injector.Strategies.Flow;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Injector.Engine
 {
     public class InjectorRepository : AbstractRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
     { 
@@ -27,6 +29,16 @@ namespace Drill4Net.Injector.Core
         }
 
         /**********************************************************************************/
+
+        public IInjector GetInjector()
+        {
+            return new Injector(GetStrategy());
+        }
+
+        public CodeHandlerStrategy GetStrategy()
+        {
+            return new FlowStrategy(Options.Probes);
+        }
 
         public virtual void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {

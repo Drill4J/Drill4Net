@@ -17,13 +17,15 @@ namespace Drill4Net.Injector.Core
         public string SourceDirectory { get; set; }
         public string SourceFile { get; set; }
         public InjectorOptions Options => Repository.Options;
+        public CodeHandlerStrategy Strategy { get; }
+        public IInjector Injector { get; }
 
         public bool? IsNetCore { get; private set; }
         public AssemblyVersioning MainVersion { get; private set; }
-        public Dictionary<string, string> Paths { get; private set; }
+        public Dictionary<string, string> AssemblyKeys { get; private set; }
         public Dictionary<string, AssemblyVersioning> Versions { get; }
 
-        public readonly IInjectorRepository Repository;
+        public IInjectorRepository Repository { get; }
 
         /***************************************************************************************/
 
@@ -31,8 +33,10 @@ namespace Drill4Net.Injector.Core
         {
             Repository = rep ?? throw new ArgumentNullException(nameof(rep));
             Tree = tree ?? throw new ArgumentNullException(nameof(tree));
-            Paths = new Dictionary<string, string>();
+            AssemblyKeys = new Dictionary<string, string>();
             Versions = DefineTargetVersions(RootDirectory);
+            Strategy = Repository.GetStrategy();
+            Injector = Repository.GetInjector();
         }
 
         /***************************************************************************************/
@@ -76,6 +80,11 @@ namespace Drill4Net.Injector.Core
                 }
             }
             return versions;
+        }
+
+        public void Inject(AssemblyContext asmCtx)
+        {
+            Injector.Inject(this, asmCtx);
         }
     }
 }
