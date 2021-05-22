@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -236,35 +236,42 @@ namespace Drill4Net.Injector.Engine
             return type is MethodType.EventAdd or MethodType.EventRemove;
         }
 
-        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, TypeDefinition type, InjectorOptions opts)
+        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, InjectorOptions opts)
+        {
+            return GetMethods(typeCtx, null, opts);
+        }
+
+        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext rootTypeCtx, TypeDefinition linkType, InjectorOptions opts)
         {
             #region Own methods
             #region Filter methods
             var probOpts = opts.Probes;
+            var type = linkType ?? rootTypeCtx.Definition;
             var isAngleBracket = type.Name.StartsWith("<");
             var ownMethods = type.Methods
-                    .Where(a => a.HasBody)
-                    .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
-                    .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
-                    .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop" && !a.Name.StartsWith("set_"))) //do we need property setters?
-                    .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop" && !a.Name.StartsWith("get_"))) //do we need property getters?
-                    .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
-                    .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
-                    .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
-                    .Where(a => !a.FullName.Contains("::get__") && !a.FullName.Contains("::set__")) //for example, inner setters/getters for ASP.NET/Blazor (even in business namespace). Is it needed? Doesn't yet...
+                .Where(a => a.HasBody)
+                .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
+                .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
+                .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop" && !a.Name.StartsWith("set_"))) //do we need property setters?
+                .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop" && !a.Name.StartsWith("get_"))) //do we need property getters?
+                .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
+                .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
+                .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
+                .Where(a => !a.FullName.Contains("::get__") && !a.FullName.Contains("::set__")) //for example, inner setters/getters for ASP.NET/Blazor (even in business namespace). Is it needed? Doesn't yet...
                 ;
             #endregion
 
-            var treeParentClass = typeCtx.InjType;
-            var asmCtx = typeCtx.AssemblyCtx;
-
             //check for type's characteristics
+
             var interfaces = type.Interfaces;
             var isAsyncStateMachine =
                 type.Methods.FirstOrDefault(a => a.Name == "SetStateMachine") != null ||
                 interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
             var isEnumerable = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
+
+            var treeParentClass = rootTypeCtx.InjType;
             var typeFullname = treeParentClass.FullName;
+            var asmCtx = rootTypeCtx.AssemblyCtx;
 
             var methods = new List<MethodDefinition>();
             foreach (var ownMethod in ownMethods)
@@ -322,12 +329,12 @@ namespace Drill4Net.Injector.Engine
                 var treeType = new InjectedType(nestedType.Module.Name, nestedType.FullName, realTypeName)
                 {
                     Source = TypeHelper.CreateTypeSource(nestedType),
-                    Path = typeCtx.AssemblyCtx.InjAssembly.Path,
+                    Path = rootTypeCtx.AssemblyCtx.InjAssembly.Path,
                 };
                 asmCtx.InjClasses.Add(treeType.FullName, treeType);
                 treeParentClass.Add(treeType);
                 //
-                var innerMethods = GetMethods(typeCtx, nestedType, opts);
+                var innerMethods = GetMethods(rootTypeCtx, nestedType, opts);
                 methods.AddRange(innerMethods);
             }
             #endregion
@@ -355,7 +362,7 @@ namespace Drill4Net.Injector.Engine
                 MethodType = GetMethodType(def),
                 //IsOverride = ...
                 IsNested = def.FullName.Contains("|"),
-                HashCode = GetMethodHashcode(def.Body.Instructions),
+                HashCode = GetMethodHashCode(def.Body.Instructions),
             };
         }
 
@@ -368,7 +375,7 @@ namespace Drill4Net.Injector.Engine
             return AccessType.Internal;
         }
 
-        internal static string GetMethodHashcode(Mono.Collections.Generic.Collection<Instruction> instructions)
+        internal static string GetMethodHashCode(Mono.Collections.Generic.Collection<Instruction> instructions)
         {
             var s = "";
             foreach (var p in instructions.Where(a => a.OpCode.Code != Code.Nop))

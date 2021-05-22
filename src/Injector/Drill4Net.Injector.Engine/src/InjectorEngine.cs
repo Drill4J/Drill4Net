@@ -273,7 +273,7 @@ namespace Drill4Net.Injector.Engine
 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
-                var methods = MethodHelper.GetMethods(typeCtx, typeDef, opts).ToArray();
+                var methods = MethodHelper.GetMethods(typeCtx, opts).ToArray();
                 if (!methods.Any())
                     continue;
 
