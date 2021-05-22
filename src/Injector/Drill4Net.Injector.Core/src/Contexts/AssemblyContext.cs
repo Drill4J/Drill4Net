@@ -28,6 +28,9 @@ namespace Drill4Net.Injector.Core
         public Dictionary<string, InjectedMethod> InjMethodByFullname { get; }
         public Dictionary<string, InjectedMethod> InjMethodByKeys { get; }
 
+        public string ProxyNamespace { get; set; }
+        public MethodReference ProxyMethRef { get; set; }
+
         /***********************************************************************************/
 
         internal AssemblyContext() 

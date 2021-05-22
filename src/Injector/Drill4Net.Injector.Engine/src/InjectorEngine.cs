@@ -163,7 +163,6 @@ namespace Drill4Net.Injector.Engine
             #endregion
             #region Reading
             var reader = new AssemblyReader();
-            var writer = new AssemblyWriter();
             var asmCtx = reader.ReadAssembly(runCtx);
             if (asmCtx.Skipped)
                 return;
@@ -173,11 +172,11 @@ namespace Drill4Net.Injector.Engine
                 return; //it's norm (the assembly is shared and already is injected)
 
             //get the injecting commands
-            var proxyNamespace = CreateProxyNamespace();
-            var proxyMethRef = CreateProxyMethodReference(asmCtx, proxyNamespace, opts);
+            asmCtx.ProxyNamespace = CreateProxyNamespace();
+            asmCtx.ProxyMethRef = CreateProxyMethodReference(asmCtx, opts);
 
             //preparing data
-            PrepareContextData(runCtx, asmCtx, proxyNamespace, proxyMethRef);
+            PrepareContextData(runCtx, asmCtx);
 
             AssemblyHelper.FindMoveNextMethods(asmCtx);
             AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
@@ -186,15 +185,17 @@ namespace Drill4Net.Injector.Engine
 
             //the injecting here
             InjectProxyCalls(asmCtx, runCtx.Tree);
-            InjectProxyClass(asmCtx, proxyNamespace, opts);
+            InjectProxyClass(asmCtx, opts);
 
             //coverage data
             CoverageHelper.CalcCoverageBlocks(asmCtx);
             #endregion
-
-            //save modified assembly and symbols to new file    
+            #region Writing
+            //save modified assembly and symbols to new file
+            var writer = new AssemblyWriter();
             var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
             asmCtx.Definition.Dispose();
+            #endregion
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
         }
@@ -238,20 +239,20 @@ namespace Drill4Net.Injector.Engine
             return $"Injection_{Guid.NewGuid()}".Replace("-", null); 
         }
 
-        internal MethodReference CreateProxyMethodReference(AssemblyContext asmCtx, string proxyNamespace, InjectorOptions opts)
+        internal MethodReference CreateProxyMethodReference(AssemblyContext asmCtx, InjectorOptions opts)
         {
             //we will use proxy class (with cached Reflection) leading to real profiler
             //proxy will be inject in each target assembly - let construct the calling of it's method
             var module = asmCtx.Module;
             var proxyReturnTypeRef = module.TypeSystem.Void;
-            var proxyTypeRef = new TypeReference(proxyNamespace, opts.Proxy.Class, module, module);
+            var proxyTypeRef = new TypeReference(asmCtx.ProxyNamespace, opts.Proxy.Class, module, module);
             var proxyMethRef = new MethodReference(opts.Proxy.Method, proxyReturnTypeRef, proxyTypeRef);
             var strPar = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
             proxyMethRef.Parameters.Add(strPar);
             return proxyMethRef;
         }
 
-        internal void PrepareContextData(RunContext runCtx, AssemblyContext asmCtx, string proxyNamespace, MethodReference proxyMethRef)
+        internal void PrepareContextData(RunContext runCtx, AssemblyContext asmCtx)
         {
             var treeAsm = asmCtx.InjAssembly;
             var opts = runCtx.Options;
@@ -349,8 +350,6 @@ namespace Drill4Net.Injector.Engine
                     {
                         StartIndex = startInd,
                         IsStrictEnterReturn = strictEnterReturn,
-                        ProxyNamespace = proxyNamespace,
-                        ProxyMethRef = proxyMethRef,
                     };
                     typeCtx.MethodContexts.Add(methodFullName, methodCtx);
                     #endregion
@@ -474,7 +473,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal void InjectProxyClass(AssemblyContext asmCtx, string proxyNamespace, InjectorOptions opts)
+        internal void InjectProxyClass(AssemblyContext asmCtx, InjectorOptions opts)
         {
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
@@ -482,7 +481,7 @@ namespace Drill4Net.Injector.Engine
             var assembly = asmCtx.Definition;
             var profilerOpts = opts.Profiler;
             var profDir = profilerOpts.Directory;
-            var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
+            var proxyGenerator = new ProfilerProxyGenerator(asmCtx.ProxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
                                                             profDir, profilerOpts.AssemblyName, //real profiler
                                                             profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
             var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;

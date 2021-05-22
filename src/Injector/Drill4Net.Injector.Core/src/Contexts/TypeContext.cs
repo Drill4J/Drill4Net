@@ -13,7 +13,7 @@ namespace Drill4Net.Injector.Core
         public Dictionary<string, MethodContext> MethodContexts { get; }
 
         /*****************************************************************************************/
-        
+
         public TypeContext(AssemblyContext asmCtx, TypeDefinition typeDef, InjectedType injType)
         {
             AssemblyCtx = asmCtx ?? throw new ArgumentNullException(nameof(asmCtx));

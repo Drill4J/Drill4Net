@@ -39,7 +39,7 @@ namespace Drill4Net.Injector.Core
                 var isOwn = _typeChecker.CheckByMethodFullName(fullname);
                 if (code is Code.Callvirt)
                     return isOwn || fullname.Contains("::Invoke(");
-                if (fullname.Contains(ctx.ProxyNamespace))
+                if (fullname.Contains(ctx.TypeCtx.AssemblyCtx.ProxyNamespace))
                     return false;
                 return isOwn;
             }

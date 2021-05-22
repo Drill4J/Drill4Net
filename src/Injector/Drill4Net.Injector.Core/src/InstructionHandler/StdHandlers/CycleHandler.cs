@@ -23,12 +23,13 @@ namespace Drill4Net.Injector.Core
             var instr = instructions[ctx.CurIndex];
             var opCode = instr.OpCode;
             var code = opCode.Code;
+            var proxyMethRef = ctx.TypeCtx.AssemblyCtx.ProxyMethRef;
 
             var methodSource = treeFunc.Source;
             var isEnumeratorMoveNext = methodSource.IsEnumeratorMoveNext;
 
             var jumpers = ctx.Jumpers;
-            var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+            var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
             #endregion
             #region Check
@@ -58,7 +59,7 @@ namespace Drill4Net.Injector.Core
                 ctx.CorrectIndex(2);
 
                 var ldstrIf3 = Register(ctx, CrossPointType.CycleEnd);
-                var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+                var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
                 processor.InsertAfter(instr, call1);
                 processor.InsertAfter(instr, ldstrIf3);
                 ctx.CorrectIndex(2);
@@ -74,7 +75,7 @@ namespace Drill4Net.Injector.Core
                 var crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
                 var ldstrIf = Register(ctx, crossType); 
 
-                var call1 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+                var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
                 processor.InsertAfter(instr, call1);
                 processor.InsertAfter(instr, ldstrIf);
                 ctx.CorrectIndex(2);
@@ -89,7 +90,7 @@ namespace Drill4Net.Injector.Core
                 crossType = isBrFalse ? CrossPointType.CycleEnd : CrossPointType.Cycle;
                 var ldstrIf2 = Register(ctx, crossType); 
 
-                var call2 = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+                var call2 = Instruction.Create(OpCodes.Call, proxyMethRef);
                 processor.InsertAfter(jump, call2);
                 processor.InsertAfter(jump, ldstrIf2);
                 ctx.CorrectIndex(2);

@@ -26,8 +26,8 @@ namespace Drill4Net.Injector.Core
             var ifStack = ctx.IfStack;
             var crossType = CrossPointType.Unset;
 
-
-            var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+            var proxyMethRef = ctx.TypeCtx.AssemblyCtx.ProxyMethRef;
+            var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
             #endregion
             #region Check

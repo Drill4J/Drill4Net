@@ -26,7 +26,7 @@ namespace Drill4Net.Injector.Core
             
             //data
             var ldstr = Register(ctx, PointType);
-            var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+            var call = Instruction.Create(OpCodes.Call, ctx.TypeCtx.AssemblyCtx.ProxyMethRef);
             
             //correction
             var instr = ctx.Instructions[ctx.CurIndex];

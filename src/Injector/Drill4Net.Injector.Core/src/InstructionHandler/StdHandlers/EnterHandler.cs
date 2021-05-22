@@ -23,7 +23,8 @@ namespace Drill4Net.Injector.Core
 
             //injection
             var firstOp = ctx.Instructions[0];
-            var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+            var proxyMethRef = ctx.TypeCtx.AssemblyCtx.ProxyMethRef;
+            var call = Instruction.Create(OpCodes.Call, proxyMethRef);
 
             ctx.Processor.InsertBefore(firstOp, ldstrEntering);
             ctx.Processor.InsertBefore(firstOp, call);

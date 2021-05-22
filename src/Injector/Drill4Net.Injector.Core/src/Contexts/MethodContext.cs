@@ -36,9 +36,6 @@ namespace Drill4Net.Injector.Core
         public HashSet<object> Anchors { get; }
         public HashSet<Instruction> CompilerInstructions { get; }
         public HashSet<Instruction> AheadProcessed { get; }
-
-        public string ProxyNamespace { get; set; }
-        public MethodReference ProxyMethRef { get; set; }
         
         /// <summary>
         /// Current instruction index from source IL code

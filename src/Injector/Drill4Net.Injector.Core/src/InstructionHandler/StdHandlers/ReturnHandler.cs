@@ -23,7 +23,8 @@ namespace Drill4Net.Injector.Core
             //init
             var processor = ctx.Processor;
             var instr = ctx.CurInstruction;
-            var call = Instruction.Create(OpCodes.Call, ctx.ProxyMethRef);
+            var proxyMethRef = ctx.TypeCtx.AssemblyCtx.ProxyMethRef;
+            var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             
             //data
             var ind = ctx.OrigSize - 1;
