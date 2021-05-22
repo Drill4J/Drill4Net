@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Engine
         private readonly IInjectorRepository _rep;
         private readonly TypeChecker _typeChecker;
 
-        /***************************************************************************************/
+        /*****************************************************************/
 
         public InjectorEngine(IInjectorRepository rep)
         {
@@ -30,7 +30,7 @@ namespace Drill4Net.Injector.Engine
             _typeChecker = new TypeChecker();
         }
 
-        /***************************************************************************************/
+        /*****************************************************************/
 
         public InjectedSolution Process()
         {

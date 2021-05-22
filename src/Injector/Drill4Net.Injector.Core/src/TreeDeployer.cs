@@ -2,10 +2,9 @@
 using System.IO;
 using System.Linq;
 using Serilog;
-using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
     public class TreeDeployer
     {

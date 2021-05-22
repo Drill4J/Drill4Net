@@ -27,7 +27,7 @@ namespace Drill4Net.Injector.Engine
         public void Inject(RunContext runCtx, AssemblyContext asmCtx)
         {
             if (!ContextHelper.CreateContexts(runCtx, asmCtx))
-                return; //it's norm (the assembly is shared and already is injected)
+                return; //it's normal (in the most case it's means the assembly is shared and already is injected)
 
             //get the injecting commands
             var opts = runCtx.Options;
