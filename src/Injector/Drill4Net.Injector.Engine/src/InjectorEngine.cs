@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
-using System.Collections.Generic;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -134,7 +133,7 @@ namespace Drill4Net.Injector.Engine
             foreach (var file in files)
             {
                 runCtx.SourceFile = file;
-                ProcessAssembly(runCtx);
+                ProcessFile(runCtx);
             }
 
             //subdirectories
@@ -147,7 +146,7 @@ namespace Drill4Net.Injector.Engine
             return true;
         }
         
-        private void ProcessAssembly(RunContext runCtx)
+        private void ProcessFile(RunContext runCtx)
         {
             #region Checks
             var opts = runCtx.Options;
@@ -203,7 +202,7 @@ namespace Drill4Net.Injector.Engine
             #region Processing
             //get the injecting commands
             var proxyNamespace = CreateProxyNamespace();
-            var proxyMethRef = CreateProxymethodReference(asmCtx, proxyNamespace, opts);
+            var proxyMethRef = CreateProxyMethodReference(asmCtx, proxyNamespace, opts);
 
             //preparing data
             PrepareContextData(runCtx, asmCtx, proxyNamespace, proxyMethRef);
@@ -214,31 +213,11 @@ namespace Drill4Net.Injector.Engine
             AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
 
             //the injecting here
-            Inject(asmCtx, tree);
+            InjectProxyCalls(asmCtx, tree);
+            InjectProxyClass(asmCtx, proxyNamespace, opts);
 
             //coverage data
             CoverageHelper.CalcCoverageBlocks(asmCtx);
-            #endregion
-            #region Proxy class
-            //here we generate proxy class which will be calling of real profiler by cached Reflection
-            //directory of profiler dependencies - for injected target on it's side
-            var profilerOpts = opts.Profiler;
-            var profDir = profilerOpts.Directory;
-            var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
-                                                            profDir, profilerOpts.AssemblyName, //real profiler
-                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
-            var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
-            proxyGenerator.InjectTo(assembly, isNetFx);
-
-            // ensure we referencing only ref assemblies
-            if (isNetFx)
-            {
-                var systemPrivateCoreLib = module.AssemblyReferences
-                    .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
-                //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
-                if (systemPrivateCoreLib != null)
-                    module.AssemblyReferences.Remove(systemPrivateCoreLib);
-            }
             #endregion
 
             //save modified assembly and symbols to new file    
@@ -254,7 +233,7 @@ namespace Drill4Net.Injector.Engine
             return $"Injection_{Guid.NewGuid()}".Replace("-", null); 
         }
 
-        internal MethodReference CreateProxymethodReference(AssemblyContext asmCtx, string proxyNamespace, InjectorOptions opts)
+        internal MethodReference CreateProxyMethodReference(AssemblyContext asmCtx, string proxyNamespace, InjectorOptions opts)
         {
             //we will use proxy class (with cached Reflection) leading to real profiler
             //proxy will be inject in each target assembly - let construct the calling of it's method
@@ -376,7 +355,7 @@ namespace Drill4Net.Injector.Engine
                 return;
         }
 
-        internal void Inject(AssemblyContext asmCtx, InjectedSolution tree)
+        internal void InjectProxyCalls(AssemblyContext asmCtx, InjectedSolution tree)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
@@ -487,6 +466,31 @@ namespace Drill4Net.Injector.Engine
             {
                 Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.Method.FullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
                 throw;
+            }
+        }
+
+        internal void InjectProxyClass(AssemblyContext asmCtx, string proxyNamespace, InjectorOptions opts)
+        {
+            //here we generate proxy class which will be calling of real profiler by cached Reflection
+            //directory of profiler dependencies - for injected target on it's side
+            var module = asmCtx.Module;
+            var assembly = asmCtx.Definition;
+            var profilerOpts = opts.Profiler;
+            var profDir = profilerOpts.Directory;
+            var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
+                                                            profDir, profilerOpts.AssemblyName, //real profiler
+                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
+            var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
+            proxyGenerator.InjectTo(assembly, isNetFx);
+
+            // ensure we referencing only ref assemblies
+            if (isNetFx)
+            {
+                var systemPrivateCoreLib = module.AssemblyReferences
+                    .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+                //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
+                if (systemPrivateCoreLib != null)
+                    module.AssemblyReferences.Remove(systemPrivateCoreLib);
             }
         }
     }
