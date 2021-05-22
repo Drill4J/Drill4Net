@@ -167,13 +167,45 @@ namespace Drill4Net.Injector.Engine
             var asmCtx = reader.ReadAssembly(runCtx);
             if (asmCtx.Skipped)
                 return;
+            #endregion
+            #region Processing
+            if (!CreateContexts(runCtx, asmCtx))
+                return; //it's norm (the assembly is shared and already is injected)
 
+            //get the injecting commands
+            var proxyNamespace = CreateProxyNamespace();
+            var proxyMethRef = CreateProxyMethodReference(asmCtx, proxyNamespace, opts);
+
+            //preparing data
+            PrepareContextData(runCtx, asmCtx, proxyNamespace, proxyMethRef);
+
+            AssemblyHelper.FindMoveNextMethods(asmCtx);
+            AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
+            AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
+            AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
+
+            //the injecting here
+            InjectProxyCalls(asmCtx, runCtx.Tree);
+            InjectProxyClass(asmCtx, proxyNamespace, opts);
+
+            //coverage data
+            CoverageHelper.CalcCoverageBlocks(asmCtx);
+            #endregion
+
+            //save modified assembly and symbols to new file    
+            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
+            asmCtx.Definition.Dispose();
+
+            Log.Information($"Modified assembly is created: {modifiedPath}");
+        }
+
+        internal bool CreateContexts(RunContext runCtx, AssemblyContext asmCtx)
+        {
             var sourceDir = asmCtx.SourceDir;
+            var filePath = runCtx.SourceFile;
             var destDir = asmCtx.DestinationDir;
             var assembly = asmCtx.Definition;
             var module = asmCtx.Module;
-            #endregion
-            #region Tree
             var tree = runCtx.Tree;
 
             //directory
@@ -190,41 +222,17 @@ namespace Drill4Net.Injector.Engine
             treeDir.Add(treeAsm);
             asmCtx.InjAssembly = treeAsm;
 
+
             var paths = runCtx.Paths;
-            if (paths.ContainsKey(assembly.FullName)) //assembly is shared and already is injected
+            if (paths.ContainsKey(assembly.FullName)) //the assembly is shared and already is injected
             {
+                var writer = new AssemblyWriter();
                 var copyFrom = paths[assembly.FullName];
                 var copyTo = writer.GetDestFileName(copyFrom, destDir);
                 File.Copy(copyFrom, copyTo, true);
-                return;
+                return false;
             }
-            #endregion
-            #region Processing
-            //get the injecting commands
-            var proxyNamespace = CreateProxyNamespace();
-            var proxyMethRef = CreateProxyMethodReference(asmCtx, proxyNamespace, opts);
-
-            //preparing data
-            PrepareContextData(runCtx, asmCtx, proxyNamespace, proxyMethRef);
-
-            AssemblyHelper.FindMoveNextMethods(asmCtx);
-            AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
-            AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
-            AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
-
-            //the injecting here
-            InjectProxyCalls(asmCtx, tree);
-            InjectProxyClass(asmCtx, proxyNamespace, opts);
-
-            //coverage data
-            CoverageHelper.CalcCoverageBlocks(asmCtx);
-            #endregion
-
-            //save modified assembly and symbols to new file    
-            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-            assembly.Dispose();
-
-            Log.Information($"Modified assembly is created: {modifiedPath}");
+            return true;
         }
 
         internal string CreateProxyNamespace()
