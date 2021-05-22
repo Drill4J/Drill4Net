@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Globalization;
+using System.Diagnostics;
+using System.Collections.Generic;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Drill4Net.Common;
-using Drill4Net.Injector.Core;
 using Drill4Net.Injection;
+using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Strategies.Flow;
 
@@ -221,8 +218,51 @@ namespace Drill4Net.Injector.Engine
             var types = TypeHelper.FilterTypes(module.Types, opts.Source.Filter);
             asmCtx.InjAssembly = treeAsm;
 
-            #region 1. Tree's entities & Contexts
-            #region Creating contexts
+            CreateContextData(runCtx, asmCtx, proxyNamespace, proxyMethRef);
+            FindMoveNextMethods(asmCtx);
+            MapBusinessMethodFirstPass(asmCtx);
+            MapBusinessMethodSecondPass(asmCtx);
+            CalcBusinessPartCodeSizes(asmCtx);
+            Inject(asmCtx, tree);
+            CalcCoverageBlocks(asmCtx);
+            #endregion
+            #region Proxy class
+            //here we generate proxy class which will be calling of real profiler by cached Reflection
+            //directory of profiler dependencies - for injected target on it's side
+            var profilerOpts = opts.Profiler;
+            var profDir = profilerOpts.Directory;
+            //if (!Directory.EnumerateFiles(profDir).Any() && targetFolder != null)
+            //    profDir = Path.Combine(profDir, targetFolder) + "\\";
+            var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
+                                                            profDir, profilerOpts.AssemblyName, //real profiler
+                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
+            var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
+            proxyGenerator.InjectTo(assembly, isNetFx);
+            //
+            // ensure we referencing only ref assemblies
+            if (isNetFx)
+            {
+                var systemPrivateCoreLib = module.AssemblyReferences
+                    .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+                //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
+                if (systemPrivateCoreLib != null)
+                    module.AssemblyReferences.Remove(systemPrivateCoreLib);
+            }
+            #endregion
+
+            //save modified assembly and symbols to new file    
+            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
+            assembly.Dispose();
+
+            Log.Information($"Modified assembly is created: {modifiedPath}");
+        }
+
+        internal void CreateContextData(RunContext runCtx, AssemblyContext asmCtx, string proxyNamespace, MethodReference proxyMethRef)
+        {
+            var treeAsm = asmCtx.InjAssembly;
+            var opts = runCtx.Options;
+            var types = TypeHelper.FilterTypes(asmCtx.Module.Types, opts.Source.Filter);
+
             foreach (var typeDef in types)
             {
                 var typeFullName = typeDef.FullName;
@@ -235,7 +275,7 @@ namespace Drill4Net.Injector.Engine
                     Path = treeAsm.Path,
                 };
                 var typeCtx = new TypeContext(asmCtx, typeDef, treeMethodType);
-                
+
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
                 var methods = MethodHelper.GetMethods(typeCtx, typeDef, opts).ToArray();
@@ -261,23 +301,23 @@ namespace Drill4Net.Injector.Engine
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
                     var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
-                    
+
                     //Enter/Return
                     var isSpecFunc = MethodHelper.IsSpecialGeneratedMethod(methodType);
                     var strictEnterReturn = //what is principally forbidden
                         !isSpecFunc
                         //ASP.NET & Blazor rendering methods (may contains business logic)
-                        && !methodName.Contains("CreateHostBuilder") 
+                        && !methodName.Contains("CreateHostBuilder")
                         && !methodName.Contains("BuildRenderTree")
                         //others
-                        && (                           
+                        && (
                             methodName.Contains("|") || //local func                                                        
                             isAsyncStateMachine || //async/await
                             isCompilerGenerated ||
                             //Finalize() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
                             (runCtx.IsNetCore == true && methodSource.IsFinalizer)
                         );
-                    
+
                     //instructions
                     var body = methodDef.Body;
                     var instructions = body.Instructions; //no copy list!
@@ -297,7 +337,7 @@ namespace Drill4Net.Injector.Engine
                             {
                                 var curAsyncCode = asyncInstr.OpCode.Code;
                                 //guanito
-                                if (curAsyncCode is Code.Nop or Code.Stfld or Code.Newobj or Code.Call 
+                                if (curAsyncCode is Code.Nop or Code.Stfld or Code.Newobj or Code.Call
                                     || curAsyncCode.ToString().StartsWith("Ldarg"))
                                     break;
                                 asyncInstr = asyncInstr.Next;
@@ -324,12 +364,14 @@ namespace Drill4Net.Injector.Engine
             }
             if (!asmCtx.TypeContexts.Any())
                 return;
-            #endregion
-            #region MoveNext methods
-            var moveNextMethods = treeAsm.Filter(typeof(InjectedMethod), true)
-                .Cast<InjectedMethod>()
-                .Where(x => x.IsCompilerGenerated && x.Name == "MoveNext")
-                .ToList();
+        }
+
+        internal void FindMoveNextMethods(AssemblyContext asmCtx)
+        {
+            var moveNextMethods = asmCtx.InjAssembly.Filter(typeof(InjectedMethod), true)
+               .Cast<InjectedMethod>()
+               .Where(x => x.IsCompilerGenerated && x.Name == "MoveNext")
+               .ToList();
             for (int i = 0; i < moveNextMethods.Count; i++)
             {
                 InjectedMethod meth = moveNextMethods[i];
@@ -344,14 +386,16 @@ namespace Drill4Net.Injector.Engine
                 // Business method
                 var extRealMethodName = MethodHelper.TryGetBusinessMethod(meth.FullName, meth.Name, true, true);
                 mkey = MethodHelper.GetMethodKey(meth.TypeName, extRealMethodName);
-                if (!asmCtx.InjMethodByKeys.ContainsKey(mkey)) 
+                if (!asmCtx.InjMethodByKeys.ContainsKey(mkey))
                     continue;
                 var treeFunc = asmCtx.InjMethodByKeys[mkey];
                 if (meth.CGInfo != null)
-                   meth.CGInfo.FromMethod = treeFunc.FullName;
+                    meth.CGInfo.FromMethod = treeFunc.FullName;
             }
-            #endregion
-            #region Business function mapping (first pass)
+        }
+
+        internal void MapBusinessMethodFirstPass(AssemblyContext asmCtx)
+        {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 foreach (var methodCtx in typeCtx.MethodContexts.Values)
@@ -360,7 +404,7 @@ namespace Drill4Net.Injector.Engine
                     var startInd = methodCtx.StartIndex;
                     var instructions = methodCtx.Instructions;
                     var injMethod = methodCtx.Method;
-                    
+
                     var cgInfo = injMethod.CGInfo;
                     if (cgInfo != null)
                         cgInfo.FirstIndex = startInd == 0 ? 0 : startInd - 1; //correcting to real start
@@ -390,8 +434,10 @@ namespace Drill4Net.Injector.Engine
                     injMethod.OwnBusinessSize = cnt;
                 }
             }
-            #endregion
-            #region Business function mapping (second pass)
+        }
+
+        internal void MapBusinessMethodSecondPass(AssemblyContext asmCtx)
+        {
             var badCtxs = new List<MethodContext>();
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
@@ -417,8 +463,10 @@ namespace Drill4Net.Injector.Engine
             // the removing methods for which business method is not defined 
             foreach (var ctx in badCtxs)
                 ctx.TypeCtx.MethodContexts.Remove(ctx.Method.FullName);
-            #endregion
-            #region Size of the business code parts
+        }
+
+        internal void CalcBusinessPartCodeSizes(AssemblyContext asmCtx)
+        {
             var bizMethods = asmCtx.InjMethodByFullname.Values
                 .Where(a => !a.IsCompilerGenerated).ToArray();
             if (!bizMethods.Any())
@@ -428,9 +476,10 @@ namespace Drill4Net.Injector.Engine
                 foreach (var calleeName in caller.CalleeIndexes.Keys)
                     MethodHelper.CorrectMethodBusinessSize(asmCtx.InjMethodByFullname, caller, calleeName);
             }
-            #endregion
-            #endregion
-            #region 2. Injection
+        }
+
+        internal void Inject(AssemblyContext asmCtx, InjectedSolution tree)
+        {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 Debug.WriteLine(typeCtx.InjType.FullName);
@@ -456,7 +505,7 @@ namespace Drill4Net.Injector.Engine
                     {
                         var instr = instructions[i];
                         var flow = instr.OpCode.FlowControl;
-                        if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch)) 
+                        if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
                             continue;
                         methodCtx.Jumpers.Add(instr);
                         //
@@ -466,7 +515,7 @@ namespace Drill4Net.Injector.Engine
                         //not needed jumps from by Leave from try/catch/finally semantically
                         if (curCode == Code.Leave || curCode == Code.Leave_S)
                             continue;
-                        if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor)) 
+                        if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))
                             methodCtx.Anchors.Add(anchor);
                     }
                     #endregion
@@ -504,7 +553,7 @@ namespace Drill4Net.Injector.Engine
                         if (methodCtx.AheadProcessed.Contains(instr))
                             continue;
                         #endregion
-                        
+
                         methodCtx.SetPosition(i);
                         i = HandleInstruction(methodCtx); //process and correct current index after potential injection
                     }
@@ -516,7 +565,7 @@ namespace Drill4Net.Injector.Engine
                     foreach (var jump in jumpers)
                     {
                         var opCode = jump.OpCode;
-                        if (jump.Operand is not Instruction) 
+                        if (jump.Operand is not Instruction)
                             continue;
                         var newOpCode = InstructionHelper.ShortJumpToLong(opCode);
                         if (newOpCode.Code != opCode.Code)
@@ -528,8 +577,10 @@ namespace Drill4Net.Injector.Engine
                     body.OptimizeMacros();
                 }
             }
-            #endregion
-            #region 3. Coverage blocks for the methods
+        }
+
+        internal void CalcCoverageBlocks(AssemblyContext asmCtx)
+        {
             var allMethods = asmCtx.InjMethodByFullname.Values;
             foreach (var method in allMethods)
             {
@@ -566,37 +617,6 @@ namespace Drill4Net.Injector.Engine
                 {
                 }
             }
-            #endregion
-            #endregion
-            #region Proxy class
-            //here we generate proxy class which will be calling of real profiler by cached Reflection
-            //directory of profiler dependencies - for injected target on it's side
-            var profilerOpts = opts.Profiler;
-            var profDir = profilerOpts.Directory;
-            //if (!Directory.EnumerateFiles(profDir).Any() && targetFolder != null)
-            //    profDir = Path.Combine(profDir, targetFolder) + "\\";
-            var proxyGenerator = new ProfilerProxyGenerator(proxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
-                                                            profDir, profilerOpts.AssemblyName, //real profiler
-                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
-            var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
-            proxyGenerator.InjectTo(assembly, isNetFx);
-            //
-            // ensure we referencing only ref assemblies
-            if (isNetFx)
-            {
-                var systemPrivateCoreLib = module.AssemblyReferences
-                    .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
-                //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
-                if (systemPrivateCoreLib != null)
-                    module.AssemblyReferences.Remove(systemPrivateCoreLib);
-            }
-            #endregion
-
-            //save modified assembly and symbols to new file    
-            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-            assembly.Dispose();
-
-            Log.Information($"Modified assembly is created: {modifiedPath}");
         }
 
         internal int HandleInstruction(MethodContext ctx)
