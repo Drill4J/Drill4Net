@@ -202,10 +202,8 @@ namespace Drill4Net.Injector.Engine
         internal bool CreateContexts(RunContext runCtx, AssemblyContext asmCtx)
         {
             var sourceDir = asmCtx.SourceDir;
-            var filePath = runCtx.SourceFile;
             var destDir = asmCtx.DestinationDir;
-            var assembly = asmCtx.Definition;
-            var module = asmCtx.Module;
+            var asmFullName = asmCtx.Definition.FullName;
             var tree = runCtx.Tree;
 
             //directory
@@ -217,17 +215,16 @@ namespace Drill4Net.Injector.Engine
             }
 
             //assembly (exactly from whole tree, not just current treeDir - for shared dll)
-            var treeAsm = tree.GetAssembly(assembly.FullName, true) ??
-                          new InjectedAssembly(asmCtx.Version, module.Name, assembly.FullName, filePath);
+            var treeAsm = tree.GetAssembly(asmFullName, true) ??
+                          new InjectedAssembly(asmCtx.Version, asmCtx.Module.Name, asmFullName, runCtx.SourceFile);
             treeDir.Add(treeAsm);
             asmCtx.InjAssembly = treeAsm;
 
-
             var paths = runCtx.Paths;
-            if (paths.ContainsKey(assembly.FullName)) //the assembly is shared and already is injected
+            if (paths.ContainsKey(asmFullName)) //the assembly is shared and already is injected
             {
                 var writer = new AssemblyWriter();
-                var copyFrom = paths[assembly.FullName];
+                var copyFrom = paths[asmFullName];
                 var copyTo = writer.GetDestFileName(copyFrom, destDir);
                 File.Copy(copyFrom, copyTo, true);
                 return false;
