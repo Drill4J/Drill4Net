@@ -59,11 +59,11 @@ namespace Drill4Net.Injector.Engine
 
                         #region Check
                         var checkRes = CheckInstruction(methodCtx);
-                        if (checkRes == FlowType.NextCycle)
+                        if (checkRes == ExecutionType.NextCycle)
                             continue;
-                        if (checkRes == FlowType.BreakCycle)
+                        if (checkRes == ExecutionType.BreakCycle)
                             break;
-                        if (checkRes == FlowType.Return)
+                        if (checkRes == ExecutionType.Return)
                             return;
                         #endregion
 
@@ -78,14 +78,14 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static FlowType CheckInstruction(MethodContext ctx)
+        internal static ExecutionType CheckInstruction(MethodContext ctx)
         {
             var instr = ctx.CurInstruction;
             var code = instr.OpCode.Code;
 
             // for injecting cases
             if (code == Code.Nop || ctx.AheadProcessed.Contains(instr))
-                return FlowType.NextCycle;
+                return ExecutionType.NextCycle;
 
             var method = ctx.Method;
 
@@ -120,7 +120,7 @@ namespace Drill4Net.Injector.Engine
             }
             #endregion
 
-            return FlowType.NextOperand;
+            return ExecutionType.NextOperand;
 
             //local funcs
             static bool LeaveTryCatch(MethodContext ctx)

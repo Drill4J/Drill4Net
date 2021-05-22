@@ -1,6 +1,6 @@
-﻿namespace Drill4Net.Injector.Engine
+﻿namespace Drill4Net.Injector.Core
 {
-    public enum FlowType
+    public enum ExecutionType
     {
         NextOperand,
         NextCycle,
