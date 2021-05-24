@@ -104,7 +104,7 @@ namespace Drill4Net.Injector.Core
             var versions = new Dictionary<string, AssemblyVersioning>();
 
             //we should be located in the project folder of a specific moniker,
-            //not in root dir for the project 
+            //not in root dir for the project or whole Injector Engine Run
 
             //as hint 'exe' must be first - after 'dll'
             foreach (var file in files.OrderBy(a => a))

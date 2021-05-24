@@ -8,25 +8,42 @@
     private bool _isTest = true;
 }
 
+
 @*Group runers*@
 <MudGrid>
     <MudItem xs="12" md="0">
         <MudText Color="Color.Info" Typo="Typo.body2"><i>CoverageTarget @(_isTest ? " (test)" : "")</i></MudText>
 
+        @*Info message*@
+        <MudText Class="pa-2 mx-2" Typo="Typo.body2">
+            This page shows the principles of retreiving  of code coverage by <i>manual testing</i>.
+        </MudText>
+        <MudText Class="pa-2 mx-2" Typo="Typo.body2">
+            Let's say we have one simplest class with two identical functions. Each function has one conditional <i>If/Else</i> branch statement and
+            a <i>Boolean input parameter</i> that allows you to work out either the <i>If</i> or <i>Else</i> branch. So 2x2 = 4 options for what
+            should happen - <i>25% coverage</i> for each single call. If the GUI can call all the methods of the public interface, the tester is also,
+            in theory, able to cover the entire code of our class.
+        </MudText>
+        <MudText Class="pa-2 mx-2" Typo="Typo.body2">
+            Click 1 or 2 buttons and then check the results on the Drill Admin side (please wait a few seconds). And after that click the
+            remaining buttons. You should get 100% coverage - both the <i>theoretical</i> one listed here on the page, and <i>practical</i> on the
+            Drill admin side, too. <i>Note:</i> Subsequent clicks on the same button should not have an effect on any results. Let's do it!
+        </MudText>
+
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_A">@GetButtonCaption(1)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun1()" OnClick="RunGroup_A">@GetButtonCaption(1, false)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_B">@GetButtonCaption(2)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun1()" OnClick="RunGroup_B">@GetButtonCaption(1, true)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_C">@GetButtonCaption(3)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun2()" OnClick="RunGroup_C">@GetButtonCaption(2, false)</MudButton>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color="Color.Success">@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColor()" OnClick="RunGroup_D">@GetButtonCaption(4)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun2()" OnClick="RunGroup_D">@GetButtonCaption(2, true)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
@@ -97,19 +114,24 @@
     }
 
     #region Buttons
-    private string GetButtonCaption(int order = 0)
+    private string GetButtonCaption(int fun, bool boolParam)
     {
-        return $"Fun {order}";
+        return $"Fun {fun} ({boolParam})";
     }
 
     private Variant GetButtonVariant()
     {
-        return Variant.Outlined;
+        return Variant.Text; // Variant.Outlined;
     }
 
-    private Color GetButtonColor()
+    private Color GetButtonColorFun1()
     {
         return Color.Primary;
+    }
+
+    private Color GetButtonColorFun2()
+    {
+        return Color.Secondary;
     }
     #endregion
 }
