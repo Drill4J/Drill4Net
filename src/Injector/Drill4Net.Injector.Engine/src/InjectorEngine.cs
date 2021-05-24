@@ -8,6 +8,12 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// High-level Injector Engine working with target directories and files. 
+    /// It injects the Agent's proxy code to the needed methods and produces 
+    /// the Tree data of that (processed directories, assemblies, 
+    /// classes, methods, cross-points, and their meta-data)
+    /// </summary>
     public class InjectorEngine : IInjectorEngine
     {
         /* INFO *
@@ -24,6 +30,9 @@ namespace Drill4Net.Injector.Engine
 
         /*****************************************************************/
 
+        /// <summary>
+        /// Create the Injector Engine working with target directories and files
+        /// </summary>
         public InjectorEngine(IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
@@ -32,11 +41,20 @@ namespace Drill4Net.Injector.Engine
 
         /*****************************************************************/
 
+        /// <summary>
+        /// Inject the target accordingly by the current config
+        /// </summary>
+        /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
         public InjectedSolution Process()
         {
             return Process(_rep.Options);
         }
 
+        /// <summary>
+        ///  Inject the target accordingly by the config form parameters 
+        /// </summary>
+        /// <param name="opts">Config for target's injection</param>
+        /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
         public InjectedSolution Process(InjectorOptions opts)
         {
             Log.Information("Process starting...");
@@ -107,6 +125,11 @@ namespace Drill4Net.Injector.Engine
             return tree;
         }
 
+        /// <summary>
+        /// Process directory from current Engine's context
+        /// </summary>
+        /// <param name="runCtx">Context of Engine's Run</param>
+        /// <returns>Is the directory processed?</returns>
         internal bool ProcessDirectory(RunContext runCtx)
         {
             var opts = runCtx.Options;
@@ -135,8 +158,13 @@ namespace Drill4Net.Injector.Engine
             }
             return true;
         }
-        
-        private void ProcessFile(RunContext runCtx)
+
+        /// <summary>
+        /// Process file from current Engine's context
+        /// </summary>
+        /// <param name="runCtx">Context of Engine's Run</param>
+        ///<returns>Is the file processed?</returns>
+        private bool ProcessFile(RunContext runCtx)
         {
             #region Checks
             var opts = runCtx.Options;
@@ -144,16 +172,16 @@ namespace Drill4Net.Injector.Engine
 
             //filter
             if (!opts.Source.Filter.IsFileNeed(filePath))
-                return;
+                return false;
             if (!_typeChecker.CheckByAssemblyPath(filePath))
-                return;
+                return false;
             #endregion
 
             //reading
             var reader = new AssemblyReader();
             var asmCtx = reader.ReadAssembly(runCtx);
             if (asmCtx.Skipped)
-                return;
+                return false;
 
             //processing
             runCtx.Inject(asmCtx);
@@ -164,6 +192,7 @@ namespace Drill4Net.Injector.Engine
             asmCtx.Definition.Dispose();
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
+            return true;
         }
     }
 }

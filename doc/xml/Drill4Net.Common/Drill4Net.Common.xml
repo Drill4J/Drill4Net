@@ -68,6 +68,11 @@
             of full class names (Namespace.Name)
             </summary>
         </member>
+        <member name="T:Drill4Net.Common.MonikerData">
+            <summary>
+            Data for moniker of framework version (netcoreapp3.1, net5.0, etc)
+            </summary>
+        </member>
         <member name="P:Drill4Net.Common.MonikerData.BaseFolder">
             <summary>
             Base folder(s) of the testing target

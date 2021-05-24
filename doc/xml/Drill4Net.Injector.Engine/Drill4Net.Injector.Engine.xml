@@ -4,13 +4,218 @@
         <name>Drill4Net.Injector.Engine</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Injector.Engine.AssemblyInjector">
+            <summary>
+            The concrete Injector which injects the instrumenting code called by Target for Agent
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Injector.Engine.AssemblyInjector.Strategy">
+            <summary>
+            Concrete strategy of instrumenting code injections into Target
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.#ctor(Drill4Net.Injector.Core.CodeHandlerStrategy)">
+            <summary>
+            Create the Injector which injects the instrumenting code called by Target for Agent
+            </summary>
+            <param name="strategy"></param>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.Inject(Drill4Net.Injector.Core.RunContext,Drill4Net.Injector.Core.AssemblyContext)">
+            <summary>
+            Inject the specified assembly
+            </summary>
+            <param name="runCtx">Context of Engine's Run</param>
+            <param name="asmCtx">Context of current assembly</param>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.InjectProxyCalls(Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Profiling.Tree.InjectedSolution)">
+            <summary>
+            Inject instrumenting probe calls of Proxy class' calls 
+            for each needed cross-point of Target
+            </summary>
+            <param name="asmCtx"></param>
+            <param name="tree"></param>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.HandleInstruction(Drill4Net.Injector.Core.MethodContext)">
+            <summary>
+            Process the current instruction of IL code according to <see cref="P:Drill4Net.Injector.Engine.AssemblyInjector.Strategy"/>
+            </summary>
+            <param name="ctx">Current method context</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.InjectProxyType(Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Common.InjectorOptions)">
+            <summary>
+            Inject into assembly the Proxy class (it just pushes the probe data from 
+            Target class to real Agent) according specified in context and options metadata
+            </summary>
+            <param name="asmCtx">Assembly context</param>
+            <param name="opts">Injector options</param>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.InstructionHelper">
+            <summary>
+            Instruction helper
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InstructionHelper.ShortJumpToLong(Mono.Cecil.Cil.OpCode)">
+            <summary>
+            Converting the short form of an IL instruction to the long form in cases of "jumping too far"
+            </summary>
+            <param name="opCode"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.TypeHelper">
+            <summary>
+            Type helper
+            </summary>
+        </member>
         <member name="M:Drill4Net.Injector.Engine.TypeHelper.FilterTypes(System.Collections.Generic.IEnumerable{Mono.Cecil.TypeDefinition},Drill4Net.Common.SourceFilterOptions)">
             <summary>
-            Get filtered types of assembly
+            Get filtered types of assembly by specified options
             </summary>
             <param name="allTypes"></param>
             <param name="opts"></param>
             <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.TryGetRealTypeName(Mono.Cecil.TypeDefinition)">
+            <summary>
+            Try to get real type name from compiler generated classes. Technically, 
+            it will be upward search the "normal name" in the type parent's hierarchy.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.CreateTypeSource(Mono.Cecil.TypeDefinition)">
+            <summary>
+            Retreive some metadata for type
+            </summary>
+            <param name="def"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.GetAccessType(Mono.Cecil.TypeDefinition)">
+            <summary>
+            Get access type of type
+            </summary>
+            <param name="def"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.InjectorEngine">
+            <summary>
+            High-level Injector Engine working with target directories and files. 
+            It injects the Agent's proxy code to the needed methods and produces 
+            the Tree data of that (processed directories, assemblies, 
+            classes, methods, cross-points, and their meta-data)
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorEngine.#ctor(Drill4Net.Injector.Core.IInjectorRepository)">
+            <summary>
+            Create the Injector Engine working with target directories and files
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorEngine.Process">
+            <summary>
+            Inject the target accordingly by the current config
+            </summary>
+            <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorEngine.Process(Drill4Net.Common.InjectorOptions)">
+            <summary>
+             Inject the target accordingly by the config form parameters 
+            </summary>
+            <param name="opts">Config for target's injection</param>
+            <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorEngine.ProcessDirectory(Drill4Net.Injector.Core.RunContext)">
+            <summary>
+            Process directory from current Engine's context
+            </summary>
+            <param name="runCtx">Context of Engine's Run</param>
+            <returns>Is the directory processed?</returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorEngine.ProcessFile(Drill4Net.Injector.Core.RunContext)">
+             <summary>
+             Process file from current Engine's context
+             </summary>
+             <param name="runCtx">Context of Engine's Run</param>
+            <returns>Is the file processed?</returns>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.InjectorRepository">
+            <summary>
+            Injector Engine's repository (provides injection strategy, target assemblies, 
+            injector for them, the reading/writing of resulting tree data, etc)
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.#ctor(System.String)">
+            <summary>
+            Create Injector Engine's repository (provides injection strategy, target assemblies, 
+            injector for them, the reading/writing of resulting tree data, etc).
+            </summary>
+            <param name="cfgPath">Path to the config of injection</param>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.#ctor(System.String[])">
+            <summary>
+            Create Injector Engine's repository (provides injection strategy, target assemblies, 
+            injector for them, the reading/writing of resulting tree data, etc)
+            </summary>
+            <param name="args">Input arguments from console, including path to config, etc</param>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.GetInjector">
+            <summary>
+            Get the concrete assembly injector
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.GetStrategy">
+            <summary>
+            Get the strategy of Target injections
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.CopySource(System.String,System.String,System.Collections.Generic.Dictionary{System.String,Drill4Net.Common.MonikerData})">
+            <summary>
+            Preliminary coping the source directories and files from source to destination 
+            according to the needed monikers (framework versions)
+            </summary>
+            <param name="sourcePath">Source directory</param>
+            <param name="destPath">destintation directory</param>
+            <param name="monikers">Dictionary of framework versions monikers from <see cref="P:Drill4Net.Common.VersionOptions.Targets"/>.
+            Key is moniker (for example, net5.0)</param>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.ValidateOptions">
+            <summary>
+            Validation for options from loaded config
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.GetAssemblies(System.String)">
+            <summary>
+            Get assemblies (.dll and .exe) from the specified directory
+            </summary>
+            <param name="directory">Directory with Target assemblies</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.TryGetAssemblyVersion(System.String)">
+            <summary>
+            Try to get framework version of assembly. In some cases,
+            the version cannot be obtained.
+            </summary>
+            <param name="filePath">Path to the file of assembly</param>
+            <returns>Version of assembly including other metadata</returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.ReadInjectedTree">
+            <summary>
+            Read the metadata of injected entities from file
+            </summary>
+            <returns>Tree data of injected entities (directories, assemblies, types, methods, etc)</returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.WriteInjectedTree(System.String,Drill4Net.Profiling.Tree.InjectedSolution)">
+            <summary>
+            Write metadata of injected entities (directories, assemblies, types, methods, etc) to the file
+            </summary>
+            <param name="path"></param>
+            <param name="tree"></param>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.PrepareLogger">
+            <summary>
+            The preparing the logger. It need be called from the client side.
+            </summary>
         </member>
     </members>
 </doc>

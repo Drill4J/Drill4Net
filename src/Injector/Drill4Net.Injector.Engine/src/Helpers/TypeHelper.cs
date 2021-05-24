@@ -6,6 +6,9 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// Type helper
+    /// </summary>
     internal static class TypeHelper
     {
         private static readonly TypeChecker _typeChecker = new();
@@ -13,7 +16,7 @@ namespace Drill4Net.Injector.Engine
         /*************************************************************************************/
 
         /// <summary>
-        /// Get filtered types of assembly
+        /// Get filtered types of assembly by specified options
         /// </summary>
         /// <param name="allTypes"></param>
         /// <param name="opts"></param>
@@ -52,15 +55,29 @@ namespace Drill4Net.Injector.Engine
             return res;
         }
 
+        /// <summary>
+        /// Try to get real type name from compiler generated classes. Technically, 
+        /// it will be upward search the "normal name" in the type parent's hierarchy.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         internal static string TryGetRealTypeName(TypeDefinition type)
         {
             if (type?.DeclaringType == null)
                 return type?.FullName;
             do type = type.DeclaringType;
-            while (type.DeclaringType != null && (type.Name.Contains("c__DisplayClass") || type.Name.Contains("<>")));
+                while ( 
+                        type.DeclaringType != null && 
+                        (type.Name.Contains("c__DisplayClass") || type.Name.Contains("<>"))
+                      );
             return type?.FullName;
         }
 
+        /// <summary>
+        /// Retreive some metadata for type
+        /// </summary>
+        /// <param name="def"></param>
+        /// <returns></returns>
         internal static TypeSource CreateTypeSource(TypeDefinition def)
         {
             return new TypeSource
@@ -74,6 +91,11 @@ namespace Drill4Net.Injector.Engine
             };
         }
 
+        /// <summary>
+        /// Get access type of type
+        /// </summary>
+        /// <param name="def"></param>
+        /// <returns></returns>
         internal static AccessType GetAccessType(TypeDefinition def)
         {
             if (def.IsNestedPrivate)

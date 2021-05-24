@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using Mono.Cecil.Cil;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -59,11 +59,11 @@ namespace Drill4Net.Injector.Engine
 
                         #region Check
                         var checkRes = CheckInstruction(methodCtx);
-                        if (checkRes == ExecutionType.NextCycle)
+                        if (checkRes == OperationType.CycleContinue)
                             continue;
-                        if (checkRes == ExecutionType.BreakCycle)
+                        if (checkRes == OperationType.BreakCycle)
                             break;
-                        if (checkRes == ExecutionType.Return)
+                        if (checkRes == OperationType.Return)
                             return;
                         #endregion
 
@@ -78,14 +78,14 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static ExecutionType CheckInstruction(MethodContext ctx)
+        internal static OperationType CheckInstruction(MethodContext ctx)
         {
             var instr = ctx.CurInstruction;
             var code = instr.OpCode.Code;
 
             // for injecting cases
             if (code == Code.Nop || ctx.AheadProcessed.Contains(instr))
-                return ExecutionType.NextCycle;
+                return OperationType.CycleContinue;
 
             var method = ctx.Method;
 
@@ -120,7 +120,7 @@ namespace Drill4Net.Injector.Engine
             }
             #endregion
 
-            return ExecutionType.NextOperand;
+            return OperationType.NextOperand;
 
             //local funcs
             static bool LeaveTryCatch(MethodContext ctx)

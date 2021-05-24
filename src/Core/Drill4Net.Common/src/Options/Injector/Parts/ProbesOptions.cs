@@ -13,5 +13,16 @@
         /// Does the Enter type of cross-point needed?
         /// </summary>
         public bool SkipEnterType { get; set; }
+
+        /***********************************************/
+
+        public ProbesOptions()
+        {
+            Private = true;
+            Ctor = true;
+            Getter = true;
+            Setter = true;
+        }
+
     }
 }

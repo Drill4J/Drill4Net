@@ -2,8 +2,16 @@
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// Instruction helper
+    /// </summary>
     internal static class InstructionHelper
     {
+        /// <summary>
+        /// Converting the short form of an IL instruction to the long form in cases of "jumping too far"
+        /// </summary>
+        /// <param name="opCode"></param>
+        /// <returns></returns>
         public static OpCode ShortJumpToLong(OpCode opCode)
         {
             //TODO: to a dictionary

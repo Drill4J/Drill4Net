@@ -1,13 +1,20 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Core.Repository
 {
+    /// <summary>
+    /// Abstract repository for the injection options, retrieving strategy, directories and files, etc
+    /// </summary>
+    /// <typeparam name="TOptions">Concrete options</typeparam>
+    /// <typeparam name="THelper">Helper for manipulating the concrete type of options</typeparam>
     public abstract class AbstractRepository<TOptions, THelper> where TOptions : BaseOptions, new()
                                                                 where THelper : BaseOptionsHelper<TOptions>, new()
     {
+        /// <summary>
+        /// Options for the injection
+        /// </summary>
         public TOptions Options { get; set; }
 
         protected THelper _optHelper;

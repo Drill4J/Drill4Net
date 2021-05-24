@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Core
         public string SourceFile { get; set; }
         public InjectorOptions Options => Repository.Options;
         public CodeHandlerStrategy Strategy { get; }
-        public IInjector Injector { get; }
+        public IAssemblyInjector Injector { get; }
 
         public bool? IsNetCore { get; private set; }
         public AssemblyVersioning MainVersion { get; private set; }
@@ -61,7 +61,7 @@ namespace Drill4Net.Injector.Core
                     versions.Add(file, version);
                     continue;
                 }
-                version = Repository.GetAssemblyVersion(file);
+                version = Repository.TryGetAssemblyVersion(file);
                 versions.Add(file, version);
                 //
                 if (IsNetCore == null)

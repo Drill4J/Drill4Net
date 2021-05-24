@@ -11,19 +11,34 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Engine
 {
-    public class Injector : IInjector
+    /// <summary>
+    /// The concrete Injector which injects the instrumenting code called by Target for Agent
+    /// </summary>
+    public class AssemblyInjector : IAssemblyInjector
     {
+        /// <summary>
+        /// Concrete strategy of instrumenting code injections into Target
+        /// </summary>
         public CodeHandlerStrategy Strategy { get; }
 
         /**********************************************************************************/
 
-        public Injector(CodeHandlerStrategy strategy)
+        /// <summary>
+        /// Create the Injector which injects the instrumenting code called by Target for Agent
+        /// </summary>
+        /// <param name="strategy"></param>
+        public AssemblyInjector(CodeHandlerStrategy strategy)
         {
             Strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
         }
 
         /**********************************************************************************/
 
+        /// <summary>
+        /// Inject the specified assembly
+        /// </summary>
+        /// <param name="runCtx">Context of Engine's Run</param>
+        /// <param name="asmCtx">Context of current assembly</param>
         public void Inject(RunContext runCtx, AssemblyContext asmCtx)
         {
             if (!ContextHelper.CreateContexts(runCtx, asmCtx))
@@ -42,14 +57,20 @@ namespace Drill4Net.Injector.Engine
             AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
             AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
 
-            //the injecting here
+            //the injecting is here
             InjectProxyCalls(asmCtx, runCtx.Tree);
-            InjectProxyClass(asmCtx, opts);
+            InjectProxyType(asmCtx, opts);
 
             //coverage data
             CoverageHelper.CalcCoverageBlocks(asmCtx);
         }
 
+        /// <summary>
+        /// Inject instrumenting probe calls of Proxy class' calls 
+        /// for each needed cross-point of Target
+        /// </summary>
+        /// <param name="asmCtx"></param>
+        /// <param name="tree"></param>
         internal void InjectProxyCalls(AssemblyContext asmCtx, InjectedSolution tree)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
@@ -148,6 +169,11 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
+        /// <summary>
+        /// Process the current instruction of IL code according to <see cref="Strategy"/>
+        /// </summary>
+        /// <param name="ctx">Current method context</param>
+        /// <returns></returns>
         internal int HandleInstruction(MethodContext ctx)
         {
             if (ctx == null)
@@ -164,7 +190,13 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal void InjectProxyClass(AssemblyContext asmCtx, InjectorOptions opts)
+        /// <summary>
+        /// Inject into assembly the Proxy class (it just pushes the probe data from 
+        /// Target class to real Agent) according specified in context and options metadata
+        /// </summary>
+        /// <param name="asmCtx">Assembly context</param>
+        /// <param name="opts">Injector options</param>
+        internal void InjectProxyType(AssemblyContext asmCtx, InjectorOptions opts)
         {
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side

@@ -13,6 +13,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Drill4Net class' XML docs
+doc/xml/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

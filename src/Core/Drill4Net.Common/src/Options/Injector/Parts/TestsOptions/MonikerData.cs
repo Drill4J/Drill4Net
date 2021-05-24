@@ -2,6 +2,9 @@
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Data for moniker of framework version (netcoreapp3.1, net5.0, etc)
+    /// </summary>
     public class MonikerData
     {
         /// <summary>

@@ -38,7 +38,7 @@ namespace Drill4Net.Injector.Core
             }
             else
             {
-                version = runCtx.Repository.GetAssemblyVersion(filePath);
+                version = runCtx.Repository.TryGetAssemblyVersion(filePath);
                 if (version != null)
                     versions.Add(filePath, version);
             }
