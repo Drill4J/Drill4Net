@@ -30,7 +30,7 @@ namespace Drill4Net.Injector.Engine
             asmCtx.InjAssembly = treeAsm;
 
             var key = asmCtx.Key;
-            var keys = runCtx.AssemblyKeys;
+            var keys = runCtx.AssemblyPaths;
             if (keys.ContainsKey(key)) //the assembly is shared and already is injected
             {
                 var writer = new AssemblyWriter();
