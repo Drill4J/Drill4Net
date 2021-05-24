@@ -275,15 +275,16 @@ namespace Drill4Net.Agent.Standard
         public bool RegisterCoverage(string pointUid)
         {
             //global session
+            var isGlobalReg = false;
             if (_globalDispatcher != null)
-                _globalDispatcher.RegisterCoverage(pointUid);
+                isGlobalReg = _globalDispatcher.RegisterCoverage(pointUid);
 
             //exact session
             var disp = GetCoverageDispather();
             if (disp != null)
                 return disp.RegisterCoverage(pointUid);
             else
-                return false;
+                return isGlobalReg;
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -320,7 +321,7 @@ namespace Drill4Net.Agent.Standard
 
         private void SendDispatcherCoverageData(CoverageDispatcher disp)
         {
-            var sessionUid = disp.Session?.SessionId;
+            var sessionUid = disp?.Session?.SessionId;
             if (sessionUid == null)
                 return;
             var execClasses = disp.AffectedExecClasses.ToList();
@@ -380,6 +381,10 @@ namespace Drill4Net.Agent.Standard
             {
                 //TODO: do it properly! Need right binding ctx to session!
                 var session = GetManualSession();
+                if (session == null)
+                    return null;
+                if (_globalDispatcher.Session == session)
+                    return null;
                 disp = CreateCoverageDispatcher(session);
                 _ctxToDispatcher.TryAdd(ctxId, disp);
             }
