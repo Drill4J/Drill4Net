@@ -65,10 +65,10 @@ namespace Drill4Net.Agent.Standard
         {
             #region Checks
             //hm... log?
-            if (!PointToClass.TryGetValue(pointUid, out var classData))
-                return false; //it's normal, but not the best (for block coverage we not need "Enter" type of cross-points, another case is a possible error)
             if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
                 return false; //it's error
+            if (!PointToClass.TryGetValue(pointUid, out var classData))
+                return false; //it's normal, but not the best (for block coverage we not need "Enter" type of cross-points, another case is a possible error)
 
             var probes = classData.probes;
             var start = range.Start;
@@ -77,21 +77,17 @@ namespace Drill4Net.Agent.Standard
                 return false; //it's error
             #endregion
 
-            if (probes[start]) //yet registered
+            if (probes[start]) //already registered
                 return true;
             //
-            for(var i = start; i <= end; i++)
-                probes[i] = true;
-            AffectedProbeCount += end - start + 1;
-
-            //affected classes
-            if (!AffectedExecClasses.Contains(classData))
+            lock (AffectedExecClasses)
             {
-                lock (AffectedExecClasses)
-                {
-                    if (!AffectedExecClasses.Contains(classData))
-                        AffectedExecClasses.Add(classData);
-                }
+                for (var i = start; i <= end; i++)
+                    probes[i] = true;
+                AffectedProbeCount += (end - start + 1);
+
+                if (!AffectedExecClasses.Contains(classData))
+                    AffectedExecClasses.Add(classData);
             }
             return true;
         }

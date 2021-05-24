@@ -20,7 +20,7 @@
         <MudText Class="pa-2 mx-2" Typo="Typo.body2">
             Let's say we have one simplest class <i>Drill4Net.Demo.Target.CoverageTarget</i> with two identical functions. Each function has 
             one conditional <i>If/Else</i> branch statement and a <i>Boolean input parameter</i> that allows you to work out either the 
-            <i>If</i> or <i>Else</i> branch. So 2x2 = 4 options for what should happen - <i>25% coverage</i> for each single call. 
+            <i>If</i> or <i>Else</i> branch. So 2x2 = 4 options for what should happen - <i>approximately 25% coverage</i> for each single call. 
             If the GUI can call all the methods of our class, the tester able to cover the entire code of it. Of course, in real conditions 
             everything is more complicated.
         </MudText>
@@ -78,28 +78,28 @@
     void RunGroup_A()
     {
         var c = new CoverageTarget();
-        c.IfElse_FullSimple_1(false);
+        c.IfElse_1(false);
         CoverGroup(MethodGroupType.A);
     }
 
     void RunGroup_B()
     {
         var c = new CoverageTarget();
-        c.IfElse_FullSimple_1(true);
+        c.IfElse_1(true);
         CoverGroup(MethodGroupType.B);
     }
 
     void RunGroup_C()
     {
         var c = new CoverageTarget();
-        c.IfElse_FullSimple_2(false);
+        c.IfElse_2(false);
         CoverGroup(MethodGroupType.C);
     }
 
     void RunGroup_D()
     {
         var c = new CoverageTarget();
-        c.IfElse_FullSimple_2(true);
+        c.IfElse_2(true);
         CoverGroup(MethodGroupType.D);
     }
 

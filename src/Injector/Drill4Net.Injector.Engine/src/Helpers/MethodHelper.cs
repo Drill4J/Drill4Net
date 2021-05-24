@@ -18,8 +18,8 @@ namespace Drill4Net.Injector.Engine
 
         /*************************************************************************************/
 
-        internal static void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods, InjectedMethod caller,
-            string calleeName)
+        internal static void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods, 
+            InjectedMethod caller, string calleeName)
         {
             #region Check
             if (methods == null)
@@ -37,8 +37,7 @@ namespace Drill4Net.Injector.Engine
                 CorrectMethodBusinessSize(methods, callee, subCalleeName);
             }
 
-            //the size of caller consists of own size + all sizes of it's CG callees
-            //(already included in them)
+            //the size of caller consists of own size + all sizes of it's CG callees (already included in them)
             caller.BusinessSize += callee.BusinessSize;
         }
 

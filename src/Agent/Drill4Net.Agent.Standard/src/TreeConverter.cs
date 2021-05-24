@@ -8,12 +8,18 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Agent.Standard
 {
     /// <summary>
-    /// Converter-helper for DTO entities (<see cref="AstEntity"/>, <see cref="AstMethod"/>) 
-    /// and <see cref="CoverageDispatcher"/> from <see cref="InjectedType"/>
+    /// Helper for converting DTO entities (<see cref="AstEntity"/>, <see cref="AstMethod"/>) 
+    /// and also <see cref="CoverageDispatcher"/> from <see cref="InjectedType"/>
     /// </summary>
     public class TreeConverter
     {
         #region AstEntities
+        /// <summary>
+        /// Convert list of <see cref="InjectedType"/> to the list of <see cref="AstEntity"/>
+        /// for transferring onto Admin side
+        /// </summary>
+        /// <param name="injTypes"></param>
+        /// <returns></returns>
         public List<AstEntity> ToAstEntities(IEnumerable<InjectedType> injTypes)
         {
             if (injTypes == null)
@@ -27,7 +33,13 @@ namespace Drill4Net.Agent.Standard
             }
             return res;
         }
-        
+
+        /// <summary>
+        /// Convert <see cref="InjectedType"/> to the <see cref="AstEntity"/>
+        /// for transferring onto Admin side
+        /// </summary>
+        /// <param name="injType"></param>
+        /// <returns></returns>
         internal AstEntity ToAstEntity(InjectedType injType)
         {
             if (injType == null)
@@ -42,7 +54,13 @@ namespace Drill4Net.Agent.Standard
             }
             return entity;
         }
-        
+
+        /// <summary>
+        /// Convert <see cref="InjectedMethod"/> to the <see cref="AstMethod"/>
+        /// for transferring onto Admin side
+        /// </summary>
+        /// <param name="injMethod"></param>
+        /// <returns></returns>
         internal AstMethod ToAstMethod(InjectedMethod injMethod)
         {
             if (injMethod == null)
@@ -81,7 +99,7 @@ namespace Drill4Net.Agent.Standard
             //    .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
             //    .OrderBy(a => a.FullName);
 
-            foreach (var type in bizTypes.AsParallel())
+            foreach (var type in bizTypes) //don't parallelize yet (need protect ind)
             {
                 var bizMethods = type.GetMethods()?
                     .Where(a => a.Coverage.PointToBlockEnds.Any())?
@@ -106,8 +124,6 @@ namespace Drill4Net.Agent.Standard
 
                     //CG callee data
                     var cgCallees = meth.CalleeIndexes;
-                    if (cgCallees.Count == 0)
-                        continue;
                     foreach (var callee in cgCallees.Keys)
                     {
                         var cgInd = cgCallees[callee];

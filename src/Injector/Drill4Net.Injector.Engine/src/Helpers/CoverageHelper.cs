@@ -5,8 +5,16 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// Helper for calculating of the code block coverage
+    /// </summary>
     internal static class CoverageHelper
     {
+        /// <summary>
+        /// The calculating of the local code block coverage (cross-point's instruction ranges)
+        /// fro assembly's methods
+        /// </summary>
+        /// <param name="asmCtx">Assembly context</param>
         internal static void CalcCoverageBlocks(AssemblyContext asmCtx)
         {
             var allMethods = asmCtx.InjMethodByFullname.Values;

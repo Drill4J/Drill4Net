@@ -84,9 +84,33 @@
         </member>
         <member name="T:Drill4Net.Agent.Standard.TreeConverter">
             <summary>
-            Converter-helper for DTO entities (<see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/>, <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstMethod"/>) 
-            and <see cref="T:Drill4Net.Agent.Standard.CoverageDispatcher"/> from <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
+            Helper for converting DTO entities (<see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/>, <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstMethod"/>) 
+            and also <see cref="T:Drill4Net.Agent.Standard.CoverageDispatcher"/> from <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
             </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.ToAstEntities(System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedType})">
+            <summary>
+            Convert list of <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/> to the list of <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/>
+            for transferring onto Admin side
+            </summary>
+            <param name="injTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.ToAstEntity(Drill4Net.Profiling.Tree.InjectedType)">
+            <summary>
+            Convert <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/> to the <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/>
+            for transferring onto Admin side
+            </summary>
+            <param name="injType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.ToAstMethod(Drill4Net.Profiling.Tree.InjectedMethod)">
+            <summary>
+            Convert <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/> to the <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstMethod"/>
+            for transferring onto Admin side
+            </summary>
+            <param name="injMethod"></param>
+            <returns></returns>
         </member>
         <member name="M:Drill4Net.Agent.Standard.TreeConverter.CreateCoverageDispatcher(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload,System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedType})">
             <summary>
@@ -116,16 +140,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 40c3ba8</summary>
+            <summary>Commit: a086e03</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 40c3ba8e8af4ef0aea370a4844d1a2b6c649589f</summary>
+            <summary>Sha: a086e03ce9e0ac71014d51c21049e11511e3aa5b</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-05-24T15:24:22+03:00</summary>
+            <summary>Commit date: 2021-05-24T16:27:42+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 384</summary>
+            <summary>Commits on top of base version: 385</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -155,7 +179,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 384</summary>
+            <summary>Patch: 385</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

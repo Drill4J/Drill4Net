@@ -51,6 +51,11 @@ namespace Drill4Net.Agent.Standard.Debug
                 _points = asmTree.Filter(typeof(CrossPoint), true).Cast<CrossPoint>().ToList();
                 Console.WriteLine($"\nCross points: {_points.Count}");
 
+                //debug
+                var treeCnv = new TreeConverter();
+                var types = tree.GetAllTypes().Where(a => a.Name == "CoverageTarget");
+                treeCnv.CreateCoverageDispatcher(new Abstract.Transfer.StartSessionPayload(), types);
+
                 //range
                 await Task.Delay(1500);
                 Console.Write($"Input point count for the simulating execution range [{_pointRange}]: ");
