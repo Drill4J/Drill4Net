@@ -8,7 +8,6 @@
     private bool _isTest = true;
 }
 
-
 @*Group runers*@
 <MudGrid>
     <MudItem xs="12" md="0">
@@ -19,32 +18,33 @@
             This page shows the principles of retreiving  of code coverage by <i>manual testing</i>.
         </MudText>
         <MudText Class="pa-2 mx-2" Typo="Typo.body2">
-            Let's say we have one simplest class with two identical functions. Each function has one conditional <i>If/Else</i> branch statement and
-            a <i>Boolean input parameter</i> that allows you to work out either the <i>If</i> or <i>Else</i> branch. So 2x2 = 4 options for what
-            should happen - <i>25% coverage</i> for each single call. If the GUI can call all the methods of the public interface, the tester is also,
-            in theory, able to cover the entire code of our class.
+            Let's say we have one simplest class <i>CoverageTarget</i> with two identical functions. Each function has one conditional <i>If/Else</i>
+            branch statement and a <i>Boolean input parameter</i> that allows you to work out either the <i>If</i> or <i>Else</i> branch.
+            So 2x2 = 4 options for what should happen - <i>25% coverage</i> for each single call. If the GUI can call all the methods of our class,
+            the tester able to cover the entire code of it. Of course, in real conditions everything is more complicated.
         </MudText>
         <MudText Class="pa-2 mx-2" Typo="Typo.body2">
-            Click 1 or 2 buttons and then check the results on the Drill Admin side (please wait a few seconds). And after that click the
-            remaining buttons. You should get 100% coverage - both the <i>theoretical</i> one listed here on the page, and <i>practical</i> on the
-            Drill admin side, too. <i>Note:</i> Subsequent clicks on the same button should not have an effect on any results. Let's do it!
+            So, click 1 or 2 buttons and then check the results on the Drill Admin side (please wait a few seconds). And after that click the
+            remaining buttons. You should get 100% coverage of the class CoverageTarget - both the <i>theoretical</i> one listed here on the page, 
+            and <i>practical</i> on the Drill admin side, too. <i>Note:</i> Subsequent clicks on the same button should not have an effect on any results.
+            Let's do it!
         </MudText>
 
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun1()" OnClick="RunGroup_A">@GetButtonCaption(1, false)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.A)>@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun1()" OnClick="RunGroup_B">@GetButtonCaption(1, true)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.B)>@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun2()" OnClick="RunGroup_C">@GetButtonCaption(2, false)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color="Color.Success">@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.C)>@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun2()" OnClick="RunGroup_D">@GetButtonCaption(2, true)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2">@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.D)>@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudText Class="px-0 py-1" Typo="Typo.body2" Color="@_resColor"><strong>Coverage: @_coverProc%</strong></MudText>
@@ -113,7 +113,7 @@
             _resColor = Color.Success;
     }
 
-    #region Buttons
+    #region Control views
     private string GetButtonCaption(int fun, bool boolParam)
     {
         return $"Fun {fun} ({boolParam})";
@@ -132,6 +132,11 @@
     private Color GetButtonColorFun2()
     {
         return Color.Secondary;
+    }
+
+    private Color GetProcCaptionColor(MethodGroupType order)
+    {
+        return _coverGroups.Contains(order) ? Color.Success : Color.Dark;
     }
     #endregion
 }
