@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Demo.Target
+﻿using System;
+
+namespace Drill4Net.Demo.Target
 {
     /// <summary>
     /// Functions for demo with known coverage part
@@ -12,9 +14,9 @@
                 var a = cond ? 5 : -3;
                 var b = 2;
                 double c = a * b;
-                c -= (a + b) / 3.0 * 10 + 25 - 45 + 67 / 13.0 - 23;
-                c += (a + b) / 3.0 + 10 - 25 + 45 + 67 + 13 - 23;
-                c -= (a + b) / 3.0 + 10 + 25 - 45 + 67 + 13 - 23;
+                c -= 3.0 * 10 + 25 - 45 + 67 / 13.0 - 23;
+                c += 3.0 + 10 - 25 + 45 + 67 + 13 - 23;
+                c -= 3.0 + 10 + 25 - 45 + 67 + 13 - 23;
                 c /= (a + b) / 3.0 * 10 - 25 + 45 + 67 + 13 - 23;
                 c *= (a + b) / 3.0 + 10 + 25 - 45 + 67 + 13 - 23;
                 c += (a + b) / 3.0 + 10 - 25 + 45 + 67 + 13 - 23;
@@ -4263,6 +4265,13 @@
                 c *= (a + b) / 3.0 + 10 - 25 + 45 + 67 / 13.0 - a;
                 return c;
             }
+        }
+
+        public void Elvis_Double_NotNull()
+        {
+            var obj = "aaa";
+            var prop = obj ?? "bbb";
+            Console.WriteLine($"{nameof(Elvis_Double_NotNull)}: {prop}");
         }
     }
 }
