@@ -84,8 +84,8 @@ namespace Drill4Net.Agent.Standard
             {
                 for (var i = start; i <= end; i++)
                     probes[i] = true;
-                AffectedProbeCount += (end - start + 1);
-
+                AffectedProbeCount += end - start + 1;
+                //
                 if (!AffectedExecClasses.Contains(classData))
                     AffectedExecClasses.Add(classData);
             }

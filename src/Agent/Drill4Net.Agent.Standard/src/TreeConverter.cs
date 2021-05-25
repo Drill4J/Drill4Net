@@ -138,13 +138,14 @@ namespace Drill4Net.Agent.Standard
             static void bindMethod(CoverageDispatcher disp, ExecClassData execData, InjectedMethod meth, ref int ind)
             {
                 var inds = meth.Coverage.PointToBlockEnds.OrderBy(a => a.Value);
+                var startMeth = ind;
                 foreach (var pair in inds)
                 {
                     var localEnd = pair.Value;
-                    var start = ind;
-                    var end = start + localEnd;
-                    disp.BindPoint(pair.Key, execData, start, end);
-                    ind += localEnd + 1;
+                    var startBlock = ind;
+                    var endBlock = startMeth + localEnd;
+                    disp.BindPoint(pair.Key, execData, startBlock, endBlock);
+                    ind = endBlock + 1;
                 }
             }
         }
