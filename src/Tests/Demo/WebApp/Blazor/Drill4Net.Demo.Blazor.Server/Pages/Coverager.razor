@@ -18,34 +18,38 @@
             This page shows the principles of retreiving  of code coverage by <i>manual testing</i>.
         </MudText>
         <MudText Class="pa-2 mx-2" Typo="Typo.body2">
-            Let's say we have one simplest class <i>Drill4Net.Demo.Target.CoverageTarget</i> with two identical functions. Each function has 
-            one conditional <i>If/Else</i> branch statement and a <i>Boolean input parameter</i> that allows you to work out either the 
-            <i>If</i> or <i>Else</i> branch. So 2x2 = 4 options for what should happen - <i>approximately 25% coverage</i> for each single call. 
-            If the GUI can call all the methods of our class, the tester able to cover the entire code of it. Of course, in real conditions 
+            Let's say we have one simplest class <i>Drill4Net.Demo.Target.CoverageTarget</i> with two identical functions. Each function has
+            one conditional <i>If/Else</i> branch statement and a <i>Boolean input parameter</i> that allows you to work out either the
+            <i>If</i> or <i>Else</i> branch. So 2x2 = 4 options for what should happen - <i>approximately 25% coverage</i> for each single call.
+            If the GUI can call all the methods of our class, the tester able to cover the entire code of it. Of course, in real conditions
             everything is more complicated.
         </MudText>
         <MudText Class="pa-2 mx-2" Typo="Typo.body2">
             So, click 1 or 2 buttons and then check the results on the Drill Admin side (please wait a few seconds). And after that click the
-            remaining buttons. You should get 100% coverage of the class Drill4Net.Demo.Target.CoverageTarget - both the <i>theoretical</i> 
-            one listed here on the page, and <i>practical</i> on the Drill admin side, too. <i>Note:</i> Subsequent clicks on the same button 
+            remaining buttons. You should get 100% coverage of the class Drill4Net.Demo.Target.CoverageTarget - both the <i>theoretical</i>
+            one listed here on the page, and <i>practical</i> on the Drill admin side, too. <i>Note:</i> Subsequent clicks on the same button
             should not have an effect on any results. Let's do it!
         </MudText>
 
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun1()" OnClick="RunGroup_A">@GetButtonCaption(1, false)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(1)" OnClick="RunGroup_A">@GetButtonCaption(1, false)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.A)>@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun1()" OnClick="RunGroup_B">@GetButtonCaption(1, true)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(1)" OnClick="RunGroup_B">@GetButtonCaption(1, true)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.B)>@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun2()" OnClick="RunGroup_C">@GetButtonCaption(2, false)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(2)" OnClick="RunGroup_C">@GetButtonCaption(2, false)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.C)>@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun2()" OnClick="RunGroup_D">@GetButtonCaption(2, true)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(2)" OnClick="RunGroup_D">@GetButtonCaption(2, true)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.D)>@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
+        </MudPaper>
+        <MudPaper Class="d-flex flex-row py-1">
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(3)" OnClick="RunGroup_E">@GetButtonCaption(3, true)</MudButton>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.E)>~@GetGroupCoverageDesc(MethodGroupType.E) -> <i>It's new functionality!</i></MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudText Class="px-0 py-1" Typo="Typo.body2" Color="@_resColor"><strong>Coverage: @_coverProc%</strong></MudText>
@@ -56,7 +60,7 @@
 @code {
     private Dictionary<MethodGroupType, double> _coverages = new Dictionary<MethodGroupType, double>
     {
-        { MethodGroupType.A, 25 }, { MethodGroupType.B, 25 }, { MethodGroupType.C, 25 }, { MethodGroupType.D, 25 }
+        { MethodGroupType.A, 25 }, { MethodGroupType.B, 25 }, { MethodGroupType.C, 25 }, { MethodGroupType.D, 25 }, { MethodGroupType.E, 0.1 }
     };
 
     private HashSet<MethodGroupType> _coverGroups = new HashSet<MethodGroupType>();
@@ -103,12 +107,21 @@
         CoverGroup(MethodGroupType.D);
     }
 
+    void RunGroup_E()
+    {
+        var c = new CoverageTarget();
+        c.Elvis_Double_NotNull();
+        CoverGroup(MethodGroupType.E);
+    }
+
     void CoverGroup(MethodGroupType id)
     {
         if (!_coverGroups.Contains(id))
         {
             _coverGroups.Add(id);
             _coverProc += GetGroupCoverage(id);
+            if (_coverProc > 100)
+                _coverProc = 100;
         }
         if (_coverProc == 100)
             _resColor = Color.Success;
@@ -125,14 +138,15 @@
         return Variant.Text; // Variant.Outlined;
     }
 
-    private Color GetButtonColorFun1()
+    private Color GetButtonColorFun(int fun)
     {
-        return Color.Primary;
-    }
-
-    private Color GetButtonColorFun2()
-    {
-        return Color.Secondary;
+        switch (fun)
+        {
+            case 1: return Color.Primary;
+            case 2: return Color.Secondary;
+            case 3: return Color.Warning;
+            default: return Color.Default;
+        }
     }
 
     private Color GetProcCaptionColor(MethodGroupType order)
