@@ -33,22 +33,22 @@
 
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(1)" OnClick="RunGroup_A">@GetButtonCaption(1, false)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.A)>~@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.A)>@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(1)" OnClick="RunGroup_B">@GetButtonCaption(1, true)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.B)>~@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.B)>@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(2)" OnClick="RunGroup_C">@GetButtonCaption(2, false)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.C)>~@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.C)>@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
             <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(2)" OnClick="RunGroup_D">@GetButtonCaption(2, true)</MudButton>
-            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.D)>~@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
+            <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.D)>@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(3)" OnClick="RunGroup_E">@GetButtonCaption(3, true)</MudButton>
+            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(3)" OnClick="RunGroup_E">@GetButtonCaption(3)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.E)>~@GetGroupCoverageDesc(MethodGroupType.E) -> <i>It's new functionality!</i></MudText>
         </MudPaper>
         <MudPaper Class="d-flex flex-row py-1">
@@ -60,7 +60,7 @@
 @code {
     private Dictionary<MethodGroupType, double> _coverages = new Dictionary<MethodGroupType, double>
     {
-        { MethodGroupType.A, 25 }, { MethodGroupType.B, 25 }, { MethodGroupType.C, 25 }, { MethodGroupType.D, 25 }, { MethodGroupType.E, 0.1 }
+        { MethodGroupType.A, 25 }, { MethodGroupType.B, 25 }, { MethodGroupType.C, 25 }, { MethodGroupType.D, 25 }, { MethodGroupType.E, 0.01 }
     };
 
     private HashSet<MethodGroupType> _coverGroups = new HashSet<MethodGroupType>();
@@ -110,7 +110,7 @@
     void RunGroup_E()
     {
         var c = new CoverageTarget();
-        c.Elvis_Double_NotNull();
+        c.GetMilliseconds();
         CoverGroup(MethodGroupType.E);
     }
 
@@ -128,9 +128,10 @@
     }
 
     #region Control views
-    private string GetButtonCaption(int fun, bool boolParam)
+    private string GetButtonCaption(int fun, object pars = null)
     {
-        return $"Fun {fun} ({boolParam})";
+        var s = $"Fun_{fun}({pars})";
+        return s;
     }
 
     private Variant GetButtonVariant()
