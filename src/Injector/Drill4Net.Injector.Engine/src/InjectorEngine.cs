@@ -42,7 +42,7 @@ namespace Drill4Net.Injector.Engine
         /*****************************************************************/
 
         /// <summary>
-        /// Inject the target accordingly by the current config
+        /// Inject the target accordingly by the current config from repository
         /// </summary>
         /// <returns>Tree data of metadata for injected entities (processed directories, assemblies, 
         /// classes, methods, cross-points, etc)</returns>
