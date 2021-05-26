@@ -70,8 +70,8 @@ namespace Drill4Net.Injector.Core
             var asmCtx = (AssemblyLoaderContext)refCtx.Target;
             try
             {
-                if (refCtx.IsAlive)
-                    asmCtx.Unload();
+                //if (refCtx.IsAlive)
+                     //asmCtx.Unload();
             }
             catch { }
             for (var i = 0; refCtx.IsAlive && i < 10; i++)

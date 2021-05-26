@@ -56,11 +56,11 @@
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.D)>@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
 
-        <MudPaper Class="d-flex flex-row py-1 px-4">
+        @*<MudPaper Class="d-flex flex-row py-1 px-4">
             <MudButton Variant="@GetButtonVariant()" Style="height:36px;width:100px;"
                        Color="@GetButtonColorFun(3)" OnClick="RunGroup_E">@GetButtonCaption(3)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.E)>~@GetGroupCoverageDesc(MethodGroupType.E) -> <i>It's new functionality!</i></MudText>
-        </MudPaper>
+        </MudPaper>*@
 
         <MudPaper Class="d-flex flex-row py-1">
             <MudText Class="px-0 py-1" Typo="Typo.body2" Style="height:36px;width:100px;"
@@ -119,12 +119,12 @@
         CoverGroup(MethodGroupType.D);
     }
 
-    void RunGroup_E()
-    {
-        var c = new CoverageTarget();
-        c.GetMilliseconds();
-        CoverGroup(MethodGroupType.E);
-    }
+    //void RunGroup_E()
+    //{
+    //    var c = new CoverageTarget();
+    //    c.GetMilliseconds();
+    //    CoverGroup(MethodGroupType.E);
+    //}
 
     void CoverGroup(MethodGroupType id)
     {

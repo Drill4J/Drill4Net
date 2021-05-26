@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GitInfo" Version="2.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MudBlazor" Version="5.0.8" />
   </ItemGroup>
 
