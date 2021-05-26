@@ -378,7 +378,7 @@ namespace Drill4Net.Injector.Engine
         {
             long a = 0;
             foreach (var p in instructions.Where(a => a.OpCode.Code != Code.Nop))
-                a ^= p.GetHashCode();
+                a ^= $"{p.OpCode.Code}{p.Operand}".GetHashCode();
             return a.ToString();
         }
     }

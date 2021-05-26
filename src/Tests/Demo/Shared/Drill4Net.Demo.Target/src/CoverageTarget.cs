@@ -4267,9 +4267,9 @@ namespace Drill4Net.Demo.Target
             }
         }
 
-        public int GetMilliseconds()
-        {
-            return DateTime.Now.Millisecond;
-        }
+        //public int GetMilliseconds()
+        //{
+        //    return DateTime.Now.Millisecond;
+        //}
     }
 }
