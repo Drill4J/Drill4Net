@@ -299,7 +299,7 @@ namespace Drill4Net.Injector.Engine
                 #endregion
 
                 var source = CreateMethodSource(ownMethod);
-                Console.WriteLine($"Hash: {methodName} -> {source.HashCode}");
+                //Console.WriteLine($"Hash: {methodName} -> {source.HashCode}");
                 var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname,
                     treeParentClass.BusinessType, ownMethod.FullName, source);
                 //
@@ -379,9 +379,10 @@ namespace Drill4Net.Injector.Engine
             var bizInstrs = instructions.Where(a => a.OpCode.Code != Code.Nop);
             unchecked // Overflow is fine, just wrap
             {
-                var a = bizInstrs.Aggregate(11, (current, p) => 
-                    current ^ $"{p.OpCode.Code}{p.Operand}".Sum(a => a.GetHashCode()));
-                return a.ToString();
+                var hash = bizInstrs.Aggregate(3151131, (val, p) => 
+                    val ^ $"{p.OpCode.Code}{p.Operand}"
+                           .Aggregate(7171371, (strSum, ch) => strSum ^ ch.GetHashCode()));
+                return hash.ToString();
             }
         }
     }
