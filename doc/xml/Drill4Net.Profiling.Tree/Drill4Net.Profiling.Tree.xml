@@ -131,5 +131,20 @@
             Normal ('business') method from the user source code
             </summary>
         </member>
+        <member name="T:Drill4Net.Profiling.Tree.MethodSource">
+            <summary>
+            Metadata about method
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.MethodSource.MethodType">
+            <summary>
+            Type of method
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.MethodSource.HashCode">
+            <summary>
+            Hash code of method body for the tracking of it's changes
+            </summary>
+        </member>
     </members>
 </doc>

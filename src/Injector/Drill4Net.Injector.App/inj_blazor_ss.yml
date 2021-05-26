@@ -23,7 +23,8 @@ Destination: # where copying injected assemblies
     FolderPostfix: Injected #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  Directory: c:\drill-agents\StandardAgent\ #..\..\Drill4Net.Agent.Standard\netstandard2.0\  # absolute path or relatively dir
+  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\  # absolute path or relatively dir
+  #Directory: c:\drill-agents\StandardAgent\ 
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard
   Class: StandardAgent
