@@ -9,7 +9,7 @@
 }
 
 @*Group runers*@
-<MudGrid>
+<MudGrid Justify="Justify.FlexStart">
     <MudItem xs="12" md="0">
         <MudText Color="Color.Info" Typo="Typo.body2"><i>CoverageTarget @(_isTest ? " (test)" : "")</i></MudText>
 
@@ -31,28 +31,40 @@
             should not have an effect on any results. Let's do it!
         </MudText>
 
-        <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(1)" OnClick="RunGroup_A">@GetButtonCaption(1, false)</MudButton>
+        <MudPaper Class="d-flex flex-row py-1 px-4">
+            <MudButton Variant="@GetButtonVariant()" Style="height:36px;width:100px;"
+                       Color="@GetButtonColorFun(1)" OnClick="RunGroup_A">@GetButtonCaption(1, false)
+            </MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.A)>@GetGroupCoverageDesc(MethodGroupType.A)</MudText>
         </MudPaper>
-        <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(1)" OnClick="RunGroup_B">@GetButtonCaption(1, true)</MudButton>
+
+        <MudPaper Class="d-flex flex-row py-1 px-4">
+            <MudButton Variant="@GetButtonVariant()" Style="height:36px;width:100px;"
+                       Color="@GetButtonColorFun(1)" OnClick="RunGroup_B">@GetButtonCaption(1, true)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.B)>@GetGroupCoverageDesc(MethodGroupType.B)</MudText>
         </MudPaper>
-        <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(2)" OnClick="RunGroup_C">@GetButtonCaption(2, false)</MudButton>
+
+        <MudPaper Class="d-flex flex-row py-1 px-4">
+            <MudButton Variant="@GetButtonVariant()" Style="height:36px;width:100px;"
+                       Color="@GetButtonColorFun(2)" OnClick="RunGroup_C">@GetButtonCaption(2, false)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.C)>@GetGroupCoverageDesc(MethodGroupType.C)</MudText>
         </MudPaper>
-        <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(2)" OnClick="RunGroup_D">@GetButtonCaption(2, true)</MudButton>
+
+        <MudPaper Class="d-flex flex-row py-1 px-4">
+            <MudButton Variant="@GetButtonVariant()" Style="height:36px;width:100px;"
+                       Color="@GetButtonColorFun(2)" OnClick="RunGroup_D">@GetButtonCaption(2, true)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.D)>@GetGroupCoverageDesc(MethodGroupType.D)</MudText>
         </MudPaper>
-        <MudPaper Class="d-flex flex-row py-1">
-            <MudButton Variant="@GetButtonVariant()" Color="@GetButtonColorFun(3)" OnClick="RunGroup_E">@GetButtonCaption(3)</MudButton>
+
+        <MudPaper Class="d-flex flex-row py-1 px-4">
+            <MudButton Variant="@GetButtonVariant()" Style="height:36px;width:100px;"
+                       Color="@GetButtonColorFun(3)" OnClick="RunGroup_E">@GetButtonCaption(3)</MudButton>
             <MudText Class="pa-2 mx-2" Typo="Typo.body2" Color=@GetProcCaptionColor(MethodGroupType.E)>~@GetGroupCoverageDesc(MethodGroupType.E) -> <i>It's new functionality!</i></MudText>
         </MudPaper>
+
         <MudPaper Class="d-flex flex-row py-1">
-            <MudText Class="px-0 py-1" Typo="Typo.body2" Color="@_resColor"><strong>Coverage: @_coverProc%</strong></MudText>
+            <MudText Class="px-0 py-1" Typo="Typo.body2" Style="height:36px;width:100px;"
+                     Color="@_resColor"><strong>Coverage: @_coverProc%</strong></MudText>
         </MudPaper>
     </MudItem>
 </MudGrid>
