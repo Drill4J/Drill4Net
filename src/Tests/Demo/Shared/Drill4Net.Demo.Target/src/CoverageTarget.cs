@@ -4267,11 +4267,9 @@ namespace Drill4Net.Demo.Target
             }
         }
 
-        public void Elvis_Double_NotNull()
+        public int NewMethod()
         {
-            var obj = "aaa";
-            var prop = obj ?? "bbb";
-            Console.WriteLine($"{nameof(Elvis_Double_NotNull)}: {prop}");
+            return DateTime.Now.Millisecond;
         }
     }
 }
