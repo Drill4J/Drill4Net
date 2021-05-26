@@ -17,7 +17,7 @@ namespace Drill4Net.Demo.Target
                 c -= 3.0 * 10 + 25 - 45 + 67 / 13.0 - 23;
                 c += 3.0 + 10 - 25 + 45 - 67 + 13 - 23;
                 c -= 3.0 + 10 + 25 - 45 + 67 + 13 - 23;
-                c /= (a + b) / 3.0 * 10 - 25 + 45 + 67 + 13 - 23;
+                c /= b / 3.0 * 10 - 25 + 45 + 67 + 13 - 23;
                 c *= (a + b) / 3.0 + 10 + 25 - 45 + 67 + 13 - 23;
                 c += (a + b) / 3.0 + 10 - 25 + 45 + 67 + 13 - 23;
                 c -= (a - b) / 3.0 * 10 + 25 - 45 + 67 + 13 - 23;
@@ -4267,9 +4267,9 @@ namespace Drill4Net.Demo.Target
             }
         }
 
-        //public int GetMilliseconds()
-        //{
-        //    return DateTime.Now.Millisecond;
-        //}
+        public int GetMilliseconds()
+        {
+            return DateTime.Now.Millisecond;
+        }
     }
 }
