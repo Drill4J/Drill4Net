@@ -276,10 +276,10 @@ namespace Drill4Net.Injector.Engine
             foreach (var ownMethod in ownMethods)
             {
                 #region Check
-                var name = ownMethod.Name;
+                var methodName = ownMethod.Name;
 
                 //too small body for special functions (no logic: pure set/get, empty .сtor, etc)
-                if (name.StartsWith("set_") || name.StartsWith("get_") || name.StartsWith(".ctor") || name.StartsWith(".cctor"))
+                if (methodName.StartsWith("set_") || methodName.StartsWith("get_") || methodName.StartsWith(".ctor") || methodName.StartsWith(".cctor"))
                 {
                     if (ownMethod.Body.Instructions.Count(a => a.OpCode.Code != Code.Nop) < 6)
                         continue;
@@ -289,20 +289,20 @@ namespace Drill4Net.Injector.Engine
                 //is it useless? But for custom weaving it's very interesting idea...
                 if (treeParentClass.IsCompilerGenerated)
                 {
-                    if (ownMethod.IsSetter && !name.StartsWith("set_"))
+                    if (ownMethod.IsSetter && !methodName.StartsWith("set_"))
                         continue;
-                    if (ownMethod.IsGetter && !name.StartsWith("get_"))
+                    if (ownMethod.IsGetter && !methodName.StartsWith("get_"))
                         continue;
-                    if (isAsyncStateMachine && name != "MoveNext")
+                    if (isAsyncStateMachine && methodName != "MoveNext")
                         continue;
                 }
                 #endregion
 
                 var source = CreateMethodSource(ownMethod);
+                Console.WriteLine($"Hash: {methodName} -> {source.HashCode}");
                 var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname,
                     treeParentClass.BusinessType, ownMethod.FullName, source);
                 //
-                var methodName = ownMethod.Name;
                 source.IsAsyncStateMachine = isAsyncStateMachine;
                 source.IsMoveNext = methodName == "MoveNext";
                 source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
@@ -376,10 +376,13 @@ namespace Drill4Net.Injector.Engine
 
         internal static string GetMethodHashCode(Mono.Collections.Generic.Collection<Instruction> instructions)
         {
-            long a = 0;
-            foreach (var p in instructions.Where(a => a.OpCode.Code != Code.Nop))
-                a ^= $"{p.OpCode.Code}{p.Operand}".GetHashCode();
-            return a.ToString();
+            var bizInstrs = instructions.Where(a => a.OpCode.Code != Code.Nop);
+            unchecked // Overflow is fine, just wrap
+            {
+                var a = bizInstrs.Aggregate(11, (current, p) => 
+                    current ^ $"{p.OpCode.Code}{p.Operand}".Sum(a => a.GetHashCode()));
+                return a.ToString();
+            }
         }
     }
 }
