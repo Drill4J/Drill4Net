@@ -376,10 +376,6 @@ namespace Drill4Net.Injector.Engine
 
         internal static string GetMethodHashCode(Mono.Collections.Generic.Collection<Instruction> instructions)
         {
-            //var s = "";
-            //foreach (var p in instructions.Where(a => a.OpCode.Code != Code.Nop))
-            //    s += p.ToString();
-            //return s.GetHashCode().ToString();
             long a = 0;
             foreach (var p in instructions.Where(a => a.OpCode.Code != Code.Nop))
                 a ^= p.GetHashCode();

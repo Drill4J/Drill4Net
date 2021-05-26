@@ -1,7 +1,7 @@
 ﻿Description: Manual debugging of Injector App (RnD) on Blazor app (Wasm)
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: Blazor app (Wasm) # optional injection name
+    Name: Blazor-wasm-app # optional injection name
 Source: # what and how processing
     Directory: ..\..\Tests\BlazorWasm\
     Filter: # mask for search files, namespaces, classes...

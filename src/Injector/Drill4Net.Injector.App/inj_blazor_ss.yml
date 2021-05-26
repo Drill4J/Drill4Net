@@ -1,7 +1,7 @@
 ﻿Description: Manual debugging of Injector App (Standard agent) on Blazor app (Server-Side)
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: Blazor app (Server-Side) # optional injection name
+    Name: Blazor-server-side-app # optional injection name
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp\
     Filter: # mask for search files, namespaces, classes...
@@ -23,8 +23,8 @@ Destination: # where copying injected assemblies
     FolderPostfix: Injected #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  #Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\  # absolute path or relatively dir
-  Directory: c:\drill-agents\StandardAgent\ 
+  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\  # absolute path or relatively dir
+  #Directory: c:\drill-agents\StandardAgent\ 
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard
   Class: StandardAgent
