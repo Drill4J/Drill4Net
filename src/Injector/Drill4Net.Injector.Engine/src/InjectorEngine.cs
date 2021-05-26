@@ -11,8 +11,8 @@ namespace Drill4Net.Injector.Engine
     /// <summary>
     /// High-level Injector Engine working with target directories and files. 
     /// It injects the Agent's proxy code to the needed methods and produces 
-    /// the Tree data of that (processed directories, assemblies, 
-    /// classes, methods, cross-points, and their meta-data)
+    /// the Tree metadata of processed entities (directories, assemblies, 
+    /// classes, methods, cross-points, etc)
     /// </summary>
     public class InjectorEngine : IInjectorEngine
     {
@@ -44,7 +44,8 @@ namespace Drill4Net.Injector.Engine
         /// <summary>
         /// Inject the target accordingly by the current config
         /// </summary>
-        /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
+        /// <returns>Tree data of metadata for injected entities (processed directories, assemblies, 
+        /// classes, methods, cross-points, etc)</returns>
         public InjectedSolution Process()
         {
             return Process(_rep.Options);
