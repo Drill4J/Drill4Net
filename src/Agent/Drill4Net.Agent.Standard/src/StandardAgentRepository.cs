@@ -279,8 +279,8 @@ namespace Drill4Net.Agent.Standard
             if (_globalDispatcher != null)
                 isGlobalReg = _globalDispatcher.RegisterCoverage(pointUid);
 
-            //exact session
-            var disp = GetCoverageDispather();
+            //user session
+            var disp = GetUserDispather();
             if (disp != null)
                 return disp.RegisterCoverage(pointUid);
             else
@@ -313,7 +313,7 @@ namespace Drill4Net.Agent.Standard
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
                     if (!_ctxToDispatcher.TryGetValue(ctxId, out var disp))
-                        disp = GetCoverageDispather();
+                        disp = GetUserDispather(); //?? hmmm...
                     SendDispatcherCoverageData(disp);
                 }
             }
@@ -363,7 +363,7 @@ namespace Drill4Net.Agent.Standard
         /// Get the coverage dispatcher by current context if exists and otherwise create it
         /// </summary>
         /// <returns></returns>
-        public CoverageDispatcher GetCoverageDispather()
+        public CoverageDispatcher GetUserDispather()
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
@@ -375,15 +375,13 @@ namespace Drill4Net.Agent.Standard
             {
                 _ctxToDispatcher.TryGetValue(ctxId, out disp);
                 if(disp is {Session: null})
-                    disp.Session = GetManualSession();
+                    disp.Session = GetManualUserSession();
             }
             else
             {
                 //TODO: do it properly! Need right binding ctx to session!
-                var session = GetManualSession();
+                var session = GetManualUserSession();
                 if (session == null)
-                    return null;
-                if (_globalDispatcher.Session == session)
                     return null;
                 disp = CreateCoverageDispatcher(session);
                 _ctxToDispatcher.TryAdd(ctxId, disp);
@@ -391,9 +389,10 @@ namespace Drill4Net.Agent.Standard
             return disp;
         }
 
-        private StartSessionPayload GetManualSession()
+        private StartSessionPayload GetManualUserSession()
         {
-            return _sessionToObject.Values.FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL);
+            return _sessionToObject.Values.FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL && 
+                                                              (_globalDispatcher == null || _globalDispatcher.Session != a));
         }
         
         internal CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session)
