@@ -4,7 +4,7 @@ Target: # some metadata about target
     Name: Blazor-server-side-app # optional injection name
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp\
-    Filter: # mask for search files, namespaces, classes...
+    Filter: # filter for files, namespaces, classes...
       Includes:
         Directories:
         Files: 
@@ -14,16 +14,16 @@ Source: # what and how processing
         Attributes:
       Excludes:
         Directories:
-          #- net5.0\publish\ @ relative path to concrete directory
+          #- net5.0\publish\ # full path
         Folders:
-          - publish # name of folder (may be in some paths)
+          - publish # folder name (may be in some paths)
           - ref
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\  # absolute path or relatively dir
+  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\
   #Directory: c:\drill-agents\StandardAgent\ 
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard

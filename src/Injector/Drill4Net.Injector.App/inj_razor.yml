@@ -4,7 +4,7 @@ Target:
     Name: Razor-app
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Demo.Razor.App\
-    Filter: # mask for search files, namespaces, classes...
+    Filter: # filter for files, namespaces, classes...
       Includes:
         Directories:
         Files: 
@@ -23,7 +23,7 @@ Destination: # where copying injected assemblies
     FolderPostfix: Injected #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\ # absolute path, or relatively Destination dir
+  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\ 
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard
   Class: StandardAgent

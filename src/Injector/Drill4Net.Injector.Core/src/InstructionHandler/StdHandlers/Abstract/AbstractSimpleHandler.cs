@@ -23,24 +23,23 @@ namespace Drill4Net.Injector.Core
             
             if (!IsCondition(ctx))
                 return;
-            
+
             //data
+            var instr = ctx.Instructions[ctx.CurIndex];
             var ldstr = Register(ctx, PointType);
             var call = Instruction.Create(OpCodes.Call, ctx.TypeCtx.AssemblyCtx.ProxyMethRef);
             
             //correction
-            var instr = ctx.Instructions[ctx.CurIndex];
             FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
             ReplaceJumps(instr, ldstr, ctx);
-            
+            ctx.CorrectIndex(2);
+
             //injection
             var processor = ctx.Processor;
             processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
-            ctx.CorrectIndex(2);
 
-            PostAction(ctx);
-            
+            PostAction(ctx);        
             needBreak = true;
         }
 

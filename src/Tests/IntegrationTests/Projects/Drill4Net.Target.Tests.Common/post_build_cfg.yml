@@ -4,7 +4,7 @@ Target: # some metadata about target
     Name: Test-target #optional injection name
 Source: # what and how processing
     Directory: ..\..\Tests\TargetApps\
-    Filter: # mask for search files, namespaces, classes...
+    Filter: # filter for files, namespaces, classes...
       Includes:
         Directories:
         Files: 
@@ -21,7 +21,7 @@ Destination: # where copying injected assemblies
     FolderPostfix: Injected.Tests #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
     Name: Test agent # name exactly for agent subsystem
-    Directory: ..\..\Tests\Drill4Net.Agent.Testing\netstandard2.0\  # absolute path, or relatively Destination dir
+    Directory: ..\..\Tests\Drill4Net.Agent.Testing\netstandard2.0\ 
     AssemblyName: Drill4Net.Agent.Testing.dll
     Namespace: Drill4Net.Agent.Testing
     Class: TesterProfiler
