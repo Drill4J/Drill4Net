@@ -260,8 +260,10 @@ namespace Drill4Net.Injector.Engine
             return $"{typeFullname}::{methodShortName}";
         }
 
-        internal static MethodSource CreateMethodSource(MethodDefinition def)
+        internal static MethodSource CreateMethodSource(MethodDefinition def, bool isAsyncStateMachine, bool isEnumerableType)
         {
+            var methodName = def.Name;
+            var isMoveNext = methodName == "MoveNext";
             return new MethodSource
             {
                 AccessType = GetAccessType(def),
@@ -269,8 +271,12 @@ namespace Drill4Net.Injector.Engine
                 IsGeneric = def.HasGenericParameters,
                 IsStatic = def.IsStatic,
                 MethodType = GetMethodType(def),
+                IsAsyncStateMachine = isAsyncStateMachine,
+                IsMoveNext = isMoveNext,
+                IsEnumeratorMoveNext = isMoveNext && isEnumerableType,
+                IsFinalizer = methodName == "Finalize" && def.IsVirtual,
                 //IsOverride = ...
-                IsNested = def.FullName.Contains("|"),
+                IsLocal = def.FullName.Contains("|"),
                 HashCode = GetMethodHashCode(def.Body.Instructions),
             };
         }

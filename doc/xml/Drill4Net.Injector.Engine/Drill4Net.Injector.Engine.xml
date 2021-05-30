@@ -50,6 +50,16 @@
             <param name="asmCtx">Assembly context</param>
             <param name="opts">Injector options</param>
         </member>
+        <member name="T:Drill4Net.Injector.Engine.AssemblyHelper">
+            <summary>
+            Helper for getting some info about assemblies
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.ContextHelper">
+            <summary>
+            Helper for working with contaexts
+            </summary>
+        </member>
         <member name="T:Drill4Net.Injector.Engine.CoverageHelper">
             <summary>
             Helper for calculating of the code block coverage
@@ -74,9 +84,40 @@
             <param name="opCode"></param>
             <returns></returns>
         </member>
+        <member name="T:Drill4Net.Injector.Engine.MethodHelper">
+            <summary>
+            Helper for getting info about methods
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.MethodHelper.GetMethodType(Mono.Cecil.MethodDefinition)">
+            <summary>
+            Get the type of method by its semantic (ctor, normal, setter/getter, compiler generated, etc)
+            </summary>
+            <param name="def"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.MethodHelper.IsCompilerGeneratedType(Mono.Cecil.MethodDefinition)">
+            <summary>
+            Method's type is compiler generated
+            </summary>
+            <param name="def"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.MethodHelper.IsSpecialGeneratedMethod(Drill4Net.Profiling.Tree.MethodType)">
+            <summary>
+            Is the method special even for compiler generated ones? Currently it's for the adding and removing events
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.ProxyHelper">
+            <summary>
+            Helper for working with info for a injecting Proxy class
+            </summary>
+        </member>
         <member name="T:Drill4Net.Injector.Engine.TypeHelper">
             <summary>
-            Type helper
+            Helper for getting info about types
             </summary>
         </member>
         <member name="M:Drill4Net.Injector.Engine.TypeHelper.FilterTypes(System.Collections.Generic.IEnumerable{Mono.Cecil.TypeDefinition},Drill4Net.Common.SourceFilterOptions)">

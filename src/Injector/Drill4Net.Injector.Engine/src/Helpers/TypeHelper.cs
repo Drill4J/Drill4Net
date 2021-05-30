@@ -81,37 +81,18 @@ namespace Drill4Net.Injector.Engine
             foreach (var ownMethod in ownMethods)
             {
                 #region Check
-                var methodName = ownMethod.Name;
-
                 //too small body for special functions (no logic: pure set/get, empty .сtor, etc)
-                if (methodName.StartsWith("set_") || methodName.StartsWith("get_") || methodName.StartsWith(".ctor") || methodName.StartsWith(".cctor"))
+                var mType = MethodHelper.GetMethodType(ownMethod);
+                if(mType is MethodType.Constructor or MethodType.Setter or MethodType.Getter or MethodType.EventAdd or MethodType.EventRemove)
                 {
                     if (ownMethod.Body.Instructions.Count(a => a.OpCode.Code != Code.Nop) < 6)
                         continue;
                 }
-
-                //check for setter & getter of properties for anonymous types
-                //is it useless? But for custom weaving it's very interesting idea...
-                if (treeParentClass.IsCompilerGenerated)
-                {
-                    if (ownMethod.IsSetter && !methodName.StartsWith("set_"))
-                        continue;
-                    if (ownMethod.IsGetter && !methodName.StartsWith("get_"))
-                        continue;
-                    if (isAsyncStateMachine && methodName != "MoveNext")
-                        continue;
-                }
                 #endregion
 
-                var source = MethodHelper.CreateMethodSource(ownMethod);
-                //Console.WriteLine($"Hash: {methodName} -> {source.HashCode}");
+                var source = MethodHelper.CreateMethodSource(ownMethod, isAsyncStateMachine, isEnumerable);
                 var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname,
                     treeParentClass.BusinessType, ownMethod.FullName, source);
-                //
-                source.IsAsyncStateMachine = isAsyncStateMachine;
-                source.IsMoveNext = methodName == "MoveNext";
-                source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
-                source.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
                 //
                 if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.FullName))
                     asmCtx.InjMethodByFullname.Add(treeFunc.FullName, treeFunc);
@@ -218,7 +199,7 @@ namespace Drill4Net.Injector.Engine
                 IsGeneric = def.IsGenericInstance,
                 //IsStatic = ...,
                 IsValueType = def.IsValueType,
-                IsNested = def.IsNested
+                IsLocal = def.IsNested
             };
         }
 
