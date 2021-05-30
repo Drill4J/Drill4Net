@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
@@ -123,6 +122,10 @@ namespace Drill4Net.Injector.Engine
             }
             if (!asmCtx.TypeContexts.Any())
                 return;
+
+            //get the injecting commands
+            asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
+            asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);
         }
     }
 }

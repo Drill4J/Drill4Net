@@ -44,23 +44,18 @@ namespace Drill4Net.Injector.Engine
             if (!AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)
 
-            //preparing
+            //the preparing
             ContextHelper.PrepareContextData(runCtx, asmCtx);
             AssemblyHelper.FindMoveNextMethods(asmCtx);
             AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
             AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
             AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
 
-            //get the injecting commands
-            var opts = runCtx.Options;
-            asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
-            asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);
-
-            //the injecting is here
+            //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);
-            InjectProxyType(asmCtx, opts);
+            InjectProxyType(asmCtx, runCtx.Options);
 
-            //coverage data
+            //prepare coverage metadata
             CoverageHelper.CalcCoverageBlocks(asmCtx);
         }
 
