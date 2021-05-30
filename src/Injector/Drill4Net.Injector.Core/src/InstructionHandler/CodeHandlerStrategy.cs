@@ -21,7 +21,7 @@
             _last = handler;
         }
 
-        public virtual void Preprocess(MethodContext ctx)
+        public virtual void PrimaryAct(MethodContext ctx)
         {
             _first?.Preprocess(ctx);
         }

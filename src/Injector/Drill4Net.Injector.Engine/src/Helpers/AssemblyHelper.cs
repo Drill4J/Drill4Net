@@ -11,6 +11,46 @@ namespace Drill4Net.Injector.Engine
     /// </summary>
     internal static class AssemblyHelper
     {
+        /// <summary>
+        /// Create and prepare the <see cref="InjectedAssembly"/> and its <see cref="InjectedDirectory"/> if needed
+        /// </summary>
+        /// <param name="runCtx">Context of the Injector Engine's Run</param>
+        /// <param name="asmCtx">Assembly's context</param>
+        /// <returns></returns>
+        internal static bool PrepareInjectedAssembly(RunContext runCtx, AssemblyContext asmCtx)
+        {
+            var sourceDir = asmCtx.SourceDir;
+            var destDir = asmCtx.DestinationDir;
+            var asmFullName = asmCtx.Definition.FullName;
+            var tree = runCtx.Tree;
+
+            //directory
+            var treeDir = tree.GetDirectory(sourceDir);
+            if (treeDir == null)
+            {
+                treeDir = new InjectedDirectory(sourceDir, destDir);
+                tree.Add(treeDir);
+            }
+
+            //assembly (exactly from whole tree, not just current treeDir - for shared dll)
+            var treeAsm = tree.GetAssembly(asmFullName, true) ??
+                          new InjectedAssembly(asmCtx.Version, asmCtx.Module.Name, asmFullName, runCtx.SourceFile);
+            treeDir.Add(treeAsm);
+            asmCtx.InjAssembly = treeAsm;
+
+            var key = asmCtx.Key;
+            var keys = runCtx.AssemblyPaths;
+            if (keys.ContainsKey(key)) //the assembly is shared and already is injected
+            {
+                var writer = new AssemblyWriter();
+                var copyFrom = keys[key];
+                var copyTo = writer.GetDestFileName(copyFrom, destDir);
+                File.Copy(copyFrom, copyTo, true);
+                return false;
+            }
+            return true;
+        }
+
         internal static void FindMoveNextMethods(AssemblyContext asmCtx)
         {
             var moveNextMethods = asmCtx.InjAssembly.Filter(typeof(InjectedMethod), true)

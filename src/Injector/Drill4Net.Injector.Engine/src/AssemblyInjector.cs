@@ -37,11 +37,11 @@ namespace Drill4Net.Injector.Engine
         /// <summary>
         /// Inject the specified assembly
         /// </summary>
-        /// <param name="runCtx">Context of Engine's Run</param>
+        /// <param name="runCtx">Context of Injector Engine's Run</param>
         /// <param name="asmCtx">Context of current assembly</param>
         public void Inject(RunContext runCtx, AssemblyContext asmCtx)
         {
-            if (!ContextHelper.CreateContexts(runCtx, asmCtx))
+            if (!AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)
 
             //preparing
@@ -132,7 +132,7 @@ namespace Drill4Net.Injector.Engine
                     }
                     #endregion
                     #region *** Injections ***
-                    Strategy.Preprocess(methodCtx); //primary actions
+                    Strategy.PrimaryAct(methodCtx); //primary actions for some handlers
                     for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
                     {
                         #region Checks

@@ -11,40 +11,11 @@ namespace Drill4Net.Injector.Engine
     /// </summary>
     internal static class ContextHelper
     {
-        internal static bool CreateContexts(RunContext runCtx, AssemblyContext asmCtx)
-        {
-            var sourceDir = asmCtx.SourceDir;
-            var destDir = asmCtx.DestinationDir;
-            var asmFullName = asmCtx.Definition.FullName;
-            var tree = runCtx.Tree;
-
-            //directory
-            var treeDir = tree.GetDirectory(sourceDir);
-            if (treeDir == null)
-            {
-                treeDir = new InjectedDirectory(sourceDir, destDir);
-                tree.Add(treeDir);
-            }
-
-            //assembly (exactly from whole tree, not just current treeDir - for shared dll)
-            var treeAsm = tree.GetAssembly(asmFullName, true) ??
-                          new InjectedAssembly(asmCtx.Version, asmCtx.Module.Name, asmFullName, runCtx.SourceFile);
-            treeDir.Add(treeAsm);
-            asmCtx.InjAssembly = treeAsm;
-
-            var key = asmCtx.Key;
-            var keys = runCtx.AssemblyPaths;
-            if (keys.ContainsKey(key)) //the assembly is shared and already is injected
-            {
-                var writer = new AssemblyWriter();
-                var copyFrom = keys[key];
-                var copyTo = writer.GetDestFileName(copyFrom, destDir);
-                File.Copy(copyFrom, copyTo, true);
-                return false;
-            }
-            return true;
-        }
-
+        /// <summary>
+        /// Prepare the Run's and Assembly's contexts
+        /// </summary>
+        /// <param name="runCtx">Context of Injector Engine's Run</param>
+        /// <param name="asmCtx">Context of current assembly</param>
         internal static void PrepareContextData(RunContext runCtx, AssemblyContext asmCtx)
         {
             var treeAsm = asmCtx.InjAssembly;
