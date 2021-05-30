@@ -6,6 +6,9 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// Helper for getting some info about assemblies
+    /// </summary>
     internal static class AssemblyHelper
     {
         internal static void FindMoveNextMethods(AssemblyContext asmCtx)

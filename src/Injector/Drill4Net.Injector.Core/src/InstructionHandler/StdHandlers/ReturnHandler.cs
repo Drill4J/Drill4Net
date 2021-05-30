@@ -13,7 +13,7 @@ namespace Drill4Net.Injector.Core
 
         /**************************************************************************************/
 
-        protected override void StartMethodConcrete(MethodContext ctx)
+        protected override void PreprocessConcrete(MethodContext ctx)
         {
             if (ctx.IsStrictEnterReturn)
                 return;

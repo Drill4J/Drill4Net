@@ -4,6 +4,17 @@
         <name>Drill4Net.Agent.Standard</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Agent.Standard.CoverageDispatcher">
+            <summary>
+            Manager of the coverage data for the user's or global session
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.#ctor(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload)">
+            <summary>
+            Create manager of the coverage data for the user's or global session
+            </summary>
+            <param name="session"></param>
+        </member>
         <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.BindPoint(System.String,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Int32,System.Int32)">
             <summary>
             Bind point Uid to probe's range of the target class
@@ -140,16 +151,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 2f7e362</summary>
+            <summary>Commit: 5cfe692</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 2f7e362e2c74b8860065cce1e26b18d45bdeb94f</summary>
+            <summary>Sha: 5cfe6928aa6cd1954b6852cfee44298988b8a9de</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-05-27T13:15:31+03:00</summary>
+            <summary>Commit date: 2021-05-28T14:52:59+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 408</summary>
+            <summary>Commits on top of base version: 409</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -179,7 +190,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 408</summary>
+            <summary>Patch: 409</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

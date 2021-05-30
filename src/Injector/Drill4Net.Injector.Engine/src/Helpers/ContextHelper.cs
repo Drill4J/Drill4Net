@@ -6,6 +6,9 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// Helper for working with contaexts
+    /// </summary>
     internal static class ContextHelper
     {
         internal static bool CreateContexts(RunContext runCtx, AssemblyContext asmCtx)
@@ -63,7 +66,7 @@ namespace Drill4Net.Injector.Engine
 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
-                var methods = MethodHelper.GetMethods(typeCtx, opts).ToArray();
+                var methods = TypeHelper.GetMethods(typeCtx, opts).ToArray();
                 if (!methods.Any())
                     continue;
 

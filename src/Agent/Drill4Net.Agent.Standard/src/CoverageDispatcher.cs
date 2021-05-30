@@ -5,6 +5,9 @@ using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
 {
+    /// <summary>
+    /// Manager of the coverage data for the user's or global session
+    /// </summary>
     public class CoverageDispatcher
     {
         public StartSessionPayload Session { get; set; }
@@ -16,6 +19,10 @@ namespace Drill4Net.Agent.Standard
 
         /*************************************************************************/
 
+        /// <summary>
+        /// Create manager of the coverage data for the user's or global session
+        /// </summary>
+        /// <param name="session"></param>
         public CoverageDispatcher(StartSessionPayload session)
         {
             Session = session; // ?? throw new .....

@@ -1,5 +1,8 @@
 ﻿namespace Drill4Net.Profiling.Tree
 {
+    /// <summary>
+    /// Type of method by its semantic (ctor, normal, setter/getter, compiler generated, etc)
+    /// </summary>
     public enum MethodType
     {
         /// <summary>
@@ -18,13 +21,41 @@
         /// </summary>
         Normal = 2,
         
+        /// <summary>
+        /// It's constructor
+        /// </summary>
         Constructor = 3,
+
+        /// <summary>
+        /// It's destructor
+        /// </summary>
         Destructor = 4,
+        
         //Anonymous = 5,
+
+        /// <summary>
+        /// It's local (nested) method
+        /// </summary>
         Local = 8,
+
+        /// <summary>
+        /// It's getter method for a property
+        /// </summary>
         Getter = 9,
+
+        /// <summary>
+        /// It's setter method for a property
+        /// </summary>
         Setter = 10,
+
+        /// <summary>
+        /// It's method for the adding event
+        /// </summary>
         EventAdd = 11,
+
+        /// <summary>
+        /// It's method for the removing event
+        /// </summary>
         EventRemove = 12,
     }
 }

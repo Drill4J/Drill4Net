@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using System.Runtime.CompilerServices;
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// Helper for getting info about methods
+    /// </summary>
     internal static class MethodHelper
     {
         private static readonly TypeChecker _typeChecker = new();
@@ -160,7 +161,7 @@ namespace Drill4Net.Injector.Engine
             string realMethodName = null;
             try
             {
-                if (methodName.Contains("|")) //local funcs
+                if (methodName.Contains("|")) //for local funcs
                 {
                     var a1 = methodName.Split('>')[0];
                     return a1.Substring(1, a1.Length - 1);
@@ -193,6 +194,11 @@ namespace Drill4Net.Injector.Engine
             return realMethodName;
         }
 
+        /// <summary>
+        /// Get the type of method by its semantic (ctor, normal, setter/getter, compiler generated, etc)
+        /// </summary>
+        /// <param name="def"></param>
+        /// <returns></returns>
         internal static MethodType GetMethodType(MethodDefinition def)
         {
             if (def.IsSetter)
@@ -206,18 +212,7 @@ namespace Drill4Net.Injector.Engine
             if (methodFullName.Contains("::remove_"))
                 return MethodType.EventRemove;
             //
-            var type = def.DeclaringType;
-            var declAttrs = type.CustomAttributes;
-            var compGenAttrName = nameof(CompilerGeneratedAttribute);
-            var fullName = def.FullName;
-            //the CompilerGeneratedAttribute itself is not enough!
-            //not use isMoveNext - this class may be own iterator, not compiler's one
-            var isCompilerGeneratedType = /*def.IsPrivate &&*/
-                def.Name.StartsWith("<") || fullName.EndsWith(">d::MoveNext()") ||
-                fullName.Contains(">b__") || fullName.Contains(">c__") || fullName.Contains(">d__") ||
-                fullName.Contains(">f__") || fullName.Contains("|") ||
-                declAttrs.FirstOrDefault(a => a.AttributeType.Name == compGenAttrName) != null;
-            if (isCompilerGeneratedType)
+            if (IsCompilerGeneratedType(def))
                 return MethodType.CompilerGenerated;
             //
             if (def.IsConstructor)
@@ -230,119 +225,34 @@ namespace Drill4Net.Injector.Engine
             return MethodType.Normal;
         }
 
+        /// <summary>
+        /// Method's type is compiler generated
+        /// </summary>
+        /// <param name="def"></param>
+        /// <returns></returns>
+        internal static bool IsCompilerGeneratedType(MethodDefinition def)
+        {
+            var fullName = def.FullName;
+            var typeAttrs = def.DeclaringType.CustomAttributes;
+
+            //the CompilerGeneratedAttribute itself is not enough!
+            //not use isMoveNext - this class may be own iterator, not compiler's one
+            var isCompilerGeneratedType = /*def.IsPrivate &&*/
+                def.Name.StartsWith("<") || fullName.EndsWith(">d::MoveNext()") ||
+                fullName.Contains(">b__") || fullName.Contains(">c__") || fullName.Contains(">d__") ||
+                fullName.Contains(">f__") || fullName.Contains("|") ||
+                typeAttrs.FirstOrDefault(a => a.AttributeType.Name == nameof(CompilerGeneratedAttribute)) != null;
+            return isCompilerGeneratedType;
+        }
+
+        /// <summary>
+        /// Is the method special even for compiler generated ones? Currently it's for the adding and removing events
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         internal static bool IsSpecialGeneratedMethod(MethodType type)
         {
             return type is MethodType.EventAdd or MethodType.EventRemove;
-        }
-
-        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, InjectorOptions opts)
-        {
-            return GetMethods(typeCtx, null, opts);
-        }
-
-        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext rootTypeCtx, TypeDefinition linkType, InjectorOptions opts)
-        {
-            #region Own methods
-            #region Filter methods
-            var probOpts = opts.Probes;
-            var type = linkType ?? rootTypeCtx.Definition;
-            var isAngleBracket = type.Name.StartsWith("<");
-            var ownMethods = type.Methods
-                .Where(a => a.HasBody)
-                .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
-                .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
-                .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop" && !a.Name.StartsWith("set_"))) //do we need property setters?
-                .Where(a => probOpts.Getter || (!probOpts.Getter && a.Name != "get_Prop" && !a.Name.StartsWith("get_"))) //do we need property getters?
-                .Where(a => probOpts.EventAdd || !(a.FullName.Contains("::add_") && !probOpts.EventAdd)) //do we need 'event add'?
-                .Where(a => probOpts.EventRemove || !(a.FullName.Contains("::remove_") && !probOpts.EventRemove)) //do we need 'event remove'?
-                .Where(a => isAngleBracket || !a.IsPrivate || !(a.IsPrivate && !probOpts.Private)) //do we need business privates?
-                .Where(a => !a.FullName.Contains("::get__") && !a.FullName.Contains("::set__")) //for example, inner setters/getters for ASP.NET/Blazor (even in business namespace). Is it needed? Doesn't yet...
-                ;
-            #endregion
-
-            //check for type's characteristics
-
-            var interfaces = type.Interfaces;
-            var isAsyncStateMachine =
-                type.Methods.FirstOrDefault(a => a.Name == "SetStateMachine") != null ||
-                interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IAsyncStateMachine") != null;
-            var isEnumerable = interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
-
-            var treeParentClass = rootTypeCtx.InjType;
-            var typeFullname = treeParentClass.FullName;
-            var asmCtx = rootTypeCtx.AssemblyCtx;
-
-            var methods = new List<MethodDefinition>();
-            foreach (var ownMethod in ownMethods)
-            {
-                #region Check
-                var methodName = ownMethod.Name;
-
-                //too small body for special functions (no logic: pure set/get, empty .сtor, etc)
-                if (methodName.StartsWith("set_") || methodName.StartsWith("get_") || methodName.StartsWith(".ctor") || methodName.StartsWith(".cctor"))
-                {
-                    if (ownMethod.Body.Instructions.Count(a => a.OpCode.Code != Code.Nop) < 6)
-                        continue;
-                }
-
-                //check for setter & getter of properties for anonymous types
-                //is it useless? But for custom weaving it's very interesting idea...
-                if (treeParentClass.IsCompilerGenerated)
-                {
-                    if (ownMethod.IsSetter && !methodName.StartsWith("set_"))
-                        continue;
-                    if (ownMethod.IsGetter && !methodName.StartsWith("get_"))
-                        continue;
-                    if (isAsyncStateMachine && methodName != "MoveNext")
-                        continue;
-                }
-                #endregion
-
-                var source = CreateMethodSource(ownMethod);
-                //Console.WriteLine($"Hash: {methodName} -> {source.HashCode}");
-                var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname,
-                    treeParentClass.BusinessType, ownMethod.FullName, source);
-                //
-                source.IsAsyncStateMachine = isAsyncStateMachine;
-                source.IsMoveNext = methodName == "MoveNext";
-                source.IsEnumeratorMoveNext = source.IsMoveNext && isEnumerable;
-                source.IsFinalizer = methodName == "Finalize" && ownMethod.IsVirtual;
-                //
-                if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.FullName))
-                    asmCtx.InjMethodByFullname.Add(treeFunc.FullName, treeFunc);
-                else { } //strange..
-                methods.Add(ownMethod);
-                //
-                var methodKey = GetMethodKey(typeFullname, treeFunc.Name);
-                if (!asmCtx.InjMethodByKeys.ContainsKey(methodKey))
-                    asmCtx.InjMethodByKeys.Add(methodKey, treeFunc);
-                else { }
-
-                treeParentClass.Add(treeFunc);
-            }
-            #endregion
-            #region Nested classes
-            foreach (var nestedType in type.NestedTypes)
-            {
-                var realTypeName = TypeHelper.TryGetRealTypeName(nestedType);
-                var treeType = new InjectedType(nestedType.Module.Name, nestedType.FullName, realTypeName)
-                {
-                    Source = TypeHelper.CreateTypeSource(nestedType),
-                    Path = rootTypeCtx.AssemblyCtx.InjAssembly.Path,
-                };
-                asmCtx.InjClasses.Add(treeType.FullName, treeType);
-                treeParentClass.Add(treeType);
-                //
-                var innerMethods = GetMethods(rootTypeCtx, nestedType, opts);
-                methods.AddRange(innerMethods);
-            }
-            #endregion
-
-            methods = methods
-                .Where(m => m.CustomAttributes
-                .FirstOrDefault(attr => attr.AttributeType.Name == nameof(DebuggerHiddenAttribute)) == null)
-                .ToList();
-            return methods;
         }
 
         internal static string GetMethodKey(string typeFullname, string methodShortName)

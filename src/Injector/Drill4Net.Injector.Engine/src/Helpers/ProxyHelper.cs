@@ -5,6 +5,9 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Engine
 {
+    /// <summary>
+    /// Helper for working with info for a injecting Proxy class
+    /// </summary>
     public static class ProxyHelper
     {
         public static string CreateProxyNamespace()

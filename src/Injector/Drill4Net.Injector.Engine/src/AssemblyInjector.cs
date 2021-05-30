@@ -83,7 +83,7 @@ namespace Drill4Net.Injector.Engine
 
                     var methodDef = methodCtx.Definition;
                     var body = methodDef.Body;
-                    //body.SimplifyMacros(); //buggy (Cecil or me?)
+                    //body.SimplifyMacros(); //bug (Cecil's or my?)
                     var instructions = methodCtx.Instructions; //no copy list!
 
                     #region Jumpers
@@ -132,7 +132,7 @@ namespace Drill4Net.Injector.Engine
                     }
                     #endregion
                     #region *** Injections ***
-                    Strategy.StartMethod(methodCtx); //primary actions
+                    Strategy.Preprocess(methodCtx); //primary actions
                     for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
                     {
                         #region Checks

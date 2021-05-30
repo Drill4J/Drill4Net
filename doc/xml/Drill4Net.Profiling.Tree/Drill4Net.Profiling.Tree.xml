@@ -46,6 +46,11 @@
             The first index in the compiler generated code which considered as 'business part'
             </summary>
         </member>
+        <member name="T:Drill4Net.Profiling.Tree.CoverageData">
+            <summary>
+            Data of the method's coverage
+            </summary>
+        </member>
         <member name="P:Drill4Net.Profiling.Tree.CoverageData.BlockByPart">
             <summary>
             Dictionary of code blocks: key is point Id, value - coverage part of code by this block
@@ -54,6 +59,11 @@
         <member name="P:Drill4Net.Profiling.Tree.CoverageData.PointToBlockEnds">
             <summary>
             Binding the cross-point by Uid to last index of the block's range in the probe list of method
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.CoverageData.#ctor">
+            <summary>
+            Create data of the method's coverage
             </summary>
         </member>
         <member name="T:Drill4Net.Profiling.Tree.CrossPoint">
@@ -106,13 +116,18 @@
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Coverage">
             <summary>
-            Data of method coverage
+            Data of the method's coverage
             </summary>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedType.FromMethod">
             <summary>
             For compiler generated classes which was created 
             compiler for some business methods
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Profiling.Tree.MethodType">
+            <summary>
+            Type of method by its semantic (ctor, normal, setter/getter, compiler generated, etc)
             </summary>
         </member>
         <member name="F:Drill4Net.Profiling.Tree.MethodType.Unset">
@@ -129,6 +144,41 @@
         <member name="F:Drill4Net.Profiling.Tree.MethodType.Normal">
             <summary>
             Normal ('business') method from the user source code
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.MethodType.Constructor">
+            <summary>
+            It's constructor
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.MethodType.Destructor">
+            <summary>
+            It's destructor
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.MethodType.Local">
+            <summary>
+            It's local (nested) method
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.MethodType.Getter">
+            <summary>
+            It's getter method for a property
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.MethodType.Setter">
+            <summary>
+            It's setter method for a property
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.MethodType.EventAdd">
+            <summary>
+            It's method for the adding event
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.MethodType.EventRemove">
+            <summary>
+            It's method for the removing event
             </summary>
         </member>
         <member name="T:Drill4Net.Profiling.Tree.MethodSource">

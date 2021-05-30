@@ -21,9 +21,9 @@
             _last = handler;
         }
 
-        public virtual void StartMethod(MethodContext ctx)
+        public virtual void Preprocess(MethodContext ctx)
         {
-            _first?.StartMethod(ctx);
+            _first?.Preprocess(ctx);
         }
 
         public virtual void HandleInstruction(MethodContext ctx)

@@ -87,6 +87,14 @@
             <param name="opts"></param>
             <returns></returns>
         </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.FilterMethods(Mono.Cecil.TypeDefinition,Drill4Net.Common.ProbesOptions)">
+            <summary>
+            Filter methods of the type according options
+            </summary>
+            <param name="type">The type definition</param>
+            <param name="probOpts">Options for the filtering</param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Injector.Engine.TypeHelper.TryGetRealTypeName(Mono.Cecil.TypeDefinition)">
             <summary>
             Try to get real type name from compiler generated classes. Technically, 

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Profiling.Tree
 {
+    /// <summary>
+    /// Data of the method's coverage
+    /// </summary>
     [Serializable]
     public class CoverageData
     { 
@@ -18,6 +21,9 @@ namespace Drill4Net.Profiling.Tree
 
         /**************************************************************/
 
+        /// <summary>
+        /// Create data of the method's coverage
+        /// </summary>
         public CoverageData()
         {
             BlockByPart = new Dictionary<int, float>();
