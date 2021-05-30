@@ -58,16 +58,31 @@ namespace Drill4Net.Injector.Engine
             return res;
         }
 
-        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, InjectorOptions opts)
+        /// <summary>
+        /// Get filtered methods for specified type by options in <paramref name="opts"/>. 
+        /// All methods of the nested types will also be found.
+        /// </summary>
+        /// <param name="typeCtx">Type's context</param>
+        /// <param name="opts">Options for method filtering</param>
+        /// <returns></returns>
+        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, ProbesOptions opts)
         {
             return GetMethods(typeCtx, null, opts);
         }
 
-        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext rootTypeCtx, TypeDefinition linkType, InjectorOptions opts)
+        /// <summary>
+        /// Get filtered methods for specified type (as root) and the nested type in <paramref name="linkType"/> by options in <paramref name="opts"/>.
+        /// This method used for the recurse founding all methods for the <paramref name="rootTypeCtx"/>
+        /// </summary>
+        /// <param name="rootTypeCtx">Root type's context</param>
+        /// <param name="linkType">Current nested type in the <paramref name="rootTypeCtx"/></param>
+        /// <param name="opts">Options for the method filtering</param>
+        /// <returns></returns>
+        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext rootTypeCtx, TypeDefinition linkType, ProbesOptions opts)
         {
             #region Own methods
             var type = linkType ?? rootTypeCtx.Definition;
-            var ownMethods = FilterMethods(type, opts.Probes);
+            var ownMethods = FilterMethods(type, opts);
 
             //check for type's characteristics
             var isAsyncStateMachine = IsAsyncMachine(type);
@@ -81,16 +96,18 @@ namespace Drill4Net.Injector.Engine
             foreach (var ownMethod in ownMethods)
             {
                 #region Check
+                if (ownMethod.CustomAttributes.Any(attr => attr.AttributeType.Name == nameof(DebuggerHiddenAttribute)))
+                    continue;
+
                 //too small body for special functions (no logic: pure set/get, empty .сtor, etc)
-                var mType = MethodHelper.GetMethodType(ownMethod);
-                if(mType is MethodType.Constructor or MethodType.Setter or MethodType.Getter or MethodType.EventAdd or MethodType.EventRemove)
+                var source = MethodHelper.CreateMethodSource(ownMethod, isAsyncStateMachine, isEnumerable);
+                if (source.MethodType is MethodType.Constructor or MethodType.Setter or MethodType.Getter or MethodType.EventAdd or MethodType.EventRemove)
                 {
                     if (ownMethod.Body.Instructions.Count(a => a.OpCode.Code != Code.Nop) < 6)
                         continue;
                 }
                 #endregion
 
-                var source = MethodHelper.CreateMethodSource(ownMethod, isAsyncStateMachine, isEnumerable);
                 var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname,
                     treeParentClass.BusinessType, ownMethod.FullName, source);
                 //
@@ -123,11 +140,6 @@ namespace Drill4Net.Injector.Engine
                 methods.AddRange(innerMethods);
             }
             #endregion
-
-            methods = methods
-                .Where(m => m.CustomAttributes
-                .FirstOrDefault(attr => attr.AttributeType.Name == nameof(DebuggerHiddenAttribute)) == null)
-                .ToList();
             return methods;
         }
 

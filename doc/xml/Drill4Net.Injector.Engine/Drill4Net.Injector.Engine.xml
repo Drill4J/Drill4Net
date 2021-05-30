@@ -32,8 +32,8 @@
             Inject instrumenting probe calls of Proxy class' calls 
             for each needed cross-point of Target
             </summary>
-            <param name="asmCtx"></param>
-            <param name="tree"></param>
+            <param name="asmCtx">Assembly's context</param>
+            <param name="tree">The tree of the injected entities</param>
         </member>
         <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.HandleInstruction(Drill4Net.Injector.Core.MethodContext)">
             <summary>
@@ -57,7 +57,7 @@
         </member>
         <member name="T:Drill4Net.Injector.Engine.ContextHelper">
             <summary>
-            Helper for working with contaexts
+            Helper for working with some contexts
             </summary>
         </member>
         <member name="T:Drill4Net.Injector.Engine.CoverageHelper">
@@ -126,6 +126,25 @@
             </summary>
             <param name="allTypes"></param>
             <param name="opts"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.GetMethods(Drill4Net.Injector.Core.TypeContext,Drill4Net.Common.ProbesOptions)">
+            <summary>
+            Get filtered methods for specified type by options in <paramref name="opts"/>. 
+            All methods of the nested types will also be found.
+            </summary>
+            <param name="typeCtx">Type's context</param>
+            <param name="opts">Options for method filtering</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.GetMethods(Drill4Net.Injector.Core.TypeContext,Mono.Cecil.TypeDefinition,Drill4Net.Common.ProbesOptions)">
+            <summary>
+            Get filtered methods for specified type (as root) and the nested type in <paramref name="linkType"/> by options in <paramref name="opts"/>.
+            This method used for the recurse founding all methods for the <paramref name="rootTypeCtx"/>
+            </summary>
+            <param name="rootTypeCtx">Root type's context</param>
+            <param name="linkType">Current nested type in the <paramref name="rootTypeCtx"/></param>
+            <param name="opts">Options for the method filtering</param>
             <returns></returns>
         </member>
         <member name="M:Drill4Net.Injector.Engine.TypeHelper.FilterMethods(Mono.Cecil.TypeDefinition,Drill4Net.Common.ProbesOptions)">

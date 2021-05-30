@@ -7,7 +7,7 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Engine
 {
     /// <summary>
-    /// Helper for working with contaexts
+    /// Helper for working with some contexts
     /// </summary>
     internal static class ContextHelper
     {
@@ -66,7 +66,7 @@ namespace Drill4Net.Injector.Engine
 
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
-                var methods = TypeHelper.GetMethods(typeCtx, opts).ToArray();
+                var methods = TypeHelper.GetMethods(typeCtx, opts.Probes).ToArray();
                 if (!methods.Any())
                     continue;
 
@@ -88,7 +88,7 @@ namespace Drill4Net.Injector.Engine
 
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
                     var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
-                    var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip state machine init jump block, etc
+                    var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip the init jump block for the state machine, etc
 
                     //Enter/Return
                     var isSpecFunc = MethodHelper.IsSpecialGeneratedMethod(methodType);
@@ -115,6 +115,8 @@ namespace Drill4Net.Injector.Engine
                     var startInd = 0;
                     if (skipStart)
                     {
+                        //we need find the start of the business part of the code
+                        //the MoveNext method of Async Machine consists of some own if/else & try/catch statements
                         if (isAsyncStateMachine && body.ExceptionHandlers.Any())
                         {
                             var minOffset = body.ExceptionHandlers.Min(a => a.TryStart.Offset);
@@ -124,8 +126,8 @@ namespace Drill4Net.Injector.Engine
                             while (true)
                             {
                                 var curAsyncCode = asyncInstr.OpCode.Code;
-                                //guanito
-                                if (curAsyncCode is Code.Nop or Code.Stfld or Code.Newobj or Code.Call
+                                //the async's if/else statements are over
+                                if (curAsyncCode is Code.Nop or Code.Stfld or Code.Newobj or Code.Call //guanito
                                     || curAsyncCode.ToString().StartsWith("Ldarg"))
                                     break;
                                 asyncInstr = asyncInstr.Next;

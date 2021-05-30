@@ -68,8 +68,8 @@ namespace Drill4Net.Injector.Engine
         /// Inject instrumenting probe calls of Proxy class' calls 
         /// for each needed cross-point of Target
         /// </summary>
-        /// <param name="asmCtx"></param>
-        /// <param name="tree"></param>
+        /// <param name="asmCtx">Assembly's context</param>
+        /// <param name="tree">The tree of the injected entities</param>
         internal void InjectProxyCalls(AssemblyContext asmCtx, InjectedSolution tree)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
