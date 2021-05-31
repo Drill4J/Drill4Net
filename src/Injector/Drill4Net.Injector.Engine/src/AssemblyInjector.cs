@@ -43,9 +43,10 @@ namespace Drill4Net.Injector.Engine
         {
             if (!AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)
+            if (!ContextHelper.PrepareContextData(runCtx, asmCtx))
+                return;
 
             //the preparing
-            ContextHelper.PrepareContextData(runCtx, asmCtx);
             AssemblyHelper.FindMoveNextMethods(asmCtx);
             AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
             AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
@@ -67,12 +68,20 @@ namespace Drill4Net.Injector.Engine
         /// <param name="tree">The tree of the injected entities</param>
         internal void InjectProxyCalls(AssemblyContext asmCtx, InjectedSolution tree)
         {
-            foreach (var typeCtx in asmCtx.TypeContexts.Values)
+            //these methods are only of the current assembly, but this is enough to work with CG methods
+            //This should be done here, for an already gathered dependency tree
+            var treeAsmMethods = tree.Filter(typeof(InjectedMethod), true)
+                .Cast<InjectedMethod>()
+                .Where(a => a.CalleeIndexes.Count > 0)
+                .Where(s => s.AssemblyName == asmCtx.InjAssembly.Name);
+
+            //by types
+            foreach (var typeCtx in asmCtx.TypeContexts.Values) 
             {
                 Debug.WriteLine(typeCtx.InjType.FullName);
 
-                //process methods
-                foreach (var methodCtx in typeCtx.MethodContexts.Values)
+                //by methods
+                foreach (var methodCtx in typeCtx.MethodContexts.Values) 
                 {
                     Debug.WriteLine(methodCtx.Method.FullName);
 
@@ -104,12 +113,7 @@ namespace Drill4Net.Injector.Engine
                     }
                     #endregion
                     #region CG method's global call index
-                    //these methods are only of the current assembly, but this is enough to work with CG methods
-                    //This should be done here, for an already gathered dependency tree
-                    var treeMethods = tree.Filter(typeof(InjectedMethod), true)
-                        .Cast<InjectedMethod>()
-                        .Where(a => a.CalleeIndexes.Count > 0);
-                    foreach (var caller in treeMethods)
+                    foreach (var caller in treeAsmMethods)
                     {
                         foreach (var calleName in caller.CalleeIndexes.Keys)
                         {

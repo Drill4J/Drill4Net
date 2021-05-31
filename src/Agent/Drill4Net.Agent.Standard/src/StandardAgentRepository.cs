@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Reflection;
@@ -50,14 +49,9 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         /// <summary>
-        /// Create repository for Standard Agent with default cfg or cfg founded by _reidrect.yml
-        /// </summary>
-        public StandardAgentRepository() : this(GetStandardConfigPath()) { }
-
-        /// <summary>
         /// Create repository for Standard Agent
         /// </summary>
-        public StandardAgentRepository(string cfgPath): base(cfgPath)
+        public StandardAgentRepository(string cfgPath = null): base(cfgPath)
         {
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<int, string>();
@@ -87,13 +81,6 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         #region Init
-        internal static string GetStandardConfigPath()
-        {
-            var dirName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
-            return cfg_path;
-        }
-
         private AbstractCommunicator GetCommunicator(AdminOptions adminOpts, TargetOptions targetOpts)
         {
             if (adminOpts == null)

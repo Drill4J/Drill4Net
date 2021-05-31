@@ -5,8 +5,14 @@ using System.Reflection;
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Common file util functions
+    /// </summary>
     public static class FileUtils
     {
+        /// <summary>
+        /// Base directory of the running Injector App
+        /// </summary>
         public static string BaseDir { get; }
 
         /******************************************************************/
@@ -45,7 +51,7 @@ namespace Drill4Net.Common
 
         public static string GetSourceDirectory(InjectorOptions opts)
         {
-            return GetFullPath(opts.Source.Directory);
+            return GetFullPath(opts?.Source?.Directory);
         }
 
         public static string GetFullPath(string path, string basePath = null)
@@ -95,9 +101,15 @@ namespace Drill4Net.Common
         }
         #endregion
 
-        public static string GetCommonLogDirectory(string relativeBaseDir, string logFoler = "logs")
+        /// <summary>
+        /// Get directory for the all subsystems of the Drill4Net
+        /// </summary>
+        /// <param name="relativeBaseDir"></param>
+        /// <param name="logFolder"></param>
+        /// <returns></returns>
+        public static string GetCommonLogDirectory(string relativeBaseDir, string logFolder = "logs")
         {
-            return Path.Combine(GetFullPath(relativeBaseDir), logFoler);
+            return Path.Combine(GetFullPath(relativeBaseDir), logFolder);
         }
     }
 }

@@ -40,9 +40,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 StandardAgent.Init();
 
                 //point data
-                var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_STD_NAME);
-                var injRep = new StandardAgentRepository(cfg_path);
+                var injRep = new StandardAgentRepository(); // cfg_path
                 var tree = injRep.ReadInjectedTree();
                 var moniker = "net5.0";
                 var asmTree = tree.GetFrameworkVersionRootDirectory(moniker);

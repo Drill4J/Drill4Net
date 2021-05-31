@@ -2,6 +2,9 @@
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Options for the Filter of directories, folders, namespaces, type names, etc
+    /// </summary>
     public class SourceFilterOptions
     {
         public SourceFilterParams Includes { get; set; } 

@@ -22,7 +22,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="std_cfg.yml">
+      <None Update="blazor_ss.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="RnD.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="_redirect.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

@@ -5,13 +5,25 @@ using System.Text;
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Common util functions
+    /// </summary>
     public class CommonUtils
     {
+        /// <summary>
+        /// Get target version for the entry assembly of current process
+        /// </summary>
+        /// <returns></returns>
         public static AssemblyVersioning GetEntryTargetVersioning()
         {
             return new AssemblyVersioning(GetAssemblyVersion(Assembly.GetEntryAssembly()));
         }
 
+        /// <summary>
+        /// Get string version of specified assembly
+        /// </summary>
+        /// <param name="asm"></param>
+        /// <returns></returns>
         public static string GetAssemblyVersion(Assembly asm)
         {
             var fs = asm.DefinedTypes.FirstOrDefault(a => a.FullName?.Contains("-Target-Common-FSharp") == true);
@@ -31,6 +43,11 @@ namespace Drill4Net.Common
             return versionS;
         }
 
+        /// <summary>
+        /// Convert string to the HEX representation
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static string ToHexString(string s)
         {
             byte[] ba = Encoding.Default.GetBytes(s);

@@ -2,12 +2,30 @@
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Structure for the assembly version's metadata
+    /// </summary>
     [Serializable]
     public class AssemblyVersioning
     {
+        /// <summary>
+        /// Type of the assembly's version
+        /// </summary>
         public AssemblyVersionType Target { get; set; }
+
+        /// <summary>
+        /// The string representation of the assembly's version
+        /// </summary>
         public string Version { get; set; }
+
+        /// <summary>
+        /// Raw string version form the assembly's metadata (appropriate attribute)
+        /// </summary>
         public string RawVersion { get; set; }
+
+        /// <summary>
+        /// Does the assembly contains a strong name?
+        /// </summary>
         public bool IsStrongName { get; set; }
 
         /*************************************************************************/

@@ -4,11 +4,164 @@
         <name>Drill4Net.Common</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Common.AssemblyVersioning">
+            <summary>
+            Structure for the assembly version's metadata
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AssemblyVersioning.Target">
+            <summary>
+            Type of the assembly's version
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AssemblyVersioning.Version">
+            <summary>
+            The string representation of the assembly's version
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AssemblyVersioning.RawVersion">
+            <summary>
+            Raw string version form the assembly's metadata (appropriate attribute)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AssemblyVersioning.IsStrongName">
+            <summary>
+            Does the assembly contains a strong name?
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.AssemblyVersionType">
+            <summary>
+            Types of the assembly version
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.AssemblyVersionType.Unknown">
+            <summary>
+            Version isn't set yet or isn't recognized
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.AssemblyVersionType.NotIL">
+            <summary>
+            Assembly not contains the IL code
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.AssemblyVersionType.NetFramework">
+            <summary>
+            It's NetFramework version
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.AssemblyVersionType.NetStandard">
+            <summary>
+            It's NetStandard version
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.AssemblyVersionType.NetCore">
+            <summary>
+            It's .Net Core version
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.CommonUtils">
+            <summary>
+            Common util functions
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Common.CommonUtils.GetEntryTargetVersioning">
+            <summary>
+            Get target version for the entry assembly of current process
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Common.CommonUtils.GetAssemblyVersion(System.Reflection.Assembly)">
+            <summary>
+            Get string version of specified assembly
+            </summary>
+            <param name="asm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Common.CommonUtils.ToHexString(System.String)">
+            <summary>
+            Convert string to the HEX representation
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Common.CoreConstants">
+            <summary>
+            Core constants of whole Drill4Net system
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.CoreConstants.CONFIG_REDIRECT_NAME">
+            <summary>
+            Name of the file for the redirecting to the certain config
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.CoreConstants.CONFIG_DEFAULT_NAME">
+            <summary>
+            Standard file name for the Injector's config (if no <see cref="F:Drill4Net.Common.CoreConstants.CONFIG_REDIRECT_NAME"/> and other configs exists)
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.CoreConstants.CONFIG_TESTS_NAME">
+            <summary>
+            Config file name for the Tester subsystem
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.CoreConstants.TREE_FILE_NAME">
+            <summary>
+            File name for the injected entities' metadata (files, types, classes, methods, cross-points, etc)
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Common.CoreConstants.TREE_FILE_HINT_NAME">
+            <summary>
+            File name with a path to the <see cref="F:Drill4Net.Common.CoreConstants.TREE_FILE_NAME"/> helping to search it
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.Extensions">
+            <summary>
+            Common method's extensions
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Common.Extensions.DistinctBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+            <summary>
+            Distinct the elements of the sequence by the key selector, for example, by property of the object
+            </summary>
+            <typeparam name="TSource">Type of source sequence</typeparam>
+            <typeparam name="TKey"></typeparam>
+            <param name="source">Source sequence</param>
+            <param name="keySelector">Key selector, for example, property of the object</param>
+            <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Common.FileUtils">
+            <summary>
+            Common file util functions
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.FileUtils.BaseDir">
+            <summary>
+            Base directory of the running Injector App
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Common.FileUtils.GetCommonLogDirectory(System.String,System.String)">
+            <summary>
+            Get directory for the all subsystems of the Drill4Net
+            </summary>
+            <param name="relativeBaseDir"></param>
+            <param name="logFolder"></param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Common.LoggerHelper.GetCommonFilePath">
             <summary>
             Get the common folder to log events (for all components of system)
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Common.AgentOptions">
+            <summary>
+            Agent's options
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AgentOptions.Admin">
+            <summary>
+            Options for the communicating between Agent part of instrumented App and the admin side
+            </summary>
         </member>
         <member name="T:Drill4Net.Common.AdminOptions">
             <summary>
@@ -46,9 +199,100 @@
             Description for injection process
             </summary>
         </member>
+        <member name="T:Drill4Net.Common.InjectorOptions">
+            <summary>
+            Options for the Injector App
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Source">
+            <summary>
+            Options for the Source of the Target (instrumenting App) - what and how processing
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Destination">
+            <summary>
+            Options for the Destination: path, naming, etc
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.DestinationOptions">
+            <summary>
+            Options for the Destination: path, naming, etc
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.DestinationOptions.Directory">
+            <summary>
+            Where copying injected assemblies. May be empty if no empty <see cref="P:Drill4Net.Common.DestinationOptions.FolderPostfix"/>
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.DestinationOptions.FolderPostfix">
+            <summary>
+            If <see cref="P:Drill4Net.Common.DestinationOptions.Directory"/> is empty, the destination path 
+            will be construct as Source path + "." + this property
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.SourceFilterOptions">
+            <summary>
+            Options for the Filter of directories, folders, namespaces, type names, etc
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.ProbesOptions">
+            <summary>
+            Options for the injecting process (types of methods, cross-points, etc)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.Private">
+            <summary>
+            Need private methods?
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.Ctor">
+            <summary>
+            Need constructors?
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.Getter">
+            <summary>
+            Need getters of the properties?
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.Setter">
+            <summary>
+            Need setters of the properties?
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.EventAdd">
+            <summary>
+            Need handlers for the event adding?
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.EventRemove">
+            <summary>
+            Need handlers for the event removing?
+            </summary>
+        </member>
         <member name="P:Drill4Net.Common.ProbesOptions.SkipEnterType">
             <summary>
             Does the Enter type of cross-point needed?
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Common.ProbesOptions.#ctor">
+            <summary>
+            Create options for the injecting process (types of methods, cross-points, etc)
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.SourceOptions">
+            <summary>
+            Options for the Source of the Target (instrumenting App) - what and how processing
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.SourceOptions.Directory">
+            <summary>
+            Root directory of the injecting Source
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.SourceOptions.Filter">
+            <summary>
+            Options for the Filter of directories, folders, namespaces, type names, etc
             </summary>
         </member>
         <member name="T:Drill4Net.Common.FolderData">
@@ -85,7 +329,7 @@
         </member>
         <member name="T:Drill4Net.Common.VersionOptions">
             <summary>
-            Options for Test Engine
+            Options for the Test Engine
             </summary>
         </member>
         <member name="P:Drill4Net.Common.VersionOptions.Directory">
@@ -98,6 +342,11 @@
             What will be tested - by target moniker/assembly/class
             </summary>
         </member>
+        <member name="M:Drill4Net.Common.VersionOptions.#ctor">
+            <summary>
+            Create options for the Test Engine
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.RedirectOptions">
             <summary>
             Simple redirection cfg to real Injection cfg
@@ -106,6 +355,26 @@
         <member name="P:Drill4Net.Common.RedirectOptions.Path">
             <summary>
             Full/relative path or simple name of real injection cfg (in this case with or without extension)
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.TesterOptions">
+            <summary>
+            Options for the Tester Subsystem for the Project Solution
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.TesterOptions.FolderPostfix">
+            <summary>
+            Postfix for original folder name of Source target
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.TesterOptions.Versions">
+            <summary>
+            Versions of Terget for teh testing
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.TesterOptions.Probes">
+            <summary>
+            Options for the injecting process (types of methods, cross-point, etc)
             </summary>
         </member>
     </members>

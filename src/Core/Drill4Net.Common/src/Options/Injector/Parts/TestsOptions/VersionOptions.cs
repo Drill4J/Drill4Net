@@ -3,7 +3,7 @@
 namespace Drill4Net.Common
 {
     /// <summary>
-    /// Options for Test Engine
+    /// Options for the Test Engine
     /// </summary>
     public class VersionOptions
     {
@@ -19,6 +19,9 @@ namespace Drill4Net.Common
 
         /******************************************************/
 
+        /// <summary>
+        /// Create options for the Test Engine
+        /// </summary>
         public VersionOptions()
         {
             Targets = new Dictionary<string, MonikerData>();

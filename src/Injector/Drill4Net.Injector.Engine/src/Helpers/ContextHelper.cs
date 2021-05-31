@@ -15,7 +15,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="runCtx">Context of Injector Engine's Run</param>
         /// <param name="asmCtx">Context of current assembly</param>
-        internal static void PrepareContextData(RunContext runCtx, AssemblyContext asmCtx)
+        internal static bool PrepareContextData(RunContext runCtx, AssemblyContext asmCtx)
         {
             var treeAsm = asmCtx.InjAssembly;
             var opts = runCtx.Options;
@@ -121,11 +121,13 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             if (!asmCtx.TypeContexts.Any())
-                return;
+                return false;
 
             //get the injecting commands
             asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
             asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);
+
+            return true;
         }
     }
 }
