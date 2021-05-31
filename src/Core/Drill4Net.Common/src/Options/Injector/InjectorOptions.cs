@@ -15,14 +15,29 @@
         /// </summary>
         public DestinationOptions Destination { get; set; }
 
+        /// <summary>
+        /// Options for the Profiler (Agent)
+        /// </summary>
         public ProfilerOptions Profiler { get; set; }
 
+        /// <summary>
+        /// Options for the Proxy class injected to the Target
+        /// </summary>
         public CallerOptions Proxy { get; set; }
 
+        /// <summary>
+        /// Options for the injecting process (types of methods, cross-points, etc)
+        /// </summary>
         public ProbesOptions Probes { get; set; }
 
+        /// <summary>
+        /// Parameters for the target object versions to be processed
+        /// </summary>
         public VersionOptions Versions { get; set; }
 
+        /// <summary>
+        /// Is the silent mode set (no interactive with defaults for the Injector)?
+        /// </summary>
         public bool Silent { get; set; }
     }
 }

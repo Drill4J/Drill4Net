@@ -3,7 +3,7 @@
 namespace Drill4Net.Common
 {
     /// <summary>
-    /// Options for the Test Engine
+    /// Parameters for the target object versions to be processed
     /// </summary>
     public class VersionOptions
     {
@@ -20,7 +20,7 @@ namespace Drill4Net.Common
         /******************************************************/
 
         /// <summary>
-        /// Create options for the Test Engine
+        /// Create parameters for the target object versions to be processed
         /// </summary>
         public VersionOptions()
         {

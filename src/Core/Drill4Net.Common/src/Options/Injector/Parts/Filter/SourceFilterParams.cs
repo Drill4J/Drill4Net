@@ -2,6 +2,9 @@
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Parameters of Filter for the Source Target
+    /// </summary>
     public class SourceFilterParams
     {
         public List<string> Directories { get; set; }

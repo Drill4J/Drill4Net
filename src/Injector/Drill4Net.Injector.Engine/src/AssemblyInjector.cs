@@ -44,7 +44,7 @@ namespace Drill4Net.Injector.Engine
             if (!AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)
             if (!ContextHelper.PrepareContextData(runCtx, asmCtx))
-                return;
+                return; //does the context contain any methods of interest to us?
 
             //the preparing
             AssemblyHelper.FindMoveNextMethods(asmCtx);

@@ -7,7 +7,14 @@ namespace Drill4Net.Common
     /// </summary>
     public class SourceFilterOptions
     {
-        public SourceFilterParams Includes { get; set; } 
+        /// <summary>
+        /// What are we include in Target. <see cref="Includes"/> takes precedence over it
+        /// </summary>
+        public SourceFilterParams Includes { get; set; }
+
+        /// <summary>
+        /// What are we skip in Target. It takes precedence over <see cref="Includes"/>
+        /// </summary>
         public SourceFilterParams Excludes { get; set; }
 
         /*********************************************************/

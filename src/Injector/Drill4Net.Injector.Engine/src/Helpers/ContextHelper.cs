@@ -15,6 +15,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="runCtx">Context of Injector Engine's Run</param>
         /// <param name="asmCtx">Context of current assembly</param>
+        /// <returns>Does the context contain any methods of interest to us and is it worth taking it into account?</returns>
         internal static bool PrepareContextData(RunContext runCtx, AssemblyContext asmCtx)
         {
             var treeAsm = asmCtx.InjAssembly;

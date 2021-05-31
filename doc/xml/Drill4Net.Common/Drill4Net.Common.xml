@@ -214,6 +214,51 @@
             Options for the Destination: path, naming, etc
             </summary>
         </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Profiler">
+            <summary>
+            Options for the Profiler (Agent)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Proxy">
+            <summary>
+            Options for the Proxy class injected to the Target
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Probes">
+            <summary>
+            Options for the injecting process (types of methods, cross-points, etc)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Versions">
+            <summary>
+            Parameters for the target object versions to be processed
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Silent">
+            <summary>
+            Is the silent mode set (no interactive with defaults for the Injector)?
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.CallerOptions">
+            <summary>
+            Base options for abstract Caller entity
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.CallerOptions.Class">
+            <summary>
+            Full class name
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.CallerOptions.Method">
+            <summary>
+            Method's name
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.CallerOptions.Static">
+            <summary>
+            Is method static?
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.DestinationOptions">
             <summary>
             Options for the Destination: path, naming, etc
@@ -233,6 +278,21 @@
         <member name="T:Drill4Net.Common.SourceFilterOptions">
             <summary>
             Options for the Filter of directories, folders, namespaces, type names, etc
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.SourceFilterOptions.Includes">
+            <summary>
+            What are we include in Target. <see cref="P:Drill4Net.Common.SourceFilterOptions.Includes"/> takes precedence over it
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.SourceFilterOptions.Excludes">
+            <summary>
+            What are we skip in Target. It takes precedence over <see cref="P:Drill4Net.Common.SourceFilterOptions.Includes"/>
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.SourceFilterParams">
+            <summary>
+            Parameters of Filter for the Source Target
             </summary>
         </member>
         <member name="T:Drill4Net.Common.ProbesOptions">
@@ -278,6 +338,31 @@
         <member name="M:Drill4Net.Common.ProbesOptions.#ctor">
             <summary>
             Create options for the injecting process (types of methods, cross-points, etc)
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Common.ProfilerOptions">
+            <summary>
+            Options for the Profiler (Agent)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProfilerOptions.Name">
+            <summary>
+            Descriptive name for the Agent (optional)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProfilerOptions.Directory">
+            <summary>
+            Full path to the folder where Profier is located
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProfilerOptions.AssemblyName">
+            <summary>
+            Short file name of the Profiler with extension
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.ProfilerOptions.Namespace">
+            <summary>
+            Namespace of the Profiler's class
             </summary>
         </member>
         <member name="T:Drill4Net.Common.SourceOptions">
@@ -329,7 +414,7 @@
         </member>
         <member name="T:Drill4Net.Common.VersionOptions">
             <summary>
-            Options for the Test Engine
+            Parameters for the target object versions to be processed
             </summary>
         </member>
         <member name="P:Drill4Net.Common.VersionOptions.Directory">
@@ -344,7 +429,7 @@
         </member>
         <member name="M:Drill4Net.Common.VersionOptions.#ctor">
             <summary>
-            Create options for the Test Engine
+            Create parameters for the target object versions to be processed
             </summary>
         </member>
         <member name="T:Drill4Net.Common.RedirectOptions">
