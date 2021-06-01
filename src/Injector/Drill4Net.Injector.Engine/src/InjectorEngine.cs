@@ -23,6 +23,8 @@ namespace Drill4Net.Injector.Engine
             https://www.codeproject.com/Articles/671259/Reweaving-IL-code-with-Mono-Cecil
             https://blog.elishalom.com/2012/02/04/monitoring-execution-using-mono-cecil/
             https://stackoverflow.com/questions/48090703/run-mono-cecil-in-net-core
+
+            Mono.Cecil maintainer: jbevain@gmail.com
         */
 
         private readonly IInjectorRepository _rep;

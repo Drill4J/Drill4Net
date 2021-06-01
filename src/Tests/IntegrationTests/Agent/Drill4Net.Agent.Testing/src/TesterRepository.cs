@@ -5,7 +5,7 @@ namespace Drill4Net.Agent.Testing
 {
     public class TesterRepository : AbstractRepository<TesterOptions, BaseOptionsHelper<TesterOptions>>
     {
-        public TesterRepository(string cfgPath) : base(cfgPath)
+        public TesterRepository(string cfgPath = null) : base(cfgPath)
         {
         }
     }

@@ -28,9 +28,7 @@ namespace Drill4Net.Agent.Testing
             try
             {
                 //rep
-                var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-                var rep = new TesterRepository(cfg_path);
+                var rep = new TesterRepository();
 
                 //tree info
                 var tree = rep.ReadInjectedTree();
