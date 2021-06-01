@@ -34,8 +34,9 @@ namespace Drill4Net.Injector.Engine
             }
 
             //assembly (exactly from whole tree, not just current treeDir - for shared dll)
-            var treeAsm = tree.GetAssembly(asmFullName, true) ??
-                          new InjectedAssembly(asmCtx.Version, asmCtx.Module.Name, asmFullName, runCtx.SourceFile);
+            var asmPath = runCtx.SourceFile;
+            var treeAsm = tree.GetAssembly(asmPath, true) ??
+                          new InjectedAssembly(asmCtx.Version, asmCtx.Module.Name, asmFullName, asmPath);
             treeDir.Add(treeAsm);
             asmCtx.InjAssembly = treeAsm;
 

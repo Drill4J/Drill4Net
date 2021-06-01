@@ -37,7 +37,7 @@ namespace Drill4Net.Injector.Engine
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
         /// <param name="args">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(string[] args): base()
+        public InjectorRepository(string[] args)
         {
             Options = _optHelper.ReadOptionsFromArgs(args);
         }

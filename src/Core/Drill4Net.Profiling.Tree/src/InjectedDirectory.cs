@@ -54,7 +54,7 @@ namespace Drill4Net.Profiling.Tree
                 .Cast<InjectedType>();
         }
 
-        public InjectedAssembly GetAssembly(string fullName, bool inDeep = false)
+        public InjectedAssembly GetAssemblyByName(string fullName, bool inDeep = false)
         {
             if (!inDeep)
             {
@@ -65,7 +65,22 @@ namespace Drill4Net.Profiling.Tree
             else
             {
                 var asms = GetAllAssemblies();
-                return asms.FirstOrDefault(a => a.FullName == fullName);
+                return asms.FirstOrDefault(a => a.FullName.Equals(fullName, StringComparison.InvariantCultureIgnoreCase));
+            }
+        }
+
+        public InjectedAssembly GetAssembly(string path, bool inDeep = false)
+        {
+            if (!inDeep)
+            {
+                return GetAssemblies()
+                    .Where(a => a.Path.Equals(path, StringComparison.CurrentCultureIgnoreCase))
+                    as InjectedAssembly;
+            }
+            else
+            {
+                var asms = GetAllAssemblies();
+                return asms.FirstOrDefault(a => a.Path.Equals(path, StringComparison.InvariantCultureIgnoreCase));
             }
         }
 
