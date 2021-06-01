@@ -92,8 +92,10 @@ namespace Drill4Net.Injector.Engine
                     var x = Path.Combine(sourceDir, a.Value.BaseFolder);
                     if (x.EndsWith("\\"))
                         x = x.Substring(0, x.Length - 1);
+                    if (x.Equals(dir, StringComparison.InvariantCultureIgnoreCase))
+                        return true;
                     var z = Path.Combine(dir, a.Key);
-                    return x == z;
+                    return x.Equals(z, StringComparison.InvariantCultureIgnoreCase);
                 });
                 
                 if (need)
