@@ -5,6 +5,10 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Core.Repository
 {
+    /// <summary>
+    /// Base generic options Helper
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BaseOptionsHelper<T> where T : BaseOptions, new()
     {
         public string DefaultCfgPath { get; private set; }

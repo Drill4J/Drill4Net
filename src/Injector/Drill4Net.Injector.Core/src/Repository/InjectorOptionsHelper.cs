@@ -74,6 +74,13 @@ namespace Drill4Net.Common
             return cfgArg == null ? DefaultCfgPath : cfgArg.Split('=')[1];
         }
 
+        /// <summary>
+        /// Read options by input argument of program (Injector).
+        /// If the arguments do not contain the path to the config, 
+        /// the method will try to find the config in other ways
+        /// </summary>
+        /// <param name="args">Input arguments</param>
+        /// <returns></returns>
         public InjectorOptions ReadOptionsFromArgs(string[] args)
         {
             var cfgPath = GetArgumentConfigPath(args);
