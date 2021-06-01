@@ -1,7 +1,7 @@
 ﻿Description: Manual debugging of Injector App (Standard agent) on Razor app
 Type: Injector #type as hint
 Target:
-    Name: Razor-app
+    Name: razor-app
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Demo.Razor.App\
     Filter: # filter for files, namespaces, classes...

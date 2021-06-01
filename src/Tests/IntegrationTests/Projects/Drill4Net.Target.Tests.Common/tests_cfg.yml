@@ -1,7 +1,7 @@
 ﻿Description: Engine for integration tests
 Type: Tests #type as hint
 Target:
-    Name: Test-target
+    Name: test-target
 TreePath: ..\..\TargetApps.Injected.Tests\ # were tree data about probes are located - if empty, system will try find it by another ways
 Probes: # types of cross-cutting points
     Ctor: true

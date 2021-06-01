@@ -1,7 +1,7 @@
 ﻿Description: Manual debugging of Injector App (Standard agent) on Blazor app (Server-Side)
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: Blazor-server-side-app # optional injection name
+    Name: blazor-server-side-app # optional injection name
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Demo.Blazor.ServerApp\
     Filter: # filter for files, namespaces, classes...
