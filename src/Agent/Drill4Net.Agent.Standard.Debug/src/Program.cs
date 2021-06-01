@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Drill4Net.Common;
+using System.Collections.Generic;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard.Debug

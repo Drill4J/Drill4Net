@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-	<DefineConstants>NET_CORE</DefineConstants>
 	<LangVersion>latest</LangVersion>
 	<NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
