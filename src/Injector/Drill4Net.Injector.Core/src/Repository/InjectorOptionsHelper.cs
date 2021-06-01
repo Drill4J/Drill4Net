@@ -74,7 +74,7 @@ namespace Drill4Net.Common
             return cfgArg == null ? DefaultCfgPath : cfgArg.Split('=')[1];
         }
 
-        public InjectorOptions ClarifyOptions(string[] args)
+        public InjectorOptions ReadOptionsFromArgs(string[] args)
         {
             var cfgPath = GetArgumentConfigPath(args);
             if (string.IsNullOrWhiteSpace(cfgPath))
