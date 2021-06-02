@@ -87,48 +87,12 @@ namespace Drill4Net.Injector.Engine
                 {
                     Debug.WriteLine(methodCtx.Method.FullName);
 
-                    var methodDef = methodCtx.Definition;
-                    var body = methodDef.Body;
+                    var body = methodCtx.Definition.Body;
                     //body.SimplifyMacros(); //bug (Cecil's or my?)
-                    var instructions = methodCtx.Instructions; //no copy list!
 
                     CollectJumpers(methodCtx);
-
-                    #region CG method's global call index
-                    foreach (var caller in treeAsmMethods)
-                    {
-                        foreach (var calleName in caller.CalleeIndexes.Keys)
-                        {
-                            if (asmCtx.InjMethodByFullname.ContainsKey(calleName))
-                            {
-                                var callee = asmCtx.InjMethodByFullname[calleName];
-                                var cgInfo = callee.CGInfo;
-                                if (cgInfo == null) //null is normal (business method)
-                                    continue;
-                                cgInfo.Caller = caller;
-                                cgInfo.CallerIndex = caller.CalleeIndexes[calleName];
-                            }
-                            else { } //hmmm... check, WTF...
-                        }
-                    }
-                    #endregion
-                    #region *** Injections ***
-                    Strategy.PrimaryAct(methodCtx); //primary actions for some handlers
-                    for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
-                    {
-                        #region Checks
-                        var instr = instructions[i];
-                        if (!methodCtx.BusinessInstructions.Contains(instr))
-                            continue;
-                        if (methodCtx.AheadProcessed.Contains(instr))
-                            continue;
-                        #endregion
-
-                        methodCtx.SetPosition(i);
-                        i = HandleInstruction(methodCtx); //process and correct current index after potential injection
-                    }
-                    #endregion
-
+                    CollectCallsInfo(asmCtx, treeAsmMethods);
+                    InjectMethod(methodCtx);
                     CorrectJumps(methodCtx.Jumpers.ToArray());
 
                     body.Optimize();
@@ -137,12 +101,51 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static void CollectJumpers(MethodContext methodCtx)
+        internal void CollectCallsInfo(AssemblyContext asmCtx, IEnumerable<InjectedMethod> treeAsmMethods)
+        {
+            foreach (var caller in treeAsmMethods)
+            {
+                foreach (var calleName in caller.CalleeIndexes.Keys)
+                {
+                    if (asmCtx.InjMethodByFullname.ContainsKey(calleName))
+                    {
+                        var callee = asmCtx.InjMethodByFullname[calleName];
+                        var cgInfo = callee.CGInfo;
+                        if (cgInfo == null) //null is normal (business method)
+                            continue;
+                        cgInfo.Caller = caller;
+                        cgInfo.CallerIndex = caller.CalleeIndexes[calleName];
+                    }
+                    else { } //hmmm... check, WTF...
+                }
+            }
+        }
+
+        internal void InjectMethod(MethodContext methodCtx)
+        {
+            var instructions = methodCtx.Instructions; //no copy list!
+            Strategy.PrimaryAct(methodCtx); //primary actions for some handlers
+            for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
+            {
+                #region Checks
+                var instr = instructions[i];
+                if (!methodCtx.BusinessInstructions.Contains(instr))
+                    continue;
+                if (methodCtx.AheadProcessed.Contains(instr))
+                    continue;
+                #endregion
+
+                methodCtx.SetPosition(i);
+                i = HandleInstruction(methodCtx); //process and correct current index after potential injection
+            }
+        }
+
+        internal void CollectJumpers(MethodContext methodCtx)
         {
             //Hash table for separate addresses is almost useless,
             //because they may be recalculated inside the processor during inject...
             //and ideally, there shouldn't be too many of them 
-            var instructions = methodCtx.Instructions;
+            var instructions = methodCtx.Instructions; //no copy list!
             for (var i = 1; i < instructions.Count; i++)
             {
                 var instr = instructions[i];
@@ -167,7 +170,7 @@ namespace Drill4Net.Injector.Engine
         ///again after each necessary conversion)
         /// </summary>
         /// <param name="jumpers"></param>
-        internal static void CorrectJumps(IEnumerable<Instruction> jumpers)
+        internal void CorrectJumps(IEnumerable<Instruction> jumpers)
         {
             foreach (var jump in jumpers)
             {
