@@ -48,56 +48,14 @@ namespace Drill4Net.Injector.Engine
                 //by methods
                 foreach (var methodDef in methods)
                 {
-                    #region Init
-                    var methodName = methodDef.Name;
                     var methodFullName = methodDef.FullName;
-
-                    //Tree
                     var treeFunc = asmCtx.InjMethodByFullname[methodFullName];
+
                     var methodCtx = new MethodContext(typeCtx, treeFunc, methodDef);
-                    typeCtx.MethodContexts.Add(methodFullName, methodCtx);
-
                     methodCtx.IsStrictEnterReturn = IsEnterReturnRestrict(runCtx, methodCtx);
-                    #endregion
-                    #region Start index
-                    var methodSource = treeFunc.Source;
-                    var methodType = methodSource.MethodType;
-                    var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
-                    var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
-                    var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip the init jump block for the state machine, etc
+                    methodCtx.StartIndex = CalcStartIndex(treeFunc.Source, methodCtx.Definition.Body);
 
-                    //instructions
-                    var body = methodDef.Body;
-                    var instructions = body.Instructions; //no copy list!
-
-                    var startInd = 0;
-                    if (skipStart)
-                    {
-                        //we need find the start of the business part of the code
-                        //the MoveNext method of Async Machine consists of some own if/else & try/catch statements
-                        if (isAsyncStateMachine && body.ExceptionHandlers.Any())
-                        {
-                            var minOffset = body.ExceptionHandlers.Min(a => a.TryStart.Offset);
-                            var asyncInstr = body.ExceptionHandlers
-                                .First(a => a.TryStart.Offset == minOffset).TryStart;
-                            startInd = instructions.IndexOf(asyncInstr) + 1;
-                            while (true)
-                            {
-                                var curAsyncCode = asyncInstr.OpCode.Code;
-                                //the async's if/else statements are over
-                                if (curAsyncCode is Code.Nop or Code.Stfld or Code.Newobj or Code.Call //guanito
-                                    || curAsyncCode.ToString().StartsWith("Ldarg"))
-                                    break;
-                                asyncInstr = asyncInstr.Next;
-                                startInd++;
-                            }
-                        }
-                        else
-                        {
-                            startInd = 12;
-                        }
-                    }
-                    #endregion
+                    typeCtx.MethodContexts.Add(methodFullName, methodCtx);
                 }
             }
             if (!asmCtx.TypeContexts.Any())
@@ -133,6 +91,44 @@ namespace Drill4Net.Injector.Engine
                     (runCtx.IsNetCore == true && methodSource.IsFinalizer)
                 );
             return strictEnterReturn;
+        }
+
+        internal static int CalcStartIndex(MethodSource methodSource, MethodBody body)
+        {
+            var methodType = methodSource.MethodType;
+            var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
+            var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
+            var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip the init jump block for the state machine, etc
+            var instructions = body.Instructions; //no copy list!
+
+            var startInd = 0;
+            if (skipStart)
+            {
+                //we need find the start of the business part of the code
+                //the MoveNext method of Async Machine consists of some own if/else & try/catch statements
+                if (isAsyncStateMachine && body.ExceptionHandlers.Any())
+                {
+                    var minOffset = body.ExceptionHandlers.Min(a => a.TryStart.Offset);
+                    var asyncInstr = body.ExceptionHandlers
+                        .First(a => a.TryStart.Offset == minOffset).TryStart;
+                    startInd = instructions.IndexOf(asyncInstr) + 1;
+                    while (true)
+                    {
+                        var curAsyncCode = asyncInstr.OpCode.Code;
+                        //the async's if/else statements are over
+                        if (curAsyncCode is Code.Nop or Code.Stfld or Code.Newobj or Code.Call //guanito
+                            || curAsyncCode.ToString().StartsWith("Ldarg"))
+                            break;
+                        asyncInstr = asyncInstr.Next;
+                        startInd++;
+                    }
+                }
+                else
+                {
+                    startInd = 12;
+                }
+            }
+            return startInd;
         }
     }
 }
