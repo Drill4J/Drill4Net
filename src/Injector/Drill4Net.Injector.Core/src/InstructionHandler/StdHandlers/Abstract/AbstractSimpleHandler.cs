@@ -17,6 +17,12 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************/
 
+        /// <summary>
+        /// Instruction handler for the simple cases by current method's context
+        /// </summary>
+        /// <param name="ctx">Method's context</param>
+        /// <param name="needBreak">Do we need to break the further processing in the chain of 
+        /// subsequent handlers after successful processing by the current handler?</param>
         protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             needBreak = false;
@@ -43,8 +49,17 @@ namespace Drill4Net.Injector.Core
             needBreak = true;
         }
 
+        /// <summary>
+        /// Check whether the current instruction needs to be processed by this handler
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         protected abstract bool IsCondition(MethodContext ctx);
 
+        /// <summary>
+        /// Post action after main injection.
+        /// </summary>
+        /// <param name="ctx"></param>
         protected virtual void PostAction(MethodContext ctx) {}
     }
 }

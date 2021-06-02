@@ -6,31 +6,94 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// Context of the assembly 's current data
+    /// </summary>
     public class AssemblyContext
     {
+        /// <summary>
+        /// Subject name - just short name of the assembly
+        /// </summary>
         public string SubjectName { get; set; }
+
+        /// <summary>
+        /// Source directory of the target assembly
+        /// </summary>
         public string SourceDir { get; set; }
+
+        /// <summary>
+        /// File name of the target assembly
+        /// </summary>
         public string SourceFile { get; }
+
+        /// <summary>
+        /// Destination directory of the injected assembly
+        /// </summary>
         public string DestinationDir { get; set; }
 
+        /// <summary>
+        /// The definition of the assembly
+        /// </summary>
         public AssemblyDefinition Definition { get; }
+
+        /// <summary>
+        /// Main module of the assembly
+        /// </summary>
         public ModuleDefinition Module => Definition?.MainModule;
 
+        /// <summary>
+        /// Do need use the PDB info?
+        /// </summary>
         public bool IsNeedPdb { get; set; }
+
+        /// <summary>
+        /// Do the assembly need to be injected?
+        /// </summary>
         public bool Skipped { get; set; }
 
+        /// <summary>
+        /// Version info of assembly
+        /// </summary>
         public AssemblyVersioning Version { get; }
-        public InjectedAssembly InjAssembly { get; set; }
 
+        /// <summary>
+        /// Type contexts of assembly
+        /// </summary>
         public Dictionary<string, TypeContext> TypeContexts { get; }
 
+        /// <summary>
+        /// The Injected assembly's metadata
+        /// </summary>
+        public InjectedAssembly InjAssembly { get; set; }
+
+        /// <summary>
+        /// Injected classes of assembly's metadata
+        /// </summary>
         public Dictionary<string, InjectedType> InjClasses { get; }
+
+        /// <summary>
+        /// Injected methods by their full name
+        /// </summary>
         public Dictionary<string, InjectedMethod> InjMethodByFullname { get; }
+
+        /// <summary>
+        /// Injected methods by their special key
+        /// </summary>
         public Dictionary<string, InjectedMethod> InjMethodByKeys { get; }
 
+        /// <summary>
+        /// The Proxy's namespace
+        /// </summary>
         public string ProxyNamespace { get; set; }
+
+        /// <summary>
+        /// The Proxy's method reference
+        /// </summary>
         public MethodReference ProxyMethRef { get; set; }
 
+        /// <summary>
+        /// The Key of the assembly
+        /// </summary>
         public string Key => $"{Definition?.FullName}${Version}";
 
         /***********************************************************************************/

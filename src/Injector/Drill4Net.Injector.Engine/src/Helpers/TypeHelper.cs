@@ -29,9 +29,18 @@ namespace Drill4Net.Injector.Engine
             var res = new List<TypeDefinition>();
             foreach (var typeDef in allTypes)
             {
+                //The<Module> type is a place holder for declaring classes and methods that do not conform to the CLI model.
+                //Normally relevant only in mixed-mode assemblies that contain both code written in a managed language and
+                //unmanaged code, such as C or C++. It is empty for pure managed builds. These languages support free functions
+                //and global variables. The CLR does not directly support this, methods and variables must always be members of
+                //the type. So the metadata generator uses a simple trick, it creates a fake type that will become the home for
+                //such functions and variables. The name of this fake type is <Module>. It always has internal accessibility to
+                //hide the participants.There is only one of these types, its RID is always 1. The CLR source code calls it a
+                //"global class".
                 var typeName = typeDef.Name;
                 if (typeName == "<Module>")
                     continue;
+                //
                 var typeFullName = typeDef.FullName;
                 if (_typeChecker.IsSystemType(typeFullName)) //system's types not needed any way
                     continue;
