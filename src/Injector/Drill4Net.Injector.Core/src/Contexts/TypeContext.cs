@@ -5,6 +5,9 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// Context of the targer Type
+    /// </summary>
     public class TypeContext
     {
         public AssemblyContext AssemblyCtx { get; }
@@ -14,6 +17,12 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************************/
 
+        /// <summary>
+        /// Create context of the targer Type
+        /// </summary>
+        /// <param name="asmCtx"></param>
+        /// <param name="typeDef"></param>
+        /// <param name="injType"></param>
         public TypeContext(AssemblyContext asmCtx, TypeDefinition typeDef, InjectedType injType)
         {
             AssemblyCtx = asmCtx ?? throw new ArgumentNullException(nameof(asmCtx));

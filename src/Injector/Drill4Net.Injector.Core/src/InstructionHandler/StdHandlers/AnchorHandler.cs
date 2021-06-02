@@ -48,7 +48,7 @@ namespace Drill4Net.Injector.Core
                     foreach (var operand in operands)
                     {
                         var anchor = operand;
-                        if (ctx.FirstInjectInstructions.Contains(anchor) && ctx.ReplacedJumps.ContainsKey(anchor))
+                        if (ctx.StatingInjectInstructions.Contains(anchor) && ctx.ReplacedJumps.ContainsKey(anchor))
                             anchor = ctx.ReplacedJumps[anchor];
                         if (anchor != instr)
                             continue;

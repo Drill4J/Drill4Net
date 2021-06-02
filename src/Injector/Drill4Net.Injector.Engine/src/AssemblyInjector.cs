@@ -124,7 +124,7 @@ namespace Drill4Net.Injector.Engine
         internal void InjectMethod(MethodContext methodCtx)
         {
             var instructions = methodCtx.Instructions; //no copy list!
-            Strategy.PrimaryAct(methodCtx); //primary actions for some handlers
+            Strategy.Preprocess(methodCtx); //primary actions for some handlers
             for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
             {
                 #region Checks

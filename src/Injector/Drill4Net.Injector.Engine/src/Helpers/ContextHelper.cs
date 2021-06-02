@@ -60,7 +60,7 @@ namespace Drill4Net.Injector.Engine
             if (!asmCtx.TypeContexts.Any())
                 return false;
 
-            PrepareProxy(asmCtx, opts);
+            PrepareProxyCalls(asmCtx, opts);
             return true;
         }
 
@@ -145,7 +145,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="asmCtx"></param>
         /// <param name="opts"></param>
-        internal static void PrepareProxy(AssemblyContext asmCtx, InjectorOptions opts)
+        internal static void PrepareProxyCalls(AssemblyContext asmCtx, InjectorOptions opts)
         {
             asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
             asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);

@@ -117,7 +117,7 @@ namespace Drill4Net.Injector.Core
             if (asProcessed)
                 ctx.AheadProcessed.Add(ctx.Instructions[ind]);
             var probeData = GetProbeData(ctx, type, ind, out var point);
-            return GetFirstInjectedInstruction(ctx, probeData);
+            return GetStartingInjectedInstruction(ctx, probeData);
         }
 
         /// <summary>
@@ -328,15 +328,15 @@ namespace Drill4Net.Injector.Core
         }
 
         /// <summary>
-        /// Get the first injected instruction in the injecting series. Now it's type is OpCodes.Ldstr
+        /// Get the set of the starting injected instructions in the injecting block. Now it's just type is OpCodes.Ldstr
         /// </summary>
         /// <param name="ctx">Method context</param>
         /// <param name="probeData">String which need injected</param>
         /// <returns></returns>
-        protected Instruction GetFirstInjectedInstruction(MethodContext ctx, string probeData)
+        protected Instruction GetStartingInjectedInstruction(MethodContext ctx, string probeData)
         {
             var instr = Instruction.Create(OpCodes.Ldstr, probeData);
-            ctx.FirstInjectInstructions.Add(instr);
+            ctx.StatingInjectInstructions.Add(instr);
             return instr;
         }
 
