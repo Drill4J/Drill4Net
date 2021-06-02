@@ -502,8 +502,8 @@ namespace Drill4Net.Target.Tests.Common
                     new TestInfo(GetInfo(_anotherTarget.WhoAreU), new List<string>())
                     ).SetCategory(CATEGORY_MISC);
 
-                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Yield), new List<string> { "Call_3" }), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Anchor_62", "Else_44", "Anchor_49", "Anchor_62", "Call_67" })).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Yield), new List<string> { "Call_3" }), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Anchor_62", "If_46", "Anchor_49", "Anchor_62", "Call_67" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Yield), new List<string> { "Call_3" }), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Anchor_62", "Else_44", "Anchor_49", "If_10", "Anchor_62", "Call_67" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Yield), new List<string> { "Call_3" }), new TestInfo(GetInfo(Target.GetForYield), new List<string> { "Anchor_62", "If_46", "Anchor_49", "If_10", "Anchor_62", "Call_67" })).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Extension), new List<string> { "Call_3" }), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Else_2", "Anchor_6" })).SetCategory(CATEGORY_MISC);
                 yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Extension), new List<string> { "Call_3" }), new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "If_4", "Anchor_6" })).SetCategory(CATEGORY_MISC);

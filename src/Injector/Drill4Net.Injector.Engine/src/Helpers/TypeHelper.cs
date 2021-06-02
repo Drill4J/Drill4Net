@@ -29,7 +29,7 @@ namespace Drill4Net.Injector.Engine
             var res = new List<TypeDefinition>();
             foreach (var typeDef in allTypes)
             {
-                //The<Module> type is a place holder for declaring classes and methods that do not conform to the CLI model.
+                //The <Module> type is a placeholder for declaring classes and methods that do not conform to the CLI model.
                 //Normally relevant only in mixed-mode assemblies that contain both code written in a managed language and
                 //unmanaged code, such as C or C++. It is empty for pure managed builds. These languages support free functions
                 //and global variables. The CLR does not directly support this, methods and variables must always be members of
@@ -152,11 +152,21 @@ namespace Drill4Net.Injector.Engine
             return methods;
         }
 
+        /// <summary>
+        /// Does the specified type implement the Enumerable interface?
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         internal static bool IsEnumerable(TypeDefinition type)
         {
             return type.Interfaces.FirstOrDefault(a => a.InterfaceType.Name == "IEnumerable") != null;
         }
 
+        /// <summary>
+        /// Does the specified type implement an asynchronous State Machine?
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         internal static bool IsAsyncMachine(TypeDefinition type)
         {
             var isAsyncStateMachine =

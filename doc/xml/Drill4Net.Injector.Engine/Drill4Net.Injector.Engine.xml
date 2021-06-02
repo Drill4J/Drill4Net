@@ -163,6 +163,20 @@
             <param name="opts">Options for the method filtering</param>
             <returns></returns>
         </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.IsEnumerable(Mono.Cecil.TypeDefinition)">
+            <summary>
+            Does the specified type implement the Enumerable interface?
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.TypeHelper.IsAsyncMachine(Mono.Cecil.TypeDefinition)">
+            <summary>
+            Does the specified type implement an asynchronous State Machine?
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Injector.Engine.TypeHelper.FilterMethods(Mono.Cecil.TypeDefinition,Drill4Net.Common.ProbesOptions)">
             <summary>
             Filter methods of the type according options

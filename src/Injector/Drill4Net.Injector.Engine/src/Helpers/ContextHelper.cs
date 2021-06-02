@@ -54,35 +54,22 @@ namespace Drill4Net.Injector.Engine
 
                     //Tree
                     var treeFunc = asmCtx.InjMethodByFullname[methodFullName];
+                    var methodCtx = new MethodContext(typeCtx, treeFunc, methodDef);
+                    typeCtx.MethodContexts.Add(methodFullName, methodCtx);
+
+                    methodCtx.IsStrictEnterReturn = IsEnterReturnRestrict(runCtx, methodCtx);
+                    #endregion
+                    #region Start index
                     var methodSource = treeFunc.Source;
                     var methodType = methodSource.MethodType;
-
                     var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
                     var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
                     var skipStart = isAsyncStateMachine || methodSource.IsEnumeratorMoveNext; //skip the init jump block for the state machine, etc
 
-                    //Enter/Return
-                    var isSpecFunc = MethodHelper.IsSpecialGeneratedMethod(methodType);
-                    var strictEnterReturn = //what is principally forbidden
-                        !isSpecFunc
-                        //ASP.NET & Blazor rendering methods (may contains business logic)
-                        && !methodName.Contains("CreateHostBuilder")
-                        && !methodName.Contains("BuildRenderTree")
-                        //others
-                        && (
-                            methodName.Contains("|") || //local func                                                        
-                            isAsyncStateMachine || //async/await
-                            isCompilerGenerated ||
-                            //Finalize() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
-                            (runCtx.IsNetCore == true && methodSource.IsFinalizer)
-                        );
-
                     //instructions
                     var body = methodDef.Body;
                     var instructions = body.Instructions; //no copy list!
-                    var processor = body.GetILProcessor();
-                    #endregion
-                    #region Start index
+
                     var startInd = 0;
                     if (skipStart)
                     {
@@ -111,14 +98,6 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                     #endregion
-                    #region Method context
-                    var methodCtx = new MethodContext(typeCtx, treeFunc, methodDef)
-                    {
-                        StartIndex = startInd,
-                        IsStrictEnterReturn = strictEnterReturn,
-                    };
-                    typeCtx.MethodContexts.Add(methodFullName, methodCtx);
-                    #endregion
                 }
             }
             if (!asmCtx.TypeContexts.Any())
@@ -129,6 +108,31 @@ namespace Drill4Net.Injector.Engine
             asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);
 
             return true;
+        }
+
+        internal static bool IsEnterReturnRestrict(RunContext runCtx, MethodContext methCtx)
+        {
+            var methodName = methCtx.Definition.Name;
+            var treeFunc = methCtx.Method;
+            var methodSource = treeFunc.Source;
+            var methodType = methodSource.MethodType;
+            var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
+            var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
+            var isSpecFunc = MethodHelper.IsSpecialGeneratedMethod(methodType);
+            var strictEnterReturn = //what is principally forbidden
+                !isSpecFunc
+                //ASP.NET & Blazor rendering methods (may contains business logic)
+                && !methodName.Contains("CreateHostBuilder")
+                && !methodName.Contains("BuildRenderTree")
+                //others
+                && (
+                    methodName.Contains("|") || //local func                                                        
+                    isAsyncStateMachine || //async/await
+                    isCompilerGenerated ||
+                    //Finalize() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
+                    (runCtx.IsNetCore == true && methodSource.IsFinalizer)
+                );
+            return strictEnterReturn;
         }
     }
 }
