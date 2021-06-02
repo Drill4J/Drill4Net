@@ -18,8 +18,8 @@ namespace Drill4Net.Injector.Engine
 
         public static MethodReference CreateProxyMethodReference(AssemblyContext asmCtx, InjectorOptions opts)
         {
-            //we will use proxy class (with cached Reflection) leading to real profiler
-            //proxy will be inject in each target assembly - let construct the calling of it's method
+            //We will use proxy class (with cached Reflection) leading to real profiler.
+            //Proxy will be injected in each target assembly - let construct the calling of it's method
             var module = asmCtx.Module;
             var proxyReturnTypeRef = module.TypeSystem.Void;
             var proxyTypeRef = new TypeReference(asmCtx.ProxyNamespace, opts.Proxy.Class, module, module);

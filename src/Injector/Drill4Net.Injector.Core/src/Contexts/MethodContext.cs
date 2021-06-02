@@ -10,20 +10,25 @@ namespace Drill4Net.Injector.Core
 {
     public record MethodContext
     {
-        public TypeContext TypeCtx { get; }
         public string ModuleName => TypeCtx.AssemblyCtx.Module.Name;
-        public InjectedType Type => TypeCtx.InjType;
+        public AssemblyContext AssemblyCtx => TypeCtx?.AssemblyCtx;
 
         public MethodDefinition Definition { get; }
         public InjectedMethod Method { get; }
 
-        public ILProcessor Processor { get; }
+        public TypeContext TypeCtx { get; }
+        public InjectedType Type => TypeCtx.InjType;
+
+        public int StartIndex { get; set; }
         public Collection<Instruction> Instructions { get; }
         public List<Instruction> OrigInstructions { get; }
         public HashSet<Instruction> BusinessInstructions { get; }
-        public int StartIndex { get; set; }
-        public Collection<ExceptionHandler> ExceptionHandlers { get; }
         public Instruction LastOperation { get; set; }
+        public HashSet<Instruction> CompilerInstructions { get; }
+        public HashSet<Instruction> AheadProcessed { get; }
+
+        public ILProcessor Processor { get; }
+        public Collection<ExceptionHandler> ExceptionHandlers { get; }
         public Stack<Instruction> IfStack { get; }
         public bool IsStrictEnterReturn { get; set; }
         public HashSet<object> FirstInjectInstructions { get; }
@@ -34,9 +39,7 @@ namespace Drill4Net.Injector.Core
         /// Set of an anchors (targets of <see cref="Jumpers"/>, in fact, their Operands)
         /// </summary>
         public HashSet<object> Anchors { get; }
-        public HashSet<Instruction> CompilerInstructions { get; }
-        public HashSet<Instruction> AheadProcessed { get; }
-        
+  
         /// <summary>
         /// Current instruction index from source IL code
         /// </summary>

@@ -35,6 +35,13 @@
             <param name="asmCtx">Assembly's context</param>
             <param name="tree">The tree of the injected entities</param>
         </member>
+        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.CorrectJumps(System.Collections.Generic.IEnumerable{Mono.Cecil.Cil.Instruction})">
+             <summary>
+            EACH short form of jumps to long form (otherwise, we need to recalculate 
+            again after each necessary conversion)
+             </summary>
+             <param name="jumpers"></param>
+        </member>
         <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.HandleInstruction(Drill4Net.Injector.Core.MethodContext)">
             <summary>
             Process the current instruction of IL code according to <see cref="P:Drill4Net.Injector.Engine.AssemblyInjector.Strategy"/>
@@ -75,6 +82,30 @@
             <param name="runCtx">Context of Injector Engine's Run</param>
             <param name="asmCtx">Context of current assembly</param>
             <returns>Does the context contain any methods of interest to us and is it worth taking it into account?</returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.ContextHelper.IsEnterReturnRestrict(Drill4Net.Injector.Core.RunContext,Drill4Net.Injector.Core.MethodContext)">
+            <summary>
+            Do we need restrict Enter and Return cross-point's injection?
+            </summary>
+            <param name="runCtx">Injector Engine's Run context</param>
+            <param name="methCtx">Method's context</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.ContextHelper.CalcStartIndex(Drill4Net.Profiling.Tree.MethodSource,Mono.Cecil.Cil.MethodBody)">
+            <summary>
+            Calculate the start index (we need skip the start of instruction array, for example,
+            for some compiler generated methods)
+            </summary>
+            <param name="methodSource"></param>
+            <param name="body"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.ContextHelper.PrepareProxy(Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Common.InjectorOptions)">
+            <summary>
+            Prepare info about injector proxy class and its called method
+            </summary>
+            <param name="asmCtx"></param>
+            <param name="opts"></param>
         </member>
         <member name="T:Drill4Net.Injector.Engine.CoverageHelper">
             <summary>

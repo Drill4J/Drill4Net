@@ -32,7 +32,7 @@ namespace Drill4Net.Injector.Core
             var compilerInstructions = ctx.CompilerInstructions;
             var exceptionHandlers = ctx.ExceptionHandlers;
             var ifStack = ctx.IfStack;
-            var proxyMethRef = ctx.TypeCtx.AssemblyCtx.ProxyMethRef;
+            var proxyMethRef = ctx.AssemblyCtx.ProxyMethRef;
             var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             #endregion
             #region Checks

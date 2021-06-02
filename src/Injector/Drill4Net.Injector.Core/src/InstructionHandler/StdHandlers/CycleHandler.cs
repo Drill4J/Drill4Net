@@ -23,7 +23,7 @@ namespace Drill4Net.Injector.Core
             var instr = instructions[ctx.CurIndex];
             var opCode = instr.OpCode;
             var code = opCode.Code;
-            var proxyMethRef = ctx.TypeCtx.AssemblyCtx.ProxyMethRef;
+            var proxyMethRef = ctx.AssemblyCtx.ProxyMethRef;
 
             var methodSource = treeFunc.Source;
             var isEnumeratorMoveNext = methodSource.IsEnumeratorMoveNext;
@@ -53,7 +53,7 @@ namespace Drill4Net.Injector.Core
             if (prevOperand.OpCode.Code is Code.Br or Code.Br_S) //for/while
             {
                 var ldstrIf2 = Register(ctx, CrossPointType.Cycle); 
-                var targetOp = prevOperand.Operand as Instruction; //prevOperand.Operand
+                var targetOp = prevOperand.Operand as Instruction;
                 processor.InsertBefore(targetOp, ldstrIf2);
                 processor.InsertBefore(targetOp, call);
                 ctx.CorrectIndex(2);

@@ -1,6 +1,6 @@
-﻿using Mono.Cecil.Cil;
+﻿using System.Linq;
+using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
-using System.Linq;
 
 namespace Drill4Net.Injector.Core
 {
@@ -23,7 +23,7 @@ namespace Drill4Net.Injector.Core
             //init
             var processor = ctx.Processor;
             var instr = ctx.CurInstruction;
-            var proxyMethRef = ctx.TypeCtx.AssemblyCtx.ProxyMethRef;
+            var proxyMethRef = ctx.AssemblyCtx.ProxyMethRef;
             var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             
             //data

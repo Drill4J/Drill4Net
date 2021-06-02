@@ -8,6 +8,7 @@ using Drill4Net.Common;
 using Drill4Net.Injection;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -43,8 +44,9 @@ namespace Drill4Net.Injector.Engine
         {
             if (!AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)
+
             if (!ContextHelper.PrepareContextData(runCtx, asmCtx))
-                return; //does the context contain any methods of interest to us?
+                return; //just the context does not contain any methods of interest to us
 
             //the preparing
             AssemblyHelper.FindMoveNextMethods(asmCtx);
@@ -90,28 +92,8 @@ namespace Drill4Net.Injector.Engine
                     //body.SimplifyMacros(); //bug (Cecil's or my?)
                     var instructions = methodCtx.Instructions; //no copy list!
 
-                    #region Jumpers
-                    //collect jumpers. Hash table for separate addresses is almost useless,
-                    //because they may be recalculated inside the processor during inject...
-                    //and ideally, there shouldn't be too many of them 
-                    for (var i = 1; i < instructions.Count; i++)
-                    {
-                        var instr = instructions[i];
-                        var flow = instr.OpCode.FlowControl;
-                        if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
-                            continue;
-                        methodCtx.Jumpers.Add(instr);
-                        //
-                        var anchor = instr.Operand;
-                        //need this jump for handle?
-                        var curCode = instr.OpCode.Code;
-                        //not needed jumps from by Leave from try/catch/finally semantically
-                        if (curCode == Code.Leave || curCode == Code.Leave_S)
-                            continue;
-                        if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))
-                            methodCtx.Anchors.Add(anchor);
-                    }
-                    #endregion
+                    CollectJumpers(methodCtx);
+
                     #region CG method's global call index
                     foreach (var caller in treeAsmMethods)
                     {
@@ -146,24 +128,55 @@ namespace Drill4Net.Injector.Engine
                         i = HandleInstruction(methodCtx); //process and correct current index after potential injection
                     }
                     #endregion
-                    #region Correct jumps
-                    //EACH short form -> to long form (otherwise, we need to recalculate 
-                    //again after each necessary conversion)
-                    var jumpers = methodCtx.Jumpers.ToArray();
-                    foreach (var jump in jumpers)
-                    {
-                        var opCode = jump.OpCode;
-                        if (jump.Operand is not Instruction)
-                            continue;
-                        var newOpCode = InstructionHelper.ShortJumpToLong(opCode);
-                        if (newOpCode.Code != opCode.Code)
-                            jump.OpCode = newOpCode;
-                    }
-                    #endregion
+
+                    CorrectJumps(methodCtx.Jumpers.ToArray());
 
                     body.Optimize();
                     body.OptimizeMacros();
                 }
+            }
+        }
+
+        internal static void CollectJumpers(MethodContext methodCtx)
+        {
+            //Hash table for separate addresses is almost useless,
+            //because they may be recalculated inside the processor during inject...
+            //and ideally, there shouldn't be too many of them 
+            var instructions = methodCtx.Instructions;
+            for (var i = 1; i < instructions.Count; i++)
+            {
+                var instr = instructions[i];
+                var flow = instr.OpCode.FlowControl;
+                if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
+                    continue;
+                methodCtx.Jumpers.Add(instr);
+                //
+                var anchor = instr.Operand;
+                //need this jump for handle?
+                var curCode = instr.OpCode.Code;
+                //not needed jumps from by Leave from try/catch/finally semantically
+                if (curCode == Code.Leave || curCode == Code.Leave_S)
+                    continue;
+                if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))
+                    methodCtx.Anchors.Add(anchor);
+            }
+        }
+
+        /// <summary>
+        ///EACH short form of jumps to long form (otherwise, we need to recalculate 
+        ///again after each necessary conversion)
+        /// </summary>
+        /// <param name="jumpers"></param>
+        internal static void CorrectJumps(IEnumerable<Instruction> jumpers)
+        {
+            foreach (var jump in jumpers)
+            {
+                var opCode = jump.OpCode;
+                if (jump.Operand is not Instruction)
+                    continue;
+                var newOpCode = InstructionHelper.ShortJumpToLong(opCode);
+                if (newOpCode.Code != opCode.Code)
+                    jump.OpCode = newOpCode;
             }
         }
 

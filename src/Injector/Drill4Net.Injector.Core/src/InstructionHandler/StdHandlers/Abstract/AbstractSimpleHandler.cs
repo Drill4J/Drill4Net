@@ -33,8 +33,8 @@ namespace Drill4Net.Injector.Core
             //data
             var instr = ctx.Instructions[ctx.CurIndex];
             var ldstr = Register(ctx, PointType);
-            var call = Instruction.Create(OpCodes.Call, ctx.TypeCtx.AssemblyCtx.ProxyMethRef);
-            
+            var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
+
             //correction
             FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
             ReplaceJumps(instr, ldstr, ctx);

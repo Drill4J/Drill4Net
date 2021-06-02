@@ -2,6 +2,7 @@
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -24,9 +25,8 @@ namespace Drill4Net.Injector.Engine
 
             foreach (var typeDef in types)
             {
-                var typeFullName = typeDef.FullName;
-
                 //tree
+                var typeFullName = typeDef.FullName;
                 var realTypeName = TypeHelper.TryGetRealTypeName(typeDef);
                 var treeMethodType = new InjectedType(treeAsm.Name, typeFullName, realTypeName)
                 {
@@ -54,20 +54,22 @@ namespace Drill4Net.Injector.Engine
                     var methodCtx = new MethodContext(typeCtx, treeFunc, methodDef);
                     methodCtx.IsStrictEnterReturn = IsEnterReturnRestrict(runCtx, methodCtx);
                     methodCtx.StartIndex = CalcStartIndex(treeFunc.Source, methodCtx.Definition.Body);
-
                     typeCtx.MethodContexts.Add(methodFullName, methodCtx);
                 }
             }
             if (!asmCtx.TypeContexts.Any())
                 return false;
 
-            //get the injecting commands
-            asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
-            asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);
-
+            PrepareProxy(asmCtx, opts);
             return true;
         }
 
+        /// <summary>
+        /// Do we need restrict Enter and Return cross-point's injection?
+        /// </summary>
+        /// <param name="runCtx">Injector Engine's Run context</param>
+        /// <param name="methCtx">Method's context</param>
+        /// <returns></returns>
         internal static bool IsEnterReturnRestrict(RunContext runCtx, MethodContext methCtx)
         {
             var methodName = methCtx.Definition.Name;
@@ -93,6 +95,13 @@ namespace Drill4Net.Injector.Engine
             return strictEnterReturn;
         }
 
+        /// <summary>
+        /// Calculate the start index (we need skip the start of instruction array, for example,
+        /// for some compiler generated methods)
+        /// </summary>
+        /// <param name="methodSource"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
         internal static int CalcStartIndex(MethodSource methodSource, MethodBody body)
         {
             var methodType = methodSource.MethodType;
@@ -129,6 +138,17 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             return startInd;
+        }
+
+        /// <summary>
+        /// Prepare info about injector proxy class and its called method
+        /// </summary>
+        /// <param name="asmCtx"></param>
+        /// <param name="opts"></param>
+        internal static void PrepareProxy(AssemblyContext asmCtx, InjectorOptions opts)
+        {
+            asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
+            asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);
         }
     }
 }
