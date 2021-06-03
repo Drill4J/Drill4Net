@@ -194,7 +194,12 @@ namespace Drill4Net.Injector.Engine
            //writing modified assembly and symbols to new file
            var writer = new AssemblyWriter();
             var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
+
+            //power disposing
             asmCtx.Definition.Dispose();
+            GC.Collect();
+            GC.WaitForFullGCComplete();
+            GC.WaitForPendingFinalizers();
 
             Log.Information($"Modified assembly is created: {modifiedPath}");
             return true;

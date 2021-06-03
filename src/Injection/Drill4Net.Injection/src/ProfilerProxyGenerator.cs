@@ -61,8 +61,9 @@ namespace Drill4Net.Injection
 				throw new ArgumentNullException(nameof(assembly));
 
 			//TODO: check for NetFx!!!
-			//mscorlib.dll
-			var coreLib = isNetFX ? "System.Runtime" : "System.Private.CoreLib";
+			//mscorlib.dll / "netstandard" / "System.Runtime" - only System.Type, not Assembly
+			var sysLib = isNetFX ? "System.Runtime" : "System.Private.CoreLib";
+			var asmLib = isNetFX ? "System.Reflection" : "System.Private.CoreLib";
 
 			#region ClassDeclaration : ProfilerProxy
 			var t1 = new TypeDefinition(ProxyNs, ProxyClass, TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit | TypeAttributes.Public, assembly.MainModule.TypeSystem.Object);
@@ -89,7 +90,7 @@ namespace Drill4Net.Injection
 			//var asm = Assembly.LoadFrom(profPath);
 			var lv_asm4 = new VariableDefinition(assembly.MainModule.ImportReference(typeof(System.Reflection.Assembly)));
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_asm4);
-			var Call5 = il_ProfilerProxy_cctor_.Create(OpCodes.Call, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "LoadFrom", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.String")));
+			var Call5 = il_ProfilerProxy_cctor_.Create(OpCodes.Call, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(asmLib, "System.Reflection.Assembly", "LoadFrom", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.String")));
 			var Ldloc6 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_profPath1);
 			il_ProfilerProxy_cctor_.Append(Ldloc6);
 			il_ProfilerProxy_cctor_.Append(Call5);
@@ -101,7 +102,7 @@ namespace Drill4Net.Injection
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_type8);
 			var Ldloc9 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_asm4);
 			il_ProfilerProxy_cctor_.Append(Ldloc9);
-			var Callvirt10 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "GetType", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
+			var Callvirt10 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(asmLib, "System.Reflection.Assembly", "GetType", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
 			var Ldstr11 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, $"{ProfilerNs}.{ProfilerClass}");
 			il_ProfilerProxy_cctor_.Append(Ldstr11);
 			il_ProfilerProxy_cctor_.Append(Callvirt10);
@@ -111,7 +112,7 @@ namespace Drill4Net.Injection
 			//_methInfo = type.GetMethod("Process");
 			var Ldloc13 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_type8);
 			il_ProfilerProxy_cctor_.Append(Ldloc13);
-			var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
+			var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(sysLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String")));
 			var Ldstr15 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, ProfilerFunc);
 			il_ProfilerProxy_cctor_.Append(Ldstr15);
 			il_ProfilerProxy_cctor_.Append(Callvirt14);
@@ -146,7 +147,7 @@ namespace Drill4Net.Injection
 			il_ProfilerProxy_Process_string.Append(Ldarg_022);
 			var Ldfld23 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldsfld, fld_ProfilerProxy__methInfo);
 			il_ProfilerProxy_Process_string.Append(Ldfld23);
-			var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]")));
+			var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(asmLib, "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]")));
 			var Ldnull25 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldnull);
 			il_ProfilerProxy_Process_string.Append(Ldnull25);
 			var Ldc_I426 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 1);
