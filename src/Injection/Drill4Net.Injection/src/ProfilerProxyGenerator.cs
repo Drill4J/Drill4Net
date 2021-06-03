@@ -61,6 +61,7 @@ namespace Drill4Net.Injection
 				throw new ArgumentNullException(nameof(assembly));
 
 			//TODO: check for NetFx!!!
+			//mscorlib.dll
 			var coreLib = isNetFX ? "System.Runtime" : "System.Private.CoreLib";
 
 			#region ClassDeclaration : ProfilerProxy
@@ -145,7 +146,7 @@ namespace Drill4Net.Injection
 			il_ProfilerProxy_Process_string.Append(Ldarg_022);
 			var Ldfld23 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldsfld, fld_ProfilerProxy__methInfo);
 			il_ProfilerProxy_Process_string.Append(Ldfld23);
-			var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]")));
+			var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]")));
 			var Ldnull25 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldnull);
 			il_ProfilerProxy_Process_string.Append(Ldnull25);
 			var Ldc_I426 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 1);

@@ -9,7 +9,7 @@
     <RootNamespace>Drill4Net.Target.Net48.App</RootNamespace>
     <AssemblyName>Drill4Net.Target.Net48.App</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -39,17 +39,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Drill4Net.Target.Common, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.dll</HintPath>
+    <Reference Include="Drill4Net.Target.Common">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Common\net48\Drill4Net.Target.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Drill4Net.Target.Common.Another, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.Another.dll</HintPath>
+    <Reference Include="Drill4Net.Target.Common.Another">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Common\net48\Drill4Net.Target.Common.Another.dll</HintPath>
     </Reference>
-    <Reference Include="Drill4Net.Target.Common.VB, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.VB.dll</HintPath>
+    <Reference Include="Drill4Net.Target.Common.VB">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Common\net48\Drill4Net.Target.Common.VB.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

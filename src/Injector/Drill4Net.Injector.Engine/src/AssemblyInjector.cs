@@ -228,7 +228,8 @@ namespace Drill4Net.Injector.Engine
             if (isNetFx)
             {
                 var systemPrivateCoreLib = module.AssemblyReferences
-                    .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
+                    .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase) ||
+                                         x.Name.StartsWith("mscorlib", StringComparison.InvariantCultureIgnoreCase));
                 //Debug.Assert(systemPrivateCoreLib == null, "systemPrivateCoreLib == null");
                 if (systemPrivateCoreLib != null)
                     module.AssemblyReferences.Remove(systemPrivateCoreLib);

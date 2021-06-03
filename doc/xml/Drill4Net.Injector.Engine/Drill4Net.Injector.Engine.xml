@@ -100,7 +100,7 @@
             <param name="body"></param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Injector.Engine.ContextHelper.PrepareProxy(Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Common.InjectorOptions)">
+        <member name="M:Drill4Net.Injector.Engine.ContextHelper.PrepareProxyCalls(Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Common.InjectorOptions)">
             <summary>
             Prepare info about injector proxy class and its called method
             </summary>
@@ -156,6 +156,11 @@
             </summary>
             <param name="type"></param>
             <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.ProfilerHelper">
+            <summary>
+            Helper for working with info for the Profiler assembly and class
+            </summary>
         </member>
         <member name="T:Drill4Net.Injector.Engine.ProxyHelper">
             <summary>
