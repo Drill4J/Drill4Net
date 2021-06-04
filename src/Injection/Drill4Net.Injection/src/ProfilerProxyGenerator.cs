@@ -69,7 +69,7 @@ namespace Drill4Net.Injection
 			module.Types.Add(t1);
 			t1.BaseType = module.TypeSystem.Object;
 
-			var fld_ProfilerProxy__methInfo = new FieldDefinition("_methInfo", FieldAttributes.Private | FieldAttributes.Static, ImportTypeReference(syslib, module, typeof(System.Reflection.MethodInfo), isNetFX));
+			var fld_ProfilerProxy__methInfo = new FieldDefinition("_methInfo", FieldAttributes.Private | FieldAttributes.Static, ImportTypeReference(syslib, module, typeof(System.Reflection.MethodInfo)));
 			t1.Fields.Add(fld_ProfilerProxy__methInfo);
 			#endregion
 			#region Constructor : .cctor
@@ -87,7 +87,7 @@ namespace Drill4Net.Injection
 			il_ProfilerProxy_cctor_.Append(Stloc3);
 
 			//var asm = Assembly.LoadFrom(profPath);
-			var lv_asm4 = new VariableDefinition(ImportTypeReference(syslib, module, typeof(System.Reflection.Assembly), isNetFX));
+			var lv_asm4 = new VariableDefinition(ImportTypeReference(syslib, module, typeof(System.Reflection.Assembly)));
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_asm4);
 
 			var methLoadFrom = GetMethodReference(syslib, module, "System.Reflection", "Assembly", "LoadFrom", true, typeof(string), typeof(System.Reflection.Assembly));
@@ -101,7 +101,7 @@ namespace Drill4Net.Injection
 			il_ProfilerProxy_cctor_.Append(Stloc7);
 
 			//var type = asm.GetType("Agent.Tests.LoggerAgent");
-			var lv_type8 = new VariableDefinition(ImportTypeReference(syslib, module, typeof(Type), isNetFX));
+			var lv_type8 = new VariableDefinition(ImportTypeReference(syslib, module, typeof(Type)));
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_type8);
 			var Ldloc9 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_asm4);
 			il_ProfilerProxy_cctor_.Append(Ldloc9);
@@ -162,9 +162,9 @@ namespace Drill4Net.Injection
 
             var methInvoke = GetMethodReference(syslib, module, "System.Reflection", "MethodBase", "Invoke", false, new Type[] { typeof(object), typeof(object[]) }, typeof(object));
 			//HACK: for proper creating of object[] (and under/for the NetFx, and under/for the NetCore)
-			var oldRef = module.ImportReference(TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
+			var reflectRef = module.ImportReference(TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
 			methInvoke.Parameters.Clear();
-			foreach(var p in oldRef.Parameters)
+			foreach(var p in reflectRef.Parameters)
 				methInvoke.Parameters.Add(p);
 
 			var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, methInvoke);
@@ -221,7 +221,7 @@ namespace Drill4Net.Injection
 			return target.ImportReference(methRef);
 		}
 
-		internal TypeReference ImportTypeReference(ModuleDefinition syslib, ModuleDefinition target, Type type, bool isNetFx)
+		internal TypeReference ImportTypeReference(ModuleDefinition syslib, ModuleDefinition target, Type type)
 		{
 			return target.ImportReference(new TypeReference(type.Namespace, type.Name, syslib, syslib));
 		}
@@ -231,7 +231,7 @@ namespace Drill4Net.Injection
 			//TODO: get real for current environment!
 			return isNetFx ?
 				@"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll" :
-				@"c:\Program Files (x86)\dotnet\shared\Microsoft.NETCore.App\5.0.6\System.Runtime.dll"; //System.Private.CoreLib.dll
+				@"c:\Program Files (x86)\dotnet\shared\Microsoft.NETCore.App\5.0.6\System.Private.CoreLib.dll"; //System.Private.CoreLib.dll
 		}
     }
 }
