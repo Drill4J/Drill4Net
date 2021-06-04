@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using System.IO;
+using System.Security.Policy;
 #if NET5_0
 using System.Runtime.Loader;
 #endif
@@ -8,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
-#if NET5_0
+#if NET5_0_OR_GREATER
     public class AssemblyContextManager : IAssemblyContextManager
     {
         private readonly Dictionary<string, WeakReference> _contexts;
@@ -81,7 +83,8 @@ namespace Drill4Net.Injector.Core
             }
         }
     }
-#else
+#elif NETFRAMEWORK
+    [Serializable]
     public class AssemblyContextManager : IAssemblyContextManager
     {
         private readonly Dictionary<string, AppDomain> _domains;
@@ -107,10 +110,36 @@ namespace Drill4Net.Injector.Core
             }
             else
             {
-                var domen = AppDomain.CreateDomain(path);
-                _domains.Add(path, domen);
-                return domen.Load(path);
+                var domaininfo = new AppDomainSetup
+                {
+                    ApplicationBase = Path.GetDirectoryName(path)
+                };
+                var adevidence = AppDomain.CurrentDomain.Evidence;
+                var domain = AppDomain.CreateDomain(friendlyName: path, adevidence, domaininfo);
+                domain.AssemblyResolve += Domain_AssemblyResolve;
+                _domains.Add(path, domain);
+
+                byte[] rawAssembly = LoadFile(path);
+                var asm = domain.Load(rawAssembly);
+                _assemblies.Add(path, asm);
+
+                domain.AssemblyResolve -= Domain_AssemblyResolve;
+                return asm;
             }
+        }
+
+        private Assembly Domain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        // Loads the content of a file to a byte array.
+        static byte[] LoadFile(string filename)
+        {
+            using FileStream fs = new FileStream(filename, FileMode.Open);
+            byte[] buffer = new byte[(int)fs.Length];
+            fs.Read(buffer, 0, buffer.Length);
+            return buffer;
         }
 
         public void Unload(string path)
@@ -127,6 +156,19 @@ namespace Drill4Net.Injector.Core
             AppDomain.Unload(domain);
             GC.Collect();
             GC.WaitForPendingFinalizers();
+        }
+    }
+#else //Core App 2.2, 3.1 
+    public class AssemblyContextManager : IAssemblyContextManager
+    {
+        public Assembly Load(string assemblyPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unload(string assemblyPath)
+        {
+            throw new NotImplementedException();
         }
     }
 #endif

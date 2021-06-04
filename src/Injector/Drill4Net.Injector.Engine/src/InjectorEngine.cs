@@ -191,8 +191,8 @@ namespace Drill4Net.Injector.Engine
             //processing
             runCtx.Inject(asmCtx);
 
-           //writing modified assembly and symbols to new file
-           var writer = new AssemblyWriter();
+            //writing modified assembly and symbols to new file
+            var writer = new AssemblyWriter();
             var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
 
             //power disposing

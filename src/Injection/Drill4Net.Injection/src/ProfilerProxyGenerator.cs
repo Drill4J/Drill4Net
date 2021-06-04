@@ -70,7 +70,7 @@ namespace Drill4Net.Injection
 			module.Types.Add(t1);
 			t1.BaseType = module.TypeSystem.Object;
 
-			var fld_ProfilerProxy__methInfo = new FieldDefinition("_methInfo", FieldAttributes.Private | FieldAttributes.Static, module.ImportReference(typeof(System.Reflection.MethodInfo)));
+			var fld_ProfilerProxy__methInfo = new FieldDefinition("_methInfo", FieldAttributes.Private | FieldAttributes.Static, ImportReference(module, typeof(System.Reflection.MethodInfo), isNetFX));
 			t1.Fields.Add(fld_ProfilerProxy__methInfo);
 			#endregion
 			#region Constructor : .cctor
@@ -88,7 +88,7 @@ namespace Drill4Net.Injection
 			il_ProfilerProxy_cctor_.Append(Stloc3);
 
 			//var asm = Assembly.LoadFrom(profPath);
-			var lv_asm4 = new VariableDefinition(module.ImportReference(typeof(System.Reflection.Assembly)));
+			var lv_asm4 = new VariableDefinition(ImportReference(module, typeof(System.Reflection.Assembly), isNetFX));
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_asm4);
 
 			var methLoadFrom = isNetFX ? 
@@ -103,7 +103,7 @@ namespace Drill4Net.Injection
 			il_ProfilerProxy_cctor_.Append(Stloc7);
 
 			//var type = asm.GetType("Agent.Tests.LoggerAgent");
-			var lv_type8 = new VariableDefinition(module.ImportReference(typeof(Type)));
+			var lv_type8 = new VariableDefinition(ImportReference(module, typeof(Type), isNetFX));
 			ProfilerProxy_cctor_.Body.Variables.Add(lv_type8);
 			var Ldloc9 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_asm4);
 			il_ProfilerProxy_cctor_.Append(Ldloc9);
@@ -119,21 +119,22 @@ namespace Drill4Net.Injection
 			var Stloc12 = il_ProfilerProxy_cctor_.Create(OpCodes.Stloc, lv_type8);
 			il_ProfilerProxy_cctor_.Append(Stloc12);
 
-			//_methInfo = type.GetMethod("Process");
-			var Ldloc13 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_type8);
-			il_ProfilerProxy_cctor_.Append(Ldloc13);
+            //_methInfo = type.GetMethod("Process");
+            var Ldloc13 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_type8);
+            il_ProfilerProxy_cctor_.Append(Ldloc13);
 
-			var methGetMethodRef = isNetFX ?
-				GetMethodReferenceFor(module, "System", "Type", "GetMethod", false, typeof(string), typeof(System.Reflection.MethodInfo)) :
-				module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
+            var methGetMethodRef = isNetFX ?
+                GetMethodReferenceFor(module, "System", "Type", "GetMethod", false, typeof(string), typeof(System.Reflection.MethodInfo)) :
+                module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
 
-			var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, methGetMethodRef);
-			var Ldstr15 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, ProfilerFunc);
-			il_ProfilerProxy_cctor_.Append(Ldstr15);
-			il_ProfilerProxy_cctor_.Append(Callvirt14);
-			var Stsfld16 = il_ProfilerProxy_cctor_.Create(OpCodes.Stsfld, fld_ProfilerProxy__methInfo);
-			il_ProfilerProxy_cctor_.Append(Stsfld16);
-			var Ret17 = il_ProfilerProxy_cctor_.Create(OpCodes.Ret);
+            var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, methGetMethodRef);
+            var Ldstr15 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, ProfilerFunc);
+            il_ProfilerProxy_cctor_.Append(Ldstr15);
+            il_ProfilerProxy_cctor_.Append(Callvirt14);
+            var Stsfld16 = il_ProfilerProxy_cctor_.Create(OpCodes.Stsfld, fld_ProfilerProxy__methInfo);
+            il_ProfilerProxy_cctor_.Append(Stsfld16);
+
+            var Ret17 = il_ProfilerProxy_cctor_.Create(OpCodes.Ret);
 			il_ProfilerProxy_cctor_.Append(Ret17);
 			#endregion
 			#region Constructor: .ctor
@@ -157,28 +158,28 @@ namespace Drill4Net.Injection
 			var data21 = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
 			ProfilerProxy_Process_string.Parameters.Add(data21);
 
-			//_methInfo.Invoke(null, new object[] { data });
-			var Ldarg_022 = il_ProfilerProxy_Process_string.Create(OpCodes.Nop);
-			il_ProfilerProxy_Process_string.Append(Ldarg_022);
-			var Ldfld23 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldsfld, fld_ProfilerProxy__methInfo);
-			il_ProfilerProxy_Process_string.Append(Ldfld23);
+            //_methInfo.Invoke(null, new object[] { data });
+            var Ldarg_022 = il_ProfilerProxy_Process_string.Create(OpCodes.Nop);
+            il_ProfilerProxy_Process_string.Append(Ldarg_022);
+            var Ldfld23 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldsfld, fld_ProfilerProxy__methInfo);
+            il_ProfilerProxy_Process_string.Append(Ldfld23);
 
-			var methInvoke = isNetFX ?
-				GetMethodReferenceFor(module, "System.Reflection", "MethodBase", "Invoke", false, new Type[] { typeof(object), typeof(object[]) }, typeof(object)) :
-				module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
+            var methInvoke = isNetFX ?
+                GetMethodReferenceFor(module, "System.Reflection", "MethodBase", "Invoke", false, new Type[] { typeof(object), typeof(object[]) }, typeof(object)) :
+                module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
 
-			var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, methInvoke);
-			var Ldnull25 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldnull);
-			il_ProfilerProxy_Process_string.Append(Ldnull25);
-			var Ldc_I426 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 1);
-			il_ProfilerProxy_Process_string.Append(Ldc_I426);
-			var Newarr27 = il_ProfilerProxy_Process_string.Create(OpCodes.Newarr, module.TypeSystem.Object);
-			il_ProfilerProxy_Process_string.Append(Newarr27);
-			var Dup28 = il_ProfilerProxy_Process_string.Create(OpCodes.Dup);
-			il_ProfilerProxy_Process_string.Append(Dup28);
-			var Ldc_I429 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 0);
-			il_ProfilerProxy_Process_string.Append(Ldc_I429);
-            var Ldarg_130 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldarg_0); 
+            var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, methInvoke);
+            var Ldnull25 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldnull);
+            il_ProfilerProxy_Process_string.Append(Ldnull25);
+            var Ldc_I426 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 1);
+            il_ProfilerProxy_Process_string.Append(Ldc_I426);
+            var Newarr27 = il_ProfilerProxy_Process_string.Create(OpCodes.Newarr, module.TypeSystem.Object);
+            il_ProfilerProxy_Process_string.Append(Newarr27);
+            var Dup28 = il_ProfilerProxy_Process_string.Create(OpCodes.Dup);
+            il_ProfilerProxy_Process_string.Append(Dup28);
+            var Ldc_I429 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 0);
+            il_ProfilerProxy_Process_string.Append(Ldc_I429);
+            var Ldarg_130 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldarg_0);
             il_ProfilerProxy_Process_string.Append(Ldarg_130);
             var Stelem_Ref31 = il_ProfilerProxy_Process_string.Create(OpCodes.Stelem_Ref);
             il_ProfilerProxy_Process_string.Append(Stelem_Ref31);
@@ -202,7 +203,7 @@ namespace Drill4Net.Injection
 		internal MethodReference GetMethodReferenceFor(ModuleDefinition target, string ns, string typeName, string method, bool isStatic, Type[] parTypes, Type resType)
 		{
 			//MethodReference writeLine = module.ImportReference(typeof(Console).GetMethod("WriteLine"));
-			var path = @"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\mscorlib.dll";
+			var path = @"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll";
 
 			using var typeModule = ModuleDefinition.ReadModule(path, new ReaderParameters());
 			var methTypeRef = new TypeReference(ns, typeName, typeModule, typeModule);
@@ -214,13 +215,27 @@ namespace Drill4Net.Injection
             //parameters
             for (int i = 0; i < parTypes.Length; i++)
 			{
-                Type parType = parTypes[i];
+                var parType = parTypes[i];
                 var parTypeRef = new TypeReference(parType.Namespace, parType.Name, typeModule, typeModule);
 				var parDef = new ParameterDefinition($"par_{i}", ParameterAttributes.None, parTypeRef);
 				methRef.Parameters.Add(parDef);
 			}
 
 			return target.ImportReference(methRef);
+		}
+
+		internal TypeReference ImportReference(ModuleDefinition target, Type type, bool isNetFx)
+		{
+			if (isNetFx)
+			{
+				var path = @"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll";
+				using var typeModule = ModuleDefinition.ReadModule(path, new ReaderParameters());
+				return target.ImportReference(new TypeReference(type.Namespace, type.Name, typeModule, typeModule));
+			}
+			else
+			{
+				return target.ImportReference(type);
+			}
 		}
     }
 }

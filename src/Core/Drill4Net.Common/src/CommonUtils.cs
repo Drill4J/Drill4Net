@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mono.Cecil;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -41,6 +42,14 @@ namespace Drill4Net.Common
                 versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
             }
             return versionS;
+        }
+
+        public static AssemblyVersioning GetAssemblyVersion(string path)
+        {
+            using var assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters());
+            var versionAttr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == "TargetFrameworkAttribute");
+            var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
+            return new AssemblyVersioning(versionS);
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Strategies.Flow;
+using Mono.Cecil;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -134,10 +135,12 @@ namespace Drill4Net.Injector.Engine
                     return new AssemblyVersioning() { IsStrongName = true };
                 }
 
-                var asm = _asmCtxManager.Load(filePath);
-                var versionS = CommonUtils.GetAssemblyVersion(asm);
-                var version = new AssemblyVersioning(versionS);
-                _asmCtxManager.Unload(filePath);
+                //var asm = _asmCtxManager.Load(filePath);
+                //var versionS = CommonUtils.GetAssemblyVersion(asm);
+                //var version = new AssemblyVersioning(versionS);
+                //_asmCtxManager.Unload(filePath);
+
+                var version = CommonUtils.GetAssemblyVersion(filePath);
                 return version;
             }
             catch (Exception ex)
