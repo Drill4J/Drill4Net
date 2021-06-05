@@ -78,7 +78,7 @@ namespace Drill4Net.Injector.Engine
             };
 
             //ctx of this Run
-            var runCtx = new RunContext(_rep, tree);
+            using var runCtx = new RunContext(_rep, tree);
 
             //targets from in cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");

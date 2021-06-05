@@ -10,7 +10,7 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Strategies.Flow;
-using Mono.Cecil;
+using Drill4Net.Injection;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -191,6 +191,20 @@ namespace Drill4Net.Injector.Engine
             //common folder - TODO: from local cfg!
             cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(AssemblyInjector)}.log"));
             Log.Logger = cfg.CreateLogger();
+        }
+
+        /// <summary>
+        /// Get the IL code generator of the injecting Proxy Type
+        /// </summary>
+        /// <returns></returns>
+        public IProfilerProxyGenerator GetProxyGenerator()
+        {
+            var profilerOpts = Options.Profiler;
+            var profDir = profilerOpts.Directory;
+            var proxyGenerator = new ProfilerProxyGenerator(Options.Proxy.Class, Options.Proxy.Method, //proxy to profiler
+                                                            profDir, profilerOpts.AssemblyName, //real profiler
+                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
+            return proxyGenerator;
         }
     }
 }

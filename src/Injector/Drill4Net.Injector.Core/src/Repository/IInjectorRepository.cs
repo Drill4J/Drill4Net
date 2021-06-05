@@ -28,6 +28,12 @@ namespace Drill4Net.Injector.Core
         CodeHandlerStrategy GetStrategy();
 
         /// <summary>
+        /// Get the IL code generator of the injecting Proxy Type
+        /// </summary>
+        /// <returns></returns>
+        IProfilerProxyGenerator GetProxyGenerator();
+
+        /// <summary>
         /// Validation for options from loaded config
         /// </summary>
         void ValidateOptions();

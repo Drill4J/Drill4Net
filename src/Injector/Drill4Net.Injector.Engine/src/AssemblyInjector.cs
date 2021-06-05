@@ -56,7 +56,7 @@ namespace Drill4Net.Injector.Engine
 
             //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);
-            InjectProxyType(asmCtx, runCtx.Options);
+            InjectProxyType(runCtx, asmCtx, runCtx.Options);
 
             //prepare coverage metadata
             CoverageHelper.CalcCoverageBlocks(asmCtx);
@@ -208,19 +208,15 @@ namespace Drill4Net.Injector.Engine
         /// Inject into assembly the Proxy class (it just pushes the probe data from 
         /// Target class to real Agent) according specified in context and options metadata
         /// </summary>
+        /// <param name="runCtx">The Injector Engine's Run</param>
         /// <param name="asmCtx">Assembly context</param>
         /// <param name="opts">Injector options</param>
-        internal void InjectProxyType(AssemblyContext asmCtx, InjectorOptions opts)
+        internal void InjectProxyType(RunContext runCtx, AssemblyContext asmCtx, InjectorOptions opts)
         {
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
-            var profilerOpts = opts.Profiler;
-            var profDir = profilerOpts.Directory;
-            var proxyGenerator = new ProfilerProxyGenerator(asmCtx.ProxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
-                                                            profDir, profilerOpts.AssemblyName, //real profiler
-                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
             var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
-            proxyGenerator.InjectTo(asmCtx.Definition, isNetFx);
+            runCtx.ProxyGenerator.InjectTo(asmCtx.Definition, asmCtx.ProxyNamespace, isNetFx);
 
             // ensure we referencing only ref assemblies
             if (isNetFx)

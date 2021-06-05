@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.Core
     /// <summary>
     /// Context for a separate single run of the Injector on a certain folder
     /// </summary>
-    public class RunContext
+    public class RunContext : IDisposable
     {
         /// <summary>
         /// The metadata of the injected Target projects (directories, assemblies, 
@@ -74,6 +74,8 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public IInjectorRepository Repository { get; }
 
+        public IProfilerProxyGenerator ProxyGenerator { get; }
+
         /***************************************************************************************/
 
         /// <summary>
@@ -87,6 +89,7 @@ namespace Drill4Net.Injector.Core
             Versions = DefineProjectVersions(RootDirectory);
             Strategy = Repository.GetStrategy();
             Injector = Repository.GetInjector();
+            ProxyGenerator = Repository.GetProxyGenerator();
         }
 
         /***************************************************************************************/
@@ -148,6 +151,11 @@ namespace Drill4Net.Injector.Core
         public void Inject(AssemblyContext asmCtx)
         {
             Injector.Inject(this, asmCtx);
+        }
+
+        public void Dispose()
+        {
+            ProxyGenerator.Dispose();
         }
     }
 }

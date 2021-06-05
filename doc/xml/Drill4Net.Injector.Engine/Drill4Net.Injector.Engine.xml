@@ -49,11 +49,12 @@
             <param name="ctx">Current method context</param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.InjectProxyType(Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Common.InjectorOptions)">
+        <member name="M:Drill4Net.Injector.Engine.AssemblyInjector.InjectProxyType(Drill4Net.Injector.Core.RunContext,Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Common.InjectorOptions)">
             <summary>
             Inject into assembly the Proxy class (it just pushes the probe data from 
             Target class to real Agent) according specified in context and options metadata
             </summary>
+            <param name="runCtx">The Injector Engine's Run</param>
             <param name="asmCtx">Assembly context</param>
             <param name="opts">Injector options</param>
         </member>
@@ -358,6 +359,12 @@
             <summary>
             The preparing the logger. It need be called from the client side.
             </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.GetProxyGenerator">
+            <summary>
+            Get the IL code generator of the injecting Proxy Type
+            </summary>
+            <returns></returns>
         </member>
     </members>
 </doc>
