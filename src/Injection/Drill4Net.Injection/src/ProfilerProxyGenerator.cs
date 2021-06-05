@@ -2,6 +2,8 @@
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Cecilifier.Runtime;
+using System.IO;
+using System.Linq;
 
 namespace Drill4Net.Injection
 {
@@ -228,10 +230,19 @@ namespace Drill4Net.Injection
 
 		internal string GetSyslibPath(bool isNetFx)
 		{
-			//TODO: get real for current environment!
-			return isNetFx ?
-				@"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll" :
-				@"c:\Program Files (x86)\dotnet\shared\Microsoft.NETCore.App\5.0.6\System.Private.CoreLib.dll"; //System.Private.CoreLib.dll
+			//TODO: get real root dirs from Environment
+			var root = isNetFx ?
+				@"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\" :
+				@"c:\Program Files (x86)\dotnet\shared\Microsoft.NETCore.App\";
+			var pattern = isNetFx ? "v4.*" : "5.*";
+			var fileName = isNetFx ? "mscorlib.dll" : "System.Private.CoreLib.dll";
+			var dirs = Directory.GetDirectories(root, pattern, SearchOption.TopDirectoryOnly).Where(a => !a.Contains("X")).OrderBy(a => a).ToArray();
+			if (!dirs.Any())
+				throw new Exception("System lib's directory found");
+			var path = Path.Combine(dirs[dirs.Length - 1], fileName);
+			if (!File.Exists(path))
+				throw new Exception("System lib not found");
+			return path;
 		}
     }
 }
