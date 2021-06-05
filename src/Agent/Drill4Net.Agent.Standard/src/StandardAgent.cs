@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
+using System.Reflection;
 using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
@@ -10,6 +10,9 @@ using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
 {
+    /// <summary>
+    /// Standard Agent (Profiler0) for Drill Admin side
+    /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public class StandardAgent : AbstractAgent
     {
@@ -28,6 +31,9 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+
                 PrepareLogger();
                 Log.Debug("Initializing...");
 
@@ -47,7 +53,7 @@ namespace Drill4Net.Agent.Standard
                 _comm.Connect();
 
                 //...and now we will wait events from admin side and
-                //probe data from instrumented code on RegisterStatic
+                //probe's data from instrumented code on RegisterStatic
 
                 //local tests
                 // var testUid = Guid.NewGuid().ToString();
@@ -77,6 +83,18 @@ namespace Drill4Net.Agent.Standard
         /// in a real system because the ctor will be arised due Register call.
         /// </summary>
         public static void Init() { }
+
+        private static void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        {
+            File.AppendAllText(Path.Combine(FileUtils.GetExecutionDir(), "first_chance_error.log"), e.Exception.ToString());
+        }
+
+        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            var info = $"{args.Name}: {args.RequestingAssembly.FullName}";
+            File.AppendAllText(Path.Combine(FileUtils.GetExecutionDir(), "resolve_failed.log"), info);
+            return null;
+        }
 
         #region Temporary tests
         // private static void SendTest_StartSession(string sessionUid)

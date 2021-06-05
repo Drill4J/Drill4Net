@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.RnD</OutputPath>
     <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.RnD\Drill4Net.Agent.RnD.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
