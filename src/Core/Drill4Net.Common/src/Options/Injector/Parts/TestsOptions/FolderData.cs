@@ -18,5 +18,12 @@ namespace Drill4Net.Common
         /// of full class names (Namespace.Name)
         /// </summary>
         public Dictionary<string, List<string>> Assemblies { get; set; }
+
+        /************************************************************************/
+
+        public override string ToString()
+        {
+            return Folder;
+        }
     }
 }

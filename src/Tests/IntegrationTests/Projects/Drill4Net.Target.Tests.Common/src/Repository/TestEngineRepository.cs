@@ -12,8 +12,14 @@ using Drill4Net.Agent.Testing;
 
 namespace Drill4Net.Target.Tests.Common
 {
+    /// <summary>
+    /// Repository for the Tester subsystem
+    /// </summary>
     public class TesterEngineRepository
     {
+        /// <summary>
+        /// Options for the Tester subsystem
+        /// </summary>
         public TesterOptions Options => _tstRep?.Options;
 
         private readonly string _targetDir;
@@ -24,6 +30,9 @@ namespace Drill4Net.Target.Tests.Common
 
         /*******************************************************************************/
 
+        /// <summary>
+        /// Create the repository for the Tester subsystem
+        /// </summary>
         public TesterEngineRepository()
         {
             PrepareLogger();

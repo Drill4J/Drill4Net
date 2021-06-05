@@ -16,5 +16,12 @@ namespace Drill4Net.Common
         /// Testing folders in the BaseFolder
         /// </summary>
         public List<FolderData> Folders { get; set; }
+
+        /*********************************************************/
+
+        public override string ToString()
+        {
+            return BaseFolder;
+        }
     }
 }
