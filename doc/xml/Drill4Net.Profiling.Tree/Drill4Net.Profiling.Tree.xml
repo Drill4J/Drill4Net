@@ -159,6 +159,30 @@
             Data of the method's coverage
             </summary>
         </member>
+        <member name="T:Drill4Net.Profiling.Tree.InjectedSolution">
+            <summary>
+            The metadata of the injected Target projects (directories, assemblies, 
+            classes, methods, cross-points, etc)
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedSolution.GetInjectedTreeTypes">
+            <summary>
+            Get list of the Tree entities' types
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedSolution.GetFrameworkRootDirectory(System.String)">
+            <summary>
+            Get root directory's object of the processed target by version of the framework (moniker)
+            </summary>
+            <param name="moniker">Moniker - short string version of the framework (netstandard2.0, net5.0, etc)</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedSolution.RemoveEmpties">
+            <summary>
+            Remove from Tree empty entitis
+            </summary>
+        </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedType.FromMethod">
             <summary>
             For compiler generated classes which was created 

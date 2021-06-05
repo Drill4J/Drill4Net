@@ -40,7 +40,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 var injRep = new StandardAgentRepository(); 
                 var tree = injRep.ReadInjectedTree();
                 var moniker = "net5.0";
-                var asmTree = tree.GetFrameworkVersionRootDirectory(moniker);
+                var asmTree = tree.GetFrameworkRootDirectory(moniker);
                 if (asmTree == null)
                     throw new Exception($"Data for moniker {moniker} not found");
                 _points = asmTree.Filter(typeof(CrossPoint), true).Cast<CrossPoint>().ToList();

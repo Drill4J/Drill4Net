@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace Drill4Net.Profiling.Tree
 {
+    /// <summary>
+    /// The metadata of the injected Target projects (directories, assemblies, 
+    /// classes, methods, cross-points, etc)
+    /// </summary>
     [Serializable]
     public class InjectedSolution : InjectedDirectory
     {
@@ -25,6 +29,10 @@ namespace Drill4Net.Profiling.Tree
 
         /************************************************************************/
 
+        /// <summary>
+        /// Get list of the Tree entities' types
+        /// </summary>
+        /// <returns></returns>
         public static List<Type> GetInjectedTreeTypes()
         {
             return new List<Type>
@@ -38,11 +46,19 @@ namespace Drill4Net.Profiling.Tree
             };
         }
 
-        public InjectedDirectory GetFrameworkVersionRootDirectory(string moniker)
+        /// <summary>
+        /// Get root directory's object of the processed target by version of the framework (moniker)
+        /// </summary>
+        /// <param name="moniker">Moniker - short string version of the framework (netstandard2.0, net5.0, etc)</param>
+        /// <returns></returns>
+        public InjectedDirectory GetFrameworkRootDirectory(string moniker)
         {
             return _children.FirstOrDefault(a => a.Name == moniker) as InjectedDirectory;
         }
 
+        /// <summary>
+        /// Remove from Tree empty entitis
+        /// </summary>
         public void RemoveEmpties()
         {
             var parents = CalcParentMap();

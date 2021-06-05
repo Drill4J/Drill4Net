@@ -6,7 +6,6 @@ using Serilog;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Drill4Net.Common;
-using Drill4Net.Injection;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
@@ -56,7 +55,7 @@ namespace Drill4Net.Injector.Engine
 
             //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);
-            InjectProxyType(runCtx, asmCtx, runCtx.Options);
+            InjectProxyType(runCtx, asmCtx);
 
             //prepare coverage metadata
             CoverageHelper.CalcCoverageBlocks(asmCtx);
@@ -211,7 +210,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="runCtx">The Injector Engine's Run</param>
         /// <param name="asmCtx">Assembly context</param>
         /// <param name="opts">Injector options</param>
-        internal void InjectProxyType(RunContext runCtx, AssemblyContext asmCtx, InjectorOptions opts)
+        internal void InjectProxyType(RunContext runCtx, AssemblyContext asmCtx)
         {
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
