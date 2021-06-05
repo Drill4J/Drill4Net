@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Diagnostics;
+using System.Collections.Generic;
 using Serilog;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -8,7 +9,6 @@ using Drill4Net.Common;
 using Drill4Net.Injection;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -214,19 +214,18 @@ namespace Drill4Net.Injector.Engine
         {
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
-            var module = asmCtx.Module;
-            var assembly = asmCtx.Definition;
             var profilerOpts = opts.Profiler;
             var profDir = profilerOpts.Directory;
             var proxyGenerator = new ProfilerProxyGenerator(asmCtx.ProxyNamespace, opts.Proxy.Class, opts.Proxy.Method, //proxy to profiler
                                                             profDir, profilerOpts.AssemblyName, //real profiler
                                                             profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
             var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
-            proxyGenerator.InjectTo(assembly, isNetFx);
+            proxyGenerator.InjectTo(asmCtx.Definition, isNetFx);
 
             // ensure we referencing only ref assemblies
             if (isNetFx)
             {
+                var module = asmCtx.Module;
                 var systemPrivateCoreLib = module.AssemblyReferences
                     .FirstOrDefault(x => x.Name.StartsWith("System.Private.CoreLib", StringComparison.InvariantCultureIgnoreCase));
                 if(systemPrivateCoreLib != null)

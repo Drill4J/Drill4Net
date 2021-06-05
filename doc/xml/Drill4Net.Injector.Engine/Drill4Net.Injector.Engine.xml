@@ -157,11 +157,6 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="T:Drill4Net.Injector.Engine.ProfilerHelper">
-            <summary>
-            Helper for working with info for the Profiler assembly and class
-            </summary>
-        </member>
         <member name="T:Drill4Net.Injector.Engine.ProxyHelper">
             <summary>
             Helper for working with info for a injecting Proxy class

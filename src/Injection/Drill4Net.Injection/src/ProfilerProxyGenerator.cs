@@ -1,9 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Cecilifier.Runtime;
-using System.IO;
-using System.Linq;
 
 namespace Drill4Net.Injection
 {
@@ -234,11 +234,14 @@ namespace Drill4Net.Injection
 			var root = isNetFx ?
 				@"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\" :
 				@"c:\Program Files (x86)\dotnet\shared\Microsoft.NETCore.App\";
-			var pattern = isNetFx ? "v4.*" : "5.*";
+			var pattern = isNetFx ? "v4.*" : "5.*"; //TODO: for next versions
 			var fileName = isNetFx ? "mscorlib.dll" : "System.Private.CoreLib.dll";
-			var dirs = Directory.GetDirectories(root, pattern, SearchOption.TopDirectoryOnly).Where(a => !a.Contains("X")).OrderBy(a => a).ToArray();
+			var dirs = Directory.GetDirectories(root, pattern, SearchOption.TopDirectoryOnly)
+				.Where(a => !a.Contains("X")) //NetFx folder without libs
+				.OrderBy(a => a)
+				.ToArray();
 			if (!dirs.Any())
-				throw new Exception("System lib's directory found");
+				throw new Exception("System lib's directory not found");
 			var path = Path.Combine(dirs[dirs.Length - 1], fileName);
 			if (!File.Exists(path))
 				throw new Exception("System lib not found");

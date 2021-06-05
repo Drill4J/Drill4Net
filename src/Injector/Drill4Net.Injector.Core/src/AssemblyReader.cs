@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Serilog;
 using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Core
