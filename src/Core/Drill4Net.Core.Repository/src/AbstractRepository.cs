@@ -17,6 +17,7 @@ namespace Drill4Net.Core.Repository
         /// </summary>
         public TOptions Options { get; set; }
 
+        protected NetSerializer.Serializer _ser;
         protected THelper _optHelper;
 
         /**********************************************************************************/
@@ -24,6 +25,8 @@ namespace Drill4Net.Core.Repository
         protected AbstractRepository()
         {
             _optHelper = new THelper();
+            var types = InjectedSolution.GetInjectedTreeTypes();
+            _ser = new NetSerializer.Serializer(types);
         }
 
         protected AbstractRepository(string cfgPath): this()
@@ -41,20 +44,19 @@ namespace Drill4Net.Core.Repository
         #region Injected Tree
         public virtual InjectedSolution ReadInjectedTree(string path = null)
         {
-            var types = InjectedSolution.GetInjectedTreeTypes();
-            var ser = new NetSerializer.Serializer(types);
-
+            if (!string.IsNullOrWhiteSpace(path))
+                path = FileUtils.GetFullPath(path);
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
             {
-                var dir = string.IsNullOrWhiteSpace(Options.TreePath) ? FileUtils.GetEntryDir() : FileUtils.GetFullPath(Options.TreePath);
+                var dir = string.IsNullOrWhiteSpace(Options.TreePath) ? FileUtils.GetExecutionDir() : FileUtils.GetFullPath(Options.TreePath);
                 path = Path.Combine(dir, CoreConstants.TREE_FILE_NAME);
             }
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Solution Tree not found: [{path}]");
-
+            //
             var bytes2 = File.ReadAllBytes(path);
             using var ms2 = new MemoryStream(bytes2);
-            var tree = ser.Deserialize(ms2) as InjectedSolution;
+            var tree = _ser.Deserialize(ms2) as InjectedSolution;
             return tree;
         }
 

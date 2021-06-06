@@ -27,5 +27,10 @@
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
    </ItemGroup>
+   <ItemGroup>
+     <None Update="tests_cfg.yml">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     </None>
+   </ItemGroup>
 
 </Project>

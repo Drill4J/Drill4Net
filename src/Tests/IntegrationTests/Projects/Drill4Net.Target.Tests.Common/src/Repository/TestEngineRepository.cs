@@ -22,7 +22,7 @@ namespace Drill4Net.Target.Tests.Common
         /// </summary>
         public TesterOptions Options => _tstRep?.Options;
 
-        private readonly string _targetDir;
+        private readonly string _targetsDir;
         private readonly FolderData _defaultFolderData;
         private readonly Dictionary<string, MonikerData> _targets;
         private readonly AssemblyContextManager _asmCtxManager;
@@ -35,47 +35,35 @@ namespace Drill4Net.Target.Tests.Common
         /// </summary>
         public TesterEngineRepository()
         {
-            PrepareLogger();
-            Log.Debug("Repository is initializing...");
-
-            //find the cfg path
-            var folderList = FileUtils.GetExecutionDir().Split('\\').ToList();
-
-            #pragma warning disable IDE0056 // Use index operator
-            var targetType = folderList[folderList.Count - 1];
-            #pragma warning restore IDE0056 // Use index operator
-
-            for (var i = 0; i < 2; i++)
-                folderList.RemoveAt(folderList.Count - 1);
-            var a = string.Join("\\", folderList);
-            var dirName = Path.Combine(a, typeof(TesterEngineRepository).Namespace, targetType);
-            var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
-
-            //repository
-            //here better exactly InjectorRepository, not some AgentRepository
-            //(for future checking the inhection settings)
-            _tstRep = new TesterRepository(cfg_path); 
-            _asmCtxManager = new AssemblyContextManager();
-
-            var baseDir = Options?.Versions?.Directory;
-            if (baseDir == null)
-                Assert.Fail($"Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}");
-            if (baseDir.EndsWith("\\"))
-                baseDir = baseDir.Remove(baseDir.Length - 1, 1);
-            _targetDir = $"{baseDir}.{Options.FolderPostfix}";
-
-            _defaultFolderData = new FolderData
+            try
             {
-                Assemblies = new Dictionary<string, List<string>>
+                PrepareLogger();
+                Log.Debug("Repository is initializing...");
+
+                var callDir = FileUtils.GetCallingDir();
+                var cfgDir = FindConfigDeep(callDir);
+                var cfg_path = Path.Combine(cfgDir, CoreConstants.CONFIG_TESTS_NAME);
+                _tstRep = new TesterRepository(cfg_path);
+                _targetsDir = _tstRep.GetTargetsDir(callDir);
+
+                _asmCtxManager = new AssemblyContextManager();
+                _defaultFolderData = new FolderData
                 {
-                   { TestConstants.ASSEMBLY_COMMON,  new List<string> { TestConstants.CLASS_DEFAULT_FULL }}
-                },
-            };
+                    Assemblies = new Dictionary<string, List<string>>
+                    {
+                       { TestConstants.ASSEMBLY_COMMON,  new List<string> { TestConstants.CLASS_DEFAULT_FULL }}
+                    },
+                };
 
-            //target assemblies
-            _targets = Options.Versions.Targets;
+                //target assemblies
+                _targets = Options.Versions.Targets;
 
-            Log.Debug("Repository is initialized.");
+                Log.Debug("Repository is initialized.");
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, $"Creating {nameof(TesterEngineRepository)} is failed");
+            }
         }
 
         /*******************************************************************************/
@@ -96,7 +84,7 @@ namespace Drill4Net.Target.Tests.Common
                 //asemblies
                 foreach (var asmFile in asmDatas.Keys)
                 {
-                    var targetPath = Path.Combine(_targetDir, monikerData.BaseFolder, asmFile);
+                    var targetPath = Path.Combine(_targetsDir, monikerData.BaseFolder, asmFile);
                     if (!File.Exists(targetPath))
                         Assert.Fail($"Path for target not found: {targetPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
                     
@@ -139,7 +127,7 @@ namespace Drill4Net.Target.Tests.Common
                     throw new ArgumentException($"Class [{className}] not found for assembly [{assemblyName}] in config");
 
                 //loading
-                var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, assemblyName);
+                var targerPath = Path.Combine(_targetsDir, monikerData.BaseFolder, assemblyName);
                 if (!File.Exists(targerPath))
                     Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
                 var asm = LoadAssembly(targerPath);
@@ -186,7 +174,7 @@ namespace Drill4Net.Target.Tests.Common
                     asms = _defaultFolderData.Assemblies;
                 foreach (var asm in asms.Keys)
                 {
-                    var targerPath = Path.Combine(_targetDir, monikerData.BaseFolder, asm);
+                    var targerPath = Path.Combine(_targetsDir, monikerData.BaseFolder, asm);
                     if (!File.Exists(targerPath))
                         Assert.Fail($"Path for target not found: {targerPath}. Check {CoreConstants.CONFIG_TESTS_NAME}");
                     _asmCtxManager.Unload(targerPath);
@@ -196,10 +184,9 @@ namespace Drill4Net.Target.Tests.Common
         }
         #endregion
 
-        public InjectedSolution LoadTree()
+        public string FindConfigDeep(string curDir)
         {
             //search dir with files - there must be tree data
-            var curDir = _targetDir;
             while (true)
             {
                 if (!Directory.Exists(curDir))
@@ -208,12 +195,17 @@ namespace Drill4Net.Target.Tests.Common
                     break;
                 var dirs = Directory.GetDirectories(curDir);
                 if (dirs.Length == 0)
-                    Assert.Fail($"Tree info not found in {_targetDir}");
+                    Assert.Fail($"Tree info not found in {_targetsDir}");
                 curDir = dirs[0];
             }
+            return curDir;
+        }
 
+        public InjectedSolution LoadTree()
+        {
             //read tree data
-            return _tstRep.ReadInjectedTree(null);
+            var path = Path.Combine(_targetsDir, CoreConstants.TREE_FILE_NAME);
+            return _tstRep.ReadInjectedTree(path);
         }
 
         public void PrepareLogger()

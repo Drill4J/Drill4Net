@@ -28,12 +28,14 @@ namespace Drill4Net.Agent.Testing
             try
             {
                 //rep
-                var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var dirName = FileUtils.GetCallingDir(); //  Path.GetDirectoryName(Assembly.GetCallingAssembly().Location); //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
                 var rep = new TesterRepository(cfg_path);
 
                 //tree info
-                var tree = rep.ReadInjectedTree();
+                var dir = rep.GetTargetsDir(dirName); // FileUtils.GetFullPath(rep.Options.TreePath, Path.GetDirectoryName(cfg_path));
+                var path = Path.Combine(dir, CoreConstants.TREE_FILE_NAME);
+                var tree = rep.ReadInjectedTree(path);
                 _pointToMethods = tree.MapPointToMethods();
 
                 Log.Debug("Initialized.");

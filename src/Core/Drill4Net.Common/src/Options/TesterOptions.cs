@@ -6,9 +6,9 @@
     public class TesterOptions : BaseOptions
     {
         /// <summary>
-        /// Postfix for original folder name of Source target
+        /// Folder name for tests
         /// </summary>
-        public string FolderPostfix { get; set; }
+        public string Folder { get; set; }
 
         /// <summary>
         /// Versions of Terget for teh testing

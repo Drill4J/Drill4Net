@@ -447,9 +447,9 @@
             Options for the Tester Subsystem for the Project Solution
             </summary>
         </member>
-        <member name="P:Drill4Net.Common.TesterOptions.FolderPostfix">
+        <member name="P:Drill4Net.Common.TesterOptions.Folder">
             <summary>
-            Postfix for original folder name of Source target
+            Folder name for tests
             </summary>
         </member>
         <member name="P:Drill4Net.Common.TesterOptions.Versions">

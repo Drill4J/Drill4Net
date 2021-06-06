@@ -35,9 +35,14 @@ namespace Drill4Net.Common
             return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         }
 
+        public static string GetCallingDir()
+        {
+            return Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+        }
+
         public static string GetEntryDir()
         {
-            return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
         }
 
         public static bool IsSameDirectories(string dir1, string dir2)

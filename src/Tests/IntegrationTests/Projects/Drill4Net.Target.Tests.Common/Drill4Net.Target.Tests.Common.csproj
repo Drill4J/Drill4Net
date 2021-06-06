@@ -37,9 +37,6 @@
     <None Update="post_build_cfg.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="tests_cfg.yml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
