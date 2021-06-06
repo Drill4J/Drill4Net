@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -37,6 +36,7 @@ namespace Drill4Net.Agent.Testing
                 var path = Path.Combine(dir, CoreConstants.TREE_FILE_NAME);
                 var tree = rep.ReadInjectedTree(path);
                 _pointToMethods = tree.MapPointToMethods();
+                //var a = _pointToMethods.ContainsKey("a7f32336-b37b-4f22-89ce-98ad0a88406b");
 
                 Log.Debug("Initialized.");
             }
