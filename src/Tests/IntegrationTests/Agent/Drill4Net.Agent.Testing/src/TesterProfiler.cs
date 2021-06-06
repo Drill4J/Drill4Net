@@ -27,16 +27,15 @@ namespace Drill4Net.Agent.Testing
             try
             {
                 //rep
-                var dirName = FileUtils.GetCallingDir(); //  Path.GetDirectoryName(Assembly.GetCallingAssembly().Location); //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var cfg_path = Path.Combine(dirName, CoreConstants.CONFIG_TESTS_NAME);
+                var callingDir = FileUtils.GetCallingDir();
+                var cfg_path = Path.Combine(callingDir, CoreConstants.CONFIG_TESTS_NAME);
                 var rep = new TesterRepository(cfg_path);
 
                 //tree info
-                var dir = rep.GetTargetsDir(dirName); // FileUtils.GetFullPath(rep.Options.TreePath, Path.GetDirectoryName(cfg_path));
-                var path = Path.Combine(dir, CoreConstants.TREE_FILE_NAME);
-                var tree = rep.ReadInjectedTree(path);
+                var targetsDir = rep.GetTargetsDir(callingDir);
+                var treePath = Path.Combine(targetsDir, CoreConstants.TREE_FILE_NAME);
+                var tree = rep.ReadInjectedTree(treePath);
                 _pointToMethods = tree.MapPointToMethods();
-                //var a = _pointToMethods.ContainsKey("a7f32336-b37b-4f22-89ce-98ad0a88406b");
 
                 Log.Debug("Initialized.");
             }
