@@ -203,7 +203,6 @@ namespace Drill4Net.Target.Tests.Common
 
         public InjectedSolution LoadTree()
         {
-            //read tree data
             var path = Path.Combine(_targetsDir, CoreConstants.TREE_FILE_NAME);
             return _tstRep.ReadInjectedTree(path);
         }

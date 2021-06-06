@@ -2,7 +2,6 @@
 Type: Tests #type as hint
 Target:
     Name: test-target
-#FolderPostfix: Injected.Tests #...or prefix to source dir
 TreePath: TargetApps.Injected.Tests\ # were tree data about probes are located - if empty, system will try find it by another ways
 Probes: # types of cross-cutting points
     Ctor: true
@@ -13,7 +12,7 @@ Probes: # types of cross-cutting points
     EventRemove: false
     SkipEnterType: true
 Versions: # what will be tested - by target moniker/assembly/class
-    Directory: #..\..\TargetApps\ #pure source target dir relatively Test project
+    Directory: # for executing tests not needed
     Targets:
         net461: #assembly moniker (MonikerData)
           BaseFolder: Drill4Net.Target.Net461.App #folder of app/simple target

@@ -6,11 +6,6 @@
     public class TesterOptions : BaseOptions
     {
         /// <summary>
-        /// Folder name for tests
-        /// </summary>
-        public string Folder { get; set; }
-
-        /// <summary>
         /// Versions of Terget for teh testing
         /// </summary>
         public VersionOptions Versions { get; set; }

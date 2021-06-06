@@ -447,11 +447,6 @@
             Options for the Tester Subsystem for the Project Solution
             </summary>
         </member>
-        <member name="P:Drill4Net.Common.TesterOptions.Folder">
-            <summary>
-            Folder name for tests
-            </summary>
-        </member>
         <member name="P:Drill4Net.Common.TesterOptions.Versions">
             <summary>
             Versions of Terget for teh testing
