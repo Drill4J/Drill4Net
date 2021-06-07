@@ -250,18 +250,18 @@ namespace Drill4Net.Target.Tests.Common
             return CreateMethodSource(asmName, fullSig);
         }
 
-        public static string CreateMethodSource(string moduleName, string methodFullSig)
+        internal static string CreateMethodSource(string moduleName, string methodFullSig)
         {
             return $"{moduleName};{methodFullSig}";
         }
 
-        public static string GetFullSignature(object target, string shortSig)
+        internal static string GetFullSignature(object target, string shortSig)
         {
             var asm = GetAssembly(target);
             return GetFullSignatureFromAssembly(asm, shortSig);
         }
 
-        public static string GetFullSignatureFromAssembly(Assembly asm, string shortSig)
+        internal static string GetFullSignatureFromAssembly(Assembly asm, string shortSig)
         {
             var ar = shortSig.Split(' ');
             var ret = ar[0];
@@ -304,17 +304,17 @@ namespace Drill4Net.Target.Tests.Common
             return sig;
         }
 
-        public static string GetModuleName(Assembly asm)
+        internal static string GetModuleName(Assembly asm)
         {
             return asm.ManifestModule.Name;
         }
 
-        public static string GetModuleName(object target)
+        internal static string GetModuleName(object target)
         {
             return GetAssembly(target).ManifestModule.Name;
         }
 
-        public static Assembly GetAssembly(object target)
+        internal static Assembly GetAssembly(object target)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
