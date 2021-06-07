@@ -203,7 +203,7 @@ namespace Drill4Net.Injector.Engine
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
             //common folder - TODO: from local cfg!
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(AssemblyInjector)}.log"));
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(AssemblyInjector)}.log"));
             Log.Logger = cfg.CreateLogger();
         }
     }

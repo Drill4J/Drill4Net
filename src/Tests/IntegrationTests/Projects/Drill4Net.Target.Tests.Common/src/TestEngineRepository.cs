@@ -210,7 +210,7 @@ namespace Drill4Net.Target.Tests.Common
         public void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\"), "TestEngine.log"));
+            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), "TestEngine.log"));
             Log.Logger = cfg.CreateLogger();
         }
     }

@@ -1,43 +1,54 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
+using NUnit.Framework.Internal;
+#if NETFRAMEWORK
+using System.Runtime.Remoting.Messaging;
+#endif
 using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
+using System.Threading;
 
 namespace Drill4Net.Agent.Testing
 {
     public class TesterProfiler : AbstractAgent
     {
-        private static readonly ConcurrentDictionary<int, Dictionary<string, List<string>>> _clientPoints;
-        private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
+        private static ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
+        private static Dictionary<string, InjectedMethod> _pointToMethods;
 
         /*****************************************************************************/
 
         static TesterProfiler()
         {
-            _clientPoints = new ConcurrentDictionary<int, Dictionary<string, List<string>>>();
             PrepareLogger();
             Log.Debug("Initializing...");
 
             try
             {
-                //rep
-                var callingDir = FileUtils.GetCallingDir();
-                var cfg_path = Path.Combine(callingDir, CoreConstants.CONFIG_TESTS_NAME);
-                var rep = new TesterRepository(cfg_path);
+                var domain = AppDomain.CurrentDomain;
+                _pointToMethods = domain.GetData("pointToMethods") as Dictionary<string, InjectedMethod>;
+                if (_pointToMethods == null)
+                {
+                    //rep
+                    var callingDir = FileUtils.GetCallingDir();
+                    var cfg_path = Path.Combine(callingDir, CoreConstants.CONFIG_TESTS_NAME);
+                    var rep = new TesterRepository(cfg_path);
 
-                //tree info
-                var targetsDir = rep.GetTargetsDir(callingDir);
-                var treePath = Path.Combine(targetsDir, CoreConstants.TREE_FILE_NAME);
-                var tree = rep.ReadInjectedTree(treePath);
-                _pointToMethods = tree.MapPointToMethods();
+                    //tree info
+                    var targetsDir = rep.GetTargetsDir(callingDir);
+                    var treePath = Path.Combine(targetsDir, CoreConstants.TREE_FILE_NAME);
+                    var tree = rep.ReadInjectedTree(treePath);
+                    _pointToMethods = tree.MapPointToMethods();
+                    domain.SetData("pointToMethods", _pointToMethods);
 
-                Log.Debug("Initialized.");
+                    _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
+                    domain.SetData("clientPoints", _clientPoints);
+
+                    Log.Debug("Initialized.");
+                }
             }
             catch (Exception ex)
             {
@@ -53,6 +64,10 @@ namespace Drill4Net.Agent.Testing
             try
             {
                 #region Checks
+                var logCtx = GetLogicalContext();
+                if (logCtx == null)
+                    return;
+
                 if (string.IsNullOrWhiteSpace(data))
                 {
                     Log.Error("Data is empty");
@@ -73,7 +88,7 @@ namespace Drill4Net.Agent.Testing
                 var probe = ar[3];
 
                 var businessMethod = GetBusinessMethodName(probeUid);
-                if(businessMethod != null)
+                if (businessMethod != null)
                     AddPoint(asmName, businessMethod, $"{probeUid}:{probe}"); //in the prod profiler only uid needed
             }
             catch (Exception ex)
@@ -85,6 +100,16 @@ namespace Drill4Net.Agent.Testing
         public override void Register(string data)
         {
             RegisterStatic(data);
+        }
+
+        internal static TestExecutionContext GetLogicalContext()
+        {
+#if NETFRAMEWORK
+            var ret = CallContext.LogicalGetData("NUnit.Framework.TestExecutionContext") as TestExecutionContext;
+            return ret;
+#else
+            return new TestExecutionContext(); // { CurrentTest = new Test { FullName = "NONE" } };
+#endif
         }
 
         internal static void AddPoint(string asmName, string funcSig, string point)
@@ -118,7 +143,7 @@ namespace Drill4Net.Agent.Testing
             var all = new List<string>();
             foreach (var funcs in _clientPoints.Values)
             {
-                if (!funcs.ContainsKey(funcSig)) 
+                if (!funcs.ContainsKey(funcSig))
                     continue;
                 all.AddRange(funcs[funcSig]);
                 funcs.Remove(funcSig);
@@ -131,24 +156,43 @@ namespace Drill4Net.Agent.Testing
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
             var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
-            Debug.WriteLine($"Profiler({createNotExistedBranch}): id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
+            //Debug.WriteLine($"Profiler({createNotExistedBranch}): id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
 
-            Dictionary<string, List<string>> byFunctions;
-            if (_clientPoints.ContainsKey(id))
+            string method = id.ToString();
+#if NETFRAMEWORK
+            var logCtx = GetLogicalContext();
+            method = logCtx?.CurrentTest?.FullName ?? "unknown";
+#endif
+
+            if (_clientPoints == null)
             {
-                _clientPoints.TryGetValue(id, out byFunctions);
+                if (AppDomain.CurrentDomain.GetData("clientPoints") is ConcurrentDictionary<string, Dictionary<string, List<string>>> clientPoints)
+                    _clientPoints = clientPoints;
+            }
+            if (_clientPoints == null)
+                _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
+            //
+            Dictionary<string, List<string>> byFunctions;
+            if (_clientPoints.ContainsKey(method))
+            {
+                _clientPoints.TryGetValue(method, out byFunctions);
             }
             else
             {
                 byFunctions = new Dictionary<string, List<string>>();
-                if(createNotExistedBranch)
-                    _clientPoints.TryAdd(id, byFunctions);
+                if (createNotExistedBranch)
+                    _clientPoints.TryAdd(method, byFunctions);
             }
             return byFunctions;
         }
 
         internal static string GetBusinessMethodName(string probeUid)
         {
+            if (_pointToMethods == null)
+            {
+                if (AppDomain.CurrentDomain.GetData("pointToMethods") is Dictionary<string, InjectedMethod> pointToMethods)
+                    _pointToMethods = pointToMethods;
+            }
             if (_pointToMethods == null || !_pointToMethods.ContainsKey(probeUid))
                 return null;
             return _pointToMethods[probeUid].BusinessMethod;
@@ -157,7 +201,8 @@ namespace Drill4Net.Agent.Testing
         public static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\"), $"{nameof(TesterProfiler)}.log"));
+            var file = Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterProfiler)}.log");
+            cfg.WriteTo.File(file);
             Log.Logger = cfg.CreateLogger();
         }
     }

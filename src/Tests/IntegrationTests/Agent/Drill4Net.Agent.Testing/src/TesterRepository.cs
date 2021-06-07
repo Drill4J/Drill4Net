@@ -21,7 +21,7 @@ namespace Drill4Net.Agent.Testing
             //var folder = Options?.Versions?.Directory;
             if (baseDir.EndsWith("\\"))
                 baseDir = baseDir.Remove(baseDir.Length - 1, 1);
-            return Path.Combine(baseDir, Options.TreePath); // $"{baseDir}\\{Options.Folder}";
+            return Path.Combine(baseDir, Options.TreePath);
         }
 
         public string GetBaseDir(string callingDir)
