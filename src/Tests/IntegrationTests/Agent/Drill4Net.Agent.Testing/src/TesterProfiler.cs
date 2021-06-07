@@ -11,6 +11,8 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
 using System.Threading;
+using System.Reflection;
+using System.Linq;
 
 namespace Drill4Net.Agent.Testing
 {
@@ -108,7 +110,26 @@ namespace Drill4Net.Agent.Testing
             var ret = CallContext.LogicalGetData("NUnit.Framework.TestExecutionContext") as TestExecutionContext;
             return ret;
 #else
-            return new TestExecutionContext(); // { CurrentTest = new Test { FullName = "NONE" } };
+            var myType = typeof(ExecutionContext);
+            var fields = typeof(ExecutionContext).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+            var fld = fields.FirstOrDefault(a => a.Name == "m_localValues");
+            if (fld != null)
+            {
+                var fldVal = fld.GetValue(Thread.CurrentThread.ExecutionContext);
+                if (fldVal != null)
+                {
+                    //TODO: cache!!!
+                    var typeValMap = Type.GetType("System.Threading.AsyncLocalValueMap+ThreeElementAsyncLocalValueMap");
+                    var fields2 = typeValMap.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+                    var fld2 = fields2.FirstOrDefault(a => a.Name == "_value3");
+                    if (fld2 != null)
+                    {
+                        var testCtx = fld2.GetValue(fldVal) as TestExecutionContext;
+                        return testCtx;
+                    }
+                }
+            }
+            return null;
 #endif
         }
 
@@ -155,14 +176,11 @@ namespace Drill4Net.Agent.Testing
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
-            var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
+            //var id = Thread.CurrentThread.ExecutionContext.GetHashCode();
             //Debug.WriteLine($"Profiler({createNotExistedBranch}): id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
 
-            string method = id.ToString();
-#if NETFRAMEWORK
             var logCtx = GetLogicalContext();
-            method = logCtx?.CurrentTest?.FullName ?? "unknown";
-#endif
+            var method = logCtx?.CurrentTest?.FullName ?? "unknown";
 
             if (_clientPoints == null)
             {
