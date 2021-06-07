@@ -13,6 +13,7 @@ using Drill4Net.Profiling.Tree;
 using System.Threading;
 using System.Reflection;
 using System.Linq;
+using Drill4Net.Agent.Testing.NetFxUtils;
 
 namespace Drill4Net.Agent.Testing
 {
@@ -107,24 +108,37 @@ namespace Drill4Net.Agent.Testing
         internal static TestExecutionContext GetLogicalContext()
         {
 #if NETFRAMEWORK
-            var ret = CallContext.LogicalGetData("NUnit.Framework.TestExecutionContext") as TestExecutionContext;
+            //What if NUnit or Tester Engine comes here?
+            var ret = LogicalContextManager.GetTestFromLogicalContext();
             return ret;
 #else
-            var myType = typeof(ExecutionContext);
-            var fields = typeof(ExecutionContext).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-            var fld = fields.FirstOrDefault(a => a.Name == "m_localValues");
-            if (fld != null)
+            //and for NetFx's tests, and for NetCore ones the Tester Engine will be on NetCore version
+            try
             {
-                var fldVal = fld.GetValue(Thread.CurrentThread.ExecutionContext);
-                if (fldVal != null)
+                //try load CallContext type - for NetFx successfully
+                var ret = LogicalContextManager.GetTestFromLogicalContext();
+                if (ret != null)
+                    return ret;
+            }
+            catch { } //it's normal under the NetCore
+
+            //...and for NetCore tests
+            var lstFld = typeof(ExecutionContext)
+                .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                .FirstOrDefault(a => a.Name == "m_localValues");
+            if (lstFld != null)
+            {
+                var lstFldVal = lstFld.GetValue(Thread.CurrentThread.ExecutionContext);
+                if (lstFldVal != null)
                 {
                     //TODO: cache!!!
                     var typeValMap = Type.GetType("System.Threading.AsyncLocalValueMap+ThreeElementAsyncLocalValueMap");
-                    var fields2 = typeValMap.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-                    var fld2 = fields2.FirstOrDefault(a => a.Name == "_value3");
-                    if (fld2 != null)
+                    var ctxFld = typeValMap
+                        .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                        .FirstOrDefault(a => a.Name == "_value3");
+                    if (ctxFld != null)
                     {
-                        var testCtx = fld2.GetValue(fldVal) as TestExecutionContext;
+                        var testCtx = ctxFld.GetValue(lstFldVal) as TestExecutionContext;
                         return testCtx;
                     }
                 }
