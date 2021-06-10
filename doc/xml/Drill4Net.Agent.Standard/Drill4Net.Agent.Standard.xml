@@ -151,16 +151,16 @@
             <summary>Branch: multi_tests</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 2661bb9</summary>
+            <summary>Commit: 37011f8</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 2661bb9b12a7fcaf9424aab274f36acce2ece81e</summary>
+            <summary>Sha: 37011f84b11b1c844fbd5ceede1556642136b309</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-10T15:53:41+03:00</summary>
+            <summary>Commit date: 2021-06-10T16:28:41+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 456</summary>
+            <summary>Commits on top of base version: 458</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -190,7 +190,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 456</summary>
+            <summary>Patch: 458</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>
