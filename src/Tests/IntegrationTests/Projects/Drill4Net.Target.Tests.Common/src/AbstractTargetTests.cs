@@ -114,6 +114,7 @@ namespace Drill4Net.Target.Tests.Common
                 }
                 else
                 {
+                    Assert.IsNotNull(mi);
                     mi.Invoke(target, args);
                 }
             }

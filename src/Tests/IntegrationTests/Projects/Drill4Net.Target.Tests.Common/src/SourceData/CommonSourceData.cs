@@ -491,9 +491,8 @@ namespace Drill4Net.Target.Tests.Common
                     );
                 #endregion
                 #region Misc
-                yield return GetCase(Array.Empty<object>(), false, 
+                yield return GetCase(Array.Empty<object>(), false,
                     new TestInfo(GetInfo(Target.CallAnotherTarget), new List<string> { "Call_2" }),
-                    //new TestInfo(GetSourceFromFullSig(Target, "Drill4Net.Target.Common.Another.dll;System.Void Drill4Net.Target.Common.Another.AnotherTarget::.ctor()"), false, new List<string>()),
                     new TestInfo(GetInfo(_anotherTarget.WhoAreU), new List<string>())
                     ).SetCategory(CATEGORY_MISC);
 
@@ -505,7 +504,6 @@ namespace Drill4Net.Target.Tests.Common
 
                 yield return GetCase(Array.Empty<object>(), true, 
                     new TestInfo(GetInfo(Target.Event), new List<string> { "Call_18", "Call_22", "Call_26" }),
-                    //new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.Eventer::.ctor()"), false, new List<string>()),
                     new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "If_6", "Call_8" })
                     ).SetCategory(CATEGORY_MISC);
 
@@ -529,14 +527,14 @@ namespace Drill4Net.Target.Tests.Common
 
 #if NETFRAMEWORK
                 yield return GetCase(new object[] { false },
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.ContextBound::.ctor(System.Boolean)"), false, new List<string> { "Else_6", "Call_10"}),
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.InjectTarget::ContextBound(System.Boolean)"), false, new List<string>())
+                    new TestInfo(GetInfo(Target.ContextBound), new List<string>()),
+                    new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.ContextBound::.ctor(System.Boolean)"), false, new List<string> { "Else_6", "Call_10" })
                     ).SetCategory(CATEGORY_MISC);
 
 
                 yield return GetCase(new object[] { true },
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.ContextBound::.ctor(System.Boolean)"), false, new List<string> { "Else_6", "Call_10" }),
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.InjectTarget::ContextBound(System.Boolean)"), false, new List<string>())
+                    new TestInfo(GetInfo(Target.ContextBound), new List<string>()),
+                    new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.ContextBound::.ctor(System.Boolean)"), false, new List<string> { "If_8", "Call_10" }) 
                     ).SetCategory(CATEGORY_MISC);
 #endif
                 #endregion

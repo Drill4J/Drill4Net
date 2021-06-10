@@ -199,12 +199,22 @@ namespace Drill4Net.Target.Tests.Common
             Assert.True(input.Length > 0);
 
             var mi = input[0].Info;
-            var name = mi?.Name ?? input[0].Signature;
+            if (mi == null)
+                return null;
+            var name = mi.Name;
             var caption = GetCaption(name, pars);
             var category = GetCategory(name);
             return new TestCaseData(mi, pars, isAsync, isBunch, ignoreEnterReturns, input)
                 .SetCategory(category)
                 .SetName(caption);
+        }
+
+        internal static string GetNameFromSignature(string sig)
+        {
+            if (!sig.Contains(":") || !sig.Contains("."))
+                return sig;
+            var ar = sig.Split(':')[0].Split('.');
+            return ar[ar.Length - 1];
         }
 
         private static string GetCategory(string name)
