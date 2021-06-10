@@ -364,11 +364,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "Else_13", "Else_13", "Else_13", "Else_13", "Else_13" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string>())
-                    )
-#if NETFRAMEWORK
-                    .Ignore(IGNORE_REASON);
-#endif
-                    ;
+                    );
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "If_2", "If_2", "If_2", "If_2", "If_2", "If_5", "If_5", "If_5", "If_5", "If_5" }, true),
@@ -378,11 +374,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Parallel_For), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Else_14", "Else_14", "Else_14", "Else_14", "Else_14", "If_18", "If_18", "If_18", "If_18", "If_18" }, true),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string>())
-                    )
-#if NETFRAMEWORK
-                    .Ignore(IGNORE_REASON);
-#endif
-                ;
+                    );
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Parallel_For), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "If_18", "If_18", "If_18", "If_3", "If_3", "If_3", "If_3", "If_3", "If_6", "If_6", "If_6", "If_6", "If_6" }, true),
@@ -392,11 +384,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Parallel_Foreach), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Else_14", "Else_14", "Else_14", "Else_14", "Else_14", "If_18", "If_18", "If_18", "If_18", "If_18" }, true),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string>())
-                    )
-#if NETFRAMEWORK
-                    .Ignore(IGNORE_REASON);
-#endif
-                ;
+                    );
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Parallel_Foreach), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "If_18", "If_18", "If_18", "If_3", "If_3", "If_3", "If_3", "If_3", "If_6", "If_6", "If_6", "If_6", "If_6" }, true),
@@ -405,22 +393,14 @@ namespace Drill4Net.Target.Tests.Common
 
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_5", "Else_9", "Anchor_15" }, true),
-                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Else_2", "Anchor_14" }, true))
-#if NETFRAMEWORK
-                    .Ignore(IGNORE_REASON);
-#endif
-                ;
+                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Else_2", "Anchor_14" }, true));
 
                 yield return GetCase(new object[] { true }, 
                     new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_5", "If_3", "Anchor_15" }, true),
                     new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "If_8", "Anchor_14" }, true));
 
                 yield return GetCase(new object[] { false },
-                    new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "Else_2", "Anchor_14" }))
-#if NETFRAMEWORK
-                    .Ignore(IGNORE_REASON);
-#endif
-                ;
+                    new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "Else_2", "Anchor_14" }));
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "If_8", "Anchor_14" }));
