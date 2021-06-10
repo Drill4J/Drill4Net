@@ -199,7 +199,7 @@ namespace Drill4Net.Target.Tests.Common
             Assert.True(input.Length > 0);
 
             var mi = input[0].Info;
-            var name = mi.Name;
+            var name = mi?.Name ?? input[0].Signature;
             var caption = GetCaption(name, pars);
             var category = GetCategory(name);
             return new TestCaseData(mi, pars, isAsync, isBunch, ignoreEnterReturns, input)

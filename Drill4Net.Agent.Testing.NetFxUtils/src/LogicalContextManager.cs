@@ -14,8 +14,8 @@ namespace Drill4Net.Agent.Testing.NetFxUtils
         /// <returns></returns>
         public static TestExecutionContext GetTestFromLogicalContext()
         {
-            var ret = CallContext.LogicalGetData("NUnit.Framework.TestExecutionContext") as TestExecutionContext;
-            return ret;
+            var ret = CallContext.LogicalGetData("NUnit.Framework.TestExecutionContext");
+            return ret as TestExecutionContext;
         }
     }
 }

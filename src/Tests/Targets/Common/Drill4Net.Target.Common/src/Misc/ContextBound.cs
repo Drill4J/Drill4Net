@@ -12,9 +12,9 @@ namespace Drill4Net.Target.Common
         
         /**********************************************/
 
-        public ContextBound(int prop)
+        public ContextBound(bool cond)
         {
-            Prop = prop < 0 ? 0 : prop;
+            Prop = cond ? 1 : -1;
         }
     }
 }

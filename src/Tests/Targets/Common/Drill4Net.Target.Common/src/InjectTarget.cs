@@ -324,8 +324,8 @@ namespace Drill4Net.Target.Common
             Event();
 
 #if NETFRAMEWORK
-            ContextBound(-1);
-            ContextBound(1);
+            ContextBound(false);
+            ContextBound(true);
 #endif
             ExpandoObject(false);
             ExpandoObject(true);
@@ -1415,10 +1415,10 @@ namespace Drill4Net.Target.Common
         }
 
 #if NETFRAMEWORK
-        public bool ContextBound(int prop)
+        public bool ContextBound(bool cond)
         {
-            new ContextBound(prop);
-            Console.WriteLine($"{nameof(ContextBound)}: {prop}");
+            new ContextBound(cond);
+            Console.WriteLine($"{nameof(ContextBound)}: {cond}");
             return true;
         }
 #endif

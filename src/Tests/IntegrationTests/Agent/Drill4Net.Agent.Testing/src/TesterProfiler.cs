@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Testing
         private const string CONTEXT_UNKNOWN = "unknown";
         private static ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
         private static Dictionary<string, InjectedMethod> _pointToMethods;
-        private static Dictionary<int, string> _execIdToMethodOutput;
+        private static Dictionary<int, string> _execIdToTestId;
 
         /*****************************************************************************/
 
@@ -52,8 +52,8 @@ namespace Drill4Net.Agent.Testing
                     _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
                     domain.SetData(nameof(_clientPoints), _clientPoints);
 
-                    _execIdToMethodOutput = new Dictionary<int, string>();
-                    domain.SetData(nameof(_execIdToMethodOutput), _execIdToMethodOutput);
+                    _execIdToTestId = new Dictionary<int, string>();
+                    domain.SetData(nameof(_execIdToTestId), _execIdToTestId);
 
                     Log.Debug("Initialized.");
                 }
@@ -127,7 +127,8 @@ namespace Drill4Net.Agent.Testing
             }
             catch { } //it's normal under the NetCore
 
-            //...and for NetCore tests NUnit uses AsyncLocal
+            //...and for NetCore tests NUnit uses AsyncLocal.
+            //var lstFlds = typeof(ExecutionContext).GetFields();
             var lstFld = Array.Find(typeof(ExecutionContext)
                 .GetFields(BindingFlags.NonPublic | BindingFlags.Instance), a => a.Name == "m_localValues");
             if (lstFld != null)
@@ -141,10 +142,20 @@ namespace Drill4Net.Agent.Testing
                         .GetFields(BindingFlags.NonPublic | BindingFlags.Instance), a => a.Name == "_value3");
                     if (ctxFld != null)
                     {
+                        //This defines the logical execution path of function callers regardless
+                        //of whether threads are created in async/await or Parallel.For
+                        //It doesn't work very well on its own, at least not for everyone's version 
+                        //of the framework.
+                        var execId = Thread.CurrentThread.ExecutionContext.GetHashCode();
+
                         try
                         {
                             var testCtx = ctxFld.GetValue(lstFldVal) as TestExecutionContext;
-                            return GetContextId(testCtx);
+                            var id = GetContextId(testCtx);
+                            if (!_execIdToTestId.ContainsKey(execId))
+                                _execIdToTestId.Add(execId, id);
+
+                            return id;
                         }
                         catch 
                         {
@@ -154,17 +165,10 @@ namespace Drill4Net.Agent.Testing
                                 .GetFields(BindingFlags.NonPublic | BindingFlags.Instance), a => a.Name == "_value1");
                             //no context info about concrete test
                             var testCtx = ctxFld.GetValue(lstFldVal) as TestExecutionContext;
-                            var testOutput = testCtx?.CurrentResult?.Output ?? CONTEXT_UNKNOWN;
+                            var testOutput = GetContextOutput(testCtx);
 
-                            //This defines the logical execution path of function callers regardless
-                            //of whether threads are created in async/await or Parallel.For
-                            //It doesn't work very well on its own, at least not for everyone's version 
-                            //of the framework.
-                            var execId = Thread.CurrentThread.ExecutionContext.GetHashCode();
-                            if(_execIdToMethodOutput.ContainsKey(execId))
-                                _execIdToMethodOutput.Add(execId, testOutput);
-
-                            return GetContextId(testCtx);
+                            var id = _execIdToTestId.ContainsKey(execId) ? _execIdToTestId[execId] : CONTEXT_UNKNOWN;
+                            return id; //testOutput
                         }
                     }
                 }
@@ -176,6 +180,11 @@ namespace Drill4Net.Agent.Testing
         internal static string GetContextId(TestExecutionContext ctx)
         {
             return ctx?.CurrentTest?.FullName ?? CONTEXT_UNKNOWN;
+        }
+        
+        internal static string GetContextOutput(TestExecutionContext ctx)
+        {
+            return ctx?.CurrentResult?.Output ?? CONTEXT_UNKNOWN;
         }
 
         internal static void AddPoint(string asmName, string funcSig, string point)
@@ -224,8 +233,6 @@ namespace Drill4Net.Agent.Testing
         /// <returns></returns>
         public static Dictionary<string, List<string>> GetFunctions(bool createNotExistedBranch)
         {
-            //Debug.WriteLine($"Profiler({createNotExistedBranch}): id={id}, trId={Thread.CurrentThread.ManagedThreadId}");
-
             var id = GetContextId();
 
             if (_clientPoints == null && 
