@@ -122,7 +122,7 @@ namespace Drill4Net.Target.Tests.Common
             {
                 Assert.Fail(fex.Message);
             }
-            catch (TargetException tex) 
+            catch (TargetException tex)
             {
                 Assert.Fail(tex.Message);
             }
@@ -131,8 +131,8 @@ namespace Drill4Net.Target.Tests.Common
                 if (!inputs.SelectMany(a => a.Checks).Any(a => a.Contains("Throw")))
                     Assert.Fail(ex.Message);
             }
-            #endregion
-            #region Assert
+#endregion
+#region Assert
             var funcs = GetFunctions();
 
             //checking whether functions from another context are needed
@@ -208,7 +208,7 @@ namespace Drill4Net.Target.Tests.Common
                 var checks = inputs.SelectMany(a => a.Checks).ToList();
                 var points = funcs.Values.SelectMany(a => a).ToList();
                 RemoveEnterReturns(points);
-                if (inputs[0].NeedSort)
+                if (inputs.Any( a=> a.NeedSort))
                 {
                     points.Sort();
                     checks.Sort();
@@ -228,10 +228,10 @@ namespace Drill4Net.Target.Tests.Common
                 for (var j = 0; j < forDelete.Length; j++)
                     links.Remove(forDelete[j]);
             }
-            #endregion
+#endregion
         }
 
-        #region Auxiliary funcs
+#region Auxiliary funcs
         private static void LoadTreeData()
         {
             Log.Debug("Tree data is loading...");
@@ -295,7 +295,7 @@ namespace Drill4Net.Target.Tests.Common
 
         internal PointLinkage ConvertToLink(string probData)
         {
-            if (probData == null || probData.Contains(':') == false)
+            if (probData == null || !probData.Contains(':'))
                 throw new ArgumentException(nameof(probData));
             //
             var ar = probData.Split(':');
@@ -303,22 +303,21 @@ namespace Drill4Net.Target.Tests.Common
             if (!_pointMap.ContainsKey(uid))
                 Assert.Fail($"No point with Uid = {uid}");
             //
-            var point = (CrossPoint)_pointMap[uid];
+            var point = _pointMap[uid];
             var method = (InjectedMethod)_parentMap[point];
             var type = (InjectedType)_parentMap[method];
 
             InjectedSimpleEntity asmObj = type;
             do { asmObj = _parentMap[asmObj]; } while (asmObj is { } and not InjectedAssembly); 
             var asm = asmObj as InjectedAssembly;
-            //
-            var link = new PointLinkage(asm, type, method, point);
-            return link;
+
+            return new PointLinkage(asm, type, method, point);
         }
         
         private static void Check(IList<PointLinkage> links, List<string> checks)
         {
             Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
         }
-        #endregion
+#endregion
     }
 }

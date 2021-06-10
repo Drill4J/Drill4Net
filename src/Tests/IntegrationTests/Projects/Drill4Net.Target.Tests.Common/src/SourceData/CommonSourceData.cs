@@ -377,7 +377,7 @@ namespace Drill4Net.Target.Tests.Common
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string>())
                     );
 
-                yield return GetCase(new object[] { false },
+                yield return GetCase(new object[] { false }, 
                     new TestInfo(GetInfo(Target.Parallel_Foreach), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Else_14", "Else_14", "Else_14", "Else_14", "Else_14", "If_18", "If_18", "If_18", "If_18", "If_18" }, true),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string>())
                     );
@@ -387,20 +387,19 @@ namespace Drill4Net.Target.Tests.Common
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string>())
                     );
 
-                //data migrates from one func to another depending on running other similar tests... See next option for execute them
-                //yield return GetCase(new object[] { false }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "Else_11"}), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "Else_4" }));
-                //yield return GetCase(new object[] { true }, new TestData(GetInfo(_target.TaskNewWait), new List<string> { "If_3" }), new TestData(GetInfo(_target.GetStringListForTaskNewWait), new List<string> { "If_12" }));
-
-                yield return GetCase(new object[] { false }, false, true, true, 
+                yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_5", "Else_9", "Anchor_15" }, true),
                     new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Else_2", "Anchor_14" }, true));
 
-                yield return GetCase(new object[] { true }, false, true, true, 
+                yield return GetCase(new object[] { true }, 
                     new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_5", "If_3", "Anchor_15" }, true),
                     new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "If_8", "Anchor_14" }, true));
 
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "Else_2", "Anchor_14" }));
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "If_8", "Anchor_14" }));
+                yield return GetCase(new object[] { false }, 
+                    new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "Else_2", "Anchor_14" }));
+                
+                yield return GetCase(new object[] { true }, 
+                    new TestInfo(GetInfo(Target.Parallel_Thread_New), new List<string> { "Call_9" }), new TestInfo(GetInfo(Target.GetStringListForThreadNew), new List<string> { "If_8", "Anchor_14" }));
                 #endregion
                 #region Dynamic
                 yield return GetCase(new object[] { false },

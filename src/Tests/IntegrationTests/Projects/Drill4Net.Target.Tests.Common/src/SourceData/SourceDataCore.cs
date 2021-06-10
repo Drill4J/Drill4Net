@@ -188,12 +188,11 @@ namespace Drill4Net.Target.Tests.Common
         public static TestCaseData GetCase(object[] pars, bool isAsync, bool ignoreEnterReturns,
             params TestInfo[] input)
         {
-            return GetCase(pars, isAsync, false, ignoreEnterReturns, input);
+            return GetCase(pars, isAsync, false, ignoreEnterReturns,input);
         }
 
         //parented
-        public static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, 
-            params TestInfo[] input)
+        public static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] input)
         {
             Assert.IsNotNull(input);
             Assert.True(input.Length > 0);
