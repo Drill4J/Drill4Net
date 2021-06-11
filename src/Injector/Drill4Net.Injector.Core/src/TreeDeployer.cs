@@ -6,6 +6,9 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// Deployer for the Tree data
+    /// </summary>
     public class TreeDeployer
     {
         private readonly IInjectorRepository _rep;
@@ -38,12 +41,12 @@ namespace Drill4Net.Injector.Core
             if (!dirs.Any())
                 return;
             var pathInText = _rep.GetTreeFilePath(tree);
-            Log.Debug($"Tree saved to: [{pathInText}]");
+            Log.Debug("Tree saved to: [{PathInText}]", pathInText);
             foreach (var dir in dirs)
             {
                 var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
                 File.WriteAllText(hintPath, pathInText);
-                Log.Debug($"Hint placed to: [{hintPath}]");
+                Log.Debug("Hint placed to: [{HintPath}]", hintPath);
             }
         }
     }

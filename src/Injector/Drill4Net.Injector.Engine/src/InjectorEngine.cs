@@ -144,7 +144,7 @@ namespace Drill4Net.Injector.Engine
             var folder = new DirectoryInfo(directory).Name;
             if (!opts.Source.Filter.IsFolderNeed(folder))
                 return false;
-            Log.Debug($"Processing dir [{directory}]");
+            Log.Debug("Processing dir [{Directory}]", directory);
 
             //files
             var files = _rep.GetAssemblies(directory);
@@ -184,25 +184,24 @@ namespace Drill4Net.Injector.Engine
 
             //reading
             var reader = new AssemblyReader();
-            var asmCtx = reader.ReadAssembly(runCtx);
-            if (asmCtx.Skipped)
-                return false;
+            using (var asmCtx = reader.ReadAssembly(runCtx))
+            {
+                if (asmCtx.Skipped)
+                    return false;
 
-            //processing
-            runCtx.Inject(asmCtx);
+                if (!Directory.Exists(asmCtx.DestinationDir))
+                    Directory.CreateDirectory(asmCtx.DestinationDir);
 
-            //writing modified assembly and symbols to new file
-            var writer = new AssemblyWriter();
-            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
+                //processing
+                runCtx.Inject(asmCtx);
 
-            //power disposing
-            asmCtx.Definition.Dispose();
-            GC.Collect();
-            GC.WaitForFullGCComplete();
-            GC.WaitForPendingFinalizers();
+                //writing modified assembly and symbols to new file
+                var writer = new AssemblyWriter();
+                var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
+                Log.Information("Modified assembly is created: {ModifiedPath}", modifiedPath);
 
-            Log.Information($"Modified assembly is created: {modifiedPath}");
-            return true;
+                return true;
+            }
         }
     }
 }

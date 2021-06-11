@@ -8,27 +8,26 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// Assembly reader for an <see cref="AssemblyContext"/> creation 
+    /// </summary>
     public class AssemblyReader
     {
+        /// <summary>
+        /// Reads the assembly.
+        /// </summary>
+        /// <param name="runCtx">The Injector Engine's Run context.</param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException">$"File not exists: [{filePath}]</exception>
         public AssemblyContext ReadAssembly(RunContext runCtx)
         {
-            #region Paths
             var filePath = runCtx.SourceFile;
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
 
-            //source
-            var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath) ?? string.Empty)}\\";
-            Environment.CurrentDirectory = sourceDir;
-
-            //destination
-            var destDir = FileUtils.GetDestinationDirectory(runCtx.Options, sourceDir);
-            if (!Directory.Exists(destDir))
-                Directory.CreateDirectory(destDir);
-            #endregion
             #region Version
             //need to know the version of the assembly before reading it via cecil
-            var ext = Path.GetExtension(filePath);
+
             AssemblyVersioning version;
             var versions = runCtx.Versions;
             if (versions.ContainsKey(filePath))
@@ -41,16 +40,13 @@ namespace Drill4Net.Injector.Core
                 if (version != null)
                     versions.Add(filePath, version);
             }
-            var asmCtx = new AssemblyContext(filePath, version)
-            {
-                SourceDir = sourceDir,
-                DestinationDir = destDir,
-            };
-            if (version == null || version.Target == AssemblyVersionType.NotIL ||
-                (ext == ".exe" && version.Target == AssemblyVersionType.NetCore))
-                    return new AssemblyContext(filePath, version) { Skipped = true };
             Console.WriteLine($"Version = {version}");
             #endregion
+
+            var asmCtx = new AssemblyContext(runCtx.Options, filePath, version);
+            if (asmCtx.Skipped)
+                return asmCtx;
+
             #region Params
             var readerParams = new ReaderParameters
             {
