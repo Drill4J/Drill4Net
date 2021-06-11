@@ -275,11 +275,8 @@ namespace Drill4Net.Injector.Core
             var localInsts = new List<Instruction>();
 
             //GUANO!!!
-            while (true)
+            while (instr != null && instr.Offset != 0)
             {
-                if (instr == null || instr.Offset == 0)
-                    break;
-
                 //we don't need compiler generated instructions in business code
                 if (!compilerInstructions.Contains(instr))
                 {

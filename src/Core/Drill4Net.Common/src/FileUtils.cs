@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Drill4Net.Common

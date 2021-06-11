@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Drill4Net.Common;
@@ -34,7 +35,7 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// The definition of the assembly
         /// </summary>
-        public AssemblyDefinition Definition { get; }
+        public AssemblyDefinition Definition { get; set; }
 
         /// <summary>
         /// Main module of the assembly
@@ -98,18 +99,21 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************/
 
-        internal AssemblyContext() 
+        internal AssemblyContext(string filePath, AssemblyVersioning version)
         {
+            SourceFile = filePath ?? throw new ArgumentNullException(nameof(filePath));
+            Version = version;
             TypeContexts = new Dictionary<string, TypeContext>();
             InjClasses = new Dictionary<string, InjectedType>();
             InjMethodByFullname = new Dictionary<string, InjectedMethod>();
             InjMethodByKeys = new Dictionary<string, InjectedMethod>();
+            SubjectName = Path.GetFileNameWithoutExtension(SourceFile);
         }
 
-        public AssemblyContext(string filePath, AssemblyVersioning version, AssemblyDefinition asmDef): this()
+        public AssemblyContext(string filePath, AssemblyVersioning version, AssemblyDefinition asmDef): this(filePath, version)
         {
-            SourceFile = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            Version = version ?? throw new ArgumentNullException(nameof(version));
+            if (Version == null)
+                throw new InvalidDataException(nameof(version));
             Definition = asmDef ?? throw new ArgumentNullException(nameof(asmDef));
         }
         

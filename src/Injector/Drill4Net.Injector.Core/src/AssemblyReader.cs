@@ -20,7 +20,6 @@ namespace Drill4Net.Injector.Core
             //source
             var sourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath) ?? string.Empty)}\\";
             Environment.CurrentDirectory = sourceDir;
-            var subjectName = Path.GetFileNameWithoutExtension(filePath);
 
             //destination
             var destDir = FileUtils.GetDestinationDirectory(runCtx.Options, sourceDir);
@@ -42,9 +41,14 @@ namespace Drill4Net.Injector.Core
                 if (version != null)
                     versions.Add(filePath, version);
             }
+            var asmCtx = new AssemblyContext(filePath, version)
+            {
+                SourceDir = sourceDir,
+                DestinationDir = destDir,
+            };
             if (version == null || version.Target == AssemblyVersionType.NotIL ||
                 (ext == ".exe" && version.Target == AssemblyVersionType.NetCore))
-                return new AssemblyContext { Skipped = true };
+                    return new AssemblyContext(filePath, version) { Skipped = true };
             Console.WriteLine($"Version = {version}");
             #endregion
             #region Params
@@ -58,7 +62,7 @@ namespace Drill4Net.Injector.Core
             };
 
             #region PDB
-            var pdb = $"{subjectName}.pdb";
+            var pdb = $"{asmCtx.SubjectName}.pdb";
             var isPdbExists = File.Exists(pdb);
             //TODO: +cfg? or by type of coverage/injection?
             var needPdb = isPdbExists && (version.Target is AssemblyVersionType.NetCore or AssemblyVersionType.NetStandard);
@@ -78,22 +82,20 @@ namespace Drill4Net.Injector.Core
                         //else
                         Log.Error(ex, $"Reading PDB: {nameof(ReadAssembly)}");
                 }
+                asmCtx.IsNeedPdb = needPdb;
             }
             #endregion
             #endregion
             #region Reading
             // read subject assembly with symbols
-            Log.Debug($"Reading file [{filePath}]");
+            Log.Debug("Reading file [{FilePath}]", filePath);
+#pragma warning disable DF0010 // Marks undisposed local variables.
             var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
-            var asmCtx = new AssemblyContext(filePath, version, assembly)
-            {
-                SubjectName = subjectName,
-                SourceDir = sourceDir,
-                DestinationDir = destDir,
-                IsNeedPdb = needPdb,
-            };
-            return asmCtx;
+ #pragma warning restore DF0010 // Marks undisposed local variables.
+            asmCtx.Definition = assembly;
             #endregion
+
+            return asmCtx;
         }
     }
 }

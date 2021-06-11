@@ -27,7 +27,7 @@ namespace Drill4Net.Agent.Testing
         private const string CONTEXT_UNKNOWN = "unknown";
         private static ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
         private static Dictionary<string, InjectedMethod> _pointToMethods;
-        private static Dictionary<int, string> _execIdToTestId;
+        private static readonly Dictionary<int, string> _execIdToTestId;
 
         /*****************************************************************************/
 
