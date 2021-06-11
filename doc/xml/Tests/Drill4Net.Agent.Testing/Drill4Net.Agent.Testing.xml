@@ -4,11 +4,55 @@
         <name>Drill4Net.Agent.Testing</name>
     </assembly>
     <members>
-        <member name="M:Drill4Net.Agent.Testing.TesterProfiler.GetFunctions(System.Boolean)">
+        <member name="T:Drill4Net.Agent.Testing.TesterProfiler">
+            <summary>
+            Profiler for the Tester Subsystem (integration tests for the checking 
+            of correctness of the injections in the model assembly)
+            </summary>
+            <seealso cref="T:Drill4Net.Agent.Abstract.AbstractAgent" />
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TesterProfiler.RegisterStatic(System.String)">
+            <summary>
+             Registers the probe data from the injected Target app
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TesterProfiler.Register(System.String)">
+             <summary>
+            Registers the probe data from the injected Target app  
+             </summary>
+             <param name="data">The data.</param>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TesterProfiler.GetPoints(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Gets the probe cross-points of Target by Test Context, function signature, etc.
+            </summary>
+            <param name="ctxId">The context of test identifier.</param>
+            <param name="asmName">Name of the assembly of function.</param>
+            <param name="funcSig">The function signature.</param>
+            <param name="withPointRemoving">if set to <c>true</c> the probe data after its retrieving will be deleted.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TesterProfiler.GetPointsIgnoringContext(System.String)">
+            <summary>
+            Gets all cross-points ignoring execution context.
+            </summary>
+            <param name="funcSig">The function sig.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TesterProfiler.GetMethods(System.Boolean,System.String)">
             <summary>
             Gets list of the functions by current execution and logical contexts.
             </summary>
             <param name="createNotExistedBranch">If set to <c>true</c> create not existed branch for the current execution or logical context.</param>
+            <param name="ctxId">Test context. If empty will try get current context</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TesterProfiler.GetBusinessMethodName(System.String)">
+            <summary>
+            Gets the business name of the tested method.
+            </summary>
+            <param name="pointUid">The cross-point's uid.</param>
             <returns></returns>
         </member>
     </members>

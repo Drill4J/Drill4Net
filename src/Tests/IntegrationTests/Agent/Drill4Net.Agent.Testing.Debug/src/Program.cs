@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Testing.Debug
                 var funcSig = "System.Void Drill4Net.Agent.Testing.TesterProfiler::Register(System.String)";
                 profiler.Register($"^{asmName}^{funcSig}^{100}^If_6");
                 //
-                var funcs = TesterProfiler.GetFunctions(false);
+                var funcs = TesterProfiler.GetMethods(false);
                 foreach(var f in funcs.Keys)
                     Console.WriteLine($"{f}: {string.Join(", ", funcs[f])}");
                 //

@@ -264,7 +264,7 @@ namespace Drill4Net.Target.Tests.Common
 
         private Dictionary<string, List<PointLinkage>> GetFunctions()
         {
-            var raw = TesterProfiler.GetFunctions(false);
+            var raw = TesterProfiler.GetMethods(false);
             return ConvertToLinks(raw);
         }
 

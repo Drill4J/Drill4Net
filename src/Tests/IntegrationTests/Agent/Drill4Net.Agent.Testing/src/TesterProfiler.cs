@@ -17,6 +17,11 @@ using Drill4Net.Agent.Testing.NetFxUtils;
 
 namespace Drill4Net.Agent.Testing
 {
+    /// <summary>
+    /// Profiler for the Tester Subsystem (integration tests for the checking 
+    /// of correctness of the injections in the model assembly)
+    /// </summary>
+    /// <seealso cref="Drill4Net.Agent.Abstract.AbstractAgent" />
     public class TesterProfiler : AbstractAgent
     {
         private const string CONTEXT_UNKNOWN = "unknown";
@@ -66,14 +71,19 @@ namespace Drill4Net.Agent.Testing
 
         /*****************************************************************************/
 
+        #region Register
         // ReSharper disable once MemberCanBePrivate.Global
+        /// <summary>
+        ///  Registers the probe data from the injected Target app
+        /// </summary>
+        /// <param name="data"></param>
         public static void RegisterStatic(string data)
         {
             try
             {
                 #region Checks
-                var logCtx = GetContextId();
-                if (logCtx == null)
+                var ctxId = GetContextId();
+                if (ctxId == null)
                     return;
 
                 if (string.IsNullOrWhiteSpace(data))
@@ -85,7 +95,7 @@ namespace Drill4Net.Agent.Testing
                 var ar = data.Split('^');
                 if (ar.Length < 4)
                 {
-                    Log.Error($"Bad format of input: {data}");
+                    Log.Error("Bad format of input: {Data}", data);
                     return;
                 }
                 #endregion
@@ -96,20 +106,25 @@ namespace Drill4Net.Agent.Testing
                 var probe = ar[3];
 
                 var businessMethod = GetBusinessMethodName(probeUid);
-                if (businessMethod != null)
-                    AddPoint(asmName, businessMethod, $"{probeUid}:{probe}"); //in the prod profiler only uid needed
+                if (!string.IsNullOrEmpty(businessMethod))
+                    AddPoint(ctxId, asmName, businessMethod, $"{probeUid}:{probe}"); //in the prod profiler only uid needed
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"{data}");
+                Log.Error(ex, "{Data}", data);
             }
         }
 
+        /// <summary>
+        ///Registers the probe data from the injected Target app  
+        /// </summary>
+        /// <param name="data">The data.</param>
         public override void Register(string data)
         {
             RegisterStatic(data);
         }
-
+        #endregion
+        #region Context
         internal static string GetContextId()
         {
 #if NETFRAMEWORK
@@ -151,13 +166,14 @@ namespace Drill4Net.Agent.Testing
                         try
                         {
                             var testCtx = ctxFld.GetValue(lstFldVal) as TestExecutionContext;
+
                             var id = GetContextId(testCtx);
                             if (!_execIdToTestId.ContainsKey(execId))
                                 _execIdToTestId.Add(execId, id);
 
                             return id;
                         }
-                        catch 
+                        catch
                         {
                             //here we will be, for example, for object's Finalizers
                             typeValMap = Type.GetType("System.Threading.AsyncLocalValueMap+OneElementAsyncLocalValueMap");
@@ -167,8 +183,7 @@ namespace Drill4Net.Agent.Testing
                             var testCtx = ctxFld.GetValue(lstFldVal) as TestExecutionContext;
                             var testOutput = GetContextOutput(testCtx);
 
-                            var id = _execIdToTestId.ContainsKey(execId) ? _execIdToTestId[execId] : CONTEXT_UNKNOWN;
-                            return id; //testOutput
+                            return _execIdToTestId.ContainsKey(execId) ? _execIdToTestId[execId] : CONTEXT_UNKNOWN; 
                         }
                     }
                 }
@@ -186,16 +201,25 @@ namespace Drill4Net.Agent.Testing
         {
             return ctx?.CurrentResult?.Output ?? CONTEXT_UNKNOWN;
         }
-
-        internal static void AddPoint(string asmName, string funcSig, string point)
+        #endregion
+        #region Cross-points
+        internal static void AddPoint(string ctxId, string asmName, string funcSig, string point)
         {
-            var points = GetPoints(asmName, funcSig);
+            var points = GetPoints(ctxId, asmName, funcSig);
             points.Add(point);
         }
 
-        public static List<string> GetPoints(string asmName, string funcSig, bool withPointRemoving = false)
+        /// <summary>
+        /// Gets the probe cross-points of Target by Test Context, function signature, etc.
+        /// </summary>
+        /// <param name="ctxId">The context of test identifier.</param>
+        /// <param name="asmName">Name of the assembly of function.</param>
+        /// <param name="funcSig">The function signature.</param>
+        /// <param name="withPointRemoving">if set to <c>true</c> the probe data after its retrieving will be deleted.</param>
+        /// <returns></returns>
+        public static List<string> GetPoints(string ctxId, string asmName, string funcSig, bool withPointRemoving = false)
         {
-            var byFunctions = GetFunctions(!withPointRemoving);
+            var byFunctions = GetMethods(!withPointRemoving, ctxId);
             List<string> points;
             var funcPath = $"{asmName};{funcSig}";
             if (byFunctions.ContainsKey(funcPath))
@@ -213,6 +237,11 @@ namespace Drill4Net.Agent.Testing
             return points;
         }
 
+        /// <summary>
+        /// Gets all cross-points ignoring execution context.
+        /// </summary>
+        /// <param name="funcSig">The function sig.</param>
+        /// <returns></returns>
         public static List<string> GetPointsIgnoringContext(string funcSig)
         {
             var all = new List<string>();
@@ -225,54 +254,68 @@ namespace Drill4Net.Agent.Testing
             }
             return all;
         }
-
+        #endregion
+        #region Methods
         /// <summary>
         /// Gets list of the functions by current execution and logical contexts.
         /// </summary>
         /// <param name="createNotExistedBranch">If set to <c>true</c> create not existed branch for the current execution or logical context.</param>
+        /// <param name="ctxId">Test context. If empty will try get current context</param>
         /// <returns></returns>
-        public static Dictionary<string, List<string>> GetFunctions(bool createNotExistedBranch)
+        public static Dictionary<string, List<string>> GetMethods(bool createNotExistedBranch, string ctxId = null)
         {
-            var id = GetContextId();
+            if(string.IsNullOrWhiteSpace(ctxId))
+                ctxId = GetContextId();
 
-            if (_clientPoints == null && 
-                AppDomain.CurrentDomain.GetData(nameof(_clientPoints)) is ConcurrentDictionary<string, Dictionary<string, List<string>>> clientPoints)
+            if (_clientPoints == null && AppDomain.CurrentDomain.GetData(nameof(_clientPoints)) 
+                    is ConcurrentDictionary<string, Dictionary<string, List<string>>> clientPoints)
+            {
                 _clientPoints = clientPoints;
+            }
+
             if (_clientPoints == null)
                 _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
             //
             Dictionary<string, List<string>> byFunctions;
-            if (_clientPoints.ContainsKey(id))
+            if (_clientPoints.ContainsKey(ctxId))
             {
-                _clientPoints.TryGetValue(id, out byFunctions);
+                _clientPoints.TryGetValue(ctxId, out byFunctions);
             }
             else
             {
                 byFunctions = new Dictionary<string, List<string>>();
                 if (createNotExistedBranch)
-                    _clientPoints.TryAdd(id, byFunctions);
+                    _clientPoints.TryAdd(ctxId, byFunctions);
             }
             return byFunctions;
         }
 
-        internal static string GetBusinessMethodName(string probeUid)
+        /// <summary>
+        /// Gets the business name of the tested method.
+        /// </summary>
+        /// <param name="pointUid">The cross-point's uid.</param>
+        /// <returns></returns>
+        internal static string GetBusinessMethodName(string pointUid)
         {
             if (_pointToMethods == null)
             {
                 if (AppDomain.CurrentDomain.GetData(nameof(_pointToMethods)) is Dictionary<string, InjectedMethod> pointToMethods)
                     _pointToMethods = pointToMethods;
             }
-            if (_pointToMethods == null || !_pointToMethods.ContainsKey(probeUid))
+            if (_pointToMethods == null || !_pointToMethods.ContainsKey(pointUid))
                 return null;
-            return _pointToMethods[probeUid].BusinessMethod;
+            return _pointToMethods[pointUid].BusinessMethod;
         }
+        #endregion
 
-        public static void PrepareLogger()
+        private static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
             var file = Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterProfiler)}.log");
             cfg.WriteTo.File(file);
+            #pragma warning disable DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
             Log.Logger = cfg.CreateLogger();
+            #pragma warning restore DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
         }
     }
 }
