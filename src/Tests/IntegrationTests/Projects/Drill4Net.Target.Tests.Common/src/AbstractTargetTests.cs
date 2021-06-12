@@ -14,7 +14,6 @@ namespace Drill4Net.Target.Tests.Common
     //Despite the late binding, a reference to the injected target assembly
     //must be added to the project (as file), which in turn must be updated
     //externally each time the injection process is started (automatically)
-
     [TestFixture]
     public abstract class AbstractTargetTests
     {
@@ -33,27 +32,6 @@ namespace Drill4Net.Target.Tests.Common
         }
 
         /****************************************************************************/
-
-        [OneTimeSetUp]
-        public void SetupClass()
-        {
-            //LoadTarget();
-        }
-
-        [OneTimeTearDown]
-        public void TearDownClass()
-        {
-            //it seems that unloading assemblies from memory technically works,
-            //but the tests although with the correct statistics
-            //do not look very nice in NUnit
-
-            //UnloadTarget();
-        }
-
-        /****************************************************************************/
-
-        protected abstract Dictionary<string, object> LoadTarget();
-        protected abstract void UnloadTarget();
 
         [TestCaseSource(typeof(CommonSourceData), nameof(CommonSourceData.Simple))]
         public void Base_Simple(MethodInfo mi, object[] args, List<string> checks)

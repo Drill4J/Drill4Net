@@ -1,15 +1,15 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Mono.Cecil;
 
 namespace Drill4Net.Common
 {
     /// <summary>
     /// Common util functions
     /// </summary>
-    public class CommonUtils
+    public static class CommonUtils
     {
         /// <summary>
         /// Get target version for the entry assembly of current process
@@ -59,10 +59,9 @@ namespace Drill4Net.Common
         /// <returns></returns>
         public static string ToHexString(string s)
         {
-            byte[] ba = Encoding.Default.GetBytes(s);
+            var ba = Encoding.Default.GetBytes(s);
             var hexString = BitConverter.ToString(ba);
-            hexString = hexString.Replace("-", "");
-            return hexString;
+            return hexString.Replace("-", "");
         }
     }
 }

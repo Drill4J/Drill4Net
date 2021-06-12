@@ -40,8 +40,7 @@ namespace Drill4Net.Injector.Core
         {
             var ext = Path.GetExtension(origFilePath);
             var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
-            var modifiedPath = $"{Path.Combine(destDir, subjectName)}{ext}";
-            return modifiedPath;
+            return $"{Path.Combine(destDir, subjectName)}{ext}";
         }
     }
 }

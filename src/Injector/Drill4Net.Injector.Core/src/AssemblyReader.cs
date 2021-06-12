@@ -27,7 +27,6 @@ namespace Drill4Net.Injector.Core
 
             #region Version
             //need to know the version of the assembly before reading it via cecil
-
             AssemblyVersioning version;
             var versions = runCtx.Versions;
             if (versions.ContainsKey(filePath))

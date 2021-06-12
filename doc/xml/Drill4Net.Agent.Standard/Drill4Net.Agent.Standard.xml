@@ -78,7 +78,7 @@
             <summary>
             Get list of <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/> for list of registered <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
             </summary>
-            <returns></returns>
+            <returns>List of DTO entities for injected types</returns>
         </member>
         <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.RegisterCoverage(System.String)">
             <summary>
@@ -151,16 +151,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 40c729d</summary>
+            <summary>Commit: e424d0d</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 40c729dca13d8acdbd9271a42164e8dd5ac6e9c9</summary>
+            <summary>Sha: e424d0d1062c8803fffb941da41c20268f20f756</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-11T10:49:51+03:00</summary>
+            <summary>Commit date: 2021-06-11T12:15:28+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 461</summary>
+            <summary>Commits on top of base version: 462</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -190,7 +190,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 461</summary>
+            <summary>Patch: 462</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

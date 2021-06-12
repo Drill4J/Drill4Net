@@ -12,7 +12,7 @@ namespace Drill4Net.Injector.Core
         
         /*****************************************************************************/
         
-        public CallHandler(AbstractProbeHelper probeHelper): 
+        public CallHandler(AbstractProbeHelper probeHelper):
             base(C.INSTRUCTION_HANDLER_CALL, CrossPointType.Call, probeHelper)
         {
             _typeChecker = new TypeChecker();

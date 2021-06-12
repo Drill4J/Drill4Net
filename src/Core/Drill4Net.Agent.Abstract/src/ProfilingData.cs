@@ -4,6 +4,9 @@ using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Abstract
 {
+    /// <summary>
+    /// The profiling data: maps for methods including its DTO presentation (<see cref="AstMethod"/>)
+    /// </summary>
     public class ProfilingData
     {
         /// <summary>
@@ -18,6 +21,9 @@ namespace Drill4Net.Agent.Abstract
 
         /*****************************************************************************/
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfilingData"/> class.
+        /// </summary>
         public ProfilingData()
         {
             MethodByProbUid = new Dictionary<Guid, string>();

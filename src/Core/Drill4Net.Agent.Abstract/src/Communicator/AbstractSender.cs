@@ -13,8 +13,8 @@ namespace Drill4Net.Agent.Abstract
         public virtual void SendScopeInitialized(InitActiveScope scope, long ts)
         {
             var load = scope.Payload;
-            var mess = new ScopeInitialized(load.Id, load.Name, load.PrevId, ts);
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, 
+                new ScopeInitialized(load.Id, load.Name, load.PrevId, ts));
         }
         
         /// <summary>
@@ -22,8 +22,7 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public virtual void SendInitMessage(int classesCount)
         {
-            var mess = new InitInfo(classesCount);
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, new InitInfo(classesCount));
         }
 
         /// <summary>
@@ -32,54 +31,52 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="entities"></param>
         public virtual void SendClassesDataMessage(List<AstEntity> entities)
         {
-            var mess = new InitDataPart { astEntities = entities };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, new InitDataPart { astEntities = entities });
         }
 
         /// <summary>
         /// "Agent is initialized" message ("INITIALIZED")
         /// </summary>
         public virtual void SendInitializedMessage()
-        {
-            var mess = new Initialized {msg = "Initialized"}; //can be any string
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+        {        
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, new Initialized { msg = "Initialized" }); //can be any string
         }
         #endregion
 
         public virtual void SendSessionStartedMessage(string sessionUid, string testType, bool isRealTime, long ts)
         {
-            var mess = new SessionStarted 
-            { 
-                sessionId  = sessionUid,
-                isRealtime = isRealTime,
-                testType = testType,
-                ts = ts,
-            };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
+                new SessionStarted
+                {
+                    sessionId = sessionUid,
+                    isRealtime = isRealTime,
+                    testType = testType,
+                    ts = ts,
+                });
         }
         
         public virtual void SendSessionFinishedMessage(string sessionUid, long ts)
         {
-            var mess = new SessionFinished { sessionId = sessionUid, ts = ts };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
+                new SessionFinished { sessionId = sessionUid, ts = ts });
         }
         
         public virtual void SendAllSessionFinishedMessage(List<string> sessionUids, long ts)
         {
-            var mess = new SessionsFinished { ids = sessionUids, ts = ts };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
+                new SessionsFinished { ids = sessionUids, ts = ts });
         }
         
         public virtual void SendSessionCancelledMessage(string uid, long ts)
         {
-            var mess = new SessionCancelled { sessionId  = uid, ts = ts };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
+                new SessionCancelled { sessionId = uid, ts = ts });
         }
 
         public virtual void SendAllSessionCancelledMessage(List<string> uids, long ts)
         {
-            var mess = new SessionsCancelled { ids = uids, ts = ts };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
+                new SessionsCancelled { ids = uids, ts = ts });
         }
 
         /// <summary>
@@ -87,14 +84,14 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public virtual void SendCoverageData(string sessionUid, List<ExecClassData> data)
         {
-            var mess = new CoverDataPart { data = data, sessionId = sessionUid };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
+                new CoverDataPart { data = data, sessionId = sessionUid });
         }
         
         public virtual void SendSessionChangedMessage(string sessionUid, int probeCount)
         {
-            var mess = new SessionChanged { sessionId  = sessionUid, probeCount = probeCount };
-            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, mess);
+            SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
+                new SessionChanged { sessionId = sessionUid, probeCount = probeCount });
         }
         #endregion
         #region Send API

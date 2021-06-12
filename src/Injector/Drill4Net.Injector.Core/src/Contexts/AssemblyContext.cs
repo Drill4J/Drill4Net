@@ -130,11 +130,7 @@ namespace Drill4Net.Injector.Core
         
         /***********************************************************************************/
 
-        public override string ToString()
-        {
-            return Module.Name;
-        }
-
+        #region Dispose
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -173,6 +169,12 @@ namespace Drill4Net.Injector.Core
             GC.Collect();
             GC.WaitForFullGCComplete();
             GC.WaitForPendingFinalizers();
+        }
+        #endregion
+
+        public override string ToString()
+        {
+            return Module.Name;
         }
     }
 }

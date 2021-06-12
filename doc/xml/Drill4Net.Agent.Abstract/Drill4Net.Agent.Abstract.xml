@@ -298,6 +298,11 @@
             List of probe data
             </summary>
         </member>
+        <member name="T:Drill4Net.Agent.Abstract.ProfilingData">
+            <summary>
+            The profiling data: maps for methods including its DTO presentation (<see cref="T:Drill4Net.Agent.Abstract.Transfer.AstMethod"/>)
+            </summary>
+        </member>
         <member name="P:Drill4Net.Agent.Abstract.ProfilingData.MethodByProbUid">
             <summary>
             Get the method full name (by Injector standard) against Guid of cross-point (probe).
@@ -306,6 +311,11 @@
         <member name="P:Drill4Net.Agent.Abstract.ProfilingData.AstMethodByName">
             <summary>
             Get the AstMethod for transfer to the API by full name (by Injector standard).
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Abstract.ProfilingData.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Drill4Net.Agent.Abstract.ProfilingData"/> class.
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.AbstractCommunicatorRepository.Communicator">

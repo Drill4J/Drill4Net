@@ -24,7 +24,7 @@ namespace Drill4Net.Injector.Core
             //
             if (flow is not FlowControl.Next and not FlowControl.Call)
                 return false;
-            if (instr.Previous is {OpCode: {Code: Code.Leave or Code.Leave_S}}) 
+            if (instr.Previous is {OpCode: {Code: Code.Leave or Code.Leave_S}})
                 return false;
             if (ctx.CompilerInstructions.Contains(instr))
                 return false;
@@ -61,7 +61,7 @@ namespace Drill4Net.Injector.Core
                 }
             }
             //
-            return true; 
+            return true;
         }
     }
 }

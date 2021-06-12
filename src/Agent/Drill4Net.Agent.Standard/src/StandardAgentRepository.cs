@@ -138,7 +138,7 @@ namespace Drill4Net.Agent.Standard
                         multi = false;
                         break;
                     }
-                    if (multi) 
+                    if (multi)
                     {
                         //here many copies of target for different runtimes
                         //we need only one
@@ -166,7 +166,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Get list of <see cref="AstEntity"/> for list of registered <see cref="InjectedType"/>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>List of DTO entities for injected types</returns>
         public List<AstEntity> GetEntities()
         {
             return _converter.ToAstEntities(_injTypes);
