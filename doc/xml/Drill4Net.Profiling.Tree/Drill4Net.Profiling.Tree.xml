@@ -102,6 +102,11 @@
             <param name="businessIndex"></param>
             <param name="pointType"></param>
         </member>
+        <member name="T:Drill4Net.Profiling.Tree.CrossPointType">
+            <summary>
+            The type of the cross-point in the intrumented Target
+            </summary>
+        </member>
         <member name="T:Drill4Net.Profiling.Tree.InjectedMethod">
             <summary>
             The injected method

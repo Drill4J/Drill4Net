@@ -61,6 +61,33 @@
             agent attachment, agent toggle, agent system settings changing).
             </summary>
         </member>
+        <member name="T:Drill4Net.Agent.Abstract.AbstractCommunicator">
+            <summary>
+            Abstract communicator interacing with some admin side
+            </summary>
+            <seealso cref="T:Drill4Net.Agent.Abstract.ICommunicator" />
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AbstractCommunicator.Receiver">
+            <summary>
+            Receiver of the data from Admin side.
+            </summary>
+            <value>
+            The receiver.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Agent.Abstract.AbstractCommunicator.Sender">
+            <summary>
+            Sender of the data from Admin side.
+            </summary>
+            <value>
+            The sender.
+            </value>
+        </member>
+        <member name="M:Drill4Net.Agent.Abstract.AbstractCommunicator.Connect">
+            <summary>
+            Connect to the Admin side.
+            </summary>
+        </member>
         <member name="M:Drill4Net.Agent.Abstract.AbstractSender.SendScopeInitialized(Drill4Net.Agent.Abstract.Transfer.InitActiveScope,System.Int64)">
             <summary>
             "Send Scope Initialized" message ("SCOPE_INITIALIZED")
@@ -335,10 +362,23 @@
             Initializes a new instance of the <see cref="T:Drill4Net.Agent.Abstract.ProfilingData"/> class.
             </summary>
         </member>
+        <member name="T:Drill4Net.Agent.Abstract.AbstractCommunicatorRepository">
+            <summary>
+            Abstract data repository of the profiling Agent communicating with some Admin side
+            </summary>
+            <seealso cref="T:Drill4Net.Agent.Abstract.AgentRepository" />
+            <seealso cref="T:Drill4Net.Agent.Abstract.IAgentRepository" />
+        </member>
         <member name="P:Drill4Net.Agent.Abstract.AbstractCommunicatorRepository.Communicator">
             <summary>
             Communicator for transfer probe data to admin side
             </summary>
+        </member>
+        <member name="T:Drill4Net.Agent.Abstract.AgentRepository">
+            <summary>
+            Data repository for the profiling Agent
+            </summary>
+            <seealso cref="!:Drill4Net.Core.Repository.AbstractRepository&lt;Drill4Net.Common.AgentOptions, Drill4Net.Core.Repository.BaseOptionsHelper&lt;Drill4Net.Common.AgentOptions&gt;&gt;" />
         </member>
         <member name="P:Drill4Net.Agent.Abstract.IAgentRepository.Communicator">
             <summary>

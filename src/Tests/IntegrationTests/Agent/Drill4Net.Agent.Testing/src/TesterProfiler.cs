@@ -311,7 +311,7 @@ namespace Drill4Net.Agent.Testing
         private static void PrepareLogger()
         {
             var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            var file = Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\..\"), $"{nameof(TesterProfiler)}.log");
+            var file = Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterProfiler)}.log");
             cfg.WriteTo.File(file);
             #pragma warning disable DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
             Log.Logger = cfg.CreateLogger();

@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public class NonConditionBranchHandler : AbstractBaseHandler
     {
-        public NonConditionBranchHandler(AbstractProbeHelper probeHelper) : 
+        public NonConditionBranchHandler(AbstractProbeHelper probeHelper) :
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_NONCONDITIONAL, probeHelper)
         {
         }
