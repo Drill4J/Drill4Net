@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
     <ProjectReference Include="..\..\..\Targets\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
     <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj" />
   </ItemGroup>

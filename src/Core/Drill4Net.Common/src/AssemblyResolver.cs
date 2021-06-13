@@ -1,11 +1,10 @@
 ﻿using Mono.Cecil;
 using System.Collections.Generic;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Common
 {
     public class AssemblyResolver : IAssemblyResolver
     {
-        private readonly AssemblyHelper _helper;
         private readonly ReaderParameters _readerParams;
         private readonly Dictionary<string, AssemblyDefinition> _cache;
 
@@ -14,7 +13,6 @@ namespace Drill4Net.Injector.Core
         public AssemblyResolver()
         {
             _cache = new Dictionary<string, AssemblyDefinition>();
-            _helper = new AssemblyHelper();
             _readerParams = new ReaderParameters
             {
                 ReadWrite = false,
@@ -35,7 +33,7 @@ namespace Drill4Net.Injector.Core
             if (_cache.ContainsKey(name))
                 return _cache[name];
             //
-            var path = _helper.FindAssemblyPath(name, nameRef.Version);
+            var path = FileUtils.FindAssemblyPath(name, nameRef.Version);
             if (path == null)
                 return null;
             var def = AssemblyDefinition.ReadAssembly(path, _readerParams);

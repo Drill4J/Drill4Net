@@ -20,10 +20,6 @@ namespace Drill4Net.Injector.Engine
     /// </summary>
     public class InjectorRepository : AbstractRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
     { 
-        private readonly AssemblyContextManager _asmCtxManager = new();
-
-        /**********************************************************************************/
-
         /// <summary>
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
         /// injector for them, the reading/writing of resulting tree data, etc).

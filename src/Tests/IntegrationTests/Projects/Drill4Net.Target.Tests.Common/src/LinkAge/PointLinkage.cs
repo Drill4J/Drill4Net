@@ -1,5 +1,4 @@
 ﻿using System;
-using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Target.Tests.Common
