@@ -58,7 +58,7 @@ namespace Drill4Net.Agent.Transport
 
         public void SendPluginMessage(string pluginId, string message)
         {
-            sendPluginMessage(pluginId, message); //now pluginId = "test2code"
+            sendPluginMessage(pluginId, message); //currently pluginId is the only one = "test2code"
         }
     }
 }

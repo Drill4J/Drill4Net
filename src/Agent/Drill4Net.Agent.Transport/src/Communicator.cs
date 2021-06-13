@@ -3,9 +3,27 @@ using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
 {
+    /// <summary>
+    /// Communicator for interaction with Drill Admin side
+    /// </summary>
+    /// <seealso cref="Drill4Net.Agent.Abstract.AbstractCommunicator" />
     public class Communicator : AbstractCommunicator
     {
+        /// <summary>
+        /// Config for admin side about Agent and instrumented application instances,
+        /// applied during connect.
+        /// </summary>
+        /// <value>
+        /// The agent configuration.
+        /// </value>
         public AgentPartConfig AgentConfig { get; }
+
+        /// <summary>
+        /// Gets the URL of the Drill Admin side.
+        /// </summary>
+        /// <value>
+        /// The URL.
+        /// </value>
         private string Url { get; }
 
         private readonly Connector _connector;

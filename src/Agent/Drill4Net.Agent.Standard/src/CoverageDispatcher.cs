@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -10,11 +9,52 @@ namespace Drill4Net.Agent.Standard
     /// </summary>
     public class CoverageDispatcher
     {
+        /// <summary>
+        /// Gets or sets the test session on the Drill Admin side.
+        /// </summary>
+        /// <value>
+        /// The test session.
+        /// </value>
         public StartSessionPayload Session { get; set; }
-        public ConcurrentDictionary<string, ExecClassData> PointToClass { get; }
+
+        /// <summary>
+        /// Maps the cross-point's Uid to the corresponding target type.
+        /// </summary>
+        /// <value>
+        /// The DTO of the Target type.
+        /// </value>
+        public ConcurrentDictionary<string, ExecClassData> PointToType { get; }
+
+        /// <summary>
+        /// Gets the range of the indexes in method's instructions for the specified cross-point's Uid.
+        /// </summary>
+        /// <value>
+        /// The range of the indexes in method's instructions
+        /// </value>
         public ConcurrentDictionary<string, (int, int)> PointToRange { get; }
-        public HashSet<ExecClassData> ExecClasses { get; }
-        public HashSet<ExecClassData> AffectedExecClasses { get; }
+
+        /// <summary>
+        /// Gets the injected classes in DTO form.
+        /// </summary>
+        /// <value>
+        /// The injected classes in DTO form.
+        /// </value>
+        public HashSet<ExecClassData> Types { get; }
+
+        /// <summary>
+        /// Gets the affected injected classes after last sending its data to the Drill admin side.
+        /// </summary>
+        /// <value>
+        /// The affected injected classes.
+        /// </value>
+        public HashSet<ExecClassData> AffectedTypes { get; }
+
+        /// <summary>
+        /// Gets the affected probe count after last sending data to the Drill admin side.
+        /// </summary>
+        /// <value>
+        /// The affected probe count.
+        /// </value>
         public int AffectedProbeCount { get; private set; }
 
         /*************************************************************************/
@@ -26,21 +66,21 @@ namespace Drill4Net.Agent.Standard
         public CoverageDispatcher(StartSessionPayload session)
         {
             Session = session; // ?? throw new .....
-            PointToClass = new ConcurrentDictionary<string, ExecClassData>();
+            PointToType = new ConcurrentDictionary<string, ExecClassData>();
             PointToRange = new ConcurrentDictionary<string, (int, int)>();
-            ExecClasses = new HashSet<ExecClassData>();
-            AffectedExecClasses = new HashSet<ExecClassData>();
+            Types = new HashSet<ExecClassData>();
+            AffectedTypes = new HashSet<ExecClassData>();
         }
 
         /*************************************************************************/
 
         /// <summary>
-        /// Bind point Uid to probe's range of the target class
+        /// Bind point Uid to the probe's range of the target class
         /// </summary>
-        /// <param name="pointUid"></param>
-        /// <param name="data"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
+        /// <param name="pointUid">Cross-point's Uid</param>
+        /// <param name="data">Probes of instrumented assemblies for sending of collecting data to the Admin side</param>
+        /// <param name="start">Start index of the cross-point's region in IL instructions of the its method</param>
+        /// <param name="end">End index of the cross-point's region in IL instructions of the its method</param>
         public void BindPoint(string pointUid, ExecClassData data, int start, int end)
         {
             //link point to range
@@ -49,17 +89,17 @@ namespace Drill4Net.Agent.Standard
             PointToRange.TryAdd(pointUid, (start, end));
 
             //link point (probe) to class
-            if (PointToClass.ContainsKey(pointUid))
+            if (PointToType.ContainsKey(pointUid))
                 return;
-            PointToClass.TryAdd(pointUid, data);
+            PointToType.TryAdd(pointUid, data);
             
             //list of classes
-            if (!ExecClasses.Contains(data))
+            if (!Types.Contains(data))
             {
-                lock (ExecClasses)
+                lock (Types)
                 {
-                    if (!ExecClasses.Contains(data))
-                        ExecClasses.Add(data);
+                    if (!Types.Contains(data))
+                        Types.Add(data);
                 }
             }
         }
@@ -74,7 +114,7 @@ namespace Drill4Net.Agent.Standard
             //hm... log?
             if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
                 return false; //it's error
-            if (!PointToClass.TryGetValue(pointUid, out var classData))
+            if (!PointToType.TryGetValue(pointUid, out var classData))
                 return false; //it's normal, but not the best (for block coverage we not need "Enter" type of cross-points, another case is a possible error)
 
             var probes = classData.probes;
@@ -87,14 +127,14 @@ namespace Drill4Net.Agent.Standard
             if (probes[start]) //already registered
                 return true;
             //
-            lock (AffectedExecClasses)
+            lock (AffectedTypes)
             {
                 for (var i = start; i <= end; i++)
                     probes[i] = true;
                 AffectedProbeCount += end - start + 1;
                 //
-                if (!AffectedExecClasses.Contains(classData))
-                    AffectedExecClasses.Add(classData);
+                if (!AffectedTypes.Contains(classData))
+                    AffectedTypes.Add(classData);
             }
             return true;
         }
@@ -104,7 +144,7 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public void ClearAffectedData()
         {
-            AffectedExecClasses.Clear();
+            AffectedTypes.Clear();
             AffectedProbeCount = 0;
         }
     }

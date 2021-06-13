@@ -11,6 +11,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Agent.Transport;
 
+//automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
 [assembly: AssemblyInformationalVersion(
   ThisAssembly.Git.SemVer.Major + "." +
@@ -311,7 +312,7 @@ namespace Drill4Net.Agent.Standard
             var sessionUid = disp?.Session?.SessionId;
             if (sessionUid == null)
                 return;
-            var execClasses = disp.AffectedExecClasses.ToList();
+            var execClasses = disp.AffectedTypes.ToList();
             var cnt = execClasses.Count();
             switch (cnt)
             {
@@ -387,7 +388,11 @@ namespace Drill4Net.Agent.Standard
             return _converter.CreateCoverageDispatcher(session, _injTypes);
         }
         #endregion
-        
+
+        /// <summary>
+        /// Gets the context identifier.
+        /// </summary>
+        /// <returns></returns>
         internal int GetContextId()
         {
             var ctx = Thread.CurrentThread.ExecutionContext;

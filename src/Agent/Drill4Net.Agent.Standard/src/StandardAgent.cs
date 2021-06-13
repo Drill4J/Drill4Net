@@ -142,6 +142,9 @@ namespace Drill4Net.Agent.Standard
         // }
         #endregion
 
+        /// <summary>
+        /// Handler of the event for the creating new test scope on the Admin side
+        /// </summary>
         private static void OnInitScopeData(InitActiveScope scope)
         {
             _rep.CancelAllSessions(); //just in case
@@ -149,6 +152,9 @@ namespace Drill4Net.Agent.Standard
             Sender.SendScopeInitialized(scope, GetCurrentUnixTimeMs());
         }
 
+        /// <summary>
+        /// Handler of the event for the requsteing classes data of the Target from the Admin side
+        /// </summary>
         private static void OnRequestClassesData()
         {
             lock (_entLocker)
@@ -156,7 +162,10 @@ namespace Drill4Net.Agent.Standard
                 _entities = _rep.GetEntities();
             }
         }
-        
+
+        /// <summary>
+        /// Handler of the event for the toggling some plugin on the Admin side
+        /// </summary>
         private static void OnTogglePlugin(string plugin)
         {
             lock (_entLocker)

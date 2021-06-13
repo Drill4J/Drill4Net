@@ -8,6 +8,9 @@ using Drill4Net.Target.Common;
 
 namespace Drill4Net.Target.Tests.Common
 {
+    /// <summary>
+    /// Helper for the Target tests' data source
+    /// </summary>
     public static class SourceDataCore
     {
         #region Delegates

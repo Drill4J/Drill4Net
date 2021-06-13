@@ -3,8 +3,18 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// Abstract handler of the IL code's instructions for some simple cases
+    /// </summary>
+    /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public abstract class AbstractSimpleHandler : AbstractBaseHandler
     {
+        /// <summary>
+        /// Gets the type of the cross-point.
+        /// </summary>
+        /// <value>
+        /// The type of the point.
+        /// </value>
         public CrossPointType PointType { get; }
         
         /*****************************************************************************/

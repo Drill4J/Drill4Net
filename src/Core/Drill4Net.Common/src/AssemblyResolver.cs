@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Assembly resolver for its reading with Mono.Cecil
+    /// </summary>
+    /// <seealso cref="Mono.Cecil.IAssemblyResolver" />
     public class AssemblyResolver : IAssemblyResolver
     {
         private readonly ReaderParameters _readerParams;

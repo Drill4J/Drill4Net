@@ -3,6 +3,10 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// IL code's handler of the cross-point for the "IF/ELSE" type (conditional branch)
+    /// </summary>
+    /// <seealso cref="Drill4Net.Injector.Core.AbstractConditionBranchHandler" />
     public class IfElseHandler : AbstractConditionBranchHandler
     {
         public IfElseHandler(AbstractProbeHelper probeHelper) : base(probeHelper)

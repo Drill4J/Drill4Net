@@ -6,7 +6,11 @@ using Drill4Net.Agent.Abstract.Transfer;
 namespace Drill4Net.Agent.Transport
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=881283184
-    
+
+    /// <summary>
+    /// Data Sender for the profiling Agent
+    /// </summary>
+    /// <seealso cref="Drill4Net.Agent.Abstract.AbstractSender" />
     public class AgentSender : AbstractSender
     {
         private readonly Connector _connector;
@@ -35,6 +39,7 @@ namespace Drill4Net.Agent.Transport
             _connector.SendPluginMessage(topic, message);
         }
 
+        #region Test
         public override void SendOutgoingTest(OutgoingMessage data)
         {
 
@@ -49,5 +54,6 @@ namespace Drill4Net.Agent.Transport
         {
             
         }
+        #endregion
     }
 }

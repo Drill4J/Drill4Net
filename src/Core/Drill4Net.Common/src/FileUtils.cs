@@ -157,7 +157,7 @@ namespace Drill4Net.Common
         /// </summary>
         /// <param name="relativeBaseDir"></param>
         /// <param name="logFolder"></param>
-        /// <returns></returns>
+        /// <returns>Log directory's path</returns>
         public static string GetCommonLogDirectory(string relativeBaseDir, string logFolder = "logs")
         {
             return Path.Combine(GetFullPath(relativeBaseDir), logFolder);

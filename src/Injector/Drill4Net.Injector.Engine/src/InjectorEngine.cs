@@ -184,24 +184,22 @@ namespace Drill4Net.Injector.Engine
 
             //reading
             var reader = new AssemblyReader();
-            using (var asmCtx = reader.ReadAssembly(runCtx))
-            {
-                if (asmCtx.Skipped)
-                    return false;
+            using var asmCtx = reader.ReadAssembly(runCtx);
+            if (asmCtx.Skipped)
+                return false;
 
-                if (!Directory.Exists(asmCtx.DestinationDir))
-                    Directory.CreateDirectory(asmCtx.DestinationDir);
+            if (!Directory.Exists(asmCtx.DestinationDir))
+                Directory.CreateDirectory(asmCtx.DestinationDir);
 
-                //processing
-                runCtx.Inject(asmCtx);
+            //processing
+            runCtx.Inject(asmCtx);
 
-                //writing modified assembly and symbols to new file
-                var writer = new AssemblyWriter();
-                var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-                Log.Information("Modified assembly is created: {ModifiedPath}", modifiedPath);
+            //writing modified assembly and symbols to new file
+            var writer = new AssemblyWriter();
+            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
+            Log.Information("Modified assembly is created: {ModifiedPath}", modifiedPath);
 
-                return true;
-            }
+            return true;
         }
     }
 }

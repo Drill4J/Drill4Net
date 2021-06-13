@@ -2,9 +2,26 @@
 
 namespace Drill4Net.Agent.Abstract
 {
+    /// <summary>
+    /// Abstract communicator interacing with some admin side
+    /// </summary>
+    /// <seealso cref="Drill4Net.Agent.Abstract.ICommunicator" />
     public abstract class AbstractCommunicator : ICommunicator
     {
+        /// <summary>
+        /// Receiver of the data from Admin side.
+        /// </summary>
+        /// <value>
+        /// The receiver.
+        /// </value>
         public IReceiver Receiver { get; protected set; }
+
+        /// <summary>
+        /// Sender of the data from Admin side.
+        /// </summary>
+        /// <value>
+        /// The sender.
+        /// </value>
         public AbstractSender Sender { get; protected set; }
         
         /******************************************************************************/
@@ -19,6 +36,9 @@ namespace Drill4Net.Agent.Abstract
 
         /******************************************************************************/
 
+        /// <summary>
+        /// Connect to the Admin side.
+        /// </summary>
         public abstract void Connect();
     }
 }

@@ -128,7 +128,7 @@ namespace Drill4Net.Agent.Testing
         internal static string GetContextId()
         {
 #if NETFRAMEWORK
-            //What if NUnit or Tester Engine comes here?
+            //What if the NUnit or Tester Engine comes here?
             var testCtx = LogicalContextManager.GetTestFromLogicalContext();
             return GetContextId(testCtx);
 #else

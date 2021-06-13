@@ -4,6 +4,10 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// IL code's handler of the cross-point for the "Enter" type (enter into method)
+    /// </summary>
+    /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public class EnterHandler : AbstractBaseHandler
     {
         public EnterHandler(AbstractProbeHelper probeHelper) : 

@@ -3,6 +3,12 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// IL code's handler of the cross-point for the "Anchor" type (instructions which are jumpers 
+    /// or the targets for another instruction-jumpers or call business-methods, and thus dividing 
+    /// IL code to the blocks)
+    /// </summary>
+    /// <seealso cref="Drill4Net.Injector.Core.AbstractSimpleHandler" />
     public class AnchorHandler : AbstractSimpleHandler
     {
         private readonly bool _ignoreCycles;

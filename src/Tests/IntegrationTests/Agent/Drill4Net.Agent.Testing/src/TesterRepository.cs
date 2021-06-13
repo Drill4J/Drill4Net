@@ -5,30 +5,42 @@ using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Testing
 {
+    /// <summary>
+    /// Repository for the Tester subsystem
+    /// </summary>
     public class TesterRepository : AbstractRepository<TesterOptions, BaseOptionsHelper<TesterOptions>>
     {
+        /// <summary>
+        /// Initializes a new instance of the repository for the Tester subsystem.
+        /// </summary>
+        /// <param name="cfgPath">The CFG path.</param>
         public TesterRepository(string cfgPath = null) : base(cfgPath)
         {
         }
 
         /***************************************************************************/
 
+        /// <summary>
+        /// Gets the concrete targets dir by calling assembly directory.
+        /// </summary>
+        /// <param name="callingDir">The calling assembly directory.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}</exception>
         public string GetTargetsDir(string callingDir)
         {
-            var baseDir = GetBaseDir(callingDir);
+            var baseDir = FindTestsDir(callingDir);
             if (baseDir == null)
                 throw new Exception($"Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}");
-            //var folder = Options?.Versions?.Directory;
             if (baseDir.EndsWith("\\"))
                 baseDir = baseDir.Remove(baseDir.Length - 1, 1);
             return Path.Combine(baseDir, Options.TreePath);
         }
 
-        public string GetBaseDir(string callingDir)
-        {
-            return FindTestsDir(callingDir);
-        }
-
+        /// <summary>
+        /// Gets the root directory of the tests by some inner directory into it.
+        /// </summary>
+        /// <param name="innerDir">The inner dir.</param>
+        /// <returns></returns>
         internal string FindTestsDir(string innerDir)
         {
             var targets = Options.Versions.Targets;

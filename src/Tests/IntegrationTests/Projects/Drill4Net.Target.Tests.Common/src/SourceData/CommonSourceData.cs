@@ -18,7 +18,7 @@ namespace Drill4Net.Target.Tests.Common
         #region CONSTs
         private const string CATEGORY_DYNAMIC = "Dynamic";
         private const string CATEGORY_MISC = "Misc";
-        private const string IGNORE_REASON = "Due complexiti with multi-threaded";
+        //private const string IGNORE_REASON = "Due complexiti with multi-threaded";
         #endregion
         #region FIELDs
         private static readonly AnotherTarget _anotherTarget;
@@ -45,6 +45,9 @@ namespace Drill4Net.Target.Tests.Common
 
         /************************************************************************/
 
+        /// <summary>
+        /// Data source for input data of Target tests which affect only one method
+        /// </summary>
         internal static IEnumerable Simple
         {
             get
@@ -225,6 +228,9 @@ namespace Drill4Net.Target.Tests.Common
             }
         }
 
+        /// <summary>
+        /// Data source for input data of Target tests which affect several methods
+        /// </summary>
         internal static IEnumerable Parented
         {
             get

@@ -71,6 +71,12 @@ namespace Drill4Net.Agent.Transport
 
         /************************************************************************/
 
+        /// <summary>
+        /// Messages received from the Admin side.
+        /// </summary>
+        /// <param name="topic">The topic.</param>
+        /// <param name="message">The message.</param>
+        /// <exception cref="Exception">Handlers are not attached for received events</exception>
         protected virtual void MessageReceived(string topic, string message)
         {
             if (RequestClassesData == null)

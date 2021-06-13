@@ -4,6 +4,23 @@
         <name>Drill4Net.Agent.Abstract</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Agent.Abstract.AbstractAgent">
+            <summary>
+            Abstract Agent collecting probe data of the cross-point in instrumented Target
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Abstract.AbstractAgent.Register(System.String)">
+            <summary>
+            Register the cross-pont's probe data.
+            </summary>
+            <param name="data">The data.</param>
+        </member>
+        <member name="M:Drill4Net.Agent.Abstract.AbstractAgent.ProcessAsync(System.String)">
+            <summary>
+            Async register the cross-pont's probe data.
+            </summary>
+            <param name="data">The data.</param>
+        </member>
         <member name="T:Drill4Net.Agent.Abstract.AgentConstants">
             <summary>
             Constants for Agent subsystem
@@ -275,7 +292,7 @@
         </member>
         <member name="T:Drill4Net.Agent.Abstract.Transfer.ExecClassData">
             <summary>
-            Probes of instrumented assemblies for sending of collecting data to admin side
+            Probes of instrumented assemblies for sending of collecting data to the Admin side
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.testName">

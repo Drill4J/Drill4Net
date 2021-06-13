@@ -1,5 +1,8 @@
 ﻿namespace Drill4Net.Profiling.Tree
 {
+    /// <summary>
+    /// The type of the cross-point in the intrumented Target
+    /// </summary>
     public enum CrossPointType
     {
         Unset = 0,

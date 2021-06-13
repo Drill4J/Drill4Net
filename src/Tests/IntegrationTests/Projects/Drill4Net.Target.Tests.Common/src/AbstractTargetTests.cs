@@ -14,6 +14,10 @@ namespace Drill4Net.Target.Tests.Common
     //Despite the late binding, a reference to the injected target assembly
     //must be added to the project (as file), which in turn must be updated
     //externally each time the injection process is started (automatically)
+
+    /// <summary>
+    /// Tests for the injected Target assembly
+    /// </summary>
     [TestFixture]
     public abstract class AbstractTargetTests
     {
@@ -33,6 +37,9 @@ namespace Drill4Net.Target.Tests.Common
 
         /****************************************************************************/
 
+        /// <summary>
+        /// Target tests which affect only one method
+        /// </summary>
         [TestCaseSource(typeof(CommonSourceData), nameof(CommonSourceData.Simple))]
         public void Base_Simple(MethodInfo mi, object[] args, List<string> checks)
         {
@@ -71,6 +78,9 @@ namespace Drill4Net.Target.Tests.Common
             #endregion
         }
 
+        /// <summary>
+        /// Target tests which affect several methods
+        /// </summary>
         [TestCaseSource(typeof(CommonSourceData), nameof(CommonSourceData.Parented))]
         public void Base_Parented(MethodInfo mi, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
         {

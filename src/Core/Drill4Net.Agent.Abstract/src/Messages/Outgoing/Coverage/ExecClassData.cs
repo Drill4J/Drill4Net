@@ -5,7 +5,7 @@ using System.Linq;
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     /// <summary>
-    /// Probes of instrumented assemblies for sending of collecting data to admin side
+    /// Probes of instrumented assemblies for sending of collecting data to the Admin side
     /// </summary>
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]

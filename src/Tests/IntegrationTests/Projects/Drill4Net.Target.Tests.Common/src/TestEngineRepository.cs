@@ -54,6 +54,11 @@ namespace Drill4Net.Target.Tests.Common
 
         /*******************************************************************************/
 
+        /// <summary>
+        /// Finds the configuration deep into folder hierarhy from the specified path.
+        /// </summary>
+        /// <param name="curDir">The current directory.</param>
+        /// <returns></returns>
         public string FindConfigDeep(string curDir)
         {
             //search dir with files - there must be tree data
@@ -71,6 +76,10 @@ namespace Drill4Net.Target.Tests.Common
             return curDir;
         }
 
+        /// <summary>
+        /// Loads the tree of the injected methods.
+        /// </summary>
+        /// <returns></returns>
         public InjectedSolution LoadTree()
         {
             var path = Path.Combine(_targetsDir, CoreConstants.TREE_FILE_NAME);

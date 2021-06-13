@@ -9,6 +9,54 @@
             Manager of the coverage data for the user's or global session
             </summary>
         </member>
+        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.Session">
+            <summary>
+            Gets or sets the test session on the Drill Admin side.
+            </summary>
+            <value>
+            The test session.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.PointToType">
+            <summary>
+            Maps the cross-point's Uid to the corresponding target type.
+            </summary>
+            <value>
+            The DTO of the Target type.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.PointToRange">
+            <summary>
+            Gets the range of the indexes in method's instructions for the specified cross-point's Uid.
+            </summary>
+            <value>
+            The range of the indexes in method's instructions
+            </value>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.Types">
+            <summary>
+            Gets the injected classes in DTO form.
+            </summary>
+            <value>
+            The injected classes in DTO form.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.AffectedTypes">
+            <summary>
+            Gets the affected injected classes after last sending its data to the Drill admin side.
+            </summary>
+            <value>
+            The affected injected classes.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.AffectedProbeCount">
+            <summary>
+            Gets the affected probe count after last sending data to the Drill admin side.
+            </summary>
+            <value>
+            The affected probe count.
+            </value>
+        </member>
         <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.#ctor(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload)">
             <summary>
             Create manager of the coverage data for the user's or global session
@@ -17,12 +65,12 @@
         </member>
         <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.BindPoint(System.String,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Int32,System.Int32)">
             <summary>
-            Bind point Uid to probe's range of the target class
+            Bind point Uid to the probe's range of the target class
             </summary>
-            <param name="pointUid"></param>
-            <param name="data"></param>
-            <param name="start"></param>
-            <param name="end"></param>
+            <param name="pointUid">Cross-point's Uid</param>
+            <param name="data">Probes of instrumented assemblies for sending of collecting data to the Admin side</param>
+            <param name="start">Start index of the cross-point's region in IL instructions of the its method</param>
+            <param name="end">End index of the cross-point's region in IL instructions of the its method</param>
         </member>
         <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.RegisterCoverage(System.String)">
             <summary>
@@ -45,6 +93,21 @@
             It just run the ctor with the main init procedure.
             This function mainly used for debugging. It's not necessary
             in a real system because the ctor will be arised due Register call.
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgent.OnInitScopeData(Drill4Net.Agent.Abstract.Transfer.InitActiveScope)">
+            <summary>
+            Handler of the event for the creating new test scope on the Admin side
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgent.OnRequestClassesData">
+            <summary>
+            Handler of the event for the requsteing classes data of the Target from the Admin side
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgent.OnTogglePlugin(System.String)">
+            <summary>
+            Handler of the event for the toggling some plugin on the Admin side
             </summary>
         </member>
         <member name="M:Drill4Net.Agent.Standard.StandardAgent.RegisterStatic(System.String)">
@@ -90,6 +153,12 @@
         <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetUserDispather">
             <summary>
             Get the coverage dispatcher by current context if exists and otherwise create it
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetContextId">
+            <summary>
+            Gets the context identifier.
             </summary>
             <returns></returns>
         </member>
@@ -151,16 +220,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 0cb4fe6</summary>
+            <summary>Commit: 8a99da7</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 0cb4fe6ee392e9c530161178335cbda1945b3de3</summary>
+            <summary>Sha: 8a99da7b4b9124d7b1943a0050d4f0f8626b1efc</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-12T17:57:20+03:00</summary>
+            <summary>Commit date: 2021-06-13T08:30:28+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 463</summary>
+            <summary>Commits on top of base version: 464</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -190,7 +259,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 463</summary>
+            <summary>Patch: 464</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>
