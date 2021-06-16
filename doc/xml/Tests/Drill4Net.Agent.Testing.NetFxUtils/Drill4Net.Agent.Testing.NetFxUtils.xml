@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Drill4Net.Agent.Testing.NetFxUtils</name>
+    </assembly>
+    <members>
+        <member name="T:Drill4Net.Agent.Testing.NetFxUtils.LogicalContextManager">
+            <summary>
+            Utils methods for CallContext in NetFramework
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.NetFxUtils.LogicalContextManager.GetTestFromLogicalContext">
+            <summary>
+            Get NUnit test's context for current Run
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

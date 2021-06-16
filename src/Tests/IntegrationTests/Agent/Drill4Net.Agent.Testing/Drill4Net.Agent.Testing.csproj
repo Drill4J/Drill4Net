@@ -24,10 +24,10 @@
      <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
    </ItemGroup>
    <ItemGroup>
-     <ProjectReference Include="..\..\..\..\..\Drill4Net.Agent.Testing.NetFxUtils\Drill4Net.Agent.Testing.NetFxUtils.csproj" />
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
+     <ProjectReference Include="..\Drill4Net.Agent.Testing.NetFxUtils\Drill4Net.Agent.Testing.NetFxUtils.csproj" />
    </ItemGroup>
    <ItemGroup>
      <None Update="tests_cfg.yml">
