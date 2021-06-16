@@ -26,6 +26,11 @@
         public CallerOptions Proxy { get; set; }
 
         /// <summary>
+        /// Options for the Debug mode
+        /// </summary>
+        public InjectorDebugOptions Debug { get; set; }
+
+        /// <summary>
         /// Options for the injecting process (types of methods, cross-points, etc)
         /// </summary>
         public ProbesOptions Probes { get; set; }

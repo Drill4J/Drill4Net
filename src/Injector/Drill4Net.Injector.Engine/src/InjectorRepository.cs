@@ -39,7 +39,7 @@ namespace Drill4Net.Injector.Engine
             Options = _optHelper.ReadOptionsFromArgs(args);
         }
 
-        /**********************************************************************************/
+        /*************************************************************************************/
 
         /// <summary>
         /// Get the concrete assembly injector

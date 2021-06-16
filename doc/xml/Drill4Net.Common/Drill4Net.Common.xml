@@ -200,10 +200,47 @@
             by another ways using "redirect cfg", current dir, etc
             </summary>
         </member>
+        <member name="P:Drill4Net.Common.BaseOptions.Logs">
+            <summary>
+            Gets or sets the options for logs.
+            </summary>
+            <value>
+            The logs' options.
+            </value>
+        </member>
         <member name="P:Drill4Net.Common.BaseOptions.Description">
             <summary>
             Description for injection process
             </summary>
+        </member>
+        <member name="T:Drill4Net.Common.IDebugOptions">
+            <summary>
+            Options for the Debug mode
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.IDebugOptions.Disabled">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Drill4Net.Common.IDebugOptions"/> is disabled.
+            </summary>
+            <value>
+              <c>true</c> if disabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorDebugOptions.Disabled">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Drill4Net.Common.IDebugOptions"/> is disabled.
+            </summary>
+            <value>
+              <c>true</c> if disabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorDebugOptions.CrossPointInfo">
+            <summary>
+            Gets or sets a value indicating whether cross-point information is included into injected probe data.
+            </summary>
+            <value>
+              <c>true</c> if cross-point information is included into injected probe data; otherwise, <c>false</c>.
+            </value>
         </member>
         <member name="T:Drill4Net.Common.InjectorOptions">
             <summary>
@@ -228,6 +265,11 @@
         <member name="P:Drill4Net.Common.InjectorOptions.Proxy">
             <summary>
             Options for the Proxy class injected to the Target
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.InjectorOptions.Debug">
+            <summary>
+            Options for the Debug mode
             </summary>
         </member>
         <member name="P:Drill4Net.Common.InjectorOptions.Probes">
@@ -437,6 +479,47 @@
             <summary>
             Create parameters for the target object versions to be processed
             </summary>
+        </member>
+        <member name="T:Drill4Net.Common.LogOptions">
+            <summary>
+            Options for the logging
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.LogOptions.Disabled">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Drill4Net.Common.LogOptions"/> is disabled.
+            </summary>
+            <value>
+              <c>true</c> if disabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.LogOptions.Type">
+            <summary>
+            Gets or sets the type of the logger sink (file, console, etc).
+            By default it is file type.
+            Possible types: file, console.
+            </summary>
+            <value>
+            The type of the logger sink.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.LogOptions.Path">
+            <summary>
+            Gets or sets the path/URI, thus, for file type it is full file path.
+            If its extension isn't exists for th file name will be used name of the subsystem. 
+            For console it is empty.
+            </summary>
+            <value>
+            The file log path, directory, etc.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.LogOptions.Level">
+            <summary>
+            Gets or sets the log level (Verbose, Info, Error, etc).
+            </summary>
+            <value>
+            The log level.
+            </value>
         </member>
         <member name="T:Drill4Net.Common.RedirectOptions">
             <summary>
