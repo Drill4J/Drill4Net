@@ -14,6 +14,7 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing.NetFxUtils;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Testing
 {
@@ -33,7 +34,7 @@ namespace Drill4Net.Agent.Testing
 
         static TesterProfiler()
         {
-            PrepareLogger();
+            BaseRepository.PrepareInitLogger();
             Log.Debug("Initializing...");
 
             try
@@ -308,14 +309,14 @@ namespace Drill4Net.Agent.Testing
         }
         #endregion
 
-        private static void PrepareLogger()
-        {
-            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            var file = Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterProfiler)}.log");
-            cfg.WriteTo.File(file);
-            #pragma warning disable DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
-            Log.Logger = cfg.CreateLogger();
-            #pragma warning restore DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
-        }
+        //private static void PrepareLogger()
+        //{
+        //    var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+        //    var file = Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterProfiler)}.log");
+        //    cfg.WriteTo.File(file);
+        //    #pragma warning disable DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
+        //    Log.Logger = cfg.CreateLogger();
+        //    #pragma warning restore DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
+        //}
     }
 }

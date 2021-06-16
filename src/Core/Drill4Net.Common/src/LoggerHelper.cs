@@ -5,6 +5,8 @@ namespace Drill4Net.Common
 {
     public class LoggerHelper
     {
+        public static string LOG_FILENAME = "log.txt";
+
         public virtual LoggerConfiguration GetBaseLoggerConfiguration()
         {
             var cfg = new LoggerConfiguration()
@@ -18,9 +20,9 @@ namespace Drill4Net.Common
         /// Get the common folder to log events (for all components of system)
         /// </summary>
         /// <returns></returns>
-        protected virtual string GetCommonFilePath()
+        public virtual string GetCommonFilePath()
         {
-            return Path.Combine(FileUtils.GetExecutionDir(), "logs", "log.txt");
+            return Path.Combine(FileUtils.GetExecutionDir(), "logs", LOG_FILENAME);
         }
     }
 }

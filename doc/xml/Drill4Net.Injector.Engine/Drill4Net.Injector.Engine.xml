@@ -361,10 +361,5 @@
             <param name="path"></param>
             <param name="tree"></param>
         </member>
-        <member name="M:Drill4Net.Injector.Engine.InjectorRepository.PrepareLogger">
-            <summary>
-            The preparing the logger. It need be called from the client side.
-            </summary>
-        </member>
     </members>
 </doc>

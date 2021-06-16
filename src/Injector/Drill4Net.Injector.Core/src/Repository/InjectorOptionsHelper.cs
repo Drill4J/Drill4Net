@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Common
@@ -68,28 +67,11 @@ namespace Drill4Net.Common
             }
         }
 
-        internal string GetArgumentConfigPath(string[] args)
+        #region Clarify
+        public void Clarify(string[] args, InjectorOptions opts)
         {
-            var cfgArg = GetArgument(args, CoreConstants.ARGUMENT_CONFIG_PATH);
-            return cfgArg == null ? DefaultCfgPath : cfgArg.Split('=')[1];
-        }
-
-        /// <summary>
-        /// Read options by input argument of program (Injector).
-        /// If the arguments do not contain the path to the config, 
-        /// the method will try to find the config in other ways
-        /// </summary>
-        /// <param name="args">Input arguments</param>
-        /// <returns></returns>
-        public InjectorOptions ReadOptionsFromArgs(string[] args)
-        {
-            var cfgPath = GetArgumentConfigPath(args);
-            if (string.IsNullOrWhiteSpace(cfgPath))
-                cfgPath = GetActualConfigPath();
-            var cfg = ReadOptions(cfgPath);
-            ClarifySourceDirectory(args, cfg);
-            ClarifyDestinationDirectory(args, cfg);
-            return cfg;
+            ClarifySourceDirectory(args, opts);
+            ClarifyDestinationDirectory(args, opts);
         }
 
         internal void ClarifySourceDirectory(string[] args, InjectorOptions opts)
@@ -116,11 +98,7 @@ namespace Drill4Net.Common
             //TODO: regex!!!
             return !arg.StartsWith("-") && (arg.Contains("//") || arg.Contains("\\")) ? arg : null;
         }
-
-        internal string GetArgument(string[] args, string arg)
-        {
-            return args?.FirstOrDefault(a => a.StartsWith($"-{arg}="));
-        }
+        #endregion
 
         public static void ValidateOptions(InjectorOptions opts)
         {

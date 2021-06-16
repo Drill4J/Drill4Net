@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Testing
         /// Initializes a new instance of the repository for the Tester subsystem.
         /// </summary>
         /// <param name="cfgPath">The CFG path.</param>
-        public TesterRepository(string cfgPath = null) : base(cfgPath)
+        public TesterRepository(string cfgPath = null) : base(cfgPath, CoreConstants.SUBSYSTEM_TESTER)
         {
         }
 

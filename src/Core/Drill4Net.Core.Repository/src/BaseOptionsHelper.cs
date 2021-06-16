@@ -11,8 +11,6 @@ namespace Drill4Net.Core.Repository
     /// <typeparam name="T"></typeparam>
     public class BaseOptionsHelper<T> where T : BaseOptions, new()
     {
-        public string DefaultCfgPath { get; private set; }
-
         private readonly Deserializer _deser;
 
         /********************************************************************/
@@ -38,22 +36,16 @@ namespace Drill4Net.Core.Repository
             return FileUtils.GetFullPath(path);
         }
 
-        public T GetOptions(string _defaultCfgPath)
-        {
-            DefaultCfgPath = _defaultCfgPath;
-            return ReadOptions(DefaultCfgPath);
-        }
-
         public T ReadOptions(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Options file not found: [{path}]");
-            Log.Debug($"Reading config: [{path}]");
+            Log.Debug("Reading config: [{Path}]", path);
             var cfg = File.ReadAllText(path);
             var opts = _deser.Deserialize<T>(cfg);
-            Log.Debug($"Config deserialized.");
+            Log.Debug("Config deserialized.");
             PostProcess(opts);
-            Log.Debug($"Config prepared.");
+            Log.Debug("Config prepared.");
             return opts;
         }
 

@@ -9,7 +9,7 @@ namespace Drill4Net.Agent.Abstract
     /// <seealso cref="Drill4Net.Core.Repository.AbstractRepository{Drill4Net.Common.AgentOptions, Drill4Net.Core.Repository.BaseOptionsHelper{Drill4Net.Common.AgentOptions}}" />
     public class AgentRepository : AbstractRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>
     {
-        public AgentRepository(string cfgPath = null) : base(cfgPath)
+        public AgentRepository(string cfgPath = null) : base(cfgPath, CoreConstants.SUBSYSTEM_AGENT)
         {
         }
     }

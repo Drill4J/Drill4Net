@@ -25,7 +25,7 @@ namespace Drill4Net.Injector.Engine
         /// injector for them, the reading/writing of resulting tree data, etc).
         /// </summary>
         /// <param name="cfgPath">Path to the config of injection</param>
-        public InjectorRepository(string cfgPath): base(cfgPath)
+        public InjectorRepository(string cfgPath): base(cfgPath, CoreConstants.SUBSYSTEM_INJECTOR)
         {
         }
 
@@ -34,9 +34,9 @@ namespace Drill4Net.Injector.Engine
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
         /// <param name="args">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(string[] args)
+        public InjectorRepository(string[] args): base(args, CoreConstants.SUBSYSTEM_INJECTOR)
         {
-            Options = _optHelper.ReadOptionsFromArgs(args);
+            _optHelper.Clarify(args, Options);
         }
 
         /*************************************************************************************/
@@ -192,15 +192,15 @@ namespace Drill4Net.Injector.Engine
         }
         #endregion
 
-        /// <summary>
-        /// The preparing the logger. It need be called from the client side.
-        /// </summary>
-        public static void PrepareLogger()
-        {
-            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            //common folder - TODO: from local cfg!
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(AssemblyInjector)}.log"));
-            Log.Logger = cfg.CreateLogger();
-        }
+        ///// <summary>
+        ///// The preparing the logger. It need be called from the client side.
+        ///// </summary>
+        //public static void PrepareLogger()
+        //{
+        //    var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+        //    //common folder - TODO: from local cfg!
+        //    cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(AssemblyInjector)}.log"));
+        //    Log.Logger = cfg.CreateLogger();
+        //}
     }
 }

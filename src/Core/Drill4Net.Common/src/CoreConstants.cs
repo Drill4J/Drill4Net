@@ -3,7 +3,7 @@
     /// <summary>
     /// Core constants of whole Drill4Net system
     /// </summary>
-    public class CoreConstants
+    public static class CoreConstants
     {
         /// <summary>
         /// Name of the file for the redirecting to the certain config
@@ -30,12 +30,12 @@
         /// </summary>
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
-        #region Injector App input arguments
-        public const string ARGUMENT_SILENT = "silent";
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
-        //public const string ARGUMENT_CONFIG_NAME = "cfg_name"; //TODO
-        public const string ARGUMENT_SOURCE = "src";
-        public const string ARGUMENT_DESTINATION = "dest";
+
+        #region Subsystems
+        public const string SUBSYSTEM_INJECTOR = "Injector";
+        public const string SUBSYSTEM_TESTER = "Tester";
+        public const string SUBSYSTEM_AGENT = "Agent";
         #endregion
     }
 }

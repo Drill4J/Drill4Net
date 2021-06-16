@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Common
+﻿using Microsoft.Extensions.Logging;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for the logging
@@ -21,7 +23,7 @@
         /// <value>
         /// The type of the logger sink.
         /// </value>
-        public string Type { get; set; }
+        public LogSinkType Type { get; set; }
 
         /// <summary>
         /// Gets or sets the path/URI, thus, for file type it is full file path.
@@ -39,6 +41,16 @@
         /// <value>
         /// The log level.
         /// </value>
-        public string Level { get; set; }
+        public LogLevel Level { get; set; }
+
+        /********************************************************************************/
+
+        public override string ToString()
+        {
+            var s = $"{Type}: {Level}";
+            if (!string.IsNullOrWhiteSpace(Path))
+                s += $" -> {Path}";
+            return s;
+        }
     }
 }

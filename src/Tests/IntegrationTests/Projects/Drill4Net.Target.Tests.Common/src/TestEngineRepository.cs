@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -32,11 +33,11 @@ namespace Drill4Net.Target.Tests.Common
         {
             try
             {
-                PrepareLogger();
+                BaseRepository.PrepareInitLogger();
                 Log.Debug("Repository is initializing...");
 
                 var callDir = FileUtils.GetCallingDir();
-                var cfgDir = FindConfigDeep(callDir);
+                var cfgDir = FindConfigInDepth(callDir);
                 var cfg_path = Path.Combine(cfgDir, CoreConstants.CONFIG_TESTS_NAME);
                 _tstRep = new TesterRepository(cfg_path);
                 _targetsDir = _tstRep.GetTargetsDir(callDir);
@@ -55,17 +56,15 @@ namespace Drill4Net.Target.Tests.Common
         /*******************************************************************************/
 
         /// <summary>
-        /// Finds the configuration deep into folder hierarhy from the specified path.
+        /// Finds the configuration by folder's hierarchy from the specified path in depth.
         /// </summary>
         /// <param name="curDir">The current directory.</param>
         /// <returns></returns>
-        public string FindConfigDeep(string curDir)
+        public string FindConfigInDepth(string curDir)
         {
             //search dir with files - there must be tree data
-            while (true)
+            while (Directory.Exists(curDir))
             {
-                if (!Directory.Exists(curDir))
-                    break;
                 if (Directory.GetFiles(curDir, "*.dll").Length > 0)
                     break;
                 var dirs = Directory.GetDirectories(curDir);
@@ -86,11 +85,11 @@ namespace Drill4Net.Target.Tests.Common
             return _tstRep.ReadInjectedTree(path);
         }
 
-        public void PrepareLogger()
-        {
-            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterEngineRepository)}.log"));
-            Log.Logger = cfg.CreateLogger();
-        }
+        //public void PrepareLogger()
+        //{
+        //    var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+        //    cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterEngineRepository)}.log"));
+        //    Log.Logger = cfg.CreateLogger();
+        //}
     }
 }

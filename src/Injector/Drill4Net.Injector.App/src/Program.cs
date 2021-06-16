@@ -2,6 +2,7 @@
 using Serilog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Injector.App
 {
@@ -9,14 +10,14 @@ namespace Drill4Net.Injector.App
     {
         static void Main(string[] args)
         {
-            InjectorRepository.PrepareLogger();
+            //program name... from namespace
+            var name = typeof(Program).Namespace.Split('.')[0];
+            Console.WriteLine($"{name} is starting");
+
+            BaseRepository.PrepareInitLogger();
             IInjectorRepository rep = null;
             try
             {
-                //program name... from namespace
-                var name = typeof(Program).Namespace.Split('.')[0];
-                Console.WriteLine($"{name} is started");
-
                 rep = new InjectorRepository(args);
 
                 Log.Debug("Arguments: {@Args}", args);

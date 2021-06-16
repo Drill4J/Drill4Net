@@ -41,10 +41,14 @@ Probes: # types of cross-cutting points
     SkipEnterType: true
 Logs:
     - Type: console
-      Level: warning
+      Level: debug
+    #local log
     - Type: file
-      Path: ..\..\..\..\..\ # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
-      Level: verbose
+      Level: trace
+    #common place
+    - Type: file
+      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Level: trace
 Debug:
     CrossPointInfo : true # cross-point information is included into injected probe data. By default is true
 Versions: # what will be tested - by target moniker/assembly/class

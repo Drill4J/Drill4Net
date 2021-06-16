@@ -7,6 +7,7 @@ using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -34,7 +35,7 @@ namespace Drill4Net.Agent.Standard
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
 
-                PrepareLogger();
+                BaseRepository.PrepareInitLogger();
                 Log.Debug("Initializing...");
 
                 _rep = new StandardAgentRepository();
@@ -274,12 +275,12 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        private static void PrepareLogger()
-        {
-            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-            //common log
-            cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(StandardAgent)}.log"));
-            Log.Logger = cfg.CreateLogger();
-        }
+        //private static void PrepareLogger()
+        //{
+        //    var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+        //    //common log
+        //    cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(StandardAgent)}.log"));
+        //    Log.Logger = cfg.CreateLogger();
+        //}
     }
 }

@@ -60,7 +60,7 @@ namespace Drill4Net.Injector.Engine
         /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
         public InjectedSolution Process(InjectorOptions opts)
         {
-            Log.Information("Process starting...");
+            Log.Information("Process is starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
 
             var sourceDir = opts.Source.Directory;
