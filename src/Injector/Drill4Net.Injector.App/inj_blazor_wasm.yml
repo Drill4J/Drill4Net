@@ -41,6 +41,16 @@ Probes: # types of cross-cutting points
     EventAdd: false
     EventRemove: false
     SkipEnterType: true
+Logs:
+    - Type: console
+      Level: debug
+    #local log
+    - Type: file
+      Level: trace
+    #common place
+    - Type: file
+      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Level: trace
 #Versions: # what will be tested - by target moniker/assembly/class
 #    Directory: ..\..\TargetApps\ #target dir relatively Test project
 #    Targets:

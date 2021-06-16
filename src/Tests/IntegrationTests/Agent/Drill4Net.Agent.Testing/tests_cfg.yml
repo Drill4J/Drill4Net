@@ -17,7 +17,7 @@ Logs:
       Level: trace
     #common place
     - Type: file
-      Path: ..\..\..\..\..\ # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Path: ..\..\..\..\..\..\log\testing-agent.log # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
       Level: trace
 Versions: # what will be tested - by target moniker/assembly/class
     Directory: # for executing tests not needed

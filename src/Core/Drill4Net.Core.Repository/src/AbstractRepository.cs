@@ -3,10 +3,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
-using Serilog.Configuration;
-using Serilog.Events;
 
 namespace Drill4Net.Core.Repository
 {
@@ -81,6 +80,7 @@ namespace Drill4Net.Core.Repository
 
         internal void AddLogOption(LoggerConfiguration cfg, LogOptions logOpt, LoggerHelper helper)
         {
+            //https://github.com/serilog/serilog/wiki/Configuration-Basics#overriding-per-sink
             var seriLvl = ConvertToSerilogLogLevel(logOpt.Level);
             switch (logOpt.Type)
             {
@@ -96,7 +96,6 @@ namespace Drill4Net.Core.Repository
                         path = Path.Combine(path, fileName);
                     }
                     path = FileUtils.GetFullPath(path);
-                    //cfg.WriteTo.File(path, restrictedToMinimumLevel: seriLvl);
                     cfg = cfg.WriteTo.Logger(lc => lc.WriteTo.File(path, seriLvl));
                     break;
                 default:
