@@ -78,6 +78,7 @@ namespace Drill4Net.Agent.Standard
 
         /*****************************************************************************/
 
+        #region Init
         /// <summary>
         /// It just run the ctor with the main init procedure.
         /// This function mainly used for debugging. It's not necessary
@@ -96,7 +97,7 @@ namespace Drill4Net.Agent.Standard
             File.AppendAllText(Path.Combine(FileUtils.GetExecutionDir(), "resolve_failed.log"), info);
             return null;
         }
-
+        #endregion
         #region Temporary tests
         // private static void SendTest_StartSession(string sessionUid)
         // {

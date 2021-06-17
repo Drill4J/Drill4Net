@@ -44,7 +44,7 @@ namespace Drill4Net.Target.Tests.Common
         [TestCaseSource(typeof(CommonSourceData), nameof(CommonSourceData.Simple))]
         public void Base_Simple(MethodInfo mi, object[] args, List<string> checks)
         {
-            Assert.NotNull(mi, $"Method info is empty");
+            Assert.NotNull(mi, "Method info is empty");
 
             //arrange
             var target = CommonSourceData.Target;
@@ -130,7 +130,7 @@ namespace Drill4Net.Target.Tests.Common
                 var sig = input.Signature;
                 if (funcs.ContainsKey(sig))
                     continue;
-                var probes2 = TesterProfiler.GetPointsIgnoringContext(sig);
+                var probes2 = TestAgent.GetPointsIgnoringContext(sig);
                 var links2 = ConvertToLinks(probes2);
                 funcs.Add(sig, links2);
             }
@@ -253,7 +253,7 @@ namespace Drill4Net.Target.Tests.Common
 
         private Dictionary<string, List<PointLinkage>> GetFunctions()
         {
-            var raw = TesterProfiler.GetMethods(false);
+            var raw = TestAgent.GetMethods(false);
             return ConvertToLinks(raw);
         }
 
@@ -284,11 +284,15 @@ namespace Drill4Net.Target.Tests.Common
 
         internal PointLinkage ConvertToLink(string probData)
         {
-            if (probData == null || !probData.Contains(':'))
+            if (probData == null)
                 throw new ArgumentException(nameof(probData));
             //
-            var ar = probData.Split(':');
-            var uid = ar[0];
+            string uid = probData;
+            if (probData.Contains(':'))
+            {
+                var ar = probData.Split(':');
+                uid = ar[0];
+            }
             if (!_pointMap.ContainsKey(uid))
                 Assert.Fail($"No point with Uid = {uid}");
             //

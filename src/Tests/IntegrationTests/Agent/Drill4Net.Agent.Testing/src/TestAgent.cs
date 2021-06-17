@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.Testing
     /// of correctness of the injections in the model assembly)
     /// </summary>
     /// <seealso cref="Drill4Net.Agent.Abstract.AbstractAgent" />
-    public class TesterProfiler : AbstractAgent
+    public class TestAgent : AbstractAgent
     {
         private const string CONTEXT_UNKNOWN = "unknown";
         private static ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
@@ -32,7 +32,7 @@ namespace Drill4Net.Agent.Testing
 
         /*****************************************************************************/
 
-        static TesterProfiler()
+        static TestAgent()
         {
             BaseRepository.PrepareInitLogger();
             Log.Debug("Initializing...");
@@ -66,7 +66,7 @@ namespace Drill4Net.Agent.Testing
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Error of {nameof(TesterProfiler)} initializing");
+                Log.Fatal(ex, $"Error of {nameof(TestAgent)} initializing");
             }
         }
 
@@ -82,33 +82,16 @@ namespace Drill4Net.Agent.Testing
         {
             try
             {
-                #region Checks
-                var ctxId = GetContextId();
-                if (ctxId == null)
-                    return;
-
                 if (string.IsNullOrWhiteSpace(data))
                 {
                     Log.Error("Data is empty");
                     return;
                 }
-                //
-                var ar = data.Split('^');
-                if (ar.Length < 4)
-                {
-                    Log.Error("Bad format of input: {Data}", data);
-                    return;
-                }
-                #endregion
 
+                var ctxId = GetContextId();
+                var ar = data.Split('^'); //can be with some additional info in debug mode
                 var probeUid = ar[0];
-                var asmName = ar[1];
-                //var funcName = ar[2];
-                var probe = ar[3];
-
-                var businessMethod = GetBusinessMethodName(probeUid);
-                if (!string.IsNullOrEmpty(businessMethod))
-                    AddPoint(ctxId, asmName, businessMethod, $"{probeUid}:{probe}"); //in the prod profiler only uid needed
+                AddPoint(ctxId, probeUid);
             }
             catch (Exception ex)
             {
@@ -204,10 +187,13 @@ namespace Drill4Net.Agent.Testing
         }
         #endregion
         #region Cross-points
-        internal static void AddPoint(string ctxId, string asmName, string funcSig, string point)
+        internal static void AddPoint(string ctxId, string pointUid)
         {
-            var points = GetPoints(ctxId, asmName, funcSig);
-            points.Add(point);
+            var method = _pointToMethods.ContainsKey(pointUid) ? _pointToMethods[pointUid] : null;
+            if (method == null)
+                return;
+            var points = GetPoints(ctxId, method.AssemblyName, method.BusinessMethod);
+            points.Add(pointUid);
         }
 
         /// <summary>
@@ -218,9 +204,9 @@ namespace Drill4Net.Agent.Testing
         /// <param name="funcSig">The function signature.</param>
         /// <param name="withPointRemoving">if set to <c>true</c> the probe data after its retrieving will be deleted.</param>
         /// <returns></returns>
-        public static List<string> GetPoints(string ctxId, string asmName, string funcSig, bool withPointRemoving = false)
+        public static List<string> GetPoints(string ctxId, string asmName, string funcSig)
         {
-            var byFunctions = GetMethods(!withPointRemoving, ctxId);
+            var byFunctions = GetMethods(true, ctxId);
             List<string> points;
             var funcPath = $"{asmName};{funcSig}";
             if (byFunctions.ContainsKey(funcPath))
@@ -232,9 +218,6 @@ namespace Drill4Net.Agent.Testing
                 points = new List<string>();
                 byFunctions.Add(funcPath, points);
             }
-            //
-            if (withPointRemoving)
-                byFunctions.Remove(funcPath);
             return points;
         }
 
@@ -268,7 +251,7 @@ namespace Drill4Net.Agent.Testing
             if(string.IsNullOrWhiteSpace(ctxId))
                 ctxId = GetContextId();
 
-            if (_clientPoints == null && AppDomain.CurrentDomain.GetData(nameof(_clientPoints)) 
+            if (_clientPoints == null && AppDomain.CurrentDomain.GetData(nameof(_clientPoints))
                     is ConcurrentDictionary<string, Dictionary<string, List<string>>> clientPoints)
             {
                 _clientPoints = clientPoints;
