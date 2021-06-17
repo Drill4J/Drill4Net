@@ -4,5 +4,11 @@
         <name>Drill4Net.Injector.Strategies.Flow</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Injector.Strategies.Flow.FlowProbeHelper">
+            <summary>
+            Helper for the generating the cross-point's probe data
+            </summary>
+            <seealso cref="T:Drill4Net.Injector.Core.AbstractProbeHelper" />
+        </member>
     </members>
 </doc>

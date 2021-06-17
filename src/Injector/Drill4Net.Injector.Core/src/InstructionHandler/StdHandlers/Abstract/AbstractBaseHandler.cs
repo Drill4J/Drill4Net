@@ -143,7 +143,7 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         protected virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int byIndex)
         {
-            return _probeHelper.GetPoint(ctx, pointType, byIndex);
+            return _probeHelper.GetOrCreatePoint(ctx, pointType, byIndex);
         }
 
         /// <summary>

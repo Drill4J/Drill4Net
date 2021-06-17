@@ -56,7 +56,7 @@ namespace Drill4Net.Injector.Engine
         /// <returns></returns>
         public CodeHandlerStrategy GetStrategy()
         {
-            return new FlowStrategy(Options.Probes);
+            return new FlowStrategy(Options.Probes, Options.Debug);
         }
 
         /// <summary>
@@ -191,16 +191,5 @@ namespace Drill4Net.Injector.Engine
             File.WriteAllBytes(path, ms.ToArray());
         }
         #endregion
-
-        ///// <summary>
-        ///// The preparing the logger. It need be called from the client side.
-        ///// </summary>
-        //public static void PrepareLogger()
-        //{
-        //    var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-        //    //common folder - TODO: from local cfg!
-        //    cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(AssemblyInjector)}.log"));
-        //    Log.Logger = cfg.CreateLogger();
-        //}
     }
 }

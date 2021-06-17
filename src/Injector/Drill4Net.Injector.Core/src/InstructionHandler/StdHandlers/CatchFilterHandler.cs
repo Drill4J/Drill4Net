@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.Core
     /// <seealso cref="Drill4Net.Injector.Core.AbstractSimpleHandler" />
     public class CatchFilterHandler : AbstractSimpleHandler
     {
-        public CatchFilterHandler(AbstractProbeHelper probeHelper): 
+        public CatchFilterHandler(AbstractProbeHelper probeHelper):
             base(C.INSTRUCTION_HANDLER_CATCH_FILTER, CrossPointType.CatchFilter, probeHelper)
         {
         }

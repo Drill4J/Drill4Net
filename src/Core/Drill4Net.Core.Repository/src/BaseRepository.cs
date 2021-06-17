@@ -5,7 +5,7 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Core.Repository
 {
     /// <summary>
-    /// Base repository
+    /// Base (root) repository
     /// </summary>
     public abstract class BaseRepository
     {

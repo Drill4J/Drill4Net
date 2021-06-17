@@ -84,12 +84,5 @@ namespace Drill4Net.Target.Tests.Common
             var path = Path.Combine(_targetsDir, CoreConstants.TREE_FILE_NAME);
             return _tstRep.ReadInjectedTree(path);
         }
-
-        //public void PrepareLogger()
-        //{
-        //    var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-        //    cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\..\..\..\"), $"{nameof(TesterEngineRepository)}.log"));
-        //    Log.Logger = cfg.CreateLogger();
-        //}
     }
 }

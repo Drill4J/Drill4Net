@@ -274,13 +274,5 @@ namespace Drill4Net.Agent.Standard
             RegisterStatic(data);
         }
         #endregion
-
-        //private static void PrepareLogger()
-        //{
-        //    var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
-        //    //common log
-        //    cfg.WriteTo.File(Path.Combine(FileUtils.GetCommonLogDirectory(@"..\..\"), $"{nameof(StandardAgent)}.log"));
-        //    Log.Logger = cfg.CreateLogger();
-        //}
     }
 }

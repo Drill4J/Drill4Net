@@ -5,9 +5,9 @@ namespace Drill4Net.Injector.Strategies.Flow
 {
     public class FlowStrategy : CodeHandlerStrategy
     {
-        public FlowStrategy(ProbesOptions opts = null)
+        public FlowStrategy(ProbesOptions probeOpts = null, InjectorDebugOptions dbgOpts = null)
         {
-            var helper = new FlowProbeHelper();
+            var helper = new FlowProbeHelper(dbgOpts);
             
             //branches
             AddHandler(new IfElseHandler(helper));
@@ -20,7 +20,7 @@ namespace Drill4Net.Injector.Strategies.Flow
             
             //enter/return
             AddHandler(new ReturnHandler(helper));
-            if(opts == null || !opts.SkipEnterType)
+            if(probeOpts == null || !probeOpts.SkipEnterType)
                 AddHandler(new EnterHandler(helper));
             
             //methods' calls (must be prior AnchorHandler)

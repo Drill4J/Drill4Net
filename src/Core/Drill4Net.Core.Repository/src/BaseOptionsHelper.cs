@@ -22,6 +22,10 @@ namespace Drill4Net.Core.Repository
 
         /********************************************************************/
 
+        /// <summary>
+        /// Tryings to get the actual configuration file path.
+        /// </summary>
+        /// <returns></returns>
         protected internal string GetActualConfigPath()
         {
             var redirectPath = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_REDIRECT_NAME);
@@ -36,6 +40,12 @@ namespace Drill4Net.Core.Repository
             return FileUtils.GetFullPath(path);
         }
 
+        /// <summary>
+        /// Reads the options by specified file path.
+        /// </summary>
+        /// <param name="path">The fike path.</param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException">$"Options file not found: [{path}]</exception>
         public T ReadOptions(string path)
         {
             if (!File.Exists(path))

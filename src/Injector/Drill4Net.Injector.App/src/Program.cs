@@ -10,7 +10,7 @@ namespace Drill4Net.Injector.App
     {
         static void Main(string[] args)
         {
-            //program name... from namespace
+            //program name... yep, from namespace
             var name = typeof(Program).Namespace.Split('.')[0];
             Console.WriteLine($"{name} is starting");
 

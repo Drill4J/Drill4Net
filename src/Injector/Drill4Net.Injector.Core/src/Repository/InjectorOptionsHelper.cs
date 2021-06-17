@@ -67,7 +67,13 @@ namespace Drill4Net.Common
             }
         }
 
-        #region Clarify
+        #region Clarify        
+        /// <summary>
+        /// Clarifies some options (such as relative file paths) by additional input
+        /// arguments (as a rule, from program command line).
+        /// </summary>
+        /// <param name="args">The input arguments.</param>
+        /// <param name="opts">The current options.</param>
         public void Clarify(string[] args, InjectorOptions opts)
         {
             ClarifySourceDirectory(args, opts);

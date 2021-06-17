@@ -7,6 +7,11 @@ namespace Drill4Net.Common
     {
         public static string LOG_FILENAME = "log.txt";
 
+        /// <summary>
+        /// Gets the base logger configuration for the logging into console and 
+        /// local text file with the Verbose level.
+        /// </summary>
+        /// <returns></returns>
         public virtual LoggerConfiguration GetBaseLoggerConfiguration()
         {
             var cfg = new LoggerConfiguration()
