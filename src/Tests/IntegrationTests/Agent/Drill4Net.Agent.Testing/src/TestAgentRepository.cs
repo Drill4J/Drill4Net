@@ -8,20 +8,20 @@ namespace Drill4Net.Agent.Testing
     /// <summary>
     /// Repository for the Tester subsystem
     /// </summary>
-    public class TesterRepository : AbstractRepository<TesterOptions, BaseOptionsHelper<TesterOptions>>
+    public class TestAgentRepository : AbstractRepository<TesterOptions, BaseOptionsHelper<TesterOptions>>
     {
         /// <summary>
         /// Initializes a new instance of the repository for the Tester subsystem.
         /// </summary>
         /// <param name="cfgPath">The CFG path.</param>
-        public TesterRepository(string cfgPath = null) : base(cfgPath, CoreConstants.SUBSYSTEM_TESTER)
+        public TestAgentRepository(string cfgPath = null) : base(cfgPath, CoreConstants.SUBSYSTEM_TESTER)
         {
         }
 
         /***************************************************************************/
 
         /// <summary>
-        /// Gets the concrete targets dir by calling assembly directory.
+        /// Gets the concrete targets' root dir by calling assembly directory.
         /// </summary>
         /// <param name="callingDir">The calling assembly directory.</param>
         /// <returns></returns>
@@ -30,7 +30,7 @@ namespace Drill4Net.Agent.Testing
         {
             var baseDir = FindTestsDir(callingDir);
             if (baseDir == null)
-                throw new Exception($"Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}");
+                throw new Exception($"Base directory for the tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}");
             if (baseDir.EndsWith("\\"))
                 baseDir = baseDir.Remove(baseDir.Length - 1, 1);
             return Path.Combine(baseDir, Options.TreePath);

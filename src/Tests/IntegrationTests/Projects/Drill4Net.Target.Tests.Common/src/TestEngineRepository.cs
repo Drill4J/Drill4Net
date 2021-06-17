@@ -11,25 +11,36 @@ using Drill4Net.Core.Repository;
 namespace Drill4Net.Target.Tests.Common
 {
     /// <summary>
-    /// Repository for the Tester subsystem
+    /// Repository for the Tester Engine subsystem
     /// </summary>
-    public class TesterEngineRepository
+    public class TestEngineRepository
     {
         /// <summary>
         /// Options for the Tester subsystem
         /// </summary>
         public TesterOptions Options => _tstRep?.Options;
 
-        private readonly string _targetsDir;
-        private readonly Dictionary<string, MonikerData> _targets;
-        private readonly TesterRepository _tstRep;
+        /// <summary>
+        /// Gets the targets' root directory.
+        /// </summary>
+        public string TargetsDir { get; }
+
+        /// <summary>
+        /// Gets the targets from the opitons.
+        /// </summary>
+        /// <value>
+        /// The targets.
+        /// </value>
+        public Dictionary<string, MonikerData> Targets { get; }
+
+        private readonly TestAgentRepository _tstRep;
 
         /*******************************************************************************/
 
         /// <summary>
         /// Create the repository for the Tester subsystem
         /// </summary>
-        public TesterEngineRepository()
+        public TestEngineRepository()
         {
             try
             {
@@ -39,17 +50,17 @@ namespace Drill4Net.Target.Tests.Common
                 var callDir = FileUtils.GetCallingDir();
                 var cfgDir = FindConfigInDepth(callDir);
                 var cfg_path = Path.Combine(cfgDir, CoreConstants.CONFIG_TESTS_NAME);
-                _tstRep = new TesterRepository(cfg_path);
-                _targetsDir = _tstRep.GetTargetsDir(callDir);
+                _tstRep = new TestAgentRepository(cfg_path);
 
-                //target assemblies
-                _targets = Options.Versions.Targets;
+                //targets
+                Targets = Options.Versions.Targets;
+                TargetsDir = _tstRep.GetTargetsDir(callDir);
 
                 Log.Debug("Repository is initialized.");
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Creating {nameof(TesterEngineRepository)} is failed");
+                Log.Fatal(ex, $"Creating {nameof(TestEngineRepository)} is failed");
             }
         }
 
@@ -69,10 +80,15 @@ namespace Drill4Net.Target.Tests.Common
                     break;
                 var dirs = Directory.GetDirectories(curDir);
                 if (dirs.Length == 0)
-                    Assert.Fail($"Tree info not found in {_targetsDir}");
+                    Assert.Fail($"Tree info not found in {TargetsDir}");
                 curDir = dirs[0];
             }
             return curDir;
+        }
+
+        public Dictionary<string, MonikerData> GetTargets()
+        {
+            return Targets;
         }
 
         /// <summary>
@@ -81,7 +97,7 @@ namespace Drill4Net.Target.Tests.Common
         /// <returns></returns>
         public InjectedSolution LoadTree()
         {
-            var path = Path.Combine(_targetsDir, CoreConstants.TREE_FILE_NAME);
+            var path = Path.Combine(TargetsDir, CoreConstants.TREE_FILE_NAME);
             return _tstRep.ReadInjectedTree(path);
         }
     }

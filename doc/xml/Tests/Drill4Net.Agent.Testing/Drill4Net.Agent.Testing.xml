@@ -4,6 +4,32 @@
         <name>Drill4Net.Agent.Testing</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Agent.Testing.TestAgentRepository">
+            <summary>
+            Repository for the Tester subsystem
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TestAgentRepository.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the repository for the Tester subsystem.
+            </summary>
+            <param name="cfgPath">The CFG path.</param>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TestAgentRepository.GetTargetsDir(System.String)">
+            <summary>
+            Gets the concrete targets' root dir by calling assembly directory.
+            </summary>
+            <param name="callingDir">The calling assembly directory.</param>
+            <returns></returns>
+            <exception cref="T:System.Exception">Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}</exception>
+        </member>
+        <member name="M:Drill4Net.Agent.Testing.TestAgentRepository.FindTestsDir(System.String)">
+            <summary>
+            Gets the root directory of the tests by some inner directory into it.
+            </summary>
+            <param name="innerDir">The inner dir.</param>
+            <returns></returns>
+        </member>
         <member name="T:Drill4Net.Agent.Testing.TesterProfiler">
             <summary>
             Profiler for the Tester Subsystem (integration tests for the checking 
@@ -53,32 +79,6 @@
             Gets the business name of the tested method.
             </summary>
             <param name="pointUid">The cross-point's uid.</param>
-            <returns></returns>
-        </member>
-        <member name="T:Drill4Net.Agent.Testing.TesterRepository">
-            <summary>
-            Repository for the Tester subsystem
-            </summary>
-        </member>
-        <member name="M:Drill4Net.Agent.Testing.TesterRepository.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the repository for the Tester subsystem.
-            </summary>
-            <param name="cfgPath">The CFG path.</param>
-        </member>
-        <member name="M:Drill4Net.Agent.Testing.TesterRepository.GetTargetsDir(System.String)">
-            <summary>
-            Gets the concrete targets dir by calling assembly directory.
-            </summary>
-            <param name="callingDir">The calling assembly directory.</param>
-            <returns></returns>
-            <exception cref="T:System.Exception">Base directory for tests is empty. See {CoreConstants.CONFIG_TESTS_NAME}</exception>
-        </member>
-        <member name="M:Drill4Net.Agent.Testing.TesterRepository.FindTestsDir(System.String)">
-            <summary>
-            Gets the root directory of the tests by some inner directory into it.
-            </summary>
-            <param name="innerDir">The inner dir.</param>
             <returns></returns>
         </member>
     </members>

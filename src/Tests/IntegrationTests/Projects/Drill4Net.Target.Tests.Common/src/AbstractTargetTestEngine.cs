@@ -19,18 +19,19 @@ namespace Drill4Net.Target.Tests.Common
     /// Tests for the injected Target assembly
     /// </summary>
     [TestFixture]
-    public abstract class AbstractTargetTests
+    public abstract class AbstractTargetTestEngine
+
     {
-        protected static readonly TesterEngineRepository _testsRep;
+        protected static readonly TestEngineRepository _testsRep;
         private static Dictionary<string, CrossPoint> _pointMap;
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
 
         /****************************************************************************/
 
-        static AbstractTargetTests()
+        static AbstractTargetTestEngine()
         {
-            _testsRep = new TesterEngineRepository();
+            _testsRep = new TestEngineRepository();
             LoadTreeData();
             Log.Information("Engine is initialized.");
         }
@@ -120,7 +121,7 @@ namespace Drill4Net.Target.Tests.Common
                     Assert.Fail(ex.Message);
             }
 #endregion
-#region Assert
+            #region Assert
             var funcs = GetFunctions();
 
             //checking whether functions from another context are needed
@@ -219,7 +220,7 @@ namespace Drill4Net.Target.Tests.Common
 #endregion
         }
 
-#region Auxiliary funcs
+        #region Auxiliary funcs
         private static void LoadTreeData()
         {
             Log.Debug("Tree data is loading...");
@@ -306,6 +307,6 @@ namespace Drill4Net.Target.Tests.Common
         {
             Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
         }
-#endregion
+        #endregion
     }
 }

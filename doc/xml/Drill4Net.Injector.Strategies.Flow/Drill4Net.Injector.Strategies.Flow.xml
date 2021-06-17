@@ -10,5 +10,19 @@
             </summary>
             <seealso cref="T:Drill4Net.Injector.Core.AbstractProbeHelper" />
         </member>
+        <member name="M:Drill4Net.Injector.Strategies.Flow.FlowProbeHelper.GenerateProbeData(Drill4Net.Injector.Core.MethodContext,Drill4Net.Profiling.Tree.CrossPoint)">
+            <summary>
+            Generates the main part of cross-point's probe data.
+            </summary>
+            <param name="ctx">The method's context.</param>
+            <param name="point">The cross-point of the target code.</param>
+        </member>
+        <member name="M:Drill4Net.Injector.Strategies.Flow.FlowProbeHelper.GenerateSpecificProbeData(Drill4Net.Profiling.Tree.CrossPoint)">
+            <summary>
+            Generates the specific probe data - its type, id, etc (as a rule for the debugging).
+            </summary>
+            <param name="point">The cross-point of the target code.</param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

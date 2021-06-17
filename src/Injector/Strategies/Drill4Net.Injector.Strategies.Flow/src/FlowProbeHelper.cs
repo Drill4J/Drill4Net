@@ -21,7 +21,12 @@ namespace Drill4Net.Injector.Strategies.Flow
 
         /*********************************************************************************/
 
-        protected override string GenerateProbePrefix(MethodContext ctx, CrossPoint point)
+        /// <summary>
+        /// Generates the main part of cross-point's probe data.
+        /// </summary>
+        /// <param name="ctx">The method's context.</param>
+        /// <param name="point">The cross-point of the target code.</param>
+        protected override string GenerateProbeData(MethodContext ctx, CrossPoint point)
         {
             if (_dbgOpts?.CrossPointInfo == true)
             {
@@ -34,7 +39,12 @@ namespace Drill4Net.Injector.Strategies.Flow
             }
         }
 
-        protected override string GenerateProbeData(CrossPoint point)
+        /// <summary>
+        /// Generates the specific probe data - its type, id, etc (as a rule for the debugging).
+        /// </summary>
+        /// <param name="point">The cross-point of the target code.</param>
+        /// <returns></returns>
+        protected override string GenerateSpecificProbeData(CrossPoint point)
         {
             if (_dbgOpts?.CrossPointInfo == true)
             {

@@ -19,11 +19,23 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         public virtual string GenerateProbe(MethodContext ctx, CrossPoint point)
         {
-            return $"{GenerateProbePrefix(ctx, point)}{GenerateProbeData(point)}";
+            return $"{GenerateProbeData(ctx, point)}{GenerateSpecificProbeData(point)}";
         }
 
-        protected abstract string GenerateProbePrefix(MethodContext ctx, CrossPoint point);
-        protected abstract string GenerateProbeData(CrossPoint point);
+        /// <summary>
+        /// Generates the main part of cross-point's probe data.
+        /// </summary>
+        /// <param name="ctx">The method's context.</param>
+        /// <param name="point">The cross-point of the target code.</param>
+        /// <returns></returns>
+        protected abstract string GenerateProbeData(MethodContext ctx, CrossPoint point);
+
+        /// <summary>
+        /// Generates the specific probe data - its type, id, etc (as a rule for the debugging).
+        /// </summary>
+        /// <param name="point">The cross-point of the target code.</param>
+        /// <returns></returns>
+        protected abstract string GenerateSpecificProbeData(CrossPoint point);
         #endregion
         #region CrossPoint        
         /// <summary>
