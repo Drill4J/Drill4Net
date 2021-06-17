@@ -521,6 +521,11 @@
             The log level.
             </value>
         </member>
+        <member name="T:Drill4Net.Common.LogSinkType">
+            <summary>
+            Type of the logger sink (console, file, etc)
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.RedirectOptions">
             <summary>
             Simple redirection cfg to real Injection cfg

@@ -71,7 +71,8 @@ namespace Drill4Net.Core.Repository
             var helper = new LoggerHelper();
             var cfg = new LoggerConfiguration();
             cfg.MinimumLevel.Verbose(); //global min level must be the most "verbosing"
-            foreach (var opt in Options.Logs.OrderBy(a => a.Level))
+            var opts = Options.Logs.Where(a => !a.Disabled).OrderBy(a => a.Level);
+            foreach (var opt in opts)
             {
                 AddLogOption(cfg, opt, helper);
             }
@@ -85,7 +86,7 @@ namespace Drill4Net.Core.Repository
             switch (logOpt.Type)
             {
                 case LogSinkType.Console:
-                    cfg = cfg.WriteTo.Logger(lc => lc.WriteTo.Console(seriLvl));
+                    cfg.WriteTo.Logger(lc => lc.WriteTo.Console(seriLvl));
                     break;
                 case LogSinkType.File:
                     var path = logOpt.Path ?? helper.GetCommonFilePath();
@@ -96,7 +97,7 @@ namespace Drill4Net.Core.Repository
                         path = Path.Combine(path, fileName);
                     }
                     path = FileUtils.GetFullPath(path);
-                    cfg = cfg.WriteTo.Logger(lc => lc.WriteTo.File(path, seriLvl));
+                    cfg.WriteTo.Logger(lc => lc.WriteTo.File(path, seriLvl));
                     break;
                 default:
                     throw new ArgumentException($"Unknown logger sink: {logOpt.Type}");
