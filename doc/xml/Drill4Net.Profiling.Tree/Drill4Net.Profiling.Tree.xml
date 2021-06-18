@@ -112,13 +112,10 @@
             The injected method
             </summary>
         </member>
-        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.TypeName">
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Source">
             <summary>
-            Gets or sets the name of the method's type.
+            Some metadata about the current method
             </summary>
-            <value>
-            The name of the method's type.
-            </value>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.IsCompilerGenerated">
             <summary>
@@ -135,19 +132,14 @@
             Indexes of the IL code's instructions for the current method's callees
             </summary>
         </member>
-        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.BusinessMethod">
-            <summary>
-            Name of the business method (for the compiler generated methods)
-            </summary>
-        </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.BusinessType">
             <summary>
             Name of the business type (for the compiler generated methods)
             </summary>
         </member>
-        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Source">
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.BusinessMethod">
             <summary>
-            Some metadata about the current method
+            Name of the business method (for the compiler generated methods)
             </summary>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.BusinessSize">
@@ -171,6 +163,13 @@
             <summary>
             Data of the method's coverage
             </summary>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedMethod.GetBusinessMethod">
+            <summary>
+            Gets the business method by its current known data.
+            This is used during the injection process
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Drill4Net.Profiling.Tree.InjectedSolution">
             <summary>

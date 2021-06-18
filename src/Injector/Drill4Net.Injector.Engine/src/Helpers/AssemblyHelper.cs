@@ -62,6 +62,7 @@ namespace Drill4Net.Injector.Engine
             for (int i = 0; i < moveNextMethods.Count; i++)
             {
                 InjectedMethod meth = moveNextMethods[i];
+
                 // Owner type
                 var fullName = meth.FullName;
                 var mkey = fullName.Split(' ')[1].Split(':')[0];
@@ -70,9 +71,10 @@ namespace Drill4Net.Injector.Engine
                     var treeType = asmCtx.InjClasses[mkey];
                     treeType.Add(meth);
                 }
+
                 // Business method
                 var extRealMethodName = MethodHelper.TryGetBusinessMethod(meth.FullName, meth.Name, true, true);
-                mkey = MethodHelper.GetMethodKey(meth.TypeName, extRealMethodName);
+                mkey = MethodHelper.GetMethodKey(meth.BusinessType, extRealMethodName);
                 if (!asmCtx.InjMethodByKeys.ContainsKey(mkey))
                     continue;
                 var treeFunc = asmCtx.InjMethodByKeys[mkey];

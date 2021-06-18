@@ -117,8 +117,8 @@ namespace Drill4Net.Injector.Engine
                 }
                 #endregion
 
-                var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, typeFullname,
-                    treeParentClass.BusinessType, ownMethod.FullName, source);
+                var treeFunc = new InjectedMethod(treeParentClass.AssemblyName, treeParentClass.BusinessType,
+                    ownMethod.FullName, source);
                 //
                 if (!asmCtx.InjMethodByFullname.ContainsKey(treeFunc.FullName))
                     asmCtx.InjMethodByFullname.Add(treeFunc.FullName, treeFunc);

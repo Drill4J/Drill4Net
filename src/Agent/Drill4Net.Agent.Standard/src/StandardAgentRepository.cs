@@ -313,12 +313,11 @@ namespace Drill4Net.Agent.Standard
             if (sessionUid == null)
                 return;
             var execClasses = disp.AffectedTypes.ToList();
-            var cnt = execClasses.Count();
-            switch (cnt)
+            switch (execClasses.Count)
             {
                 case 0:
                     return;
-                case > 65535:
+                case > 65535: //Drill side's restriction
                     //TODO: implement in cycle by chunk
                     break;
                 default:
@@ -335,7 +334,7 @@ namespace Drill4Net.Agent.Standard
         {
             _sendTimer.Enabled = true;
         }
-        
+
         private void StopSendCycle()
         {
             _sendTimer.Enabled = false;
@@ -379,10 +378,11 @@ namespace Drill4Net.Agent.Standard
 
         private StartSessionPayload GetManualUserSession()
         {
-            return _sessionToObject.Values.FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL && 
-                                                              (_globalDispatcher == null || _globalDispatcher.Session != a));
+            return _sessionToObject.Values
+                .FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL && 
+                                    (_globalDispatcher == null || _globalDispatcher.Session != a));
         }
-        
+
         internal CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session)
         {
             return _converter.CreateCoverageDispatcher(session, _injTypes);
