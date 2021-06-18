@@ -3,6 +3,10 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Strategies.Flow
 {
+    /// <summary>
+    /// Strategy for target's injection with classics Flow cross-points
+    /// </summary>
+    /// <seealso cref="Drill4Net.Injector.Core.CodeHandlerStrategy" />
     public class FlowStrategy : CodeHandlerStrategy
     {
         public FlowStrategy(ProbesOptions probeOpts = null, InjectorDebugOptions dbgOpts = null)
@@ -20,7 +24,7 @@ namespace Drill4Net.Injector.Strategies.Flow
             
             //enter/return
             AddHandler(new ReturnHandler(helper));
-            if(probeOpts == null || !probeOpts.SkipEnterType)
+            if(probeOpts?.SkipEnterType != true)
                 AddHandler(new EnterHandler(helper));
             
             //methods' calls (must be prior AnchorHandler)

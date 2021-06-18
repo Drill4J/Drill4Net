@@ -89,8 +89,11 @@ namespace Drill4Net.Agent.Testing
                 }
 
                 var ctxId = GetContextId();
-                var ar = data.Split('^'); //can be with some additional info in debug mode
+                var ar = data.Split('^'); //data can be with some additional info in debug mode
                 var probeUid = ar[0];
+                //var asmName = ar[1];
+                //var funcName = ar[2];
+                //var probe = ar[3];  
                 AddPoint(ctxId, probeUid);
             }
             catch (Exception ex)

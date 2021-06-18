@@ -20,7 +20,6 @@ namespace Drill4Net.Target.Tests.Common
     /// </summary>
     [TestFixture]
     public abstract class AbstractTargetTestEngine
-
     {
         protected static readonly TestEngineRepository _testsRep;
         private static Dictionary<string, CrossPoint> _pointMap;
@@ -211,7 +210,7 @@ namespace Drill4Net.Target.Tests.Common
                 if (links is null)
                     throw new ArgumentNullException(nameof(links));
 
-                var forDelete = links.Where(a => a.Point.PointType == CrossPointType.Enter || 
+                var forDelete = links.Where(a => a.Point.PointType == CrossPointType.Enter ||
                                                  a.Point.PointType == CrossPointType.Return)
                     .ToArray();
                 for (var j = 0; j < forDelete.Length; j++)

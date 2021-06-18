@@ -17,9 +17,10 @@ namespace Drill4Net.Agent.Standard
     // ReSharper disable once ClassNeverInstantiated.Global
     public class StandardAgent : AbstractAgent
     {
-        private static readonly ICommunicator _comm;
         private static IReceiver Receiver => _comm.Receiver;
         private static ISender Sender => _comm.Sender;
+
+        private static readonly ICommunicator _comm;
         private static readonly StandardAgentRepository _rep;
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
@@ -53,8 +54,8 @@ namespace Drill4Net.Agent.Standard
 
                 _comm.Connect();
 
-                //...and now we will wait events from admin side and
-                //probe's data from instrumented code on RegisterStatic
+                //...and now we will wait the events from the admin side and the
+                //probe's data from the instrumented code on the RegisterStatic
 
                 //local tests
                 // var testUid = Guid.NewGuid().ToString();
@@ -98,52 +99,7 @@ namespace Drill4Net.Agent.Standard
             return null;
         }
         #endregion
-        #region Temporary tests
-        // private static void SendTest_StartSession(string sessionUid)
-        // {
-        //     var payload = new StartSessionPayload()
-        //     {
-        //         IsGlobal = false,
-        //         IsRealtime = true,
-        //         SessionId = sessionUid,
-        //         TestName = "TEST1",
-        //         TestType = "AUTO",
-        //     };
-        //     var data = new StartAgentSession {Payload = payload};
-        //     Sender.SendTest(data);
-        // }
-        //
-        // private static void SendTest_StopSession(string sessionUid)
-        // {
-        //     var payload = new AgentSessionPayload()
-        //     {
-        //         SessionId = sessionUid,
-        //     };
-        //     var data = new StopAgentSession {Payload = payload};
-        //     Sender.SendTest(data);
-        // }
-        //
-        // private static void SendTest_StopAllSessions()
-        // {
-        //     Sender.SendTest(new StopAllAgentSessions());
-        // }
-        //
-        // private static void SendTest_CancelSession(string sessionUid)
-        // {
-        //     var payload = new AgentSessionPayload()
-        //     {
-        //         SessionId = sessionUid,
-        //     };
-        //     var data = new CancelAgentSession {Payload = payload};
-        //     Sender.SendTest(data);
-        // }
-        //
-        // private static void SendTest_CancelAllSessions()
-        // {
-        //     Sender.SendTest(new CancelAllAgentSessions());
-        // }
-        #endregion
-
+        #region Events
         /// <summary>
         /// Handler of the event for the creating new test scope on the Admin side
         /// </summary>
@@ -222,6 +178,7 @@ namespace Drill4Net.Agent.Standard
             Sender.SendAllSessionFinishedMessage(uids, GetCurrentUnixTimeMs());
         }
         #endregion
+        #endregion
         #region Register
         /// <summary>
         /// Registering probe's data from injected Target app
@@ -235,22 +192,16 @@ namespace Drill4Net.Agent.Standard
                 _initEvent.WaitOne(); //in fact, the blocking will be only one time on init
 
                 #region Checks
-                if (_rep == null || !_rep.IsAnySession)
+                if (_rep?.IsAnySession != true)
                     return;
                 if (string.IsNullOrWhiteSpace(data))
                 {
                     Log.Error("Data is empty");
                     return;
                 }
-                //
-                var ar = data.Split('^');
-                if (ar.Length < 4)
-                {
-                    Log.Error($"Bad format of input: {data}");
-                    return;
-                }
                 #endregion
 
+                var ar = data.Split('^'); //data can be with some additional info in debug mode
                 var probeUid = ar[0];
                 //var asmName = ar[1];
                 //var funcName = ar[2];
@@ -262,7 +213,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"{data}");
+                Log.Error(ex, "{Data}", data);
             }
         }
 
@@ -274,6 +225,51 @@ namespace Drill4Net.Agent.Standard
         {
             RegisterStatic(data);
         }
+        #endregion
+        #region Temporary tests
+        // private static void SendTest_StartSession(string sessionUid)
+        // {
+        //     var payload = new StartSessionPayload()
+        //     {
+        //         IsGlobal = false,
+        //         IsRealtime = true,
+        //         SessionId = sessionUid,
+        //         TestName = "TEST1",
+        //         TestType = "AUTO",
+        //     };
+        //     var data = new StartAgentSession {Payload = payload};
+        //     Sender.SendTest(data);
+        // }
+        //
+        // private static void SendTest_StopSession(string sessionUid)
+        // {
+        //     var payload = new AgentSessionPayload()
+        //     {
+        //         SessionId = sessionUid,
+        //     };
+        //     var data = new StopAgentSession {Payload = payload};
+        //     Sender.SendTest(data);
+        // }
+        //
+        // private static void SendTest_StopAllSessions()
+        // {
+        //     Sender.SendTest(new StopAllAgentSessions());
+        // }
+        //
+        // private static void SendTest_CancelSession(string sessionUid)
+        // {
+        //     var payload = new AgentSessionPayload()
+        //     {
+        //         SessionId = sessionUid,
+        //     };
+        //     var data = new CancelAgentSession {Payload = payload};
+        //     Sender.SendTest(data);
+        // }
+        //
+        // private static void SendTest_CancelAllSessions()
+        // {
+        //     Sender.SendTest(new CancelAllAgentSessions());
+        // }
         #endregion
     }
 }
