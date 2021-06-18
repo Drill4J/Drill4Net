@@ -137,6 +137,13 @@
             Create repository for Standard Agent
             </summary>
         </member>
+        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetTypesByCallerVersion(Drill4Net.Profiling.Tree.InjectedSolution)">
+            <summary>
+            Get tool types, taking into account the current version of the target framework.
+            </summary>
+            <param name="tree">The tree data of injected assemblies.</param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetEntities">
             <summary>
             Get list of <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/> for list of registered <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
@@ -150,9 +157,9 @@
             <param name="pointUid"></param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetUserDispather">
+        <member name="M:Drill4Net.Agent.Standard.StandardAgentRepository.GetUserRegistrator">
             <summary>
-            Get the coverage dispatcher by current context if exists and otherwise create it
+            Get the coverage registrator by current context if exists and otherwise create it
             </summary>
             <returns></returns>
         </member>
@@ -201,6 +208,25 @@
             <param name="injTypes"></param>
             <returns></returns>
         </member>
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethods(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Collections.Generic.List{Drill4Net.Profiling.Tree.InjectedMethod},System.Int32@,System.Collections.Generic.Dictionary{System.String,Drill4Net.Profiling.Tree.InjectedMethod})">
+            <summary>
+            Binds the methods to the class by start and end indexes to the class coverage's array
+            </summary>
+            <param name="reg"></param>
+            <param name="execData"></param>
+            <param name="methods"></param>
+            <param name="ind"></param>
+            <param name="cgMethods"></param>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethod(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,Drill4Net.Profiling.Tree.CoverageData,System.Int32@)">
+            <summary>
+            Binds the method to the class by start and end indexes to the class coverage's array
+            </summary>
+            <param name="reg"></param>
+            <param name="execData"></param>
+            <param name="methCoverage"></param>
+            <param name="ind"></param>
+        </member>
         <member name="T:ThisAssembly">
             <summary>Provides access to the current assembly information.</summary>
         </member>
@@ -220,16 +246,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 973bc63</summary>
+            <summary>Commit: 636d19a</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 973bc63a766f7778fee0be893905db3c3c8b527b</summary>
+            <summary>Sha: 636d19a7cb7945edf2dc9cd24da362160a2b9983</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-18T12:35:49+03:00</summary>
+            <summary>Commit date: 2021-06-18T14:14:38+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 478</summary>
+            <summary>Commits on top of base version: 479</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -259,7 +285,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 478</summary>
+            <summary>Patch: 479</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

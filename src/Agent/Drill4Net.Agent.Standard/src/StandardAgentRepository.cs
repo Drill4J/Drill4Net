@@ -35,7 +35,7 @@ namespace Drill4Net.Agent.Standard
         private readonly ConcurrentDictionary<int, string> _ctxToSession;
         private readonly ConcurrentDictionary<string, int> _sessionToCtx;
         private readonly ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
-        private readonly ConcurrentDictionary<int, CoverageRegistrator> _ctxToDispatcher;
+        private readonly ConcurrentDictionary<int, CoverageRegistrator> _ctxToRegistrator;
         private readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
         private CoverageRegistrator _globalRegistrator;
@@ -56,7 +56,7 @@ namespace Drill4Net.Agent.Standard
         {
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<int, string>();
-            _ctxToDispatcher = new ConcurrentDictionary<int, CoverageRegistrator>();
+            _ctxToRegistrator = new ConcurrentDictionary<int, CoverageRegistrator>();
             
             //session maps
             _sessionToCtx = new ConcurrentDictionary<string, int>();
@@ -200,7 +200,7 @@ namespace Drill4Net.Agent.Standard
             _sessionToCtx.TryAdd(sessionUid, ctxId);
 
             if (session.IsGlobal)
-                _globalRegistrator = CreateCoverageDispatcher(session);
+                _globalRegistrator = CreateCoverageRegistrator(session);
         }
         #endregion
         #region Stop
@@ -246,7 +246,7 @@ namespace Drill4Net.Agent.Standard
                 return;
             _ctxToSession.TryRemove(ctxId, out var _);
             _ctxToExecData.TryRemove(ctxId, out var _);
-            _ctxToDispatcher.TryRemove(ctxId, out var _);
+            _ctxToRegistrator.TryRemove(ctxId, out var _);
             _sessionToObject.TryRemove(sessionUid, out var _);
         }
         
@@ -255,7 +255,7 @@ namespace Drill4Net.Agent.Standard
             _ctxToSession.Clear();
             _sessionToCtx.Clear();
             _ctxToExecData.Clear();
-            _ctxToDispatcher.Clear();
+            _ctxToRegistrator.Clear();
             _sessionToObject.Clear();
         }
         #endregion
@@ -273,9 +273,9 @@ namespace Drill4Net.Agent.Standard
                 isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid);
 
             //user session
-            var disp = GetUserDispather();
-            if (disp != null)
-                return disp.RegisterCoverage(pointUid);
+            var reg = GetUserRegistrator();
+            if (reg != null)
+                return reg.RegisterCoverage(pointUid);
             else
                 return isGlobalReg;
         }
@@ -301,23 +301,23 @@ namespace Drill4Net.Agent.Standard
             lock (_sendLocker)
             {
                 if (_globalRegistrator != null)
-                    SendDispatcherCoverageData(_globalRegistrator);
+                    SendCoverageData(_globalRegistrator);
 
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
-                    if (!_ctxToDispatcher.TryGetValue(ctxId, out var disp))
-                        disp = GetUserDispather(); //?? hmmm...
-                    SendDispatcherCoverageData(disp);
+                    if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
+                        reg = GetUserRegistrator(); //?? hmmm...
+                    SendCoverageData(reg);
                 }
             }
         }
 
-        private void SendDispatcherCoverageData(CoverageRegistrator disp)
+        private void SendCoverageData(CoverageRegistrator reg)
         {
-            var sessionUid = disp?.Session?.SessionId;
+            var sessionUid = reg?.Session?.SessionId;
             if (sessionUid == null)
                 return;
-            var execClasses = disp.AffectedTypes.ToList();
+            var execClasses = reg.AffectedTypes.ToList();
             switch (execClasses.Count)
             {
                 case 0:
@@ -329,10 +329,10 @@ namespace Drill4Net.Agent.Standard
                     Communicator.Sender.SendCoverageData(sessionUid, execClasses);
                     break;
             }
-            var session = disp.Session;
+            var session = reg.Session;
             if (session is { IsRealtime: true })
-                Communicator.Sender.SendSessionChangedMessage(sessionUid, disp.AffectedProbeCount);
-            disp.ClearAffectedData();
+                Communicator.Sender.SendSessionChangedMessage(sessionUid, reg.AffectedProbeCount);
+            reg.ClearAffectedData();
         }
 
         private void StartSendCycle()
@@ -347,27 +347,27 @@ namespace Drill4Net.Agent.Standard
 
         private void StopSendCycleIfNeeded()
         {
-            if(_ctxToDispatcher.Count == 0)
+            if(_ctxToRegistrator.Count == 0)
                 _sendTimer.Enabled = false;
         }
 
         /// <summary>
-        /// Get the coverage dispatcher by current context if exists and otherwise create it
+        /// Get the coverage registrator by current context if exists and otherwise create it
         /// </summary>
         /// <returns></returns>
-        public CoverageRegistrator GetUserDispather()
+        public CoverageRegistrator GetUserRegistrator()
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
             var ctxId = GetContextId();
             Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
 
-            CoverageRegistrator disp;
-            if (_ctxToDispatcher.ContainsKey(ctxId))
+            CoverageRegistrator reg;
+            if (_ctxToRegistrator.ContainsKey(ctxId))
             {
-                _ctxToDispatcher.TryGetValue(ctxId, out disp);
-                if(disp is {Session: null})
-                    disp.Session = GetManualUserSession();
+                _ctxToRegistrator.TryGetValue(ctxId, out reg);
+                if(reg is {Session: null})
+                    reg.Session = GetManualUserSession();
             }
             else
             {
@@ -375,10 +375,10 @@ namespace Drill4Net.Agent.Standard
                 var session = GetManualUserSession();
                 if (session == null)
                     return null;
-                disp = CreateCoverageDispatcher(session);
-                _ctxToDispatcher.TryAdd(ctxId, disp);
+                reg = CreateCoverageRegistrator(session);
+                _ctxToRegistrator.TryAdd(ctxId, reg);
             }
-            return disp;
+            return reg;
         }
 
         private StartSessionPayload GetManualUserSession()
@@ -388,7 +388,7 @@ namespace Drill4Net.Agent.Standard
                                     (_globalRegistrator == null || _globalRegistrator.Session != a));
         }
 
-        internal CoverageRegistrator CreateCoverageDispatcher(StartSessionPayload session)
+        internal CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session)
         {
             return _converter.CreateCoverageRegistrator(session, _injTypes);
         }

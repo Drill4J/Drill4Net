@@ -196,7 +196,7 @@ namespace Drill4Net.Agent.Testing
                 throw new InvalidOperationException("Points' map is null");
             var method = _pointToMethods.ContainsKey(pointUid) ? _pointToMethods[pointUid] : null;
             if (method == null)
-                return; //it's may be normal for init events of Target on TesterEngine's side
+                return; //it's may be normal only for the init events of the Target on TesterEngine's side
             //
             var points = GetPoints(ctxId, method.AssemblyName, method.BusinessMethod);
             points.Add(pointUid);

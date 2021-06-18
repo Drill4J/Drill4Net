@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
@@ -84,8 +83,8 @@ namespace Drill4Net.Agent.Standard
         public CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
             //TODO: cloning from Template object?
-            var reg = new CoverageRegistrator(session); 
-            string testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
+            var reg = new CoverageRegistrator(session);
+            string testName = session?.TestName ?? Guid.NewGuid().ToString(); //$"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
             if(session != null)
                 session.TestName = testName;
             var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated)
@@ -101,52 +100,63 @@ namespace Drill4Net.Agent.Standard
                 var bizMethods = type.GetMethods()?
                     .Where(a => a.Coverage.PointToBlockEnds.Any())?
                     .ToList();
-                if (bizMethods?.Any() != true) 
+                if (bizMethods?.Any() != true)
                     continue;
-                var ind = 0; //end2end for current type
+                var ind = 0; //end2end for the current type
                 var execData = new ExecClassData(testName, type.FullName);
-                bindMethods(reg, execData, bizMethods, ref ind, cgMethods);
+                BindMethods(reg, execData, bizMethods, ref ind, cgMethods);
                 execData.InitProbes(ind); //not needed +1
             }
             return reg;
+        }
 
-            //local methods
-
-            //bind the methods to the class by theirs start and end indexes in array of the coverage data
-            static void bindMethods(CoverageRegistrator reg, ExecClassData execData, List<InjectedMethod> methods,
-                ref int ind, Dictionary<string, InjectedMethod> cgMethods)
+        /// <summary>
+        /// Binds the methods to the class by start and end indexes to the class coverage's array
+        /// </summary>
+        /// <param name="reg"></param>
+        /// <param name="execData"></param>
+        /// <param name="methods"></param>
+        /// <param name="ind"></param>
+        /// <param name="cgMethods"></param>
+        internal void BindMethods(CoverageRegistrator reg, ExecClassData execData, List<InjectedMethod> methods,
+            ref int ind, Dictionary<string, InjectedMethod> cgMethods)
+        {
+            foreach (var meth in methods) //don't parallel here!
             {
-                foreach (var meth in methods) //don't parallel here!
-                {
-                    //own data
-                    bindMethod(reg, execData, meth.Coverage, ref ind);
+                //own data
+                BindMethod(reg, execData, meth.Coverage, ref ind);
 
-                    //CG callee data
-                    var cgCallees = meth.CalleeIndexes;
-                    foreach (var callee in cgCallees.Keys)
-                    {
-                        var cgInd = cgCallees[callee];
-                        if (!cgMethods.ContainsKey(callee))
-                            continue; //it's normal (business methods here are not needed)
-                        var cgMeth = cgMethods[callee];
-                        bindMethod(reg, execData, cgMeth.Coverage, ref ind);
-                    }
+                //CG callee's data
+                var cgCallees = meth.CalleeIndexes;
+                foreach (var callee in cgCallees.Keys)
+                {
+                    //here we need only compiler generated methods
+                    if (!cgMethods.ContainsKey(callee))
+                        continue;
+                    var cgMeth = cgMethods[callee];
+                    BindMethod(reg, execData, cgMeth.Coverage, ref ind);
                 }
             }
+        }
 
-            //bind the method to the class by start and end indexes in array of the coverage data
-            static void bindMethod(CoverageRegistrator reg, ExecClassData execData, CoverageData methCoverage, ref int ind)
+        /// <summary>
+        /// Binds the method to the class by start and end indexes to the class coverage's array
+        /// </summary>
+        /// <param name="reg"></param>
+        /// <param name="execData"></param>
+        /// <param name="methCoverage"></param>
+        /// <param name="ind"></param>
+        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, CoverageData methCoverage, ref int ind)
+        {
+            var indPairs = methCoverage.PointToBlockEnds.OrderBy(a => a.Value);
+            var startMeth = ind;
+            foreach (var pair in indPairs)
             {
-                var inds = methCoverage.PointToBlockEnds.OrderBy(a => a.Value);
-                var startMeth = ind;
-                foreach (var pair in inds)
-                {
-                    var localEnd = pair.Value;
-                    var startBlock = ind;
-                    var endBlock = startMeth + localEnd;
-                    reg.BindPoint(pair.Key, execData, startBlock, endBlock);
-                    ind = endBlock + 1;
-                }
+                var localEnd = pair.Value;
+                var startBlock = ind;
+                var endBlock = startMeth + localEnd;
+                reg.BindPoint(pair.Key, execData, startBlock, endBlock);
+                ind = endBlock + 1;
             }
         }
         #endregion
