@@ -5,12 +5,12 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler of the cross-point for the "Return" type (return from the method)
+    /// IL code's handler for the cross-point of the "Return" type (return from the method)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public class ReturnHandler : AbstractBaseHandler
     {
-        public ReturnHandler(AbstractProbeHelper probeHelper) : 
+        public ReturnHandler(AbstractProbeHelper probeHelper):
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_RETURN, probeHelper)
         {    
         }

@@ -7,7 +7,7 @@ using C = Drill4Net.Injector.Core.InjectorCoreConstants;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler of the cross-point for the "Call" type (call another business-method from current one)
+    /// IL code's handler for the cross-point of the "Call" type (call another business-method from current one)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractSimpleHandler" />
     public class CallHandler : AbstractSimpleHandler

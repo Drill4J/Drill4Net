@@ -4,7 +4,7 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler of the cross-point for the "Anchor" type (instructions which are jumpers 
+    /// IL code's handler for the cross-point of the "Anchor" type (instructions which are jumpers 
     /// or the targets for another instruction-jumpers or call business-methods, and thus dividing 
     /// IL code to the blocks)
     /// </summary>
@@ -15,7 +15,7 @@ namespace Drill4Net.Injector.Core
         
         /************************************************************************************/
         
-        public AnchorHandler(AbstractProbeHelper probeHelper, bool ignoreCycles) : 
+        public AnchorHandler(AbstractProbeHelper probeHelper, bool ignoreCycles):
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_ANCHOR, CrossPointType.Anchor, probeHelper)
         {
             _ignoreCycles = ignoreCycles;
@@ -34,7 +34,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (ctx.CompilerInstructions.Contains(instr))
                 return false;
-            if (ctx.AheadProcessed.Contains(instr)) //may be 'IF' or 'ELS' it yet are processed
+            if (ctx.AheadProcessed.Contains(instr)) //it may be yet processed
                 return false;
             if (!ctx.Anchors.Contains(instr))
                 return false;

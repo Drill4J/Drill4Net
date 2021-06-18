@@ -8,7 +8,7 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// Base Abstract Handler of IL instruction
+    /// Base Abstract Handler for IL instruction
     /// </summary>
     public abstract class AbstractBaseHandler
     {
@@ -258,11 +258,13 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ind">Current index of instructions</param>
         /// <param name="instructions">List of method's instructions</param>
-        /// <param name="compilerInstructions">Hashed list of the compiler's instructions</param>
+        /// <param name="compilerInstructions">Hashed list of the compiler branch's instructions</param>
         /// <returns></returns>
         internal bool IsCompilerGeneratedBranch(int ind, Mono.Collections.Generic.Collection<Instruction> instructions,
             HashSet<Instruction> compilerInstructions)
         {
+            //TODO: Check: is there any point in such a check function?
+
             //TODO: optimize (caching 'normal instruction')
             if (ind < 0 || ind >= instructions.Count)
                 return false;

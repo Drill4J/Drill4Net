@@ -378,7 +378,6 @@
             <summary>
             Data repository for the profiling Agent
             </summary>
-            <seealso cref="!:Drill4Net.Core.Repository.AbstractRepository&lt;Drill4Net.Common.AgentOptions, Drill4Net.Core.Repository.BaseOptionsHelper&lt;Drill4Net.Common.AgentOptions&gt;&gt;" />
         </member>
         <member name="P:Drill4Net.Agent.Abstract.IAgentRepository.Communicator">
             <summary>

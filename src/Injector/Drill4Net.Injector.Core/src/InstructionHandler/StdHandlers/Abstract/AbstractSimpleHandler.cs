@@ -4,7 +4,7 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// Abstract handler of the IL code's instructions for some simple cases
+    /// Abstract handler for the IL code's instructions in some simple cases
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public abstract class AbstractSimpleHandler : AbstractBaseHandler
@@ -19,7 +19,7 @@ namespace Drill4Net.Injector.Core
         
         /*****************************************************************************/
         
-        private protected AbstractSimpleHandler(string name, CrossPointType pointType, AbstractProbeHelper probeHelper) : 
+        private protected AbstractSimpleHandler(string name, CrossPointType pointType, AbstractProbeHelper probeHelper):
             base(name, probeHelper)
         {
             PointType = pointType;
@@ -55,7 +55,7 @@ namespace Drill4Net.Injector.Core
             processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
 
-            PostAction(ctx);        
+            PostAction(ctx);   
             needBreak = true;
         }
 

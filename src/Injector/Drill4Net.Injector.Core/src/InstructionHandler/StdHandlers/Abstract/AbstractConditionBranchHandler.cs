@@ -4,12 +4,12 @@ using Mono.Cecil.Cil;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// Abstract conditional branch handler of the IL code's instructions
+    /// Abstract conditional branch handler for the IL code's instructions
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public abstract class AbstractConditionBranchHandler : AbstractBaseHandler
     {
-        protected AbstractConditionBranchHandler(AbstractProbeHelper probeHelper) :  
+        protected AbstractConditionBranchHandler(AbstractProbeHelper probeHelper):
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_CONDITIONAL, probeHelper)
         {
         }

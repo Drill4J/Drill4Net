@@ -79,7 +79,7 @@ namespace Drill4Net.Injector.Engine
             var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
             var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
             var isSpecFunc = MethodHelper.IsSpecialGeneratedMethod(methodType);
-            var strictEnterReturn = //what is principally forbidden
+            var strictEnterReturn = //what is forbidden principally?
                 !isSpecFunc
                 //ASP.NET & Blazor rendering methods (may contains business logic)
                 && !methodName.Contains("CreateHostBuilder")

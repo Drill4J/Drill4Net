@@ -5,7 +5,7 @@ using C = Drill4Net.Injector.Core.InjectorCoreConstants;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler of the cross-point for the "CatchFilter" type (Catch part of the try/ctach construction)
+    /// IL code's handler for the cross-point of the "CatchFilter" type (Catch part of the try/ctach construction)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractSimpleHandler" />
     public class CatchFilterHandler : AbstractSimpleHandler

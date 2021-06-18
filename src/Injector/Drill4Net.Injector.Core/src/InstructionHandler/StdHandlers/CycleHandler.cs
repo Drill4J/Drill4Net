@@ -5,12 +5,12 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler of the cross-point for the "Cycle" type (cycle constructions: do, while, etc)
+    /// IL code's handler for the cross-point of the "Cycle" type (cycle constructions: do, while, etc)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractConditionBranchHandler" />
     public class CycleHandler : AbstractConditionBranchHandler
     {
-        public CycleHandler(AbstractProbeHelper probeHelper) : base(probeHelper)
+        public CycleHandler(AbstractProbeHelper probeHelper): base(probeHelper)
         {
         }
 

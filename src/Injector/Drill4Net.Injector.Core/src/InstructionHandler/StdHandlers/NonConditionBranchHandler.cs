@@ -6,7 +6,7 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler of the cross-point for the nonconditional instruction's jump (branch)
+    /// IL code's handler for the cross-point of the nonconditional instruction's jump (branch)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public class NonConditionBranchHandler : AbstractBaseHandler

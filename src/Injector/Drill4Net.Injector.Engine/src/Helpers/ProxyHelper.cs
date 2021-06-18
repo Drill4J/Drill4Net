@@ -10,12 +10,22 @@ namespace Drill4Net.Injector.Engine
     /// </summary>
     public static class ProxyHelper
     {
+        /// <summary>
+        /// Get the type namespace for the injected proxy class.
+        /// </summary>
+        /// <returns></returns>
         public static string CreateProxyNamespace()
         {
             //must be unique for each target asm
             return $"Injection_{Guid.NewGuid()}".Replace("-", null);
         }
 
+        /// <summary>
+        /// Creates the proxy method's call reference for the injecting into the target's code.
+        /// </summary>
+        /// <param name="asmCtx">The assembly context.</param>
+        /// <param name="opts">The Injector options.</param>
+        /// <returns></returns>
         public static MethodReference CreateProxyMethodReference(AssemblyContext asmCtx, InjectorOptions opts)
         {
             //We will use proxy class (with cached Reflection) leading to real profiler.

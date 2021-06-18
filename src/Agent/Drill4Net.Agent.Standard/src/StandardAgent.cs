@@ -12,7 +12,7 @@ using Drill4Net.Core.Repository;
 namespace Drill4Net.Agent.Standard
 {
     /// <summary>
-    /// Standard Agent (Profiler0) for Drill Admin side
+    /// Standard Agent (Profiler) for the Drill Admin side
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public class StandardAgent : AbstractAgent
@@ -57,14 +57,15 @@ namespace Drill4Net.Agent.Standard
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                //local tests
+                #region local tests
                 // var testUid = Guid.NewGuid().ToString();
                 // SendTest_StartSession(testUid);
                 // SendTest_StopSession(testUid);
                 // SendTest_StopAllSessions();
                 // SendTest_CancelSession(testUid);
                 // SendTest_CancelAllSessions();
-                //
+                #endregion
+
                 Log.Debug("Initialized.");
             }
             catch (Exception ex)
@@ -201,7 +202,7 @@ namespace Drill4Net.Agent.Standard
                 }
                 #endregion
 
-                var ar = data.Split('^'); //data can be with some additional info in debug mode
+                var ar = data.Split('^'); //data can contains some additional info in the debug mode
                 var probeUid = ar[0];
                 //var asmName = ar[1];
                 //var funcName = ar[2];

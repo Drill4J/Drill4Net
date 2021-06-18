@@ -4,7 +4,7 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler of the cross-point for the "IF/ELSE" type (conditional branch)
+    /// IL code's handler for the cross-point of the "IF/ELSE" type (conditional branch)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractConditionBranchHandler" />
     public class IfElseHandler : AbstractConditionBranchHandler
@@ -97,10 +97,8 @@ namespace Drill4Net.Injector.Core
             //data: need insert paired call
             crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
             var ind = 0;
-            while (true)
+            while (operand != null)
             {
-                if (operand == null)
-                    break;
                 ind = ctx.OrigInstructions.IndexOf(operand);
                 if (ind >= 0)
                     break;
