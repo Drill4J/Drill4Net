@@ -10,6 +10,12 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class InjectedMethod : InjectedEntity
     {
+        /// <summary>
+        /// Gets or sets the method's signature.
+        /// </summary>
+        /// <value>
+        /// The method's signature.
+        /// </value>
         public MethodSignature Signature { get; set; }
 
         /// <summary>
@@ -40,7 +46,7 @@ namespace Drill4Net.Profiling.Tree
         /// <summary>
         /// Name of the business method (for the compiler generated methods)
         /// </summary>
-        public string BusinessMethod => GetBusinessMethod(); //it's better as method because this info during injector's work can be changed
+        public string BusinessMethod => GetBusinessMethod(); //it's better as a method because this info during the injector's work can be changed
 
         /// <summary>
         /// Count of instructions in various 'business parts' of the IL code
@@ -72,7 +78,7 @@ namespace Drill4Net.Profiling.Tree
             Source = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
             FullName = fullName;
-            Signature = GetParts(fullName);
+            Signature = ParseSignature(fullName);
             Name = Signature.Name;
             if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
@@ -82,7 +88,7 @@ namespace Drill4Net.Profiling.Tree
 
         /********************************************************************/
 
-        internal static MethodSignature GetParts(string fullName)
+        internal static MethodSignature ParseSignature(string fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName))
                 return new MethodSignature();

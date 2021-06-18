@@ -35,10 +35,10 @@ namespace Drill4Net.Agent.Standard
         private readonly ConcurrentDictionary<int, string> _ctxToSession;
         private readonly ConcurrentDictionary<string, int> _sessionToCtx;
         private readonly ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
-        private readonly ConcurrentDictionary<int, CoverageDispatcher> _ctxToDispatcher;
+        private readonly ConcurrentDictionary<int, CoverageRegistrator> _ctxToDispatcher;
         private readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
-        private CoverageDispatcher _globalDispatcher;
+        private CoverageRegistrator _globalRegistrator;
 
         private readonly TreeConverter _converter;
         private readonly IEnumerable<InjectedType> _injTypes;
@@ -56,7 +56,7 @@ namespace Drill4Net.Agent.Standard
         {
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<int, string>();
-            _ctxToDispatcher = new ConcurrentDictionary<int, CoverageDispatcher>();
+            _ctxToDispatcher = new ConcurrentDictionary<int, CoverageRegistrator>();
             
             //session maps
             _sessionToCtx = new ConcurrentDictionary<string, int>();
@@ -70,9 +70,9 @@ namespace Drill4Net.Agent.Standard
 
             Communicator = GetCommunicator(Options.Admin, Options.Target);
 
-            //target class tree
+            //target classes' tree
             var tree = ReadInjectedTree();
-            _injTypes = FilterMonikerTypes(tree);
+            _injTypes = GetTypesByCallerVersion(tree);
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(2000);
@@ -110,7 +110,12 @@ namespace Drill4Net.Agent.Standard
             return FileUtils.GetProductVersion(type);
         }
 
-        internal IEnumerable<InjectedType> FilterMonikerTypes(InjectedSolution tree)
+        /// <summary>
+        /// Get tool types, taking into account the current version of the target framework.
+        /// </summary>
+        /// <param name="tree">The tree data of injected assemblies.</param>
+        /// <returns></returns>
+        internal IEnumerable<InjectedType> GetTypesByCallerVersion(InjectedSolution tree)
         {
             IEnumerable<InjectedType> injTypes = null;
 
@@ -195,7 +200,7 @@ namespace Drill4Net.Agent.Standard
             _sessionToCtx.TryAdd(sessionUid, ctxId);
 
             if (session.IsGlobal)
-                _globalDispatcher = CreateCoverageDispatcher(session);
+                _globalRegistrator = CreateCoverageDispatcher(session);
         }
         #endregion
         #region Stop
@@ -264,8 +269,8 @@ namespace Drill4Net.Agent.Standard
         {
             //global session
             var isGlobalReg = false;
-            if (_globalDispatcher != null)
-                isGlobalReg = _globalDispatcher.RegisterCoverage(pointUid);
+            if (_globalRegistrator != null)
+                isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid);
 
             //user session
             var disp = GetUserDispather();
@@ -295,8 +300,8 @@ namespace Drill4Net.Agent.Standard
         {
             lock (_sendLocker)
             {
-                if (_globalDispatcher != null)
-                    SendDispatcherCoverageData(_globalDispatcher);
+                if (_globalRegistrator != null)
+                    SendDispatcherCoverageData(_globalRegistrator);
 
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
@@ -307,7 +312,7 @@ namespace Drill4Net.Agent.Standard
             }
         }
 
-        private void SendDispatcherCoverageData(CoverageDispatcher disp)
+        private void SendDispatcherCoverageData(CoverageRegistrator disp)
         {
             var sessionUid = disp?.Session?.SessionId;
             if (sessionUid == null)
@@ -350,14 +355,14 @@ namespace Drill4Net.Agent.Standard
         /// Get the coverage dispatcher by current context if exists and otherwise create it
         /// </summary>
         /// <returns></returns>
-        public CoverageDispatcher GetUserDispather()
+        public CoverageRegistrator GetUserDispather()
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
             var ctxId = GetContextId();
             Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
 
-            CoverageDispatcher disp;
+            CoverageRegistrator disp;
             if (_ctxToDispatcher.ContainsKey(ctxId))
             {
                 _ctxToDispatcher.TryGetValue(ctxId, out disp);
@@ -380,12 +385,12 @@ namespace Drill4Net.Agent.Standard
         {
             return _sessionToObject.Values
                 .FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL && 
-                                    (_globalDispatcher == null || _globalDispatcher.Session != a));
+                                    (_globalRegistrator == null || _globalRegistrator.Session != a));
         }
 
-        internal CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session)
+        internal CoverageRegistrator CreateCoverageDispatcher(StartSessionPayload session)
         {
-            return _converter.CreateCoverageDispatcher(session, _injTypes);
+            return _converter.CreateCoverageRegistrator(session, _injTypes);
         }
         #endregion
 

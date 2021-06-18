@@ -127,7 +127,7 @@ namespace Drill4Net.Injector.Core
             InjMethodByKeys = new Dictionary<string, InjectedMethod>();
             SubjectName = Path.GetFileNameWithoutExtension(SourceFile);
         }
-        
+
         /***********************************************************************************/
 
         #region Dispose

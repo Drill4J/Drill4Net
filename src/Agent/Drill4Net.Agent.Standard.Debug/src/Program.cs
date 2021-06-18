@@ -49,7 +49,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 //debug
                 var treeCnv = new TreeConverter();
                 var types = tree.GetAllTypes().Where(a => a.Name == "CoverageTarget");
-                treeCnv.CreateCoverageDispatcher(new Abstract.Transfer.StartSessionPayload(), types);
+                treeCnv.CreateCoverageRegistrator(new Abstract.Transfer.StartSessionPayload(), types);
 
                 //range
                 await Task.Delay(1500);

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard
 {
     /// <summary>
     /// Helper for converting DTO entities (<see cref="AstEntity"/>, <see cref="AstMethod"/>) 
-    /// and also <see cref="CoverageDispatcher"/> from <see cref="InjectedType"/>
+    /// and also <see cref="CoverageRegistrator"/> from <see cref="InjectedType"/>
     /// </summary>
     public class TreeConverter
     {
@@ -75,16 +75,16 @@ namespace Drill4Net.Agent.Standard
         #endregion
         #region ExecClassData
         /// <summary>
-        /// Create <see cref="CoverageDispatcher"/> for session <see cref="StartSessionPayload"/> 
+        /// Create <see cref="CoverageRegistrator"/> for session <see cref="StartSessionPayload"/> 
         /// and bind it to list of <see cref="InjectedType"/>
         /// </summary>
         /// <param name="session"></param>
         /// <param name="injTypes"></param>
         /// <returns></returns>
-        public CoverageDispatcher CreateCoverageDispatcher(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
+        public CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
             //TODO: cloning from Template object?
-            var disp = new CoverageDispatcher(session); 
+            var reg = new CoverageRegistrator(session); 
             string testName = session?.TestName ?? $"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
             if(session != null)
                 session.TestName = testName;
@@ -105,19 +105,21 @@ namespace Drill4Net.Agent.Standard
                     continue;
                 var ind = 0; //end2end for current type
                 var execData = new ExecClassData(testName, type.FullName);
-                bindMethods(disp, execData, bizMethods, ref ind, cgMethods);
+                bindMethods(reg, execData, bizMethods, ref ind, cgMethods);
                 execData.InitProbes(ind); //not needed +1
             }
-            return disp;
+            return reg;
 
             //local methods
-            static void bindMethods(CoverageDispatcher disp, ExecClassData execData, List<InjectedMethod> methods, 
+
+            //bind the methods to the class by theirs start and end indexes in array of the coverage data
+            static void bindMethods(CoverageRegistrator reg, ExecClassData execData, List<InjectedMethod> methods,
                 ref int ind, Dictionary<string, InjectedMethod> cgMethods)
             {
                 foreach (var meth in methods) //don't parallel here!
                 {
                     //own data
-                    bindMethod(disp, execData, meth, ref ind);
+                    bindMethod(reg, execData, meth.Coverage, ref ind);
 
                     //CG callee data
                     var cgCallees = meth.CalleeIndexes;
@@ -127,21 +129,22 @@ namespace Drill4Net.Agent.Standard
                         if (!cgMethods.ContainsKey(callee))
                             continue; //it's normal (business methods here are not needed)
                         var cgMeth = cgMethods[callee];
-                        bindMethod(disp, execData, cgMeth, ref ind);
+                        bindMethod(reg, execData, cgMeth.Coverage, ref ind);
                     }
                 }
             }
 
-            static void bindMethod(CoverageDispatcher disp, ExecClassData execData, InjectedMethod meth, ref int ind)
+            //bind the method to the class by start and end indexes in array of the coverage data
+            static void bindMethod(CoverageRegistrator reg, ExecClassData execData, CoverageData methCoverage, ref int ind)
             {
-                var inds = meth.Coverage.PointToBlockEnds.OrderBy(a => a.Value);
+                var inds = methCoverage.PointToBlockEnds.OrderBy(a => a.Value);
                 var startMeth = ind;
                 foreach (var pair in inds)
                 {
                     var localEnd = pair.Value;
                     var startBlock = ind;
                     var endBlock = startMeth + localEnd;
-                    disp.BindPoint(pair.Key, execData, startBlock, endBlock);
+                    reg.BindPoint(pair.Key, execData, startBlock, endBlock);
                     ind = endBlock + 1;
                 }
             }

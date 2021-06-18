@@ -190,7 +190,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                _initEvent.WaitOne(); //in fact, the blocking will be only one time on init
+                _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
 
                 #region Checks
                 if (_rep?.IsAnySession != true)

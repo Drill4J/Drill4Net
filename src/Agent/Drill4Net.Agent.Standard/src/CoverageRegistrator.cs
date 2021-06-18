@@ -5,9 +5,9 @@ using Drill4Net.Agent.Abstract.Transfer;
 namespace Drill4Net.Agent.Standard
 {
     /// <summary>
-    /// Manager of the coverage data for the user's or global session
+    /// Registrar of the coverage data for the user's and global session
     /// </summary>
-    public class CoverageDispatcher
+    public class CoverageRegistrator
     {
         /// <summary>
         /// Gets or sets the test session on the Drill Admin side.
@@ -63,7 +63,7 @@ namespace Drill4Net.Agent.Standard
         /// Create manager of the coverage data for the user's or global session
         /// </summary>
         /// <param name="session"></param>
-        public CoverageDispatcher(StartSessionPayload session)
+        public CoverageRegistrator(StartSessionPayload session)
         {
             Session = session; // ?? throw new .....
             PointToType = new ConcurrentDictionary<string, ExecClassData>();

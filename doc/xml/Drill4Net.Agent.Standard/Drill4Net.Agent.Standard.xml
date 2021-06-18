@@ -4,12 +4,12 @@
         <name>Drill4Net.Agent.Standard</name>
     </assembly>
     <members>
-        <member name="T:Drill4Net.Agent.Standard.CoverageDispatcher">
+        <member name="T:Drill4Net.Agent.Standard.CoverageRegistrator">
             <summary>
-            Manager of the coverage data for the user's or global session
+            Registrar of the coverage data for the user's and global session
             </summary>
         </member>
-        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.Session">
+        <member name="P:Drill4Net.Agent.Standard.CoverageRegistrator.Session">
             <summary>
             Gets or sets the test session on the Drill Admin side.
             </summary>
@@ -17,7 +17,7 @@
             The test session.
             </value>
         </member>
-        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.PointToType">
+        <member name="P:Drill4Net.Agent.Standard.CoverageRegistrator.PointToType">
             <summary>
             Maps the cross-point's Uid to the corresponding target type.
             </summary>
@@ -25,7 +25,7 @@
             The DTO of the Target type.
             </value>
         </member>
-        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.PointToRange">
+        <member name="P:Drill4Net.Agent.Standard.CoverageRegistrator.PointToRange">
             <summary>
             Gets the range of the indexes in method's instructions for the specified cross-point's Uid.
             </summary>
@@ -33,7 +33,7 @@
             The range of the indexes in method's instructions
             </value>
         </member>
-        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.Types">
+        <member name="P:Drill4Net.Agent.Standard.CoverageRegistrator.Types">
             <summary>
             Gets the injected classes in DTO form.
             </summary>
@@ -41,7 +41,7 @@
             The injected classes in DTO form.
             </value>
         </member>
-        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.AffectedTypes">
+        <member name="P:Drill4Net.Agent.Standard.CoverageRegistrator.AffectedTypes">
             <summary>
             Gets the affected injected classes after last sending its data to the Drill admin side.
             </summary>
@@ -49,7 +49,7 @@
             The affected injected classes.
             </value>
         </member>
-        <member name="P:Drill4Net.Agent.Standard.CoverageDispatcher.AffectedProbeCount">
+        <member name="P:Drill4Net.Agent.Standard.CoverageRegistrator.AffectedProbeCount">
             <summary>
             Gets the affected probe count after last sending data to the Drill admin side.
             </summary>
@@ -57,13 +57,13 @@
             The affected probe count.
             </value>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.#ctor(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload)">
+        <member name="M:Drill4Net.Agent.Standard.CoverageRegistrator.#ctor(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload)">
             <summary>
             Create manager of the coverage data for the user's or global session
             </summary>
             <param name="session"></param>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.BindPoint(System.String,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Int32,System.Int32)">
+        <member name="M:Drill4Net.Agent.Standard.CoverageRegistrator.BindPoint(System.String,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Int32,System.Int32)">
             <summary>
             Bind point Uid to the probe's range of the target class
             </summary>
@@ -72,13 +72,13 @@
             <param name="start">Start index of the cross-point's region in IL instructions of the its method</param>
             <param name="end">End index of the cross-point's region in IL instructions of the its method</param>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.RegisterCoverage(System.String)">
+        <member name="M:Drill4Net.Agent.Standard.CoverageRegistrator.RegisterCoverage(System.String)">
             <summary>
             Register the coverage data by point Uid coming from Target side
             </summary>
             <param name="pointUid"></param>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.CoverageDispatcher.ClearAffectedData">
+        <member name="M:Drill4Net.Agent.Standard.CoverageRegistrator.ClearAffectedData">
             <summary>
             Clearing the affected data (classes, probes, etc) after sending it to admin side
             </summary>
@@ -165,7 +165,7 @@
         <member name="T:Drill4Net.Agent.Standard.TreeConverter">
             <summary>
             Helper for converting DTO entities (<see cref="T:Drill4Net.Agent.Abstract.Transfer.AstEntity"/>, <see cref="T:Drill4Net.Agent.Abstract.Transfer.AstMethod"/>) 
-            and also <see cref="T:Drill4Net.Agent.Standard.CoverageDispatcher"/> from <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
+            and also <see cref="T:Drill4Net.Agent.Standard.CoverageRegistrator"/> from <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
             </summary>
         </member>
         <member name="M:Drill4Net.Agent.Standard.TreeConverter.ToAstEntities(System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedType})">
@@ -192,9 +192,9 @@
             <param name="injMethod"></param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.TreeConverter.CreateCoverageDispatcher(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload,System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedType})">
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.CreateCoverageRegistrator(Drill4Net.Agent.Abstract.Transfer.StartSessionPayload,System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedType})">
             <summary>
-            Create <see cref="T:Drill4Net.Agent.Standard.CoverageDispatcher"/> for session <see cref="T:Drill4Net.Agent.Abstract.Transfer.StartSessionPayload"/> 
+            Create <see cref="T:Drill4Net.Agent.Standard.CoverageRegistrator"/> for session <see cref="T:Drill4Net.Agent.Abstract.Transfer.StartSessionPayload"/> 
             and bind it to list of <see cref="T:Drill4Net.Profiling.Tree.InjectedType"/>
             </summary>
             <param name="session"></param>
@@ -220,16 +220,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 416c57e</summary>
+            <summary>Commit: 973bc63</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 416c57e60a7bae74c62e10967e451ac5d47173f4</summary>
+            <summary>Sha: 973bc63a766f7778fee0be893905db3c3c8b527b</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-18T10:47:16+03:00</summary>
+            <summary>Commit date: 2021-06-18T12:35:49+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 477</summary>
+            <summary>Commits on top of base version: 478</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -259,7 +259,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 477</summary>
+            <summary>Patch: 478</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

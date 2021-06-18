@@ -112,6 +112,14 @@
             The injected method
             </summary>
         </member>
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Signature">
+            <summary>
+            Gets or sets the method's signature.
+            </summary>
+            <value>
+            The method's signature.
+            </value>
+        </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Source">
             <summary>
             Some metadata about the current method
