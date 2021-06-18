@@ -139,7 +139,8 @@ namespace Drill4Net.Agent.Standard
                     {
                         var prev = asmNameByDirs[i - 1];
                         var cur = asmNameByDirs[i];
-                        if (prev.Count == cur.Count && prev.Intersect(cur).Any()) //the same structure
+                        //is the ALMOST same structure? It's not a strict match to compare NetFx and NetCore assembly sets
+                        if (Math.Abs(prev.Count - cur.Count) < 2 && prev.Intersect(cur).Any())
                             continue;
                         multi = false;
                         break;

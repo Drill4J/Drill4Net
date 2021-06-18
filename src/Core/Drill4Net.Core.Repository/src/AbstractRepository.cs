@@ -71,10 +71,13 @@ namespace Drill4Net.Core.Repository
             var helper = new LoggerHelper();
             var cfg = new LoggerConfiguration();
             cfg.MinimumLevel.Verbose(); //global min level must be the most "verbosing"
-            var opts = Options.Logs.Where(a => !a.Disabled).OrderBy(a => a.Level);
-            foreach (var opt in opts)
+            if (Options.Logs != null)
             {
-                AddLogOption(cfg, opt, helper);
+                var opts = Options.Logs.Where(a => !a.Disabled).OrderBy(a => a.Level);
+                foreach (var opt in opts)
+                {
+                    AddLogOption(cfg, opt, helper);
+                }
             }
             Log.Logger = cfg.CreateLogger();
         }

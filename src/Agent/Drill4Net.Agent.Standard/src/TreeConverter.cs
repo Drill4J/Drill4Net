@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -24,13 +25,13 @@ namespace Drill4Net.Agent.Standard
             if (injTypes == null)
                 throw new ArgumentNullException(nameof(injTypes));
             //
-            var res = new List<AstEntity>();
+            var res = new ConcurrentBag<AstEntity>();
             foreach (var type in injTypes.AsParallel())
             {
                 lock (res)
                     res.Add(ToAstEntity(type));
             }
-            return res;
+            return res.ToList();
         }
 
         /// <summary>
@@ -97,9 +98,7 @@ namespace Drill4Net.Agent.Standard
 
             foreach (var type in bizTypes) //don't parallelize yet (need protect ind)
             {
-                var bizMethods = type.GetMethods()?
-                    .Where(a => a.Coverage.PointToBlockEnds.Any())?
-                    .ToList();
+                var bizMethods = type.GetMethods()?.Where(a => a.Coverage.PointToBlockEnds.Any());
                 if (bizMethods?.Any() != true)
                     continue;
                 var ind = 0; //end2end for the current type
@@ -118,7 +117,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="methods"></param>
         /// <param name="ind"></param>
         /// <param name="cgMethods"></param>
-        internal void BindMethods(CoverageRegistrator reg, ExecClassData execData, List<InjectedMethod> methods,
+        internal void BindMethods(CoverageRegistrator reg, ExecClassData execData, IEnumerable<InjectedMethod> methods,
             ref int ind, Dictionary<string, InjectedMethod> cgMethods)
         {
             foreach (var meth in methods) //don't parallel here!
@@ -150,7 +149,7 @@ namespace Drill4Net.Agent.Standard
         {
             var indPairs = methCoverage.PointToBlockEnds.OrderBy(a => a.Value);
             var startMeth = ind;
-            foreach (var pair in indPairs)
+            foreach (var pair in indPairs) //don't parallel here!
             {
                 var localEnd = pair.Value;
                 var startBlock = ind;

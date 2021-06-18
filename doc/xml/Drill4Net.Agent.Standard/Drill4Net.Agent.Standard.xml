@@ -208,7 +208,7 @@
             <param name="injTypes"></param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethods(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Collections.Generic.List{Drill4Net.Profiling.Tree.InjectedMethod},System.Int32@,System.Collections.Generic.Dictionary{System.String,Drill4Net.Profiling.Tree.InjectedMethod})">
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethods(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedMethod},System.Int32@,System.Collections.Generic.Dictionary{System.String,Drill4Net.Profiling.Tree.InjectedMethod})">
             <summary>
             Binds the methods to the class by start and end indexes to the class coverage's array
             </summary>
@@ -246,16 +246,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 636d19a</summary>
+            <summary>Commit: be1d8ad</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 636d19a7cb7945edf2dc9cd24da362160a2b9983</summary>
+            <summary>Sha: be1d8ad196f146d19a875cc195244c0cbb23f2f9</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-18T14:14:38+03:00</summary>
+            <summary>Commit date: 2021-06-18T15:03:00+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 479</summary>
+            <summary>Commits on top of base version: 480</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -285,7 +285,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 479</summary>
+            <summary>Patch: 480</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

@@ -39,7 +39,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 //point data
                 var injRep = new StandardAgentRepository(); 
                 var tree = injRep.ReadInjectedTree();
-                var moniker = "net5.0";
+                const string moniker = "net5.0";
                 var asmTree = tree.GetFrameworkRootDirectory(moniker);
                 if (asmTree == null)
                     throw new Exception($"Data for moniker {moniker} not found");
@@ -52,7 +52,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 treeCnv.CreateCoverageRegistrator(new Abstract.Transfer.StartSessionPayload(), types);
 
                 //range
-                await Task.Delay(1500);
+                await Task.Delay(1500).ConfigureAwait(false);
                 Console.Write($"Input point count for the simulating execution range [{_pointRange}]: ");
                 var expr = Console.ReadLine()?.Trim();
                 if (int.TryParse(expr, out var pntCnt))
@@ -62,7 +62,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 }
 
                 // info
-                var mess = @"  *** Firstly, start session on admin side...
+                const string mess = @"  *** Firstly, start session on admin side...
   *** Press 1 for start some portion of target methods
   *** Press q for exit
   *** Good luck and... keep on dancing!";
