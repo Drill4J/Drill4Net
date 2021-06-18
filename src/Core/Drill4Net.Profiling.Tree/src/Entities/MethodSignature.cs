@@ -1,6 +1,12 @@
-﻿namespace Drill4Net.Profiling.Tree
+﻿using System;
+
+namespace Drill4Net.Profiling.Tree
 {
-    public class ParsedMethod
+    /// <summary>
+    /// Metadata about method's signature
+    /// </summary>
+    [Serializable]
+    public class MethodSignature
     {
         public string Namespace { get; }
         public string Name { get; }
@@ -9,11 +15,11 @@
 
         /*************************************************/
         
-        public ParsedMethod()
+        public MethodSignature()
         {
         }
 
-        public ParsedMethod(string @namespace, string @return, string name, string parameters)
+        public MethodSignature(string @namespace, string @return, string name, string parameters)
         {
             Namespace = @namespace;
             Name = name;

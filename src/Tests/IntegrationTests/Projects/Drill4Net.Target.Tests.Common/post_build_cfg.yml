@@ -47,4 +47,6 @@ Logs:
     - Type: file
       Path: ..\..\..\..\..\logs\post-build.log # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
       Level: trace
+Debug:
+    CrossPointInfo: true # default is true
 Silent: true #no wait, no questions...

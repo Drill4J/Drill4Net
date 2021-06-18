@@ -10,10 +10,15 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class InjectedMethod : InjectedEntity
     {
-        public string Namespace { get; set; }
-        public string ReturnType { get; set; }
-        public string Parameters { get; set; }
+        /// <summary>
+        /// Gets or sets the name of the method's type.
+        /// </summary>
+        /// <value>
+        /// The name of the method's type.
+        /// </value>
         public string TypeName { get; set; }
+
+        public MethodSignature Signature { get; set; }
 
         /// <summary>
         /// Is this method compiler generated?
@@ -44,14 +49,14 @@ namespace Drill4Net.Profiling.Tree
         /// Some metadata about the current method
         /// </summary>
         public MethodSource Source { get; set; }
-        
+
         /// <summary>
         /// Count of instructions in various 'business parts' of the IL code
         /// (including compiler generated classes and functions) at the own level
         /// of hierarchy of calls CG members
         /// </summary>
         public int BusinessSize { get; set; } = -1;
-        
+
         /// <summary>
         /// Count of only own 'business parts' of the IL code
         /// </summary>
@@ -72,28 +77,25 @@ namespace Drill4Net.Profiling.Tree
         public InjectedMethod(string assemblyName, string typeName, string businessTypeName, string fullName, MethodSource sourceType)
         {
             AssemblyName = assemblyName ?? throw new ArgumentNullException(nameof(assemblyName));
+            Source = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             BusinessType = businessTypeName ?? throw new ArgumentNullException(nameof(businessTypeName));
-            Source = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
+            FullName = fullName;
+            Signature = GetParts(fullName);
+            Name = Signature.Name;
+
             if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
             CalleeIndexes = new Dictionary<string, int>();
             Coverage = new CoverageData();
-            //
-            var parts = GetParts(fullName);
-            Namespace = parts.Namespace;
-            Name = parts.Name;
-            ReturnType = parts.Return;
-            Parameters = parts.Parameters;
-            FullName = fullName;
         }
 
         /********************************************************************/
 
-        internal static ParsedMethod GetParts(string fullName)
+        internal static MethodSignature GetParts(string fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName))
-                return new ParsedMethod();
+                return new MethodSignature();
             
             //TODO: regex !!! AAAAAAAAAA!!!!
             //Example: System.String Drill4Net.Target.Common.AbstractGen`1::GetDesc(System.Boolean)
@@ -124,7 +126,7 @@ namespace Drill4Net.Profiling.Tree
                 pars = pars.Length > 1 ? pars.Remove(pars.Length - 1, 1) : null;
             }
 
-            return new ParsedMethod(ns, retType, name, pars);
+            return new MethodSignature(ns, retType, name, pars);
         }
 
         public InjectedType FindBusinessType(Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parentMap,
@@ -137,12 +139,10 @@ namespace Drill4Net.Profiling.Tree
             //
             InjectedType type = null;
             InjectedSimpleEntity key = forEntity;
-            while (true)
+            while (parentMap.ContainsKey(key))
             {
-                if (!parentMap.ContainsKey(key))
-                    break;
                 type = parentMap[key] as InjectedType;
-                if (type is {IsCompilerGenerated: false})
+                if (type is { IsCompilerGenerated: false })
                     break;
                 key = type;
             }

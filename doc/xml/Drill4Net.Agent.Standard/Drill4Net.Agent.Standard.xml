@@ -85,7 +85,7 @@
         </member>
         <member name="T:Drill4Net.Agent.Standard.StandardAgent">
             <summary>
-            Standard Agent (Profiler0) for Drill Admin side
+            Standard Agent (Profiler) for the Drill Admin side
             </summary>
         </member>
         <member name="M:Drill4Net.Agent.Standard.StandardAgent.Init">
@@ -220,16 +220,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: bb2fd01</summary>
+            <summary>Commit: 92c6b32</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: bb2fd018fcf4787b75ca88f3858f5dea66c10634</summary>
+            <summary>Sha: 92c6b32c2331f77ef7d7e189f441345d59b333a6</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-17T15:50:25+03:00</summary>
+            <summary>Commit date: 2021-06-18T09:38:14+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 473</summary>
+            <summary>Commits on top of base version: 476</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -259,7 +259,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 473</summary>
+            <summary>Patch: 476</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

@@ -163,6 +163,20 @@
             Helper for working with info for a injecting Proxy class
             </summary>
         </member>
+        <member name="M:Drill4Net.Injector.Engine.ProxyHelper.CreateProxyNamespace">
+            <summary>
+            Get the type namespace for the injected proxy class.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.ProxyHelper.CreateProxyMethodReference(Drill4Net.Injector.Core.AssemblyContext,Drill4Net.Common.InjectorOptions)">
+            <summary>
+            Creates the proxy method's call reference for the injecting into the target's code.
+            </summary>
+            <param name="asmCtx">The assembly context.</param>
+            <param name="opts">The Injector options.</param>
+            <returns></returns>
+        </member>
         <member name="T:Drill4Net.Injector.Engine.TypeHelper">
             <summary>
             Helper for getting info about types

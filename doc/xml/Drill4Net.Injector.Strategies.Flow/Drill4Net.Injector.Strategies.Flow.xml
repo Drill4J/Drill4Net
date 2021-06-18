@@ -24,5 +24,11 @@
             <param name="point">The cross-point of the target code.</param>
             <returns></returns>
         </member>
+        <member name="T:Drill4Net.Injector.Strategies.Flow.FlowStrategy">
+            <summary>
+            Strategy for target's injection with classics Flow cross-points
+            </summary>
+            <seealso cref="T:Drill4Net.Injector.Core.CodeHandlerStrategy" />
+        </member>
     </members>
 </doc>

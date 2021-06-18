@@ -112,6 +112,14 @@
             The injected method
             </summary>
         </member>
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.TypeName">
+            <summary>
+            Gets or sets the name of the method's type.
+            </summary>
+            <value>
+            The name of the method's type.
+            </value>
+        </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.IsCompilerGenerated">
             <summary>
             Is this method compiler generated?
@@ -192,6 +200,11 @@
             <summary>
             For compiler generated classes which was created 
             compiler for some business methods
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Profiling.Tree.MethodSignature">
+            <summary>
+            Metadata about method's signature
             </summary>
         </member>
         <member name="T:Drill4Net.Profiling.Tree.MethodType">
