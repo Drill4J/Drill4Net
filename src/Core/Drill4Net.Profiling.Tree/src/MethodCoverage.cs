@@ -7,7 +7,7 @@ namespace Drill4Net.Profiling.Tree
     /// Data of the method's coverage
     /// </summary>
     [Serializable]
-    public class CoverageData
+    public class MethodCoverage
     { 
         /// <summary>
         /// Dictionary of code blocks: key is point Id, value - coverage part of code by this block
@@ -24,7 +24,7 @@ namespace Drill4Net.Profiling.Tree
         /// <summary>
         /// Create data of the method's coverage
         /// </summary>
-        public CoverageData()
+        public MethodCoverage()
         {
             BlockByPart = new Dictionary<int, float>();
             PointToBlockEnds = new Dictionary<string, int>();

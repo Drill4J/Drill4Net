@@ -218,7 +218,7 @@
             <param name="ind"></param>
             <param name="cgMethods"></param>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethod(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,Drill4Net.Profiling.Tree.CoverageData,System.Int32@)">
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethod(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,Drill4Net.Profiling.Tree.MethodCoverage,System.Int32@)">
             <summary>
             Binds the method to the class by start and end indexes to the class coverage's array
             </summary>
@@ -246,16 +246,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: ca75ab5</summary>
+            <summary>Commit: a5b6c83</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: ca75ab5782c070e9548c4e6fee268fa31eced96b</summary>
+            <summary>Sha: a5b6c83252194b58f05b3d1d866b5b21d69cfb43</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-18T17:23:35+03:00</summary>
+            <summary>Commit date: 2021-06-21T10:43:28+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 481</summary>
+            <summary>Commits on top of base version: 482</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -285,7 +285,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 481</summary>
+            <summary>Patch: 482</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

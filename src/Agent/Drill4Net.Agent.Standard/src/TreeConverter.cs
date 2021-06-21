@@ -146,7 +146,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="execData"></param>
         /// <param name="methCoverage"></param>
         /// <param name="ind"></param>
-        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, CoverageData methCoverage, ref int ind)
+        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, MethodCoverage methCoverage, ref int ind)
         {
             var indPairs = methCoverage.PointToBlockEnds.OrderBy(a => a.Value);
             var startMeth = ind;

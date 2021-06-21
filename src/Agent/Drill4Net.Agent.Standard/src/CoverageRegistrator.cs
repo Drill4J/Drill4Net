@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Standard
         /// <value>
         /// The range of the indexes in method's instructions
         /// </value>
-        public ConcurrentDictionary<string, (int, int)> PointToRange { get; }
+        public ConcurrentDictionary<string, (int Start, int End)> PointToRange { get; }
 
         /// <summary>
         /// Gets the injected classes in DTO form.

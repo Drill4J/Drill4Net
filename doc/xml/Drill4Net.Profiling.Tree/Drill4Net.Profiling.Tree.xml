@@ -46,26 +46,6 @@
             The first index in the compiler generated code which considered as 'business part'
             </summary>
         </member>
-        <member name="T:Drill4Net.Profiling.Tree.CoverageData">
-            <summary>
-            Data of the method's coverage
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Profiling.Tree.CoverageData.BlockByPart">
-            <summary>
-            Dictionary of code blocks: key is point Id, value - coverage part of code by this block
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Profiling.Tree.CoverageData.PointToBlockEnds">
-            <summary>
-            Binding the cross-point by Uid to last index of the block's range in the probe list of method
-            </summary>
-        </member>
-        <member name="M:Drill4Net.Profiling.Tree.CoverageData.#ctor">
-            <summary>
-            Create data of the method's coverage
-            </summary>
-        </member>
         <member name="T:Drill4Net.Profiling.Tree.CrossPoint">
             <summary>
             Cross-cutting point for injection code located in <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/>
@@ -212,6 +192,26 @@
         <member name="T:Drill4Net.Profiling.Tree.MethodSignature">
             <summary>
             Metadata about method's signature
+            </summary>
+        </member>
+        <member name="T:Drill4Net.Profiling.Tree.MethodCoverage">
+            <summary>
+            Data of the method's coverage
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.MethodCoverage.BlockByPart">
+            <summary>
+            Dictionary of code blocks: key is point Id, value - coverage part of code by this block
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.MethodCoverage.PointToBlockEnds">
+            <summary>
+            Binding the cross-point by Uid to last index of the block's range in the probe list of method
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.MethodCoverage.#ctor">
+            <summary>
+            Create data of the method's coverage
             </summary>
         </member>
         <member name="T:Drill4Net.Profiling.Tree.MethodType">
