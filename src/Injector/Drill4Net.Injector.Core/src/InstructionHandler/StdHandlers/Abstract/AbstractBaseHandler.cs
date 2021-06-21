@@ -335,7 +335,7 @@ namespace Drill4Net.Injector.Core
         protected Instruction GetStartingInjectedInstruction(MethodContext ctx, string probeData)
         {
             var instr = Instruction.Create(OpCodes.Ldstr, probeData);
-            ctx.StatingInjectInstructions.Add(instr);
+            ctx.StartingInjectInstructions.Add(instr);
             return instr;
         }
 

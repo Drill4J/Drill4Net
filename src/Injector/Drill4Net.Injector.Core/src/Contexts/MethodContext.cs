@@ -78,9 +78,9 @@ namespace Drill4Net.Injector.Core
         public bool IsStrictEnterReturn { get; set; }
 
         /// <summary>
-        /// The set of the starting injected instructions in the injecting block. Now it's just type is OpCodes.Ldstr
+        /// The set of the starting instructions in the injecting block. Now it's just type is OpCodes.Ldstr
         /// </summary>
-        public HashSet<object> StatingInjectInstructions { get; }
+        public HashSet<object> StartingInjectInstructions { get; }
 
         /// <summary>
         /// Caching list of the replaced jumper's targets
@@ -96,7 +96,7 @@ namespace Drill4Net.Injector.Core
         /// Set of an anchors (targets of <see cref="Jumpers"/>, in fact, their Operands)
         /// </summary>
         public HashSet<object> Anchors { get; }
-  
+
         /// <summary>
         /// Current instruction index from source IL code
         /// </summary>
@@ -116,9 +116,9 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Current instuction according <see cref="CurIndex"/>
         /// </summary>
-        public Instruction CurInstruction => 
-            CurIndex >= 0 && CurIndex < Instructions.Count ? 
-                Instructions[CurIndex] : 
+        public Instruction CurInstruction =>
+            CurIndex >= 0 && CurIndex < Instructions.Count ?
+                Instructions[CurIndex] :
                 throw new ArgumentOutOfRangeException($"CurIndex must be in range of Instruction collection");
 
         /***********************************************************************************************/
@@ -145,7 +145,7 @@ namespace Drill4Net.Injector.Core
             //
             BusinessInstructions = new HashSet<Instruction>();
             AheadProcessed = new HashSet<Instruction>();
-            StatingInjectInstructions = new HashSet<object>();
+            StartingInjectInstructions = new HashSet<object>();
             CompilerInstructions = new HashSet<Instruction>();
             ReplacedJumps = new Dictionary<Instruction, Instruction>();
             Jumpers = new HashSet<Instruction>();

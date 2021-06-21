@@ -56,11 +56,13 @@ namespace Drill4Net.Injector.Core
             var prevOperand = SkipNop(ind, false, instructions);
             if (prevOperand.OpCode.Code is Code.Br or Code.Br_S) //for/while
             {
-                var ldstrIf2 = Register(ctx, CrossPointType.Cycle); 
-                var targetOp = prevOperand.Operand as Instruction;
-                processor.InsertBefore(targetOp, ldstrIf2);
-                processor.InsertBefore(targetOp, call);
+                var ldstrIf2 = Register(ctx, CrossPointType.Cycle);
+                var targetOp = (instr.Operand as Instruction).Previous; //no nop skipping
+                processor.InsertAfter(targetOp, call);
+                processor.InsertAfter(targetOp, ldstrIf2);
                 ctx.CorrectIndex(2);
+
+                instr.Operand = ldstrIf2;
 
                 var ldstrIf3 = Register(ctx, CrossPointType.CycleEnd);
                 var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
@@ -70,11 +72,6 @@ namespace Drill4Net.Injector.Core
             }
             else //do
             {
-                var back = instr.Operand;
-                var next = instr.Next;
-
-                // 1.
-                //it's fictive instruction - for coverage not needed (but for debug?) 
                 //its LocalId will be matched with paired instruction
                 var crossType = isBrFalse ? CrossPointType.Cycle : CrossPointType.CycleEnd;
                 var ldstrIf = Register(ctx, crossType);
@@ -84,26 +81,14 @@ namespace Drill4Net.Injector.Core
                 processor.InsertAfter(instr, ldstrIf);
                 ctx.CorrectIndex(2);
 
-                //jump-1
-                var jump = Instruction.Create(OpCodes.Br_S, next);
-                processor.InsertAfter(call1, jump);
-                jumpers.Add(jump);
-                ctx.CorrectIndex();
-
-                // 2.
+                var jmpOperand = instr.Operand as Instruction;
                 crossType = isBrFalse ? CrossPointType.CycleEnd : CrossPointType.Cycle;
                 var ldstrIf2 = Register(ctx, crossType);
 
                 var call2 = Instruction.Create(OpCodes.Call, proxyMethRef);
-                processor.InsertAfter(jump, call2);
-                processor.InsertAfter(jump, ldstrIf2);
+                processor.InsertAfter(jmpOperand, call2);
+                processor.InsertAfter(jmpOperand, ldstrIf2);
                 ctx.CorrectIndex(2);
-
-                //jump-2
-                var jump2 = Instruction.Create(OpCodes.Br, back as Instruction);
-                processor.InsertAfter(call2, jump2);
-                jumpers.Add(jump2);
-                ctx.CorrectIndex();
 
                 instr.Operand = ldstrIf2;
             }

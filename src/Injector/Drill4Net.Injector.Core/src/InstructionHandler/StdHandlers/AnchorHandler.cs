@@ -12,9 +12,9 @@ namespace Drill4Net.Injector.Core
     public class AnchorHandler : AbstractSimpleHandler
     {
         private readonly bool _ignoreCycles;
-        
+
         /************************************************************************************/
-        
+
         public AnchorHandler(AbstractProbeHelper probeHelper, bool ignoreCycles):
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_ANCHOR, CrossPointType.Anchor, probeHelper)
         {
@@ -34,7 +34,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (ctx.CompilerInstructions.Contains(instr))
                 return false;
-            if (ctx.AheadProcessed.Contains(instr)) //it may be yet processed
+            if (ctx.AheadProcessed.Contains(instr)) //it can already be processed
                 return false;
             if (!ctx.Anchors.Contains(instr))
                 return false;
@@ -43,6 +43,7 @@ namespace Drill4Net.Injector.Core
             //not if/else or cycles jumps, there are special handlers for these purposes
             if (_ignoreCycles)
             {
+                //TODO: caching!!!
                 foreach (var cur in ctx.Jumpers)
                 {
                     Instruction[] operands;
@@ -54,14 +55,14 @@ namespace Drill4Net.Injector.Core
                     foreach (var operand in operands)
                     {
                         var anchor = operand;
-                        if (ctx.StatingInjectInstructions.Contains(anchor) && ctx.ReplacedJumps.ContainsKey(anchor))
+                        if (ctx.StartingInjectInstructions.Contains(anchor) && ctx.ReplacedJumps.ContainsKey(anchor))
                             anchor = ctx.ReplacedJumps[anchor];
                         if (anchor != instr)
                             continue;
                         var jumpFlow = cur.OpCode.FlowControl;
                         if (jumpFlow == FlowControl.Cond_Branch)
                             return false;
-                        if (jumpFlow == FlowControl.Branch && cur.Previous is {OpCode: {FlowControl: FlowControl.Cond_Branch}})
+                        if (jumpFlow == FlowControl.Branch && cur.Previous is { OpCode: { FlowControl: FlowControl.Cond_Branch } })
                             return false;
                     }
                 }
