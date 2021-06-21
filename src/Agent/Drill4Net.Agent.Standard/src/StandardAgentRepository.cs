@@ -302,18 +302,18 @@ namespace Drill4Net.Agent.Standard
             lock (_sendLocker)
             {
                 if (_globalRegistrator != null)
-                    SendCoverageData(_globalRegistrator);
+                    SendCoverageDataFor(_globalRegistrator);
 
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
                     if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
                         reg = GetUserRegistrator(); //?? hmmm...
-                    SendCoverageData(reg);
+                    SendCoverageDataFor(reg);
                 }
             }
         }
 
-        private void SendCoverageData(CoverageRegistrator reg)
+        private void SendCoverageDataFor(CoverageRegistrator reg)
         {
             var sessionUid = reg?.Session?.SessionId;
             if (sessionUid == null)

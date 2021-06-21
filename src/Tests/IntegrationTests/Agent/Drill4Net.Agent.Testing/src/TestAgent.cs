@@ -27,7 +27,7 @@ namespace Drill4Net.Agent.Testing
     {
         private const string CONTEXT_UNKNOWN = "unknown";
         private static ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
-        private static Dictionary<string, InjectedMethod> _pointToMethods;
+        private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
         private static readonly Dictionary<int, string> _execIdToTestId;
 
         /*****************************************************************************/
@@ -230,17 +230,17 @@ namespace Drill4Net.Agent.Testing
         /// <summary>
         /// Gets all cross-points ignoring execution context.
         /// </summary>
-        /// <param name="funcSig">The function sig.</param>
+        /// <param name="fullSig">The full function signature with assembly name is formed as $"{asmName};{funcSig}.</param>
         /// <returns></returns>
-        public static List<string> GetPointsIgnoringContext(string funcSig)
+        public static List<string> GetPointsIgnoringContext(string fullSig)
         {
             var all = new List<string>();
             foreach (var funcs in _clientPoints.Values)
             {
-                if (!funcs.ContainsKey(funcSig))
+                if (!funcs.ContainsKey(fullSig))
                     continue;
-                all.AddRange(funcs[funcSig]);
-                funcs.Remove(funcSig);
+                all.AddRange(funcs[fullSig]);
+                funcs.Remove(fullSig);
             }
             return all;
         }
@@ -280,22 +280,22 @@ namespace Drill4Net.Agent.Testing
             return byFunctions;
         }
 
-        /// <summary>
-        /// Gets the business name of the tested method.
-        /// </summary>
-        /// <param name="pointUid">The cross-point's uid.</param>
-        /// <returns></returns>
-        internal static string GetBusinessMethodName(string pointUid)
-        {
-            if (_pointToMethods == null)
-            {
-                if (AppDomain.CurrentDomain.GetData(nameof(_pointToMethods)) is Dictionary<string, InjectedMethod> pointToMethods)
-                    _pointToMethods = pointToMethods;
-            }
-            if (_pointToMethods == null || !_pointToMethods.ContainsKey(pointUid))
-                return null;
-            return _pointToMethods[pointUid].BusinessMethod;
-        }
+        ///// <summary>
+        ///// Gets the business name of the tested method.
+        ///// </summary>
+        ///// <param name="pointUid">The cross-point's uid.</param>
+        ///// <returns></returns>
+        //internal static string GetBusinessMethodName(string pointUid)
+        //{
+        //    if (_pointToMethods == null)
+        //    {
+        //        if (AppDomain.CurrentDomain.GetData(nameof(_pointToMethods)) is Dictionary<string, InjectedMethod> pointToMethods)
+        //            _pointToMethods = pointToMethods;
+        //    }
+        //    if (_pointToMethods?.ContainsKey(pointUid) != true)
+        //        return null;
+        //    return _pointToMethods[pointUid].BusinessMethod;
+        //}
         #endregion
     }
 }

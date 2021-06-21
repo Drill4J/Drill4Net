@@ -83,9 +83,9 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
-            //TODO: cloning from Template object?
+            //TODO: cloning from some Template object?
             var reg = new CoverageRegistrator(session);
-            string testName = session?.TestName ?? Guid.NewGuid().ToString(); //$"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
+            var testName = session?.TestName ?? Guid.NewGuid().ToString(); //$"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
             if(session != null)
                 session.TestName = testName;
             var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated)
@@ -98,7 +98,8 @@ namespace Drill4Net.Agent.Standard
 
             foreach (var type in bizTypes) //don't parallelize yet (need protect ind)
             {
-                var bizMethods = type.GetMethods()?.Where(a => a.Coverage.PointToBlockEnds.Any());
+                var bizMethods = type.GetMethods()?
+                    .Where(a => a.Coverage.PointToBlockEnds.Any());
                 if (bizMethods?.Any() != true)
                     continue;
                 var ind = 0; //end2end for the current type

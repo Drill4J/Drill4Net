@@ -78,10 +78,10 @@ namespace Drill4Net.Agent.Standard
         /// Bind point Uid to the probe's range of the target class
         /// </summary>
         /// <param name="pointUid">Cross-point's Uid</param>
-        /// <param name="data">Probes of instrumented assemblies for sending of collecting data to the Admin side</param>
+        /// <param name="typeData">Probes of instrumented assemblies for sending of collecting data to the Admin side</param>
         /// <param name="start">Start index of the cross-point's region in IL instructions of the its method</param>
         /// <param name="end">End index of the cross-point's region in IL instructions of the its method</param>
-        public void BindPoint(string pointUid, ExecClassData data, int start, int end)
+        public void BindPoint(string pointUid, ExecClassData typeData, int start, int end)
         {
             //link point to range
             if (PointToRange.ContainsKey(pointUid))
@@ -91,15 +91,15 @@ namespace Drill4Net.Agent.Standard
             //link point (probe) to class
             if (PointToType.ContainsKey(pointUid))
                 return;
-            PointToType.TryAdd(pointUid, data);
+            PointToType.TryAdd(pointUid, typeData);
             
             //list of classes
-            if (!Types.Contains(data))
+            if (!Types.Contains(typeData))
             {
                 lock (Types)
                 {
-                    if (!Types.Contains(data))
-                        Types.Add(data);
+                    if (!Types.Contains(typeData))
+                        Types.Add(typeData);
                 }
             }
         }

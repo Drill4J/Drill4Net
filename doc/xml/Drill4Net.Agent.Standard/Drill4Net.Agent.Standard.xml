@@ -68,7 +68,7 @@
             Bind point Uid to the probe's range of the target class
             </summary>
             <param name="pointUid">Cross-point's Uid</param>
-            <param name="data">Probes of instrumented assemblies for sending of collecting data to the Admin side</param>
+            <param name="typeData">Probes of instrumented assemblies for sending of collecting data to the Admin side</param>
             <param name="start">Start index of the cross-point's region in IL instructions of the its method</param>
             <param name="end">End index of the cross-point's region in IL instructions of the its method</param>
         </member>
@@ -246,16 +246,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: be1d8ad</summary>
+            <summary>Commit: ca75ab5</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: be1d8ad196f146d19a875cc195244c0cbb23f2f9</summary>
+            <summary>Sha: ca75ab5782c070e9548c4e6fee268fa31eced96b</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-06-18T15:03:00+03:00</summary>
+            <summary>Commit date: 2021-06-18T17:23:35+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 480</summary>
+            <summary>Commits on top of base version: 481</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -285,7 +285,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 480</summary>
+            <summary>Patch: 481</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>
