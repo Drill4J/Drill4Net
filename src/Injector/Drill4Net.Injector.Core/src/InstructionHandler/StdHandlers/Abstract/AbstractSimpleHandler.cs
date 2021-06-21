@@ -55,7 +55,7 @@ namespace Drill4Net.Injector.Core
             processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
 
-            PostAction(ctx);   
+            PostAction(ctx);
             needBreak = true;
         }
 

@@ -123,7 +123,7 @@ namespace Drill4Net.Injector.Engine
         internal void InjectMethod(MethodContext methodCtx)
         {
             var instructions = methodCtx.Instructions; //no copy list!
-            Strategy.Preprocess(methodCtx); //primary actions for some handlers
+            Strategy.Preprocess(methodCtx); //primary pre-actions for some handlers
             for (var i = methodCtx.StartIndex; i < instructions.Count; i++)
             {
                 #region Checks
@@ -137,6 +137,7 @@ namespace Drill4Net.Injector.Engine
                 methodCtx.SetPosition(i);
                 i = HandleInstruction(methodCtx); //process and correct current index after potential injection
             }
+            Strategy.Postprocess(methodCtx); //primary post-actions for some handlers
         }
 
         internal void CollectJumpers(MethodContext methodCtx)

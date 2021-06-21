@@ -28,7 +28,6 @@ namespace Drill4Net.Injector.Core
             var instr = instructions[ctx.CurIndex];
             var opCode = instr.OpCode;
             var code = opCode.Code;
-            var flow = opCode.FlowControl;
             var lastOp = ctx.LastOperation;
 
             var source = ctx.Method.Source;
@@ -40,7 +39,7 @@ namespace Drill4Net.Injector.Core
             var call = Instruction.Create(OpCodes.Call, proxyMethRef);
             #endregion
             #region Checks
-            if (flow != FlowControl.Branch || (code != Code.Br && code != Code.Br_S)) 
+            if (code != Code.Br && code != Code.Br_S)
                 return;
             if (!ifStack.Any())
                 return;
@@ -51,7 +50,7 @@ namespace Drill4Net.Injector.Core
             if (!IsRealCondition(ctx.CurIndex, instructions)) //is real condition's branch?
                 return;
             #endregion
-            
+
             //ELSE/JUMP
             try
             {
@@ -63,7 +62,7 @@ namespace Drill4Net.Injector.Core
                 var firstProbeInst = Register(ctx, crossType);
 
                 //correction
-                FixFinallyEnd(instr, firstProbeInst, exceptionHandlers); //need fix statement boundaries for potential tr/finally 
+                FixFinallyEnd(instr, firstProbeInst, exceptionHandlers); //need fix the statement boundaries for the potential try/finally 
                 var oldJumpTarget = instructions[ctx.CurIndex + 1]; //where the code jumped earlier
                 ReplaceJumps(oldJumpTarget, firstProbeInst, ctx); //...we change it to our first instruction
 
@@ -71,7 +70,7 @@ namespace Drill4Net.Injector.Core
                 processor.InsertBefore(oldJumpTarget, firstProbeInst);
                 processor.InsertBefore(oldJumpTarget, call);
                 ctx.CorrectIndex(2);
-                
+
                 needBreak = true;
             }
             catch (Exception exx)

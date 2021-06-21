@@ -94,7 +94,7 @@ namespace Drill4Net.Injector.Core
                 return;
             #endregion
 
-            //data: need insert paired call
+            //data: need to insert paired call
             crossType = crossType == CrossPointType.If ? CrossPointType.Else : CrossPointType.If;
             var ind = 0;
             while (operand != null)
@@ -104,7 +104,7 @@ namespace Drill4Net.Injector.Core
                     break;
                 operand = operand.Previous;
             }
-            var ldstr2 = Register(ctx, crossType, prevCode == Code.Throw ? ind : ind - 1); //need sub for prev index if no Throw unstruction
+            var ldstr2 = Register(ctx, crossType, prevCode == Code.Throw ? ind : ind - 1); //need to sub 1 for prev index if no Throw unstruction
 
             //correction
             ReplaceJumps(operand, ldstr2, ctx);

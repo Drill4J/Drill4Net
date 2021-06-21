@@ -83,6 +83,11 @@ namespace Drill4Net.Injector.Core
         public HashSet<object> StartingInjectInstructions { get; }
 
         /// <summary>
+        /// The last added starting instructions in the injecting block to the <see cref="StartingInjectInstructions"/>.
+        /// </summary>
+        public Instruction LastAddedStartingInjectInstructions { get; set; }
+
+        /// <summary>
         /// Caching list of the replaced jumper's targets
         /// </summary>
         public Dictionary<Instruction, Instruction> ReplacedJumps { get; }

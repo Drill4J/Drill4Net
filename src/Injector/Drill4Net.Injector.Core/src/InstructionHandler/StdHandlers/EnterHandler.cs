@@ -23,7 +23,7 @@ namespace Drill4Net.Injector.Core
                 return;
 
             //data
-            var ldstrEntering = Register(ctx, CrossPointType.Enter, 0);//exactly 0 !
+            var ldstrEntering = Register(ctx, CrossPointType.Enter, 0); //exactly 0
 
             //injection
             var firstOp = ctx.Instructions[0];

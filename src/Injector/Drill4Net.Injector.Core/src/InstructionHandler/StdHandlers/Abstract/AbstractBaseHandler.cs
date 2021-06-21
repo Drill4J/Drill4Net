@@ -89,6 +89,29 @@ namespace Drill4Net.Injector.Core
         /// <param name="needBreak">If the current instruction was processed either need to break further processing by next handlers?</param>
         protected abstract void HandleInstructionConcrete(MethodContext ctx, out bool needBreak);
         #endregion
+        #region Postprocess the method
+        /// <summary>
+        /// Postprocess method context
+        /// </summary>
+        /// <param name="ctx">Method's context</param>
+        public virtual void Postprocess(MethodContext ctx)
+        {
+            try
+            {
+                PostprocessConcrete(ctx);
+            }
+            finally
+            {
+                Successor?.Postprocess(ctx);
+            }
+        }
+
+        /// <summary>
+        /// Postprocess method contex. Can be overridden in the descendant class.
+        /// </summary>
+        /// <param name="ctx">Method's context</param>
+        protected virtual void PostprocessConcrete(MethodContext ctx) { }
+        #endregion
         #endregion
         #region  Register
         /// <summary>
@@ -336,6 +359,7 @@ namespace Drill4Net.Injector.Core
         {
             var instr = Instruction.Create(OpCodes.Ldstr, probeData);
             ctx.StartingInjectInstructions.Add(instr);
+            ctx.LastAddedStartingInjectInstructions = instr;
             return instr;
         }
 

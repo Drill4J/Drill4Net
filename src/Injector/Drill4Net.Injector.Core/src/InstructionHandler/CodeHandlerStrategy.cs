@@ -47,5 +47,14 @@
         {
             _first?.HandleInstruction(ctx);
         }
+
+        /// <summary>
+        /// Post act for the chain of the handlers on whole set of IL code (if some one implement it)
+        /// </summary>
+        /// <param name="ctx"></param>
+        public virtual void Postprocess(MethodContext ctx)
+        {
+            _first?.Postprocess(ctx);
+        }
     }
 }

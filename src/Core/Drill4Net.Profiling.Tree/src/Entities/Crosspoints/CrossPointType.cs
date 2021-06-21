@@ -27,7 +27,9 @@
 
         //misc
         Call = 15,
-        Monitor = 16,
+        Jumper = 16,
+        Monitor = 25,
+
 
         Anchor = 100,
     }

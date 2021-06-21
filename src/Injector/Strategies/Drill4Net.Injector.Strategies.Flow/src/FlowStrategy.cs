@@ -17,7 +17,9 @@ namespace Drill4Net.Injector.Strategies.Flow
             AddHandler(new IfElseHandler(helper));
             AddHandler(new NonConditionBranchHandler(helper));
             AddHandler(new CycleHandler(helper));
-            
+
+            AddHandler(new JumperHandler(helper));
+
             //catch, throw
             AddHandler(new ThrowHandler(helper));
             AddHandler(new CatchFilterHandler(helper));

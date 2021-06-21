@@ -36,7 +36,7 @@ namespace Drill4Net.Injector.Core
             var isBrFalse = code is Code.Brfalse or Code.Brfalse_S; //TODO: add another branch codes? Hmm...
             #endregion
             #region Checks
-            if (flow != FlowControl.Cond_Branch) 
+            if (flow != FlowControl.Cond_Branch)
                 return;
 
             #region 'Using' statement
@@ -77,7 +77,7 @@ namespace Drill4Net.Injector.Core
             }
             #endregion
             #endregion
-            
+
             //IF, FOR/SWITCH
             ProcessConditionInstruction(ctx, out needBreak);
         }
