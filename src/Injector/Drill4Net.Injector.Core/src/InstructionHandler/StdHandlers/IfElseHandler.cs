@@ -15,7 +15,7 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************************/
 
-        protected override void ProcessConditionInstruction(MethodContext ctx, out bool needBreak)
+        protected override bool ProcessConditionInstruction(MethodContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
@@ -26,7 +26,8 @@ namespace Drill4Net.Injector.Core
             var opCode = instr.OpCode;
             var code = opCode.Code;
 
-            var processed = ctx.AheadProcessed;
+            var processedInstrs = ctx.Processed;
+            var processed = false;
             var ifStack = ctx.IfStack;
             var crossType = CrossPointType.Unset;
 
@@ -38,7 +39,7 @@ namespace Drill4Net.Injector.Core
             //if pure if/else, but backward jump
             var operand = instr.Operand as Instruction;
             if (operand is {Offset: > 0} && instr.Offset > operand.Offset)
-                return;
+                return false;
             //
             var prev = instr.Previous;
             var prevCode = prev.OpCode.Code;
@@ -46,7 +47,7 @@ namespace Drill4Net.Injector.Core
             {
                 var s = prev.ToString();
                 if (s.EndsWith("get_IsCompleted()"))
-                    return;
+                    return false;
             }
             #endregion
             #region Switch
@@ -80,18 +81,20 @@ namespace Drill4Net.Injector.Core
                 processor.InsertAfter(instr, call);
                 processor.InsertAfter(instr, ldstr);
                 ctx.CorrectIndex(2);
-                
-                needBreak = true;
+
+                processed = true;
+
+                //needBreak = false; //also AnchorHandler may processes
             }
             #endregion
             #region 'Switch when()', etc
             #region Checks
             prev = operand?.Previous;
-            if (prev == null || processed.Contains(prev))
-                return;
+            if (prev == null || processedInstrs.Contains(prev))
+                return processed;
             prevCode = prev.OpCode.Code;
             if (prevCode is not Code.Br and not Code.Br_S and not Code.Throw)
-                return;
+                return processed;
             #endregion
 
             //data: need to insert paired call
@@ -117,10 +120,12 @@ namespace Drill4Net.Injector.Core
             
             //paired injected instructions are must be labeled as processed
             if(prevCode != Code.Throw)
-                processed.Add(prev);
-            
-            needBreak = true;
+                processedInstrs.Add(prev);
+
+            //needBreak = false; //also AnchorHandler may processes
             #endregion
+
+            return true;
         }
     }
 }

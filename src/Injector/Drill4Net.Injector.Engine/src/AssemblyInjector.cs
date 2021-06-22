@@ -130,7 +130,7 @@ namespace Drill4Net.Injector.Engine
                 var instr = instructions[i];
                 if (!methodCtx.BusinessInstructions.Contains(instr))
                     continue;
-                if (methodCtx.AheadProcessed.Contains(instr))
+                if (methodCtx.Processed.Contains(instr))
                     continue;
                 #endregion
 

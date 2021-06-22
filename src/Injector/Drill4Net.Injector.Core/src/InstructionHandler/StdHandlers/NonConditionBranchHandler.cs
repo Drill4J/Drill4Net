@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Core
 
         /*****************************************************************************/
 
-        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
+        protected override bool HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
@@ -40,15 +40,15 @@ namespace Drill4Net.Injector.Core
             #endregion
             #region Checks
             if (code != Code.Br && code != Code.Br_S)
-                return;
+                return false;
             if (!ifStack.Any())
-                return;
+                return false;
             if (IsNextReturn(ctx.CurIndex, instructions, lastOp))
-                return;
+                return false;
             if (!isAsyncStateMachine && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
-                return;
+                return false;
             if (!IsRealCondition(ctx.CurIndex, instructions)) //is real condition's branch?
-                return;
+                return false;
             #endregion
 
             //ELSE/JUMP
@@ -72,10 +72,13 @@ namespace Drill4Net.Injector.Core
                 ctx.CorrectIndex(2);
 
                 needBreak = true;
+                return true;
             }
             catch (Exception exx)
             {
                 //log...
+
+                return false;
             }
         }
     }

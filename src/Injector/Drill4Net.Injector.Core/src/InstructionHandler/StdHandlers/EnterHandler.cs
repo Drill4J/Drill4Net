@@ -33,9 +33,10 @@ namespace Drill4Net.Injector.Core
             ctx.Processor.InsertBefore(firstOp, call);
         }
 
-        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
+        protected override bool HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             needBreak = false;
+            return false;
         }
     }
 }

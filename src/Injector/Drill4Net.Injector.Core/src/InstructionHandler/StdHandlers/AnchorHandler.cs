@@ -26,20 +26,20 @@ namespace Drill4Net.Injector.Core
 
         protected override bool IsCondition(MethodContext ctx)
         {
-            var instr = ctx.Instructions[ctx.CurIndex];
+            var instr = ctx.CurInstruction;
             var flow = instr.OpCode.FlowControl;
             //
-            if (flow is not FlowControl.Next and not FlowControl.Call)
-                return false;
-            if (instr.Previous is {OpCode: {Code: Code.Leave or Code.Leave_S}})
+            if (!ctx.Anchors.Contains(instr))
                 return false;
             if (ctx.CompilerInstructions.Contains(instr))
                 return false;
-            if (ctx.AheadProcessed.Contains(instr)) //it can already be processed
+            if (flow is not FlowControl.Next and not FlowControl.Call)
                 return false;
-            if (!ctx.Anchors.Contains(instr))
+            if (instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S } })
                 return false;
-            
+            if (ctx.Processed.Contains(instr)) //it can already be processed
+                return false;
+
             //we need use only 'pure jumps', for example, 'goto' statement,
             //not if/else or cycles jumps, there are special handlers for these purposes
             if (_ignoreCycles)
@@ -49,7 +49,7 @@ namespace Drill4Net.Injector.Core
                 {
                     Instruction[] operands;
                     if (cur.Operand is Instruction instruction)
-                        operands = new[] {instruction};
+                        operands = new[] { instruction };
                     else
                         operands = (Instruction[])cur.Operand; //'switch' statement
                     //
@@ -70,6 +70,23 @@ namespace Drill4Net.Injector.Core
             }
             //
             return true;
+        }
+
+        protected override void PostprocessConcrete(MethodContext ctx)
+        {
+            // in fact, will process not processed instructions
+            var ret = ctx.Instructions.Last();
+            foreach (var instr in ctx.BusinessInstructions
+                .Where(a => ctx.Anchors.Contains(a) &&
+                            !ctx.Processed.Contains(a) &&
+                            !ctx.ReplacedJumps.ContainsKey(a) &&
+                            a != ret
+                            ))
+            {
+                var ind = ctx.Instructions.IndexOf(instr);
+                ctx.SetPosition(ind);
+                ProcessInstruction(ctx);
+            }
         }
     }
 }

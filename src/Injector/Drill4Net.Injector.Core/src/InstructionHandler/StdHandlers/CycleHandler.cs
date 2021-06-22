@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.Core
 
         /******************************************************************************************/
 
-        protected override void ProcessConditionInstruction(MethodContext ctx, out bool needBreak)
+        protected override bool ProcessConditionInstruction(MethodContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
@@ -39,15 +39,15 @@ namespace Drill4Net.Injector.Core
             #region Check
             var nextCode = instr.Next.OpCode.Code;
             if (nextCode == Code.Leave || nextCode == Code.Leave_S)
-                return;
+                return false;
             var operand = instr.Operand as Instruction;
             if (operand is not { Offset: > 0 } || instr.Offset < operand.Offset)
-                return;
+                return false;
             if (isEnumeratorMoveNext)
             {
                 var prevRef = ((MemberReference)instr.Previous.Operand).FullName;
                 if (prevRef?.Contains("::MoveNext()") == true)
-                    return;
+                    return false;
             }
             #endregion
 
@@ -94,6 +94,7 @@ namespace Drill4Net.Injector.Core
             }
             
             needBreak = true;
+            return true;
         }
     }
 }

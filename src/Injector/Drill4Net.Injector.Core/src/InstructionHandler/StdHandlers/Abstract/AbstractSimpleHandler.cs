@@ -33,15 +33,23 @@ namespace Drill4Net.Injector.Core
         /// <param name="ctx">Method's context</param>
         /// <param name="needBreak">Do we need to break the further processing in the chain of 
         /// subsequent handlers after successful processing by the current handler?</param>
-        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
+        protected override bool HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             needBreak = false;
             
             if (!IsCondition(ctx))
-                return;
+                return false;
 
-            //data
-            var instr = ctx.Instructions[ctx.CurIndex];
+            ProcessInstruction(ctx);
+
+            PostAction(ctx);
+            needBreak = true;
+            return true;
+        }
+
+        protected virtual void ProcessInstruction(MethodContext ctx)
+        {
+            var instr = ctx.CurInstruction;
             var ldstr = Register(ctx, PointType);
             var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 
@@ -54,9 +62,6 @@ namespace Drill4Net.Injector.Core
             var processor = ctx.Processor;
             processor.InsertBefore(instr, ldstr);
             processor.InsertBefore(instr, call);
-
-            PostAction(ctx);
-            needBreak = true;
         }
 
         /// <summary>

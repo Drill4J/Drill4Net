@@ -43,7 +43,7 @@ namespace Drill4Net.Injector.Core
         public HashSet<Instruction> BusinessInstructions { get; }
 
         /// <summary>
-        /// Last instruction of the method
+        /// Last instruction of the method (potentially including first instrumented instruction for this block)
         /// </summary>
         public Instruction LastOperation { get; set; }
 
@@ -53,9 +53,9 @@ namespace Drill4Net.Injector.Core
         public HashSet<Instruction> CompilerInstructions { get; }
 
         /// <summary>
-        /// Already ahead processed instruction
+        /// Already processed instruction
         /// </summary>
-        public HashSet<Instruction> AheadProcessed { get; }
+        public HashSet<Instruction> Processed { get; }
 
         /// <summary>
         /// Method's processor for the IL instructions
@@ -124,7 +124,7 @@ namespace Drill4Net.Injector.Core
         public Instruction CurInstruction =>
             CurIndex >= 0 && CurIndex < Instructions.Count ?
                 Instructions[CurIndex] :
-                throw new ArgumentOutOfRangeException($"CurIndex must be in range of Instruction collection");
+                throw new ArgumentOutOfRangeException("CurIndex must be in range of Instruction collection");
 
         /***********************************************************************************************/
 
@@ -149,7 +149,7 @@ namespace Drill4Net.Injector.Core
             LastOperation = instructions.Last();
             //
             BusinessInstructions = new HashSet<Instruction>();
-            AheadProcessed = new HashSet<Instruction>();
+            Processed = new HashSet<Instruction>();
             StartingInjectInstructions = new HashSet<object>();
             CompilerInstructions = new HashSet<Instruction>();
             ReplacedJumps = new Dictionary<Instruction, Instruction>();
@@ -182,6 +182,13 @@ namespace Drill4Net.Injector.Core
         {
             CurIndex += inc;
             return CurIndex;
+        }
+
+        public void RegisterProcessed()
+        {
+            var instr = CurInstruction;
+            if(!Processed.Contains(instr))
+                Processed.Add(instr);
         }
         
         public override string ToString()

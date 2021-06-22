@@ -73,7 +73,8 @@ namespace Drill4Net.Injector.Core
             var needBreak = false;
             try
             {
-                HandleInstructionConcrete(ctx, out needBreak);
+                if (HandleInstructionConcrete(ctx, out needBreak))
+                    ctx.RegisterProcessed();
             }
             finally
             {
@@ -87,7 +88,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ctx">Method's context</param>
         /// <param name="needBreak">If the current instruction was processed either need to break further processing by next handlers?</param>
-        protected abstract void HandleInstructionConcrete(MethodContext ctx, out bool needBreak);
+        protected abstract bool HandleInstructionConcrete(MethodContext ctx, out bool needBreak);
         #endregion
         #region Postprocess the method
         /// <summary>
@@ -138,7 +139,7 @@ namespace Drill4Net.Injector.Core
             if (ind < 0)
                 throw new ArgumentException(nameof(ind));
             if (asProcessed)
-                ctx.AheadProcessed.Add(ctx.Instructions[ind]);
+                ctx.Processed.Add(ctx.Instructions[ind]);
             var probeData = GetProbeData(ctx, type, ind, out var point);
             return GetStartingInjectedInstruction(ctx, probeData);
         }

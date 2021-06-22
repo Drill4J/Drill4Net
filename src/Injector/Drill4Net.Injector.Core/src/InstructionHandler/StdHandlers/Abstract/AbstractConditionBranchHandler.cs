@@ -16,12 +16,12 @@ namespace Drill4Net.Injector.Core
 
         /*******************************************************************************************/
 
-        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
+        protected override bool HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             #region Init
             needBreak = false;
+
             var treeFunc = ctx.Method;
-            
             var instructions = ctx.Instructions;
             var instr = instructions[ctx.CurIndex];
             var opCode = instr.OpCode;
@@ -37,7 +37,7 @@ namespace Drill4Net.Injector.Core
             #endregion
             #region Checks
             if (flow != FlowControl.Cond_Branch)
-                return;
+                return false;
 
             #region 'Using' statement
             //check for 'using' statement (compiler generated Try/Finally with If-checking)
@@ -48,22 +48,22 @@ namespace Drill4Net.Injector.Core
             {
                 var prev2 = instructions[ctx.CurIndex - 2].OpCode.Code;
                 if (prev2 == Code.Throw)
-                    return;
+                    return false;
                 var isWasTry = prev2 == Code.Leave || prev2 == Code.Leave_S;
                 if (isWasTry)
                 {
                     var b = instructions[ctx.CurIndex + 2];
                     var isDispose = (b.Operand as MemberReference)?.FullName?.EndsWith("IDisposable::Dispose()") == true;
                     if (isDispose)
-                        return;
+                        return false;
                 }
             }
             #endregion
             #region Is this business code?
             if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
-                return;
+                return false;
             if (!IsRealCondition(ctx.CurIndex, instructions))
-                return;
+                return false;
             #endregion
             #region Monitor/lock
             var operand = instr.Operand as Instruction;
@@ -73,15 +73,15 @@ namespace Drill4Net.Injector.Core
                 var prevInstr = SkipNop(endFinInd, false, instructions);
                 var operand2 = prevInstr.Operand as MemberReference;
                 if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
-                    return;
+                    return false;
             }
             #endregion
             #endregion
 
             //IF, FOR/SWITCH
-            ProcessConditionInstruction(ctx, out needBreak);
+            return ProcessConditionInstruction(ctx, out needBreak);
         }
 
-        protected abstract void ProcessConditionInstruction(MethodContext ctx, out bool needBreak);
+        protected abstract bool ProcessConditionInstruction(MethodContext ctx, out bool needBreak);
     }
 }

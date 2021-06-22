@@ -131,7 +131,7 @@ namespace Drill4Net.Injector.Engine
             var code = instr.OpCode.Code;
 
             // for injecting cases
-            if (code == Code.Nop || ctx.AheadProcessed.Contains(instr))
+            if (code == Code.Nop || ctx.Processed.Contains(instr))
                 return OperationType.CycleContinue;
 
             var method = ctx.Method;

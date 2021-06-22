@@ -39,9 +39,10 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        protected override void HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
+        protected override bool HandleInstructionConcrete(MethodContext ctx, out bool needBreak)
         {
             needBreak = false;
+            return false;
         }
     }
 }
