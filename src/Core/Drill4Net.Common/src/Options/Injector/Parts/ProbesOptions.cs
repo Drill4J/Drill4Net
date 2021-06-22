@@ -40,6 +40,11 @@
         /// </summary>
         public bool SkipEnterType { get; set; }
 
+        /// <summary>
+        /// Does the IfElse type of cross-point needed?
+        /// </summary>
+        public bool SkipIfElseType { get; set; }
+
         /***********************************************/
 
         /// <summary>

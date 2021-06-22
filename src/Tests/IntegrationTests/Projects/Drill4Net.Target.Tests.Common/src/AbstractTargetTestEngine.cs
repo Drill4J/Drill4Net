@@ -300,7 +300,7 @@ namespace Drill4Net.Target.Tests.Common
             var type = (InjectedType)_parentMap[method];
 
             InjectedSimpleEntity asmObj = type;
-            do { asmObj = _parentMap[asmObj]; } while (asmObj is { } and not InjectedAssembly); 
+            do { asmObj = _parentMap[asmObj]; } while (asmObj is { } and not InjectedAssembly);
             var asm = asmObj as InjectedAssembly;
 
             return new PointLinkage(asm, type, method, point);

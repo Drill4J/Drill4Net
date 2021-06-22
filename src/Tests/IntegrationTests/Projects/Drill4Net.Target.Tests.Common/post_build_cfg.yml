@@ -39,6 +39,7 @@ Probes: # types of cross-cutting points
     EventAdd: false
     EventRemove: false
     SkipEnterType: true
+    SkipIfElseType: false
 Logs:
     #local log
     - Type: file

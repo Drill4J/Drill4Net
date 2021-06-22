@@ -12,9 +12,10 @@ namespace Drill4Net.Injector.Strategies.Flow
         public FlowStrategy(ProbesOptions probeOpts = null, InjectorDebugOptions dbgOpts = null)
         {
             var helper = new FlowProbeHelper(dbgOpts);
-            
+
             //branches
-            AddHandler(new IfElseHandler(helper));
+            if (probeOpts?.SkipIfElseType != true)
+                AddHandler(new IfElseHandler(helper));
             AddHandler(new NonConditionBranchHandler(helper));
             AddHandler(new CycleHandler(helper));
 

@@ -390,6 +390,11 @@
             Does the Enter type of cross-point needed?
             </summary>
         </member>
+        <member name="P:Drill4Net.Common.ProbesOptions.SkipIfElseType">
+            <summary>
+            Does the IfElse type of cross-point needed?
+            </summary>
+        </member>
         <member name="M:Drill4Net.Common.ProbesOptions.#ctor">
             <summary>
             Create options for the injecting process (types of methods, cross-points, etc)
