@@ -5,8 +5,8 @@ using System.Linq;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler for the cross-point of the "Anchor" type (instructions which are jumpers 
-    /// or the targets for another instruction-jumpers or call business-methods, and thus dividing 
+    /// IL code's handler for the cross-point of the "Anchor" type (instructions which are jumpers
+    /// or the targets for another instruction-jumpers or call business-methods, and thus dividing
     /// IL code to the blocks)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractSimpleHandler" />
@@ -74,14 +74,14 @@ namespace Drill4Net.Injector.Core
 
         protected override void PostprocessConcrete(MethodContext ctx)
         {
-            // in fact, will process not processed instructions
+            //in fact, will process not processed instructions
             var ret = ctx.Instructions.Last();
             foreach (var instr in ctx.BusinessInstructions
                                     .Where(a => ctx.Anchors.Contains(a) &&
                                                 !ctx.Processed.Contains(a) &&
                                                 !ctx.ReplacedJumps.ContainsKey(a) &&
                                                 a != ret
-                                                ))
+                                           ))
             {
                 var ind = ctx.Instructions.IndexOf(instr);
                 ctx.SetPosition(ind);

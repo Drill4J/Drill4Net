@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Core
 
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
-            var instr = instructions[ctx.CurIndex];
+            var instr = ctx.CurInstruction;
             var opCode = instr.OpCode;
             var code = opCode.Code;
 
@@ -83,8 +83,7 @@ namespace Drill4Net.Injector.Core
                 ctx.CorrectIndex(2);
 
                 processed = true;
-
-                //needBreak = false; //also AnchorHandler may processes
+                needBreak = true;
             }
             #endregion
             #region 'Switch when()', etc
@@ -107,6 +106,7 @@ namespace Drill4Net.Injector.Core
                     break;
                 operand = operand.Previous;
             }
+            ctx.Processed.Add(operand);
             var ldstr2 = Register(ctx, crossType, prevCode == Code.Throw ? ind : ind - 1); //need to sub 1 for prev index if no Throw unstruction
 
             //correction
@@ -122,7 +122,7 @@ namespace Drill4Net.Injector.Core
             if(prevCode != Code.Throw)
                 processedInstrs.Add(prev);
 
-            //needBreak = false; //also AnchorHandler may processes
+            needBreak = true;
             #endregion
 
             return true;
