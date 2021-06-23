@@ -201,7 +201,8 @@
         </member>
         <member name="P:Drill4Net.Profiling.Tree.MethodCoverage.BlockByPart">
             <summary>
-            Dictionary of code blocks: key is point Id, value - coverage part of code by this block
+            Dictionary of code blocks: key is point Id, value - coverage part of code by this block.
+            Hint: not used!
             </summary>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.MethodCoverage.PointToBlockEnds">

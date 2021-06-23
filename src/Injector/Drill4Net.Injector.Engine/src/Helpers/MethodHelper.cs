@@ -19,7 +19,7 @@ namespace Drill4Net.Injector.Engine
 
         /*************************************************************************************/
 
-        internal static void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods, 
+        internal static void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods,
             InjectedMethod caller, string calleeName)
         {
             #region Check

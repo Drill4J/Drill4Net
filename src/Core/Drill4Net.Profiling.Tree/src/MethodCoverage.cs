@@ -8,9 +8,10 @@ namespace Drill4Net.Profiling.Tree
     /// </summary>
     [Serializable]
     public class MethodCoverage
-    { 
+    {
         /// <summary>
-        /// Dictionary of code blocks: key is point Id, value - coverage part of code by this block
+        /// Dictionary of code blocks: key is point Id, value - coverage part of code by this block.
+        /// Hint: not used!
         /// </summary>
         public Dictionary<int, float> BlockByPart { get; }
 

@@ -20,10 +20,11 @@ namespace Drill4Net.Injector.Engine
             var allMethods = asmCtx.InjMethodByFullname.Values;
             foreach (var method in allMethods)
             {
+                //for the block type (!) of coverage If/Else type not needed
                 var points = method.Points;
                 var ranges = points
                     .Select(a => a.BusinessIndex)
-                    .Where(c => c != 0) //Enter not needed in any case (for the block type of coverage)
+                    .Where(c => c != 0) //"Enter" type not needed in any case (for the block type of coverage)
                     .OrderBy(b => b)
                     .Distinct() //need for exclude in fact some fictive (for coverage) injections: CycleEnd, etc
                     .ToList();
@@ -39,18 +40,13 @@ namespace Drill4Net.Injector.Engine
                     coverage.PointToBlockEnds.Add(points2[0].PointUid, ind);
                 }
 
-                //by parts
+                //by parts (not used, однако)
                 float origSize = ranges.Last() + 1;
                 var prev = -1;
                 foreach (var range in ranges)
                 {
                     coverage.BlockByPart.Add(range, (range - prev) / origSize);
                     prev = range;
-                }
-                //
-                var sum = coverage.BlockByPart.Values.Sum(); //must be 1.0
-                if (Math.Abs(sum - 1) > 0.0001)
-                {
                 }
             }
         }
