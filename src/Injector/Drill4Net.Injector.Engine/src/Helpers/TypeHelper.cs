@@ -110,7 +110,8 @@ namespace Drill4Net.Injector.Engine
 
                 //too small body for special functions (no logic: pure set/get, empty .сtor, etc)
                 var source = MethodHelper.CreateMethodSource(ownMethod, isAsyncStateMachine, isEnumerable);
-                if (source.MethodType is MethodType.Constructor or MethodType.Setter or MethodType.Getter or MethodType.EventAdd or MethodType.EventRemove)
+                if (source.MethodType is MethodType.Constructor or MethodType.Setter or MethodType.Getter or
+                                         MethodType.EventAdd or MethodType.EventRemove)
                 {
                     if (ownMethod.Body.Instructions.Count(a => a.OpCode.Code != Code.Nop) < 6)
                         continue;

@@ -45,7 +45,7 @@
         /// </summary>
         public bool SkipIfElseType { get; set; }
 
-        /***********************************************/
+        /************************************************************/
 
         /// <summary>
         /// Create options for the injecting process (types of methods, cross-points, etc)

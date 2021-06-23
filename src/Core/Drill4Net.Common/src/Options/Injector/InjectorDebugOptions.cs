@@ -1,5 +1,9 @@
 ﻿namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Debug category for the Injector options
+    /// </summary>
+    /// <seealso cref="Drill4Net.Common.IDebugOptions" />
     public class InjectorDebugOptions : IDebugOptions
     {
         /// <summary>

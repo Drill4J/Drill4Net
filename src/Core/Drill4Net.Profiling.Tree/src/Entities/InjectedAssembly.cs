@@ -12,7 +12,7 @@ namespace Drill4Net.Profiling.Tree
 
         /*********************************************************************/
 
-        public InjectedAssembly(AssemblyVersioning version, string name, string fullName, string path) : base(name, name, path)
+        public InjectedAssembly(AssemblyVersioning version, string name, string fullName, string path): base(name, name, path)
         {
             FullName = fullName;
             Version = version;

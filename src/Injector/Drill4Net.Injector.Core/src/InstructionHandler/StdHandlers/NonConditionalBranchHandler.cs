@@ -9,9 +9,9 @@ namespace Drill4Net.Injector.Core
     /// IL code's handler for the cross-point of the nonconditional instruction's jump (branch)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
-    public class NonConditionBranchHandler : AbstractBaseHandler
+    public class NonConditionalBranchHandler : AbstractBaseHandler
     {
-        public NonConditionBranchHandler(AbstractProbeHelper probeHelper) :
+        public NonConditionalBranchHandler(AbstractProbeHelper probeHelper):
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_NONCONDITIONAL, probeHelper)
         {
         }

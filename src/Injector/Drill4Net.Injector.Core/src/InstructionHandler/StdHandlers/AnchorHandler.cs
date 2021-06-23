@@ -77,11 +77,11 @@ namespace Drill4Net.Injector.Core
             // in fact, will process not processed instructions
             var ret = ctx.Instructions.Last();
             foreach (var instr in ctx.BusinessInstructions
-                .Where(a => ctx.Anchors.Contains(a) &&
-                            !ctx.Processed.Contains(a) &&
-                            !ctx.ReplacedJumps.ContainsKey(a) &&
-                            a != ret
-                            ))
+                                    .Where(a => ctx.Anchors.Contains(a) &&
+                                                !ctx.Processed.Contains(a) &&
+                                                !ctx.ReplacedJumps.ContainsKey(a) &&
+                                                a != ret
+                                                ))
             {
                 var ind = ctx.Instructions.IndexOf(instr);
                 ctx.SetPosition(ind);

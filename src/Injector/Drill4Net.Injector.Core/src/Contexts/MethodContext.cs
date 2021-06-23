@@ -184,6 +184,10 @@ namespace Drill4Net.Injector.Core
             return CurIndex;
         }
 
+        /// <summary>
+        /// Registers the processed instruction in <see cref="Processed"/>.
+        /// </summary>
+        /// <returns></returns>
         public void RegisterProcessed()
         {
             var instr = CurInstruction;

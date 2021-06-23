@@ -13,13 +13,18 @@ namespace Drill4Net.Injector.Strategies.Flow
         {
             var helper = new FlowProbeHelper(dbgOpts);
 
-            //branches
+            //after if/else/switch instructions
             if (probeOpts?.SkipIfElseType != true)
                 AddHandler(new IfElseHandler(helper));
-            AddHandler(new NonConditionBranchHandler(helper));
-            AddHandler(new CycleHandler(helper));
 
+            //prior non-conditional jumps: br & br.s instructions
+            AddHandler(new NonConditionalBranchHandler(helper));
+
+            //prior if & else operators
             AddHandler(new JumperHandler(helper));
+
+            //for/foreach/do/while cycles
+            AddHandler(new CycleHandler(helper));
 
             //catch, throw
             AddHandler(new ThrowHandler(helper));
@@ -33,7 +38,7 @@ namespace Drill4Net.Injector.Strategies.Flow
             //methods' calls (must be prior AnchorHandler)
             AddHandler(new CallHandler(helper));
 
-            //jump targets + call of compiler generated members
+            //jump targets + inner calls of the compiler generated members
             AddHandler(new AnchorHandler(helper, true)); //TODO: automatic check for CycleHandler's existing?
         }
     }

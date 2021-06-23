@@ -137,6 +137,23 @@
             Helper for getting info about methods
             </summary>
         </member>
+        <member name="M:Drill4Net.Injector.Engine.MethodHelper.MapBusinessFunction(Drill4Net.Injector.Core.MethodContext)">
+            <summary>
+            Maps the business function to compiler generated ones.
+            </summary>
+            <param name="ctx">The method's context.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.MethodHelper.TryGetBusinessMethod(System.String,System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Tries the get business method from the the string data.
+            </summary>
+            <param name="typeName">Name of the type.</param>
+            <param name="methodName">Name of the method.</param>
+            <param name="isCompilerGenerated">if set to <c>true</c> the method is compiler generated.</param>
+            <param name="isAsyncStateMachine">if set to <c>true</c> the method is located in asynchronous state machine.</param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Injector.Engine.MethodHelper.GetMethodType(Mono.Cecil.MethodDefinition)">
             <summary>
             Get the type of method by its semantic (ctor, normal, setter/getter, compiler generated, etc)

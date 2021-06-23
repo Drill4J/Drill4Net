@@ -41,8 +41,8 @@ namespace Drill4Net.Injector.Core
                 return false;
 
             ProcessInstruction(ctx);
-
             PostAction(ctx);
+
             needBreak = true;
             return true;
         }
@@ -72,7 +72,7 @@ namespace Drill4Net.Injector.Core
         protected abstract bool IsCondition(MethodContext ctx);
 
         /// <summary>
-        /// Post action after main injection.
+        /// Post action after main injection for the current instruction.
         /// </summary>
         /// <param name="ctx"></param>
         protected virtual void PostAction(MethodContext ctx) {}

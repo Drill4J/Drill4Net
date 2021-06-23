@@ -42,6 +42,11 @@ namespace Drill4Net.Injector.Engine
             caller.BusinessSize += callee.BusinessSize;
         }
 
+        /// <summary>
+        /// Maps the business function to compiler generated ones.
+        /// </summary>
+        /// <param name="ctx">The method's context.</param>
+        /// <returns></returns>
         internal static void MapBusinessFunction(MethodContext ctx)
         {
             var instr = ctx.CurInstruction;
@@ -148,10 +153,18 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Getting real name of func method: [{extOp}]");
+                Log.Error(ex, "Getting real name of func method: [{ExtOp}]", extOp);
             }
         }
 
+        /// <summary>
+        /// Tries the get business method from the the string data.
+        /// </summary>
+        /// <param name="typeName">Name of the type.</param>
+        /// <param name="methodName">Name of the method.</param>
+        /// <param name="isCompilerGenerated">if set to <c>true</c> the method is compiler generated.</param>
+        /// <param name="isAsyncStateMachine">if set to <c>true</c> the method is located in asynchronous state machine.</param>
+        /// <returns></returns>
         internal static string TryGetBusinessMethod(string typeName, string methodName, bool isCompilerGenerated,
                 bool isAsyncStateMachine)
         {
