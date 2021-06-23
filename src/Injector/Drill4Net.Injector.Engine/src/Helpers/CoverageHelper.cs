@@ -34,6 +34,7 @@ namespace Drill4Net.Injector.Engine
                 var coverage = method.Coverage;
                 foreach (var ind in ranges)
                 {
+                    //some paired points may have same index (Cycle/CycleEnd)
                     var points2 = points.Where(a => a.BusinessIndex == ind).ToList();
                     if (points2.Count() > 1)
                         points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...

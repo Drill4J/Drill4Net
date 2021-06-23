@@ -25,12 +25,19 @@
         CatchFilter = 13,
         FinalyLeave = 14, //?
 
-        //misc
+        /// <summary>
+        /// The call of the business method
+        /// </summary>
         Call = 15,
-        Jumper = 16,
-        Monitor = 25,
 
+        /// <summary>
+        /// The anchor for the jumper instructions
+        /// </summary>
+        Anchor = 16,
 
-        Anchor = 100,
+        /// <summary>
+        /// The conditional and non-conditional branches (cross-point prior the IF/ELSE, br and br.s instructions)
+        /// </summary>
+        Branch = 17,
     }
 }

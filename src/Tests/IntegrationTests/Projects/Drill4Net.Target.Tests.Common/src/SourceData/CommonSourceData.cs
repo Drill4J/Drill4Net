@@ -213,7 +213,7 @@ namespace Drill4Net.Target.Tests.Common
                 #region Misc
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { false }, new List<string> { "If_7" }).SetCategory(CATEGORY_MISC);
                 yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { true }, new List<string>()).SetCategory(CATEGORY_MISC);
-                
+
                 yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Backward), Array.Empty<object>(), new List<string> { "Else_20", "Anchor_21", "Else_20", "Anchor_21", "If_19", "Anchor_24" }).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Forward), new object[] { false }, new List<string> { "Anchor_26", "Cycle_31", "If_16", "Anchor_26", "Cycle_31", "If_16", "Anchor_26", "CycleEnd_31" }).SetCategory(CATEGORY_MISC);
@@ -298,15 +298,15 @@ namespace Drill4Net.Target.Tests.Common
                     );
                 #endregion
                 #region Anonymous
-                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func), new List<string> { "Call_13", "If_6" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func), new List<string> { "Call_13", "Branch_6", "If_6", "Anchor_11", "Branch_22" }));
 
-                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_Invoke), new List<string> { "Call_13", "If_6" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_Invoke), new List<string> { "Call_13", "Branch_6", "If_6", "Anchor_11", "Branch_22" }));
 
                 //at the moment, we decided not to consider local functions as separate entities 
-                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_WithLocalFunc), new List<string> { "Call_7", "If_6" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_WithLocalFunc), new List<string> { "Call_7", "Branch_6", "If_6", "Anchor_11", "Branch_22" }));
 
-                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "Else_3", "Anchor_7", "Call_14" }));
-                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "If_5", "Anchor_7", "Call_14" }));
+                yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "Branch_3", "Else_3", "Branch_9", "Anchor_7", "Call_14" }));
+                yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "Branch_3", "If_3", "If_5", "Anchor_6", "Anchor_7", "Call_14" }));
                 #endregion
                 #region Async/await
                 yield return GetCase(new object[] { false }, true, true, new TestInfo(GetInfo(Target.Async_Lambda), new List<string> { "Call_3", "Call_3", "Else_57" }));

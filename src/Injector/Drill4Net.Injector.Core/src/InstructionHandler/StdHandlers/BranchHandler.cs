@@ -5,13 +5,13 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler for the cross-point of the "Jumper" type
+    /// IL code's handler for the cross-point of the "Branch" type
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
-    public class JumperHandler : AbstractBaseHandler
+    public class BranchHandler : AbstractBaseHandler
     {
-        public JumperHandler(AbstractProbeHelper probeHelper) :
-            base(InjectorCoreConstants.INSTRUCTION_HANDLER_JUMPER, probeHelper)
+        public BranchHandler(AbstractProbeHelper probeHelper):
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH, probeHelper)
         {
         }
 
@@ -26,7 +26,7 @@ namespace Drill4Net.Injector.Core
             foreach (var instr in ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a)))
             {
                 var ind = ctx.Instructions.IndexOf(instr);
-                var ldstr = Register(ctx, CrossPointType.Jumper, ind);
+                var ldstr = Register(ctx, CrossPointType.Branch, ind);
                 var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 
                 //correction

@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core
     public class EnterHandler : AbstractBaseHandler
     {
         public EnterHandler(AbstractProbeHelper probeHelper):
-            base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_CONDITIONAL, probeHelper)
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_IF_ELSE, probeHelper)
         {
         }
 

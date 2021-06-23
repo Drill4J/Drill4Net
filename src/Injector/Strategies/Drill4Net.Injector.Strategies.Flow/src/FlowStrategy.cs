@@ -15,13 +15,13 @@ namespace Drill4Net.Injector.Strategies.Flow
 
             //after if/else/switch instructions
             if (probeOpts?.SkipIfElseType != true)
+            {
                 AddHandler(new IfElseHandler(helper));
+                AddHandler(new IfElsePairedHandler(helper));
+            }
 
-            //prior non-conditional jumps: br & br.s instructions
-            AddHandler(new NonConditionalBranchHandler(helper));
-
-            //prior if & else operators
-            AddHandler(new JumperHandler(helper));
+            //prior if/else operators and br + br.s instructions
+            AddHandler(new BranchHandler(helper));
 
             //for/foreach/do/while cycles
             AddHandler(new CycleHandler(helper));

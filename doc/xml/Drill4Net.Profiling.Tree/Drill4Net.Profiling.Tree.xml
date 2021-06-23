@@ -87,6 +87,21 @@
             The type of the cross-point in the intrumented Target
             </summary>
         </member>
+        <member name="F:Drill4Net.Profiling.Tree.CrossPointType.Call">
+            <summary>
+            The call of the business method
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.CrossPointType.Anchor">
+            <summary>
+            The anchor for the jumper instructions
+            </summary>
+        </member>
+        <member name="F:Drill4Net.Profiling.Tree.CrossPointType.Branch">
+            <summary>
+            The conditional and non-conditional branches (cross-point prior the IF/ELSE, br and br.s instructions)
+            </summary>
+        </member>
         <member name="T:Drill4Net.Profiling.Tree.InjectedMethod">
             <summary>
             The injected method

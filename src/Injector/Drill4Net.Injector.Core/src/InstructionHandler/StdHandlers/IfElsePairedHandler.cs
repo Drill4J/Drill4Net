@@ -6,13 +6,14 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler for the cross-point of the nonconditional instruction's jump (branch)
+    /// IL code's handler for the cross-point of the nonconditional instruction's jump br/br.s
+    /// (paired IF/ELSE operators in the conditional branch)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
-    public class NonConditionalBranchHandler : AbstractBaseHandler
+    public class IfElsePairedHandler : AbstractBaseHandler
     {
-        public NonConditionalBranchHandler(AbstractProbeHelper probeHelper):
-            base(InjectorCoreConstants.INSTRUCTION_HANDLER_BRANCH_NONCONDITIONAL, probeHelper)
+        public IfElsePairedHandler (AbstractProbeHelper probeHelper):
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_IF_ELSE_PAIRED, probeHelper)
         {
         }
 
