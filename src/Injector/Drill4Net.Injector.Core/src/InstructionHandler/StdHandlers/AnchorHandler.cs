@@ -84,6 +84,12 @@ namespace Drill4Net.Injector.Core
                                            ))
             {
                 var ind = ctx.Instructions.IndexOf(instr);
+                //TODO: instead such inefficient check better immediately to exclude the bad branches in ctx.Anchors
+                var prev = SkipNop(ind, false, ctx.Instructions);
+                var prevInd = ctx.Instructions.IndexOf(prev);
+                if (!IsRealCondition(prevInd, ctx.Instructions))
+                    continue;
+                //
                 ctx.SetPosition(ind);
                 ProcessInstruction(ctx);
             }

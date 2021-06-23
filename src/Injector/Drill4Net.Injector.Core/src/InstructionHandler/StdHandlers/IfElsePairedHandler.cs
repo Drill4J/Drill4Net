@@ -6,8 +6,8 @@ using Drill4Net.Profiling.Tree;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// IL code's handler for the cross-point of the nonconditional instruction's jump br/br.s
-    /// (paired IF/ELSE operators in the conditional branch)
+    /// IL code's handler for the cross-point of the nonconditional instruction's jump - br and br.s
+    /// (some separate paired IF/ELSE operators in the conditional branch)
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractBaseHandler" />
     public class IfElsePairedHandler : AbstractBaseHandler
