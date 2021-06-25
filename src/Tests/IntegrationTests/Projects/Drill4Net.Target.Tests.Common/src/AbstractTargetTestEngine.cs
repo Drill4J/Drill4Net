@@ -137,6 +137,7 @@ namespace Drill4Net.Target.Tests.Common
             {
                 Assert.IsTrue(funcs.Count == inputs.Length);
 
+                //by subfunctions in main calls
                 foreach (var data in inputs)
                 {
                     string source;

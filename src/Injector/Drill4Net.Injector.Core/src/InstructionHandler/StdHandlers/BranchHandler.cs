@@ -26,6 +26,13 @@ namespace Drill4Net.Injector.Core
             foreach (var instr in ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a)))
             {
                 var ind = ctx.Instructions.IndexOf(instr);
+
+                //check for too short jump
+                var prev = SkipNop(ind, false, ctx.Instructions);
+                var prevInd = ctx.Instructions.IndexOf(prev);
+                if (!IsRealCondition(prevInd, ctx.Instructions))
+                    continue;
+
                 var ldstr = Register(ctx, CrossPointType.Branch, ind);
                 var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 

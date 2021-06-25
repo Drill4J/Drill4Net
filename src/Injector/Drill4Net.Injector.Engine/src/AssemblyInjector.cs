@@ -92,7 +92,7 @@ namespace Drill4Net.Injector.Engine
                     CollectJumpers(methodCtx);
                     CollectCallsInfo(asmCtx, treeAsmMethods);
                     InjectMethod(methodCtx);
-                    CorrectJumps(methodCtx.Jumpers.ToArray());
+                    CorrectJumps(methodCtx.Jumpers);
 
                     body.Optimize();
                     body.OptimizeMacros();
