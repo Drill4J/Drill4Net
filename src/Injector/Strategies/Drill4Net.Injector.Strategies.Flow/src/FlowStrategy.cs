@@ -15,10 +15,7 @@ namespace Drill4Net.Injector.Strategies.Flow
 
             //after if/else/switch instructions
             if (probeOpts?.SkipIfElseType != true)
-            {
                 AddHandler(new IfElseHandler(helper));
-                //AddHandler(new IfElsePairedHandler(helper));
-            }
 
             //prior if/else operators and br + br.s instructions
             AddHandler(new BranchHandler(helper));

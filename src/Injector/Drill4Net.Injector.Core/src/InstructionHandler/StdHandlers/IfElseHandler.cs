@@ -28,7 +28,6 @@ namespace Drill4Net.Injector.Core
 
             var processedInstrs = ctx.Processed;
             var processed = false;
-            var ifStack = ctx.IfStack;
             var crossType = CrossPointType.Unset;
 
             var proxyMethRef = ctx.AssemblyCtx.ProxyMethRef;
@@ -61,13 +60,8 @@ namespace Drill4Net.Injector.Core
             //version. This also means that it is impossible to determine exactly what was
             //in the source code only from the IL code.
 
-            ifStack.Push(instr);
             if (code == Code.Switch)
-            {
-                for (var k = 0; k < ((Instruction[])instr.Operand).Length - 1; k++)
-                    ifStack.Push(instr);
                 crossType = CrossPointType.Switch;
-            }
             #endregion
             #region IF
             if (code == Code.Switch || instructions[ctx.CurIndex + 1].OpCode.FlowControl != FlowControl.Branch) //empty IF?

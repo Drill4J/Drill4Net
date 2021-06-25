@@ -68,11 +68,6 @@ namespace Drill4Net.Injector.Core
         public Collection<ExceptionHandler> ExceptionHandlers { get; }
 
         /// <summary>
-        /// Current stack of the If/Else instructions
-        /// </summary>
-        public Stack<Instruction> IfStack { get; }
-
-        /// <summary>
         /// Do we need restrict Enter and Return cross-point's injection?
         /// </summary>
         public bool IsStrictEnterReturn { get; set; }
@@ -155,7 +150,6 @@ namespace Drill4Net.Injector.Core
             ReplacedJumps = new Dictionary<Instruction, Instruction>();
             Jumpers = new HashSet<Instruction>();
             Anchors = new HashSet<object> ();
-            IfStack = new Stack<Instruction>();
         }
 
         /***********************************************************************************************/
