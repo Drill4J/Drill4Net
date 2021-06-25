@@ -17,7 +17,7 @@ namespace Drill4Net.Common
         /// </summary>
         public List<FolderData> Folders { get; set; }
 
-        /*********************************************************/
+        /************************************************************/
 
         public override string ToString()
         {

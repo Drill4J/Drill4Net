@@ -27,7 +27,7 @@ namespace Drill4Net.Common
 
         /*******************************************************************************/
 
-        public static string ConvertTargetTypeToFolder(string fullType)
+        public static string ConvertTargetTypeToMoniker(string fullType)
         {
             if (fullType.StartsWith(".NETFramework"))
                 return null;

@@ -104,10 +104,12 @@ namespace Drill4Net.Profiling.Tree
         public virtual Dictionary<T, T> CalcParentMap()
         {
             var map = new Dictionary<T, T>();
-            Traverse((_, child, parent) => 
+            Traverse((_, child, parent) =>
             {
                 if (!map.ContainsKey(child))
+                {
                     map.Add(child, parent); //child:parent = 1:1
+                }
                 else
                 {
                     var prev = map[child];

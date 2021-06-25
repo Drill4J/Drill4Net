@@ -319,8 +319,6 @@ namespace Drill4Net.Target.Tests.Common
                     var ar = must.Split('|');
                     if (ar[0] != real && ar[1] != real)
                         Assert.Fail($"Index: {i}");
-                    //else
-                    //    Assert.Pass();
                 }
                 else
                 {

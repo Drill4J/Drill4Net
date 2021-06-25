@@ -51,8 +51,12 @@ namespace Drill4Net.Agent.Testing
                     //tree info
                     var targetsDir = rep.GetTargetsDir(callingDir);
                     var treePath = Path.Combine(targetsDir, CoreConstants.TREE_FILE_NAME);
-                    var tree = rep.ReadInjectedTree(treePath);
-                    _pointToMethods = tree.MapPointToMethods();
+                    var tree = rep.ReadInjectedTree(treePath); //full tree data
+                    var version = CommonUtils.GetCallingTargetVersioning(); //current version
+                    var moniker = SdkHelper.ConvertTargetTypeToMoniker(version.RawVersion);
+                    var verTree = tree.GetFrameworkRootDirectory(moniker); //tree data for current version
+
+                    _pointToMethods = verTree.MapPointToMethods();
                     domain.SetData(nameof(_pointToMethods), _pointToMethods);
 
                     _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
@@ -144,6 +148,9 @@ namespace Drill4Net.Agent.Testing
                         .GetFields(BindingFlags.NonPublic | BindingFlags.Instance), a => a.Name == "_value3");
                     if (ctxFld != null)
                     {
+                        if (_execIdToTestId == null)
+                            return CONTEXT_UNKNOWN;
+
                         //This defines the logical execution path of function callers regardless
                         //of whether threads are created in async/await or Parallel.For
                         //It doesn't work very well on its own, at least not for everyone's version 
