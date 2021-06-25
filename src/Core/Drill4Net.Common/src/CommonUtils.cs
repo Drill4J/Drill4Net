@@ -25,6 +25,11 @@ namespace Drill4Net.Common
             return new AssemblyVersioning(GetAssemblyVersion(Assembly.GetCallingAssembly()));
         }
 
+        public static AssemblyVersioning GetExecutingTargetVersioning()
+        {
+            return new AssemblyVersioning(GetAssemblyVersion(Assembly.GetExecutingAssembly()));
+        }
+
         /// <summary>
         /// Get string version of specified assembly
         /// </summary>

@@ -52,11 +52,11 @@ namespace Drill4Net.Agent.Testing
                     var targetsDir = rep.GetTargetsDir(callingDir);
                     var treePath = Path.Combine(targetsDir, CoreConstants.TREE_FILE_NAME);
                     var tree = rep.ReadInjectedTree(treePath); //full tree data
-                    var version = CommonUtils.GetCallingTargetVersioning(); //current version
-                    var moniker = SdkHelper.ConvertTargetTypeToMoniker(version.RawVersion);
-                    var verTree = tree.GetFrameworkRootDirectory(moniker); //tree data for current version
+                    //var version = CommonUtils.GetCallingTargetVersioning(); //current version (not correct for NetFx)
+                    //var moniker = SdkHelper.ConvertTargetTypeToMoniker(version.RawVersion);
+                    //var verTree = tree.GetFrameworkRootDirectory(moniker); //tree data for current version
 
-                    _pointToMethods = verTree.MapPointToMethods();
+                    _pointToMethods = tree.MapPointToMethods();
                     domain.SetData(nameof(_pointToMethods), _pointToMethods);
 
                     _clientPoints = new ConcurrentDictionary<string, Dictionary<string, List<string>>>();
