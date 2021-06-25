@@ -193,8 +193,8 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { true }, new List<string> { "Branch_5", "If_9", "Branch_20" });
                 #endregion
                 #region Dynamic
-                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { false }, new List<string> { "Branch_4", "Anchor_6", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45", "Anchor_67", "Call_72", "Branch_2", "Else_2", "Branch_8", "Anchor_6", "Branch_17" }).SetCategory(CATEGORY_DYNAMIC);
-                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { true }, new List<string> { "Branch_4", "Anchor_6", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45", "Anchor_67", "Call_72", "Branch_2", "If_4", "Anchor_6", "Branch_17" }).SetCategory(CATEGORY_DYNAMIC);
+                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { false }, new List<string> { "Branch_4", "Anchor_6|Branch_7", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45|Branch_54", "Anchor_67", "Call_72", "Branch_2", "Else_2", "Branch_8", "Anchor_6", "Branch_17" }).SetCategory(CATEGORY_DYNAMIC);
+                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { true }, new List<string> { "Branch_4", "Anchor_6|Branch_7", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45|Branch_54", "Anchor_67", "Call_72", "Branch_2", "If_4", "Anchor_6", "Branch_17" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
                 yield return GetCase(GetInfo(Target.Cycle_Do), Array.Empty<object>(), new List<string> { "Cycle_21", "Branch_23", "Cycle_21", "Branch_23", "Cycle_21", "Branch_23", "CycleEnd_21" }); //local IDs may match
@@ -444,13 +444,13 @@ namespace Drill4Net.Target.Tests.Common
                 #endregion
                 #region Dynamic
                 yield return GetCase(new object[] { false },
-                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "Branch_4", "Anchor_6", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45", "Anchor_67", "Call_72", "Branch_2", "Else_2", "Branch_8", "Anchor_6", "Branch_17" }),
+                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "Branch_4", "Anchor_6|Branch_7", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45|Branch_54", "Anchor_67", "Call_72", "Branch_2", "Else_2", "Branch_8", "Anchor_6", "Branch_17" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.DynamicDictionary::.ctor()"), false, new List<string>()),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string> { "Branch_11" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string> { "Branch_11" }));
 
                 yield return GetCase(new object[] { true },
-                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "Branch_4", "Anchor_6", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45", "Anchor_67", "Call_72", "Branch_2", "If_4", "Anchor_6", "Branch_17" }),
+                    new TestInfo(GetInfo(Target.DynamicObject), new List<string> { "Branch_4", "Anchor_6|Branch_7", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45|Branch_54", "Anchor_67", "Call_72", "Branch_2", "If_4", "Anchor_6|Branch_7", "Branch_17" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.DynamicDictionary::.ctor()"), false, new List<string>()),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TrySetMember(System.Dynamic.SetMemberBinder,System.Object)"), false, new List<string> { "Branch_11" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Boolean Drill4Net.Target.Common.DynamicDictionary::TryGetMember(System.Dynamic.GetMemberBinder,System.Object&)"), false, new List<string> { "Branch_11" }));

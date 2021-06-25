@@ -309,7 +309,24 @@ namespace Drill4Net.Target.Tests.Common
         
         private static void Check(IList<PointLinkage> links, List<string> checks)
         {
-            Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
+            //Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
+            for (int i = 0; i < links.Count; i++)
+            {
+                var real = links[i].Probe;
+                var must = checks[i];
+                if (must.Contains('|'))
+                {
+                    var ar = must.Split('|');
+                    if (ar[0] != real && ar[1] != real)
+                        Assert.Fail($"Index: {i}");
+                    //else
+                    //    Assert.Pass();
+                }
+                else
+                {
+                    Assert.AreEqual(must, real, $"Index: {i}");
+                }
+            }
         }
         #endregion
     }

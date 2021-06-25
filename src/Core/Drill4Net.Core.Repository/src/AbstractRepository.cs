@@ -151,8 +151,7 @@ namespace Drill4Net.Core.Repository
             //
             var bytes2 = File.ReadAllBytes(path);
             using var ms2 = new MemoryStream(bytes2);
-            var tree = _ser.Deserialize(ms2) as InjectedSolution;
-            if (tree == null)
+            if (_ser.Deserialize(ms2) is not InjectedSolution tree)
                 throw new System.Exception($"Tree data not read: [{path}]");
             return tree;
         }
