@@ -30,6 +30,8 @@ namespace Drill4Net.Common
 
         public bool IsFolderNeed(string folder)
         {
+            if (Excludes?.Folders?.Contains("*") == true)
+                return false;
             if (Excludes?.IsFolderListed(folder) == true)
                 return false;
             if (Includes?.Folders == null || !Includes.Folders.Any())

@@ -68,8 +68,10 @@ namespace Drill4Net.Injector.Engine
 
             //copying of all needed data in needed targets
             var monikers = opts.Versions?.Targets;
+            Log.Information("The source is copying...");
             _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the filter
-            
+            Log.Information("The source is copied...");
+
             //tree
             var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
             {
@@ -80,7 +82,11 @@ namespace Drill4Net.Injector.Engine
             //ctx of this Run
             using var runCtx = new RunContext(_rep, tree);
 
-            //targets from in cfg
+            //files in root
+            runCtx.SourceDirectory = runCtx.RootDirectory;
+            ProcessDirectory(runCtx);
+
+            //folders: possible targets from in cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
@@ -142,7 +148,8 @@ namespace Drill4Net.Injector.Engine
             if (!opts.Source.Filter.IsDirectoryNeed(directory))
                 return false;
             var folder = new DirectoryInfo(directory).Name;
-            if (!opts.Source.Filter.IsFolderNeed(folder))
+            var isRoot = runCtx.SourceDirectory == runCtx.RootDirectory;
+            if (!isRoot && !opts.Source.Filter.IsFolderNeed(folder))
                 return false;
             Log.Debug("Processing dir [{Directory}]", directory);
 
@@ -176,7 +183,10 @@ namespace Drill4Net.Injector.Engine
             var filePath = runCtx.SourceFile;
 
             //filter
-            if (!opts.Source.Filter.IsFileNeed(filePath))
+            var filter = opts.Source.Filter;
+            if (!filter.IsFileNeed(Path.GetFileName(filePath)))
+                return false;
+            if (!filter.IsNamespaceNeed(Path.GetFileNameWithoutExtension(filePath))) //TODO: FileName regex in IsFileNeed!
                 return false;
             if (!_typeChecker.CheckByAssemblyPath(filePath))
                 return false;
