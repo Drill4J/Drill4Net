@@ -183,12 +183,7 @@ namespace Drill4Net.Injector.Engine
             var filePath = runCtx.SourceFile;
 
             //filter
-            var filter = opts.Source.Filter;
-            if (!filter.IsFileNeed(Path.GetFileName(filePath)))
-                return false;
-            if (!filter.IsNamespaceNeed(Path.GetFileNameWithoutExtension(filePath))) //TODO: FileName regex in IsFileNeed!
-                return false;
-            if (!_typeChecker.CheckByAssemblyPath(filePath))
+            if (!opts.Source.Filter.IsFileNeedByPath(Path.GetFileName(filePath)))
                 return false;
             #endregion
 
@@ -203,11 +198,12 @@ namespace Drill4Net.Injector.Engine
 
             //processing
             runCtx.Inject(asmCtx);
+            Log.Debug("Injected: [{File}]", runCtx.SourceFile);
 
             //writing modified assembly and symbols to new file
             var writer = new AssemblyWriter();
             var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-            Log.Information("Modified assembly is created: {ModifiedPath}", modifiedPath);
+            Log.Information("Writed: {ModifiedPath}", modifiedPath);
 
             return true;
         }

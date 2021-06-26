@@ -54,15 +54,14 @@ namespace Drill4Net.Injector.Core
         public bool? IsNetCore { get; private set; }
 
         /// <summary>
-        /// Version with some metadata of the current project/service/frontend in 
-        /// the broadest sense - business version of "main" assembly
+        /// Version of framework with some metadata of the current project/service/frontend
         /// </summary>
-        public AssemblyVersioning MainVersion { get; private set; }
+        public AssemblyVersioning FrameworkVersion { get; private set; }
 
         /// <summary>
         /// Outcome paths of processed assemblies by Guid of the corresponding assembly context 
         /// </summary>
-        public Dictionary<string, string> AssemblyPaths { get; private set; }
+        public Dictionary<string, string> AssemblyPaths { get; }
 
         /// <summary>
         /// Versions of processed assemblies by path to file 
@@ -108,37 +107,41 @@ namespace Drill4Net.Injector.Core
                 throw new DirectoryNotFoundException($"Source directory not exists: [{dir}]");
             var files = Repository.GetAssemblies(dir);
             var versions = new Dictionary<string, AssemblyVersioning>();
+            var filter = Options.Source.Filter;
 
             //we should be located in the project folder of a specific moniker,
             //not in root dir for the project or whole Injector Engine Run
 
             //as hint 'exe' must be first - after 'dll'
-            foreach (var file in files.OrderBy(a => a))
+            foreach (var filePath in files.OrderBy(a => a))
             {
+                if (!filter.IsFileNeedByPath(filePath))
+                    continue;
+
                 AssemblyVersioning version;
-                if (IsNetCore == true && Path.GetExtension(file) == ".exe")
+                if (IsNetCore == true && Path.GetExtension(filePath) == ".exe")
                 {
-                    var dll = Path.Combine(Path.ChangeExtension(file, ".dll"));
+                    var dll = Path.Combine(Path.ChangeExtension(filePath, ".dll"));
                     var dllVer = versions.FirstOrDefault(a => a.Key == dll).Value;
                     version = dllVer ?? new AssemblyVersioning() { Target = AssemblyVersionType.NetCore };
-                    MainVersion = version;
-                    versions.Add(file, version);
+                    FrameworkVersion = version;
+                    versions.Add(filePath, version);
                     continue;
                 }
 
-                version = Repository.TryGetAssemblyVersion(file);
-                versions.Add(file, version);
+                version = Repository.TryGetAssemblyVersion(filePath);
+                versions.Add(filePath, version);
 
                 if (IsNetCore == null) //no data yet
                 {
                     switch (version.Target)
                     {
                         case AssemblyVersionType.NetCore:
-                            MainVersion = version;
+                            FrameworkVersion = version;
                             IsNetCore = true;
                             break;
                         case AssemblyVersionType.NetFramework:
-                            MainVersion = version;
+                            FrameworkVersion = version;
                             IsNetCore = false;
                             break;
                     }

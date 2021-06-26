@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 
 namespace Drill4Net.Common
 {
@@ -7,6 +8,17 @@ namespace Drill4Net.Common
     /// </summary>
     public class SourceFilterOptions
     {
+        private readonly TypeChecker _typeChecker;
+
+        /**********************************************************************/
+
+        public SourceFilterOptions()
+        {
+            _typeChecker = new TypeChecker();
+        }
+
+        /**********************************************************************/
+
         /// <summary>
         /// What are we include in Target. <see cref="Includes"/> takes precedence over it
         /// </summary>
@@ -37,6 +49,17 @@ namespace Drill4Net.Common
             if (Includes?.Folders == null || !Includes.Folders.Any())
                 return true;
             return Includes.IsFolderListed(folder);
+        }
+
+        public bool IsFileNeedByPath(string filePath)
+        {
+            if (!IsFileNeed(Path.GetFileName(filePath)))
+                return false;
+            if (!IsNamespaceNeed(Path.GetFileNameWithoutExtension(filePath))) //TODO: FileName regex in IsFileNeed!
+                return false;
+            if (!_typeChecker.CheckByAssemblyPath(filePath))
+                return false;
+            return true;
         }
 
         public bool IsFileNeed(string name)
