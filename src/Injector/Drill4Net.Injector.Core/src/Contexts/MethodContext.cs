@@ -163,6 +163,8 @@ namespace Drill4Net.Injector.Core
         {
             if (index < 0)
                 throw new ArgumentException("Index must greater zero");
+            if (index >= Instructions.Count)
+                index = Instructions.Count - 1;
             CurIndex = index;
             SourceIndex = OrigInstructions.IndexOf(Instructions[index]);
         }

@@ -187,23 +187,33 @@ namespace Drill4Net.Injector.Engine
                 return false;
             #endregion
 
-            //reading
-            var reader = new AssemblyReader();
-            using var asmCtx = reader.ReadAssembly(runCtx);
-            if (asmCtx.Skipped)
+            try
+            {
+                //reading
+                var reader = new AssemblyReader();
+                using var asmCtx = reader.ReadAssembly(runCtx);
+                if (asmCtx.Skipped)
+                    return false;
+
+                if (!Directory.Exists(asmCtx.DestinationDir))
+                    Directory.CreateDirectory(asmCtx.DestinationDir);
+
+                //processing
+                runCtx.Inject(asmCtx);
+                Log.Debug("Injected: [{File}]", runCtx.SourceFile);
+
+                //writing modified assembly and symbols to new file
+                var writer = new AssemblyWriter();
+                var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
+                Log.Information("Writed: {ModifiedPath}", modifiedPath);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error: {Ex}", ex);
+                if (opts.Debug?.IgnoreError != true)
+                    throw ex;
                 return false;
-
-            if (!Directory.Exists(asmCtx.DestinationDir))
-                Directory.CreateDirectory(asmCtx.DestinationDir);
-
-            //processing
-            runCtx.Inject(asmCtx);
-            Log.Debug("Injected: [{File}]", runCtx.SourceFile);
-
-            //writing modified assembly and symbols to new file
-            var writer = new AssemblyWriter();
-            var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-            Log.Information("Writed: {ModifiedPath}", modifiedPath);
+            }
 
             return true;
         }

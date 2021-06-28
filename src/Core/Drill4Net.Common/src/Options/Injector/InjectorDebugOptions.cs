@@ -22,6 +22,14 @@
         /// </value>
         public bool CrossPointInfo { get; set; }
 
+        /// <summary>
+        /// To continue on reading/writing/injection error on the processing assembly.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if ignore error; otherwise, <c>false</c>.
+        /// </value>
+        public bool IgnoreError { get; set; }
+
         /*******************************************************/
 
         public InjectorDebugOptions()

@@ -255,6 +255,14 @@
               <c>true</c> if cross-point information is included into injected probe data; otherwise, <c>false</c>.
             </value>
         </member>
+        <member name="P:Drill4Net.Common.InjectorDebugOptions.IgnoreError">
+            <summary>
+            To continue on reading/writing/injection error on the processing assembly.
+            </summary>
+            <value>
+              <c>true</c> if ignore error; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="T:Drill4Net.Common.InjectorOptions">
             <summary>
             Options for the Injector App

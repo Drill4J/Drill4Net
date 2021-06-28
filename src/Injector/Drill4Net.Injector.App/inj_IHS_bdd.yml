@@ -53,7 +53,8 @@ Logs: # for Injector
       Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
       Level: trace
 Debug:
-    CrossPointInfo : true # cross-point information is included into injected probe data. By default is true if this section presents
+    CrossPointInfo: true # cross-point information is included into injected probe data. By default is true if this section presents
+    IgnoreError: true
 #Versions: # what will be tested - by target moniker/assembly/class
 #    Directory: ..\..\TargetApps\ #target dir relatively Test project
 #    Targets:

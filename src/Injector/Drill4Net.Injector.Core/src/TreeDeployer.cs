@@ -40,8 +40,11 @@ namespace Drill4Net.Injector.Core
             var dirs = tree.GetAllDirectories().ToList();
             if (!dirs.Any())
                 return;
+
             var pathInText = _rep.GetTreeFilePath(tree);
+            Console.WriteLine("");
             Log.Debug("Tree saved to: [{PathInText}]", pathInText);
+
             foreach (var dir in dirs)
             {
                 var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);

@@ -183,8 +183,9 @@ namespace Drill4Net.Injector.Engine
                 else
                 {
                     var isMoveNext = methodName == "MoveNext";
-                    var fromMethodName = typeName.Contains("c__DisplayClass") || typeName.Contains("<>");
-                    if (isMoveNext || !fromMethodName && typeName.Contains("/"))
+                    var fromMethodName = !methodName.Contains("::<>n__") //EF context's inner CG method
+                        && (typeName.Contains("c__DisplayClass") || typeName.Contains("<>"));
+                    if (isMoveNext || (!fromMethodName && typeName.Contains("/")))
                     {
                         var ar = typeName.Split('/');
                         var el = ar[ar.Length - 1];
