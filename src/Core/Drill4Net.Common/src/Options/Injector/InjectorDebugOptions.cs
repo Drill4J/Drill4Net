@@ -28,7 +28,7 @@
         /// <value>
         ///   <c>true</c> if ignore error; otherwise, <c>false</c>.
         /// </value>
-        public bool IgnoreError { get; set; }
+        public bool IgnoreErrors { get; set; }
 
         /*******************************************************/
 

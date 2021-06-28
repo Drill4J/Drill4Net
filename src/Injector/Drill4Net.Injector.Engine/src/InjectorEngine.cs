@@ -60,7 +60,7 @@ namespace Drill4Net.Injector.Engine
         /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
         public InjectedSolution Process(InjectorOptions opts)
         {
-            Log.Information("Process is starting...");
+            Log.Debug("Process is starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
 
             var sourceDir = opts.Source.Directory;
@@ -68,9 +68,9 @@ namespace Drill4Net.Injector.Engine
 
             //copying of all needed data in needed targets
             var monikers = opts.Versions?.Targets;
-            Log.Information("The source is copying...");
+            Log.Debug("The source is copying...");
             _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the filter
-            Log.Information("The source is copied...");
+            Log.Information("The source is copied");
 
             //tree
             var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
@@ -151,7 +151,7 @@ namespace Drill4Net.Injector.Engine
             var isRoot = runCtx.SourceDirectory == runCtx.RootDirectory;
             if (!isRoot && !opts.Source.Filter.IsFolderNeed(folder))
                 return false;
-            Log.Debug("Processing dir [{Directory}]", directory);
+            Log.Information("Processing dir [{Directory}]", directory);
 
             //files
             var files = _rep.GetAssemblies(directory);
@@ -210,7 +210,7 @@ namespace Drill4Net.Injector.Engine
             catch (Exception ex)
             {
                 Log.Error("Error: {Ex}", ex);
-                if (opts.Debug?.IgnoreError != true)
+                if (opts.Debug?.IgnoreErrors != true)
                     throw ex;
                 return false;
             }

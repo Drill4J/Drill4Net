@@ -71,10 +71,13 @@ namespace Drill4Net.Injector.Core
                     crossType = isBrFalse ? CrossPointType.If : CrossPointType.Else;
                 var ldstr = Register(ctx, crossType);
 
+                //correction
+                FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
+                ctx.CorrectIndex(2);
+
                 //injection
                 processor.InsertAfter(instr, call);
                 processor.InsertAfter(instr, ldstr);
-                ctx.CorrectIndex(2);
 
                 processed = true;
                 needBreak = true;
@@ -105,7 +108,7 @@ namespace Drill4Net.Injector.Core
 
             //correction
             ReplaceJumps(operand, ldstr2, ctx);
-            
+
             //injection
             processor.InsertBefore(operand, ldstr2);
             processor.InsertBefore(operand, call);

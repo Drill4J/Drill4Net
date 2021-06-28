@@ -190,7 +190,7 @@ namespace Drill4Net.Injector.Core
             if(!Processed.Contains(instr))
                 Processed.Add(instr);
         }
-        
+
         public override string ToString()
         {
             return Method.ToString();

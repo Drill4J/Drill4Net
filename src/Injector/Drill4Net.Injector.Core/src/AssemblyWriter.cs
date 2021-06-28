@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -33,7 +34,17 @@ namespace Drill4Net.Injector.Core
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
             }
 
-            asmCtx.Definition.Write(modifiedPath, writeParams);
+            try
+            {
+                asmCtx.Definition.Write(modifiedPath, writeParams);
+            }
+            catch
+            {
+                //because current file content could have been erased - it will be old now
+                File.Copy(origFilePath, modifiedPath, true);
+                throw;
+            }
+
             runCtx.AssemblyPaths.Add(asmCtx.Key, modifiedPath);
             return modifiedPath;
         }

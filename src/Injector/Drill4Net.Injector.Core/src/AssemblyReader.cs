@@ -83,7 +83,7 @@ namespace Drill4Net.Injector.Core
             #endregion
             #region Reading
             // read subject assembly with symbols
-            Log.Debug("Reading file [{FilePath}]", filePath);
+            Log.Debug("Reading: [{FilePath}]", filePath);
 #pragma warning disable DF0010 // Marks undisposed local variables.
             var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
  #pragma warning restore DF0010 // Marks undisposed local variables.

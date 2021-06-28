@@ -203,17 +203,21 @@ namespace Drill4Net.Injector.Core
         /// Change the target for the ExceptionHandler (Try/Catch/Finally statement)
         /// </summary>
         /// <param name="cur">Current instruction (original) earler connecting to HandlerEnd</param>
-        /// <param name="on">Instruction for repacing the HandlerEnd</param>
+        /// <param name="to">Instruction for repacing the HandlerEnd</param>
         /// <param name="handlers">List of try/cacth handlers of current method</param>
-        internal void FixFinallyEnd(Instruction cur, Instruction on, IEnumerable<ExceptionHandler> handlers)
+        internal void FixFinallyEnd(Instruction cur, Instruction to, IEnumerable<ExceptionHandler> handlers)
         {
             if (cur.Previous == null)
                 return;
-            if (cur.Previous.OpCode.Code != Code.Endfinally) 
+
+            //guanito: check it!!!
+            var prevCode = cur.Previous.OpCode.Code;
+            if (prevCode != Code.Endfinally && prevCode != Code.Throw)
                 return;
+
             foreach (var exc in handlers.Where(exc => exc.HandlerEnd == cur))
             {
-                exc.HandlerEnd = on;
+                exc.HandlerEnd = to;
             }
         }
 

@@ -19,7 +19,6 @@ Source: # what and how processing
         Files:
           - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
           - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
-          #- Ipreo.Csp.IaDeal.Api.dll # TEST!!!
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
@@ -56,7 +55,7 @@ Logs: # for Injector
       Level: trace
 Debug:
     CrossPointInfo: true # cross-point information is included into injected probe data. By default is true if this section presents
-    IgnoreError: true
+    IgnoreErrors: true
 #Versions: # what will be tested - by target moniker/assembly/class
 #    Directory: ..\..\TargetApps\ #target dir relatively Test project
 #    Targets:

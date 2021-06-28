@@ -56,7 +56,7 @@ Logs: # for Injector
       Level: trace
 Debug:
     CrossPointInfo: true # cross-point information is included into injected probe data. By default is true if this section presents
-    IgnoreError: true
+    IgnoreErrors: true
 #Versions: # what will be tested - by target moniker/assembly/class
 #    Directory: ..\..\TargetApps\ #target dir relatively Test project
 #    Targets:
