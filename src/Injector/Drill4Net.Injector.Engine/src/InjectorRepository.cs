@@ -84,8 +84,15 @@ namespace Drill4Net.Injector.Engine
         public virtual void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {
             if (Directory.Exists(destPath))
-                Directory.Delete(destPath, true);
-            Directory.CreateDirectory(destPath);
+            {
+                //sometimes deleting directory can blocked itself
+                var di = new DirectoryInfo(destPath);
+                if (di.GetDirectories().Length > 0 || di.GetFiles().Length > 0)
+                {
+                    Directory.Delete(destPath, true);
+                    Directory.CreateDirectory(destPath);
+                }
+            }
 
             if (monikers == null)
             {

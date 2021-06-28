@@ -112,7 +112,7 @@ namespace Drill4Net.Injector.Core
             //we should be located in the project folder of a specific moniker,
             //not in root dir for the project or whole Injector Engine Run
 
-            //as hint 'exe' must be first - after 'dll'
+            //as hint 'exe' must be first, after 'dll'
             foreach (var filePath in files.OrderBy(a => a))
             {
                 if (!filter.IsFileNeedByPath(filePath))
@@ -132,7 +132,7 @@ namespace Drill4Net.Injector.Core
                 version = Repository.TryGetAssemblyVersion(filePath);
                 versions.Add(filePath, version);
 
-                if (IsNetCore == null) //no data yet
+                if (IsNetCore == null && version != null) //no data yet
                 {
                     switch (version.Target)
                     {
