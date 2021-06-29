@@ -30,9 +30,17 @@ namespace Drill4Net.Target.Tests.Common
 
         static AbstractTargetTestEngine()
         {
-            _testsRep = new TestEngineRepository();
-            LoadTreeData();
-            Log.Information("Engine is initialized.");
+            try
+            {
+                _testsRep = new TestEngineRepository();
+                LoadTreeData();
+                Log.Information("Engine is initialized.");
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex.ToString());
+                throw;
+            }
         }
 
         /****************************************************************************/

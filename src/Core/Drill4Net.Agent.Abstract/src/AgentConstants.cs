@@ -14,33 +14,33 @@
         #region Topics
         /// <summary>
         /// The topic is used for agent attaching to the Admin Panel,
-        /// agent registration, agent system settings changing. 
+        /// agent registration, agent system settings changing.
         /// </summary>
         public const string TOPIC_HEADER_CHANGE = "/agent/change-header-name";
-        
+
         /// <summary>
         /// The Admin Panel uses the topic for agent registration
         /// with plugins and attaching registered with plugins agent.
         /// </summary>
         public const string TOPIC_AGENT_LOAD = "/agent/load";
-        
+
         /// <summary>
         /// The topic is used for agent registration with/without a plugin, package settings changing.
         /// </summary>
         public const string TOPIC_CLASSES_LOAD = "/agent/load-classes-data";
-        
+
         /// <summary>
         /// The topic is used for package settings changing (namespaces),
-        /// agent registration with/without plugins. 
+        /// agent registration with/without plugins.
         /// </summary>
         public const string TOPIC_AGENT_NAMESPACES = "/agent/set-packages-prefixes";
-        
+
         /// <summary>
         /// The topic is used to send some action to the plugin(s) (e.g. switch active scope,
         /// rename scope, switch scope, delete scope, start a new session, cancel a session, stop a session).
         /// </summary>
         public const string TOPIC_PLUGIN_ACTION = "/plugin/action";
-        
+
         /// <summary>
         /// The topic is used for plugins disabling, plugins activating (agent registration,
         /// agent attachment, agent toggle, agent system settings changing).

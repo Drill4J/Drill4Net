@@ -39,9 +39,9 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="runCtx">Context of Injector Engine's Run</param>
         /// <param name="asmCtx">Context of current assembly</param>
-        public void Inject(RunContext runCtx, AssemblyContext asmCtx)
+        public async void Inject(RunContext runCtx, AssemblyContext asmCtx)
         {
-            if (!AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
+            if (!await AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)
 
             if (!ContextHelper.PrepareContextData(runCtx, asmCtx))

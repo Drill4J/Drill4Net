@@ -29,7 +29,7 @@
         <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_HEADER_CHANGE">
             <summary>
             The topic is used for agent attaching to the Admin Panel,
-            agent registration, agent system settings changing. 
+            agent registration, agent system settings changing.
             </summary>
         </member>
         <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_AGENT_LOAD">
@@ -46,7 +46,7 @@
         <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_AGENT_NAMESPACES">
             <summary>
             The topic is used for package settings changing (namespaces),
-            agent registration with/without plugins. 
+            agent registration with/without plugins.
             </summary>
         </member>
         <member name="F:Drill4Net.Agent.Abstract.AgentConstants.TOPIC_PLUGIN_ACTION">

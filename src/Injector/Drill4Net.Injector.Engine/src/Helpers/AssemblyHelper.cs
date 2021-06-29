@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -18,7 +19,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="runCtx">Context of the Injector Engine's Run</param>
         /// <param name="asmCtx">Assembly's context</param>
         /// <returns></returns>
-        internal static bool PrepareInjectedAssembly(RunContext runCtx, AssemblyContext asmCtx)
+        internal async static Task<bool> PrepareInjectedAssembly(RunContext runCtx, AssemblyContext asmCtx)
         {
             var sourceDir = asmCtx.SourceDir;
             var destDir = asmCtx.DestinationDir;
@@ -47,7 +48,15 @@ namespace Drill4Net.Injector.Engine
                 var writer = new AssemblyWriter();
                 var copyFrom = keys[key];
                 var copyTo = writer.GetDestFileName(copyFrom, destDir);
-                File.Copy(copyFrom, copyTo, true);
+                try
+                {
+                    File.Copy(copyFrom, copyTo, true);
+                }
+                catch
+                {
+                    await Task.Delay(1000).ConfigureAwait(false);
+                    File.Copy(copyFrom, copyTo, true);
+                }
                 return false;
             }
             return true;
