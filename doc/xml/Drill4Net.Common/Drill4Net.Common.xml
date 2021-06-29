@@ -145,6 +145,15 @@
             Base directory of the running Injector App
             </summary>
         </member>
+        <member name="M:Drill4Net.Common.FileUtils.FindAssemblyPath(System.String,System.Version,System.String)">
+            <summary>
+            Finds the assembly path: from the frameworks's paths, work dir and the Injector dir.
+            </summary>
+            <param name="shortName">The short name of the assembly.</param>
+            <param name="version">The exact version of the assembly.</param>
+            <param name="workDir">The work dir.</param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Common.FileUtils.GetCommonLogDirectory(System.String,System.String)">
             <summary>
             Get directory for the all subsystems of the Drill4Net

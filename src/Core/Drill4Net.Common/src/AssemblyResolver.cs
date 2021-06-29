@@ -1,5 +1,6 @@
-﻿using Mono.Cecil;
+﻿using System;
 using System.Collections.Generic;
+using Mono.Cecil;
 
 namespace Drill4Net.Common
 {
@@ -9,18 +10,20 @@ namespace Drill4Net.Common
     /// <seealso cref="Mono.Cecil.IAssemblyResolver" />
     public class AssemblyResolver : IAssemblyResolver
     {
+        public string WworkDir { get; }
         private readonly ReaderParameters _readerParams;
-        private readonly Dictionary<string, AssemblyDefinition> _cache;
+        private static readonly Dictionary<string, AssemblyDefinition> _cache = new Dictionary<string, AssemblyDefinition>();
 
         /*************************************************************/
 
-        public AssemblyResolver()
+        public AssemblyResolver(string workDir)
         {
-            _cache = new Dictionary<string, AssemblyDefinition>();
+            WworkDir = workDir ?? throw new ArgumentNullException(nameof(workDir));
             _readerParams = new ReaderParameters
             {
                 ReadWrite = false,
                 ReadingMode = ReadingMode.Immediate,
+                AssemblyResolver = this,
             };
         }
 
@@ -37,7 +40,7 @@ namespace Drill4Net.Common
             if (_cache.ContainsKey(name))
                 return _cache[name];
             //
-            var path = FileUtils.FindAssemblyPath(name, nameRef.Version);
+            var path = FileUtils.FindAssemblyPath(name, nameRef.Version, WworkDir);
             if (path == null)
                 return null;
             var def = AssemblyDefinition.ReadAssembly(path, _readerParams);

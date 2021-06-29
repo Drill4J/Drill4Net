@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -31,7 +30,7 @@ namespace Drill4Net.Injector.Core
             #pragma warning restore DF0033 // Marks undisposed objects assinged to a property, originated from a method invocation.
                 writeParams.WriteSymbols = true;
                 // net core uses portable pdb
-                writeParams.SymbolWriterProvider = new PortablePdbWriterProvider();
+                writeParams.SymbolWriterProvider = new PortablePdbWriterProvider(); //TODO: check it for NetFx (seems it need another type o provider)!
             }
 
             try
@@ -40,7 +39,7 @@ namespace Drill4Net.Injector.Core
             }
             catch
             {
-                //because current file content could have been erased - it will be old now
+                //because after the error the content of the current file could have been erased - it will be old now
                 File.Copy(origFilePath, modifiedPath, true);
                 throw;
             }

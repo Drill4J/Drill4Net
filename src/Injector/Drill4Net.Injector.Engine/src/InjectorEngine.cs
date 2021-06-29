@@ -205,7 +205,7 @@ namespace Drill4Net.Injector.Engine
                 //writing modified assembly and symbols to new file
                 var writer = new AssemblyWriter();
                 var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-                Log.Information("Writed: {ModifiedPath}", modifiedPath);
+                Log.Information("Writed: [{ModifiedPath}]", modifiedPath);
             }
             catch (Exception ex)
             {

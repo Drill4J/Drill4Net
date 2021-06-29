@@ -108,7 +108,14 @@ namespace Drill4Net.Common
         }
         #endregion
 
-        public static string FindAssemblyPath(string shortName, Version version)
+        /// <summary>
+        /// Finds the assembly path: from the frameworks's paths, work dir and the Injector dir.
+        /// </summary>
+        /// <param name="shortName">The short name of the assembly.</param>
+        /// <param name="version">The exact version of the assembly.</param>
+        /// <param name="workDir">The work dir.</param>
+        /// <returns></returns>
+        public static string FindAssemblyPath(string shortName, Version version, string workDir = null)
         {
             //root runtime path - TODO: regex
             var curPath = RuntimeEnvironment.GetRuntimeDirectory();
@@ -120,16 +127,22 @@ namespace Drill4Net.Common
             //runtime version
             var verS = $"{version.Major}.{version.Minor}";
 
-            //search
+            //dirs
+            var dirs = Directory.GetDirectories(runtimeRootPath).ToList(); //framework's dirs
+            if (!string.IsNullOrWhiteSpace(workDir)) //work dir
+                dirs.Add(workDir);
+            dirs.Add(BaseDir); //last chance in Injector dir...
+
+            // search
             if (!shortName.EndsWith(".dll"))
                 shortName = $"{shortName}.dll";
-            var dirs = Directory.GetDirectories(runtimeRootPath);
             string firstMatch = null;
             foreach (var dir in dirs)
             {
+                //by folder as exact version
                 var may = $"{dir}\\{verS}";
                 var innerDirs = Directory.GetDirectories(dir);
-                //first (oldest) version
+                //first (oldest) version (hmmm....)
                 foreach (var curDir in innerDirs)
                 {
                     var curFPath = Path.Combine(curDir, shortName);
@@ -139,15 +152,33 @@ namespace Drill4Net.Common
                         break;
                     }
                 }
+                if (firstMatch != null)
+                    break;
 
-                //exact version
+                //folder as version by beginning
                 var verDir = innerDirs.FirstOrDefault(a => a.StartsWith(may));
-                if (verDir == null)
-                    continue;
-                var filePath = Path.Combine(verDir, shortName);
-                if (!File.Exists(filePath))
-                    continue;
-                return filePath;
+                var filePath = string.Empty;
+                if (verDir != null)
+                {
+                    filePath = Path.Combine(verDir, shortName);
+                    if (!File.Exists(filePath))
+                        continue;
+                    return filePath;
+                }
+
+                //direct in folder
+                filePath = Path.Combine(dir, shortName);
+                if (File.Exists(filePath))
+                    return filePath;
+
+                //may be in inner folders?! TODO: recursion into the deep
+                var subDirs = Directory.GetDirectories(dir);
+                foreach (var subDir in subDirs)
+                {
+                    filePath = Path.Combine(subDir, shortName);
+                    if (File.Exists(filePath))
+                        return filePath;
+                }
             }
             return firstMatch;
         }

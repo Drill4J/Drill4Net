@@ -48,6 +48,7 @@ namespace Drill4Net.Injector.Engine
                 var writer = new AssemblyWriter();
                 var copyFrom = keys[key];
                 var copyTo = writer.GetDestFileName(copyFrom, destDir);
+                //TODO: we need copy existing PDB files too (when they will be changed according to the new injected reality)!
                 try
                 {
                     File.Copy(copyFrom, copyTo, true);
