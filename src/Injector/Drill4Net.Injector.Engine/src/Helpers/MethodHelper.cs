@@ -89,7 +89,7 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                 }
-                if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && _typeChecker.CheckByMethodFullName(extFullname))
+                if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && !_typeChecker.IsSystemTypeByMethod(extFullname))
                     treeFunc.CalleeIndexes.Add(extFullname, ctx.SourceIndex);
             }
             #endregion

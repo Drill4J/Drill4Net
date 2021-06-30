@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
@@ -9,6 +10,17 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public abstract class AbstractProbeHelper
     {
+        public InjectorOptions Options { get; }
+
+        /*********************************************************************************/
+
+        protected AbstractProbeHelper(InjectorOptions options)
+        {
+            Options = options;
+        }
+
+        /*********************************************************************************/
+
         #region GenerateProbe        
         /// <summary>
         /// Generates the cross-point's probe data in the string format 

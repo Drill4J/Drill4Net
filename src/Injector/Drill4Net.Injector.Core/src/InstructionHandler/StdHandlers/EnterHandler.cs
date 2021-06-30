@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Mono.Cecil.Cil;
+﻿using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core

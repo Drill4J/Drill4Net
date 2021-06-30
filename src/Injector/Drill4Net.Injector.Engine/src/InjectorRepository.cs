@@ -56,7 +56,7 @@ namespace Drill4Net.Injector.Engine
         /// <returns></returns>
         public CodeHandlerStrategy GetStrategy()
         {
-            return new FlowStrategy(Options.Probes, Options.Debug);
+            return new FlowStrategy(Options);
         }
 
         /// <summary>

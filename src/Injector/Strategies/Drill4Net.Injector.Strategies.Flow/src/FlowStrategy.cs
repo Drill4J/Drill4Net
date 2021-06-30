@@ -9,9 +9,10 @@ namespace Drill4Net.Injector.Strategies.Flow
     /// <seealso cref="Drill4Net.Injector.Core.CodeHandlerStrategy" />
     public class FlowStrategy : CodeHandlerStrategy
     {
-        public FlowStrategy(ProbesOptions probeOpts = null, InjectorDebugOptions dbgOpts = null)
+        public FlowStrategy(InjectorOptions opts)
         {
-            var helper = new FlowProbeHelper(dbgOpts);
+            var helper = new FlowProbeHelper(opts);
+            var probeOpts = opts.Probes;
 
             //after if/else/switch instructions
             if (probeOpts?.SkipIfElseType != true)

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Collections.Generic;
+using System;
 
 namespace Drill4Net.Common
 {
@@ -20,20 +21,31 @@ namespace Drill4Net.Common
         {
             return !IsSystemType(Path.GetFileNameWithoutExtension(filePath));
         }
-        
-        public bool CheckByMethodFullName(string methodFullName)
+
+        public bool IsSystemTypeByMethod(string methodFullName)
         {
-            if (!methodFullName.Contains(" ") || !methodFullName.Contains(":"))
+            if (string.IsNullOrWhiteSpace(methodFullName))
+                throw new ArgumentNullException(nameof(methodFullName));
+            //
+            if (IsAnonymousType(methodFullName)) //guanito
                 return false;
-            var tAr = methodFullName.Split(' ')[1].Split(':');
-            var type = tAr[0];
-            return !IsSystemType(type);
+            var type = CommonUtils.GetTypeByMethod(methodFullName);
+            if (type == null)
+                return false;
+            return IsSystemType(type);
         }
-        
+
+        public bool IsAnonymousType(string sig)
+        {
+            if (string.IsNullOrWhiteSpace(sig))
+                throw new ArgumentNullException(nameof(sig));
+            return sig.Contains("<>f__AnonymousType");
+        }
+
+
         public bool IsSystemType(string typeFullName)
         {
-            var tAr = typeFullName.Split('.');
-            var ns1 = tAr[0];
+            var ns1 = CommonUtils.GetNamespace(typeFullName);
             return _restrictNamespaces.Contains(ns1);
         }
 

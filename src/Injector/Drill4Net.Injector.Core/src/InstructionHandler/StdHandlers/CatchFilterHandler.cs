@@ -1,6 +1,6 @@
 ﻿using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
-using C = Drill4Net.Injector.Core.InjectorCoreConstants;
+using static Drill4Net.Injector.Core.InjectorCoreConstants;
 
 namespace Drill4Net.Injector.Core
 {
@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core
     public class CatchFilterHandler : AbstractSimpleHandler
     {
         public CatchFilterHandler(AbstractProbeHelper probeHelper):
-            base(C.INSTRUCTION_HANDLER_CATCH_FILTER, CrossPointType.CatchFilter, probeHelper)
+            base(INSTRUCTION_HANDLER_CATCH_FILTER, CrossPointType.CatchFilter, probeHelper)
         {
         }
 

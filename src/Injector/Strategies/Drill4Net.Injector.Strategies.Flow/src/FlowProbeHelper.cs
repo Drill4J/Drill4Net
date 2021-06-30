@@ -9,14 +9,9 @@ namespace Drill4Net.Injector.Strategies.Flow
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractProbeHelper" />
     public class FlowProbeHelper : AbstractProbeHelper
-    {
-        private readonly InjectorDebugOptions _dbgOpts;
-
-        /*********************************************************************************/
-
-        public FlowProbeHelper(InjectorDebugOptions dbgOpts = null)
+    { 
+        public FlowProbeHelper(InjectorOptions opts): base(opts)
         {
-            _dbgOpts = dbgOpts;
         }
 
         /*********************************************************************************/
@@ -28,7 +23,7 @@ namespace Drill4Net.Injector.Strategies.Flow
         /// <param name="point">The cross-point of the target code.</param>
         protected override string GenerateProbeData(MethodContext ctx, CrossPoint point)
         {
-            if (_dbgOpts?.CrossPointInfo == true)
+            if (Options?.Debug?.CrossPointInfo == true)
             {
                 var injMeth = ctx.Method;
                 return $"{point.PointUid}^{injMeth.AssemblyName}^{injMeth.BusinessMethod}^";
@@ -46,7 +41,7 @@ namespace Drill4Net.Injector.Strategies.Flow
         /// <returns></returns>
         protected override string GenerateSpecificProbeData(CrossPoint point)
         {
-            if (_dbgOpts?.CrossPointInfo == true)
+            if (Options?.Debug?.CrossPointInfo == true)
             {
                 var str = point.PointType;
                 return point.PointId == point.BusinessIndex.ToString()

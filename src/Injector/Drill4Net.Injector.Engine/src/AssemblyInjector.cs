@@ -82,7 +82,7 @@ namespace Drill4Net.Injector.Engine
                 Debug.WriteLine(typeCtx.InjType.FullName);
 
                 //by methods
-                foreach (var methodCtx in typeCtx.MethodContexts.Values) 
+                foreach (var methodCtx in typeCtx.MethodContexts.Values)
                 {
                     Debug.WriteLine(methodCtx.Method.FullName);
 

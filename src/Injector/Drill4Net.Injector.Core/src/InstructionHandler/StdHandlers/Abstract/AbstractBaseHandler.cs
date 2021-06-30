@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public AbstractBaseHandler Successor { get; set; }
 
-        private readonly AbstractProbeHelper _probeHelper;
+        protected readonly AbstractProbeHelper _probeHelper;
 
         /**************************************************************************************/
 

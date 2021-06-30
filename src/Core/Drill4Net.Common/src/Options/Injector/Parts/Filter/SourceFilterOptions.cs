@@ -78,8 +78,10 @@ namespace Drill4Net.Common
             if (Includes?.Namespaces == null || !Includes.Namespaces.Any())
                 return true;
             foreach (var nsPart in Includes.Namespaces)
+            {
                 if (ns.StartsWith(nsPart))
                     return true;
+            }
             return false;
         }
 
@@ -88,7 +90,7 @@ namespace Drill4Net.Common
             if (Excludes?.IsClassListed(fullName) == true)
                 return false;
             if (Includes?.Classes == null || !Includes.Classes.Any())
-                return true;
+                return !_typeChecker.IsSystemType(fullName);
             return Includes.IsClassListed(fullName);
         }
 

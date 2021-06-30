@@ -3,7 +3,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
-using C = Drill4Net.Injector.Core.InjectorCoreConstants;
+using static Drill4Net.Injector.Core.InjectorCoreConstants;
 
 namespace Drill4Net.Injector.Core
 {
@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Core
         /*****************************************************************************/
         
         public CallHandler(AbstractProbeHelper probeHelper):
-            base(C.INSTRUCTION_HANDLER_CALL, CrossPointType.Call, probeHelper)
+            base(INSTRUCTION_HANDLER_CALL, CrossPointType.Call, probeHelper)
         {
             _typeChecker = new TypeChecker();
         }
@@ -35,18 +35,28 @@ namespace Drill4Net.Injector.Core
                 //2. Local function's calls are needed
                 if (code is not Code.Call and not Code.Calli and not Code.Callvirt)
                     return false;
-                var operand = (MethodReference) instr.Operand;
-                var fullname = operand.FullName;
-                if (fullname.EndsWith("AsyncTaskMethodBuilder::Create()"))
+                var operand = (MethodReference)instr.Operand;
+                var callFullname = operand.FullName;
+                if (callFullname.Contains(ctx.TypeCtx.AssemblyCtx.ProxyNamespace)) //own injection
+                    return false;
+                if (callFullname.EndsWith("AsyncTaskMethodBuilder::Create()"))
                     return true; //because it starts the Async State Machine with its own points
-                if (fullname.Contains("get__") || fullname.Contains("set__")) //ASP.NET/Blazor methods - not needed
+                if (callFullname.Contains("get__") || callFullname.Contains("set__")) //ASP.NET/Blazor methods - not needed
                     return false;
-                var isOwn = _typeChecker.CheckByMethodFullName(fullname);
-                if (code is Code.Callvirt)
-                    return isOwn || fullname.Contains("::Invoke(");
-                if (fullname.Contains(ctx.TypeCtx.AssemblyCtx.ProxyNamespace))
-                    return false;
-                return isOwn;
+                var invoke = code is Code.Callvirt && callFullname.Contains("::Invoke(");
+                if (invoke)
+                    return true;
+
+               // var isAnon = _typeChecker.IsAnonymousType(callFullname);
+               //// var notSystem = !_typeChecker.IsSystemTypeByMethod(callFullname);
+               // if (isAnon && (callFullname.Contains("::get_") || callFullname.Contains("::set_"))) //own getters/setters' calls needed (?)
+               //     return true;
+
+                // check by filter
+                var ns = CommonUtils.GetNamespace(CommonUtils.GetTypeByMethod(callFullname));
+                var flt = _probeHelper.Options.Source.Filter;
+                var nsNeeded = flt.IsNamespaceNeed(ns);
+                return nsNeeded;
             }
             catch (Exception e)
             {

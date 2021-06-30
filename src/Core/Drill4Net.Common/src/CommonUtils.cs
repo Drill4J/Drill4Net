@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -56,10 +57,36 @@ namespace Drill4Net.Common
 
         public static AssemblyVersioning GetAssemblyVersion(string path)
         {
-            using var assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters());
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
+            //
+            using var resolver = new AssemblyResolver(Path.GetDirectoryName(path));
+            using var assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters { AssemblyResolver = resolver });
             var versionAttr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == "TargetFrameworkAttribute");
             var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
             return new AssemblyVersioning(versionS);
+        }
+
+        public static string GetTypeByMethod(string methodFullName)
+        {
+            if (string.IsNullOrWhiteSpace(methodFullName))
+                throw new ArgumentNullException(nameof(methodFullName));
+            //
+            if (!methodFullName.Contains(" ") || !methodFullName.Contains(":"))
+                return null;
+            var tAr = methodFullName.Split(' ')[1].Split(':');
+           return tAr[0];
+        }
+
+        public static string GetNamespace(string typeFullName)
+        {
+            if (string.IsNullOrWhiteSpace(typeFullName))
+                throw new ArgumentNullException(nameof(typeFullName));
+            //
+            if (!typeFullName.Contains("."))
+                return null;
+            var tAr = typeFullName.Split('.');
+            return tAr[0];
         }
 
         /// <summary>
