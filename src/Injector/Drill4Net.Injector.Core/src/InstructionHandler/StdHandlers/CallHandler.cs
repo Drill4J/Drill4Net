@@ -47,13 +47,14 @@ namespace Drill4Net.Injector.Core
                 if (invoke)
                     return true;
 
-               // var isAnon = _typeChecker.IsAnonymousType(callFullname);
-               //// var notSystem = !_typeChecker.IsSystemTypeByMethod(callFullname);
-               // if (isAnon && (callFullname.Contains("::get_") || callFullname.Contains("::set_"))) //own getters/setters' calls needed (?)
-               //     return true;
+                var isAnon = _typeChecker.IsAnonymousType(callFullname);
+                if (isAnon)
+                    return false;
 
                 // check by filter
                 var ns = CommonUtils.GetNamespace(CommonUtils.GetTypeByMethod(callFullname));
+                if (ns == null)
+                    return true; //hmmm...
                 var flt = _probeHelper.Options.Source.Filter;
                 var nsNeeded = flt.IsNamespaceNeed(ns);
                 return nsNeeded;

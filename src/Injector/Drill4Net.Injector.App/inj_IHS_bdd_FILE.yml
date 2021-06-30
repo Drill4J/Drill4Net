@@ -8,8 +8,8 @@ Source: # what and how processing
       Includes:
         Directories:
         Files: 
-          - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
-          - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
+          #- Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
+          #- Ipreo.Csp.IaDeal.Test.Infrastructure.dll
         Namespaces:
           - Ipreo
         Classes:

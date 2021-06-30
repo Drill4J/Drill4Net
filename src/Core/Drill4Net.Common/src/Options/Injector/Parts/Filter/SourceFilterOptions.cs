@@ -73,6 +73,8 @@ namespace Drill4Net.Common
 
         public bool IsNamespaceNeed(string ns)
         {
+            if (string.IsNullOrWhiteSpace(ns))
+                return false;
             if (Excludes?.IsNamespaceListedExactly(ns) == true)
                 return false;
             if (Includes?.Namespaces == null || !Includes.Namespaces.Any())
