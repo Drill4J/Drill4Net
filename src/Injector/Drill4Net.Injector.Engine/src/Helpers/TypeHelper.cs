@@ -186,7 +186,7 @@ namespace Drill4Net.Injector.Engine
         {
             var isAngleBracket = type.Name.StartsWith("<");
             var fltMethods = type.Methods
-                .Where(a => a.HasBody)
+                .Where(a => a.HasBody && a.Body.Instructions.Count(a => a.OpCode.Code != Code.Nop) > 3)
                 .Where(a => !(isAngleBracket && a.IsConstructor)) //internal compiler's ctor is not needed in any cases
                 .Where(a => probOpts.Ctor || (!probOpts.Ctor && !a.IsConstructor)) //may be we skips own ctors
                 .Where(a => probOpts.Setter || (!probOpts.Setter && a.Name != "set_Prop" && !a.Name.StartsWith("set_"))) //do we need property setters?

@@ -68,9 +68,9 @@ namespace Drill4Net.Injector.Core
         public Collection<ExceptionHandler> ExceptionHandlers { get; }
 
         /// <summary>
-        /// Do we need restrict Enter and Return cross-point's injection?
+        /// Do we need restrict cross-points for method's edges (Enter, Return)?
         /// </summary>
-        public bool IsStrictEnterReturn { get; set; }
+        public bool IsStrictEdgeCrosspoints { get; set; }
 
         /// <summary>
         /// The set of the starting instructions in the injecting block. Now it's just type is OpCodes.Ldstr

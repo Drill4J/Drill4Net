@@ -52,7 +52,7 @@ namespace Drill4Net.Injector.Engine
                     var treeFunc = asmCtx.InjMethodByFullname[methodFullName];
 
                     var methodCtx = new MethodContext(typeCtx, treeFunc, methodDef);
-                    methodCtx.IsStrictEnterReturn = IsEnterReturnRestrict(runCtx, methodCtx);
+                    methodCtx.IsStrictEdgeCrosspoints = IsEnterReturnRestrict(runCtx, methodCtx);
                     methodCtx.StartIndex = CalcStartIndex(treeFunc.Source, methodCtx.Definition.Body);
                     typeCtx.MethodContexts.Add(methodFullName, methodCtx);
                 }

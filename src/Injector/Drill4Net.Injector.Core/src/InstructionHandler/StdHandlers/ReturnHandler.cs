@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Mono.Cecil.Cil;
+﻿using Mono.Cecil.Cil;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
@@ -19,22 +18,20 @@ namespace Drill4Net.Injector.Core
 
         protected override void PreprocessConcrete(MethodContext ctx)
         {
-            if (ctx.IsStrictEnterReturn)
+            if (ctx.IsStrictEdgeCrosspoints)
                 return;
-            if (ctx.Instructions.Count(a =>a.OpCode.Code != Code.Nop) < 4)
-                return;
-            
+
             //init
             var processor = ctx.Processor;
             var instr = ctx.CurInstruction;
             var proxyMethRef = ctx.AssemblyCtx.ProxyMethRef;
             var call = Instruction.Create(OpCodes.Call, proxyMethRef);
-            
+
             //data
             var ind = ctx.OrigSize - 1;
             var returnInst = Register(ctx, CrossPointType.Return, ind, false); //as object it must be only one
             ctx.LastOperation = returnInst;
-            
+
             //correction
             FixFinallyEnd(instr, returnInst, ctx.ExceptionHandlers);
             ReplaceJumps(instr, returnInst, ctx);

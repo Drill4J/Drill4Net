@@ -19,7 +19,7 @@ namespace Drill4Net.Injector.Core
 
         protected override void PreprocessConcrete(MethodContext ctx)
         {
-            if (ctx.IsStrictEnterReturn || !ctx.Instructions.Any())
+            if (ctx.IsStrictEdgeCrosspoints)
                 return;
 
             //data

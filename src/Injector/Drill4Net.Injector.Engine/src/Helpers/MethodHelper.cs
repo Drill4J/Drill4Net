@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using System.Runtime.CompilerServices;
 
 namespace Drill4Net.Injector.Engine
 {
