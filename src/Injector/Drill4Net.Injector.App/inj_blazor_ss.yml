@@ -24,7 +24,6 @@ Destination: # where copying injected assemblies
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
   Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\
-  #Directory: c:\drill-agents\StandardAgent\ 
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard
   Class: StandardAgent
@@ -42,6 +41,7 @@ Probes: # types of cross-cutting points
     EventAdd: false
     EventRemove: false
     SkipEnterType: true
+    SkipIfElseType: true
 Logs:
     - Type: console
       Level: debug

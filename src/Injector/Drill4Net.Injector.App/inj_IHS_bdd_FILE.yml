@@ -56,23 +56,5 @@ Logs: # for Injector
 Debug:
     CrossPointInfo: true # cross-point information is included into injected probe data. By default is true if this section presents
     IgnoreErrors: true
-#Versions: # what will be tested - by target moniker/assembly/class
-#    Directory: ..\..\TargetApps\ #target dir relatively Test project
-#    Targets:
-#        net461: #assembly moniker (MonikerData)
-#          BaseFolder: Drill4Net.Target.Net461.App #folder of app/simple target
-#          Folders: #list of FolderData
-#            - Folder: #relatively BaseFolder in deep (empty if files in BaseFolder)
-#              Assemblies: #dictionary assemblies in folder, values - list of classes
-#                'Drill4Net.Target.Common.dll':
-#                  - Drill4Net.Target.Common.InjectTarget #full name of class
-#        net48: #default assembly & class if empty
-#          BaseFolder: Drill4Net.Target.Net48.App
-#        netcoreapp2.2:
-#          BaseFolder: Drill4Net.Target.Core22.App\netcoreapp2.2\
-#        netcoreapp3.1:
-#          BaseFolder: Drill4Net.Target.Core31.App\netcoreapp3.1\
-#        net5.0:
-#          BaseFolder: Drill4Net.Target.Net50.App\net5.0\
 Silent: false # no wait, no questions...
 

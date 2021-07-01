@@ -21,6 +21,8 @@ namespace Drill4Net.Injector.Core
             if (ctx.IsStrictEdgeCrosspoints)
                 return;
 
+            //CG methods don't should processed
+
             //data
             var ldstrEntering = Register(ctx, CrossPointType.Enter, 0); //exactly 0
 

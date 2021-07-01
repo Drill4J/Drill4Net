@@ -1,9 +1,8 @@
 ﻿using System;
-using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.RnD
 {
-    public class PerfAgent : AbstractAgent
+    public class PerfAgent
     {
         public static void Do(long cnt)
         {
@@ -12,13 +11,6 @@ namespace Drill4Net.Agent.RnD
             {
                 a += Math.Sin(i);
             }
-        }
-
-        public override void Register(string data)
-        {
-            if (!long.TryParse(data, out long cnt))
-                throw new ArgumentException(nameof(data));
-            Do(cnt);
         }
     }
 }

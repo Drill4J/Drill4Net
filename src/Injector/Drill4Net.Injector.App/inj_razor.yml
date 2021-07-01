@@ -41,6 +41,7 @@ Probes: # types of cross-cutting points
     EventAdd: false
     EventRemove: false
     SkipEnterType: true
+    SkipIfElseType: true
 Logs:
     - Type: console
       Level: debug

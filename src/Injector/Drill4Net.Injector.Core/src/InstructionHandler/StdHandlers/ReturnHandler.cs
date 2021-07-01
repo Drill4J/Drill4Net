@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core
     {
         public ReturnHandler(AbstractProbeHelper probeHelper):
             base(InjectorCoreConstants.INSTRUCTION_HANDLER_RETURN, probeHelper)
-        {    
+        {
         }
 
         /**************************************************************************************/
@@ -20,6 +20,8 @@ namespace Drill4Net.Injector.Core
         {
             if (ctx.IsStrictEdgeCrosspoints)
                 return;
+
+            //CG methods don't should processed
 
             //init
             var processor = ctx.Processor;
