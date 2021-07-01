@@ -19,6 +19,8 @@ namespace Drill4Net.Agent.RnD.Debug
             //Console.WriteLine();
             //perf.Calc(cnt);
 
+            LoggerAgent.RegisterStatic($"{Guid.NewGuid()}^aaa^bbb^ccc^If_5");
+
             Console.WriteLine("\nDone.");
             Console.ReadKey(true);
         }

@@ -1,4 +1,7 @@
-﻿using Serilog;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Threading;
 
 namespace Drill4Net.Agent.RnD
 {
@@ -7,29 +10,50 @@ namespace Drill4Net.Agent.RnD
 
     public class LoggerAgent
     {
+        private static readonly string _filepath;
+        //private static readonly object _locker = new object();
+        //private static SpinLock sl = new SpinLock();
+        private static readonly ChannelsQueue _queue;
+
+        /*****************************************************************************/
+
         static LoggerAgent()
         {
-            #pragma warning disable DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
-            Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Verbose()
-               .WriteTo.File("agent_log.txt")
-               .CreateLogger();
-            #pragma warning restore DF0037 // Marks undisposed objects assinged to a property, originated from a method invocation.
+            //_filepath = Path.Combine(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location), "crosspoints.txt");
+
+            _filepath = @"d:\Projects\IHS-bdd.Injected\crosspoints.txt";
+            if (File.Exists(_filepath))
+                File.Delete(_filepath);
+
+            Action<string> action = (string str) => File.AppendAllLines(_filepath, new string[] { str });
+            _queue = new ChannelsQueue(action);
         }
 
-        ~LoggerAgent()
-        {
-            Log.CloseAndFlush();
-        }
-
-        /*********************************************************/
+        /*****************************************************************************/
 
         public static void RegisterStatic(string data)
         {
             //we just write to the file
-            #pragma warning disable Serilog004 // Constant MessageTemplate verifier
-            Log.Information(data);
-            #pragma warning restore Serilog004 // Constant MessageTemplate verifier
+
+            //var ar = data.Split('^'); //data can contains some additional info in the debug mode
+            //var probeUid = ar[0];
+            //var asmName = ar[1];
+            //var funcName = ar[2];
+            //var probe = ar[3];
+
+            //bool gotLock = false;
+            //try
+            //{
+            //    sl.Enter(ref gotLock);
+            //    File.AppendAllLines(_filepath, new string[] { data });
+            //}
+            //finally
+            //{
+            //    if (gotLock)`
+            //        sl.Exit();
+            //}
+
+            _queue.Enqueue(data);
         }
     }
 }

@@ -143,10 +143,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Testing.NetFxUtils", "src\Tests\IntegrationTests\Agent\Drill4Net.Agent.Testing.NetFxUtils\Drill4Net.Agent.Testing.NetFxUtils.csproj", "{589E6C99-00BD-4062-8192-C015D93387F2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Adoption_cfg", "!!_Adoption_cfg", "{62F8FA14-B664-46E8-BDF1-88A1E77B959C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IHS", "IHS", "{E9037637-3A09-4EAF-A4C6-E0DB06638477}"
 	ProjectSection(SolutionItems) = preProject
-		_redirect.yml = _redirect.yml
 		IHS_std.yml = IHS_std.yml
 	EndProjectSection
 EndProject
@@ -384,7 +381,6 @@ Global
 		{9ECB5BE5-4C16-4C94-9647-BF953EF86C94} = {6F63B967-D17C-4693-8228-D4F254C24F8B}
 		{3BC9ADDE-EC6E-436A-BC8E-BB18615DCE0D} = {6F63B967-D17C-4693-8228-D4F254C24F8B}
 		{589E6C99-00BD-4062-8192-C015D93387F2} = {2D8768BC-205A-4BE5-8A42-66FAADF2CF7E}
-		{E9037637-3A09-4EAF-A4C6-E0DB06638477} = {62F8FA14-B664-46E8-BDF1-88A1E77B959C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
