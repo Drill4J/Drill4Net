@@ -25,7 +25,7 @@ namespace Drill4Net.Agent.Standard
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
-        private static string _logDir;
+        private static string _emergencyLogDir;
         private static readonly object _entLocker = new();
 
         /*****************************************************************************/
@@ -38,7 +38,7 @@ namespace Drill4Net.Agent.Standard
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
 
                 const string logFolder = "logs_drill";
-                _logDir = Path.Combine(FileUtils.GetEntryDir(), logFolder);
+                _emergencyLogDir = Path.Combine(FileUtils.GetEntryDir(), logFolder);
                 BaseRepository.PrepareInitLogger(logFolder);
 
                 Log.Debug("Initializing...");
@@ -94,13 +94,13 @@ namespace Drill4Net.Agent.Standard
 
         private static void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
-            File.AppendAllLines(Path.Combine(_logDir, "first_chance_error.log"), new string[] { e.Exception.ToString() });
+            File.AppendAllLines(Path.Combine(_emergencyLogDir, "first_chance_error.log"), new string[] { e.Exception.ToString() });
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var info = $"{args.Name}: {args.RequestingAssembly.FullName}";
-            File.AppendAllLines(Path.Combine(_logDir, "resolve_failed.log"), new string[] { info });
+            File.AppendAllLines(Path.Combine(_emergencyLogDir, "resolve_failed.log"), new string[] { info });
             return null;
         }
         #endregion
