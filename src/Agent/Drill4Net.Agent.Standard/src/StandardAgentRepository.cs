@@ -10,6 +10,8 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Agent.Transport;
+using Serilog;
+using System.IO;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo

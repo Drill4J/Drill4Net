@@ -20,13 +20,17 @@ namespace Drill4Net.Agent.Standard
         private static IReceiver Receiver => _comm.Receiver;
         private static ISender Sender => _comm.Sender;
 
+        /// <summary>
+        /// Diretory for emergency logs out of scope of the common log system
+        /// </summary>
+        public static string EmergencyLogDir { get; }
+
         private static readonly ICommunicator _comm;
         private static readonly StandardAgentRepository _rep;
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static readonly AssemblyResolver _resolver;
-        private static readonly string _emergencyLogDir;
         private static readonly object _entLocker = new();
 
         /*****************************************************************************/
@@ -35,12 +39,12 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 _resolver = new AssemblyResolver();
 
                 const string logFolder = "logs_drill";
-                _emergencyLogDir = Path.Combine(FileUtils.GetEntryDir(), logFolder);
+                EmergencyLogDir = Path.Combine(FileUtils.GetEntryDir(), logFolder);
                 BaseRepository.PrepareInitLogger(logFolder);
 
                 Log.Debug("Initializing...");
@@ -101,7 +105,7 @@ namespace Drill4Net.Agent.Standard
 
         private static void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
-            File.AppendAllLines(Path.Combine(_emergencyLogDir, "first_chance_error.log"),
+            File.AppendAllLines(Path.Combine(EmergencyLogDir, "first_chance_error.log"),
                 new string[] { $"{CommonUtils.GetPreciseTime()}: {e.Exception}" });
         }
 
@@ -113,7 +117,7 @@ namespace Drill4Net.Agent.Standard
             if (asm != null)
                 return asm;
             var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from {args.RequestingAssembly.FullName}";
-            File.AppendAllLines(Path.Combine(_emergencyLogDir, "resolve_failed.log"), new string[] { info });
+            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_failed.log"), new string[] { info });
             Log.Debug("[{Name}] didn't resolve", name);
             return null;
         }

@@ -140,8 +140,11 @@ namespace Drill4Net.Common
             string firstMatch = null;
             foreach (var dir in dirs)
             {
+                if (!Directory.Exists(dir))
+                    continue;
+
                 //by folder as exact version
-                var may = $"{dir}\\{verS}";
+                var may = Path.Combine(dir, verS);
                 var innerDirs = Directory.GetDirectories(dir);
                 //first (oldest) version (hmmm....)
                 foreach (var curDir in innerDirs)
@@ -196,7 +199,7 @@ namespace Drill4Net.Common
                 if (Directory.Exists(nugetDir))
                 {
                     var innerDirs = Directory.GetDirectories(nugetDir).OrderByDescending(a => a);
-                    var may = $"{nugetDir}\\{verS}".ToLower();
+                    var may = Path.Combine(nugetDir, verS).ToLower();
                     foreach (var dir in innerDirs) //by version
                     {
                         if (!dir.ToLower().StartsWith(may))

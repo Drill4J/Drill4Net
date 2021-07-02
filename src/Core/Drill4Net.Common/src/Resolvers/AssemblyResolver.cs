@@ -1,5 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
+
 
 namespace Drill4Net.Common
 {
@@ -23,6 +26,8 @@ namespace Drill4Net.Common
             var path = FileUtils.FindAssemblyPath(shortName, version, WworkDir);
             if (path == null)
                 return null;
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Resolve failed, file not found: [{path}]");
             var asm = Assembly.LoadFrom(path);
             _cache.Add(fullName, asm);
             return asm;
