@@ -132,6 +132,7 @@ namespace Drill4Net.Common
             if (!string.IsNullOrWhiteSpace(workDir)) //work dir
                 dirs.Add(workDir);
             dirs.Add(BaseDir); //last chance in Injector dir...
+            //dirs.Add(@"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Standard\netstandard2.0\");
 
             // search
             if (!shortName.EndsWith(".dll"))
@@ -185,14 +186,15 @@ namespace Drill4Net.Common
             if (firstMatch == null)
             {
                 var nugetDir = $@"c:\Users\{Environment.UserName}\.nuget\packages\";
+                string folder = null;
+                if (shortName.EndsWith(".resources.dll"))
+                    folder = shortName.Replace(".resources.dll", null);
+                else
+                    folder = shortName;
+                nugetDir += folder;
+                //
                 if (Directory.Exists(nugetDir))
                 {
-                    string folder = null;
-                    if (shortName.EndsWith(".resources.dll"))
-                        folder = shortName.Replace(".resources.dll", null);
-                    else
-                        folder = shortName;
-                    nugetDir += folder;
                     var innerDirs = Directory.GetDirectories(nugetDir).OrderByDescending(a => a);
                     var may = $"{nugetDir}\\{verS}".ToLower();
                     foreach (var dir in innerDirs) //by version

@@ -104,6 +104,11 @@ namespace Drill4Net.Common
             return tAr[0];
         }
 
+        public static string GetPreciseTime()
+        {
+            return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
+        }
+
         /// <summary>
         /// Convert string to the HEX representation
         /// </summary>

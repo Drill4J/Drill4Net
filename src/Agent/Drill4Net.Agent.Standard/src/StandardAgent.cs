@@ -26,7 +26,7 @@ namespace Drill4Net.Agent.Standard
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static readonly AssemblyResolver _resolver;
-        private static string _emergencyLogDir;
+        private static readonly string _emergencyLogDir;
         private static readonly object _entLocker = new();
 
         /*****************************************************************************/
@@ -47,8 +47,8 @@ namespace Drill4Net.Agent.Standard
 
                 //TEST!!!
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
-                var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
-                var asm = _resolver.Resolve(ver);
+                //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
+                //var asm = _resolver.Resolve(ver);
 
                 _rep = new StandardAgentRepository();
                 _comm = _rep.Communicator;
@@ -101,7 +101,8 @@ namespace Drill4Net.Agent.Standard
 
         private static void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
-            File.AppendAllLines(Path.Combine(_emergencyLogDir, "first_chance_error.log"), new string[] { e.Exception.ToString() });
+            File.AppendAllLines(Path.Combine(_emergencyLogDir, "first_chance_error.log"),
+                new string[] { $"{CommonUtils.GetPreciseTime()}: {e.Exception}" });
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -111,7 +112,7 @@ namespace Drill4Net.Agent.Standard
             var asm = _resolver.Resolve(name);
             if (asm != null)
                 return asm;
-            var info = $"{name}: request from {args.RequestingAssembly.FullName}";
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from {args.RequestingAssembly.FullName}";
             File.AppendAllLines(Path.Combine(_emergencyLogDir, "resolve_failed.log"), new string[] { info });
             Log.Debug("[{Name}] didn't resolve", name);
             return null;
