@@ -1228,9 +1228,9 @@ namespace Drill4Net.Target.Common
         public void Anonymous_Func_Invoke()
         {
             int z = 8;
-#pragma warning disable IDE0039 // Use local function
+            #pragma warning disable IDE0039 // Use local function
             Operation operation = delegate (int x, int y)
-#pragma warning restore IDE0039 // Use local function
+            #pragma warning restore IDE0039 // Use local function
             {
                 if (x > 1)
                     x /= 2;

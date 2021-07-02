@@ -8,7 +8,7 @@ namespace Drill4Net.Agent.Standard.Debug
 {
     class Program
     {
-        private static int _pointRange = 100;
+        private static int _pointRange = 200;
         private static List<CrossPoint> _points;
 
         /*********************************************************************************/
@@ -36,9 +36,9 @@ namespace Drill4Net.Agent.Standard.Debug
 
                 StandardAgent.Init();
 
-                //point data
-                var injRep = new StandardAgentRepository(); 
-                var tree = injRep.ReadInjectedTree();
+                //point data (from the TestEngine)
+                var rep = new StandardAgentRepository();
+                var tree = rep.ReadInjectedTree();
                 const string moniker = "net5.0";
                 var asmTree = tree.GetFrameworkRootDirectory(moniker);
                 if (asmTree == null)
@@ -46,13 +46,13 @@ namespace Drill4Net.Agent.Standard.Debug
                 _points = asmTree.Filter(typeof(CrossPoint), true).Cast<CrossPoint>().ToList();
                 Console.WriteLine($"\nCross points: {_points.Count}");
 
-                //debug
-                var treeCnv = new TreeConverter();
-                var types = tree.GetAllTypes().Where(a => a.Name == "CoverageTarget");
-                treeCnv.CreateCoverageRegistrator(new Abstract.Transfer.StartSessionPayload(), types);
+                ////debug
+                //var treeCnv = new TreeConverter();
+                //var types = tree.GetAllTypes().Where(a => a.Name == "CoverageTarget");
+                //treeCnv.CreateCoverageRegistrator(new Abstract.Transfer.StartSessionPayload(), types);
 
                 //range
-                await Task.Delay(1500).ConfigureAwait(false);
+                await Task.Delay(1500).ConfigureAwait(false); //wait for connect to admin side
                 Console.Write($"Input point count for the simulating execution range [{_pointRange}]: ");
                 var expr = Console.ReadLine()?.Trim();
                 if (int.TryParse(expr, out var pntCnt))
@@ -117,14 +117,8 @@ namespace Drill4Net.Agent.Standard.Debug
                 var ind = r.Next(0, _points.Count);
                 var point = _points[ind];
                 _points.RemoveAt(ind);
-                StandardAgent.RegisterStatic($"{point.PointUid}^asmName^funcSig^probe");
+                StandardAgent.RegisterStatic($"{point.PointUid}");
             }
-
-            //var injType = _types.First(a => a.Name == "InjectTarget");
-            //var meths = _methods[injType];
-            //var meth = meths.First(a => a.Name == "RunTests");
-            //var obj = Activator.CreateInstance(injType);
-            //meth.Invoke(obj, null);
             return true;
         }
     }

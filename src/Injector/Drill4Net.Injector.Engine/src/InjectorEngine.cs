@@ -82,11 +82,7 @@ namespace Drill4Net.Injector.Engine
             //ctx of this Run
             using var runCtx = new RunContext(_rep, tree);
 
-            //files in root
-            runCtx.SourceDirectory = runCtx.RootDirectory;
-            ProcessDirectory(runCtx);
-
-            //folders: possible targets from in cfg
+            //folders: possible targets from cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
@@ -105,12 +101,19 @@ namespace Drill4Net.Injector.Engine
                     var z = Path.Combine(dir, a.Key);
                     return x.Equals(z, StringComparison.InvariantCultureIgnoreCase);
                 });
-                
+
                 if (need)
                 {
                     runCtx.SourceDirectory = dir;
                     ProcessDirectory(runCtx);
                 }
+            }
+
+            if (runCtx.Tree.GetAllAssemblies().Count() == 0)
+            {
+                //files in root
+                runCtx.SourceDirectory = runCtx.RootDirectory;
+                ProcessDirectory(runCtx);
             }
 
             //the tree's deploying
