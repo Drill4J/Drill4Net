@@ -2,13 +2,13 @@
 {
     public abstract class BaseResolver
     {
-        public string WworkDir { get; }
+        public string WorkDir { get; }
 
         /**************************************************************/
 
         protected BaseResolver(string wworkDir = null)
         {
-            WworkDir = wworkDir ?? FileUtils.GetEntryDir();
+            WorkDir = wworkDir ?? FileUtils.GetEntryDir();
         }
     }
 }

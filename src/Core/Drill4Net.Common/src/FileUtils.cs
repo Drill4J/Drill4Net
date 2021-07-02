@@ -17,11 +17,13 @@ namespace Drill4Net.Common
         /// </summary>
         public static string BaseDir { get; }
 
+        public const string LOG_FOLDER_EMERGENCY = "logs_drill";
+
         /******************************************************************/
 
         static FileUtils()
         {
-            BaseDir = GetExecutionDir();
+            BaseDir = GetEntryDir();
         }
 
         /******************************************************************/
@@ -42,9 +44,17 @@ namespace Drill4Net.Common
             return Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
         }
 
+        /// <summary>
+        /// Directory for the emergency logs out of scope of the common log system
+        /// </summary>
         public static string GetEntryDir()
         {
             return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+        }
+
+        public static string GetEmergencyDir()
+        {
+            return Path.Combine(GetEntryDir(), LOG_FOLDER_EMERGENCY);
         }
 
         public static bool IsSameDirectories(string dir1, string dir2)
@@ -113,9 +123,9 @@ namespace Drill4Net.Common
         /// </summary>
         /// <param name="shortName">The short name of the assembly.</param>
         /// <param name="version">The exact version of the assembly.</param>
-        /// <param name="workDir">The work dir.</param>
+        /// <param name="dependenciesDir">The dependencies dir.</param>
         /// <returns></returns>
-        public static string FindAssemblyPath(string shortName, Version version, string workDir = null)
+        public static string FindAssemblyPath(string shortName, Version version, string dependenciesDir = null)
         {
             //root runtime path - TODO: regex
             var curPath = RuntimeEnvironment.GetRuntimeDirectory();
@@ -129,8 +139,8 @@ namespace Drill4Net.Common
 
             //dirs
             var dirs = Directory.GetDirectories(runtimeRootPath).ToList(); //framework's dirs
-            if (!string.IsNullOrWhiteSpace(workDir)) //work dir
-                dirs.Add(workDir);
+            if (!string.IsNullOrWhiteSpace(dependenciesDir)) //work dir
+                dirs.Add(dependenciesDir);
             dirs.Add(BaseDir); //last chance in Injector dir...
             //dirs.Add(@"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Standard\netstandard2.0\");
 

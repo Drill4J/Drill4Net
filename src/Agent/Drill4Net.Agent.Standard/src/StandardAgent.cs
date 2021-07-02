@@ -21,7 +21,7 @@ namespace Drill4Net.Agent.Standard
         private static ISender Sender => _comm.Sender;
 
         /// <summary>
-        /// Diretory for emergency logs out of scope of the common log system
+        /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
         public static string EmergencyLogDir { get; }
 
@@ -42,10 +42,9 @@ namespace Drill4Net.Agent.Standard
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 _resolver = new AssemblyResolver();
-
-                const string logFolder = "logs_drill";
-                EmergencyLogDir = Path.Combine(FileUtils.GetEntryDir(), logFolder);
-                BaseRepository.PrepareInitLogger(logFolder);
+                
+                EmergencyLogDir = FileUtils.GetEntryDir();
+                BaseRepository.PrepareInitLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
                 Log.Debug("Initializing...");
 

@@ -90,7 +90,7 @@
         </member>
         <member name="P:Drill4Net.Agent.Standard.StandardAgent.EmergencyLogDir">
             <summary>
-            Diretory for emergency logs out of scope of the common log system
+            Directory for the emergency logs out of scope of the common log system
             </summary>
         </member>
         <member name="M:Drill4Net.Agent.Standard.StandardAgent.Init">
@@ -251,16 +251,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 855bbd1</summary>
+            <summary>Commit: 47c9583</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 855bbd109a5f79b4af488c239e5d0566f2186f9d</summary>
+            <summary>Sha: 47c9583b082f74abb7dd02e3bd70039f0ebee089</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-07-02T14:13:43+03:00</summary>
+            <summary>Commit date: 2021-07-02T15:26:01+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 515</summary>
+            <summary>Commits on top of base version: 516</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -290,7 +290,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 515</summary>
+            <summary>Patch: 516</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

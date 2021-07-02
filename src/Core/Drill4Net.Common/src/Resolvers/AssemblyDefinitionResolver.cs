@@ -37,7 +37,7 @@ namespace Drill4Net.Common
             if (_cache.ContainsKey(name))
                 return _cache[name];
             //
-            var path = FileUtils.FindAssemblyPath(name, nameRef.Version, WworkDir);
+            var path = FileUtils.FindAssemblyPath(name, nameRef.Version, WorkDir);
             if (path == null)
                 return null;
             var def = AssemblyDefinition.ReadAssembly(path, _readerParams);

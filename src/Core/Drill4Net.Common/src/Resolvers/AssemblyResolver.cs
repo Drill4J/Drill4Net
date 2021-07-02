@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 
-
 namespace Drill4Net.Common
 {
     public class AssemblyResolver : BaseResolver
@@ -23,7 +22,7 @@ namespace Drill4Net.Common
             if (_cache.ContainsKey(fullName))
                 return _cache[fullName];
             var (shortName, version) = CommonUtils.ParseAssemblyVersion(fullName);
-            var path = FileUtils.FindAssemblyPath(shortName, version, WworkDir);
+            var path = FileUtils.FindAssemblyPath(shortName, version, WorkDir);
             if (path == null)
                 return null;
             if (!File.Exists(path))

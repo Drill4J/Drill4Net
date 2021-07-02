@@ -139,6 +139,11 @@
             Base directory of the running Injector App
             </summary>
         </member>
+        <member name="M:Drill4Net.Common.FileUtils.GetEntryDir">
+            <summary>
+            Directory for the emergency logs out of scope of the common log system
+            </summary>
+        </member>
         <member name="M:Drill4Net.Common.FileUtils.FindAssemblyPath(System.String,System.Version,System.String)">
             <summary>
             Finds the assembly path: from the frameworks's paths, work dir and the Injector dir.
