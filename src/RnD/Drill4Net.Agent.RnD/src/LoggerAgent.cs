@@ -14,6 +14,7 @@ namespace Drill4Net.Agent.RnD
     {
         private static readonly string _filepath;
         private static readonly ChannelsQueue _queue;
+        private static readonly StreamWriter _writer;
 
         /*****************************************************************************/
 
@@ -26,7 +27,9 @@ namespace Drill4Net.Agent.RnD
                 File.Delete(_filepath);
 
             //we just write probes to the file
-            Action<string> action = (string str) => File.AppendAllLines(_filepath, new string[] { str });
+            _writer = File.AppendText(_filepath); //writes to memory and flushes at the end (but perhaps can be leaks & last data losses) - for IHS BDD 09:43 min
+            //Action<string> action = (string str) => File.AppendAllLines(_filepath, new string[] { str }); //opens & closes file each time - for IHS BDD 18:08 min
+            Action<string> action = (string str) => _writer.WriteLine(str);
             _queue = new ChannelsQueue(action);
         }
 

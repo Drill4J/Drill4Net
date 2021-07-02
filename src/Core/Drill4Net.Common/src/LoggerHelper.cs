@@ -5,6 +5,7 @@ namespace Drill4Net.Common
 {
     public class LoggerHelper
     {
+        public const string LOG_DIR_DEFAULT = "logs";
         public static string LOG_FILENAME = "log.txt";
 
         /// <summary>
@@ -12,12 +13,12 @@ namespace Drill4Net.Common
         /// local text file with the Verbose level.
         /// </summary>
         /// <returns></returns>
-        public virtual LoggerConfiguration GetBaseLoggerConfiguration()
+        public virtual LoggerConfiguration GetBaseLoggerConfiguration(string folder = LOG_DIR_DEFAULT)
         {
             var cfg = new LoggerConfiguration()
                .MinimumLevel.Verbose()
                .WriteTo.Console()
-               .WriteTo.File(GetCommonFilePath());
+               .WriteTo.File(GetCommonFilePath(folder));
             return cfg;
         }
 
@@ -25,9 +26,10 @@ namespace Drill4Net.Common
         /// Get the common folder to log events (for all components of system)
         /// </summary>
         /// <returns></returns>
-        public virtual string GetCommonFilePath()
+        public virtual string GetCommonFilePath(string folder = LOG_DIR_DEFAULT)
         {
-            return Path.Combine(FileUtils.GetExecutionDir(), "logs", LOG_FILENAME);
+            var dir = string.IsNullOrWhiteSpace(folder) ? LOG_DIR_DEFAULT : folder;
+            return Path.Combine(FileUtils.GetEntryDir(), dir, LOG_FILENAME);
         }
     }
 }

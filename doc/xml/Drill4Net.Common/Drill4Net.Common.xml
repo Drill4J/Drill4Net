@@ -162,14 +162,14 @@
             <param name="logFolder"></param>
             <returns>Log directory's path</returns>
         </member>
-        <member name="M:Drill4Net.Common.LoggerHelper.GetBaseLoggerConfiguration">
+        <member name="M:Drill4Net.Common.LoggerHelper.GetBaseLoggerConfiguration(System.String)">
             <summary>
             Gets the base logger configuration for the logging into console and 
             local text file with the Verbose level.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Common.LoggerHelper.GetCommonFilePath">
+        <member name="M:Drill4Net.Common.LoggerHelper.GetCommonFilePath(System.String)">
             <summary>
             Get the common folder to log events (for all components of system)
             </summary>

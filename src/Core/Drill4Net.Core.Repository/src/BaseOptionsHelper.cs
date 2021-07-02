@@ -28,9 +28,10 @@ namespace Drill4Net.Core.Repository
         /// <returns></returns>
         protected internal string GetActualConfigPath()
         {
-            var redirectPath = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_REDIRECT_NAME);
+            var dir = FileUtils.GetEntryDir();
+            var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_REDIRECT_NAME);
             if (!File.Exists(redirectPath))
-                return Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_DEFAULT_NAME);
+                return Path.Combine(dir, CoreConstants.CONFIG_DEFAULT_NAME);
             Deserializer deser = new();
             var cfg = File.ReadAllText(redirectPath);
             var redirect = deser.Deserialize<RedirectOptions>(cfg);

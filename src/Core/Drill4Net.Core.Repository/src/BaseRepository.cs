@@ -32,9 +32,9 @@ namespace Drill4Net.Core.Repository
         /// <summary>
         /// Prepares the initialize logger.
         /// </summary>
-        public static void PrepareInitLogger()
+        public static void PrepareInitLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
         {
-            var cfg = new LoggerHelper().GetBaseLoggerConfiguration();
+            var cfg = new LoggerHelper().GetBaseLoggerConfiguration(folder);
             Log.Logger = cfg.CreateLogger();
         }
     }
