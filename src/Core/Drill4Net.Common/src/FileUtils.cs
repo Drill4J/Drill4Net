@@ -15,7 +15,9 @@ namespace Drill4Net.Common
         /// <summary>
         /// Base directory of the running Injector App
         /// </summary>
-        public static string BaseDir { get; }
+        public static string EntryDir { get; }
+
+        public static string ExecutingDir { get; }
 
         public const string LOG_FOLDER_EMERGENCY = "logs_drill";
 
@@ -23,7 +25,8 @@ namespace Drill4Net.Common
 
         static FileUtils()
         {
-            BaseDir = GetEntryDir();
+            ExecutingDir = GetExecutionDir();
+            EntryDir = GetEntryDir() ?? ExecutingDir;
         }
 
         /******************************************************************/
@@ -76,7 +79,7 @@ namespace Drill4Net.Common
             if (string.IsNullOrWhiteSpace(path))
                 return path;
             if (!Path.IsPathRooted(path))
-                path = Path.GetFullPath(Path.Combine(basePath ?? BaseDir, path));
+                path = Path.GetFullPath(Path.Combine(basePath ?? EntryDir, path));
             return path;
         }
 
@@ -141,8 +144,9 @@ namespace Drill4Net.Common
             var dirs = Directory.GetDirectories(runtimeRootPath).ToList(); //framework's dirs
             if (!string.IsNullOrWhiteSpace(dependenciesDir)) //work dir
                 dirs.Add(dependenciesDir);
-            dirs.Add(BaseDir); //last chance in Injector dir...
-            //dirs.Add(@"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Standard\netstandard2.0\");
+            dirs.Add(EntryDir); //last chance in Injector dir...
+            if (!dirs.Contains(ExecutingDir))
+                dirs.Add(ExecutingDir);
 
             // search
             if (!shortName.EndsWith(".dll"))

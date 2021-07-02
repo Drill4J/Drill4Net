@@ -134,7 +134,7 @@
             Common file util functions
             </summary>
         </member>
-        <member name="P:Drill4Net.Common.FileUtils.BaseDir">
+        <member name="P:Drill4Net.Common.FileUtils.EntryDir">
             <summary>
             Base directory of the running Injector App
             </summary>
@@ -150,7 +150,7 @@
             </summary>
             <param name="shortName">The short name of the assembly.</param>
             <param name="version">The exact version of the assembly.</param>
-            <param name="workDir">The work dir.</param>
+            <param name="dependenciesDir">The dependencies dir.</param>
             <returns></returns>
         </member>
         <member name="M:Drill4Net.Common.FileUtils.GetCommonLogDirectory(System.String,System.String)">
