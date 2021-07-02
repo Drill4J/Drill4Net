@@ -12,6 +12,7 @@ namespace Drill4Net.Common
     /// </summary>
     public static class CommonUtils
     {
+        #region TargetVersioning
         /// <summary>
         /// Get target version for the entry assembly of current process
         /// </summary>
@@ -30,7 +31,8 @@ namespace Drill4Net.Common
         {
             return new AssemblyVersioning(GetAssemblyVersion(Assembly.GetExecutingAssembly()));
         }
-
+        #endregion
+        #region Assembly
         /// <summary>
         /// Get string version of specified assembly
         /// </summary>
@@ -60,12 +62,25 @@ namespace Drill4Net.Common
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
             //
-            using var resolver = new AssemblyResolver(Path.GetDirectoryName(path));
+            using var resolver = new AssemblyDefinitionResolver(Path.GetDirectoryName(path));
             using var assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters { AssemblyResolver = resolver });
             var versionAttr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == "TargetFrameworkAttribute");
             var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();
             return new AssemblyVersioning(versionS);
         }
+
+        public static (string ShortName, Version Version) ParseAssemblyVersion(string fullName)
+        {
+            //'System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+            if (string.IsNullOrWhiteSpace(fullName))
+                throw new ArgumentNullException(nameof(fullName));
+            if (!fullName.Contains(", ") || !fullName.Contains("="))
+                throw new ArgumentException(nameof(fullName));
+            var ar = fullName.Split(',');
+            var ver = ar[1].Trim().Split('=')[1];
+            return (ar[0], new Version(ver));
+        }
+        #endregion
 
         public static string GetTypeByMethod(string methodFullName)
         {

@@ -25,6 +25,7 @@ namespace Drill4Net.Agent.Standard
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
+        private static readonly AssemblyResolver _resolver;
         private static string _emergencyLogDir;
         private static readonly object _entLocker = new();
 
@@ -36,12 +37,18 @@ namespace Drill4Net.Agent.Standard
             {
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+                _resolver = new AssemblyResolver();
 
                 const string logFolder = "logs_drill";
                 _emergencyLogDir = Path.Combine(FileUtils.GetEntryDir(), logFolder);
                 BaseRepository.PrepareInitLogger(logFolder);
 
                 Log.Debug("Initializing...");
+
+                //TEST!!!
+                //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
+                var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
+                var asm = _resolver.Resolve(ver);
 
                 _rep = new StandardAgentRepository();
                 _comm = _rep.Communicator;
@@ -99,8 +106,14 @@ namespace Drill4Net.Agent.Standard
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            var info = $"{args.Name}: {args.RequestingAssembly.FullName}";
+            var name = args.Name;
+            Log.Debug("Need resolve: [{Name}]", name);
+            var asm = _resolver.Resolve(name);
+            if (asm != null)
+                return asm;
+            var info = $"{name}: request from {args.RequestingAssembly.FullName}";
             File.AppendAllLines(Path.Combine(_emergencyLogDir, "resolve_failed.log"), new string[] { info });
+            Log.Debug("[{Name}] didn't resolve", name);
             return null;
         }
         #endregion

@@ -54,7 +54,7 @@ namespace Drill4Net.Injector.Core
                 // read everything at once
                 ReadingMode = ReadingMode.Immediate,
                 //exactly Source, not Destination (otherwise, overwriting is blocked - since dependency caching is currently used)
-                AssemblyResolver = new AssemblyResolver(runCtx.Options.Source.Directory),
+                AssemblyResolver = new AssemblyDefinitionResolver(runCtx.Options.Source.Directory),
             };
 
             #region PDB

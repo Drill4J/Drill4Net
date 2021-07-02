@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Mono.Cecil;
 
 namespace Drill4Net.Common
@@ -8,17 +7,15 @@ namespace Drill4Net.Common
     /// Assembly resolver for its reading with Mono.Cecil
     /// </summary>
     /// <seealso cref="Mono.Cecil.IAssemblyResolver" />
-    public class AssemblyResolver : IAssemblyResolver
+    public class AssemblyDefinitionResolver : BaseResolver, IAssemblyResolver
     {
-        public string WworkDir { get; }
         private readonly ReaderParameters _readerParams;
-        private static readonly Dictionary<string, AssemblyDefinition> _cache = new Dictionary<string, AssemblyDefinition>();
+        private static readonly Dictionary<string, AssemblyDefinition> _cache = new();
 
-        /*************************************************************/
+        /********************************************************************************/
 
-        public AssemblyResolver(string workDir)
+        public AssemblyDefinitionResolver(string workDir):base(workDir)
         {
-            WworkDir = workDir ?? throw new ArgumentNullException(nameof(workDir));
             _readerParams = new ReaderParameters
             {
                 ReadWrite = false,
@@ -27,7 +24,7 @@ namespace Drill4Net.Common
             };
         }
 
-        /*************************************************************/
+        /********************************************************************************/
 
         public AssemblyDefinition Resolve(AssemblyNameReference name)
         {

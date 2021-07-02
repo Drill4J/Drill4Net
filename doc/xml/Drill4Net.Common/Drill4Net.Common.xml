@@ -4,12 +4,6 @@
         <name>Drill4Net.Common</name>
     </assembly>
     <members>
-        <member name="T:Drill4Net.Common.AssemblyResolver">
-            <summary>
-            Assembly resolver for its reading with Mono.Cecil
-            </summary>
-            <seealso cref="T:Mono.Cecil.IAssemblyResolver" />
-        </member>
         <member name="T:Drill4Net.Common.AssemblyVersioning">
             <summary>
             Structure for the assembly version's metadata
@@ -585,6 +579,12 @@
             <summary>
             Options for the injecting process (types of methods, cross-point, etc)
             </summary>
+        </member>
+        <member name="T:Drill4Net.Common.AssemblyDefinitionResolver">
+            <summary>
+            Assembly resolver for its reading with Mono.Cecil
+            </summary>
+            <seealso cref="T:Mono.Cecil.IAssemblyResolver" />
         </member>
     </members>
 </doc>

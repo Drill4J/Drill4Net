@@ -180,6 +180,42 @@ namespace Drill4Net.Common
                         return filePath;
                 }
             }
+
+            // from user's nuget cache
+            if (firstMatch == null)
+            {
+                var nugetDir = $@"c:\Users\{Environment.UserName}\.nuget\packages\";
+                if (Directory.Exists(nugetDir))
+                {
+                    string folder = null;
+                    if (shortName.EndsWith(".resources.dll"))
+                        folder = shortName.Replace(".resources.dll", null);
+                    else
+                        folder = shortName;
+                    nugetDir += folder;
+                    var innerDirs = Directory.GetDirectories(nugetDir).OrderByDescending(a => a);
+                    var may = $"{nugetDir}\\{verS}".ToLower();
+                    foreach (var dir in innerDirs) //by version
+                    {
+                        if (!dir.ToLower().StartsWith(may))
+                            continue;
+                        var dirLIbs = $"{dir}\\lib";
+                        //guanito with sorting. First trying get the netstandard, then netcoreapp, then net...
+                        var innerDirs2 = Directory.GetDirectories(dirLIbs).OrderByDescending(a => a);
+                        foreach (var dir2 in innerDirs2) //by target
+                        {
+                            var innerDirs3 = Directory.GetDirectories(dir2);
+                            foreach (var dir3 in innerDirs3) //by language
+                            {
+                                var file = $"{dir3}\\{shortName}";
+                                if (!File.Exists(file))
+                                    continue;
+                                return file;
+                            }
+                        }
+                    }
+                }
+            }
             return firstMatch;
         }
 

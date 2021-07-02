@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Drill4Net.Common;
+using Serilog;
+using System;
+using System.Reflection;
 using System.Text.Json;
 
 namespace Drill4Net.Agent.Abstract
@@ -52,7 +55,9 @@ namespace Drill4Net.Agent.Abstract
 
         public AgentPartConfig(string appId, string appVersion, string agentVersion)
         {
-           //App
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+            //App
             Id = appId;
             InstanceId = Guid.NewGuid().ToString();
             BuildVersion = string.IsNullOrWhiteSpace(appVersion) ? "0.0.0" : appVersion;
@@ -63,6 +68,18 @@ namespace Drill4Net.Agent.Abstract
             NeedSync = true;
             ServiceGroupId = "";
             //AgentVerion = agentVersion;
+        }
+
+        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            var name = args.Name;
+            Log.Debug("Need resolve: [{Name}]", name);
+            var resolver = new AssemblyResolver();
+            var asm = resolver.Resolve(name);
+            if (asm != null)
+                return asm;
+            Log.Debug("[{Name}] didn't resolve", name);
+            return null;
         }
     }
 }
