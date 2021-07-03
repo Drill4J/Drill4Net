@@ -25,11 +25,11 @@ namespace Drill4Net.Common
             var path = FindAssemblyPath(shortName, version);
             if (path == null)
             {
-                //maybe it's resource? Strange, but some of resource's searchings were here,
-                //not in CurrentDomain_AssemblyResolve event. But is is inaccurate...
-                if (fullName.EndsWith(".resources"))
+                //maybe it's resource dll? Strange, but some of resource's searchings were here,
+                //not in CurrentDomain.AssemblyResolve event. But it's inaccurate...
+                if (shortName.EndsWith(".resources"))
                 {
-                    var resName = fullName; // $"{fullName}.dll";
+                    var resName = $"{shortName}.dll";
                     var reqAsm = Assembly.LoadFrom(requestingAssemblyPath);
                     using var input = reqAsm.GetManifestResourceStream(resName);
                     if (input != null)
