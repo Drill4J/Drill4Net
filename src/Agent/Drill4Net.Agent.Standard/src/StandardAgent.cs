@@ -41,6 +41,9 @@ namespace Drill4Net.Agent.Standard
             {
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += CurrentDomain_ReflectionOnlyAssemblyResolve;
+                AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
+                AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
                 _resolver = new AssemblyResolver();
                 
                 EmergencyLogDir = FileUtils.GetEmergencyDir();
@@ -52,6 +55,8 @@ namespace Drill4Net.Agent.Standard
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
                 //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
                 //var asm = _resolver.Resolve(ver);
+
+                var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
 
                 _rep = new StandardAgentRepository();
                 _comm = _rep.Communicator;
@@ -111,13 +116,40 @@ namespace Drill4Net.Agent.Standard
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
-            Log.Debug("Need resolve: [{Name}]", name);
+            Log.Debug("Need resolve assembly: [{Name}]", name);
             var asm = _resolver.Resolve(name);
             if (asm != null)
                 return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from {args.RequestingAssembly.FullName}";
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_failed.log"), new string[] { info });
-            Log.Debug("[{Name}] didn't resolve", name);
+            Log.Debug("Assembly [{Name}] didn't resolve ", name);
+            return null;
+        }
+
+        private static Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            var name = args.Name;
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_resource_only_failed.log"), new string[] { info });
+            return null;
+        }
+
+        private static Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
+        {
+            var name = args.Name;
+            var asm = _resolver.ResolveResource(args.RequestingAssembly.Location, name);
+            if (asm != null)
+                return asm;
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_resource_failed.log"), new string[] { info });
+            return null;
+        }
+
+        private static Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
+        {
+            var name = args.Name;
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_type_failed.log"), new string[] { info });
             return null;
         }
         #endregion

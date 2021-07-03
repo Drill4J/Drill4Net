@@ -199,7 +199,7 @@ namespace Drill4Net.Common
                 }
             }
 
-            // from user's nuget cache
+            #region from user's nuget cache
             if (firstMatch == null)
             {
                 var nugetDir = $@"c:\Users\{Environment.UserName}\.nuget\packages\";
@@ -234,6 +234,7 @@ namespace Drill4Net.Common
                         }
                     }
                 }
+                #endregion
             }
             return firstMatch;
         }

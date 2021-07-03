@@ -31,5 +31,21 @@ namespace Drill4Net.Common
             _cache.Add(fullName, asm);
             return asm;
         }
+
+        public Assembly ResolveResource(string requestingAssemblyPath, string resource)
+        {
+            if (!File.Exists(requestingAssemblyPath))
+                return null;
+            if (string.IsNullOrWhiteSpace(resource) || !resource.Contains("."))
+                return null;
+            var ar = resource.Split('.');
+            var localization = ar[ar.Length - 2];
+            var dir = Path.GetDirectoryName(requestingAssemblyPath);
+            var dir2 = Path.Combine(new DirectoryInfo(dir).Parent.FullName, localization);
+            var path = Path.Combine(dir2, Path.GetFileName(requestingAssemblyPath));
+            if (!File.Exists(path))
+                path = requestingAssemblyPath;
+            return Assembly.LoadFrom(path);
+        }
     }
 }
