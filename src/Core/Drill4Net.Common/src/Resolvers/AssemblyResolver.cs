@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 
@@ -11,7 +10,7 @@ namespace Drill4Net.Common
 
         /********************************************************************************/
 
-        public AssemblyResolver(string wworkDir = null) : base(wworkDir)
+        public AssemblyResolver(List<string> searchDirs = null) : base(searchDirs)
         {
         }
 
@@ -22,7 +21,7 @@ namespace Drill4Net.Common
             if (_cache.ContainsKey(fullName))
                 return _cache[fullName];
             var (shortName, version) = CommonUtils.ParseAssemblyVersion(fullName);
-            var path = FileUtils.FindAssemblyPath(shortName, version, WorkDir);
+            var path = FindAssemblyPath(shortName, version);
             if (path == null)
                 return null;
             if (!File.Exists(path))

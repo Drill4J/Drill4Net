@@ -14,7 +14,7 @@ namespace Drill4Net.Common
 
         /********************************************************************************/
 
-        public AssemblyDefinitionResolver(string workDir):base(workDir)
+        public AssemblyDefinitionResolver(List<string> searchDirs = null) : base(searchDirs)
         {
             _readerParams = new ReaderParameters
             {
@@ -37,7 +37,7 @@ namespace Drill4Net.Common
             if (_cache.ContainsKey(name))
                 return _cache[name];
             //
-            var path = FileUtils.FindAssemblyPath(name, nameRef.Version, WorkDir);
+            var path = FindAssemblyPath(name, nameRef.Version);
             if (path == null)
                 return null;
             var def = AssemblyDefinition.ReadAssembly(path, _readerParams);

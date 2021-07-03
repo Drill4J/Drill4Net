@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -62,7 +63,8 @@ namespace Drill4Net.Common
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
             //
-            using var resolver = new AssemblyDefinitionResolver(Path.GetDirectoryName(path));
+            var searches = new List<string> { Path.GetDirectoryName(path) };
+            using var resolver = new AssemblyDefinitionResolver(searches);
             using var assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters { AssemblyResolver = resolver });
             var versionAttr = assembly.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == "TargetFrameworkAttribute");
             var versionS = versionAttr?.ConstructorArguments[0].Value?.ToString();

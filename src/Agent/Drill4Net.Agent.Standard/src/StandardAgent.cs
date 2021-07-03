@@ -41,7 +41,6 @@ namespace Drill4Net.Agent.Standard
             {
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
                 AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-                AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += CurrentDomain_ReflectionOnlyAssemblyResolve;
                 AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
                 AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
                 _resolver = new AssemblyResolver();
@@ -56,7 +55,7 @@ namespace Drill4Net.Agent.Standard
                 //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
                 //var asm = _resolver.Resolve(ver);
 
-                var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
+                //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
 
                 _rep = new StandardAgentRepository();
                 _comm = _rep.Communicator;
@@ -123,14 +122,6 @@ namespace Drill4Net.Agent.Standard
             var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_failed.log"), new string[] { info });
             Log.Debug("Assembly [{Name}] didn't resolve ", name);
-            return null;
-        }
-
-        private static Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            var name = args.Name;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
-            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_resource_only_failed.log"), new string[] { info });
             return null;
         }
 

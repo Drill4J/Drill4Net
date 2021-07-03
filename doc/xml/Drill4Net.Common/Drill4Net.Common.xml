@@ -144,15 +144,6 @@
             Directory for the emergency logs out of scope of the common log system
             </summary>
         </member>
-        <member name="M:Drill4Net.Common.FileUtils.FindAssemblyPath(System.String,System.Version,System.String)">
-            <summary>
-            Finds the assembly path: from the frameworks's paths, work dir and the Injector dir.
-            </summary>
-            <param name="shortName">The short name of the assembly.</param>
-            <param name="version">The exact version of the assembly.</param>
-            <param name="dependenciesDir">The dependencies dir.</param>
-            <returns></returns>
-        </member>
         <member name="M:Drill4Net.Common.FileUtils.GetCommonLogDirectory(System.String,System.String)">
             <summary>
             Get directory for the all subsystems of the Drill4Net
@@ -590,6 +581,15 @@
             Assembly resolver for its reading with Mono.Cecil
             </summary>
             <seealso cref="T:Mono.Cecil.IAssemblyResolver" />
+        </member>
+        <member name="M:Drill4Net.Common.BaseResolver.FindAssemblyPath(System.String,System.Version,System.String)">
+            <summary>
+            Finds the assembly path: from the frameworks's paths, work dir and the Injector dir.
+            </summary>
+            <param name="shortName">The short name of the assembly.</param>
+            <param name="version">The exact version of the assembly.</param>
+            <param name="dependenciesDir">The dependencies dir.</param>
+            <returns></returns>
         </member>
     </members>
 </doc>

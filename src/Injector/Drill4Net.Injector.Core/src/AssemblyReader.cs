@@ -5,6 +5,7 @@ using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Common;
+using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
@@ -47,6 +48,7 @@ namespace Drill4Net.Injector.Core
                 return asmCtx;
 
             #region Params
+            var searches = new List<string> { runCtx.Options.Source.Directory };
             var readerParams = new ReaderParameters
             {
                 // we will write to another file, so we don't need this
@@ -54,7 +56,7 @@ namespace Drill4Net.Injector.Core
                 // read everything at once
                 ReadingMode = ReadingMode.Immediate,
                 //exactly Source, not Destination (otherwise, overwriting is blocked - since dependency caching is currently used)
-                AssemblyResolver = new AssemblyDefinitionResolver(runCtx.Options.Source.Directory),
+                AssemblyResolver = new AssemblyDefinitionResolver(searches),
             };
 
             #region PDB
