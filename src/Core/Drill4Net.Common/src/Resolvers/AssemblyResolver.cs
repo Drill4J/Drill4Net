@@ -16,19 +16,53 @@ namespace Drill4Net.Common
 
         /********************************************************************************/
 
-        public Assembly Resolve(string fullName)
+        public Assembly Resolve(string fullName, string requestingAssemblyPath = null)
         {
             if (_cache.ContainsKey(fullName))
                 return _cache[fullName];
+            Assembly asm;
             var (shortName, version) = CommonUtils.ParseAssemblyVersion(fullName);
             var path = FindAssemblyPath(shortName, version);
             if (path == null)
+            {
+                //maybe it's resource? Strange, but some of resource's searchings were here,
+                //not in CurrentDomain_AssemblyResolve event. But is is inaccurate...
+                if (fullName.EndsWith(".resources"))
+                {
+                    var resName = fullName; // $"{fullName}.dll";
+                    var reqAsm = Assembly.LoadFrom(requestingAssemblyPath);
+                    using var input = reqAsm.GetManifestResourceStream(resName);
+                    if (input != null)
+                    {
+                        asm = Assembly.Load(StreamToBytes(input));
+                        _cache.Add(fullName, asm);
+                        return asm;
+                    }
+                }
                 return null;
+            }
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Resolve failed, file not found: [{path}]");
-            var asm = Assembly.LoadFrom(path);
+            asm = Assembly.LoadFrom(path);
             _cache.Add(fullName, asm);
             return asm;
+        }
+
+        private static byte[] StreamToBytes(Stream input)
+        {
+            int capacity = input.CanSeek ? (int)input.Length : 0;
+            using MemoryStream output = new MemoryStream(capacity);
+            int readLength;
+            byte[] buffer = new byte[4096];
+
+            do
+            {
+                readLength = input.Read(buffer, 0, buffer.Length); // had to change to buffer.Length
+                output.Write(buffer, 0, readLength);
+            }
+            while (readLength != 0);
+
+            return output.ToArray();
         }
 
         public Assembly ResolveResource(string requestingAssemblyPath, string resource)

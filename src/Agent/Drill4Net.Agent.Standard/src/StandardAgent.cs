@@ -116,7 +116,7 @@ namespace Drill4Net.Agent.Standard
         {
             var name = args.Name;
             Log.Debug("Need resolve assembly: [{Name}]", name);
-            var asm = _resolver.Resolve(name);
+            var asm = _resolver.Resolve(name, args.RequestingAssembly.Location);
             if (asm != null)
                 return asm;
             var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
