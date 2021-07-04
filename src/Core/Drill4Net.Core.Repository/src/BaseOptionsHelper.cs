@@ -29,6 +29,7 @@ namespace Drill4Net.Core.Repository
         protected internal string GetActualConfigPath()
         {
             var dir = FileUtils.GetEntryDir();
+            //File.AppendAllLines(Path.Combine(@"d:\Projects\IHS-bdd.Injected\logs_drill\", "log2.log"), new string[] { dir });
             var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_REDIRECT_NAME);
             if (!File.Exists(redirectPath))
                 return Path.Combine(dir, CoreConstants.CONFIG_DEFAULT_NAME);

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Text.Json;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Transport
 {
@@ -53,16 +53,21 @@ namespace Drill4Net.Agent.Transport
 
         #endregion
 
-        private readonly JsonSerializerOptions _deserOpts;
+        private readonly JsonSerializerSettings _deserOpts; //JsonSerializerOptions
 
         /************************************************************************/
 
         public AgentReceiver(Connector receiver)
         {
-            _deserOpts = new JsonSerializerOptions
+            //_deserOpts = new JsonSerializerOptions
+            //{
+            //    AllowTrailingCommas = true,
+            //    PropertyNameCaseInsensitive = true,
+            //};
+
+            _deserOpts = new JsonSerializerSettings
             {
-                AllowTrailingCommas = true,
-                PropertyNameCaseInsensitive = true,
+                
             };
 
             var connector = receiver ?? throw new ArgumentNullException(nameof(receiver));
@@ -144,7 +149,7 @@ namespace Drill4Net.Agent.Transport
 
         internal T Deserialize<T>(string obj) where T : class, new()
         {
-            return JsonSerializer.Deserialize<T>(obj, _deserOpts);
+            return JsonConvert.DeserializeObject<T>(obj, _deserOpts); // JsonSerializer.Deserialize<T>(obj, _deserOpts);
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using Drill4Net.Common;
+﻿using Newtonsoft.Json;
 using System;
-using System.Reflection;
-using System.Text.Json;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -58,7 +56,7 @@ namespace Drill4Net.Agent.Abstract
             Id = appId;
             InstanceId = Guid.NewGuid().ToString();
             BuildVersion = string.IsNullOrWhiteSpace(appVersion) ? "0.0.0" : appVersion;
-            PackagesPrefixes = JsonSerializer.Serialize(new BusinessNamespacer());
+            PackagesPrefixes = JsonConvert.SerializeObject(new BusinessNamespacer());
 
             //Agent
             AgentType = "DOTNET";

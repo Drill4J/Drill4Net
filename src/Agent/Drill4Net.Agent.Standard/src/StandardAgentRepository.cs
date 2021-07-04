@@ -41,7 +41,6 @@ namespace Drill4Net.Agent.Standard
         private readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
         private CoverageRegistrator _globalRegistrator;
-
         private readonly TreeConverter _converter;
         private readonly IEnumerable<InjectedType> _injTypes;
 
