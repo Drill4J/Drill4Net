@@ -1,5 +1,6 @@
-﻿Path: inj_RnD # Full/relative path or simple name of real injection cfg (in this case with or without extension)
+﻿Path: inj_Std # Full/relative path or simple name of real injection cfg (in this case with or without extension)
       #inj_RnD 
+      #inj_Std
       #inj_IHS_bdd_FILE 
       #inj_IHS_bdd 
       #inj_razor 

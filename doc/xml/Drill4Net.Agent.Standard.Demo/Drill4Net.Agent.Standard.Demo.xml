@@ -4,5 +4,18 @@
         <name>Drill4Net.Agent.Standard.Debug</name>
     </assembly>
     <members>
+        <member name="M:Drill4Net.Agent.Standard.Debug.Program.SendData(System.String)">
+            <summary>
+            Sends to the Admin side the points.
+            </summary>
+            <param name="input">The input.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Agent.Standard.Debug.Program.SendPointBlock">
+            <summary>
+            Sends to the Admin side the portion of the points.
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>
