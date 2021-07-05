@@ -105,10 +105,8 @@ namespace Drill4Net.Agent.Standard
 
         internal string GetRealTargetVersion()
         {
-            //here we get just first type, but real version of real target
-            //will be retrieved only in real injection ;)
-            var type = Assembly.GetEntryAssembly().GetTypes()[0];
-            return FileUtils.GetProductVersion(type);
+            var asm = Assembly.GetExecutingAssembly();
+            return FileUtils.GetProductVersion(asm.Location);
         }
 
         /// <summary>

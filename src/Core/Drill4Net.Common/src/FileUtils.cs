@@ -33,7 +33,12 @@ namespace Drill4Net.Common
 
         public static string GetProductVersion(Type type)
         {
-            return FileVersionInfo.GetVersionInfo(type.Assembly.Location).ProductVersion;
+            return GetProductVersion(type.Assembly.Location);
+        }
+
+        public static string GetProductVersion(string asmPath)
+        {
+            return FileVersionInfo.GetVersionInfo(asmPath).ProductVersion;
         }
 
         #region Directories

@@ -1,5 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
