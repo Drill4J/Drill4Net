@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Repository for Agent
         /// </summary>
-        private static StandardAgentRepository Repository { get; }
+        public static StandardAgentRepository Repository { get; }
 
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system

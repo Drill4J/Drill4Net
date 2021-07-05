@@ -27,12 +27,14 @@ namespace Drill4Net.Agent.Standard.Debug
         {
             try
             {
-                Console.WriteLine("Initializing...");
+                WriteMessage("Agent.Standard.Debug", ConsoleColor.Cyan);
+                WriteMessage("Please wait for the init...", ConsoleColor.White);
+                await Task.Delay(2500).ConfigureAwait(false); //wait for the reading
 
                 StandardAgent.Init();
 
                 //points' data (in fact, from the TestEngine's tree)
-                var rep = new StandardAgentRepository();
+                var rep = StandardAgent.Repository;
                 var tree = rep.ReadInjectedTree();
                 const string moniker = "net5.0";
                 var asmTree = tree.GetFrameworkRootDirectory(moniker);
@@ -56,17 +58,19 @@ namespace Drill4Net.Agent.Standard.Debug
                 //var types = tree.GetAllTypes().Where(a => a.Name == "CoverageTarget");
                 //treeCnv.CreateCoverageRegistrator(new Abstract.Transfer.StartSessionPayload(), types);
 
-                await Task.Delay(1500).ConfigureAwait(false); //wait for connect to admin side
+                await Task.Delay(3500).ConfigureAwait(false); //wait for the admin side init
 
                 //range
-                WriteMessage($"\nCross points: {_points.Count}", ConsoleColor.Cyan);
-                WriteMessage($"Input point count for the extraction range [{_pointRange}]: ", ConsoleColor.Yellow);
-                var expr = Console.ReadLine()?.Trim();
-                if (int.TryParse(expr, out var pntCnt))
-                {
-                    if (pntCnt > 0)
-                        _pointRange = pntCnt;
-                }
+                WriteMessage($"\nUnique public methods: {_methods.Count}", ConsoleColor.Cyan);
+                WriteMessage($"Total cross-points: {_points.Count}", ConsoleColor.Cyan);
+                //WriteMessage($"Input point count for the extraction range [{_pointRange}]: ", ConsoleColor.Yellow);
+                //var expr = Console.ReadLine()?.Trim();
+                //if (int.TryParse(expr, out var pntCnt))
+                //{
+                //    if (pntCnt > 0)
+                //        _pointRange = pntCnt;
+                //}
+                WriteMessage($"Block size of cross-points: {_pointRange}", ConsoleColor.Cyan);
 
                 // info
                 const string mess = @"  *** First of all, start session on admin side...
@@ -79,7 +83,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 while (true)
                 {
                     WriteMessage("\nInput:");
-                    expr = Console.ReadLine()?.Trim();
+                    var expr = Console.ReadLine()?.Trim();
                     if (string.IsNullOrWhiteSpace(expr))
                         continue;
                     if (expr == "q" || expr == "Q")
@@ -232,7 +236,7 @@ namespace Drill4Net.Agent.Standard.Debug
                         case "System.Object":
                         case "System.String": obj = val; break;
                         default:
-                            WriteMessage($"Unknown type of data: [{type}]", ConsoleColor.DarkYellow);
+                            WriteMessage($"Unknown type: [{type}] for data [{val}]", ConsoleColor.DarkYellow);
                             break;
                     }
                 }
