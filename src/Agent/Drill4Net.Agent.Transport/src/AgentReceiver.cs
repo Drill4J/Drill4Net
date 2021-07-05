@@ -1,7 +1,12 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
-using Newtonsoft.Json;
+
+    /* 
+     * NOT USE $MS standard serializer from System.Text.Json!!! 
+     * Because it will fail to resolve in some cases (project is NetStandard 2.0 now)
+     */
 
 namespace Drill4Net.Agent.Transport
 {

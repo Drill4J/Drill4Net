@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using System;
 
 namespace Drill4Net.Common
 {
@@ -30,14 +31,26 @@ namespace Drill4Net.Common
                 if (shortName.EndsWith(".resources"))
                 {
                     var resName = $"{shortName}.dll";
+                    //resName = "FxResources.System.Private.Xml.SR.resources"; //TEST!!!
                     var reqAsm = Assembly.LoadFrom(requestingAssemblyPath);
                     using var input = reqAsm.GetManifestResourceStream(resName);
                     if (input != null)
                     {
-                        asm = Assembly.Load(StreamToBytes(input));
-                        _cache.Add(fullName, asm);
-                        return asm;
+                        try
+                        {
+                            var ar = StreamToBytes(input);
+                            asm = Assembly.Load(ar);
+                            _cache.Add(fullName, asm);
+                            return asm;
+                        }
+                        catch(Exception ex)
+                        {
+                            //log...
+                            throw;
+                        }
                     }
+                    //else
+                        //return Assembly.LoadFrom(requestingAssemblyPath);
                 }
                 return null;
             }
@@ -57,11 +70,12 @@ namespace Drill4Net.Common
 
             do
             {
-                readLength = input.Read(buffer, 0, buffer.Length); // had to change to buffer.Length
+                readLength = input.Read(buffer, 0, buffer.Length); //better to use buffer.Length
                 output.Write(buffer, 0, readLength);
             }
             while (readLength != 0);
 
+            output.Position = 0;
             return output.ToArray();
         }
 
@@ -77,8 +91,8 @@ namespace Drill4Net.Common
             var dir2 = Path.Combine(new DirectoryInfo(dir).Parent.FullName, localization);
             var path = Path.Combine(dir2, Path.GetFileName(requestingAssemblyPath));
             if (!File.Exists(path))
-                path = requestingAssemblyPath;
-            return Assembly.LoadFrom(path);
+                path = requestingAssemblyPath; // null;
+            return string.IsNullOrWhiteSpace(path) ? null : Assembly.LoadFrom(path);
         }
     }
 }
