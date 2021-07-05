@@ -21,12 +21,17 @@ namespace Drill4Net.Agent.Standard
         private static ISender Sender => _comm.Sender;
 
         /// <summary>
+        /// Repository for Agent
+        /// </summary>
+        private static StandardAgentRepository Repository { get; }
+
+        /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
         public static string EmergencyLogDir { get; }
 
         private static readonly ICommunicator _comm;
-        private static readonly StandardAgentRepository _rep;
+
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
@@ -60,8 +65,8 @@ namespace Drill4Net.Agent.Standard
 
                 //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
 
-                _rep = new StandardAgentRepository();
-                _comm = _rep.Communicator;
+                Repository = new StandardAgentRepository();
+                _comm = Repository.Communicator;
 
                 //events from admin side
                 Receiver.InitScopeData += OnInitScopeData;
@@ -153,7 +158,7 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         private static void OnInitScopeData(InitActiveScope scope)
         {
-            _rep.CancelAllSessions(); //just in case
+            Repository.CancelAllSessions(); //just in case
             _scope = scope;
             Sender.SendScopeInitialized(scope, GetCurrentUnixTimeMs());
         }
@@ -165,7 +170,7 @@ namespace Drill4Net.Agent.Standard
         {
             lock (_entLocker)
             {
-                _entities = _rep.GetEntities();
+                _entities = Repository.GetEntities();
             }
         }
 
@@ -195,7 +200,7 @@ namespace Drill4Net.Agent.Standard
         #region Session
         private static void OnStartSession(StartAgentSession info)
         {
-            _rep.StartSession(info);
+            Repository.StartSession(info);
             var load = info.Payload;
             Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, GetCurrentUnixTimeMs());
         }
@@ -203,26 +208,26 @@ namespace Drill4Net.Agent.Standard
         private static void OnStopSession(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
-            _rep.SessionStop(info);
+            Repository.SessionStop(info);
             Sender.SendSessionFinishedMessage(uid, GetCurrentUnixTimeMs());
         }
 
         private static void OnCancelAllSessions()
         {
-            var uids = _rep.CancelAllSessions();
+            var uids = Repository.CancelAllSessions();
             Sender.SendAllSessionCancelledMessage(uids, GetCurrentUnixTimeMs());
         }
 
         private static void OnCancelSession(CancelAgentSession info)
         {
             var uid = info.Payload.SessionId;
-            _rep.CancelSession(info);
+            Repository.CancelSession(info);
             Sender.SendSessionCancelledMessage(uid, GetCurrentUnixTimeMs());
         }
 
         private static void OnStopAllSessions()
         {
-            var uids = _rep.StopAllSessions();
+            var uids = Repository.StopAllSessions();
             Sender.SendAllSessionFinishedMessage(uids, GetCurrentUnixTimeMs());
         }
         #endregion
@@ -240,7 +245,7 @@ namespace Drill4Net.Agent.Standard
                 _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
 
                 #region Checks
-                if (_rep?.IsAnySession != true)
+                if (Repository?.IsAnySession != true)
                     return;
                 if (string.IsNullOrWhiteSpace(data))
                 {
@@ -255,7 +260,7 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];         
 
-                var res = _rep.RegisterCoverage(probeUid);
+                var res = Repository.RegisterCoverage(probeUid);
                 if (!res) //for tests
                 { }
             }

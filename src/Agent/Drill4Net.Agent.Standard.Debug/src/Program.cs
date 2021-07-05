@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Standard.Debug
 
                 StandardAgent.Init();
 
-                //point data (in fact, from the TestEngine's tree)
+                //points' data (in fact, from the TestEngine's tree)
                 var rep = new StandardAgentRepository();
                 var tree = rep.ReadInjectedTree();
                 const string moniker = "net5.0";
@@ -56,8 +56,9 @@ namespace Drill4Net.Agent.Standard.Debug
                 //var types = tree.GetAllTypes().Where(a => a.Name == "CoverageTarget");
                 //treeCnv.CreateCoverageRegistrator(new Abstract.Transfer.StartSessionPayload(), types);
 
-                //range
                 await Task.Delay(1500).ConfigureAwait(false); //wait for connect to admin side
+
+                //range
                 WriteMessage($"\nCross points: {_points.Count}", ConsoleColor.Cyan);
                 WriteMessage($"Input point count for the extraction range [{_pointRange}]: ", ConsoleColor.Yellow);
                 var expr = Console.ReadLine()?.Trim();
@@ -68,7 +69,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 }
 
                 // info
-                const string mess = @"  *** Firstly, start session on admin side...
+                const string mess = @"  *** First of all, start session on admin side...
   *** Press 1 to send some portion of random target method's cross-points
   *** Or input method name with arguments for real probe's executing, e.g. IfElse_Consec_Full true,false
   *** Press q for exit";
@@ -219,7 +220,15 @@ namespace Drill4Net.Agent.Standard.Debug
                     switch (type)
                     {
                         case "System.Boolean": obj = bool.Parse(val); break;
+                        case "System.Byte": obj = byte.Parse(val); break;
+                        case "System.UInt16": obj = ushort.Parse(val); break;
+                        case "System.Int16": obj = short.Parse(val); break;
+                        case "System.UInt32": obj = uint.Parse(val); break;
                         case "System.Int32": obj = int.Parse(val); break;
+                        case "System.UInt64": obj = ulong.Parse(val); break;
+                        case "System.Int64": obj = long.Parse(val); break;
+                        case "System.Single": obj = float.Parse(val); break;
+                        case "System.Double": obj = double.Parse(val); break;
                         case "System.Object":
                         case "System.String": obj = val; break;
                         default:

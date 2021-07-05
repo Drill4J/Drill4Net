@@ -25,7 +25,7 @@
       <None Update="blazor_ss.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="RnD.yml">
+      <None Update="std.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="_redirect.yml">
