@@ -10,6 +10,7 @@ namespace Drill4Net.Agent.Standard.Debug
     {
         private static int _pointRange = 200;
         private static List<CrossPoint> _points;
+        private const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
 
         /*********************************************************************************/
 
@@ -24,19 +25,9 @@ namespace Drill4Net.Agent.Standard.Debug
             {
                 Console.WriteLine("Initializing...");
 
-                //// emulating the init (primary) instrumented request - in fact, it won't included in session
-                //var pointUid = "7848799f-77ee-444d-9a9d-6fd6d90f5d82"; //must be real from Injected Tree
-                //var asmName = $"Drill4Net.Target.Common.dll";
-                //const string funcSig = "System.Void Drill4Net.Agent.Standard.StandardAgent::Register(System.String)";
-                //StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
-
-                //// emulating second request, but it will be skipped, too
-                //await Task.Delay(250);
-                //StandardAgent.RegisterStatic($"{pointUid}^{asmName}^{funcSig}^If_6");
-
                 StandardAgent.Init();
 
-                //point data (from the TestEngine)
+                //point data (in fact, from the TestEngine's tree)
                 var rep = new StandardAgentRepository();
                 var tree = rep.ReadInjectedTree();
                 const string moniker = "net5.0";
@@ -44,7 +35,6 @@ namespace Drill4Net.Agent.Standard.Debug
                 if (asmTree == null)
                     throw new Exception($"Data for moniker {moniker} not found");
                 _points = asmTree.Filter(typeof(CrossPoint), true).Cast<CrossPoint>().ToList();
-                Console.WriteLine($"\nCross points: {_points.Count}");
 
                 ////debug
                 //var treeCnv = new TreeConverter();
@@ -53,7 +43,8 @@ namespace Drill4Net.Agent.Standard.Debug
 
                 //range
                 await Task.Delay(1500).ConfigureAwait(false); //wait for connect to admin side
-                Console.Write($"Input point count for the simulating execution range [{_pointRange}]: ");
+                WriteMessage($"\nCross points: {_points.Count}", ConsoleColor.Magenta);
+                WriteMessage($"Input point count for the extraction range [{_pointRange}]: ", ConsoleColor.Yellow);
                 var expr = Console.ReadLine()?.Trim();
                 if (int.TryParse(expr, out var pntCnt))
                 {
@@ -63,17 +54,15 @@ namespace Drill4Net.Agent.Standard.Debug
 
                 // info
                 const string mess = @"  *** Firstly, start session on admin side...
-  *** Press 1 for start some portion of target methods
+  *** Press 1 for start some portion of target method's cross-points
   *** Press q for exit
   *** Good luck and... keep on dancing!";
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"\n{mess}");
-                Console.ForegroundColor = ConsoleColor.Green;
+                WriteMessage($"\n{mess}", ConsoleColor.Yellow);
 
                 //polling
                 while (true)
                 {
-                    Console.WriteLine("\nInput:");
+                    WriteMessage("\nInput:");
                     expr = Console.ReadLine()?.Trim();
                     if (string.IsNullOrWhiteSpace(expr))
                         continue;
@@ -106,7 +95,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 return false;
             if (_points.Count == 0)
             {
-                Console.WriteLine("No more points!");
+                WriteMessage("No more points!", ConsoleColor.Red);
                 return false;
             }
             //
@@ -119,7 +108,15 @@ namespace Drill4Net.Agent.Standard.Debug
                 _points.RemoveAt(ind);
                 StandardAgent.RegisterStatic($"{point.PointUid}");
             }
+            WriteMessage($"Remaining points: {_points.Count}", ConsoleColor.Blue);
             return true;
+        }
+
+        private static void WriteMessage(string mess, ConsoleColor color = COLOR_DEFAULT)
+        {
+            Console.ForegroundColor = color;
+            Console.WriteLine(mess);
+            Console.ForegroundColor = COLOR_DEFAULT;
         }
     }
 }

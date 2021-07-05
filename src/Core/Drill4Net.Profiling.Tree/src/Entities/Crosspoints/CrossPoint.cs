@@ -17,7 +17,7 @@ namespace Drill4Net.Profiling.Tree
         /// Some local Id of <see cref="CrossPoint"/> (may be a position of the instruction in IL code)
         /// </summary>
         public string PointId { get; set; }
-        
+
         /// <summary>
         /// End-to-end index of the method instruction, taking into account
         /// only the business parts of the source code moved by the compiler
@@ -46,7 +46,7 @@ namespace Drill4Net.Profiling.Tree
         /// <param name="pointId"></param>
         /// <param name="businessIndex"></param>
         /// <param name="pointType"></param>
-        public CrossPoint(string pointUid, string pointId, int businessIndex, CrossPointType pointType): 
+        public CrossPoint(string pointUid, string pointId, int businessIndex, CrossPointType pointType):
             base(null)
         {
             PointUid = pointUid;
