@@ -1,0 +1,3 @@
+﻿CurrentDirectory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net50.App\net5.0\ # current directory where Target's assemblies is located, mandatory filed
+TreeFolder: net5.0 # inner folder if tree contains data for several framework's versions
+CSV: # directory where the tree data must be saved. The empty field means local directory

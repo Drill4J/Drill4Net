@@ -186,13 +186,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Profiling.Tree.InjectedSolution.GetFrameworkRootDirectory(System.String)">
-            <summary>
-            Get root directory's object of the processed target by version of the framework (moniker)
-            </summary>
-            <param name="moniker">Moniker - short string version of the framework (netstandard2.0, net5.0, etc)</param>
-            <returns></returns>
-        </member>
         <member name="M:Drill4Net.Profiling.Tree.InjectedSolution.RemoveEmpties">
             <summary>
             Remove from Tree empty entitis

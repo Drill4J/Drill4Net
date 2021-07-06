@@ -75,6 +75,7 @@ namespace Drill4Net.Injector.Engine
             {
                 StartTime = DateTime.Now,
                 DestinationPath = destDir,
+                Description = opts.Description,
             };
 
             //ctx of this Run

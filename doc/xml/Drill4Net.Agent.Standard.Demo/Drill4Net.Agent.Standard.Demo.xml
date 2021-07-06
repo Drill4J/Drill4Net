@@ -11,5 +11,23 @@
             <param name="input">The input.</param>
             <returns></returns>
         </member>
+        <member name="P:Drill4Net.Agent.Standard.Debug.TesterOptions.CurrentDirectory">
+            <summary>
+            CUrrent directory where Target's assemblies is located, mandatory filed.
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.Debug.TesterOptions.TreeFolder">
+            <summary>
+            Inner folder in tree data, if tree contains data for several framework's versions.
+            </summary>
+            <value>
+            The folder.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Agent.Standard.Debug.TesterOptions.CSV">
+            <summary>
+            Directory where the tree data must be saved. The empty field means local directory
+            </summary>
+        </member>
     </members>
 </doc>

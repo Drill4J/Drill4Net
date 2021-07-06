@@ -5,17 +5,21 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Standard.Debug
 {
     class Program
     {
+        private static InjectedSolution _injSolution;
+        private static InjectedDirectory _injDirectory;
         private static string _targetPath;
         private static int _pointRange = 200;
         private static Dictionary<string, InjectedMethod> _methods;
         private static List<InjectedMethod> _methodSorted;
         private static Dictionary<int, InjectedMethod> _methodByOrderNumber;
         private static List<CrossPoint> _points;
+        private static TesterOptions _opts;
         private const ConsoleColor INFO_COLOR = ConsoleColor.Cyan;
         private const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
 
@@ -46,19 +50,21 @@ namespace Drill4Net.Agent.Standard.Debug
         private async static Task Init()
         {
             WriteMessage("Please wait for the init...", ConsoleColor.White);
-            await Task.Delay(2500).ConfigureAwait(false); //wait for the reading
+            await Task.Delay(3000).ConfigureAwait(false); //wait for the reading
 
             StandardAgent.Init();
 
+            _opts = GetOptions();
+            _targetPath = Path.Combine(_opts.CurrentDirectory, _opts.TreeFolder);
+
             //points' data (in fact, from the TestEngine's tree)
             var rep = StandardAgent.Repository;
-            var tree = rep.ReadInjectedTree();
-            const string moniker = "net5.0";
-            var asmTree = tree.GetFrameworkRootDirectory(moniker);
-            if (asmTree == null)
-                throw new Exception($"Data for moniker {moniker} not found");
-            _points = asmTree.GetAllPoints().ToList();
-            var methList = asmTree.GetAllMethods().Where(a => !a.IsCompilerGenerated && a.Source.AccessType == AccessType.Public);
+            _injSolution = rep.ReadInjectedTree();
+            _injDirectory = _injSolution.GetDirectories().FirstOrDefault(a => a.Name == _opts.TreeFolder);
+            if (_injDirectory == null)
+                throw new Exception($"Directory in the Tree data not found: [{_targetPath}]");
+            _points = _injDirectory.GetAllPoints().ToList();
+            var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated && a.Source.AccessType == AccessType.Public);
             _methods = new Dictionary<string, InjectedMethod>();
             foreach (var meth in methList)
             {
@@ -69,23 +75,8 @@ namespace Drill4Net.Agent.Standard.Debug
             _methodSorted = GetSortedMethods();
             _methodByOrderNumber = GetMethodByOrderNumber(_methodSorted);
 
-            //TODO: from cfg!!!
-            _targetPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net50.App\net5.0\";
-
-            ////debug
-            //var treeCnv = new TreeConverter();
-            //var types = tree.GetAllTypes().Where(a => a.Name == "CoverageTarget");
-            //treeCnv.CreateCoverageRegistrator(new Abstract.Transfer.StartSessionPayload(), types);
-
             await Task.Delay(3500).ConfigureAwait(false); //wait for the admin side init
-
-            //range
-            WriteMessage($"\n  Framework: {moniker}", INFO_COLOR);
-            WriteMessage($"  Assemblies: {asmTree.GetAllAssemblies().Count()}", INFO_COLOR);
-            WriteMessage($"  Types: {asmTree.GetAllTypes().Count()}", INFO_COLOR);
-            WriteMessage($"  Unique public methods: {_methods.Count}", INFO_COLOR);
-            WriteMessage($"  Total cross-points: {_points.Count}", INFO_COLOR);
-            //WriteMessage($"  Block size of cross-points: {_pointRange}", infoColor);
+            PrintTreeInfo();
         }
 
         private static void Polling()
@@ -125,11 +116,18 @@ namespace Drill4Net.Agent.Standard.Debug
                 "?" or "help" => PrintMenu(),
                 "print" or "list" => PrintMethods(),
                 "save" => SaveTreeData(),
-                _ => SendMethodData(input)
+                _ => CallMethod(input)
             };
         }
 
-        private static bool SendMethodData(string callData)
+        private static TesterOptions GetOptions()
+        {
+            var cfgPath = Path.Combine(FileUtils.GetExecutionDir(), "app.yml");
+            var deser = new YamlDotNet.Serialization.Deserializer();
+            return deser.Deserialize<TesterOptions>(File.ReadAllText(cfgPath));
+        }
+
+        private static bool CallMethod(string callData)
         {
             //get info
             if (string.IsNullOrWhiteSpace(callData))
@@ -238,7 +236,7 @@ namespace Drill4Net.Agent.Standard.Debug
             //data
             var methCounter = 1;
             var data = new List<string>();
-            var delim = ";";
+            const string delim = ";";
             foreach (var meth in _methodSorted)
             {
                 data.Add($"{methCounter}{delim}{meth.AssemblyName}{delim}{meth.BusinessType}{delim}{meth.Name}({meth.Signature.Parameters})");
@@ -246,7 +244,7 @@ namespace Drill4Net.Agent.Standard.Debug
             }
 
             //writing
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "tree.csv");
+            var path = Path.Combine(_opts.CSV ?? FileUtils.GetExecutionDir(), "tree.csv");
             try
             {
                 File.WriteAllLines(path, data);
@@ -314,10 +312,39 @@ namespace Drill4Net.Agent.Standard.Debug
             return res;
         }
 
+        private static bool PrintTreeInfo()
+        {
+            WriteMessage($"\n  Tree data:", ConsoleColor.Yellow);
+            WriteMessage($"  Name: {_injSolution.Name}", INFO_COLOR);
+            if(!string.IsNullOrWhiteSpace(_injSolution.Description))
+                WriteMessage($"  Description: {_injSolution.Description}", INFO_COLOR);
+            WriteMessage($"  Orig destination: {_injSolution.DestinationPath}", INFO_COLOR);
+            WriteMessage($"  Processed time: {_injSolution.FinishTime ?? _injSolution.StartTime}", INFO_COLOR);
+
+            var dirs = _injSolution.GetDirectories(); //dirs on the first level
+            WriteMessage($"  Top folders: {dirs.Count()}", INFO_COLOR);
+
+            WriteMessage($"\n  Current folder : {_opts.TreeFolder}", INFO_COLOR);
+            WriteMessage($"  Assemblies: {_injDirectory.GetAllAssemblies().Count()}", INFO_COLOR);
+            WriteMessage($"  Types: {_injDirectory.GetAllTypes().Count()}", INFO_COLOR);
+            WriteMessage($"  Unique public methods: {_methods.Count}", INFO_COLOR);
+            WriteMessage($"  Total cross-points: {_points.Count}", INFO_COLOR);
+            //WriteMessage($"  Block size of cross-points: {_pointRange}", infoColor);
+
+            if (dirs.Any())
+            {
+                WriteMessage($"\n  Inner directories (may be several versions of framework): ", ConsoleColor.Yellow);
+                foreach(var dir in dirs)
+                    WriteMessage($"  {dir.Name}", INFO_COLOR);
+            }
+            return true;
+        }
+
         private static bool PrintMenu()
         {
             const string mess = @"  *** First of all, start session on admin side...
-  *** Enter 'print' or 'list' for the method listing
+  *** Enter 'info' for the tree info
+  *** Enter 'print' or 'list' for the methods listing
   *** Enter 'save' to save method's tree to the CSV file
   *** Enter order number of method from the listing with arguments for real probe's executing, e.g. 37 true
   *** Or input method name with arguments for such executing, e.g. IfElse_Consec_Full true,false
