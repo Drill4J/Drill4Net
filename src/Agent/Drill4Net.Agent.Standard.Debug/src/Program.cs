@@ -43,7 +43,7 @@ namespace Drill4Net.Agent.Standard.Debug
         {
             try
             {
-                SetTile();
+                SetTitle();
                 await Init();
                 PrintTreeInfo();
                 PrintMenu();
@@ -56,7 +56,7 @@ namespace Drill4Net.Agent.Standard.Debug
             WriteMessage("Done.", ConsoleColor.White);
         }
 
-        private static void SetTile()
+        private static void SetTitle()
         {
             var version = GetAppVersion();
             var appName = Assembly.GetExecutingAssembly().GetName().Name;
@@ -75,7 +75,7 @@ namespace Drill4Net.Agent.Standard.Debug
             _opts = GetOptions();
             _targetPath = _opts.CurrentDirectory;
 
-            //points' data (in fact, from the TestEngine's tree)
+            //tree's data (in fact, we can use the TestEngine's one)
             var rep = StandardAgent.Repository;
             _injSolution = rep.ReadInjectedTree();
             _injDirectory = _injSolution.GetDirectories().FirstOrDefault(a => a.Name == _opts.TreeFolder);
@@ -83,6 +83,7 @@ namespace Drill4Net.Agent.Standard.Debug
                 throw new Exception($"Directory in the Tree data not found: [{_targetPath}]");
             _points = _injDirectory.GetAllPoints().ToList();
 
+            //methods
             var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated && a.Source.AccessType == AccessType.Public);
             _methods = new Dictionary<string, InjectedMethod>();
             foreach (var meth in methList)
