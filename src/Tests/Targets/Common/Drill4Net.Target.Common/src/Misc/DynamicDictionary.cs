@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Dynamic;
+﻿using System.Dynamic;
+using System.Collections.Generic;
 
 namespace Drill4Net.Target.Common
 {
@@ -8,8 +8,7 @@ namespace Drill4Net.Target.Common
     /// </summary>
     public class DynamicDictionary : DynamicObject
     {
-        readonly Dictionary<string, object> dictionary = 
-            new Dictionary<string, object>();
+        readonly Dictionary<string, object> dictionary = new();
 
         public int Count => dictionary.Count;
 

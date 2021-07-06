@@ -322,6 +322,7 @@ namespace Drill4Net.Agent.Standard.Debug
   *** Enter order number of method from the listing with arguments for real probe's executing, e.g. 37 true
   *** Or input method name with arguments for such executing, e.g. IfElse_Consec_Full true,false
   *** Enter 'RunTests' to execute all methods of main target class (InjectTarget)
+  --> Please, call yet the methods only for the InjectTarget type! 
   *** Enter '?' or 'help' to print this menu
   *** Press q for exit";
             WriteMessage($"\n{mess}", ConsoleColor.Yellow);
