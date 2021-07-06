@@ -13,6 +13,8 @@ namespace Drill4Net.Agent.Standard.Debug
         private static string _targetPath;
         private static int _pointRange = 200;
         private static Dictionary<string, InjectedMethod> _methods;
+        private static List<InjectedMethod> _methodSorted;
+        private static Dictionary<int, InjectedMethod> _methodByOrderNumber;
         private static List<CrossPoint> _points;
         private const ConsoleColor INFO_COLOR = ConsoleColor.Cyan;
         private const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
@@ -64,6 +66,8 @@ namespace Drill4Net.Agent.Standard.Debug
                 if (!_methods.ContainsKey(key))
                     _methods.Add(key, meth);
             }
+            _methodSorted = GetSortedMethods();
+            _methodByOrderNumber = GetMethodByOrderNumber(_methodSorted);
 
             //TODO: from cfg!!!
             _targetPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net50.App\net5.0\";
@@ -135,11 +139,26 @@ namespace Drill4Net.Agent.Standard.Debug
             }
             var ar = callData.Split(' ');
             var name = ar[0].Trim();
+
+            //by order number?
+            if (int.TryParse(name, out int number))
+            {
+                if (!_methodByOrderNumber.ContainsKey(number))
+                {
+                    WriteMessage($"No such order number: {number}", ConsoleColor.Red);
+                    return false;
+                }
+                name = _methodByOrderNumber[number].Name;
+            }
+
+            //by name
             if (!_methods.ContainsKey(name))
             {
                 WriteMessage("No such method", ConsoleColor.Red);
                 return false;
             }
+
+            //parameters
             var pars = new List<string>();
             if (ar.Length > 1)
             {
@@ -188,13 +207,12 @@ namespace Drill4Net.Agent.Standard.Debug
         internal static bool PrintMethods()
         {
             WriteMessage("\n   ***  METHOD'S TREE  ***", ConsoleColor.Yellow);
-            var methods = GetMethodInfos();
             var curAsm = "";
             var curType = "";
             var asmCounter = 1;
             var typeCounter = 1;
             var methCounter = 1;
-            foreach (var meth in methods)
+            foreach (var meth in _methodSorted)
             {
                 if (curAsm != meth.AssemblyName)
                 {
@@ -218,11 +236,10 @@ namespace Drill4Net.Agent.Standard.Debug
         internal static bool SaveTreeData()
         {
             //data
-            var methods = GetMethodInfos();
             var methCounter = 1;
             var data = new List<string>();
             var delim = ";";
-            foreach (var meth in methods)
+            foreach (var meth in _methodSorted)
             {
                 data.Add($"{methCounter}{delim}{meth.AssemblyName}{delim}{meth.BusinessType}{delim}{meth.Name}({meth.Signature.Parameters})");
                 methCounter++;
@@ -242,13 +259,21 @@ namespace Drill4Net.Agent.Standard.Debug
             return true;
         }
 
-        internal static List<InjectedMethod> GetMethodInfos()
+        internal static List<InjectedMethod> GetSortedMethods()
         {
             return _methods.Values
                 .OrderBy(a => a.AssemblyName)
                 .ThenBy(a => a.BusinessType)
                 .ThenBy(a => a.FullName)
                 .ToList();
+        }
+
+        internal static Dictionary<int, InjectedMethod> GetMethodByOrderNumber(List<InjectedMethod> sorted)
+        {
+            var res = new Dictionary<int, InjectedMethod>();
+            for (var i = 0; i < sorted.Count; i++)
+                res.Add(i + 1, sorted[i]);
+            return res;
         }
         #endregion
 
