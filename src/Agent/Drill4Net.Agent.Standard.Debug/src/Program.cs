@@ -4,8 +4,17 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Drill4Net.Profiling.Tree;
 using Drill4Net.Common;
+using Drill4Net.Profiling.Tree;
+
+//automatic version tagger including Git info
+//https://github.com/devlooped/GitInfo
+[assembly: AssemblyInformationalVersion(
+      ThisAssembly.Git.SemVer.Major + "." +
+      ThisAssembly.Git.SemVer.Minor + "." +
+      ThisAssembly.Git.SemVer.Patch + "-" +
+      ThisAssembly.Git.Branch + "+" +
+      ThisAssembly.Git.Commit)]
 
 namespace Drill4Net.Agent.Standard.Debug
 {
@@ -34,9 +43,9 @@ namespace Drill4Net.Agent.Standard.Debug
         {
             try
             {
-                WriteMessage("Agent.Standard.Debug", ConsoleColor.Cyan);
-
+                SetTile();
                 await Init();
+                PrintTreeInfo();
                 PrintMenu();
                 Polling();
             }
@@ -47,6 +56,15 @@ namespace Drill4Net.Agent.Standard.Debug
             WriteMessage("Done.", ConsoleColor.White);
         }
 
+        private static void SetTile()
+        {
+            var version = GetAppVersion();
+            var appName = Assembly.GetExecutingAssembly().GetName().Name;
+            var title = $"{appName} {version}";
+            Console.Title = title;
+            WriteMessage(title, ConsoleColor.Cyan);
+        }
+
         private async static Task Init()
         {
             WriteMessage("Please wait for the init...", ConsoleColor.White);
@@ -55,7 +73,7 @@ namespace Drill4Net.Agent.Standard.Debug
             StandardAgent.Init();
 
             _opts = GetOptions();
-            _targetPath = Path.Combine(_opts.CurrentDirectory, _opts.TreeFolder);
+            _targetPath = _opts.CurrentDirectory;
 
             //points' data (in fact, from the TestEngine's tree)
             var rep = StandardAgent.Repository;
@@ -64,6 +82,7 @@ namespace Drill4Net.Agent.Standard.Debug
             if (_injDirectory == null)
                 throw new Exception($"Directory in the Tree data not found: [{_targetPath}]");
             _points = _injDirectory.GetAllPoints().ToList();
+
             var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated && a.Source.AccessType == AccessType.Public);
             _methods = new Dictionary<string, InjectedMethod>();
             foreach (var meth in methList)
@@ -76,7 +95,6 @@ namespace Drill4Net.Agent.Standard.Debug
             _methodByOrderNumber = GetMethodByOrderNumber(_methodSorted);
 
             await Task.Delay(3500).ConfigureAwait(false); //wait for the admin side init
-            PrintTreeInfo();
         }
 
         private static void Polling()
@@ -319,6 +337,8 @@ namespace Drill4Net.Agent.Standard.Debug
             if(!string.IsNullOrWhiteSpace(_injSolution.Description))
                 WriteMessage($"  Description: {_injSolution.Description}", INFO_COLOR);
             WriteMessage($"  Orig destination: {_injSolution.DestinationPath}", INFO_COLOR);
+
+            //TODO: fix empty FinishTime
             WriteMessage($"  Processed time: {_injSolution.FinishTime ?? _injSolution.StartTime}", INFO_COLOR);
 
             var dirs = _injSolution.GetDirectories(); //dirs on the first level
@@ -349,11 +369,17 @@ namespace Drill4Net.Agent.Standard.Debug
   *** Enter order number of method from the listing with arguments for real probe's executing, e.g. 37 true
   *** Or input method name with arguments for such executing, e.g. IfElse_Consec_Full true,false
   *** Enter 'RunTests' to execute all methods of main target class (InjectTarget)
-  --> Please, call yet the methods only for the InjectTarget type! 
+  >>> Please, call yet the methods only for the InjectTarget type! 
   *** Enter '?' or 'help' to print this menu
   *** Press q for exit";
             WriteMessage($"\n{mess}", ConsoleColor.Yellow);
             return true;
+        }
+
+        internal static string GetAppVersion()
+        {
+            var asm = Assembly.GetExecutingAssembly();
+            return FileUtils.GetProductVersion(asm.Location);
         }
 
         private static void WriteMessage(string mess, ConsoleColor color = COLOR_DEFAULT)
