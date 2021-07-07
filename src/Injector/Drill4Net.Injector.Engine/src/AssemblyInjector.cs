@@ -58,7 +58,7 @@ namespace Drill4Net.Injector.Engine
             InjectProxyType(runCtx, asmCtx);
 
             //prepare coverage metadata
-            CoverageHelper.CalcCoverageBlocks(asmCtx);
+            StructureHelper.CalcMethodBlocks(asmCtx);
         }
 
         /// <summary>

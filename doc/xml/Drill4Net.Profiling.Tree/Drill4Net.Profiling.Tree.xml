@@ -162,7 +162,7 @@
             Cross-points of method's code
             </summary>
         </member>
-        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Coverage">
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Structure">
             <summary>
             Data of the method's coverage
             </summary>
@@ -202,17 +202,17 @@
             Metadata about method's signature
             </summary>
         </member>
-        <member name="T:Drill4Net.Profiling.Tree.MethodCoverage">
+        <member name="T:Drill4Net.Profiling.Tree.MethodStructure">
             <summary>
-            Data of the method's coverage
+            Structure of method for the further coverage calculations
             </summary>
         </member>
-        <member name="P:Drill4Net.Profiling.Tree.MethodCoverage.PointToBlockEnds">
+        <member name="P:Drill4Net.Profiling.Tree.MethodStructure.PointToBlockEnds">
             <summary>
             Binding the cross-point by Uid to last index of the block's range in the probe list of method
             </summary>
         </member>
-        <member name="M:Drill4Net.Profiling.Tree.MethodCoverage.#ctor">
+        <member name="M:Drill4Net.Profiling.Tree.MethodStructure.#ctor">
             <summary>
             Create data of the method's coverage
             </summary>

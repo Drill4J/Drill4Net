@@ -68,7 +68,7 @@ namespace Drill4Net.Profiling.Tree
         /// <summary>
         /// Data of the method's coverage
         /// </summary>
-        public MethodCoverage Coverage { get; }
+        public MethodStructure Structure { get; }
 
         /********************************************************************/
 
@@ -83,7 +83,7 @@ namespace Drill4Net.Profiling.Tree
             if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
             CalleeIndexes = new Dictionary<string, int>();
-            Coverage = new MethodCoverage();
+            Structure = new MethodStructure();
         }
 
         /********************************************************************/

@@ -108,18 +108,6 @@
             <param name="asmCtx"></param>
             <param name="opts"></param>
         </member>
-        <member name="T:Drill4Net.Injector.Engine.CoverageHelper">
-            <summary>
-            Helper for calculating of the code block coverage
-            </summary>
-        </member>
-        <member name="M:Drill4Net.Injector.Engine.CoverageHelper.CalcCoverageBlocks(Drill4Net.Injector.Core.AssemblyContext)">
-            <summary>
-            The calculating of the local code block coverage (cross-point's instruction ranges)
-            fro assembly's methods
-            </summary>
-            <param name="asmCtx">Assembly context</param>
-        </member>
         <member name="T:Drill4Net.Injector.Engine.InstructionHelper">
             <summary>
             Instruction helper
@@ -193,6 +181,18 @@
             <param name="asmCtx">The assembly context.</param>
             <param name="opts">The Injector options.</param>
             <returns></returns>
+        </member>
+        <member name="T:Drill4Net.Injector.Engine.StructureHelper">
+            <summary>
+            Helper for constructing the method block structure, for the further coverage calculations
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.StructureHelper.CalcMethodBlocks(Drill4Net.Injector.Core.AssemblyContext)">
+            <summary>
+            The calculating of the local code block coverage (cross-point's instruction ranges)
+            fro assembly's methods
+            </summary>
+            <param name="asmCtx">Assembly context</param>
         </member>
         <member name="T:Drill4Net.Injector.Engine.TypeHelper">
             <summary>

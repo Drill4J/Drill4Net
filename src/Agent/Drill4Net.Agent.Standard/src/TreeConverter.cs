@@ -85,7 +85,7 @@ namespace Drill4Net.Agent.Standard
         {
             //TODO: cloning from some Template object?
             var reg = new CoverageRegistrator(session);
-            var testName = session?.TestName ?? Guid.NewGuid().ToString(); //$"{AgentConstants.TEST_NAME_DEFAULT}_{Guid.NewGuid()}";
+            var testName = session?.TestName ?? Guid.NewGuid().ToString();
             if(session != null)
                 session.TestName = testName;
             var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated)
@@ -96,10 +96,10 @@ namespace Drill4Net.Agent.Standard
                 .Distinct(new InjectedEntityComparer<InjectedMethod>())
                 .ToDictionary(k => k.FullName);
 
-            foreach (var type in bizTypes) //don't parallelize yet (need protect ind)
+            foreach (var type in bizTypes) //don't parallelize (need protect ind)
             {
                 var bizMethods = type.GetMethods()?
-                    .Where(a => a.Coverage.PointToBlockEnds.Any());
+                    .Where(a => a.Structure.PointToBlockEnds.Any());
                 if (bizMethods?.Any() != true)
                     continue;
                 var ind = 0; //end2end for the current type
@@ -124,7 +124,7 @@ namespace Drill4Net.Agent.Standard
             foreach (var meth in methods) //don't parallel here!
             {
                 //own data
-                BindMethod(reg, execData, meth.Coverage, ref ind);
+                BindMethod(reg, execData, meth.Structure, ref ind);
 
                 //CG callee's data
                 var cgCallees = meth.CalleeIndexes;
@@ -134,7 +134,7 @@ namespace Drill4Net.Agent.Standard
                     if (!cgMethods.ContainsKey(callee))
                         continue;
                     var cgMeth = cgMethods[callee];
-                    BindMethod(reg, execData, cgMeth.Coverage, ref ind);
+                    BindMethod(reg, execData, cgMeth.Structure, ref ind);
                 }
             }
         }
@@ -146,7 +146,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="execData"></param>
         /// <param name="methCoverage"></param>
         /// <param name="ind"></param>
-        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, MethodCoverage methCoverage, ref int ind)
+        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, MethodStructure methCoverage, ref int ind)
         {
             var indPairs = methCoverage.PointToBlockEnds.OrderBy(a => a.Value);
             var startMeth = ind;

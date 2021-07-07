@@ -6,7 +6,8 @@ namespace Drill4Net.Profiling.Tree
     {
         public override bool Equals(T x, T y)
         {
-             return x?.FullName != null && y?.FullName != null && x.FullName.Equals(y.FullName, System.StringComparison.InvariantCultureIgnoreCase);
+             return x?.FullName != null && y?.FullName != null &&
+                x.FullName.Equals(y.FullName, System.StringComparison.InvariantCultureIgnoreCase);
         }
 
         public override int GetHashCode(T obj)
