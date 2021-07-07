@@ -8,6 +8,8 @@ namespace Drill4Net.Common
         public const string LOG_DIR_DEFAULT = "logs";
         public static string LOG_FILENAME = "log.txt";
 
+        /******************************************************************************************/
+
         /// <summary>
         /// Gets the base logger configuration for the logging into console and 
         /// local text file with the Verbose level.

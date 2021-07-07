@@ -40,15 +40,6 @@ namespace Drill4Net.Injector.Engine
                         points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
                     coverage.PointToBlockEnds.Add(points2[0].PointUid, ind);
                 }
-
-                //by parts (not used, однако)
-                float origSize = ranges.Last() + 1;
-                var prev = -1;
-                foreach (var range in ranges)
-                {
-                    coverage.BlockByPart.Add(range, (range - prev) / origSize);
-                    prev = range;
-                }
             }
         }
     }

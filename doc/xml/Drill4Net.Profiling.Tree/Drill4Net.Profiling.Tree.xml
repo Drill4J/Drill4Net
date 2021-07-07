@@ -188,7 +188,7 @@
         </member>
         <member name="M:Drill4Net.Profiling.Tree.InjectedSolution.RemoveEmpties">
             <summary>
-            Remove from Tree empty entitis
+            Remove from the Tree empty entities
             </summary>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedType.FromMethod">
@@ -205,12 +205,6 @@
         <member name="T:Drill4Net.Profiling.Tree.MethodCoverage">
             <summary>
             Data of the method's coverage
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Profiling.Tree.MethodCoverage.BlockByPart">
-            <summary>
-            Dictionary of code blocks: key is point Id, value - coverage part of code by this block.
-            Hint: not used!
             </summary>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.MethodCoverage.PointToBlockEnds">

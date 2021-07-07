@@ -47,7 +47,7 @@ namespace Drill4Net.Profiling.Tree
         }
 
         /// <summary>
-        /// Remove from Tree empty entitis
+        /// Remove from the Tree empty entities
         /// </summary>
         public void RemoveEmpties()
         {

@@ -90,7 +90,7 @@ namespace Drill4Net.Common
                 if (File.Exists(filePath))
                     return filePath;
 
-                //may be in inner folders?! TODO: recursion into the deep
+                //maybe in inner folders?! TODO: recursion into the deep
                 var subDirs = Directory.GetDirectories(dir);
                 foreach (var subDir in subDirs)
                 {
@@ -135,8 +135,8 @@ namespace Drill4Net.Common
                         }
                     }
                 }
-                #endregion
             }
+            #endregion
             return firstMatch;
         }
 

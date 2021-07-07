@@ -10,12 +10,6 @@ namespace Drill4Net.Profiling.Tree
     public class MethodCoverage
     {
         /// <summary>
-        /// Dictionary of code blocks: key is point Id, value - coverage part of code by this block.
-        /// Hint: not used!
-        /// </summary>
-        public Dictionary<int, float> BlockByPart { get; }
-
-        /// <summary>
         /// Binding the cross-point by Uid to last index of the block's range in the probe list of method
         /// </summary>
         public Dictionary<string, int> PointToBlockEnds { get; set; }
@@ -27,7 +21,6 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public MethodCoverage()
         {
-            BlockByPart = new Dictionary<int, float>();
             PointToBlockEnds = new Dictionary<string, int>();
         }
     }
