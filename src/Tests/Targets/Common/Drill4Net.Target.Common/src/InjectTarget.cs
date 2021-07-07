@@ -1266,13 +1266,13 @@ namespace Drill4Net.Target.Common
         public void Try_Catch_VB(bool cond)
         {
             var lib = new VBLibrary();
-            lib.Try_Catch_VB(cond);
+            lib.VB_Try_Catch(cond);
         }
 
         public void Try_Finally_VB(bool cond)
         {
             var lib = new VBLibrary();
-            lib.Try_Finally_VB(cond);
+            lib.VB_Try_Finally(cond);
         }
         #endregion
         #region F#

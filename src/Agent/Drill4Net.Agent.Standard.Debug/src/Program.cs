@@ -133,7 +133,7 @@ namespace Drill4Net.Agent.Standard.Debug
             return input switch
             {
                 "?" or "help" => PrintMenu(),
-                "print" or "list" => PrintMethods(),
+                "print" or "list" => PrintTree(),
                 "save" => SaveTreeData(),
                 _ => CallMethod(input)
             };
@@ -221,30 +221,31 @@ namespace Drill4Net.Agent.Standard.Debug
         }
 
         #region Methods
-        internal static bool PrintMethods()
+        internal static bool PrintTree()
         {
             WriteMessage("\n   ***  METHOD'S TREE  ***", ConsoleColor.Yellow);
             var curAsm = "";
             var curType = "";
-            var asmCounter = 1;
-            var typeCounter = 1;
-            var methCounter = 1;
+            var asmCounter = 0;
+            var typeCounter = 0;
+            var methCounter = 0;
             foreach (var meth in _methodSorted)
             {
                 if (curAsm != meth.AssemblyName)
                 {
                     curAsm = meth.AssemblyName;
-                    WriteMessage($"\n-> ASSEMBLY_{asmCounter}: {curAsm}", ConsoleColor.White);
                     asmCounter++;
+                    typeCounter = 0;
+                    WriteMessage($"\n--> ASSEMBLY_{asmCounter}: {curAsm}", ConsoleColor.White);
                 }
                 if (curType != meth.BusinessType)
                 {
                     curType = meth.BusinessType;
-                    WriteMessage($"\n   -- TYPE_{typeCounter}: {curType}", ConsoleColor.White);
                     typeCounter++;
+                    WriteMessage($"\n   -- TYPE_{asmCounter}.{typeCounter}: {curType}", ConsoleColor.White);
                 }
-                WriteMessage($"                {methCounter}. {meth.Name} ({meth.Signature.Parameters})", ConsoleColor.White);
                 methCounter++;
+                WriteMessage($"                  {methCounter}. {meth.Name} ({meth.Signature.Parameters})", ConsoleColor.White);
             }
             WriteMessage("\n   ***  END OF METHOD'S TREE  ***", ConsoleColor.Yellow);
             return true;
@@ -343,21 +344,20 @@ namespace Drill4Net.Agent.Standard.Debug
             WriteMessage($"  Processed time: {_injSolution.FinishTime ?? _injSolution.StartTime}", INFO_COLOR);
 
             var dirs = _injSolution.GetDirectories(); //dirs on the first level
-            WriteMessage($"  Top folders: {dirs.Count()}", INFO_COLOR);
+            if (dirs.Any())
+            {
+                WriteMessage($"\n  Inner directories (may be several versions of framework): {dirs.Count()}", ConsoleColor.Yellow);
+                foreach (var dir in dirs)
+                    WriteMessage($"  {dir.Name}", INFO_COLOR);
+            }
 
-            WriteMessage($"\n  Current folder : {_opts.TreeFolder}", INFO_COLOR);
+            WriteMessage($"\n  Testing: ", ConsoleColor.Yellow);
+            WriteMessage($"  Folder : {_opts.TreeFolder}", INFO_COLOR);
             WriteMessage($"  Assemblies: {_injDirectory.GetAllAssemblies().Count()}", INFO_COLOR);
             WriteMessage($"  Types: {_injDirectory.GetAllTypes().Count()}", INFO_COLOR);
             WriteMessage($"  Unique public methods: {_methods.Count}", INFO_COLOR);
             WriteMessage($"  Total cross-points: {_points.Count}", INFO_COLOR);
             //WriteMessage($"  Block size of cross-points: {_pointRange}", infoColor);
-
-            if (dirs.Any())
-            {
-                WriteMessage($"\n  Inner directories (may be several versions of framework): ", ConsoleColor.Yellow);
-                foreach(var dir in dirs)
-                    WriteMessage($"  {dir.Name}", INFO_COLOR);
-            }
             return true;
         }
 

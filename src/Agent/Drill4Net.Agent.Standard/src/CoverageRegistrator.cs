@@ -88,7 +88,7 @@ namespace Drill4Net.Agent.Standard
                 return;
             PointToRange.TryAdd(pointUid, (start, end));
 
-            //link point (probe) to class
+            //link point (probe) to the class
             if (PointToType.ContainsKey(pointUid))
                 return;
             PointToType.TryAdd(pointUid, typeData);
@@ -115,7 +115,7 @@ namespace Drill4Net.Agent.Standard
             if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
                 return false; //it's error
             if (!PointToType.TryGetValue(pointUid, out var classData))
-                return false; //it's normal, but not the best (for block coverage we not need "Enter" type of cross-points, another case is a possible error)
+                return false; //it's normal, but not the best (for the block coverage we not need "Enter" type of cross-points, another case is a possible error)
 
             var probes = classData.probes;
             var start = range.Start;

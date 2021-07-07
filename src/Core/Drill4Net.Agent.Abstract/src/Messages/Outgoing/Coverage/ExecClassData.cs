@@ -49,7 +49,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
 
         public override string ToString()
         {
-            return $"{testName} -> {id}: {className}";
+            return $"{testName} -> {className}";
         }
     }
 }

@@ -582,22 +582,22 @@ namespace Drill4Net.Target.Tests.Common
                 #region VB.NET
                 yield return GetCase(new object[] { false }, true,
                     new TestInfo(GetInfo(Target.Try_Catch_VB), new List<string> { "Call_5" }),
-                    new TestInfo(GetInfo(_vbTarget.Try_Catch_VB), new List<string> { "Throw_5", "Branch_11", "Else_9", "Branch_17", "Anchor_13", "Branch_27" })
+                    new TestInfo(GetInfo(_vbTarget.VB_Try_Catch), new List<string> { "Throw_5", "Branch_11", "Else_9", "Branch_17", "Anchor_13", "Branch_27" })
                     );
 
                 yield return GetCase(new object[] { true }, true,
                     new TestInfo(GetInfo(Target.Try_Catch_VB), new List<string> { "Call_5" }),
-                    new TestInfo(GetInfo(_vbTarget.Try_Catch_VB), new List<string> { "Throw_5", "Branch_11", "If_11", "Anchor_13", "Branch_27" })
+                    new TestInfo(GetInfo(_vbTarget.VB_Try_Catch), new List<string> { "Throw_5", "Branch_11", "If_11", "Anchor_13", "Branch_27" })
                     );
 
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string> { "Call_5" }),
-                    new TestInfo(GetInfo(_vbTarget.Try_Finally_VB), new List<string> { "Branch_6", "Branch_11", "Else_9", "Branch_17", "Anchor_13" })
+                    new TestInfo(GetInfo(_vbTarget.VB_Try_Finally), new List<string> { "Branch_6", "Branch_11", "Else_9", "Branch_17", "Anchor_13" })
                     );
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Try_Finally_VB), new List<string> { "Call_5" }),
-                    new TestInfo(GetInfo(_vbTarget.Try_Finally_VB), new List<string> { "Branch_6", "Branch_11", "If_11", "Anchor_13" })
+                    new TestInfo(GetInfo(_vbTarget.VB_Try_Finally), new List<string> { "Branch_6", "Branch_11", "If_11", "Anchor_13" })
                     );
                 #endregion
                 #region Misc
