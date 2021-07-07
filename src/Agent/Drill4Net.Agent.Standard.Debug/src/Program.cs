@@ -154,7 +154,8 @@ namespace Drill4Net.Agent.Standard.Debug
                 WriteMessage("No input", ConsoleColor.Red);
                 return false;
             }
-            var ar = callData.Split(' ');
+            callData = callData.Replace("(", " ").Replace(")", null);
+            var ar = callData.Split(' ').Where(a => !string.IsNullOrEmpty(a)).ToArray();
             var name = ar[0].Trim();
 
             //by order number?
@@ -245,7 +246,7 @@ namespace Drill4Net.Agent.Standard.Debug
                     WriteMessage($"\n   -- TYPE_{asmCounter}.{typeCounter}: {curType}", ConsoleColor.White);
                 }
                 methCounter++;
-                WriteMessage($"                  {methCounter}. {meth.Name} ({meth.Signature.Parameters})", ConsoleColor.White);
+                WriteMessage($"        {methCounter}. {meth.Name} ({meth.Signature.Parameters})", ConsoleColor.White);
             }
             WriteMessage("\n   ***  END OF METHOD'S TREE  ***", ConsoleColor.Yellow);
             return true;
@@ -282,7 +283,7 @@ namespace Drill4Net.Agent.Standard.Debug
             return _methods.Values
                 .OrderBy(a => a.AssemblyName)
                 .ThenBy(a => a.BusinessType)
-                .ThenBy(a => a.FullName)
+                .ThenBy(a => a.Name) //more presentable than through FullName (due Return type, namespaces, etc it won't be alphabetical strict)
                 .ToList();
         }
 
@@ -370,7 +371,7 @@ namespace Drill4Net.Agent.Standard.Debug
   *** Enter order number of method from the listing with arguments for real probe's executing, e.g. 37 true
   *** Or input method name with arguments for such executing, e.g. IfElse_Consec_Full true,false
   *** Enter 'RunTests' to execute all methods of main target class (InjectTarget)
-  >>> Please, call yet the methods only for the InjectTarget type! 
+  >>> Please, call the methods only for the InjectTarget type yet! 
   *** Enter '?' or 'help' to print this menu
   *** Press q for exit";
             WriteMessage($"\n{mess}", ConsoleColor.Yellow);

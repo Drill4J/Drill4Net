@@ -269,7 +269,7 @@
         </member>
         <member name="T:Drill4Net.Agent.Abstract.Transfer.AstEntity">
             <summary>
-            Data about a class sent to Drill admin.
+            DTO: data about a class sent to Drill admin.
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.Transfer.AstEntity.path">
@@ -289,7 +289,7 @@
         </member>
         <member name="T:Drill4Net.Agent.Abstract.Transfer.AstMethod">
             <summary>
-            Class for presentation of method metadata for transferring to the Drill site
+            DTO: class for presentation of method metadata for transferring to the Drill site
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.Transfer.AstMethod.name">
@@ -319,7 +319,7 @@
         </member>
         <member name="T:Drill4Net.Agent.Abstract.Transfer.ExecClassData">
             <summary>
-            Probes of instrumented assemblies for sending of collecting data to the Admin side
+            DTO: probes of instrumented assemblies for sending of collecting data to the Admin side
             </summary>
         </member>
         <member name="P:Drill4Net.Agent.Abstract.Transfer.ExecClassData.testName">

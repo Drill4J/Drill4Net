@@ -4,8 +4,10 @@ using System.Linq;
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
+    //It's DTO: let properties will be with a small letter
+
     /// <summary>
-    /// Class for presentation of method metadata for transferring to the Drill site
+    /// DTO: class for presentation of method metadata for transferring to the Drill site
     /// </summary>
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]

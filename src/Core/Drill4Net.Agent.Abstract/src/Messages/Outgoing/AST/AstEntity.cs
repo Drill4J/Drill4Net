@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
+    //It's DTO: let properties will be with a small letter
+
     /// <summary>
-    /// Data about a class sent to Drill admin.
+    /// DTO: data about a class sent to Drill admin.
     /// </summary>
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]

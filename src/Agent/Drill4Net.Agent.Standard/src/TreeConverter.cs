@@ -46,8 +46,7 @@ namespace Drill4Net.Agent.Standard
                 throw new ArgumentNullException(nameof(injType));
             //
             var entity = new AstEntity(injType.Namespace, injType.Name);
-            var injMethods = injType.GetMethods()
-                .Where(a => !a.IsCompilerGenerated);
+            var injMethods = GetBusinessMethods(injType);
             foreach (var injMethod in injMethods)
             {
                 entity.methods.Add(ToAstMethod(injMethod));
@@ -88,18 +87,20 @@ namespace Drill4Net.Agent.Standard
             var testName = session?.TestName ?? Guid.NewGuid().ToString();
             if(session != null)
                 session.TestName = testName;
-            var bizTypes = injTypes.Where(a => !a.IsCompilerGenerated)
+            var bizTypes = injTypes
+                .Where(a => !a.IsCompilerGenerated)
                 .Distinct(new InjectedEntityComparer<InjectedType>());
 
-            var cgMethods = injTypes.Where(a => a.IsCompilerGenerated)
-                .SelectMany(a => a.GetMethods().Where(b => b.Points.Any()))
+            var cgMethods = injTypes
+                .SelectMany(a => a.Filter(typeof(InjectedMethod), true)) //including nested types/methods
+                .Cast<InjectedMethod>()
+                .Where(a => a.IsCompilerGenerated && a.Points.Any())
                 .Distinct(new InjectedEntityComparer<InjectedMethod>())
                 .ToDictionary(k => k.FullName);
 
             foreach (var type in bizTypes) //don't parallelize (need protect ind)
             {
-                var bizMethods = type.GetMethods()?
-                    .Where(a => a.Structure.PointToBlockEnds.Any());
+                var bizMethods = GetBusinessMethods(type);
                 if (bizMethods?.Any() != true)
                     continue;
                 var ind = 0; //end2end for the current type
@@ -144,11 +145,11 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="reg"></param>
         /// <param name="execData"></param>
-        /// <param name="methCoverage"></param>
+        /// <param name="methStruct"></param>
         /// <param name="ind"></param>
-        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, MethodStructure methCoverage, ref int ind)
+        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, MethodStructure methStruct, ref int ind)
         {
-            var indPairs = methCoverage.PointToBlockEnds.OrderBy(a => a.Value);
+            var indPairs = methStruct.PointToBlockEnds.OrderBy(a => a.Value);
             var startMeth = ind;
             foreach (var pair in indPairs) //don't parallel here!
             {
@@ -160,5 +161,13 @@ namespace Drill4Net.Agent.Standard
             }
         }
         #endregion
+
+        private IOrderedEnumerable<InjectedMethod> GetBusinessMethods(InjectedType injType)
+        {
+            var injMethods = injType?.GetMethods()?
+            .Where(a => !a.IsCompilerGenerated && a.Structure.PointToBlockEnds.Any())
+            .OrderBy(a => a.Name);
+            return injMethods;
+        }
     }
 }
