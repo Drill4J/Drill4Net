@@ -78,7 +78,7 @@ namespace Drill4Net.Injector.Core
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
             var pointUid = Guid.NewGuid().ToString();
-            var businessIndex = CalcBusinessIndex(ctx.Method, localId);
+            var businessIndex = CalcBusinessIndex(ctx.Method, ctx.GetCurBusinessIndex(localId));
             var point = new CrossPoint(pointUid, localId.ToString(), businessIndex, pointType)
             {
                 //TODO: PDB data
@@ -89,25 +89,26 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Calculates the index of the cross-point's instruction in the ideal business code 
         /// (collected from the compiler generated parts of IL code) by local index of the instruction
-        /// in these compiler generated methids and classes.
+        /// in these compiler generated methods and classes.
         /// </summary>
         /// <param name="ctx">The target method's context</param>
-        /// <param name="localIndex">Local index of the cross-point.</param>
+        /// <param name="localBusinessIndex">Local index of the cross-point.</param>
         /// <returns></returns>
-        internal virtual int CalcBusinessIndex(InjectedMethod method, int localIndex)
+        internal virtual int CalcBusinessIndex(InjectedMethod method, int localBusinessIndex)
         {
-            var ind = localIndex;
-            //go up to business method and sum the real index shift (business index)
+            var ind = localBusinessIndex;
+            //go up to the business method and get the "business" (logical) index
+            //of instruction taking into account the shift of the callee calls
             while (true)
             {
-                var info = method.CGInfo;
-                var caller = info?.Caller;
+                var caller = method.CGInfo?.Caller;
                 if (caller == null)
                     break;
                 var indexes = caller.CalleeIndexes;
-                if (!indexes.ContainsKey(method.FullName))
+                var curName = method.FullName;
+                if (!indexes.ContainsKey(curName))
                     break;
-                ind += indexes[method.FullName];
+                ind += indexes[curName];
                 method = caller;
             }
             return ind;

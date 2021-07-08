@@ -125,7 +125,9 @@ namespace Drill4Net.Injector.Engine
                         #endregion
 
                         i = methodCtx.CurIndex; //because it can change
-                        methodCtx.BusinessInstructions.Add(instructions[i]);
+                        var instr = instructions[i];
+                        methodCtx.BusinessInstructions.Add(instr);
+                        methodCtx.BusinessInstructionList.Add(instr);
                     }
                     //
                     var cnt = methodCtx.BusinessInstructions.Count;

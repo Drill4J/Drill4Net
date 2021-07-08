@@ -25,7 +25,7 @@ namespace Drill4Net.Injector.Core
             var processor = ctx.Processor;
             foreach (var instr in ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a)))
             {
-                var ind = ctx.Instructions.IndexOf(instr);
+                var ind = ctx.OrigInstructions.IndexOf(instr);
 
                 //check for too short jump
                 var prev = SkipNop(ind, false, ctx.Instructions);

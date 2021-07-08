@@ -39,6 +39,8 @@ namespace Drill4Net.Injector.Engine
                     if (points2.Count > 1)
                         points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
                     structure.PointToBlockEnds.Add(points2[0].PointUid, ind);
+                    if (ind >= method.BusinessSize)
+                    { } //test
                 }
             }
         }

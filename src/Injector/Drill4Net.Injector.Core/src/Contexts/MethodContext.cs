@@ -38,9 +38,14 @@ namespace Drill4Net.Injector.Core
         public List<Instruction> OrigInstructions { get; }
 
         /// <summary>
-        /// Exactly business instructions
+        /// Exactly business instructions as hashset
         /// </summary>
         public HashSet<Instruction> BusinessInstructions { get; }
+
+        /// <summary>
+        /// Exactly business instructions as list
+        /// </summary>
+        public List<Instruction> BusinessInstructionList { get; }
 
         /// <summary>
         /// Last instruction of the method (potentially including first instrumented instruction for this block)
@@ -144,6 +149,7 @@ namespace Drill4Net.Injector.Core
             LastOperation = instructions.Last();
             //
             BusinessInstructions = new HashSet<Instruction>();
+            BusinessInstructionList = new List<Instruction>();
             Processed = new HashSet<Instruction>();
             StartingInjectInstructions = new HashSet<object>();
             CompilerInstructions = new HashSet<Instruction>();
@@ -189,6 +195,16 @@ namespace Drill4Net.Injector.Core
             var instr = CurInstruction;
             if(!Processed.Contains(instr))
                 Processed.Add(instr);
+        }
+
+        public int GetCurBusinessIndex()
+        {
+            return BusinessInstructionList.IndexOf(CurInstruction);
+        }
+
+        public int GetCurBusinessIndex(int sourceIndex)
+        {
+            return BusinessInstructionList.IndexOf(OrigInstructions[sourceIndex]);
         }
 
         public override string ToString()

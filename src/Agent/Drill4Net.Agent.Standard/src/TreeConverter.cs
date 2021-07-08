@@ -46,7 +46,7 @@ namespace Drill4Net.Agent.Standard
                 throw new ArgumentNullException(nameof(injType));
             //
             var entity = new AstEntity(injType.Namespace, injType.Name);
-            var injMethods = GetBusinessMethods(injType);
+            var injMethods = GetOrderedBusinessMethods(injType);
             foreach (var injMethod in injMethods)
             {
                 entity.methods.Add(ToAstMethod(injMethod));
@@ -100,7 +100,7 @@ namespace Drill4Net.Agent.Standard
 
             foreach (var type in bizTypes) //don't parallelize (need protect ind)
             {
-                var bizMethods = GetBusinessMethods(type);
+                var bizMethods = GetOrderedBusinessMethods(type);
                 if (bizMethods?.Any() != true)
                     continue;
                 var ind = 0; //end2end for the current type
@@ -162,7 +162,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        internal IOrderedEnumerable<InjectedMethod> GetBusinessMethods(InjectedType injType)
+        internal IOrderedEnumerable<InjectedMethod> GetOrderedBusinessMethods(InjectedType injType)
         {
             var injMethods = injType?.GetMethods()?
                 .Where(a => !a.IsCompilerGenerated && a.Structure.PointToBlockEnds.Any())

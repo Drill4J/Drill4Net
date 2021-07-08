@@ -92,12 +92,12 @@ namespace Drill4Net.Injector.Engine
                             .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
                         {
                             asyncMove.CGInfo.Caller = treeFunc;
-                            treeFunc.CalleeIndexes.Add(asyncMove.FullName, ctx.SourceIndex);
+                            treeFunc.CalleeIndexes.Add(asyncMove.FullName, ctx.GetCurBusinessIndex());
                         }
                     }
                 }
                 if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && !_typeChecker.IsSystemTypeByMethod(extFullname))
-                    treeFunc.CalleeIndexes.Add(extFullname, ctx.SourceIndex);
+                    treeFunc.CalleeIndexes.Add(extFullname, ctx.GetCurBusinessIndex());
             }
             #endregion
 
@@ -147,7 +147,7 @@ namespace Drill4Net.Injector.Engine
                         if (meth.Name != extName)
                             continue;
                         if (!treeFunc.CalleeIndexes.ContainsKey(meth.FullName))
-                            treeFunc.CalleeIndexes.Add(meth.FullName, ctx.SourceIndex);
+                            treeFunc.CalleeIndexes.Add(meth.FullName, ctx.GetCurBusinessIndex());
                     }
                 }
                 else
