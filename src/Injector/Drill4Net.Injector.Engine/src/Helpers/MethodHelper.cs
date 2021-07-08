@@ -20,6 +20,13 @@ namespace Drill4Net.Injector.Engine
 
         /*************************************************************************************/
 
+        /// <summary>
+        /// Corrects the "business" (logically full) size of IL code of the method by its own size and its callees.
+        /// </summary>
+        /// <param name="methods">The list of the assembly's methods for the searching the callee by its name.</param>
+        /// <param name="caller">The caller which calls the callee.</param>
+        /// <param name="calleeName">Name of the particular callee of the caller method.</param>
+        /// <exception cref="ArgumentNullException">nameof(methods)</exception>
         internal static void CorrectMethodBusinessSize(Dictionary<string, InjectedMethod> methods,
             InjectedMethod caller, string calleeName)
         {
@@ -39,8 +46,8 @@ namespace Drill4Net.Injector.Engine
                 CorrectMethodBusinessSize(methods, callee, subCalleeName);
             }
 
-            //the size of caller consists of own size + all sizes of it's CG callees (already included in them)
-            caller.BusinessSize += callee.BusinessSize;
+            //the size of caller consists of own size + all sizes of it's CG callees (already included in them) computing recursively
+            caller.BusinessSize += callee.BusinessSize - 1;
         }
 
         /// <summary>
@@ -270,6 +277,12 @@ namespace Drill4Net.Injector.Engine
             return type is MethodType.EventAdd or MethodType.EventRemove;
         }
 
+        /// <summary>
+        /// Gets the string method key for using in some dictionaries.
+        /// </summary>
+        /// <param name="typeFullname">The type fullname.</param>
+        /// <param name="methodShortName">Short name of the method.</param>
+        /// <returns></returns>
         internal static string GetMethodKey(string typeFullname, string methodShortName)
         {
             return $"{typeFullname}::{methodShortName}";

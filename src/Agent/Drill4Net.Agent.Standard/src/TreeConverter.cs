@@ -26,7 +26,7 @@ namespace Drill4Net.Agent.Standard
                 throw new ArgumentNullException(nameof(injTypes));
             //
             var res = new ConcurrentBag<AstEntity>();
-            foreach (var type in injTypes.AsParallel())
+            foreach (var type in injTypes.Where(a => !a.IsCompilerGenerated).AsParallel())
             {
                 lock (res)
                     res.Add(ToAstEntity(type));
@@ -66,7 +66,7 @@ namespace Drill4Net.Agent.Standard
                 throw new ArgumentNullException(nameof(injMethod));
             //
             var sig = injMethod.Signature;
-            var astMethod = new AstMethod(injMethod.Name, sig.Return, injMethod.OwnBusinessSize, injMethod.Source.HashCode);
+            var astMethod = new AstMethod(injMethod.Name, sig.Return, injMethod.BusinessSize, injMethod.Source.HashCode);
             if (sig.Parameters != null)
                 astMethod.@params = sig.Parameters.Split(',').Select(a => a.Trim()).ToList();
             return astMethod;
@@ -162,11 +162,11 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        private IOrderedEnumerable<InjectedMethod> GetBusinessMethods(InjectedType injType)
+        internal IOrderedEnumerable<InjectedMethod> GetBusinessMethods(InjectedType injType)
         {
             var injMethods = injType?.GetMethods()?
-            .Where(a => !a.IsCompilerGenerated && a.Structure.PointToBlockEnds.Any())
-            .OrderBy(a => a.Name);
+                .Where(a => !a.IsCompilerGenerated && a.Structure.PointToBlockEnds.Any())
+                .OrderBy(a => a.FullName);
             return injMethods;
         }
     }

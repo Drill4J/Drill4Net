@@ -51,13 +51,13 @@ namespace Drill4Net.Profiling.Tree
             }
             return string.Join("/", list);
         }
-        
+
         public IEnumerable<InjectedType> GetNestedTypes()
         {
             return _children.Where(a => a.GetType().Name == nameof(InjectedType))
                 .Cast<InjectedType>();
         }
-        
+ 
         public IEnumerable<InjectedMethod> GetMethods()
         {
             return _children.Where(a => a.GetType().Name == nameof(InjectedMethod))

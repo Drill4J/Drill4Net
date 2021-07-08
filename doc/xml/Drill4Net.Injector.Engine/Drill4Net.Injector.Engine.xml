@@ -125,6 +125,15 @@
             Helper for getting info about methods
             </summary>
         </member>
+        <member name="M:Drill4Net.Injector.Engine.MethodHelper.CorrectMethodBusinessSize(System.Collections.Generic.Dictionary{System.String,Drill4Net.Profiling.Tree.InjectedMethod},Drill4Net.Profiling.Tree.InjectedMethod,System.String)">
+            <summary>
+            Corrects the "business" (logically full) size of IL code of the method by its own size and its callees.
+            </summary>
+            <param name="methods">The list of the assembly's methods for the searching the callee by its name.</param>
+            <param name="caller">The caller which calls the callee.</param>
+            <param name="calleeName">Name of the particular callee of the caller method.</param>
+            <exception cref="T:System.ArgumentNullException">nameof(methods)</exception>
+        </member>
         <member name="M:Drill4Net.Injector.Engine.MethodHelper.MapBusinessFunction(Drill4Net.Injector.Core.MethodContext)">
             <summary>
             Maps the business function to compiler generated ones.
@@ -161,6 +170,14 @@
             Is the method special even for compiler generated ones? Currently it's for the adding and removing events
             </summary>
             <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Injector.Engine.MethodHelper.GetMethodKey(System.String,System.String)">
+            <summary>
+            Gets the string method key for using in some dictionaries.
+            </summary>
+            <param name="typeFullname">The type fullname.</param>
+            <param name="methodShortName">Short name of the method.</param>
             <returns></returns>
         </member>
         <member name="T:Drill4Net.Injector.Engine.ProxyHelper">

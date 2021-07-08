@@ -78,7 +78,7 @@ namespace Drill4Net.Injector.Core
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
         {
             var pointUid = Guid.NewGuid().ToString();
-            var businessIndex = CalcBusinessIndex(ctx, localId);
+            var businessIndex = CalcBusinessIndex(ctx.Method, localId);
             var point = new CrossPoint(pointUid, localId.ToString(), businessIndex, pointType)
             {
                 //TODO: PDB data
@@ -94,10 +94,9 @@ namespace Drill4Net.Injector.Core
         /// <param name="ctx">The target method's context</param>
         /// <param name="localIndex">Local index of the cross-point.</param>
         /// <returns></returns>
-        internal virtual int CalcBusinessIndex(MethodContext ctx, int localIndex)
+        internal virtual int CalcBusinessIndex(InjectedMethod method, int localIndex)
         {
             var ind = localIndex;
-            var method = ctx.Method;
             //go up to business method and sum the real index shift (business index)
             while (true)
             {
