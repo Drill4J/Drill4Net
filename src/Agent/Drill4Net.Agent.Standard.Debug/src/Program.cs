@@ -84,7 +84,7 @@ namespace Drill4Net.Agent.Standard.Debug
             _points = _injDirectory.GetAllPoints().ToList();
 
             //methods
-            var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated/* && a.Source.AccessType == AccessType.Public*/);
+            var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated);
             _methods = new Dictionary<string, InjectedMethod>();
             foreach (var meth in methList)
             {
@@ -130,10 +130,11 @@ namespace Drill4Net.Agent.Standard.Debug
         /// <returns></returns>
         private static bool ProcessInput(string input)
         {
+            input = input.Trim();
             return input switch
             {
                 "?" or "help" => PrintMenu(),
-                "print" or "list" => PrintTree(),
+                "tree" or "list" => PrintTree(),
                 "save" => SaveTreeData(),
                 _ => CallMethod(input)
             };
@@ -374,10 +375,12 @@ namespace Drill4Net.Agent.Standard.Debug
         {
             const string mess = @"  *** First of all, start session on admin side...
   *** Enter 'info' for the tree info
-  *** Enter 'print' or 'list' for the methods listing
+  *** Enter 'tree' or 'list' for the methods listing
   *** Enter 'save' to save method's tree to the CSV file
   *** Enter order number of method from the listing with arguments for real probe's executing, e.g. 37 true
   *** Or input method name with arguments for such executing, e.g. IfElse_Consec_Full true,false
+      You can even enter it as C# syntax copied from the source code: IfElse_Consec_Full(true,false)
+      with or withot ; after this expression.
   *** Enter 'RunTests' to execute all methods of main target class (InjectTarget)
   >>> Please, call the methods only for the InjectTarget type yet! 
   *** Enter '?' or 'help' to print this menu
