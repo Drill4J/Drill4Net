@@ -687,7 +687,7 @@ namespace Drill4Net.Target.Common
         }
 #endif
         //C#9
-        internal double Switch_Relational(double sum)
+        public double Switch_Relational(double sum)
         {
             var newSum = sum switch
             {
@@ -701,7 +701,7 @@ namespace Drill4Net.Target.Common
         }
 
         //C#9
-        internal string Switch_Logical(int a)
+        public string Switch_Logical(int a)
         {
             var s = a switch
             {

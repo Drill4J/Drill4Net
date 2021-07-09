@@ -105,7 +105,7 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Current instruction index from source IL code
         /// </summary>
-        public int SourceIndex { get; private set; }
+        public int OrigIndex { get; private set; }
 
         /// <summary>
         /// Real current instruction index for <see cref="Instructions"/>,
@@ -161,7 +161,7 @@ namespace Drill4Net.Injector.Core
         /***********************************************************************************************/
 
         /// <summary>
-        /// Set value for both <see cref="SourceIndex"/> and <see cref="CurIndex"/>
+        /// Set value for both <see cref="OrigIndex"/> and <see cref="CurIndex"/>
         /// </summary>
         /// <param name="index">Value of indexes</param>
         /// <exception cref="ArgumentException"></exception>
@@ -172,7 +172,7 @@ namespace Drill4Net.Injector.Core
             if (index >= Instructions.Count)
                 index = Instructions.Count - 1;
             CurIndex = index;
-            SourceIndex = OrigInstructions.IndexOf(Instructions[index]);
+            OrigIndex = OrigInstructions.IndexOf(Instructions[index]);
         }
 
         /// <summary>

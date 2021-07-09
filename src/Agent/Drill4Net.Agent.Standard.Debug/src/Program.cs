@@ -84,7 +84,7 @@ namespace Drill4Net.Agent.Standard.Debug
             _points = _injDirectory.GetAllPoints().ToList();
 
             //methods
-            var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated && a.Source.AccessType == AccessType.Public);
+            var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated/* && a.Source.AccessType == AccessType.Public*/);
             _methods = new Dictionary<string, InjectedMethod>();
             foreach (var meth in methList)
             {
@@ -154,9 +154,12 @@ namespace Drill4Net.Agent.Standard.Debug
                 WriteMessage("No input", ConsoleColor.Red);
                 return false;
             }
+            if (callData.EndsWith(";"))
+                callData = callData.Substring(0, callData.Length - 1);
             callData = callData.Replace("(", " ").Replace(")", null);
-            var ar = callData.Split(' ').Where(a => !string.IsNullOrEmpty(a)).ToArray();
-            var name = ar[0].Trim();
+            var spInd = callData.IndexOf(" ");
+            var name = spInd == -1 ? callData : callData.Substring(0, spInd).Trim();
+            var parsS = spInd == -1 ? null : callData.Substring(spInd);
 
             //by order number?
             if (int.TryParse(name, out int number))
@@ -178,9 +181,9 @@ namespace Drill4Net.Agent.Standard.Debug
 
             //parameters
             var pars = new List<string>();
-            if (ar.Length > 1)
+            if (parsS != null)
             {
-                foreach (var par in ar[1].Split(','))
+                foreach (var par in parsS.Split(','))
                 {
                     if (!string.IsNullOrWhiteSpace(par))
                         pars.Add(par.Trim());
@@ -198,7 +201,12 @@ namespace Drill4Net.Agent.Standard.Debug
                 var asm = Assembly.LoadFrom(asmPath);
                 var typeName = method.BusinessType;
                 var type = asm.GetType(typeName);
-                methInfo = type.GetMethod(name);
+                methInfo = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.Instance);
+                if (methInfo == null)
+                {
+                    WriteMessage($"Method {name} not found", ConsoleColor.Red);
+                    return false;
+                }
                 target = Activator.CreateInstance(asm.FullName, typeName).Unwrap();
             }
             catch (Exception ex)

@@ -123,7 +123,7 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         protected virtual Instruction Register(MethodContext ctx, CrossPointType type)
         {
-            return Register(ctx, type, ctx.SourceIndex);
+            return Register(ctx, type, ctx.OrigIndex);
         }
 
         /// <summary>
@@ -131,16 +131,16 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ctx">Method's context</param>
         /// <param name="type">Type of the cross-point</param>
-        /// <param name="ind">Certain (not current) index of instruction for the cross-point</param>
+        /// <param name="origInd">Certain (not current) index of instruction for the cross-point</param>
         /// <param name="asProcessed">Is the instruction considered processed?</param>
         /// <returns></returns>
-        protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int ind, bool asProcessed = true)
+        protected virtual Instruction Register(MethodContext ctx, CrossPointType type, int origInd, bool asProcessed = true)
         {
-            if (ind < 0)
-                throw new ArgumentException(nameof(ind));
+            if (origInd < 0)
+                throw new ArgumentException(nameof(origInd));
             if (asProcessed)
-                ctx.Processed.Add(ctx.Instructions[ind]);
-            var probeData = GetProbeData(ctx, type, ind, out var point);
+                ctx.Processed.Add(ctx.OrigInstructions[origInd]);
+            var probeData = GetProbeData(ctx, type, origInd, out var point);
             return GetStartingInjectedInstruction(ctx, probeData);
         }
 
@@ -149,12 +149,12 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ctx">Method's context</param>
         /// <param name="pointType">Type of the cross-point</param>
-        /// <param name="byIndex">Index of instruction as local ID of cross-point</param>
+        /// <param name="origIndex">Index of instruction as local ID of cross-point</param>
         /// <param name="point">Object of the cross-point</param>
         /// <returns></returns>
-        protected virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int byIndex, out CrossPoint point)
+        protected virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int origIndex, out CrossPoint point)
         {
-            point = GetPoint(ctx, pointType, byIndex);
+            point = GetPoint(ctx, pointType, origIndex);
             return _probeHelper.GenerateProbe(ctx, point);
         }
 

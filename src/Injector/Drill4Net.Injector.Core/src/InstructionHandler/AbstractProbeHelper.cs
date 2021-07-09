@@ -55,15 +55,15 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ctx">The target method's context</param>
         /// <param name="pointType">Type of the cross-point.</param>
-        /// <param name="localId">The local identifier of the cross-point.</param>
+        /// <param name="origInd">The local identifier of the cross-point.</param>
         /// <returns></returns>
-        public virtual CrossPoint GetOrCreatePoint(MethodContext ctx, CrossPointType pointType, int localId)
+        public virtual CrossPoint GetOrCreatePoint(MethodContext ctx, CrossPointType pointType, int origInd)
         {
             var point = ctx.Method.Points
-                .FirstOrDefault(a => a.PointType == pointType && a.PointId == localId.ToString()); //check for PointType need to use also
+                .FirstOrDefault(a => a.PointType == pointType && a.PointId == origInd.ToString()); //check for PointType need to use also
             if (point != null)
                 return point;
-            point = CreateCrossPoint(ctx, pointType, localId);
+            point = CreateCrossPoint(ctx, pointType, origInd);
             ctx.Method.Add(point);
             return point;
         }
@@ -73,13 +73,13 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ctx">The target method's context</param>
         /// <param name="pointType">Type of the cross-point.</param>
-        /// <param name="localId">The local identifier of the cross-point.</param>
+        /// <param name="origInd">The local identifier of the cross-point.</param>
         /// <returns></returns>
-        protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int localId)
+        protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int origInd)
         {
             var pointUid = Guid.NewGuid().ToString();
-            var businessIndex = CalcBusinessIndex(ctx.Method, ctx.GetCurBusinessIndex(localId));
-            var point = new CrossPoint(pointUid, localId.ToString(), businessIndex, pointType)
+            var businessIndex = CalcBusinessIndex(ctx.Method, ctx.GetCurBusinessIndex(origInd));
+            var point = new CrossPoint(pointUid, origInd.ToString(), businessIndex, pointType)
             {
                 //TODO: PDB data
             };
@@ -108,7 +108,7 @@ namespace Drill4Net.Injector.Core
                 var curName = method.FullName;
                 if (!indexes.ContainsKey(curName))
                     break;
-                ind += indexes[curName];
+                ind += indexes[curName] + 1;
                 method = caller;
             }
             return ind;
