@@ -34,9 +34,9 @@ namespace Drill4Net.Profiling.Tree
         public CompilerGeneratedInfo CGInfo { get; }
 
         /// <summary>
-        /// Indexes of the IL code's instructions for the current method's callees
+        /// Indexes of the IL code's original instructions for the current method's callees
         /// </summary>
-        public Dictionary<string, int> CalleeIndexes { get; set; }
+        public Dictionary<string, int> CalleeOrigIndexes { get; set; }
 
         /// <summary>
         /// Name of the business type (for the compiler generated methods)
@@ -82,7 +82,7 @@ namespace Drill4Net.Profiling.Tree
             Name = Signature.Name;
             if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
-            CalleeIndexes = new Dictionary<string, int>();
+            CalleeOrigIndexes = new Dictionary<string, int>();
             Structure = new MethodStructure();
         }
 

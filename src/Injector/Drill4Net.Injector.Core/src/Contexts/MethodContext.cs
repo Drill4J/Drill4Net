@@ -197,14 +197,16 @@ namespace Drill4Net.Injector.Core
                 Processed.Add(instr);
         }
 
-        public int GetCurBusinessIndex()
+        /// <summary>
+        /// Gets the local business index of the instruction by index of original position in IL code.
+        /// </summary>
+        /// <remarks>< Use it after main processing of the IL code when <see cref="BusinessInstructionList"/> is filled./remarks>
+        /// <param name="origIndex">Index of the original.</param>
+        /// <returns></returns>
+        public int GetLocalBusinessIndex(int origIndex)
         {
-            return BusinessInstructionList.IndexOf(CurInstruction);
-        }
-
-        public int GetCurBusinessIndex(int sourceIndex)
-        {
-            return BusinessInstructionList.IndexOf(OrigInstructions[sourceIndex]);
+            var ind = BusinessInstructionList.IndexOf(OrigInstructions[origIndex]);
+            return ind == -1 ? origIndex : ind;
         }
 
         public override string ToString()

@@ -60,7 +60,7 @@ namespace Drill4Net.Injector.Core
         public virtual CrossPoint GetOrCreatePoint(MethodContext ctx, CrossPointType pointType, int origInd)
         {
             var point = ctx.Method.Points
-                .FirstOrDefault(a => a.PointType == pointType && a.PointId == origInd.ToString()); //check for PointType need to use also
+                .FirstOrDefault(a => a.PointType == pointType && a.OrigInd == origInd); //check for PointType need to use also
             if (point != null)
                 return point;
             point = CreateCrossPoint(ctx, pointType, origInd);
@@ -78,40 +78,12 @@ namespace Drill4Net.Injector.Core
         protected virtual CrossPoint CreateCrossPoint(MethodContext ctx, CrossPointType pointType, int origInd)
         {
             var pointUid = Guid.NewGuid().ToString();
-            var businessIndex = CalcBusinessIndex(ctx.Method, ctx.GetCurBusinessIndex(origInd));
-            var point = new CrossPoint(pointUid, origInd.ToString(), businessIndex, pointType)
+            var bizInd = ctx.GetLocalBusinessIndex(origInd);
+            var point = new CrossPoint(pointUid, origInd, bizInd, pointType)
             {
-                //TODO: PDB data
+                //TODO: bind PDB data
             };
             return point;
-        }
-
-        /// <summary>
-        /// Calculates the index of the cross-point's instruction in the ideal business code 
-        /// (collected from the compiler generated parts of IL code) by local index of the instruction
-        /// in these compiler generated methods and classes.
-        /// </summary>
-        /// <param name="ctx">The target method's context</param>
-        /// <param name="localBusinessIndex">Local index of the cross-point.</param>
-        /// <returns></returns>
-        internal virtual int CalcBusinessIndex(InjectedMethod method, int localBusinessIndex)
-        {
-            var ind = localBusinessIndex;
-            //go up to the business method and get the "business" (logical) index
-            //of instruction taking into account the shift of the callee calls
-            while (true)
-            {
-                var caller = method.CGInfo?.Caller;
-                if (caller == null)
-                    break;
-                var indexes = caller.CalleeIndexes;
-                var curName = method.FullName;
-                if (!indexes.ContainsKey(curName))
-                    break;
-                ind += indexes[curName] + 1;
-                method = caller;
-            }
-            return ind;
         }
         #endregion
     }

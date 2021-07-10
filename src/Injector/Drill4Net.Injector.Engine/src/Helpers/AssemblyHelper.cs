@@ -1,10 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
+using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -217,7 +218,7 @@ namespace Drill4Net.Injector.Engine
                         if (meth.BusinessMethod == methFullName)
                         {
                             var bizFunc = typeCtx.MethodContexts.Values.Select(a => a.Method)
-                                .FirstOrDefault(a => a.CalleeIndexes.ContainsKey(methFullName));
+                                .FirstOrDefault(a => a.CalleeOrigIndexes.ContainsKey(methFullName));
                             if (bizFunc != null)
                                 meth.CGInfo.Caller = bizFunc;
                             else
@@ -238,11 +239,77 @@ namespace Drill4Net.Injector.Engine
                 .Where(a => !a.IsCompilerGenerated).ToArray();
             if (!bizMethods.Any())
                 return;
-            foreach (var caller in bizMethods.Where(a => a.CalleeIndexes.Count > 0))
+            foreach (var caller in bizMethods.Where(a => a.CalleeOrigIndexes.Count > 0))
             {
-                foreach (var calleeName in caller.CalleeIndexes.Keys)
+                foreach (var calleeName in caller.CalleeOrigIndexes.Keys)
                     MethodHelper.CorrectMethodBusinessSize(asmCtx.InjMethodByFullname, caller, calleeName);
             }
+        }
+
+        internal static void CalcCalleeBusinessIndexes(AssemblyContext asmCtx)
+        {
+            foreach (var typeCtx in asmCtx.TypeContexts.Values)
+            {
+                foreach (var methodCtx in typeCtx.MethodContexts.Values)
+                {
+                    var meth = methodCtx.Method;
+                    if (meth.IsCompilerGenerated)
+                    {
+                        foreach (var point in meth.Points)
+                        {
+                            point.BusinessIndex = CalcBusinessIndex(methodCtx, point.OrigInd);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calculates the index of the cross-point's instruction in the ideal business code 
+        /// (collected from the compiler generated parts of IL code) by local index of the instruction
+        /// in these compiler generated methods and classes.
+        /// </summary>
+        /// <param name="ctx">The target method's context</param>
+        /// <param name="origInd">Local index of the cross-point for original IL code.</param>
+        /// <returns></returns>
+        internal static int CalcBusinessIndex(MethodContext ctx, int origInd)
+        {
+            var method = ctx.Method;
+            var ind = ctx.GetLocalBusinessIndex(origInd);
+
+            //go up to the business method and get the "business" (logical) index
+            //of instruction taking into account the shift of the callee calls
+            while (true)
+            {
+                var caller = method.CGInfo?.Caller;
+                if (caller == null)
+                    break;
+                var indexes = caller.CalleeOrigIndexes;
+                var curName = method.FullName;
+                if (!indexes.ContainsKey(curName))
+                    break;
+                var origCalleeInd = indexes[curName];
+                var calleeCtx = GetMethodContext(ctx.AssemblyCtx, caller.FullName);
+                var bizCalleeInd = calleeCtx == null ? 0 : calleeCtx.GetLocalBusinessIndex(origCalleeInd);
+                if (bizCalleeInd < 0)
+                { } //test
+                ind += bizCalleeInd;
+                method = caller;
+            }
+            return ind;
+        }
+
+        internal static MethodContext GetMethodContext(AssemblyContext asmCtx, string calleeName)
+        {
+            if (!asmCtx.InjMethodByFullname.ContainsKey(calleeName))
+                return null;
+            var callee = asmCtx.InjMethodByFullname[calleeName];
+            var calleeType = $"{callee.Signature.Namespace}.{callee.Signature.Type}";
+            if (!asmCtx.TypeContexts.ContainsKey(calleeType))
+                return null;
+            var calleeTypeCtx = asmCtx.TypeContexts[calleeType];
+            var calleeCtx = calleeTypeCtx.MethodContexts[calleeName];
+            return calleeCtx;
         }
     }
 }

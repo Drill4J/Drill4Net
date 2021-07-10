@@ -41,7 +41,7 @@ namespace Drill4Net.Injector.Engine
             #endregion
 
             //at first, children - callees
-            foreach (var subCalleeName in callee.CalleeIndexes.Keys)
+            foreach (var subCalleeName in callee.CalleeOrigIndexes.Keys)
             {
                 CorrectMethodBusinessSize(methods, callee, subCalleeName);
             }
@@ -74,7 +74,7 @@ namespace Drill4Net.Injector.Engine
             var extFullname = extOp.FullName;
 
             #region Callee's indexes
-            //TODO: regex
+            //TODO: regex?
             var isAngledCtor = extFullname.Contains("/<") && extFullname.Contains("__") && extFullname.EndsWith(".ctor()");
             if (!isAngledCtor)
             {
@@ -92,12 +92,12 @@ namespace Drill4Net.Injector.Engine
                             .FirstOrDefault(a => a.Name == "MoveNext") is InjectedMethod asyncMove)
                         {
                             asyncMove.CGInfo.Caller = treeFunc;
-                            treeFunc.CalleeIndexes.Add(asyncMove.FullName, ctx.GetCurBusinessIndex());
+                            treeFunc.CalleeOrigIndexes.Add(asyncMove.FullName, ctx.OrigIndex);
                         }
                     }
                 }
-                if (!treeFunc.CalleeIndexes.ContainsKey(extFullname) && !_typeChecker.IsSystemTypeByMethod(extFullname))
-                    treeFunc.CalleeIndexes.Add(extFullname, ctx.GetCurBusinessIndex());
+                if (!treeFunc.CalleeOrigIndexes.ContainsKey(extFullname) && !_typeChecker.IsSystemTypeByMethod(extFullname))
+                    treeFunc.CalleeOrigIndexes.Add(extFullname, ctx.OrigIndex);
             }
             #endregion
 
@@ -146,8 +146,8 @@ namespace Drill4Net.Injector.Engine
                             meth.CGInfo.FromMethod = treeFunc.FullName ?? extType.FromMethod;
                         if (meth.Name != extName)
                             continue;
-                        if (!treeFunc.CalleeIndexes.ContainsKey(meth.FullName))
-                            treeFunc.CalleeIndexes.Add(meth.FullName, ctx.GetCurBusinessIndex());
+                        if (!treeFunc.CalleeOrigIndexes.ContainsKey(meth.FullName))
+                            treeFunc.CalleeOrigIndexes.Add(meth.FullName, ctx.OrigIndex);
                     }
                 }
                 else

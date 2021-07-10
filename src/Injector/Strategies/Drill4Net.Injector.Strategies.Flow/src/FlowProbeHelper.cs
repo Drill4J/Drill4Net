@@ -44,9 +44,9 @@ namespace Drill4Net.Injector.Strategies.Flow
             if (Options?.Debug?.CrossPointInfo == true)
             {
                 var str = point.PointType;
-                return point.PointId == point.BusinessIndex.ToString()
+                return point.OrigInd == point.BusinessIndex
                     ? $"{str}_{point.BusinessIndex}"
-                    : $"{str}_{point.PointId}/{point.BusinessIndex}";
+                    : $"{str}_{point.OrigInd}/{point.BusinessIndex}";
             }
             else
             {

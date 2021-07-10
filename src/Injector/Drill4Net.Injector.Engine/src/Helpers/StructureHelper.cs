@@ -22,26 +22,28 @@ namespace Drill4Net.Injector.Engine
             {
                 //for the block type (!) of coverage If/Else type not needed
                 var points = method.Points;
-                var ranges = points
+                var bizInds = points
                     .Select(a => a.BusinessIndex)
                     .Where(c => c != 0) //"Enter" type not needed in any case (for the block type of coverage)
                     .OrderBy(b => b)
                     .Distinct() //needs to exclude, in fact, some excess/fictive for coverage injections: CycleEnd, etc
                     .ToList();
-                if (!ranges.Any())
+                if (!bizInds.Any())
                     continue;
                 //
                 var structure = method.Structure;
-                foreach (var ind in ranges)
+                foreach (var ind in bizInds)
                 {
                     //some paired points may have same index (Cycle/CycleEnd)
                     var points2 = points.Where(a => a.BusinessIndex == ind).ToList();
                     if (points2.Count > 1)
                         points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
                     structure.PointToBlockEnds.Add(points2[0].PointUid, ind);
-                    if (ind >= method.BusinessSize)
-                    { } //test
                 }
+                //
+                var last = points.FirstOrDefault(a => a.PointType == CrossPointType.Return); //for CG methods is empty
+                if (!method.IsCompilerGenerated && last != null && bizInds.Last() != points.First(a => a.PointType == CrossPointType.Return).BusinessIndex)
+                { } //test
             }
         }
     }

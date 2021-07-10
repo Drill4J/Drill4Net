@@ -14,9 +14,9 @@ namespace Drill4Net.Profiling.Tree
         public string PointUid { get; set; }
 
         /// <summary>
-        /// Some local Id of <see cref="CrossPoint"/> (may be a position of the instruction in IL code)
+        /// Position of the instruction in the original IL code
         /// </summary>
-        public string PointId { get; set; }
+        public int OrigInd { get; set; }
 
         /// <summary>
         /// End-to-end index of the method instruction, taking into account
@@ -42,24 +42,23 @@ namespace Drill4Net.Profiling.Tree
         /// <summary>
         /// Create the cross-cutting point for the injection code located in <see cref="InjectedMethod"/>
         /// </summary>
-        /// <param name="pointUid"></param>
-        /// <param name="pointId"></param>
-        /// <param name="businessIndex"></param>
-        /// <param name="pointType"></param>
-        public CrossPoint(string pointUid, string pointId, int businessIndex, CrossPointType pointType):
+        /// <param name="pointUid">Uid of point</param>
+        /// <param name="origInd">Index of instruction from whole method's body</param>
+        /// <param name="pointType">Type of point</param>
+        public CrossPoint(string pointUid, int origInd, int bizInd, CrossPointType pointType):
             base(null)
         {
             PointUid = pointUid;
-            PointId = pointId;
-            BusinessIndex = businessIndex;
+            OrigInd = origInd;
             PointType = pointType;
+            BusinessIndex = bizInd;
         }
 
         /************************************************************************/
 
         public override string ToString()
         {
-            return $"P: {PointUid}: {PointType}_{PointId}";
+            return $"P: {PointUid}: {PointType}_{OrigInd}";
         }
     }
 }

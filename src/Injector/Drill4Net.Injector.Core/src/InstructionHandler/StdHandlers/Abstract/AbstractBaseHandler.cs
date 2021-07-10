@@ -163,11 +163,11 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ctx">Method's context</param>
         /// <param name="pointType">Type of the cross-point</param>
-        /// <param name="byIndex">Index of instruction as local ID of cross-point</param>
+        /// <param name="origIndex">Index of instruction as local ID of cross-point</param>
         /// <returns></returns>
-        protected virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int byIndex)
+        protected virtual CrossPoint GetPoint(MethodContext ctx, CrossPointType pointType, int origIndex)
         {
-            return _probeHelper.GetOrCreatePoint(ctx, pointType, byIndex);
+            return _probeHelper.GetOrCreatePoint(ctx, pointType, origIndex);
         }
 
         /// <summary>
@@ -175,11 +175,11 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="ctx">Method's context</param>
         /// <param name="pointType">Type of the cross-point</param>
-        /// <param name="byIndex">Index of instruction as local ID of cross-point</param>
+        /// <param name="origIndex">Index of instruction as local ID of cross-point</param>
         /// <returns></returns>
-        protected virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int byIndex)
+        protected virtual string GetProbeData(MethodContext ctx, CrossPointType pointType, int origIndex)
         {
-            return GetProbeData(ctx, pointType, byIndex, out var _);
+            return GetProbeData(ctx, pointType, origIndex, out var _);
         }
         #endregion
 

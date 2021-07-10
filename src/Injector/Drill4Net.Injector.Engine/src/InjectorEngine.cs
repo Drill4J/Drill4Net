@@ -202,6 +202,7 @@ namespace Drill4Net.Injector.Engine
 
                 //processing
                 runCtx.Inject(asmCtx);
+
                 Log.Debug("Injected: [{File}]", runCtx.SourceFile);
 
                 //writing modified assembly and symbols to new file

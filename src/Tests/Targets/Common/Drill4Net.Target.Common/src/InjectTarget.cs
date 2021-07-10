@@ -167,6 +167,20 @@ namespace Drill4Net.Target.Common
             Elvis_Double_NotNull();
             Elvis_Double_Null();
             #endregion
+            #region Cycle
+            Cycle_For(-1);
+            Cycle_For(3);
+
+            Cycle_For_Break(3); //no break;
+            Cycle_For_Break(2); //with break;
+
+            Cycle_Foreach();
+
+            Cycle_While(-1);
+            Cycle_While(3);
+
+            Cycle_Do();
+            #endregion
             #region Linq
             Linq_Query(false);
             Linq_Query(true);
@@ -284,20 +298,6 @@ namespace Drill4Net.Target.Common
 
             Disposable_Finalizer(17);
             Disposable_Finalizer(18);
-            #endregion
-            #region Cycle
-            Cycle_For(-1);
-            Cycle_For(3);
-
-            Cycle_For_Break(3); //no break;
-            Cycle_For_Break(2); //with break;
-            
-            Cycle_Foreach();
-
-            Cycle_While(-1);
-            Cycle_While(3);
-
-            Cycle_Do();
             #endregion
             #region Misc
             Lock_Statement(false);

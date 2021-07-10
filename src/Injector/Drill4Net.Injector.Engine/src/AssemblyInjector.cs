@@ -57,6 +57,8 @@ namespace Drill4Net.Injector.Engine
             InjectProxyCalls(asmCtx, runCtx.Tree);
             InjectProxyType(runCtx, asmCtx);
 
+            AssemblyHelper.CalcCalleeBusinessIndexes(asmCtx);
+
             //prepare coverage metadata
             StructureHelper.CalcMethodBlocks(asmCtx);
         }
@@ -73,7 +75,7 @@ namespace Drill4Net.Injector.Engine
             //This should be done here, for an already gathered dependency tree
             var treeAsmMethods = tree.Filter(typeof(InjectedMethod), true)
                 .Cast<InjectedMethod>()
-                .Where(a => a.CalleeIndexes.Count > 0)
+                .Where(a => a.CalleeOrigIndexes.Count > 0)
                 .Where(s => s.AssemblyName == asmCtx.InjAssembly.Name);
 
             //by types
@@ -104,7 +106,7 @@ namespace Drill4Net.Injector.Engine
         {
             foreach (var caller in treeAsmMethods)
             {
-                foreach (var calleName in caller.CalleeIndexes.Keys)
+                foreach (var calleName in caller.CalleeOrigIndexes.Keys)
                 {
                     if (asmCtx.InjMethodByFullname.ContainsKey(calleName))
                     {
@@ -113,7 +115,7 @@ namespace Drill4Net.Injector.Engine
                         if (cgInfo == null) //null is normal (business method)
                             continue;
                         cgInfo.Caller = caller;
-                        cgInfo.CallerIndex = caller.CalleeIndexes[calleName];
+                        cgInfo.CallerIndex = caller.CalleeOrigIndexes[calleName];
                     }
                     else { } //hmmm... check, WTF...
                 }

@@ -31,7 +31,7 @@ namespace Drill4Net.Target.Tests.Common
             Type = type ?? throw new ArgumentNullException(nameof(type));
             Method = method ?? throw new ArgumentNullException(nameof(method));
             Point = point ?? throw new ArgumentNullException(nameof(point));
-            Probe = $"{point.PointType}_{point.PointId}";
+            Probe = $"{point.PointType}_{point.OrigInd}";
         }
 
         /****************************************************************************/
