@@ -250,26 +250,24 @@ namespace Drill4Net.Injector.Engine
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 //var methCtxs = TypeHelper.GetSortedMethodContextsByHierarchy(typeCtx.MethodContexts.Values);
+                var allMethCtxs = typeCtx.MethodContexts.Values;
                 var methCtxs = typeCtx.MethodContexts.Values.Where(a => !a.Method.IsCompilerGenerated);
                 foreach (var methodCtx in methCtxs)
                 {
-                    var parent = 0; var child = 0;
-                    CorrectBusinessIndexesForMethodCtx(methCtxs, methodCtx, ref parent, ref child);
+                    var delta = 0;
+                    CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta);
                 }
             }
         }
 
-        internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx, ref int parent, ref int child)
+        internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx, ref int delta)
         {
             var meth = methodCtx.Method;
             var points = meth.Points.OrderBy(a => a.OrigInd);
-            if(methodCtx.Method.IsCompilerGenerated && !methodCtx.Method.CalleeOrigIndexes.Any())
-                parent += methodCtx.BusinessInstructionList.Count;
-            //
             foreach (var point in points) //by ordered points
             {
                 var origInd = point.OrigInd;
-                var localBizInd = CalcBusinessIndex(methodCtx, origInd) + parent;
+                var localBizInd = CalcBusinessIndex(methodCtx, origInd) + delta;
                 if (point.PointType == CrossPointType.Call)
                 {
                     var instr = methodCtx.OrigInstructions[origInd];
@@ -279,13 +277,16 @@ namespace Drill4Net.Injector.Engine
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true)
                         {
-                            parent += localBizInd;
-                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref parent, ref child);
+                            delta += localBizInd;
+                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta);
                         }
                     }
                 }
                 point.BusinessIndex = localBizInd; // + child;
             }
+            //
+            if (methodCtx.Method.IsCompilerGenerated && !methodCtx.Method.CalleeOrigIndexes.Any())
+                delta += methodCtx.BusinessInstructionList.Count;
         }
 
         /// <summary>
