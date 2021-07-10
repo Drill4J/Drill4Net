@@ -169,6 +169,7 @@ namespace Drill4Net.Target.Common
             #endregion
             #region Cycle
             Cycle_For(-1);
+            Cycle_For(1);
             Cycle_For(3);
 
             Cycle_For_Break(3); //no break;

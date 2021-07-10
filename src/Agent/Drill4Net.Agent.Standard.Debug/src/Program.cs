@@ -155,6 +155,8 @@ namespace Drill4Net.Agent.Standard.Debug
                 WriteMessage("No input", ConsoleColor.Red);
                 return false;
             }
+            if (callData.Contains("await "))
+                callData = callData.Replace("await ", null);
             if (callData.EndsWith(";"))
                 callData = callData.Substring(0, callData.Length - 1);
             callData = callData.Replace("(", " ").Replace(")", null);
@@ -318,6 +320,12 @@ namespace Drill4Net.Agent.Standard.Debug
                 if (val != "null")
                 {
                     var type = types[i];
+                    var nullableToken = "System.Nullable`1<";
+                    if (type.StartsWith(nullableToken))
+                    {
+                        type = type.Replace(nullableToken, null);
+                        type = type.Substring(0, type.Length - 1);
+                    }
                     switch (type)
                     {
                         case "System.Boolean": obj = bool.Parse(val); break;
