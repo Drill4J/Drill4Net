@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
-using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
@@ -246,21 +245,46 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static void CalcCalleeBusinessIndexes(AssemblyContext asmCtx)
+        internal static void CorrectBusinessIndexes(AssemblyContext asmCtx)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
-                foreach (var methodCtx in typeCtx.MethodContexts.Values)
+                //var methCtxs = TypeHelper.GetSortedMethodContextsByHierarchy(typeCtx.MethodContexts.Values);
+                var methCtxs = typeCtx.MethodContexts.Values.Where(a => !a.Method.IsCompilerGenerated);
+                foreach (var methodCtx in methCtxs)
                 {
-                    var meth = methodCtx.Method;
-                    if (meth.IsCompilerGenerated)
+                    var parent = 0; var child = 0;
+                    CorrectBusinessIndexesForMethodCtx(methCtxs, methodCtx, ref parent, ref child);
+                }
+            }
+        }
+
+        internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx, ref int parent, ref int child)
+        {
+            var meth = methodCtx.Method;
+            var points = meth.Points.OrderBy(a => a.OrigInd);
+            if(methodCtx.Method.IsCompilerGenerated && !methodCtx.Method.CalleeOrigIndexes.Any())
+                parent += methodCtx.BusinessInstructionList.Count;
+            //
+            foreach (var point in points) //by ordered points
+            {
+                var origInd = point.OrigInd;
+                var localBizInd = CalcBusinessIndex(methodCtx, origInd) + parent;
+                if (point.PointType == CrossPointType.Call)
+                {
+                    var instr = methodCtx.OrigInstructions[origInd];
+                    var callee = instr.Operand.ToString();
+                    if (meth.CalleeOrigIndexes.ContainsKey(callee))
                     {
-                        foreach (var point in meth.Points)
+                        var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
+                        if (calleeCtx?.Method.IsCompilerGenerated == true)
                         {
-                            point.BusinessIndex = CalcBusinessIndex(methodCtx, point.OrigInd);
+                            parent += localBizInd;
+                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref parent, ref child);
                         }
                     }
                 }
+                point.BusinessIndex = localBizInd; // + child;
             }
         }
 

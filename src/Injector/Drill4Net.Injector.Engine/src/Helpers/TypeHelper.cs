@@ -248,5 +248,50 @@ namespace Drill4Net.Injector.Engine
                 return AccessType.Public;
             return AccessType.Internal;
         }
+
+        //public static List<MethodContext> GetSortedMethodContextsByHierarchy(IEnumerable<MethodContext> unordered)
+        //{
+        //    var result = unordered.OrderBy(n => n, new HierarchyMethodContextComparer()).ToList();
+        //    return result;
+        //}
     }
+
+    //public class HierarchyMethodContextComparer : IComparer<MethodContext>
+    //{
+    //    public int Compare(MethodContext xc, MethodContext yc)
+    //    {
+    //        var x = xc.Method;
+    //        var y = yc.Method;
+    //        if (x == null || y == null)
+    //            return 0;
+    //        if (!x.IsCompilerGenerated && !y.IsCompilerGenerated)
+    //        {
+    //            return CompareFullName(x, y);
+    //        }
+    //        if (x.IsCompilerGenerated && y.IsCompilerGenerated)
+    //        {
+    //            var xCallY = x.FullName == y.CGInfo.Caller?.FullName;
+    //            if (xCallY)
+    //                return -1;
+    //            var yCallX = y.FullName == x.CGInfo.Caller?.FullName;
+    //            if (yCallX)
+    //                return 1;
+    //            //No one calls each other
+    //            return CompareFullName(x, y);
+    //        }
+    //        else if (x.IsCompilerGenerated)
+    //        {
+    //            return 1;
+    //        }
+    //        else
+    //            return -1;
+    //    }
+
+    //    private int CompareFullName(InjectedMethod x, InjectedMethod y)
+    //    {
+    //        var xname = x.FullName.Split(' ')[1];
+    //        var yname = y.FullName.Split(' ')[1];
+    //        return string.Compare(xname, yname, true);
+    //    }
+    //}
 }
