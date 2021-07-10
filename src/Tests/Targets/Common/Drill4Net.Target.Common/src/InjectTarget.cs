@@ -145,8 +145,9 @@ namespace Drill4Net.Target.Common
             Switch_Tuple("English", "evening");
             Switch_Tuple("German", "morning");
             Switch_Tuple("German", "evening");
+            Switch_Tuple("Unknown", "dinner");
 #endif
-//#if NET5_0
+            //#if NET5_0
             Switch_Relational(-5);
             Switch_Relational(5);
             Switch_Relational(10);
@@ -681,7 +682,7 @@ namespace Drill4Net.Target.Common
                 ("English", "evening") => "Good evening",
                 ("German", "morning") => "Guten Morgen",
                 ("German", "evening") => "Guten Abend",
-                _ => "Доброго времени суток!"
+                _ => "Default!"
             };
             Console.WriteLine($"{nameof(Switch_Tuple)}: {s}");
             return s;
