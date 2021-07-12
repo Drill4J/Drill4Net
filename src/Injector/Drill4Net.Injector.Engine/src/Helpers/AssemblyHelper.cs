@@ -274,7 +274,7 @@ namespace Drill4Net.Injector.Engine
                 {
                     var callee = meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
                     if (callee == null)
-                    { } //bad...
+                    { } //bad... remove the point from data?
                     if (callee != null && meth.CalleeOrigIndexes.ContainsKey(callee)) //meth call the callee
                     {
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);

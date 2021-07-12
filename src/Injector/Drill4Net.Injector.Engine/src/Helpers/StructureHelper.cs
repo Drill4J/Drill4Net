@@ -40,10 +40,13 @@ namespace Drill4Net.Injector.Engine
                         points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
                     structure.PointToBlockEnds.Add(points2[0].PointUid, ind);
                 }
-                //
+
+                //test
                 var last = points.FirstOrDefault(a => a.PointType == CrossPointType.Return); //for CG methods doesn't exists
                 if (!method.IsCompilerGenerated && last != null && bizInds.Last() != last.BusinessIndex)
-                { } //test
+                { }
+                if (last != null && last.BusinessIndex != method.BusinessSize-1)
+                { }
             }
         }
     }
