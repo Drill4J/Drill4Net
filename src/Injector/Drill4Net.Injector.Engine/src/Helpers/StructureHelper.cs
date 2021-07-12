@@ -41,8 +41,8 @@ namespace Drill4Net.Injector.Engine
                     structure.PointToBlockEnds.Add(points2[0].PointUid, ind);
                 }
                 //
-                var last = points.FirstOrDefault(a => a.PointType == CrossPointType.Return); //for CG methods is empty
-                if (!method.IsCompilerGenerated && last != null && bizInds.Last() != points.First(a => a.PointType == CrossPointType.Return).BusinessIndex)
+                var last = points.FirstOrDefault(a => a.PointType == CrossPointType.Return); //for CG methods doesn't exists
+                if (!method.IsCompilerGenerated && last != null && bizInds.Last() != last.BusinessIndex)
                 { } //test
             }
         }

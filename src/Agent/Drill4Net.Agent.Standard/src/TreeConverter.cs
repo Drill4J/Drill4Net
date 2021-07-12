@@ -127,9 +127,9 @@ namespace Drill4Net.Agent.Standard
                 //own data
                 BindMethod(reg, execData, meth.Structure, ref ind);
 
-                //CG callee's data
-                var cgCallees = meth.CalleeOrigIndexes;
-                foreach (var callee in cgCallees.Keys)
+                //callee's data
+                var callees = meth.CalleeOrigIndexes;
+                foreach (var callee in callees.Keys)
                 {
                     //here we need only compiler generated methods
                     if (!cgMethods.ContainsKey(callee))

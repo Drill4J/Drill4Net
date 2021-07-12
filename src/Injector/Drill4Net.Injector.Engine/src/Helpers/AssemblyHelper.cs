@@ -251,8 +251,8 @@ namespace Drill4Net.Injector.Engine
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 var allMethCtxs = typeCtx.MethodContexts.Values;
-                var methCtxs = typeCtx.MethodContexts.Values.Where(a => !a.Method.IsCompilerGenerated);
-                foreach (var methodCtx in methCtxs)
+                var bizMethCtxs = typeCtx.MethodContexts.Values.Where(a => !a.Method.IsCompilerGenerated);
+                foreach (var methodCtx in bizMethCtxs)
                 {
                     var delta = 0;
                     CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta);
@@ -268,18 +268,19 @@ namespace Drill4Net.Injector.Engine
             foreach (var point in points) //by ordered points
             {
                 var origInd = point.OrigInd;
-                var bizInd = CalcBusinessIndex(methodCtx, origInd) + delta; //biz index for the calling point itself don't include the body of its callee
+                var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); // CalcBusinessIndex(methodCtx, origInd); //only for the local code body
+                var bizInd = localBizInd + delta; //biz index for the calling point itself don't include the body of its callee
                 if (point.PointType == CrossPointType.Call)
                 {
                     var instr = methodCtx.OrigInstructions[origInd];
                     var callee = instr.Operand.ToString();
-                    if (meth.CalleeOrigIndexes.ContainsKey(callee)) //we call this method
+                    if (meth.CalleeOrigIndexes.ContainsKey(callee)) //this method call the callee
                     {
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
-                        if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this method to biz index
+                        if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
                         {
                             noCgCalls = false;
-                            delta += origInd; //new shift for the callee taking into account the index of its call instruction
+                            delta += localBizInd; //new shift for the callee taking into account the index of its call instruction
                             CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta); //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
                         }
                     }
@@ -309,16 +310,16 @@ namespace Drill4Net.Injector.Engine
             while (true)
             {
                 var caller = method.CGInfo?.Caller;
-                if (caller == null)
+                if (caller == null) //we're locating in the business method
                     break;
-                var indexes = caller.CalleeOrigIndexes;
+                var callInds = caller.CalleeOrigIndexes;
                 var curName = method.FullName;
-                if (!indexes.ContainsKey(curName))
+                if (!callInds.ContainsKey(curName))
                     break;
-                var origCalleeInd = indexes[curName];
+                var origCalleeInd = callInds[curName];
                 var calleeCtx = GetMethodContext(ctx.AssemblyCtx, caller.FullName);
-                var bizCalleeInd = calleeCtx == null ? 0 : calleeCtx.GetLocalBusinessIndex(origCalleeInd);
-                if (bizCalleeInd < 0)
+                var bizCalleeInd = (calleeCtx?.GetLocalBusinessIndex(origCalleeInd)) ?? 0;
+                if (calleeCtx == null)
                 { } //test
                 ind += bizCalleeInd;
                 method = caller;
