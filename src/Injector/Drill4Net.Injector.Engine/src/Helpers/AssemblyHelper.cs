@@ -245,11 +245,11 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
+        #region CalcBusinessIndex
         internal static void CorrectBusinessIndexes(AssemblyContext asmCtx)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
-                //var methCtxs = TypeHelper.GetSortedMethodContextsByHierarchy(typeCtx.MethodContexts.Values);
                 var allMethCtxs = typeCtx.MethodContexts.Values;
                 var methCtxs = typeCtx.MethodContexts.Values.Where(a => !a.Method.IsCompilerGenerated);
                 foreach (var methodCtx in methCtxs)
@@ -264,28 +264,30 @@ namespace Drill4Net.Injector.Engine
         {
             var meth = methodCtx.Method;
             var points = meth.Points.OrderBy(a => a.OrigInd);
+            var noCgCalls = true;
             foreach (var point in points) //by ordered points
             {
                 var origInd = point.OrigInd;
-                var localBizInd = CalcBusinessIndex(methodCtx, origInd) + delta;
+                var bizInd = CalcBusinessIndex(methodCtx, origInd) + delta; //biz index for the calling point itself don't include the body of its callee
                 if (point.PointType == CrossPointType.Call)
                 {
                     var instr = methodCtx.OrigInstructions[origInd];
                     var callee = instr.Operand.ToString();
-                    if (meth.CalleeOrigIndexes.ContainsKey(callee))
+                    if (meth.CalleeOrigIndexes.ContainsKey(callee)) //we call this method
                     {
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
-                        if (calleeCtx?.Method.IsCompilerGenerated == true)
+                        if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this method to biz index
                         {
-                            delta += localBizInd;
-                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta);
+                            noCgCalls = false;
+                            delta += origInd; //new shift for the callee taking into account the index of its call instruction
+                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta); //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
                         }
                     }
                 }
-                point.BusinessIndex = localBizInd; // + child;
+                point.BusinessIndex = bizInd;
             }
             //
-            if (methodCtx.Method.IsCompilerGenerated && !methodCtx.Method.CalleeOrigIndexes.Any())
+            if (meth.IsCompilerGenerated && noCgCalls) //leaf on the Tree (last CG method in the chain of the calls)
                 delta += methodCtx.BusinessInstructionList.Count;
         }
 
@@ -323,17 +325,18 @@ namespace Drill4Net.Injector.Engine
             }
             return ind;
         }
+        #endregion
 
-        internal static MethodContext GetMethodContext(AssemblyContext asmCtx, string calleeName)
+        internal static MethodContext GetMethodContext(AssemblyContext asmCtx, string methodName)
         {
-            if (!asmCtx.InjMethodByFullname.ContainsKey(calleeName))
+            if (!asmCtx.InjMethodByFullname.ContainsKey(methodName))
                 return null;
-            var callee = asmCtx.InjMethodByFullname[calleeName];
+            var callee = asmCtx.InjMethodByFullname[methodName];
             var calleeType = $"{callee.Signature.Namespace}.{callee.Signature.Type}";
             if (!asmCtx.TypeContexts.ContainsKey(calleeType))
                 return null;
             var calleeTypeCtx = asmCtx.TypeContexts[calleeType];
-            var calleeCtx = calleeTypeCtx.MethodContexts[calleeName];
+            var calleeCtx = calleeTypeCtx.MethodContexts[methodName];
             return calleeCtx;
         }
     }

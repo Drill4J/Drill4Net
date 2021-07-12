@@ -166,18 +166,8 @@ namespace Drill4Net.Agent.Standard
         {
             var injMethods = injType?.GetMethods()?
                 .Where(a => !a.IsCompilerGenerated && a.Structure.PointToBlockEnds.Any())
-                .OrderBy(a => a, new MethodContextComparer());
+                .OrderBy(a => a, new MethodNameComparer());
             return injMethods;
-        }
-    }
-
-    public class MethodContextComparer : IComparer<InjectedMethod>
-    {
-        public int Compare(InjectedMethod x, InjectedMethod y)
-        {
-            var xname = x.FullName.Split(' ')[1];
-            var yname = y.FullName.Split(' ')[1];
-            return string.Compare(xname, yname, true);
         }
     }
 }
