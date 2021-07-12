@@ -97,7 +97,48 @@ namespace Drill4Net.Injector.Engine
                     }
                 }
                 if (!treeFunc.CalleeOrigIndexes.ContainsKey(extFullname) && !_typeChecker.IsSystemTypeByMethod(extFullname))
-                    treeFunc.CalleeOrigIndexes.Add(extFullname, ctx.OrigIndex);
+                {
+                    //correcting index due logically paired instruction
+                    var callInd = ctx.OrigIndex;
+                    var origIntrs = ctx.OrigInstructions;
+                    if (code == Code.Ldftn || code == Code.Ldfld) //Lambda, LINQ...
+                    {
+                        if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Call)
+                        {
+                            callInd += 2;
+                        }
+                        else
+                        {
+                            for (var i = callInd + 1; i < origIntrs.Count - 1; i++)
+                            {
+                                var curInstr = ctx.OrigInstructions[i];
+                                if (curInstr.OpCode.Code == Code.Callvirt)
+                                {
+                                    var oper = curInstr.Operand?.ToString();
+                                    if (oper != null)
+                                    {
+                                        if (oper.Contains("::Invoke(!0") || oper.EndsWith("::Start()") || oper.Contains(".Task::Run("))
+                                        {
+                                            callInd = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (code == Code.Ldsfld || code == Code.Ldsflda)
+                    {
+                        var curInstr = ctx.OrigInstructions[callInd];
+                        var oper = curInstr.Operand?.ToString();
+                        //ExpandoObject(), DynamicObject()
+                        if (origIntrs[callInd + 3].OpCode.Code == Code.Callvirt && oper.Contains("::Invoke(!0"))
+                        {
+                            callInd += 3;
+                        }
+                    }
+                    treeFunc.CalleeOrigIndexes.Add(extFullname, callInd);
+                }
             }
             #endregion
 

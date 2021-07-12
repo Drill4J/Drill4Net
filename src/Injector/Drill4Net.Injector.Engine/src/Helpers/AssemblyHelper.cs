@@ -269,12 +269,13 @@ namespace Drill4Net.Injector.Engine
             {
                 var origInd = point.OrigInd;
                 var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); // CalcBusinessIndex(methodCtx, origInd); //only for the local code body
-                var bizInd = localBizInd + delta; //biz index for the calling point itself don't include the body of its callee
+                var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
                 if (point.PointType == CrossPointType.Call)
                 {
-                    var instr = methodCtx.OrigInstructions[origInd];
-                    var callee = instr.Operand.ToString();
-                    if (meth.CalleeOrigIndexes.ContainsKey(callee)) //this method call the callee
+                    var callee = meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
+                    if (callee == null)
+                    { } //bad...
+                    if (callee != null && meth.CalleeOrigIndexes.ContainsKey(callee)) //meth call the callee
                     {
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
@@ -282,6 +283,7 @@ namespace Drill4Net.Injector.Engine
                             noCgCalls = false;
                             delta += localBizInd; //new shift for the callee taking into account the index of its call instruction
                             CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta); //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
+                            delta -= localBizInd; //correct for local using
                         }
                     }
                 }

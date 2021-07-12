@@ -221,8 +221,8 @@ namespace Drill4Net.Target.Common
             Anonymous_Type(false);
             Anonymous_Type(true);
 
-            Expression(5);
-            Expression(10);
+            //Expression(5);
+            //Expression(10);
             #endregion
             #region Try/cath/finally
             Try_Catch(false);
@@ -907,7 +907,7 @@ namespace Drill4Net.Target.Common
         public void ExpandoObject(bool cond)
         {
             dynamic exp = new ExpandoObject();
-            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
+            exp.Act = (Func<bool, string>)((a) => a ? "yes" : "false");
             exp.Act(cond);
             Console.WriteLine($"{nameof(ExpandoObject)}: {cond}");
         }
@@ -915,7 +915,7 @@ namespace Drill4Net.Target.Common
         public void DynamicObject(bool cond)
         {
             dynamic exp = new DynamicDictionary();
-            exp.Act = (Func<bool, string>)((a) => { return a ? "yes" : "false"; });
+            exp.Act = (Func<bool, string>)((a) => a ? "yes" : "false");
             exp.Act(cond);
             Console.WriteLine($"{nameof(DynamicObject)}: {cond}");
         }
@@ -1398,14 +1398,14 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(Extension)}: {cond.ToWord()}");
         }
 
-        //TODO: not working yet!
-        public void Expression(int x)
-        {
-            System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
-            var dlg = e.Compile();
-            var d = dlg(x);
-            Console.WriteLine($"{nameof(Expression)}: {d}");
-        }
+        ////TODO: not working yet!
+        //public void Expression(int x)
+        //{
+        //    System.Linq.Expressions.Expression<Func<int, int>> e = x => x < 10 ? 0 : x * x;
+        //    var dlg = e.Compile();
+        //    var d = dlg(x);
+        //    Console.WriteLine($"{nameof(Expression)}: {d}");
+        //}
 
         public void Enumerator_Implementation()
         {
