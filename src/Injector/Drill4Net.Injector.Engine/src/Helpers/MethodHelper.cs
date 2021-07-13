@@ -96,21 +96,22 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                 }
-                if (!treeFunc.CalleeOrigIndexes.ContainsKey(extFullname) && !_typeChecker.IsSystemTypeByMethod(extFullname))
+                if (!treeFunc.CalleeOrigIndexes.ContainsKey(extFullname) /*&& !_typeChecker.IsSystemTypeByMethod(extFullname)*/)
                 {
                     //correcting index due logically paired instruction
                     var callInd = ctx.OrigIndex;
                     var origIntrs = ctx.OrigInstructions;
                     if (code is Code.Ldftn or Code.Ldfld) //Lambda, LINQ...
                     {
-                        if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Call)
+                        var t4 = (ctx.OrigInstructions[callInd + 4].Operand as GenericInstanceMethod)?.DeclaringType?.FullName;
+                        if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code.ToString().StartsWith("Call"))
                         {
                             callInd += 2;
                         }
                         else
                         if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Dup &&
                             origIntrs[callInd + 3].OpCode.Code == Code.Stsfld && origIntrs[callInd + 4].OpCode.Code == Code.Call
-                            && (ctx.OrigInstructions[callInd + 4].Operand as GenericInstanceMethod)?.DeclaringType.FullName == "System.Linq.Enumerable")
+                            && (t4 == "System.Linq.Enumerable" || t4?.StartsWith("System.Linq.Parallel") == true))
                         {
                             callInd += 4;
                         }
