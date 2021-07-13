@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using System;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -255,12 +256,31 @@ namespace Drill4Net.Injector.Engine
                 foreach (var methodCtx in bizMethCtxs)
                 {
                     var delta = 0;
-                    CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta);
+                    List<int> end2EndBizIndexes = new();
+                    List<string> end2EndPointUids = new();
+                    CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta, ref end2EndBizIndexes, ref end2EndPointUids);
+                    var method = methodCtx.Method;
+                    method.End2EndBusinessIndexes = end2EndBizIndexes;
+                    method.End2EndPointUids = end2EndPointUids;
+
+                    // tests
+                    var inds = method.End2EndBusinessIndexes;
+                    var cnt = inds.Count;
+                    var retInd = inds[cnt - 1];
+                    if (method.BusinessSize != retInd + 1)
+                    { }
+                    //
+                    for (var i = 0; i < cnt - 1; i++)
+                    {
+                        if (inds[i] > inds[i + 1]) //equal can be (e.g. cycles)
+                        { }
+                    }
                 }
             }
         }
 
-        internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx, ref int delta)
+        internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx,
+            ref int delta, ref List<int> end2EndBusinessIndexes, ref List<string> end2EndPointUids)
         {
             var meth = methodCtx.Method;
             var points = meth.Points.OrderBy(a => a.OrigInd);
@@ -270,64 +290,71 @@ namespace Drill4Net.Injector.Engine
                 var origInd = point.OrigInd;
                 var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); // CalcBusinessIndex(methodCtx, origInd); //only for the local code body
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
+
+                end2EndBusinessIndexes.Add(bizInd);
+                end2EndPointUids.Add(point.Uid.ToString());
+                point.BusinessIndex = bizInd;
+
                 if (point.PointType == CrossPointType.Call)
                 {
                     var callee = meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
                     if (callee == null)
                     { } //bad... remove the point from data?
-                    if (callee != null && meth.CalleeOrigIndexes.ContainsKey(callee)) //meth call the callee
+                    if (callee != null) //meth call the callee
                     {
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
                         {
                             noCgCalls = false;
                             delta += localBizInd; //new shift for the callee taking into account the index of its call instruction
-                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta); //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
+                            //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
+                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes, ref end2EndPointUids);
                             delta -= localBizInd; //correct for local using
                         }
+                        if(calleeCtx == null)
+                        { }
                     }
                 }
-                point.BusinessIndex = bizInd;
             }
             //
             if (meth.IsCompilerGenerated && noCgCalls) //leaf on the Tree (last CG method in the chain of the calls)
-                delta += methodCtx.BusinessInstructionList.Count;
+                delta += methodCtx.BusinessInstructionList.Count - 1;
         }
 
-        /// <summary>
-        /// Calculates the index of the cross-point's instruction in the ideal business code 
-        /// (collected from the compiler generated parts of IL code) by local index of the instruction
-        /// in these compiler generated methods and classes.
-        /// </summary>
-        /// <param name="ctx">The target method's context</param>
-        /// <param name="origInd">Local index of the cross-point for original IL code.</param>
-        /// <returns></returns>
-        internal static int CalcBusinessIndex(MethodContext ctx, int origInd)
-        {
-            var method = ctx.Method;
-            var ind = ctx.GetLocalBusinessIndex(origInd);
+        ///// <summary>
+        ///// Calculates the index of the cross-point's instruction in the ideal business code 
+        ///// (collected from the compiler generated parts of IL code) by local index of the instruction
+        ///// in these compiler generated methods and classes.
+        ///// </summary>
+        ///// <param name="ctx">The target method's context</param>
+        ///// <param name="origInd">Local index of the cross-point for original IL code.</param>
+        ///// <returns></returns>
+        //internal static int CalcBusinessIndex(MethodContext ctx, int origInd)
+        //{
+        //    var method = ctx.Method;
+        //    var ind = ctx.GetLocalBusinessIndex(origInd);
 
-            //go up to the business method and get the "business" (logical) index
-            //of instruction taking into account the shift of the callee calls
-            while (true)
-            {
-                var caller = method.CGInfo?.Caller;
-                if (caller == null) //we're locating in the business method
-                    break;
-                var callInds = caller.CalleeOrigIndexes;
-                var curName = method.FullName;
-                if (!callInds.ContainsKey(curName))
-                    break;
-                var origCalleeInd = callInds[curName];
-                var calleeCtx = GetMethodContext(ctx.AssemblyCtx, caller.FullName);
-                var bizCalleeInd = (calleeCtx?.GetLocalBusinessIndex(origCalleeInd)) ?? 0;
-                if (calleeCtx == null)
-                { } //test
-                ind += bizCalleeInd;
-                method = caller;
-            }
-            return ind;
-        }
+        //    //go up to the business method and get the "business" (logical) index
+        //    //of instruction taking into account the shift of the callee calls
+        //    while (true)
+        //    {
+        //        var caller = method.CGInfo?.Caller;
+        //        if (caller == null) //we're locating in the business method
+        //            break;
+        //        var callInds = caller.CalleeOrigIndexes;
+        //        var curName = method.FullName;
+        //        if (!callInds.ContainsKey(curName))
+        //            break;
+        //        var origCalleeInd = callInds[curName];
+        //        var calleeCtx = GetMethodContext(ctx.AssemblyCtx, caller.FullName);
+        //        var bizCalleeInd = (calleeCtx?.GetLocalBusinessIndex(origCalleeInd)) ?? 0;
+        //        if (calleeCtx == null)
+        //        { } //test
+        //        ind += bizCalleeInd;
+        //        method = caller;
+        //    }
+        //    return ind;
+        //}
         #endregion
 
         internal static MethodContext GetMethodContext(AssemblyContext asmCtx, string methodName)

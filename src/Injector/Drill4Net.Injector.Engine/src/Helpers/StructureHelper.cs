@@ -47,6 +47,10 @@ namespace Drill4Net.Injector.Engine
                 { }
                 if (last != null && last.BusinessIndex != method.BusinessSize-1)
                 { }
+                //
+                //var callPoints = points.Where(a => a.PointType == CrossPointType.Call).ToList();
+                //var a = asmCtx.InjMethodByFullname.Join(method.CalleeOrigIndexes, a => a.Key, b => b.Key, (a , b) => a.Value).Where(a => a.)
+                //if (callPoints.Count != method.CalleeOrigIndexes.)
             }
         }
     }

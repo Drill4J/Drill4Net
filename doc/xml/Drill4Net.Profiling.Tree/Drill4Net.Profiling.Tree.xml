@@ -142,6 +142,18 @@
             Indexes of the IL code's original instructions for the current method's callees
             </summary>
         </member>
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndBusinessIndexes">
+            <summary>
+            End-to-end business indexes of the IL code's instructions for the this method and its callees in one logical array
+            corresponding <see cref="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndPointUids"/>
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndPointUids">
+            <summary>
+            End-to-end uids of injected cross-points for the this method and its callees in one logical array 
+            corresponding <see cref="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndBusinessIndexes"/>
+            </summary>
+        </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.BusinessType">
             <summary>
             Name of the business type (for the compiler generated methods)

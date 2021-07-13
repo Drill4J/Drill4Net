@@ -101,7 +101,7 @@ namespace Drill4Net.Injector.Engine
                     //correcting index due logically paired instruction
                     var callInd = ctx.OrigIndex;
                     var origIntrs = ctx.OrigInstructions;
-                    if (code == Code.Ldftn || code == Code.Ldfld) //Lambda, LINQ...
+                    if (code is Code.Ldftn or Code.Ldfld) //Lambda, LINQ...
                     {
                         if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Call)
                         {

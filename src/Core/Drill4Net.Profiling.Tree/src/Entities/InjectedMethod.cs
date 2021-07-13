@@ -39,6 +39,18 @@ namespace Drill4Net.Profiling.Tree
         public Dictionary<string, int> CalleeOrigIndexes { get; set; }
 
         /// <summary>
+        /// End-to-end business indexes of the IL code's instructions for the this method and its callees in one logical array
+        /// corresponding <see cref="End2EndPointUids"/>
+        /// </summary>
+        public List<int> End2EndBusinessIndexes { get; set; }
+
+        /// <summary>
+        /// End-to-end uids of injected cross-points for the this method and its callees in one logical array 
+        /// corresponding <see cref="End2EndBusinessIndexes"/>
+        /// </summary>
+        public List<string> End2EndPointUids { get; set; }
+
+        /// <summary>
         /// Name of the business type (for the compiler generated methods)
         /// </summary>
         public string BusinessType { get; set; }

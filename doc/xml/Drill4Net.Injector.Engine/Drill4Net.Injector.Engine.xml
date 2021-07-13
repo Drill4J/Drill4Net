@@ -71,16 +71,6 @@
             <param name="asmCtx">Assembly's context</param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Injector.Engine.AssemblyHelper.CalcBusinessIndex(Drill4Net.Injector.Core.MethodContext,System.Int32)">
-            <summary>
-            Calculates the index of the cross-point's instruction in the ideal business code 
-            (collected from the compiler generated parts of IL code) by local index of the instruction
-            in these compiler generated methods and classes.
-            </summary>
-            <param name="ctx">The target method's context</param>
-            <param name="origInd">Local index of the cross-point for original IL code.</param>
-            <returns></returns>
-        </member>
         <member name="T:Drill4Net.Injector.Engine.ContextHelper">
             <summary>
             Helper for working with some contexts

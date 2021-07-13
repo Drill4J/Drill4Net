@@ -36,11 +36,14 @@ namespace Drill4Net.Injector.Core
                 if (code is not Code.Call and not Code.Calli and not Code.Callvirt)
                     return false;
                 var operand = (MethodReference)instr.Operand;
+                var operType = operand.DeclaringType;
                 var callFullname = operand.FullName;
                 if (callFullname.Contains(ctx.TypeCtx.AssemblyCtx.ProxyNamespace)) //own injection
                     return false;
                 if (callFullname.Contains("AsyncTaskMethodBuilder::Start")) //Create
                     return true; //because it starts the Async State Machine with its own points
+                if (operType.FullName == "System.Linq.Enumerable")
+                    return true; //because can be user logic in LINQ expression
                 if (callFullname.Contains("get__") || callFullname.Contains("set__")) //ASP.NET/Blazor methods - not needed
                     return false;
                 var invoke = code is Code.Callvirt && callFullname.Contains("::Invoke(");

@@ -106,7 +106,9 @@ namespace Drill4Net.Agent.Standard
                 var ind = 0; //end2end for the current type
                 var execData = new ExecClassData(testName, type.FullName);
                 BindMethods(reg, execData, bizMethods, ref ind, cgMethods);
-                execData.InitProbes(ind); //not needed +1
+
+                var cnt = bizMethods.Sum(a => a.BusinessSize);
+                execData.InitProbes(cnt);
             }
             return reg;
         }
