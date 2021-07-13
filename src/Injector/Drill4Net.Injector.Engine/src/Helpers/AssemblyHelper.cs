@@ -306,7 +306,7 @@ namespace Drill4Net.Injector.Engine
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
                         {
                             noCgCalls = false;
-                            delta += localBizInd; //new shift for the callee taking into account the index of its call instruction
+                            delta = bizInd; //new shift for the callee taking into account the index of its call instruction
                             //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
                             CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes, ref end2EndPointUids);
                             delta -= localBizInd; //correct for local using
@@ -317,7 +317,7 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             //
-            if (meth.IsCompilerGenerated && noCgCalls) //leaf on the Tree (last CG method in the chain of the calls)
+            //if (meth.IsCompilerGenerated && noCgCalls) //leaf on the Tree (last CG method in the chain of the calls)
                 delta += methodCtx.BusinessInstructionList.Count - 1;
         }
 

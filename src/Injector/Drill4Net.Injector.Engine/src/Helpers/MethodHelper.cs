@@ -108,6 +108,13 @@ namespace Drill4Net.Injector.Engine
                             callInd += 2;
                         }
                         else
+                        if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Dup &&
+                            origIntrs[callInd + 3].OpCode.Code == Code.Stsfld && origIntrs[callInd + 4].OpCode.Code == Code.Call
+                            && (ctx.OrigInstructions[callInd + 4].Operand as GenericInstanceMethod)?.DeclaringType.FullName == "System.Linq.Enumerable")
+                        {
+                            callInd += 4;
+                        }
+                        else
                         {
                             for (var i = callInd + 1; i < origIntrs.Count - 1; i++)
                             {
