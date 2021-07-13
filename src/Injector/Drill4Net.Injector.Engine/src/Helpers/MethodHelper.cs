@@ -117,7 +117,8 @@ namespace Drill4Net.Injector.Engine
                         }
                         else
                         {
-                            for (var i = callInd + 1; i < origIntrs.Count - 1; i++)
+                            var to = Math.Min(origIntrs.Count - 1, callInd + 16);
+                            for (var i = callInd + 1; i < to; i++)
                             {
                                 var curInstr = ctx.OrigInstructions[i];
                                 if (curInstr.OpCode.Code == Code.Callvirt)
@@ -125,7 +126,8 @@ namespace Drill4Net.Injector.Engine
                                     var oper = curInstr.Operand?.ToString();
                                     if (oper != null)
                                     {
-                                        if (oper.Contains("::Invoke(!0") || oper.EndsWith("::Start()") || oper.Contains(".Task::Run("))
+                                        if (oper.Contains("::Invoke(") || oper.EndsWith("::Start()") || oper.Contains(".Task::Run(") ||
+                                            oper.Contains("::add_") || oper.EndsWith("::remove_")) //binding events
                                         {
                                             callInd = i;
                                             break;

@@ -284,7 +284,6 @@ namespace Drill4Net.Injector.Engine
         {
             var meth = methodCtx.Method;
             var points = meth.Points.OrderBy(a => a.OrigInd);
-            var noCgCalls = true;
             foreach (var point in points) //by ordered points
             {
                 var origInd = point.OrigInd;
@@ -305,7 +304,6 @@ namespace Drill4Net.Injector.Engine
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
                         {
-                            noCgCalls = false;
                             delta = bizInd; //new shift for the callee taking into account the index of its call instruction
                             //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
                             CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes, ref end2EndPointUids);
@@ -317,8 +315,7 @@ namespace Drill4Net.Injector.Engine
                 }
             }
             //
-            //if (meth.IsCompilerGenerated && noCgCalls) //leaf on the Tree (last CG method in the chain of the calls)
-                delta += methodCtx.BusinessInstructionList.Count - 1;
+           delta += methodCtx.BusinessInstructionList.Count - 1;
         }
 
         ///// <summary>

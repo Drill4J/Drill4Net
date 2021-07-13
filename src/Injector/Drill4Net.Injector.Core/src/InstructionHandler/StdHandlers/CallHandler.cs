@@ -50,6 +50,8 @@ namespace Drill4Net.Injector.Core
                     return true;
                 if (operType.FullName == "System.Linq.Enumerable" || operType.FullName.StartsWith("System.Linq.Parallel"))
                     return true; //because can be user logic in LINQ expression
+                if (code is Code.Callvirt && callFullname.EndsWith("Threading.Thread::Start()"))
+                    return true;
                 if (callFullname.Contains("get__") || callFullname.Contains("set__")) //ASP.NET/Blazor methods - not needed
                     return false;
                 var invoke = code is Code.Callvirt && callFullname.Contains("::Invoke(");
