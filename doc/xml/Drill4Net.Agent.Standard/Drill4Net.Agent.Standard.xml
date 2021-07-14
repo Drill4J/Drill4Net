@@ -218,7 +218,7 @@
             <param name="injTypes"></param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethods(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedMethod},System.Int32@,System.Collections.Generic.Dictionary{System.String,Drill4Net.Profiling.Tree.InjectedMethod})">
+        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethods(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,System.Collections.Generic.IEnumerable{Drill4Net.Profiling.Tree.InjectedMethod})">
             <summary>
             Binds the methods to the class by start and end indexes to the class coverage's array
             </summary>
@@ -227,15 +227,6 @@
             <param name="methods"></param>
             <param name="ind"></param>
             <param name="cgMethods"></param>
-        </member>
-        <member name="M:Drill4Net.Agent.Standard.TreeConverter.BindMethod(Drill4Net.Agent.Standard.CoverageRegistrator,Drill4Net.Agent.Abstract.Transfer.ExecClassData,Drill4Net.Profiling.Tree.MethodStructure,System.Int32@)">
-            <summary>
-            Binds the method to the class by start and end indexes to the class coverage's array
-            </summary>
-            <param name="reg"></param>
-            <param name="execData"></param>
-            <param name="methStruct"></param>
-            <param name="ind"></param>
         </member>
         <member name="T:ThisAssembly">
             <summary>Provides access to the current assembly information.</summary>
@@ -256,16 +247,16 @@
             <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: bf83cb3</summary>
+            <summary>Commit: c4422db</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: bf83cb3b559847b868f6f9d9b96dbe430a78dfe2</summary>
+            <summary>Sha: c4422dbcfa2ca681336be02c56b5f105712d8f92</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-07-13T15:49:23+03:00</summary>
+            <summary>Commit date: 2021-07-13T17:44:39+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 556</summary>
+            <summary>Commits on top of base version: 558</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -295,7 +286,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 556</summary>
+            <summary>Patch: 558</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

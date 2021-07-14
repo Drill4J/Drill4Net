@@ -91,23 +91,17 @@ namespace Drill4Net.Agent.Standard
                 .Where(a => !a.IsCompilerGenerated)
                 .Distinct(new InjectedEntityComparer<InjectedType>());
 
-            var cgMethods = injTypes
-                .SelectMany(a => a.Filter(typeof(InjectedMethod), true)) //including nested types/methods
-                .Cast<InjectedMethod>()
-                .Where(a => a.IsCompilerGenerated && a.Points.Any())
-                .Distinct(new InjectedEntityComparer<InjectedMethod>())
-                .ToDictionary(k => k.FullName);
-
             foreach (var type in bizTypes) //don't parallelize (need protect ind)
             {
                 var bizMethods = GetOrderedBusinessMethods(type);
                 if (bizMethods?.Any() != true)
                     continue;
-                var ind = 0; //end2end for the current type
+                //
                 var execData = new ExecClassData(testName, type.FullName);
-                BindMethods(reg, execData, bizMethods, ref ind, cgMethods);
-
-                var cnt = bizMethods.Sum(a => a.BusinessSize);
+                var cnt = BindMethods(reg, execData, bizMethods);
+                var size = bizMethods.Sum(a => a.BusinessSize);
+                if (cnt != size)
+                { }
                 execData.InitProbes(cnt);
             }
             return reg;
@@ -121,53 +115,32 @@ namespace Drill4Net.Agent.Standard
         /// <param name="methods"></param>
         /// <param name="ind"></param>
         /// <param name="cgMethods"></param>
-        internal void BindMethods(CoverageRegistrator reg, ExecClassData execData, IEnumerable<InjectedMethod> methods,
-            ref int ind, Dictionary<string, InjectedMethod> cgMethods)
+        internal int BindMethods(CoverageRegistrator reg, ExecClassData execData, IEnumerable<InjectedMethod> methods)
         {
+            var pos = 0;
             foreach (var meth in methods) //don't parallel here!
             {
-                //own data
-                BindMethod(reg, execData, meth.Structure, ref ind);
-
-                //callee's data
-                var callees = meth.CalleeOrigIndexes;
-                foreach (var callee in callees.Keys)
+                var pends = meth.Structure.PointToBlockEnds;
+                var prevInd = -1;
+                foreach (var (ind, uid) in meth.End2EndBusinessIndexes)
                 {
-                    //here we need only compiler generated methods
-                    if (!cgMethods.ContainsKey(callee))
-                        continue;
-                    var cgMeth = cgMethods[callee];
-                    BindMethod(reg, execData, cgMeth.Structure, ref ind);
+                    if (!pends.ContainsKey(uid))
+                    { }
+                    var start = pos;
+                    pos += ind - prevInd - 1;
+                    reg.BindPoint(uid, execData, start, pos);
+                    prevInd = ind;
+                    pos++;
                 }
             }
-        }
-
-        /// <summary>
-        /// Binds the method to the class by start and end indexes to the class coverage's array
-        /// </summary>
-        /// <param name="reg"></param>
-        /// <param name="execData"></param>
-        /// <param name="methStruct"></param>
-        /// <param name="ind"></param>
-        internal void BindMethod(CoverageRegistrator reg, ExecClassData execData, MethodStructure methStruct, ref int ind)
-        {
-            var indPairs = methStruct.PointToBlockEnds.OrderBy(a => a.Value);
-            var startMeth = ind;
-            foreach (var pair in indPairs) //don't parallel here!
-            {
-                var localEnd = pair.Value;
-                var startBlock = ind;
-                var endBlock = startMeth + localEnd;
-                reg.BindPoint(pair.Key, execData, startBlock, endBlock);
-                ind = endBlock + 1;
-            }
+            return pos;
         }
         #endregion
 
         internal IOrderedEnumerable<InjectedMethod> GetOrderedBusinessMethods(InjectedType injType)
         {
             var injMethods = injType?.GetMethods()?
-                .Where(a => !a.IsCompilerGenerated && a.Structure.PointToBlockEnds.Any())
+                .Where(a => !a.IsCompilerGenerated && a.End2EndBusinessIndexes.Any())
                 .OrderBy(a => a, new MethodNameComparer());
             return injMethods;
         }

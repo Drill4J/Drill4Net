@@ -70,7 +70,7 @@ namespace Drill4Net.Agent.Standard.Debug
             WriteMessage("Please wait for the init...", ConsoleColor.White);
             await Task.Delay(3000).ConfigureAwait(false); //wait for the reading
 
-            StandardAgent.Init();
+            //StandardAgent.Init();
 
             _opts = GetOptions();
             _targetPath = _opts.CurrentDirectory;
@@ -82,6 +82,11 @@ namespace Drill4Net.Agent.Standard.Debug
             if (_injDirectory == null)
                 throw new Exception($"Directory in the Tree data not found: [{_targetPath}]");
             _points = _injDirectory.GetAllPoints().ToList();
+
+            //tests
+            var allPoints = _injSolution.GetAllPoints();
+            var pointToBlockEndsPoint = allPoints.FirstOrDefault(a => a.Uid == Guid.Parse("31a75f3a-c10b-4448-a6cb-3d45ef85fa9c")); //no
+            var end2EndBusinessIndexesPoint = allPoints.FirstOrDefault(a => a.Uid == Guid.Parse("f539d903-1e23-4988-9478-79f9cec64a5e")); //yes
 
             //methods
             var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated);
@@ -108,15 +113,13 @@ namespace Drill4Net.Agent.Standard.Debug
                     continue;
                 if (input == "q" || input == "Q")
                     break;
-                //
-                string output = null;
                 try
                 {
                     ProcessInput(input);
                 }
                 catch (Exception ex)
                 {
-                    output = $"error -> {ex.Message}";
+                    WriteMessage($"error -> {ex.Message}", ConsoleColor.Red);
                 }
             }
 

@@ -12,20 +12,6 @@
             <param name="inDepth"></param>
             <returns></returns>
         </member>
-        <member name="M:Drill4Net.Profiling.Tree.InjectedSimpleEntity.MapPoints(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
-            <summary>
-            Get parent map of <see cref="T:Drill4Net.Profiling.Tree.CrossPoint"/> by it's <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 
-            </summary>
-            <param name="parentMap">Parent hiearchy map of entities. If empty it will calc</param>
-            <returns></returns>
-        </member>
-        <member name="M:Drill4Net.Profiling.Tree.InjectedSimpleEntity.MapPointToMethods(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
-            <summary>
-            Get parent map of <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/> by corresponding <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 
-            </summary>
-            <param name="parentMap">The hierarchy map of entity parents. If empty it will calc</param>
-            <returns></returns>
-        </member>
         <member name="T:Drill4Net.Profiling.Tree.MethodNameComparer">
             <summary>
             Comparer for the <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/> by its short name + parameter list
@@ -109,6 +95,20 @@
             The conditional and non-conditional branches (cross-point prior the IF/ELSE, br and br.s instructions)
             </summary>
         </member>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedDirectory.MapPoints(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
+            <summary>
+            Get parent map of <see cref="T:Drill4Net.Profiling.Tree.CrossPoint"/> by it's <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 
+            </summary>
+            <param name="parentMap">Parent hiearchy map of entities. If empty it will calc</param>
+            <returns></returns>
+        </member>
+        <member name="M:Drill4Net.Profiling.Tree.InjectedDirectory.MapPointToMethods(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
+            <summary>
+            Get parent map of <see cref="T:Drill4Net.Profiling.Tree.InjectedMethod"/> by corresponding <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 
+            </summary>
+            <param name="parentMap">The hierarchy map of entity parents. If empty it will calc</param>
+            <returns></returns>
+        </member>
         <member name="T:Drill4Net.Profiling.Tree.InjectedMethod">
             <summary>
             The injected method
@@ -144,14 +144,9 @@
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndBusinessIndexes">
             <summary>
-            End-to-end business indexes of the IL code's instructions for the this method and its callees in one logical array
-            corresponding <see cref="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndPointUids"/>
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndPointUids">
-            <summary>
-            End-to-end uids of injected cross-points for the this method and its callees in one logical array 
-            corresponding <see cref="P:Drill4Net.Profiling.Tree.InjectedMethod.End2EndBusinessIndexes"/>
+            End-to-end business indexes and corresponding uids of injected cross-points in the
+            IL code's instructions for current method itself and for its callees located in
+            one logical array
             </summary>
         </member>
         <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.BusinessType">

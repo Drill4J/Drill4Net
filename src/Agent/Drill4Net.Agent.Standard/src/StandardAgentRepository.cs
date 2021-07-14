@@ -158,7 +158,7 @@ namespace Drill4Net.Agent.Standard
                             targetDir = dir;
                             break;
                         }
-                        injTypes = targetDir?.GetAssemblies().SelectMany(a => a.GetAllTypes());
+                        injTypes = targetDir?.GetAllTypes(); 
                     }
                 }
             }

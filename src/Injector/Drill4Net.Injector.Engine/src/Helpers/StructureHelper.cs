@@ -28,7 +28,7 @@ namespace Drill4Net.Injector.Engine
                     .OrderBy(b => b)
                     .Distinct() //needs to exclude, in fact, some excess/fictive for coverage injections: CycleEnd, etc
                     .ToList();
-                if (!bizInds.Any())
+                if (bizInds.Count == 0)
                     continue;
                 //
                 var structure = method.Structure;
@@ -40,17 +40,6 @@ namespace Drill4Net.Injector.Engine
                         points2 = points2.Where(a => a.PointType != CrossPointType.CycleEnd).ToList(); //Guanito...
                     structure.PointToBlockEnds.Add(points2[0].PointUid, ind);
                 }
-
-                //test
-                var last = points.FirstOrDefault(a => a.PointType == CrossPointType.Return); //for CG methods doesn't exists
-                if (!method.IsCompilerGenerated && last != null && bizInds.Last() != last.BusinessIndex)
-                { }
-                if (last != null && last.BusinessIndex != method.BusinessSize-1)
-                { }
-                //
-                //var callPoints = points.Where(a => a.PointType == CrossPointType.Call).ToList();
-                //var a = asmCtx.InjMethodByFullname.Join(method.CalleeOrigIndexes, a => a.Key, b => b.Key, (a , b) => a.Value).Where(a => a.)
-                //if (callPoints.Count != method.CalleeOrigIndexes.)
             }
         }
     }

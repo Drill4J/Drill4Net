@@ -19,12 +19,55 @@ namespace Drill4Net.Profiling.Tree
 
         /*************************************************************************/
 
+        /// <summary>
+        /// Get parent map of <see cref="CrossPoint"/> by it's <see cref="CrossPoint.PointUid"/>. 
+        /// </summary>
+        /// <param name="parentMap">Parent hiearchy map of entities. If empty it will calc</param>
+        /// <returns></returns>
+        public Dictionary<string, CrossPoint> MapPoints(Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parentMap = null)
+        {
+            var pointMap = new Dictionary<string, CrossPoint>();
+            if (parentMap == null)
+                parentMap = CalcParentMap();
+            var pointPairs = parentMap.Where(a => a.Key is CrossPoint);
+            foreach (var pointPair in pointPairs)
+            {
+                var point = (CrossPoint)pointPair.Key;
+                var uid = point.PointUid;
+                if (!pointMap.ContainsKey(uid))
+                    pointMap.Add(uid, point);
+            }
+            return pointMap;
+        }
+
+        /// <summary>
+        /// Get parent map of <see cref="InjectedMethod"/> by corresponding <see cref="CrossPoint.PointUid"/>. 
+        /// </summary>
+        /// <param name="parentMap">The hierarchy map of entity parents. If empty it will calc</param>
+        /// <returns></returns>
+        public Dictionary<string, InjectedMethod> MapPointToMethods(Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> parentMap = null)
+        {
+            var methodMap = new Dictionary<string, InjectedMethod>();
+            if (parentMap == null)
+                parentMap = CalcParentMap();
+            var pointPairs = parentMap.Where(a => a.Key is CrossPoint);
+            foreach (var pointPair in pointPairs)
+            {
+                var point = (CrossPoint)pointPair.Key;
+                var uid = point.PointUid;
+                if (parentMap[point] is not InjectedMethod method)
+                    continue;
+                if (!methodMap.ContainsKey(uid))
+                    methodMap.Add(uid, method);
+            }
+            return methodMap;
+        }
+
         public IEnumerable<InjectedDirectory> GetDirectories()
         {
             return _children.Where(a => a.GetType().Name == nameof(InjectedDirectory))
                  .Cast<InjectedDirectory>();
         }
-
 
         public IEnumerable<InjectedDirectory> GetAllDirectories()
         {
@@ -39,7 +82,6 @@ namespace Drill4Net.Profiling.Tree
                 .Where(a => a.GetType().Name == nameof(InjectedAssembly))
                 .Cast<InjectedAssembly>();
         }
-
 
         public IEnumerable<InjectedAssembly> GetAssemblies()
         {

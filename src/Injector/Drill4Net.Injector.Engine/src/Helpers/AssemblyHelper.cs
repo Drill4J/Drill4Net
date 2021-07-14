@@ -256,23 +256,21 @@ namespace Drill4Net.Injector.Engine
                 foreach (var methodCtx in bizMethCtxs)
                 {
                     var delta = 0;
-                    List<int> end2EndBizIndexes = new();
-                    List<string> end2EndPointUids = new();
-                    CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta, ref end2EndBizIndexes, ref end2EndPointUids);
+                    List<(int Index, string Uid)> end2EndBizIndexes = new();
+                    CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta, ref end2EndBizIndexes);
                     var method = methodCtx.Method;
                     method.End2EndBusinessIndexes = end2EndBizIndexes;
-                    method.End2EndPointUids = end2EndPointUids;
 
                     // tests
                     var inds = method.End2EndBusinessIndexes;
                     var cnt = inds.Count;
-                    var retInd = inds[cnt - 1];
+                    var retInd = inds[cnt - 1].Index;
                     if (method.BusinessSize != retInd + 1)
                     { }
                     //
                     for (var i = 0; i < cnt - 1; i++)
                     {
-                        if (inds[i] > inds[i + 1]) //equal can be (e.g. cycles)
+                        if (inds[i].Index > inds[i + 1].Index) //equal can be (e.g. cycles)
                         { }
                     }
                 }
@@ -280,7 +278,7 @@ namespace Drill4Net.Injector.Engine
         }
 
         internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx,
-            ref int delta, ref List<int> end2EndBusinessIndexes, ref List<string> end2EndPointUids)
+            ref int delta, ref List<(int Index, string Uid)> end2EndBusinessIndexes)
         {
             var meth = methodCtx.Method;
             var points = meth.Points.OrderBy(a => a.OrigInd);
@@ -290,8 +288,7 @@ namespace Drill4Net.Injector.Engine
                 var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); // CalcBusinessIndex(methodCtx, origInd); //only for the local code body
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
-                end2EndBusinessIndexes.Add(bizInd);
-                end2EndPointUids.Add(point.Uid.ToString());
+                end2EndBusinessIndexes.Add((bizInd, point.Uid.ToString()));
                 point.BusinessIndex = bizInd;
 
                 if (point.PointType == CrossPointType.Call)
@@ -304,9 +301,9 @@ namespace Drill4Net.Injector.Engine
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
                         {
-                            delta = bizInd; //new shift for the callee taking into account the index of its call instruction
-                            //delta will be increasing in the body of that CG method for NEXT instructions of the parent method
-                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes, ref end2EndPointUids);
+                            delta = bizInd; //shift for the callee taking into account the index of its call instruction in parent
+                            //delta will be increased in the body of that CG method for NEXT instructions of the parent method
+                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes);
                             delta -= localBizInd; //correct for local using
                         }
                         if(calleeCtx == null)
