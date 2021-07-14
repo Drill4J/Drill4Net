@@ -164,7 +164,7 @@ namespace Drill4Net.Profiling.Tree
 
         public override string ToString()
         {
-            return $"{base.ToString()}{Path}";
+            return $"{base.ToString()}{DestinationPath ?? Path}";
         }
     }
 }
