@@ -288,7 +288,7 @@ namespace Drill4Net.Injector.Engine
                 var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); // CalcBusinessIndex(methodCtx, origInd); //only for the local code body
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
-                end2EndBusinessIndexes.Add((bizInd, point.Uid.ToString()));
+                end2EndBusinessIndexes.Add((bizInd, point.PointUid));
                 point.BusinessIndex = bizInd;
 
                 if (point.PointType == CrossPointType.Call)

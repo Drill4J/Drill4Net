@@ -120,12 +120,9 @@ namespace Drill4Net.Agent.Standard
             var pos = 0;
             foreach (var meth in methods) //don't parallel here!
             {
-                var pends = meth.Structure.PointToBlockEnds;
                 var prevInd = -1;
                 foreach (var (ind, uid) in meth.End2EndBusinessIndexes)
                 {
-                    if (!pends.ContainsKey(uid))
-                    { }
                     var start = pos;
                     pos += ind - prevInd - 1;
                     reg.BindPoint(uid, execData, start, pos);

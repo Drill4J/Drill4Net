@@ -7,7 +7,13 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class GenericTree<T> where T : GenericTree<T>, new()
     {
-        public Guid Uid { get; }
+        /// <summary>
+        /// Gets the item uid.
+        /// </summary>
+        /// <value>
+        /// The item uid.
+        /// </value>
+        public Guid ItemUid { get; }
 
         public bool IsParentHub { get; set; }
         public bool? IsShared { get; set; }
@@ -32,7 +38,7 @@ namespace Drill4Net.Profiling.Tree
 
         public GenericTree()
         {
-            Uid = Guid.NewGuid();
+            ItemUid = Guid.NewGuid();
             _children = new List<T>();
         }
 

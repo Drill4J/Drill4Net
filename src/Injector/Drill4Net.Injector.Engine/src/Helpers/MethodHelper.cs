@@ -137,17 +137,6 @@ namespace Drill4Net.Injector.Engine
                             }
                         }
                     }
-                    //if (code == Code.Ldsfld || code == Code.Ldsflda)
-                    //{
-                    //    //ExpandoObject()
-                    //    var curInstr = ctx.OrigInstructions[callInd];
-                    //    var oper = curInstr.Operand?.ToString();
-                    //    //ExpandoObject(), DynamicObject()
-                    //    if (origIntrs[callInd + 3].OpCode.Code == Code.Callvirt && oper.Contains("::Invoke(!0"))
-                    //    {
-                    //        callInd += 3;
-                    //    }
-                    //}
                     treeFunc.CalleeOrigIndexes.Add(extFullname, callInd);
                 }
             }

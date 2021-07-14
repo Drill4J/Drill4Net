@@ -72,11 +72,6 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public IEnumerable<CrossPoint> Points => Filter(typeof(CrossPoint), false).Cast<CrossPoint>();
 
-        /// <summary>
-        /// Data of the method's coverage
-        /// </summary>
-        public MethodStructure Structure { get; }
-
         /********************************************************************/
 
         public InjectedMethod(string assemblyName, string businessTypeName, string fullName, MethodSource sourceType)
@@ -90,7 +85,6 @@ namespace Drill4Net.Profiling.Tree
             if (sourceType.MethodType == MethodType.CompilerGenerated)
                 CGInfo = new CompilerGeneratedInfo();
             CalleeOrigIndexes = new Dictionary<string, int>();
-            Structure = new MethodStructure();
         }
 
         /********************************************************************/

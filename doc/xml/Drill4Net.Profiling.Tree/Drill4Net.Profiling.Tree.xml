@@ -4,6 +4,14 @@
         <name>Drill4Net.Profiling.Tree</name>
     </assembly>
     <members>
+        <member name="P:Drill4Net.Profiling.Tree.GenericTree`1.ItemUid">
+            <summary>
+            Gets the item uid.
+            </summary>
+            <value>
+            The item uid.
+            </value>
+        </member>
         <member name="M:Drill4Net.Profiling.Tree.GenericTree`1.Filter(System.Type,System.Boolean)">
             <summary>
             Filter children's entities of current entity (as a parent)
@@ -176,11 +184,6 @@
             Cross-points of method's code
             </summary>
         </member>
-        <member name="P:Drill4Net.Profiling.Tree.InjectedMethod.Structure">
-            <summary>
-            Data of the method's coverage
-            </summary>
-        </member>
         <member name="M:Drill4Net.Profiling.Tree.InjectedMethod.GetBusinessMethod">
             <summary>
             Gets the business method by its current known data.
@@ -214,22 +217,6 @@
         <member name="T:Drill4Net.Profiling.Tree.MethodSignature">
             <summary>
             Metadata about method's signature
-            </summary>
-        </member>
-        <member name="T:Drill4Net.Profiling.Tree.MethodStructure">
-            <summary>
-            Structure of method for the further coverage calculations
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Profiling.Tree.MethodStructure.PointToBlockEnds">
-            <summary>
-            Binding the cross-point by Uid to the end of the IL code block
-            in the probe list (as business index)
-            </summary>
-        </member>
-        <member name="M:Drill4Net.Profiling.Tree.MethodStructure.#ctor">
-            <summary>
-            Create data of the method's coverage
             </summary>
         </member>
         <member name="T:Drill4Net.Profiling.Tree.MethodType">
