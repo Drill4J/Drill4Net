@@ -83,11 +83,6 @@ namespace Drill4Net.Agent.Standard.Tester
                 throw new Exception($"Directory in the Tree data not found: [{_targetPath}]");
             _points = _injDirectory.GetAllPoints().ToList();
 
-            //tests
-            //var allPoints = _injSolution.GetAllPoints();
-            //var cnt = _points.Count();
-            //var point = allPoints.FirstOrDefault(a => a.PointUid == "0a122753-1a82-427a-a374-46e39404d9a8");
-
             //methods
             var methList = _injDirectory.GetAllMethods().Where(a => !a.IsCompilerGenerated);
             _methods = new Dictionary<string, InjectedMethod>();
