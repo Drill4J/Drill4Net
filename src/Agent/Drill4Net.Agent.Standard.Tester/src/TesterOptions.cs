@@ -1,12 +1,15 @@
 ﻿using System;
 
-namespace Drill4Net.Agent.Standard.Debug
+namespace Drill4Net.Agent.Standard.Tester
 {
+    /// <summary>
+    /// Options for the Tester app
+    /// </summary>
     [Serializable]
     public class TesterOptions
     {
         /// <summary>
-        /// CUrrent directory where Target's assemblies is located, mandatory filed.
+        /// Current directory where Target's assemblies is located, mandatory field.
         /// </summary>
         public string CurrentDirectory { get; set; }
 

@@ -4,16 +4,16 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
-		<AssemblyName>Drill4Net.Agent.Standard.Debug</AssemblyName>
+		<AssemblyName>Drill4Net.Agent.Standard.Tester</AssemblyName>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-      <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Standard.Demo</OutputPath>
+      <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Standard.Tester</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Standard.Demo</OutputPath>
-      <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Standard.Demo\Drill4Net.Agent.Standard.Demo.xml</DocumentationFile>
+      <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Standard.Tester</OutputPath>
+      <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Standard.Tester\Drill4Net.Agent.Standard.Tester.xml</DocumentationFile>
       <PlatformTarget>AnyCPU</PlatformTarget>
     </PropertyGroup>
 

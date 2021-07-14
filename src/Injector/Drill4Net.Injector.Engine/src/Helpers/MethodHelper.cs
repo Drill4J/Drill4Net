@@ -154,7 +154,7 @@ namespace Drill4Net.Injector.Engine
                     asmCtx.InjClasses[extTypeFullName] :
                     (asmCtx.InjClasses.ContainsKey(extTypeName) ? asmCtx.InjClasses[extTypeName] : null);
 
-                //extType found, not local func, not 'class-for-all'
+                //extType found, not local func, not '<>c' ('class-for-all')
                 if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                 {
                     var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);

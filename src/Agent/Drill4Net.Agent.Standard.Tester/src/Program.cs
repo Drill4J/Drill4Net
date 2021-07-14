@@ -16,7 +16,7 @@ using Drill4Net.Profiling.Tree;
       ThisAssembly.Git.Branch + "+" +
       ThisAssembly.Git.Commit)]
 
-namespace Drill4Net.Agent.Standard.Debug
+namespace Drill4Net.Agent.Standard.Tester
 {
     class Program
     {
