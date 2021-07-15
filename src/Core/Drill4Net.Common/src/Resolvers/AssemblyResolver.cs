@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Resolver of requesting assemblies and its resources (satellite assemblies)
+    /// </summary>
+    /// <seealso cref="Drill4Net.Common.BaseResolver" />
     public class AssemblyResolver : BaseResolver
     {
         private static readonly Dictionary<string, Assembly> _cache = new();
@@ -23,7 +27,8 @@ namespace Drill4Net.Common
                 return _cache[fullName];
             Assembly asm;
             var (shortName, version) = CommonUtils.ParseAssemblyVersion(fullName);
-            var path = FindAssemblyPath(shortName, version);
+            var potentialDir = string.IsNullOrWhiteSpace(requestingAssemblyPath) ? null : Path.GetDirectoryName(requestingAssemblyPath);
+            var path = FindAssemblyPath(shortName, version, potentialDir);
             if (path == null)
             {
                 //maybe it's resource dll? Strange, but some of resource's searchings were here,
@@ -64,7 +69,7 @@ namespace Drill4Net.Common
         private static byte[] StreamToBytes(Stream input)
         {
             int capacity = input.CanSeek ? (int)input.Length : 0;
-            using MemoryStream output = new MemoryStream(capacity);
+            using MemoryStream output = new(capacity);
             int readLength;
             byte[] buffer = new byte[4096];
 

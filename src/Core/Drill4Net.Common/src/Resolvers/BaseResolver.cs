@@ -85,7 +85,7 @@ namespace Drill4Net.Common
                     return filePath;
                 }
 
-                //direct in folder
+                //direct in folder - TODO: check the Product version???
                 filePath = Path.Combine(dir, shortName);
                 if (File.Exists(filePath))
                     return filePath;

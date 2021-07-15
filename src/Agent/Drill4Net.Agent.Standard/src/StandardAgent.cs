@@ -58,9 +58,12 @@ namespace Drill4Net.Agent.Standard
                 //TEST!!!
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
                 //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
-                
+
                 //var ver = "System.Private.Xml.resources, Version=4.0.2.0, Culture=en-US, PublicKeyToken=cc7b13ffcd2ddd51";
                 //var reqPath = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.16\System.Private.Xml.dll";
+
+                //var ver = "Drill4Net.Target.Common.VB, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null";
+                //var reqPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net50.App\net5.0\";
                 //var asm = _resolver.Resolve(ver, reqPath);
 
                 //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
@@ -127,7 +130,7 @@ namespace Drill4Net.Agent.Standard
             var asm = _resolver.Resolve(name, args.RequestingAssembly.Location);
             if (asm != null)
                 return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_failed.log"), new string[] { info });
             Log.Debug("Assembly [{Name}] didn't resolve ", name);
             return args.RequestingAssembly; //null
@@ -139,7 +142,7 @@ namespace Drill4Net.Agent.Standard
             var asm = _resolver.ResolveResource(args.RequestingAssembly.Location, name);
             if (asm != null)
                 return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request resource from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_resource_failed.log"), new string[] { info });
             return null;
         }
@@ -147,7 +150,7 @@ namespace Drill4Net.Agent.Standard
         private static Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_type_failed.log"), new string[] { info });
             return null;
         }

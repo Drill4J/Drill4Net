@@ -582,6 +582,12 @@
             </summary>
             <seealso cref="T:Mono.Cecil.IAssemblyResolver" />
         </member>
+        <member name="T:Drill4Net.Common.AssemblyResolver">
+            <summary>
+            Resolver of requesting assemblies and its resources (satellite assemblies)
+            </summary>
+            <seealso cref="T:Drill4Net.Common.BaseResolver" />
+        </member>
         <member name="M:Drill4Net.Common.BaseResolver.FindAssemblyPath(System.String,System.Version,System.String)">
             <summary>
             Finds the assembly path: from the frameworks's paths, work dir and the Injector dir.

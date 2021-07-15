@@ -70,7 +70,7 @@ namespace Drill4Net.Agent.Standard.Tester
             WriteMessage("Please wait for the init...", ConsoleColor.White);
             await Task.Delay(3000).ConfigureAwait(false); //wait for the reading
 
-            //StandardAgent.Init();
+            StandardAgent.Init();
 
             _opts = GetOptions();
             _targetPath = _opts.CurrentDirectory;
