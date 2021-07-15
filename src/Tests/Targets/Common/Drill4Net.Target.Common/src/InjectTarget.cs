@@ -346,6 +346,8 @@ namespace Drill4Net.Target.Common
             #region QA Testing
             QA_IfElse(false);
             QA_IfElse(true);
+
+            QA_IfElse_Random();
             #endregion
         }
 
@@ -1451,6 +1453,18 @@ namespace Drill4Net.Target.Common
             else
             {
                 Console.WriteLine($"{nameof(QA_IfElse)}: ms -> false");
+            }
+        }
+
+        public void QA_IfElse_Random()
+        {
+            if (DateTime.Now.Millisecond % 2 == 0)
+            {
+                Console.WriteLine($"{nameof(QA_Never100)}: ms -> even number");
+            }
+            else
+            {
+                Console.WriteLine($"{nameof(QA_Never100)}: ms -> odd number");
             }
         }
         #endregion
