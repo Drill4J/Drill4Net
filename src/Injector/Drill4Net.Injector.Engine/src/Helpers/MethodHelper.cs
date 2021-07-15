@@ -342,7 +342,6 @@ namespace Drill4Net.Injector.Engine
                 IsFinalizer = methodName == "Finalize" && def.IsVirtual,
                 //IsOverride = ...
                 IsLocal = def.FullName.Contains("|"),
-                HashCode = GetMethodHashCode(def.Body.Instructions),
             };
         }
 
@@ -355,15 +354,15 @@ namespace Drill4Net.Injector.Engine
             return AccessType.Internal;
         }
 
-        internal static string GetMethodHashCode(Mono.Collections.Generic.Collection<Instruction> instructions)
+        internal static int GetMethodHashCode(Mono.Collections.Generic.Collection<Instruction> instructions)
         {
             var bizInstrs = instructions.Where(a => a.OpCode.Code != Code.Nop);
             unchecked // Overflow is fine, just wrap
             {
-                var hash = bizInstrs.Aggregate(3151131, (val, p) => 
+                var hash = bizInstrs.Aggregate(3151131 + instructions.Count, (val, p) =>
                     val ^ $"{p.OpCode.Code}{p.Operand}"
-                           .Aggregate(7171371, (strSum, ch) => strSum ^ ch.GetHashCode()));
-                return hash.ToString();
+                           .Aggregate(71713719, (strSum, ch) => strSum ^ ch.GetHashCode()));
+                return hash;
             }
         }
     }

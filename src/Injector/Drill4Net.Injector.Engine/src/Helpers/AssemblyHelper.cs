@@ -63,6 +63,38 @@ namespace Drill4Net.Injector.Engine
             return true;
         }
 
+        internal static void CalcMethodHashcodes(AssemblyContext asmCtx)
+        {
+            var methCtxs = asmCtx.TypeContexts.Values.SelectMany(a => a.MethodContexts.Values).ToDictionary(a => a.Method.FullName);
+            var bizMethCtxs = methCtxs.Values.Where(a => !a.Method.IsCompilerGenerated).ToDictionary(a => a.Method.FullName);
+            foreach (var fullname in bizMethCtxs.Keys)
+            {
+                var methCtx = methCtxs[fullname];
+                var code = MethodHelper.GetMethodHashCode(methCtx.Definition.Body.Instructions);
+
+                //check the CG callees
+                CalcWithCalleeHashCodes(ref code, methCtx, methCtxs);
+
+                methCtx.Method.Source.HashCode = code.ToString();
+            }
+        }
+
+        internal static void CalcWithCalleeHashCodes(ref int currentCode, MethodContext methCtx, Dictionary<string, MethodContext> methCtxs)
+        {
+            var callees = methCtx.Method.CalleeOrigIndexes;
+            foreach (var calleeName in callees.Keys)
+            {
+                if (!methCtxs.TryGetValue(calleeName, out MethodContext calleeCtx))
+                    continue; //it's normal
+                var callee = calleeCtx.Method;
+                if (!callee.IsCompilerGenerated) //we need ONLY CG chain of the root business method
+                    continue;
+                var calleeCode = MethodHelper.GetMethodHashCode(calleeCtx.Definition.Body.Instructions);
+                currentCode ^= calleeCode;
+                CalcWithCalleeHashCodes(ref currentCode, calleeCtx, methCtxs);
+            }
+        }
+
         internal static void FindMoveNextMethods(AssemblyContext asmCtx)
         {
             var moveNextMethods = asmCtx.InjAssembly.Filter(typeof(InjectedMethod), true)
