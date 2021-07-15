@@ -344,6 +344,9 @@ namespace Drill4Net.Target.Common
             CallAnotherTarget();
             #endregion
             #region QA Testing
+            QA_IfElse_Half(false);
+            QA_IfElse_Half(true);
+
             QA_IfElse(false);
             QA_IfElse(true);
 
@@ -1444,6 +1447,14 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region QA Testing
+        public void QA_IfElse_Half(bool cond)
+        {
+            if (cond)
+            {
+                Console.WriteLine($"{nameof(QA_IfElse_Half)}: YES");
+            }
+        }
+
         public void QA_IfElse(bool cond)
         {
             if (cond)
@@ -1460,13 +1471,14 @@ namespace Drill4Net.Target.Common
         {
             if (DateTime.Now.Millisecond % 2 == 0)
             {
-                Console.WriteLine($"{nameof(QA_IfElse_Random)}: even");
+                Console.WriteLine($"{nameof(QA_IfElse_Random)}: even number");
             }
             else
             {
-                Console.WriteLine($"{nameof(QA_IfElse_Random)}: odd");
+                Console.WriteLine($"{nameof(QA_IfElse_Random)}: odd number");
             }
         }
+
         #endregion
 
         private byte[] GetBytes(byte cnt)
