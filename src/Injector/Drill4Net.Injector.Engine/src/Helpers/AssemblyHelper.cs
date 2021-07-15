@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using System;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -314,41 +313,6 @@ namespace Drill4Net.Injector.Engine
             //
            delta += methodCtx.BusinessInstructionList.Count - 1;
         }
-
-        ///// <summary>
-        ///// Calculates the index of the cross-point's instruction in the ideal business code 
-        ///// (collected from the compiler generated parts of IL code) by local index of the instruction
-        ///// in these compiler generated methods and classes.
-        ///// </summary>
-        ///// <param name="ctx">The target method's context</param>
-        ///// <param name="origInd">Local index of the cross-point for original IL code.</param>
-        ///// <returns></returns>
-        //internal static int CalcBusinessIndex(MethodContext ctx, int origInd)
-        //{
-        //    var method = ctx.Method;
-        //    var ind = ctx.GetLocalBusinessIndex(origInd);
-
-        //    //go up to the business method and get the "business" (logical) index
-        //    //of instruction taking into account the shift of the callee calls
-        //    while (true)
-        //    {
-        //        var caller = method.CGInfo?.Caller;
-        //        if (caller == null) //we're locating in the business method
-        //            break;
-        //        var callInds = caller.CalleeOrigIndexes;
-        //        var curName = method.FullName;
-        //        if (!callInds.ContainsKey(curName))
-        //            break;
-        //        var origCalleeInd = callInds[curName];
-        //        var calleeCtx = GetMethodContext(ctx.AssemblyCtx, caller.FullName);
-        //        var bizCalleeInd = (calleeCtx?.GetLocalBusinessIndex(origCalleeInd)) ?? 0;
-        //        if (calleeCtx == null)
-        //        { } //test
-        //        ind += bizCalleeInd;
-        //        method = caller;
-        //    }
-        //    return ind;
-        //}
         #endregion
 
         internal static MethodContext GetMethodContext(AssemblyContext asmCtx, string methodName)

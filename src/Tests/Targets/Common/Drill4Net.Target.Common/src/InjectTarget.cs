@@ -343,6 +343,10 @@ namespace Drill4Net.Target.Common
 
             CallAnotherTarget();
             #endregion
+            #region QA Testing
+            QA_IfElse(false);
+            QA_IfElse(true);
+            #endregion
         }
 
         #region IF/ELSE
@@ -1435,6 +1439,19 @@ namespace Drill4Net.Target.Common
                 Console.WriteLine($"{nameof(Unsafe)}: {p->ToString()}");
             }
             return true;
+        }
+        #endregion
+        #region QA Testing
+        public void QA_IfElse(bool cond)
+        {
+            if (cond)
+            {
+                Console.WriteLine($"{nameof(QA_IfElse)}: ms -> true");
+            }
+            else
+            {
+                Console.WriteLine($"{nameof(QA_IfElse)}: ms -> false");
+            }
         }
         #endregion
 

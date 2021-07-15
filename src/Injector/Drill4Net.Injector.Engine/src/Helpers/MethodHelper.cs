@@ -16,10 +16,6 @@ namespace Drill4Net.Injector.Engine
     /// </summary>
     internal static class MethodHelper
     {
-        private static readonly TypeChecker _typeChecker = new();
-
-        /*************************************************************************************/
-
         /// <summary>
         /// Corrects the "business" (logically full) size of IL code of the method by its own size and its callees.
         /// </summary>
@@ -96,7 +92,7 @@ namespace Drill4Net.Injector.Engine
                         }
                     }
                 }
-                if (!treeFunc.CalleeOrigIndexes.ContainsKey(extFullname) /*&& !_typeChecker.IsSystemTypeByMethod(extFullname)*/)
+                if (!treeFunc.CalleeOrigIndexes.ContainsKey(extFullname))
                 {
                     //correcting index due logically paired instruction
                     var callInd = ctx.OrigIndex;
