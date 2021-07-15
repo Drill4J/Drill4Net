@@ -352,9 +352,9 @@ namespace Drill4Net.Target.Common
         #region IF/ELSE
         public void IfElse_Half(bool cond)
         {
-            var type = "no";
+            var type = "false";
             if (cond)
-                type = "yes";
+                type = "true";
 
             Console.WriteLine($"{nameof(IfElse_Half)}: {type}");
         }
