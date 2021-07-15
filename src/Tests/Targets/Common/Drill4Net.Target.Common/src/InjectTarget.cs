@@ -1460,11 +1460,11 @@ namespace Drill4Net.Target.Common
         {
             if (DateTime.Now.Millisecond % 2 == 0)
             {
-                Console.WriteLine($"{nameof(QA_IfElse_Random)}: even number");
+                Console.WriteLine($"{nameof(QA_IfElse_Random)}: even");
             }
             else
             {
-                Console.WriteLine($"{nameof(QA_IfElse_Random)}: odd number");
+                Console.WriteLine($"{nameof(QA_IfElse_Random)}: odd");
             }
         }
         #endregion
