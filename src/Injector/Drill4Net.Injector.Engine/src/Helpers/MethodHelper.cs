@@ -97,38 +97,58 @@ namespace Drill4Net.Injector.Engine
                     //correcting index due logically paired instruction
                     var callInd = ctx.OrigIndex;
                     var origIntrs = ctx.OrigInstructions;
-                    if (code is Code.Ldftn or Code.Ldfld) //Lambda, LINQ...
+                    //GUANO...
+                    var cgCalls = extFullname.Contains(">b__") || extFullname.Contains("<>c__") || extFullname.Contains("<>c::");
+                    if (code is Code.Ldftn or Code.Ldfld && cgCalls) //Lambda, LINQ...
                     {
-                        var t4 = (ctx.OrigInstructions[callInd + 4].Operand as GenericInstanceMethod)?.DeclaringType?.FullName;
+                        var t4 = callInd + 4 < ctx.OrigInstructions.Count ? (ctx.OrigInstructions[callInd + 4].Operand as GenericInstanceMethod)?.DeclaringType?.FullName : null;
                         if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code.ToString().StartsWith("Call"))
                         {
                             callInd += 2;
                         }
                         else
+                        if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Newobj &&
+                            origIntrs[callInd + 3].OpCode.Code.ToString().StartsWith("Call"))
+                        {
+                            callInd += 3;
+                        }
+                        else
                         if (origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Dup &&
                             origIntrs[callInd + 3].OpCode.Code == Code.Stsfld && origIntrs[callInd + 4].OpCode.Code == Code.Call
-                            && (t4 == "System.Linq.Enumerable" || t4?.StartsWith("System.Linq.Parallel") == true))
+                            /*&& (t4 == "System.Linq.Enumerable" || t4?.StartsWith("System.Linq.Parallel") == true)*/)
                         {
                             callInd += 4;
                         }
                         else
                         {
+                            var newAndDup = origIntrs[callInd + 1].OpCode.Code == Code.Newobj && origIntrs[callInd + 2].OpCode.Code == Code.Dup;
                             var to = Math.Min(origIntrs.Count - 1, callInd + 16);
                             for (var i = callInd + 1; i < to; i++)
                             {
                                 var curInstr = ctx.OrigInstructions[i];
+                                if (curInstr.OpCode.Code == Code.Call)
+                                {
+                                    if (newAndDup)
+                                    {
+                                        callInd = i;
+                                        break;
+                                    }
+                                }
+                                else
                                 if (curInstr.OpCode.Code == Code.Callvirt)
                                 {
-                                    var oper = curInstr.Operand?.ToString();
-                                    if (oper != null)
-                                    {
-                                        if (oper.Contains("::Invoke(") || oper.EndsWith("::Start()") || oper.Contains(".Task::Run(") ||
-                                            oper.Contains("::add_") || oper.EndsWith("::remove_")) //binding events
-                                        {
-                                            callInd = i;
-                                            break;
-                                        }
-                                    }
+                                    //var oper = curInstr.Operand?.ToString();
+                                    //if (oper != null)
+                                    //{
+                                    //    if (oper.Contains("::Invoke(") || oper.EndsWith("::Start()") || oper.Contains(".Task::Run(") ||
+                                    //        oper.Contains("::add_") || oper.EndsWith("::remove_")) //binding events
+                                    //    {
+                                    //        callInd = i;
+                                    //        break;
+                                    //    }
+                                    //}
+                                    callInd = i;
+                                    break;
                                 }
                             }
                         }

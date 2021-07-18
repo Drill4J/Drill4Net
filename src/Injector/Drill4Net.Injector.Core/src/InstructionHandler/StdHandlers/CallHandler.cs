@@ -29,12 +29,15 @@ namespace Drill4Net.Injector.Core
         {
             try
             {
-                var instr = ctx.Instructions[ctx.CurIndex];
+                var curInd = ctx.CurIndex;
+                var instrs = ctx.Instructions;
+                var instr = instrs[curInd];
                 var code = instr.OpCode.Code;
                 //1. Code.Callvirt isn't needed - it's for internal compiler generated member's calls
                 //2. Local function's calls are needed
                 if (code is not Code.Call and not Code.Calli and not Code.Callvirt)
                     return false;
+                var callees = ctx.Method.CalleeOrigIndexes;
                 var operand = (MethodReference)instr.Operand;
                 var operType = operand.DeclaringType;
                 var callFullname = operand.FullName;
@@ -62,6 +65,16 @@ namespace Drill4Net.Injector.Core
                 if (isAnon)
                     return false;
 
+                //using linked CG methods in various call (DI frameworks, AutoMapper, Mediatr, LINQ, etc)
+                var aboveUsingCg = AboveUsedLinkedCgMethod(instrs, curInd);
+                if (aboveUsingCg)
+                    return true;
+                var nearestStsfldInd = FindNearestStsfld(instrs, curInd);
+                if(nearestStsfldInd != -1)
+                    aboveUsingCg = AboveUsedLinkedCgMethod(instrs, nearestStsfldInd+1);
+                if (aboveUsingCg)
+                    return true;
+
                 // check by filter
                 var ns = CommonUtils.GetNamespace(CommonUtils.GetTypeByMethod(callFullname));
                 if (ns == null)
@@ -75,6 +88,28 @@ namespace Drill4Net.Injector.Core
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        private bool AboveUsedLinkedCgMethod(Mono.Collections.Generic.Collection<Instruction> instrs, int curInd)
+        {
+            if (curInd > 2 && instrs[curInd - 1].OpCode.Code == Code.Newobj && instrs[curInd - 2].OpCode.Code == Code.Ldftn)
+                return true;
+            if (curInd > 3 && instrs[curInd - 1].OpCode.Code == Code.Stsfld && instrs[curInd - 2].OpCode.Code == Code.Dup && instrs[curInd - 3].OpCode.Code == Code.Newobj)
+                return true;
+            return false;
+        }
+
+        private int FindNearestStsfld(Mono.Collections.Generic.Collection<Instruction> instrs, int curInd)
+        {
+            var to = curInd - 10;
+            if (to < 0)
+                to = 0;
+            for (var i = curInd; i >= to; i--)
+            {
+                if (instrs[i].OpCode.Code == Code.Stsfld)
+                    return i;
+            }
+            return -1;
         }
     }
 }

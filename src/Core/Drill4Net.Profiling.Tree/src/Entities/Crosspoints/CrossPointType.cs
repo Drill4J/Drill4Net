@@ -39,5 +39,11 @@
         /// The conditional and non-conditional branches (cross-point prior the IF/ELSE, br and br.s instructions)
         /// </summary>
         Branch = 17,
+
+        /// <summary>
+        /// The virtual type when the cross-point, in fact, isn't injected into the IL code
+        /// but it is needed for the injection process in general
+        /// </summary>
+        Virtual = 100,
     }
 }

@@ -103,6 +103,12 @@
             The conditional and non-conditional branches (cross-point prior the IF/ELSE, br and br.s instructions)
             </summary>
         </member>
+        <member name="F:Drill4Net.Profiling.Tree.CrossPointType.Virtual">
+            <summary>
+            The virtual type when the cross-point, in fact, isn't injected into the IL code
+            but it is needed for the injection process in general
+            </summary>
+        </member>
         <member name="M:Drill4Net.Profiling.Tree.InjectedDirectory.MapPoints(System.Collections.Generic.Dictionary{Drill4Net.Profiling.Tree.InjectedSimpleEntity,Drill4Net.Profiling.Tree.InjectedSimpleEntity})">
             <summary>
             Get parent map of <see cref="T:Drill4Net.Profiling.Tree.CrossPoint"/> by it's <see cref="P:Drill4Net.Profiling.Tree.CrossPoint.PointUid"/>. 

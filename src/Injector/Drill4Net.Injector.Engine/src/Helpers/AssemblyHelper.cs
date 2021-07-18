@@ -292,17 +292,24 @@ namespace Drill4Net.Injector.Engine
                     var method = methodCtx.Method;
                     method.End2EndBusinessIndexes = end2EndBizIndexes;
 
-                    // tests
+                    //checks
                     var inds = method.End2EndBusinessIndexes;
                     var cnt = inds.Count;
                     var retInd = inds[cnt - 1].Index;
                     if (method.BusinessSize != retInd + 1)
-                    { }
-                    //
-                    for (var i = 0; i < cnt - 1; i++)
+                    { 
+                        //TODO: log
+                        //throw new System.Exception($"Wrong business indexes for [{method}]");
+                    }
+
+                    // tests TODO: unit tests
+                    if (asmCtx.Options.Probes.SkipIfElseType)
                     {
-                        if (inds[i].Index > inds[i + 1].Index) //equal can be (e.g. cycles)
-                        { }
+                        for (var i = 0; i < cnt - 1; i++)
+                        {
+                            if (inds[i].Index > inds[i + 1].Index) //equal can be (e.g. cycles)
+                            { }
+                        }
                     }
                 }
             }
@@ -312,19 +319,45 @@ namespace Drill4Net.Injector.Engine
             ref int delta, ref List<(int Index, string Uid)> end2EndBusinessIndexes)
         {
             var meth = methodCtx.Method;
-            var points = meth.Points.OrderBy(a => a.OrigInd);
-            foreach (var point in points) //by ordered points
+            var points = meth.Points.ToList(); //it's new list, not original one
+
+            //find orphan CG callees without real call instructions (method sigs) in current method 
+            var callPoints = points.Where(a => a.PointType is CrossPointType.Call).ToDictionary(a => a.OrigInd);
+            var usedIndexes = new HashSet<int>();
+            foreach (var calleeName in meth.CalleeOrigIndexes.Keys)
+            {
+                var ind = meth.CalleeOrigIndexes[calleeName];
+                var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == calleeName);
+                if (calleeCtx?.Method.IsCompilerGenerated != true)
+                {
+                    if(!usedIndexes.Contains(ind))
+                        usedIndexes.Add(ind); //to one callee call can be linked many method sigs (in ldftn instruction)
+                    continue;
+                }
+                if (!usedIndexes.Contains(ind) && callPoints.ContainsKey(ind))
+                {
+                    usedIndexes.Add(ind); //to one callee call can be linked many method sigs (in ldftn instruction)
+                    continue;
+                }
+                points.Add(new CrossPoint(calleeName, ind, ind, CrossPointType.Virtual)); //add auxiliary virtual cross-point
+            }
+
+            // process
+            var orderedPoints = points.OrderBy(a => a.OrigInd);
+            foreach (var point in orderedPoints) //by ordered points
             {
                 var origInd = point.OrigInd;
-                var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); // CalcBusinessIndex(methodCtx, origInd); //only for the local code body
+                var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); //only for the local code body
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
                 end2EndBusinessIndexes.Add((bizInd, point.PointUid));
                 point.BusinessIndex = bizInd;
 
-                if (point.PointType == CrossPointType.Call)
+                if (point.PointType is CrossPointType.Call or CrossPointType.Virtual)
                 {
-                    var callee = meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
+                    var callee = point.PointType is CrossPointType.Virtual ?
+                        point.PointUid :
+                        meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
                     if (callee == null)
                     { } //bad... remove the point from data?
                     if (callee != null) //meth call the callee
