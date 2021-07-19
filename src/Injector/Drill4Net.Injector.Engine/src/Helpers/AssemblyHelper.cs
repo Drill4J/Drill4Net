@@ -328,21 +328,26 @@ namespace Drill4Net.Injector.Engine
             {
                 var ind = meth.CalleeOrigIndexes[calleeName];
                 var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == calleeName);
-                if (calleeCtx?.Method.IsCompilerGenerated != true)
+                if (calleeCtx?.Method.IsCompilerGenerated != true) //not CG method
                 {
-                    if(!usedIndexes.Contains(ind))
-                        usedIndexes.Add(ind); //to one callee call can be linked many method sigs (in ldftn instruction)
+                    //with one call for the callee can be linked many method sigs (e.g. in IL's ldftn instruction)
+                    //e.g. for IHS project: Ipreo.Csp.IaDeal.Api.Bdd.Tests.Helpers -> StepsTransformation.ToDealVersionWithTranches ->
+                    //ldftn with sig '...<ToDealVersionWithTranches>b__72_2 ...'
+                    if (!usedIndexes.Contains(ind))
+                        usedIndexes.Add(ind);
                     continue;
                 }
-                if (!usedIndexes.Contains(ind) && callPoints.ContainsKey(ind))
+                if (!usedIndexes.Contains(ind) && callPoints.ContainsKey(ind)) //first method sig linked to one call
                 {
-                    usedIndexes.Add(ind); //to one callee call can be linked many method sigs (in ldftn instruction)
+                    usedIndexes.Add(ind);
                     continue;
                 }
+
+                //second method sig - we need to link it to the new virtual point
                 points.Add(new CrossPoint(calleeName, ind, ind, CrossPointType.Virtual)); //add auxiliary virtual cross-point
             }
 
-            // process
+            // calc delta for the biz index
             var orderedPoints = points.OrderBy(a => a.OrigInd);
             foreach (var point in orderedPoints) //by ordered points
             {
