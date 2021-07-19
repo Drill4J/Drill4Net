@@ -35,6 +35,7 @@ namespace Drill4Net.Common
         {
             //dirs
             var dirs = new List<string>();
+            dirs.AddRange(SearchDirs);
             if (!string.IsNullOrWhiteSpace(dependenciesDir) && !dirs.Contains(dependenciesDir))
                 dirs.Add(dependenciesDir);
             if (!dirs.Contains(FileUtils.EntryDir))
