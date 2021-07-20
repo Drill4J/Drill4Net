@@ -75,11 +75,6 @@ namespace Drill4Net.Agent.Standard
             var tree = ReadInjectedTree();
             _injTypes = GetTypesByCallerVersion(tree);
 
-            //tests
-            var allPoints = tree.GetAllPoints();
-            var pointToBlockEndsPoint = allPoints.FirstOrDefault(a => a.ItemUid == Guid.Parse("31a75f3a-c10b-4448-a6cb-3d45ef85fa9c")); //no
-            var end2EndBusinessIndexesPoint = allPoints.FirstOrDefault(a => a.ItemUid == Guid.Parse("f539d903-1e23-4988-9478-79f9cec64a5e")); //yes
-
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(2000);
             _sendTimer.Elapsed += Timer_Elapsed;
@@ -389,7 +384,7 @@ namespace Drill4Net.Agent.Standard
         private StartSessionPayload GetManualUserSession()
         {
             return _sessionToObject.Values
-                .FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL && 
+                .FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL &&
                                     (_globalRegistrator == null || _globalRegistrator.Session != a));
         }
 

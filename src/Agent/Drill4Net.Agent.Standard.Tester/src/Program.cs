@@ -156,11 +156,11 @@ namespace Drill4Net.Agent.Standard.Tester
             if (callData.Contains("await "))
                 callData = callData.Replace("await ", null);
             if (callData.EndsWith(";"))
-                callData = callData.Substring(0, callData.Length - 1);
+                callData = callData[0..^1];
             callData = callData.Replace("(", " ").Replace(")", null);
             var spInd = callData.IndexOf(" ");
             var name = spInd == -1 ? callData : callData.Substring(0, spInd).Trim();
-            var parsS = spInd == -1 ? null : callData.Substring(spInd);
+            var parsS = spInd == -1 ? null : callData[spInd..];
 
             //by order number?
             if (int.TryParse(name, out int number))
@@ -322,7 +322,7 @@ namespace Drill4Net.Agent.Standard.Tester
                     if (type.StartsWith(nullableToken))
                     {
                         type = type.Replace(nullableToken, null);
-                        type = type.Substring(0, type.Length - 1);
+                        type = type[0..^1];
                     }
                     switch (type)
                     {

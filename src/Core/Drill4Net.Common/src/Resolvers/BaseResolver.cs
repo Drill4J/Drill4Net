@@ -9,7 +9,7 @@ namespace Drill4Net.Common
     public abstract class BaseResolver
     {
         public List<string> SearchDirs { get; }
-        private List<string> _runtimeDirs;
+        private readonly List<string> _runtimeDirs;
 
         /************************************************************************/
 

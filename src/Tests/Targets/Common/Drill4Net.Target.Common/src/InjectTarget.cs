@@ -988,7 +988,7 @@ namespace Drill4Net.Target.Common
         {
             return await Task.Run(() =>
             {
-                if (cond) //If_5
+                if (cond)
                     element.Prop += "/1";
                 return element;
             });

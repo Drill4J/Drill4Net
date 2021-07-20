@@ -78,7 +78,7 @@ namespace Drill4Net.Injector.Engine
                 .Where(s => s.AssemblyName == asmCtx.InjAssembly.Name);
 
             //by types
-            foreach (var typeCtx in asmCtx.TypeContexts.Values) 
+            foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 Debug.WriteLine(typeCtx.InjType.FullName);
 

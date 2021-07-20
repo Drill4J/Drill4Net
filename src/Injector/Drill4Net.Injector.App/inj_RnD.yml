@@ -71,4 +71,3 @@ Versions: # what will be tested - by target moniker/assembly/class
         net5.0:
           BaseFolder: Drill4Net.Target.Net50.App\net5.0\
 Silent: false # no wait, no questions...
-
