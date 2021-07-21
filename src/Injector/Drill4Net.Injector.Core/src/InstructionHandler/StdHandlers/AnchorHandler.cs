@@ -35,7 +35,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (flow is not FlowControl.Next and not FlowControl.Call)
                 return false;
-            if (instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S or Code.Br or Code.Br_S } })
+            if (IsPreviousBad(instr))
                 return false;
             if (ctx.Processed.Contains(instr)) //it can already be processed
                 return false;
@@ -76,12 +76,14 @@ namespace Drill4Net.Injector.Core
         {
             //in fact, will process not processed instructions
             var ret = ctx.Instructions.Last();
-            foreach (var instr in ctx.BusinessInstructions
+            var instrs = ctx.BusinessInstructions
                                     .Where(a => ctx.Anchors.Contains(a) &&
                                                 !ctx.Processed.Contains(a) &&
                                                 !ctx.ReplacedJumps.ContainsKey(a) &&
+                                                !IsPreviousBad(a) &&
                                                 a != ret
-                                           ))
+                                           );
+            foreach (var instr in instrs)
             {
                 var ind = ctx.Instructions.IndexOf(instr);
                 //TODO: instead such inefficient check better immediately to exclude the bad branches in ctx.Anchors
@@ -89,12 +91,15 @@ namespace Drill4Net.Injector.Core
                 var prevInd = ctx.Instructions.IndexOf(prev);
                 if (!IsRealCondition(prevInd, ctx))
                     continue;
-                if (instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S or Code.Br or Code.Br_S } })
-                    continue;
                 //
                 ctx.SetPosition(ind);
                 ProcessInstruction(ctx);
             }
+        }
+
+        private bool IsPreviousBad(Instruction instr)
+        {
+            return instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S or Code.Br or Code.Br_S } };
         }
     }
 }
