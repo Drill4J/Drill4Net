@@ -17,7 +17,7 @@ namespace Drill4Net.Injector.Core
         /************************************************************************************/
 
         public AnchorHandler(AbstractProbeHelper probeHelper, bool ignoreCycles):
-            base(InjectorCoreConstants.INSTRUCTION_HANDLER_ANCHOR, CrossPointType.Anchor, probeHelper)
+            base(InjectorCoreConstants.INSTRUCTION_HANDLER_ANCHOR, CrossPointType.Anchor, probeHelper, false)
         {
             _ignoreCycles = ignoreCycles;
         }
@@ -35,7 +35,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (flow is not FlowControl.Next and not FlowControl.Call)
                 return false;
-            if (instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S } })
+            if (instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S or Code.Br or Code.Br_S } })
                 return false;
             if (ctx.Processed.Contains(instr)) //it can already be processed
                 return false;
@@ -88,6 +88,8 @@ namespace Drill4Net.Injector.Core
                 var prev = SkipNop(ind, false, ctx);
                 var prevInd = ctx.Instructions.IndexOf(prev);
                 if (!IsRealCondition(prevInd, ctx))
+                    continue;
+                if (instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S or Code.Br or Code.Br_S } })
                     continue;
                 //
                 ctx.SetPosition(ind);

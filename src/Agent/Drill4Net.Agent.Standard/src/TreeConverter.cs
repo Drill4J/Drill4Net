@@ -8,7 +8,7 @@ using Drill4Net.Agent.Abstract.Transfer;
 namespace Drill4Net.Agent.Standard
 {
     /// <summary>
-    /// Helper for converting DTO entities (<see cref="AstEntity"/>, <see cref="AstMethod"/>) 
+    /// Helper for converting DTO entities (<see cref="AstEntity"/>, <see cref="AstMethod"/>)
     /// and also <see cref="CoverageRegistrator"/> from <see cref="InjectedType"/>
     /// </summary>
     public class TreeConverter

@@ -11,7 +11,7 @@ namespace Drill4Net.Profiling.Tree
 
         /*************************************************************************/
 
-        public InjectedDirectory(string sourceDir, string destDir) : 
+        public InjectedDirectory(string sourceDir, string destDir):
             base(GetLastFolder(sourceDir), sourceDir)
         {
             DestinationPath = destDir;

@@ -131,7 +131,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static void FindMoveNextMethods(AssemblyContext asmCtx)
+        internal static void CollectMoveNextMethods(AssemblyContext asmCtx)
         {
             var moveNextMethods = asmCtx.InjAssembly.Filter(typeof(InjectedMethod), true)
                .Cast<InjectedMethod>()
@@ -339,7 +339,7 @@ namespace Drill4Net.Injector.Engine
                     var cnt = inds.Count;
                     var retInd = inds[cnt - 1].Index;
                     if (method.BusinessSize != retInd + 1)
-                    { 
+                    {
                         //TODO: log
                         //throw new System.Exception($"Wrong business indexes for [{method}]");
                     }
@@ -395,6 +395,8 @@ namespace Drill4Net.Injector.Engine
             {
                 var origInd = point.OrigInd;
                 var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); //only for the local code body
+                if (localBizInd > 0 && point.PointType != CrossPointType.Return) //because currently cross-point are setted before instruction which they relate
+                    localBizInd--;
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
                 end2EndBusinessIndexes.Add((bizInd, point.PointUid));

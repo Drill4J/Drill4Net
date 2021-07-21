@@ -16,12 +16,22 @@ namespace Drill4Net.Injector.Core
         /// The type of the point.
         /// </value>
         public CrossPointType PointType { get; }
+
+        /// <summary>
+        /// Whether it is necessary to move the anchor for the jump from the 
+        /// original instruction to the beginning of the injection.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [replace jumps]; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsReplaceJumps { get; }
         
         /*****************************************************************************/
         
-        private protected AbstractSimpleHandler(string name, CrossPointType pointType, AbstractProbeHelper probeHelper):
+        private protected AbstractSimpleHandler(string name, CrossPointType pointType, AbstractProbeHelper probeHelper, bool replaceJump = true):
             base(name, probeHelper)
         {
+            IsReplaceJumps = replaceJump;
             PointType = pointType;
         }
 
@@ -55,7 +65,8 @@ namespace Drill4Net.Injector.Core
 
             //correction
             FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
-            ReplaceJumps(instr, ldstr, ctx);
+            if(IsReplaceJumps)
+                ReplaceJumps(instr, ldstr, ctx);
             ctx.CorrectIndex(2);
 
             //injection

@@ -49,7 +49,7 @@ namespace Drill4Net.Injector.Engine
 
             //the preparing
             AssemblyHelper.CollectJumperData(asmCtx);
-            AssemblyHelper.FindMoveNextMethods(asmCtx);
+            AssemblyHelper.CollectMoveNextMethods(asmCtx);
             AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
             AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
             AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
