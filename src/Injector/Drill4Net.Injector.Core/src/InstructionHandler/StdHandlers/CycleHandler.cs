@@ -51,7 +51,7 @@ namespace Drill4Net.Injector.Core
 
             // Operators: while/for, do
             var ind = instructions.IndexOf(operand);
-            var prevOperand = SkipNop(ind, false, instructions);
+            var prevOperand = SkipNop(ind, false, ctx);
             if (prevOperand.OpCode.Code is Code.Br or Code.Br_S) //for/while
             {
                 var ldstrIf2 = Register(ctx, CrossPointType.Cycle);

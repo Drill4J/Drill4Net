@@ -62,7 +62,7 @@ namespace Drill4Net.Injector.Core
             #region Is this business code?
             if (!isAsyncStateMachine && !isEnumeratorMoveNext && IsCompilerGeneratedBranch(ctx.CurIndex, instructions, compilerInstructions))
                 return false;
-            if (!IsRealCondition(ctx.CurIndex, instructions))
+            if (!IsRealCondition(ctx.CurIndex, ctx))
                 return false;
             #endregion
             #region Monitor/lock
@@ -70,7 +70,7 @@ namespace Drill4Net.Injector.Core
             if (isBrFalse && operand is {OpCode: {Code: Code.Endfinally}})
             {
                 var endFinInd = instructions.IndexOf(operand);
-                var prevInstr = SkipNop(endFinInd, false, instructions);
+                var prevInstr = SkipNop(endFinInd, false, ctx);
                 var operand2 = prevInstr.Operand as MemberReference;
                 if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
                     return false;

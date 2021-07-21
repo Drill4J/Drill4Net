@@ -28,9 +28,9 @@ namespace Drill4Net.Injector.Core
                 var ind = ctx.Instructions.IndexOf(instr);
 
                 //check for too short jump
-                var prev = SkipNop(ind, false, ctx.Instructions);
+                var prev = SkipNop(ind, false, ctx);
                 var prevInd = ctx.Instructions.IndexOf(prev);
-                if (!IsRealCondition(prevInd, ctx.Instructions))
+                if (!IsRealCondition(prevInd, ctx))
                     continue;
 
                 var origInd = ctx.OrigInstructions.IndexOf(instr);

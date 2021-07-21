@@ -48,6 +48,7 @@ namespace Drill4Net.Injector.Engine
                 return; //just the context does not contain any methods of interest to us
 
             //the preparing
+            AssemblyHelper.CollectJumperData(asmCtx);
             AssemblyHelper.FindMoveNextMethods(asmCtx);
             AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
             AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
@@ -90,7 +91,6 @@ namespace Drill4Net.Injector.Engine
                     var body = methodCtx.Definition.Body;
                     //body.SimplifyMacros(); //bug (Cecil's or my?)
 
-                    CollectJumpers(methodCtx);
                     CollectCallsInfo(asmCtx, treeAsmMethods);
                     InjectMethod(methodCtx);
                     CorrectJumps(methodCtx.Jumpers);
@@ -139,31 +139,6 @@ namespace Drill4Net.Injector.Engine
                 i = HandleInstruction(methodCtx); //process and correct current index after potential injection
             }
             Strategy.Postprocess(methodCtx); //primary post-actions for some handlers
-        }
-
-        internal void CollectJumpers(MethodContext methodCtx)
-        {
-            //Hash table for separate addresses is almost useless,
-            //because they may be recalculated inside the processor during inject...
-            //and ideally, there shouldn't be too many of them 
-            var instructions = methodCtx.Instructions; //no copy list!
-            for (var i = 1; i < instructions.Count; i++)
-            {
-                var instr = instructions[i];
-                var flow = instr.OpCode.FlowControl;
-                if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
-                    continue;
-                methodCtx.Jumpers.Add(instr);
-                //
-                var anchor = instr.Operand;
-                //need this jump for handle?
-                var curCode = instr.OpCode.Code;
-                //not needed jumps from by Leave from try/catch/finally semantically
-                if (curCode == Code.Leave || curCode == Code.Leave_S)
-                    continue;
-                if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))
-                    methodCtx.Anchors.Add(anchor);
-            }
         }
 
         /// <summary>

@@ -323,7 +323,7 @@ namespace Drill4Net.Agent.Standard
                 case 0:
                     return;
                 case > 65535: //Drill side's restriction
-                    //TODO: implement in cycle by chunk
+                    //TODO: implement sending in cycle by chunk by 65535 probes (find out more from the engineers)
                     break;
                 default:
                     Communicator.Sender.SendCoverageData(sessionUid, execClasses);

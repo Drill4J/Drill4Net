@@ -21,7 +21,7 @@
         BreakCycle,
 
         /// <summary>
-        /// Need return from method
+        /// Need return from the processing method
         /// </summary>
         Return,
     }

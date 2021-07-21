@@ -189,13 +189,14 @@ namespace Drill4Net.Injector.Core
         /// <param name="ind">Current index of instruction</param>
         /// <param name="instructions">List of method's instructions</param>
         /// <returns></returns>
-        internal bool IsRealCondition(int ind, Mono.Collections.Generic.Collection<Instruction> instructions)
+        internal bool IsRealCondition(int ind, MethodContext ctx)
         {
+            var instructions = ctx.Instructions;
             if (ind < 0 || ind >= instructions.Count)
                 return false;
             //
             var op = instructions[ind];
-            var next = SkipNop(ind, true, instructions);
+            var next = SkipNop(ind, true, ctx);
             return op.Operand != next; //how far do it jump?
         }
 
@@ -228,8 +229,9 @@ namespace Drill4Net.Injector.Core
         /// <param name="forward">Direction: forward or backward</param>
         /// <param name="instructions">List of method's instrunctions</param>
         /// <returns></returns>
-        internal Instruction SkipNop(int ind, bool forward, Mono.Collections.Generic.Collection<Instruction> instructions)
+        internal Instruction SkipNop(int ind, bool forward, MethodContext methodCtx)
         {
+            var instructions = methodCtx.Instructions;
             int start, inc;
             if (forward)
             {
@@ -247,7 +249,7 @@ namespace Drill4Net.Injector.Core
                 if (i >= instructions.Count || i < 0)
                     break;
                 var op = instructions[i];
-                if (op.OpCode.Code == Code.Nop)
+                if (op.OpCode.Code == Code.Nop && !methodCtx.Anchors.Contains(op))
                     continue;
                 return op;
             }
@@ -344,9 +346,9 @@ namespace Drill4Net.Injector.Core
         /// <param name="instructions">List of instructions</param>
         /// <param name="lastOp">Real last operation (Return statement)</param>
         /// <returns></returns>
-        internal bool IsNextReturn(int ind, Mono.Collections.Generic.Collection<Instruction> instructions, Instruction lastOp)
+        internal bool IsNextReturn(int ind, MethodContext ctx, Instruction lastOp)
         {
-            var ins = SkipNop(ind, true, instructions);
+            var ins = SkipNop(ind, true, ctx);
             if (ins.Operand is not Instruction op)
                 return false;
             if (op == lastOp && ins.Next == lastOp)

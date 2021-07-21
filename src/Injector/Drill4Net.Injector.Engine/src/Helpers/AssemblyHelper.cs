@@ -63,6 +63,42 @@ namespace Drill4Net.Injector.Engine
             return true;
         }
 
+        internal static void CollectJumperData(AssemblyContext asmCtx)
+        {
+            foreach (var typeCtx in asmCtx.TypeContexts.Values)
+            {
+                foreach (var methodCtx in typeCtx.MethodContexts.Values)
+                {
+                    CollectJumpers(methodCtx);
+                }
+            }
+        }
+
+        internal static void CollectJumpers(MethodContext methodCtx)
+        {
+            //Hash table for separate addresses is almost useless,
+            //because they may be recalculated inside the processor during inject...
+            //and ideally, there shouldn't be too many of them 
+            var instructions = methodCtx.Instructions; //no copy list!
+            for (var i = 1; i < instructions.Count; i++)
+            {
+                var instr = instructions[i];
+                var flow = instr.OpCode.FlowControl;
+                if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
+                    continue;
+                methodCtx.Jumpers.Add(instr);
+                //
+                var anchor = instr.Operand;
+                //need this jump for handle?
+                var curCode = instr.OpCode.Code;
+                //not needed jumps from by Leave from try/catch/finally semantically
+                if (curCode == Code.Leave || curCode == Code.Leave_S)
+                    continue;
+                if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))
+                    methodCtx.Anchors.Add(anchor);
+            }
+        }
+
         internal static void CalcMethodHashcodes(AssemblyContext asmCtx)
         {
             var methCtxs = asmCtx.TypeContexts.Values.SelectMany(a => a.MethodContexts.Values).ToDictionary(a => a.Method.FullName);
@@ -174,9 +210,15 @@ namespace Drill4Net.Injector.Engine
             var instr = ctx.CurInstruction;
             var code = instr.OpCode.Code;
 
-            // for injecting cases
-            if (code == Code.Nop || ctx.Processed.Contains(instr))
+            //for injecting cases
+            if (ctx.Processed.Contains(instr))
                 return OperationType.CycleContinue;
+
+            //non-functional NOP not needed
+            if (code == Code.Nop && !ctx.Anchors.Contains(instr))
+            {
+                return OperationType.CycleContinue;
+            }
 
             var method = ctx.Method;
 
