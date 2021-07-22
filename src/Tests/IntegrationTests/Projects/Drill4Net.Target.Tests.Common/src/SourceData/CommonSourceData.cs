@@ -151,8 +151,8 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Switch_Logical), new object[] { 10 }, new List<string> { "Branch_2", "Branch_8", "Else_6", "Branch_15", "Branch_18", "Anchor_17", "Branch_37", "Anchor_20", "Branch_43", "Branch_56" });
                 #endregion
                 #region Elvis
-                yield return GetCase(GetInfo(Target.Elvis_Null), Array.Empty<object>(), new List<string> { "Branch_4", "Else_4", "Branch_10", "Anchor_9" });
-                yield return GetCase(GetInfo(Target.Elvis_Sequence_Null), Array.Empty<object>(), new List<string> { "Branch_4", "Else_4", "Branch_12", "Anchor_20" });
+                yield return GetCase(GetInfo(Target.Elvis_Null), Array.Empty<object>(), new List<string> { "Branch_4", "Else_4", "Branch_6" });
+                yield return GetCase(GetInfo(Target.Elvis_Sequence_Null), Array.Empty<object>(), new List<string> { "Branch_4", "Else_4", "Branch_8" });
                 yield return GetCase(GetInfo(Target.Elvis_Double_Null), Array.Empty<object>(), new List<string> { "Branch_5", "Else_5", "Anchor_8" });
                 #endregion
                 #region Linq
@@ -193,8 +193,8 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { true }, new List<string> { "Branch_5", "If_9", "Branch_20" });
                 #endregion
                 #region Dynamic
-                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { false }, new List<string> { "Branch_4", "Anchor_6|Branch_7", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45|Branch_54", "Anchor_67", "Call_72", "Branch_2", "Else_2", "Branch_8", "Anchor_6", "Branch_17" }).SetCategory(CATEGORY_DYNAMIC);
-                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { true }, new List<string> { "Branch_4", "Anchor_6|Branch_7", "Anchor_27", "Branch_37", "Call_40", "Branch_51", "Anchor_45|Branch_54", "Anchor_67", "Call_72", "Branch_2", "If_4", "Anchor_6", "Branch_17" }).SetCategory(CATEGORY_DYNAMIC);
+                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { false }, new List<string> { "Branch_4", "Branch_5|Anchor_27", "Branch_33", "Call_40", "Branch_43", "Branch_44|Anchor_67", "Call_72", "Branch_1", "Else_1", "Branch_3" }).SetCategory(CATEGORY_DYNAMIC);
+                yield return GetCase(GetInfo(Target.ExpandoObject), new object[] { true }, new List<string> { "Branch_4", "Branch_5|Anchor_27", "Branch_33", "Call_40", "Branch_43", "Branch_44|Anchor_67", "Call_72", "Branch_1", "If_3" }).SetCategory(CATEGORY_DYNAMIC);
                 #endregion
                 #region Cycle
                 yield return GetCase(GetInfo(Target.Cycle_Do), Array.Empty<object>(), new List<string> { "Anchor_10", "Cycle_21", "Branch_21", "Cycle_21", "Branch_21", "Cycle_21", "Branch_21", "CycleEnd_21" }); //local IDs may match
@@ -274,7 +274,7 @@ namespace Drill4Net.Target.Tests.Common
                     );
 
                 yield return GetCase(Array.Empty<object>(), false,
-                    new TestInfo(GetInfo(Target.Elvis_Sequence_NotNull),  new List<string> { "Branch_5", "If_9", "Call_11", "Branch_23", "If_18", "Anchor_21" }),
+                    new TestInfo(GetInfo(Target.Elvis_Sequence_NotNull),  new List<string> { "Branch_5", "If_9", "Call_11", "Branch_13", "If_18", "Anchor_21" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" })
                     );
 
@@ -286,25 +286,25 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Generics_Call_Base), new List<string> { "Call_6" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" }),
-                    new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Branch_6", "Else_6", "Branch_12", "Anchor_12", "Branch_23" })
+                    new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Branch_6", "Else_6", "Branch_8", "Branch_13" })
                     );
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Generics_Call_Base), new List<string> { "Call_6" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" }),
-                    new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Branch_6", "If_8", "Anchor_12", "Branch_23" })
+                    new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Branch_6", "If_8", "Anchor_12", "Branch_13" })
                     );
 
                 yield return GetCase(new object[] { false },
-                    new TestInfo(GetInfo(Target.Generics_Call_Child), new List<string> { "Branch_5", "Else_5", "Branch_11", "Anchor_10" }),
+                    new TestInfo(GetInfo(Target.Generics_Call_Child), new List<string> { "Branch_5", "Else_5", "Branch_7" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" })
                     );
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Generics_Call_Child), new List<string> { "Branch_5", "If_7", "Call_9", "Anchor_10" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" }),
-                    new TestInfo(GetInfo(_genStr.GetShortDesc), new List<string> { "Call_3", "Branch_7" }),
-                    new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Branch_6", "Else_6", "Branch_12", "Anchor_12", "Branch_23"})
+                    new TestInfo(GetInfo(_genStr.GetShortDesc), new List<string> { "Call_3", "Branch_5" }),
+                    new TestInfo(GetInfo(_genStr.GetDesc), new List<string> { "Branch_6", "Else_6", "Branch_8", "Branch_13" })
                     );
 
                 yield return GetCase(new object[] { false },
@@ -623,12 +623,12 @@ namespace Drill4Net.Target.Tests.Common
                 //Extension
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Extension), new List<string> { "Call_3" }),
-                    new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Branch_2", "Else_2", "Branch_8", "Anchor_6", "Branch_17" })
+                    new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Branch_2", "Else_2", "Branch_4", "Branch_7" })
                     ).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(new object[] { true },
                     new TestInfo(GetInfo(Target.Extension), new List<string> { "Call_3" }),
-                    new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Branch_2", "If_4", "Anchor_6", "Branch_17" })
+                    new TestInfo(GetInfo(Extensions.ToWord), new List<string> { "Branch_2", "If_4", "Anchor_6", "Branch_7" })
                     ).SetCategory(CATEGORY_MISC);
 
                 //Event
@@ -639,34 +639,30 @@ namespace Drill4Net.Target.Tests.Common
 
                 #region Enumerator_Implementation
                 yield return GetCase(Array.Empty<object>(), true,
-                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Call_7", "Branch_11", "Anchor_17", "Branch_25", "Anchor_10", "Anchor_17", "Branch_25", "Anchor_10", "Anchor_17", "Branch_25", "Anchor_10", "Anchor_17", "Branch_25", "Anchor_10", "Anchor_17", "Branch_25", "Branch_28", "Branch_32", "Anchor_26" }),
+                    new TestInfo(GetInfo(Target.Enumerator_Implementation), new List<string> { "Call_7", "Branch_9", "Branch_19", "Anchor_17", "Branch_19", "Anchor_17", "Branch_19", "Anchor_17", "Branch_19", "Anchor_17", "Branch_19", "Branch_20", "Branch_22", "Anchor_26" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.StringEnumerable::.ctor()"), false, new List<string>()),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerator`1<System.String> Drill4Net.Target.Common.StringEnumerable::GetEnumerator()"), false, new List<string> { "Branch_5" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.NotEmptyStringEnumerator::.ctor(System.String[])"), false, new List<string>()),
-                    new TestInfo(GetInfo(_strEnumerator.MoveNext), 
-                        new List<string> { "Branch_14", "Else_17", "Call_20", "Branch_34", "Anchor_25",
-                                           "Branch_14", "Else_17", "Call_20", "Branch_34", "Anchor_25",
-                                           "Branch_14", "Else_17", "Call_20", "Branch_34", "Anchor_25",
-                                           "Branch_14", "Else_17", "Call_20", "Branch_34", "Anchor_25",
-                                           "Branch_14", "If_14", "Branch_21", "Anchor_25" }),
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Int32 Drill4Net.Target.Common.NotEmptyStringEnumerator::GetPosition()"), false, 
-                        new List<string> { "Branch_4",
-                                           "Anchor_6", "Branch_19", "Else_13", "Branch_33", "Anchor_25", "Branch_43", "Cycle_27",
-                                           "Anchor_6", "Branch_19", "Else_13", "Branch_33", "Anchor_25", "Branch_43", "CycleEnd_27",
-                                           "Branch_50", "Branch_4",
-                                           "Anchor_6", "Branch_19", "Else_13", "Branch_33", "Anchor_25", "Branch_43", "CycleEnd_27",
-                                           "Branch_50", "Branch_4",
-                                           "Anchor_6", "Branch_19", "Else_13", "Branch_33", "Anchor_25", "Branch_43", "Cycle_27",
-                                           "Anchor_6", "Branch_19", "Else_13", "Branch_33", "Anchor_25", "Branch_43", "CycleEnd_27",
-                                           "Branch_50", "Branch_4",
-                                           "Anchor_6", "Branch_19", "Else_13", "Branch_33", "Anchor_25", "Branch_43", "Cycle_27",
-                                           "Anchor_6", "Branch_19", "If_23", "Anchor_25", "Branch_43", "CycleEnd_27", "Branch_50" }),
+                    new TestInfo(GetInfo(_strEnumerator.MoveNext),
+                        new List<string> { "Branch_14", "Else_17", "Call_20", "Branch_24", "Return_26",
+                                           "Branch_14", "Else_17", "Call_20", "Branch_24", "Return_26",
+                                           "Branch_14", "Else_17", "Call_20", "Branch_24", "Return_26",
+                                           "Branch_14", "Else_17", "Call_20", "Branch_24", "Return_26",
+                                           "Branch_14", "If_14", "Branch_17", "Return_26" }, true),
+                    new TestInfo(GetSourceFromFullSig(Target, "System.Int32 Drill4Net.Target.Common.NotEmptyStringEnumerator::GetPosition()"), false,
+                        new List<string> { "Branch_4", "Branch_13", "Else_13", "Branch_23", "Branch_27", "Cycle_27", "Anchor_5", "Anchor_6",
+                                           "Branch_13", "Else_13", "Branch_23", "Branch_27", "CycleEnd_27", "Branch_30", "Return_32", "Branch_4",
+                                           "Branch_13", "Else_13", "Branch_23", "Branch_27", "CycleEnd_27", "Branch_30", "Return_32", "Branch_4",
+                                           "Branch_13", "Else_13", "Branch_23", "Branch_27", "Cycle_27", "Anchor_5", "Anchor_6",
+                                           "Branch_13", "Else_13", "Branch_23", "Branch_27", "CycleEnd_27", "Branch_30", "Return_32", "Branch_4",
+                                           "Branch_13", "Else_13", "Branch_23", "Branch_27", "Cycle_27", "Anchor_5", "Anchor_6",
+                                           "Branch_13", "If_23", "Anchor_25", "Branch_27", "CycleEnd_27", "Branch_30" }, true),
                     new TestInfo(GetSourceFromFullSig(Target, "System.String Drill4Net.Target.Common.NotEmptyStringEnumerator::get_Current()"), false,
-                        new List<string> { "Branch_4", "Else_4",
-                                           "Branch_18", "Anchor_16", "Branch_28", "Else_21", "Branch_43", "Branch_4", "Else_4",
-                                           "Branch_18", "Anchor_16", "Branch_28", "Else_21", "Branch_43", "Branch_4", "Else_4",
-                                           "Branch_18", "Anchor_16", "Branch_28", "Else_21", "Branch_43", "Branch_4", "Else_4",
-                                           "Branch_18", "Anchor_16", "Branch_28", "Else_21", "Branch_43" })
+                        new List<string> { "Branch_4", 
+                                           "Else_4", "Branch_14", "Branch_18", "Else_21", "Branch_27", "Return_29", "Branch_4",
+                                           "Else_4", "Branch_14", "Branch_18", "Else_21", "Branch_27", "Return_29", "Branch_4",
+                                           "Else_4", "Branch_14", "Branch_18", "Else_21", "Branch_27", "Return_29", "Branch_4",
+                                           "Else_4", "Branch_14", "Branch_18", "Else_21", "Branch_27" }, true)
                     ).SetCategory(CATEGORY_MISC);
                 #endregion
 
