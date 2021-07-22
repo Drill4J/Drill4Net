@@ -14,5 +14,11 @@
         /// Options for the injecting process (types of methods, cross-point, etc)
         /// </summary>
         public ProbesOptions Probes { get; set; }
+
+        /// <summary>
+        /// Debug mode for the Tester
+        /// </summary>
+        /// <seealso cref="Drill4Net.Common.IDebugOptions" />
+        public TestetDebugOptions Debug { get; set; }
     }
 }

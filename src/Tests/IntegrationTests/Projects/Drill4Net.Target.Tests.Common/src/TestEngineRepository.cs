@@ -7,6 +7,7 @@ using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Core.Repository;
+using System.Linq;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -33,6 +34,8 @@ namespace Drill4Net.Target.Tests.Common
         /// </value>
         public Dictionary<string, MonikerData> Targets { get; }
 
+        private const string DEBUG_PROBES_FOLDER_DEFAULT = "probes";
+        private readonly string _debugProbesDir;
         private readonly TestAgentRepository _tstRep;
 
         /*******************************************************************************/
@@ -56,6 +59,16 @@ namespace Drill4Net.Target.Tests.Common
                 Targets = Options.Versions.Targets;
                 TargetsDir = _tstRep.GetTargetsDir(callDir);
 
+                //debug - TODO: own helper based on BaseOptionsHelper for TestAgentRepository (override PostProcess method)
+                var debug = Options.Debug;
+                if (!debug.Disabled)
+                {
+                    _debugProbesDir = Path.Combine(callDir, DEBUG_PROBES_FOLDER_DEFAULT);
+                    if (Directory.Exists(_debugProbesDir))
+                        Directory.Delete(_debugProbesDir, true);
+                    Directory.CreateDirectory(_debugProbesDir);
+                }
+                //
                 Log.Debug("Repository is initialized.");
             }
             catch (Exception ex)
@@ -99,6 +112,40 @@ namespace Drill4Net.Target.Tests.Common
         {
             var path = Path.Combine(TargetsDir, CoreConstants.TREE_FILE_NAME);
             return _tstRep.ReadInjectedTree(path);
+        }
+
+        /// <summary>
+        /// Write to file debug info: probes data from cross-points
+        /// </summary>
+        /// <param name="actual"></param>
+        public void WriteDebugInfo(string method, object[] args, Dictionary<string, List<PointLinkage>> actual)
+        {
+            if (Options.Debug.Disabled)
+                return;
+            List<string> strs = new();
+            foreach (var func in actual.Keys)
+            {
+                strs.Add(func);
+                var points = actual[func];
+                var s = "";
+                // Return type in some methods are needed
+                var fltPoints = points.Where(a => a.Point.PointType != CrossPointType.Enter);
+                foreach (var point in fltPoints)
+                {
+                    s += $"\"{point.Probe}\", ";
+                }
+                if (s != "")
+                    s = s.Remove(s.Length - 2, 2);
+                strs.Add(s);
+                strs.Add(null);
+            }
+
+            //pars
+            var pars = "";
+            if (args?.Length > 0)
+                pars += "@ " + string.Join(",", args);
+
+            File.WriteAllLines(Path.Combine(_debugProbesDir, $"{method} {pars}.log"), strs);
         }
     }
 }

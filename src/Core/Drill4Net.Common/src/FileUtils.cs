@@ -79,6 +79,12 @@ namespace Drill4Net.Common
             return GetFullPath(opts?.Source?.Directory);
         }
 
+        /// <summary>
+        /// Gets the full path from relative one.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="basePath">The base path.</param>
+        /// <returns></returns>
         public static string GetFullPath(string path, string basePath = null)
         {
             if (string.IsNullOrWhiteSpace(path))

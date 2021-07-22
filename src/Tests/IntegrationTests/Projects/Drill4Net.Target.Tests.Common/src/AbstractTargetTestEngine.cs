@@ -73,6 +73,7 @@ namespace Drill4Net.Target.Tests.Common
             #endregion
             #region Assert
             var funcs = GetFunctions();
+            _testsRep.WriteDebugInfo(mi.Name, args, funcs);
             Assert.IsTrue(funcs.Count == 1);
 
             var sig = SourceDataCore.GetFullSignature(mi);
@@ -141,6 +142,8 @@ namespace Drill4Net.Target.Tests.Common
                 var links2 = ConvertToLinks(probes2);
                 funcs.Add(sig, links2);
             }
+            _testsRep.WriteDebugInfo(mi.Name, args, funcs);
+
             if (!isBunch)
             {
                 Assert.IsTrue(funcs.Count == inputs.Length);
@@ -164,7 +167,6 @@ namespace Drill4Net.Target.Tests.Common
                     List<PointLinkage> points = null;
                     if (!funcs.ContainsKey(source)) //rare: another source?
                     {
-                        //var asmName = SourceDataCore.CreateMethodSource(,fullSig);
                         foreach (var func in funcs.Keys)
                         {
                             var ar = func.Split(';');

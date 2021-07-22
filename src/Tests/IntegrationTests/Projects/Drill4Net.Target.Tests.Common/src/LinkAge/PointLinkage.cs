@@ -7,7 +7,7 @@ namespace Drill4Net.Target.Tests.Common
     /// Info linking cross-point with its method, type, assembly, etc
     /// </summary>
     /// <seealso cref="System.IComparable" />
-    internal class PointLinkage : IComparable
+    public class PointLinkage : IComparable
     {
         public InjectedAssembly Assembly { get; }
         public InjectedType Type { get; }

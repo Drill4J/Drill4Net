@@ -144,6 +144,14 @@
             Directory for the emergency logs out of scope of the common log system
             </summary>
         </member>
+        <member name="M:Drill4Net.Common.FileUtils.GetFullPath(System.String,System.String)">
+            <summary>
+            Gets the full path from relative one.
+            </summary>
+            <param name="path">The path.</param>
+            <param name="basePath">The base path.</param>
+            <returns></returns>
+        </member>
         <member name="M:Drill4Net.Common.FileUtils.GetCommonLogDirectory(System.String,System.String)">
             <summary>
             Get directory for the all subsystems of the Drill4Net
@@ -575,6 +583,34 @@
             <summary>
             Options for the injecting process (types of methods, cross-point, etc)
             </summary>
+        </member>
+        <member name="P:Drill4Net.Common.TesterOptions.Debug">
+            <summary>
+            Debug mode for the Tester
+            </summary>
+            <seealso cref="T:Drill4Net.Common.IDebugOptions" />
+        </member>
+        <member name="T:Drill4Net.Common.TestetDebugOptions">
+            <summary>
+            Debug mode for the Tester
+            </summary>
+            <seealso cref="T:Drill4Net.Common.IDebugOptions" />
+        </member>
+        <member name="P:Drill4Net.Common.TestetDebugOptions.Disabled">
+            <summary>
+            Is Debug mode is active?
+            </summary>
+            <value>
+              <c>true</c> if disabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.TestetDebugOptions.WriteProbes">
+            <summary>
+            Whether to record the received samples in files (by methods).
+            </summary>
+            <value>
+              <c>true</c> if [write probes]; otherwise, <c>false</c>.
+            </value>
         </member>
         <member name="T:Drill4Net.Common.AssemblyDefinitionResolver">
             <summary>
