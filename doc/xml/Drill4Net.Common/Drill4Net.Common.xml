@@ -22,6 +22,11 @@
             Options for the injection
             </summary>
         </member>
+        <member name="M:Drill4Net.Common.AbstractRepository`1.PrepareLogger">
+            <summary>
+            The preparing the logger. It need be called from the client side.
+            </summary>
+        </member>
         <member name="M:Drill4Net.Common.AbstractRepository`1.PrepareInitLogger(System.String)">
             <summary>
             Prepares the initialize logger.
@@ -198,7 +203,7 @@
         </member>
         <member name="P:Drill4Net.Common.AbstractOptions.Type">
             <summary>
-            Descriptive type of config (for Injector, Test Engine, Agent, etc)
+            Descriptive type of the config (for Injector, Test Engine, Agent, etc)
             </summary>
         </member>
         <member name="P:Drill4Net.Common.AbstractOptions.Logs">

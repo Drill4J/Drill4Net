@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drill4Net.Common;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
-    public class KafkaConsumerRepository
+    public class KafkaConsumerRepository : AbstractRepository<ConverterOptions>
     {
-        public ConverterOptions Options { get; set; }
-
-        private const string CFG_NAME_DEFAULT = "svc.yml";
-
         /******************************************************************/
 
-        public KafkaConsumerRepository()
+        public KafkaConsumerRepository() : base(ConverterConstants.SUBSYSTEM)
         {
+            var optHelper = new BaseOptionsHelper<ConverterOptions>();
+            Options = optHelper.ReadOptions(ConverterConstants.CONFIG_NAME_DEFAULT);
+
+            PrepareLogger();
         }
 
         /******************************************************************/

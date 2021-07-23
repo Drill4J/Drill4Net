@@ -5,7 +5,7 @@ namespace Drill4Net.Common
     public abstract class AbstractOptions
     {
         /// <summary>
-        /// Descriptive type of config (for Injector, Test Engine, Agent, etc)
+        /// Descriptive type of the config (for Injector, Test Engine, Agent, etc)
         /// </summary>
         public string Type { get; set; }
 

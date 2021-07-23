@@ -2,7 +2,7 @@
 Type: Converter #type as hint
 Servers: #list of servers
    - 'localhost:9092'
-GropuId: test-consumer-group
+GroupId: test-consumer-group
 Topic: my-topic
 Logs:
     - Type: console

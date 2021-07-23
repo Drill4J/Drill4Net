@@ -6,7 +6,8 @@ namespace Drill4Net.Agent.Kafka.Debug
     {
         static void Main(string[] args)
         {
-            //var agent = new KafkaAgent();
+            var rep = new KafkaConsumerRepository();
+            var agent = new KafkaConsumer(rep);
         }
     }
 }

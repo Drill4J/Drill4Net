@@ -26,11 +26,11 @@ namespace Drill4Net.Core.Repository
         /// Tryings to get the actual configuration file path.
         /// </summary>
         /// <returns></returns>
-        protected internal string GetActualConfigPath(string configDefName)
+        protected internal string GetActualConfigPath(string configDefaultName)
         {
             var dir = FileUtils.GetEntryDir();
             var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_REDIRECT_NAME);
-            var defName = string.IsNullOrWhiteSpace(configDefName) ? CoreConstants.CONFIG_DEFAULT_NAME : configDefName;
+            var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_DEFAULT_NAME : configDefaultName;
             if (!File.Exists(redirectPath))
                 return Path.Combine(dir, defName);
             Deserializer deser = new();
