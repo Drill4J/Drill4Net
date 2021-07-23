@@ -156,8 +156,8 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Elvis_Double_Null), Array.Empty<object>(), new List<string> { "Branch_5", "Else_5", "Anchor_8" });
                 #endregion
                 #region Linq
-                yield return GetCase(GetInfo(Target.Linq_Query), new object[] { false }, new List<string> { "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10" });
-                yield return GetCase(GetInfo(Target.Linq_Query), new object[] { true }, new List<string> { "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
+                yield return GetCase(GetInfo(Target.Linq_Query), new object[] { false }, new List<string> { "Call_24", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6" });
+                yield return GetCase(GetInfo(Target.Linq_Query), new object[] { true }, new List<string> { "Call_24", "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
 
                 yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { false }, new List<string> { "Call_24", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6" });
                 yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { true }, new List<string> { "Call_24", "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
@@ -395,19 +395,19 @@ namespace Drill4Net.Target.Tests.Common
                 #region Parallel
                 //Parallel_Linq
                 yield return GetCase(new object[] { false },
-                    new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "Branch_2", "Branch_2", "Branch_2", "Branch_2", "Branch_2", "Else_13", "Else_13", "Else_13", "Else_13", "Else_13" }, true),
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string> { "Branch_5" })
+                    new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "Call_11", "Call_15", "Call_16", "Branch_2", "Branch_2", "Else_13", "Branch_2", "Branch_2", "Else_13", "Branch_2", "Else_13", "Else_13", "Else_13" }, true),
+                    new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string> { "Call_3", "Branch_5" })
                     );
 
                 yield return GetCase(new object[] { true },
-                    new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "Branch_19", "Branch_19", "Branch_19", "Branch_19", "Branch_19", "Branch_2", "Branch_2", "Branch_2", "Branch_2", "Branch_2", "Branch_9", "Branch_9", "Branch_9", "Branch_9", "Branch_9", "If_2", "If_2", "If_2", "If_2", "If_2", "If_5", "If_5", "If_5", "If_5", "If_5" }, true),
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string> { "Branch_5" })
+                    new TestInfo(GetInfo(Target.Parallel_Linq), new List<string> { "Call_8", "Call_11", "Call_15", "Call_16", "Branch_2", "Branch_2", "Branch_2", "Branch_2", "If_2", "If_2", "If_2", "If_2", "Branch_5", "Branch_5", "Branch_5", "Branch_5", "If_5", "If_5", "If_5", "If_5", "Branch_11", "Branch_11", "Branch_11", "Branch_11", "Branch_2", "If_2", "Branch_5", "If_5", "Branch_11" }, true),
+                    new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string> { "Call_3", "Branch_5" })
                     );
 
                 //Parallel_For
                 yield return GetCase(new object[] { false },
                     new TestInfo(GetInfo(Target.Parallel_For), new List<string> { "Call_8", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Anchor_16", "Branch_3", "Branch_3", "Branch_3", "Branch_3", "Branch_3", "Branch_34", "Branch_34", "Branch_34", "Branch_34", "Branch_34", "Else_14", "Else_14", "Else_14", "Else_14", "Else_14", "If_18", "If_18", "If_18", "If_18", "If_18" }, true),
-                    new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string> { "Branch_5" })
+                    new TestInfo(GetSourceFromFullSig(Target, "System.Collections.Generic.IEnumerable`1<System.Int32> Drill4Net.Target.Common.InjectTarget::GetDataForParallel(System.Int32)"), false, new List<string> { "Call_3", "Branch_5" })
                     );
 
                 yield return GetCase(new object[] { true },
@@ -428,12 +428,12 @@ namespace Drill4Net.Target.Tests.Common
 
                 //Parallel_Task_New
                 yield return GetCase(new object[] { false },
-                    new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Anchor_15", "Branch_3", "Call_5", "Else_9" }, true),
-                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Anchor_14", "Branch_12", "Branch_2", "Branch_25", "Else_2" }, true));
+                    new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_24", "Call_32", "Call_5", "Branch_3", "Else_9", "Anchor_15" }, true),
+                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Branch_2", "Else_2", "Branch_8", "Branch_15" }, true));
 
                 yield return GetCase(new object[] { true },
-                    new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Anchor_15", "Branch_13", "Branch_3", "Call_5", "If_3" }, true),
-                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Anchor_14", "Branch_2", "Branch_25", "If_8" }, true));
+                    new TestInfo(GetInfo(Target.Parallel_Task_New), new List<string> { "Call_24", "Call_32", "Call_5", "Branch_3", "If_3", "Branch_9" }, true),
+                    new TestInfo(GetInfo(Target.GetStringListForTaskNew), new List<string> { "Branch_2", "If_8", "Anchor_14", "Branch_15" }, true));
 
                 //Parallel_Thread_New
                 yield return GetCase(new object[] { false },
@@ -668,8 +668,8 @@ namespace Drill4Net.Target.Tests.Common
 
                 //LocalFunc
                 //Drill doesnt't take into account local func as separate entity
-                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.LocalFunc), new List<string> { "Call_3", "Branch_2", "Else_2", "Branch_8", "Anchor_6", "Branch_17" })).SetCategory(CATEGORY_MISC);
-                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.LocalFunc), new List<string> { "Call_3", "Branch_2", "If_4", "Anchor_6", "Branch_17" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { false }, new TestInfo(GetInfo(Target.LocalFunc), new List<string> { "Call_3", "Branch_2", "Else_2", "Branch_4", "Branch_7" })).SetCategory(CATEGORY_MISC);
+                yield return GetCase(new object[] { true }, new TestInfo(GetInfo(Target.LocalFunc), new List<string> { "Call_3", "Branch_2", "If_4", "Anchor_6", "Branch_7" })).SetCategory(CATEGORY_MISC);
 
                 //Unsafe
                 yield return GetCase(new object[] { false },
