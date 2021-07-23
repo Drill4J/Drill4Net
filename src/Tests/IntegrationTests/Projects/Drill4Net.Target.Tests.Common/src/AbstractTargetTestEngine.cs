@@ -317,18 +317,37 @@ namespace Drill4Net.Target.Tests.Common
             return new PointLinkage(asm, type, method, point);
         }
         
-        private static void Check(IList<PointLinkage> links, List<string> checks)
+        private static void Check(IList<PointLinkage> reals, List<string> checks)
         {
             //Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
-            for (int i = 0; i < links.Count; i++)
+            var checkInd = -1;
+            for (int i = 0; i < reals.Count; i++)
             {
-                var real = links[i].Probe;
-                var must = checks[i];
+                checkInd++;
+                var real = reals[i].Probe;
+                var must = checks[checkInd];
                 if (must.Contains('|'))
                 {
-                    var ar = must.Split('|');
-                    if (ar[0] != real && ar[1] != real)
-                        Assert.Fail($"Index: {i}");
+                    var ar = must.Split('|'); //several variants of the probe
+                    var empty = ar.FirstOrDefault(a => string.IsNullOrWhiteSpace(a)); //the probe can be missed
+                    ar = ar.Where(a => !string.IsNullOrWhiteSpace(a)).ToArray();
+                    var yes = false;
+                    foreach (var check in ar)
+                    {
+                        if (check != real)
+                            continue;
+                        yes = true;
+                        break;
+                    }
+                    if (yes)
+                        continue;
+                    if (empty != null)
+                    {
+                        i--;
+                        continue;
+                    }
+                    //
+                    Assert.Fail($"Index: {i}");
                 }
                 else
                 {

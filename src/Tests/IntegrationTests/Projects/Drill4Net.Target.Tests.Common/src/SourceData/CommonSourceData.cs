@@ -159,23 +159,23 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Linq_Query), new object[] { false }, new List<string> { "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10" });
                 yield return GetCase(GetInfo(Target.Linq_Query), new object[] { true }, new List<string> { "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
 
-                yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { false }, new List<string> { "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10" });
-                yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { true }, new List<string> { "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
+                yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { false }, new List<string> { "Call_24", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6" });
+                yield return GetCase(GetInfo(Target.Linq_Fluent), new object[] { true }, new List<string> { "Call_24", "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
                 
-                yield return GetCase(GetInfo(Target.Linq_Fluent_Double), new object[] { false }, new List<string> { "Branch_43", "Anchor_50", "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10", "Branch_2", "Else_2", "Branch_10" });
-                yield return GetCase(GetInfo(Target.Linq_Fluent_Double), new object[] { true }, new List<string> { "Branch_43", "Anchor_50", "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
+                yield return GetCase(GetInfo(Target.Linq_Fluent_Double), new object[] { false }, new List<string> { "Call_24", "Branch_43", "Call_50", "Call_55", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6" });
+                yield return GetCase(GetInfo(Target.Linq_Fluent_Double), new object[] { true }, new List<string> { "Call_24", "Branch_43", "Call_50", "Call_55", "Branch_2", "If_6", "Branch_2", "If_6", "Branch_2", "If_6" });
                 #endregion
                 #region Lambda
-                yield return GetCase(GetInfo(Target.Lambda), new object[] { 5 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "If_6" });
-                yield return GetCase(GetInfo(Target.Lambda), new object[] { 10 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "Else_2", "Branch_10" });
+                yield return GetCase(GetInfo(Target.Lambda), new object[] { 5 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "If_6" });
+                yield return GetCase(GetInfo(Target.Lambda), new object[] { 10 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "Else_2", "Branch_6" });
 
-                yield return GetCase(GetInfo(Target.Lambda_AdditionalBranch), new object[] { 5 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "If_6", "Branch_24", "Anchor_25" });
-                yield return GetCase(GetInfo(Target.Lambda_AdditionalBranch), new object[] { 10 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "Else_2", "Branch_10", "Branch_24", "Anchor_25" });
-                yield return GetCase(GetInfo(Target.Lambda_AdditionalBranch), new object[] { 12 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "Else_2", "Branch_10", "Branch_24", "If_20", "Anchor_25" });
+                yield return GetCase(GetInfo(Target.Lambda_AdditionalBranch), new object[] { 5 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "If_6", "Branch_20" });
+                yield return GetCase(GetInfo(Target.Lambda_AdditionalBranch), new object[] { 10 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "Else_2", "Branch_6", "Branch_20" });
+                yield return GetCase(GetInfo(Target.Lambda_AdditionalBranch), new object[] { 12 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "Else_2", "Branch_6", "Branch_20", "If_20", "Anchor_25" });
 
-                yield return GetCase(GetInfo(Target.Lambda_AdditionalSwitch), new object[] { 5 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "If_6", "Branch_25", "Branch_28", "Branch_33", "Branch_36" });
-                yield return GetCase(GetInfo(Target.Lambda_AdditionalSwitch), new object[] { 10 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "Else_2", "Branch_10", "Branch_25", "If_26", "Branch_43" });
-                yield return GetCase(GetInfo(Target.Lambda_AdditionalSwitch), new object[] { 12 }, new List<string> { "Branch_3", "Anchor_10", "Call_13", "Branch_2", "Else_2", "Branch_10", "Branch_25", "Branch_28", "Branch_33", "If_29", "Branch_50" });
+                yield return GetCase(GetInfo(Target.Lambda_AdditionalSwitch), new object[] { 5 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "If_6", "Branch_21", "Branch_22", "Branch_25", "Branch_26" });
+                yield return GetCase(GetInfo(Target.Lambda_AdditionalSwitch), new object[] { 10 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "Else_2", "Branch_6", "Branch_21", "If_26", "Branch_29" });
+                yield return GetCase(GetInfo(Target.Lambda_AdditionalSwitch), new object[] { 12 }, new List<string> { "Branch_3", "Anchor_10|", "Call_13", "Branch_2", "Else_2", "Branch_6", "Branch_21", "Branch_22", "Branch_25", "If_29", "Branch_32" });
                 #endregion
                 #region Try/cath/finally
                 yield return GetCase(GetInfo(Target.Try_Catch), new object[] { false }, new List<string> { "Throw_5", "Branch_11", "Else_9", "Branch_17", "Anchor_13", "Branch_27" });
@@ -312,7 +312,7 @@ namespace Drill4Net.Target.Tests.Common
                     );
 
                 yield return GetCase(new object[] { true },
-                    new TestInfo(GetInfo(Target.Generics_Var), new List<string> { "Branch_18", "If_18", "Branch_30", "If_26", "Branch_40", "Anchor_38" })
+                    new TestInfo(GetInfo(Target.Generics_Var), new List<string> { "Branch_18", "If_18", "Branch_26", "If_26", "Anchor_31", "Branch_32" })
                     );
                 #endregion
                 #region Anonymous
