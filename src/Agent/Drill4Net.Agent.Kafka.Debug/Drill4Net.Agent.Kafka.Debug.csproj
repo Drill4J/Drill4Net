@@ -5,6 +5,15 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Kafka.Debug</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Kafka.Debug\Drill4Net.Agent.Kafka.Debug.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Kafka.Debug</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
     <PackageReference Include="DumpExtensions" Version="2.0.0" />

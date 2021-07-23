@@ -1,5 +1,5 @@
-﻿using Drill4Net.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
