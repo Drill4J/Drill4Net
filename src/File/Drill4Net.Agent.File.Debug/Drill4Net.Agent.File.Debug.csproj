@@ -7,8 +7,8 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.RnD.Debug</OutputPath>
-    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.RnD.Debug\Drill4Net.Agent.RnD.Debug.xml</DocumentationFile>
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.File.Debug</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.File.Debug\Drill4Net.Agent.RnD.File.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Drill4Net.Agent.RnD\Drill4Net.Agent.RnD.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.File\Drill4Net.Agent.File.csproj" />
   </ItemGroup>
 
 </Project>
