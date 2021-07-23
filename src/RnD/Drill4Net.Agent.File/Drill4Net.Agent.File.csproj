@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,13 +7,14 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.RnD</OutputPath>
-    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.RnD\Drill4Net.Agent.RnD.xml</DocumentationFile>
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.File</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.File\Drill4Net.Agent.File.xml</DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <WarningLevel>5</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.RnD</OutputPath>
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.File</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

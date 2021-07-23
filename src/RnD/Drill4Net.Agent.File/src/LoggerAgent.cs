@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace Drill4Net.Agent.RnD
+namespace Drill4Net.Agent.File
 {
     //add this in project's csproj file: 
     //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -23,12 +23,12 @@ namespace Drill4Net.Agent.RnD
             //D:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.RnD\netstandard2.0\crosspoints.txt - GetCallingAssembly
             //d:\Projects\IHS-bdd.Injected\crosspoints.txt - GetEntryAssembly
             _filepath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "crosspoints.txt");
-            if (File.Exists(_filepath))
-                File.Delete(_filepath);
+            if (System.IO.File.Exists(_filepath))
+                System.IO.File.Delete(_filepath);
 
             //we just write probes to the file
 #pragma warning disable DF0025 // Marks undisposed objects assinged to a field, originated from method invocation.
-            _writer = File.AppendText(_filepath); //writes to memory and flushes at the end (but perhaps can be leaks & last data losses) - for IHS BDD 09:43 min
+            _writer = System.IO.File.AppendText(_filepath); //writes to memory and flushes at the end (but perhaps can be leaks & last data losses) - for IHS BDD 09:43 min
             //Action<string> action = (string str) => File.AppendAllLines(_filepath, new string[] { str }); //opens & closes file each time - for IHS BDD 18:08 min
             Action<string> action = (string str) => _writer.WriteLine(str);
             _queue = new ChannelsQueue(action);
