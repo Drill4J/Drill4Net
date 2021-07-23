@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
-using Drill4Net.Agent.RnD;
+using Drill4Net.Agent.File;
 
-namespace Drill4Net.Agent.RnD.Debug
+namespace Drill4Net.Agent.File.Debug
 {
     public delegate void ProcDlgType(long cnt);
 
