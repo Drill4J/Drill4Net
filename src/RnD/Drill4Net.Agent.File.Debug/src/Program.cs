@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Drill4Net.Agent.RnD.Debug
+namespace Drill4Net.Agent.File.Debug
 {
     //all dll including from NuGet must be replaced in plugin (agent) directory
     //you need add this in csproj file of target project: 
