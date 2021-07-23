@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DumpExtensions" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Agent.File\Drill4Net.Agent.File.csproj" />
   </ItemGroup>
 
