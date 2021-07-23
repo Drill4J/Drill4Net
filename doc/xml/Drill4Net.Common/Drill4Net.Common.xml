@@ -4,6 +4,29 @@
         <name>Drill4Net.Common</name>
     </assembly>
     <members>
+        <member name="T:Drill4Net.Common.AbstractRepository`1">
+            <summary>
+            Root level of Repository's hieararchy
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AbstractRepository`1.Subsystem">
+            <summary>
+            Gets the name of subsystem.
+            </summary>
+            <value>
+            The subsystem.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.AbstractRepository`1.Options">
+            <summary>
+            Options for the injection
+            </summary>
+        </member>
+        <member name="M:Drill4Net.Common.AbstractRepository`1.PrepareInitLogger(System.String)">
+            <summary>
+            Prepares the initialize logger.
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.AssemblyVersioning">
             <summary>
             Structure for the assembly version's metadata
@@ -173,6 +196,24 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:Drill4Net.Common.AbstractOptions.Type">
+            <summary>
+            Descriptive type of config (for Injector, Test Engine, Agent, etc)
+            </summary>
+        </member>
+        <member name="P:Drill4Net.Common.AbstractOptions.Logs">
+            <summary>
+            Gets or sets the options for logs.
+            </summary>
+            <value>
+            The logs' options.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.AbstractOptions.Description">
+            <summary>
+            Description for injection process
+            </summary>
+        </member>
         <member name="T:Drill4Net.Common.AgentOptions">
             <summary>
             Agent's options
@@ -193,38 +234,20 @@
             Endpoint for communication (address with port)
             </summary>
         </member>
-        <member name="T:Drill4Net.Common.BaseOptions">
+        <member name="T:Drill4Net.Common.BaseTargetOptions">
             <summary>
             Base options for the Drill4Net system generally
             </summary>
         </member>
-        <member name="P:Drill4Net.Common.BaseOptions.Type">
-            <summary>
-            Descriptive type of config (for Injector, Test Engine, Agent, etc)
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Common.BaseOptions.Target">
+        <member name="P:Drill4Net.Common.BaseTargetOptions.Target">
             <summary>
             Options for the injected target
             </summary>
         </member>
-        <member name="P:Drill4Net.Common.BaseOptions.TreePath">
+        <member name="P:Drill4Net.Common.BaseTargetOptions.TreePath">
             <summary>
             Path to the Tree data file, if empty, system will try find it 
             by another ways using "redirect cfg", current dir, etc
-            </summary>
-        </member>
-        <member name="P:Drill4Net.Common.BaseOptions.Logs">
-            <summary>
-            Gets or sets the options for logs.
-            </summary>
-            <value>
-            The logs' options.
-            </value>
-        </member>
-        <member name="P:Drill4Net.Common.BaseOptions.Description">
-            <summary>
-            Description for injection process
             </summary>
         </member>
         <member name="T:Drill4Net.Common.IDebugOptions">
@@ -569,6 +592,28 @@
             Full/relative path or simple name of real injection cfg (in this case with or without extension)
             </summary>
         </member>
+        <member name="T:Drill4Net.Common.TesterDebugOptions">
+            <summary>
+            Debug mode for the Tester
+            </summary>
+            <seealso cref="T:Drill4Net.Common.IDebugOptions" />
+        </member>
+        <member name="P:Drill4Net.Common.TesterDebugOptions.Disabled">
+            <summary>
+            Is Debug mode is active?
+            </summary>
+            <value>
+              <c>true</c> if disabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Drill4Net.Common.TesterDebugOptions.WriteProbes">
+            <summary>
+            Whether to record the received samples in files (by methods).
+            </summary>
+            <value>
+              <c>true</c> if [write probes]; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="T:Drill4Net.Common.TesterOptions">
             <summary>
             Options for the Tester Subsystem for the Project Solution
@@ -589,28 +634,6 @@
             Debug mode for the Tester
             </summary>
             <seealso cref="T:Drill4Net.Common.IDebugOptions" />
-        </member>
-        <member name="T:Drill4Net.Common.TestetDebugOptions">
-            <summary>
-            Debug mode for the Tester
-            </summary>
-            <seealso cref="T:Drill4Net.Common.IDebugOptions" />
-        </member>
-        <member name="P:Drill4Net.Common.TestetDebugOptions.Disabled">
-            <summary>
-            Is Debug mode is active?
-            </summary>
-            <value>
-              <c>true</c> if disabled; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Drill4Net.Common.TestetDebugOptions.WriteProbes">
-            <summary>
-            Whether to record the received samples in files (by methods).
-            </summary>
-            <value>
-              <c>true</c> if [write probes]; otherwise, <c>false</c>.
-            </value>
         </member>
         <member name="T:Drill4Net.Common.AssemblyDefinitionResolver">
             <summary>

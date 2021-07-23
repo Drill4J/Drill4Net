@@ -7,7 +7,6 @@ using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -51,7 +50,7 @@ namespace Drill4Net.Agent.Standard
                 _resolver = new AssemblyResolver();
 
                 EmergencyLogDir = FileUtils.GetEmergencyDir();
-                BaseRepository.PrepareInitLogger(FileUtils.LOG_FOLDER_EMERGENCY);
+                AbstractRepository<AgentOptions>.PrepareInitLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
                 Log.Debug("Initializing...");
 
@@ -163,7 +162,7 @@ namespace Drill4Net.Agent.Standard
         {
             Repository.CancelAllSessions(); //just in case
             _scope = scope;
-            Sender.SendScopeInitialized(scope, GetCurrentUnixTimeMs());
+            Sender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         /// <summary>
@@ -205,33 +204,33 @@ namespace Drill4Net.Agent.Standard
         {
             Repository.StartSession(info);
             var load = info.Payload;
-            Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, GetCurrentUnixTimeMs());
+            Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         private static void OnStopSession(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
             Repository.SessionStop(info);
-            Sender.SendSessionFinishedMessage(uid, GetCurrentUnixTimeMs());
+            Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         private static void OnCancelAllSessions()
         {
             var uids = Repository.CancelAllSessions();
-            Sender.SendAllSessionCancelledMessage(uids, GetCurrentUnixTimeMs());
+            Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         private static void OnCancelSession(CancelAgentSession info)
         {
             var uid = info.Payload.SessionId;
             Repository.CancelSession(info);
-            Sender.SendSessionCancelledMessage(uid, GetCurrentUnixTimeMs());
+            Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         private static void OnStopAllSessions()
         {
             var uids = Repository.StopAllSessions();
-            Sender.SendAllSessionFinishedMessage(uids, GetCurrentUnixTimeMs());
+            Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
         }
         #endregion
         #endregion

@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Engine
     /// Injector Engine's repository (provides injection strategy, target assemblies, 
     /// injector for them, the reading/writing of resulting tree data, etc)
     /// </summary>
-    public class InjectorRepository : AbstractRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
+    public class InjectorRepository : ConfiguredRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
     { 
         /// <summary>
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 

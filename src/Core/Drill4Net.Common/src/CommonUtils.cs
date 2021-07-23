@@ -122,5 +122,16 @@ namespace Drill4Net.Common
             var hexString = BitConverter.ToString(ba);
             return hexString.Replace("-", "");
         }
+
+        public static long GetCurrentUnixTimeMs()
+        {
+            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
+        public static DateTime ConvertUnixTime(long ts)
+        {
+            var offset = DateTimeOffset.FromUnixTimeMilliseconds(ts);
+            return offset.DateTime;
+        }
     }
 }

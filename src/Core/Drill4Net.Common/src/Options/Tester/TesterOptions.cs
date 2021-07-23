@@ -3,7 +3,7 @@
     /// <summary>
     /// Options for the Tester Subsystem for the Project Solution
     /// </summary>
-    public class TesterOptions : BaseOptions
+    public class TesterOptions : BaseTargetOptions
     {
         /// <summary>
         /// Versions of Terget for teh testing
@@ -19,6 +19,6 @@
         /// Debug mode for the Tester
         /// </summary>
         /// <seealso cref="Drill4Net.Common.IDebugOptions" />
-        public TestetDebugOptions Debug { get; set; }
+        public TesterDebugOptions Debug { get; set; }
     }
 }

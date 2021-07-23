@@ -1,5 +1,5 @@
-﻿using NUnit.Framework.Internal;
-using System.Runtime.Remoting.Messaging;
+﻿using System.Runtime.Remoting.Messaging;
+using NUnit.Framework.Internal;
 
 namespace Drill4Net.Agent.Testing.NetFxUtils
 {

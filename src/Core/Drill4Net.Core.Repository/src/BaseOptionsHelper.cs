@@ -9,7 +9,7 @@ namespace Drill4Net.Core.Repository
     /// Base generic options Helper
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class BaseOptionsHelper<T> where T : BaseOptions, new()
+    public class BaseOptionsHelper<T> where T : AbstractOptions, new()
     {
         private readonly Deserializer _deser;
 
@@ -26,13 +26,13 @@ namespace Drill4Net.Core.Repository
         /// Tryings to get the actual configuration file path.
         /// </summary>
         /// <returns></returns>
-        protected internal string GetActualConfigPath()
+        protected internal string GetActualConfigPath(string configDefName)
         {
             var dir = FileUtils.GetEntryDir();
-            //File.AppendAllLines(Path.Combine(@"d:\Projects\IHS-bdd.Injected\logs_drill\", "log2.log"), new string[] { dir });
             var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_REDIRECT_NAME);
+            var defName = string.IsNullOrWhiteSpace(configDefName) ? CoreConstants.CONFIG_DEFAULT_NAME : configDefName;
             if (!File.Exists(redirectPath))
-                return Path.Combine(dir, CoreConstants.CONFIG_DEFAULT_NAME);
+                return Path.Combine(dir, defName);
             Deserializer deser = new();
             var cfg = File.ReadAllText(redirectPath);
             var redirect = deser.Deserialize<RedirectOptions>(cfg);

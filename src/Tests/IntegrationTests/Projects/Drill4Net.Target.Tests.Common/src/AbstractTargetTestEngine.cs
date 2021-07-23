@@ -11,6 +11,8 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Target.Tests.Common
 {
+    // TODO: move the Engine to own assembly!
+
     //Despite the late binding, a reference to the injected target assembly
     //must be added to the project (as file), which in turn must be updated
     //externally each time the injection process is started (automatically)

@@ -1,0 +1,16 @@
+﻿Description: Converter point uid to data consuming the Admin side
+Type: Converter #type as hint
+Servers: #list of servers
+   - 'localhost:9092'
+GropuId: test-consumer-group
+Topic: my-topic
+Logs:
+    - Type: console
+      Level: debug
+    #local log
+    - Type: file
+      Level: trace
+    #common place
+    - Type: file
+      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Level: trace

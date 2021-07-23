@@ -47,7 +47,7 @@ namespace Drill4Net.Target.Tests.Common
         {
             try
             {
-                BaseRepository.PrepareInitLogger();
+                AbstractRepository<TesterOptions>.PrepareInitLogger();
                 Log.Debug("Repository is initializing...");
 
                 var callDir = FileUtils.GetCallingDir();

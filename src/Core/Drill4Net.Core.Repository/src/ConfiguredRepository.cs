@@ -14,33 +14,36 @@ namespace Drill4Net.Core.Repository
     /// </summary>
     /// <typeparam name="TOptions">Concrete options</typeparam>
     /// <typeparam name="THelper">Helper for manipulating the concrete type of options</typeparam>
-    public abstract class AbstractRepository<TOptions, THelper> : BaseRepository
-                    where TOptions : BaseOptions, new()
+    public abstract class ConfiguredRepository<TOptions, THelper> : AbstractRepository<TOptions>
+                    where TOptions : BaseTargetOptions, new()
                     where THelper : BaseOptionsHelper<TOptions>, new()
     {
-        public string Subsystem { get; }
-
         /// <summary>
-        /// Options for the injection
+        /// Gets or sets the default config path. Assigned after reading the config file.
         /// </summary>
-        public TOptions Options { get; set; }
+        /// <value>
+        /// The default config path.
+        /// </value>
+        public string DefaultCfgPath { get; internal set; }
 
+        protected NetSerializer.Serializer _ser;
         protected THelper _optHelper;
 
         /**********************************************************************************/
 
-        protected AbstractRepository(string[] args, string subsystem): this(GetArgumentConfigPath(args), subsystem)
+        protected ConfiguredRepository(string[] args, string subsystem): this(GetArgumentConfigPath(args), subsystem)
         {
         }
 
-        protected AbstractRepository(string cfgPath, string subsystem)
+        protected ConfiguredRepository(string cfgPath, string subsystem): base(subsystem)
         {
-            Subsystem = subsystem;
+            var types = InjectedSolution.GetInjectedTreeTypes();
+            _ser = new NetSerializer.Serializer(types);
             _optHelper = new THelper();
 
             //options
             if (string.IsNullOrWhiteSpace(cfgPath))
-                cfgPath = _optHelper.GetActualConfigPath();
+                cfgPath = _optHelper.GetActualConfigPath(CoreConstants.CONFIG_DEFAULT_NAME);
             DefaultCfgPath = cfgPath;
             Options = _optHelper.ReadOptions(cfgPath);
 

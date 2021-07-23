@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.Abstract
     /// <summary>
     /// Data repository for the profiling Agent
     /// </summary>
-    public class AgentRepository : AbstractRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>
+    public class AgentRepository : ConfiguredRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>
     {
         public AgentRepository(string cfgPath = null) : base(cfgPath, CoreConstants.SUBSYSTEM_AGENT)
         {

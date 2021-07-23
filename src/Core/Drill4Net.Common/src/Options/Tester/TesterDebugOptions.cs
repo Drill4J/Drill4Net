@@ -7,7 +7,7 @@ namespace Drill4Net.Common
     /// </summary>
     /// <seealso cref="Drill4Net.Common.IDebugOptions" />
     [Serializable]
-    public class TestetDebugOptions : IDebugOptions
+    public class TesterDebugOptions : IDebugOptions
     {
         /// <summary>
         /// Is Debug mode is active?

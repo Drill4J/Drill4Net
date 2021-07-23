@@ -3,7 +3,7 @@
     /// <summary>
     /// Options for communicate with Admin side of Drill system
     /// </summary>
-    public class AdminOptions : BaseOptions
+    public class AdminOptions : BaseTargetOptions
     {
         /// <summary>
         /// Endpoint for communication (address with port)

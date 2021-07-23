@@ -3,7 +3,7 @@
     /// <summary>
     /// Options for the Injector App
     /// </summary>
-    public class InjectorOptions : BaseOptions
+    public class InjectorOptions : BaseTargetOptions
     {
         /// <summary>
         /// Options for the Source of the Target (instrumenting App) - what and how processing
