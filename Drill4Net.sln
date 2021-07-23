@@ -46,7 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{2D8768BC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Testing.Debug", "src\Tests\IntegrationTests\Agent\Drill4Net.Agent.Testing.Debug\Drill4Net.Agent.Testing.Debug.csproj", "{695B6D02-77D6-432F-920E-EFE682BC0C19}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RnD", "RnD", "{77625A58-589A-4E69-B835-64A01A197D09}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "File", "File", "{77625A58-589A-4E69-B835-64A01A197D09}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50.App", "src\Tests\Targets\Net50\Drill4Net.Target.Net50.App\Drill4Net.Target.Net50.App.csproj", "{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}"
 EndProject
