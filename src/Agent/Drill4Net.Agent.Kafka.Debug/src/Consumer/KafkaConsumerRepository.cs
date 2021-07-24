@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Drill4Net.Common;
 using Drill4Net.Core.Repository;
@@ -10,7 +11,8 @@ namespace Drill4Net.Agent.Kafka.Debug
         public KafkaConsumerRepository() : base(ConverterConstants.SUBSYSTEM)
         {
             var optHelper = new BaseOptionsHelper<ConverterOptions>();
-            Options = optHelper.ReadOptions(ConverterConstants.CONFIG_NAME_DEFAULT);
+            var path = Path.Combine(FileUtils.GetExecutionDir(), ConverterConstants.CONFIG_NAME_DEFAULT);
+            Options = optHelper.ReadOptions(path);
 
             PrepareLogger();
         }

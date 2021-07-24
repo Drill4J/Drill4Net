@@ -1,4 +1,5 @@
-﻿using Drill4Net.Common;
+﻿using System.IO;
+using Drill4Net.Common;
 using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
@@ -8,7 +9,8 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         public KafkaProducerRepository() : base(TransmitterConstants.SUBSYSTEM)
         {
             var optHelper = new BaseOptionsHelper<TransmitterOptions>();
-            Options = optHelper.ReadOptions(TransmitterConstants.CONFIG_NAME_DEFAULT);
+            var path = Path.Combine(FileUtils.GetExecutionDir(), TransmitterConstants.CONFIG_NAME_DEFAULT);
+            Options = optHelper.ReadOptions(path);
 
             PrepareLogger();
         }
