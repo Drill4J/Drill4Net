@@ -27,7 +27,7 @@ Profiler: # data collector/processor in separate assembly
   AssemblyName: Drill4Net.Agent.Kafka.Transmitter.dll
   Namespace: Drill4Net.Agent.Kafka.Transmitter
   Class: ProbeTransmitter
-  Method: Register
+  Method: Transmit
   Static: true
 Proxy: # the injecting for transfer data to profiler
   Class: ProfilerProxy

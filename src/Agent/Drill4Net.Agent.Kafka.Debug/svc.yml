@@ -1,4 +1,4 @@
-﻿Description: Converter point uid to data consuming the Admin side
+﻿Description: Convert point uids from Kafka to the format consuming the Admin side
 Type: probe-converter #type as hint
 Servers: #list of servers
    - 'localhost:9093'
