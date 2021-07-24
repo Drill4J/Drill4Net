@@ -2,6 +2,15 @@
 using System.Reflection;
 using Drill4Net.Common;
 
+//automatic version tagger including Git info
+//https://github.com/devlooped/GitInfo
+[assembly: AssemblyInformationalVersion(
+      ThisAssembly.Git.SemVer.Major + "." +
+      ThisAssembly.Git.SemVer.Minor + "." +
+      ThisAssembly.Git.SemVer.Patch + "-" +
+      ThisAssembly.Git.Branch + "+" +
+      ThisAssembly.Git.Commit)]
+
 namespace Drill4Net.Agent.Kafka.Transmitter.Debug
 {
     class Program
@@ -17,9 +26,8 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
         {
             SetTitle();
 
-            AbstractRepository<TransmitterOptions> rep = new KafkaSenderRepository(); //rep
-            IProbeSender sender = new KafkaProducer(rep); //concrete sender the data to middleware (Kafka)
-            var trans = new ProbeTransmitter(sender);
+            var trans = ProbeTransmitter.Transmitter; //what is loaded into the Target process and used by the Proxy class
+            var sender = trans.Sender;
 
             while (true)
             {
@@ -33,6 +41,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
                 WriteMessage($"Data: {input}", COLOR_DATA);
 
                 var res = trans.Send(input); //TODO: return normal Status object
+
                 Console.WriteLine(res != 0
                     ? $"Delivered message"
                     : $"Delivery error: {sender.LastError}");

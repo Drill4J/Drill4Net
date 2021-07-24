@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
+using Serilog;
+using Drill4Net.Agent.Standard;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
     public class CoverageAgent
     {
-        public event ReceivedMessageHandler MessageReceived;
-        public event ErrorOccuredHandler ErrorOccured;
-
         private readonly IProbeReceiver _receiver;
 
         /***************************************************************************/
@@ -17,6 +16,8 @@ namespace Drill4Net.Agent.Kafka.Debug
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             receiver.MessageReceived += Receiver_MessageReceived;
             receiver.ErrorOccured += Receiver_ErrorOccured;
+
+            StandardAgent.Init();
         }
 
         /***************************************************************************/
@@ -28,12 +29,17 @@ namespace Drill4Net.Agent.Kafka.Debug
 
         private void Receiver_MessageReceived(string message)
         {
-            MessageReceived?.Invoke(message);
+            Log.Debug("Message: {Message}", message);
+            StandardAgent.RegisterStatic(message);
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
         {
-            ErrorOccured?.Invoke(isFatal, isLocal, message);
+            var mess = $"Local: {isLocal} -> {message}";
+            if (isFatal)
+                Log.Fatal(mess);
+            else
+                Log.Error(mess);
         }
     }
 }

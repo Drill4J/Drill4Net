@@ -3,9 +3,9 @@ using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
-    public class KafkaSenderRepository : AbstractRepository<TransmitterOptions>
+    public class KafkaProducerRepository : AbstractRepository<TransmitterOptions>
     {
-        public KafkaSenderRepository() : base(TransmitterConstants.SUBSYSTEM)
+        public KafkaProducerRepository() : base(TransmitterConstants.SUBSYSTEM)
         {
             var optHelper = new BaseOptionsHelper<TransmitterOptions>();
             Options = optHelper.ReadOptions(TransmitterConstants.CONFIG_NAME_DEFAULT);

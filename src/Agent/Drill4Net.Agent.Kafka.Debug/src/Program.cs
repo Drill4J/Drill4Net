@@ -2,6 +2,15 @@
 using System.Reflection;
 using Drill4Net.Common;
 
+//automatic version tagger including Git info
+//https://github.com/devlooped/GitInfo
+[assembly: AssemblyInformationalVersion(
+      ThisAssembly.Git.SemVer.Major + "." +
+      ThisAssembly.Git.SemVer.Minor + "." +
+      ThisAssembly.Git.SemVer.Patch + "-" +
+      ThisAssembly.Git.Branch + "+" +
+      ThisAssembly.Git.Commit)]
+
 namespace Drill4Net.Agent.Kafka.Debug
 {
     class Program
@@ -21,20 +30,7 @@ namespace Drill4Net.Agent.Kafka.Debug
             IProbeReceiver consumer = new KafkaConsumer(rep);
             var agent = new CoverageAgent(consumer);
 
-            agent.MessageReceived += Agent_MessageReceived;
-            agent.ErrorOccured += Agent_ErrorOccured;
-
             agent.Start();
-        }
-
-        private static void Agent_MessageReceived(string message)
-        {
-            WriteMessage($"Message: {message}");
-        }
-
-        private static void Agent_ErrorOccured(bool isFatal, bool isLocal, string error)
-        {
-            WriteMessage($"Error (Fatal: {isFatal}/Local: {isLocal}): {error}", COLOR_ERROR);
         }
 
         #region Info
