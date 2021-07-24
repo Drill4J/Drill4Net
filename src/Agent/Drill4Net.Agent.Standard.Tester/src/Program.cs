@@ -29,7 +29,7 @@ namespace Drill4Net.Agent.Standard.Tester
         private static Dictionary<int, InjectedMethod> _methodByOrderNumber;
         private static List<CrossPoint> _points;
         private static TesterOptions _opts;
-        private const ConsoleColor INFO_COLOR = ConsoleColor.Cyan;
+        private const ConsoleColor COLOR_INFO = ConsoleColor.Cyan;
         private const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
 
         /*********************************************************************************/
@@ -351,28 +351,28 @@ namespace Drill4Net.Agent.Standard.Tester
         private static bool PrintTreeInfo()
         {
             WriteMessage($"\n  Tree data:", ConsoleColor.Yellow);
-            WriteMessage($"  Name: {_injSolution.Name}", INFO_COLOR);
+            WriteMessage($"  Name: {_injSolution.Name}", COLOR_INFO);
             if(!string.IsNullOrWhiteSpace(_injSolution.Description))
-                WriteMessage($"  Description: {_injSolution.Description}", INFO_COLOR);
-            WriteMessage($"  Orig destination: {_injSolution.DestinationPath}", INFO_COLOR);
+                WriteMessage($"  Description: {_injSolution.Description}", COLOR_INFO);
+            WriteMessage($"  Orig destination: {_injSolution.DestinationPath}", COLOR_INFO);
 
             //TODO: fix empty FinishTime
-            WriteMessage($"  Processed time: {_injSolution.FinishTime ?? _injSolution.StartTime}", INFO_COLOR);
+            WriteMessage($"  Processed time: {_injSolution.FinishTime ?? _injSolution.StartTime}", COLOR_INFO);
 
             var dirs = _injSolution.GetDirectories(); //dirs on the first level
             if (dirs.Any())
             {
                 WriteMessage($"\n  Inner directories (may be several versions of framework): {dirs.Count()}", ConsoleColor.Yellow);
                 foreach (var dir in dirs)
-                    WriteMessage($"  {dir.Name}", INFO_COLOR);
+                    WriteMessage($"  {dir.Name}", COLOR_INFO);
             }
 
             WriteMessage($"\n  Testing: ", ConsoleColor.Yellow);
-            WriteMessage($"  Folder : {_opts.TreeFolder}", INFO_COLOR);
-            WriteMessage($"  Assemblies: {_injDirectory.GetAllAssemblies().Count()}", INFO_COLOR);
-            WriteMessage($"  Types: {_injDirectory.GetAllTypes().Count()}", INFO_COLOR);
-            WriteMessage($"  Unique public methods: {_methods.Count}", INFO_COLOR);
-            WriteMessage($"  Total cross-points: {_points.Count}", INFO_COLOR);
+            WriteMessage($"  Folder : {_opts.TreeFolder}", COLOR_INFO);
+            WriteMessage($"  Assemblies: {_injDirectory.GetAllAssemblies().Count()}", COLOR_INFO);
+            WriteMessage($"  Types: {_injDirectory.GetAllTypes().Count()}", COLOR_INFO);
+            WriteMessage($"  Unique public methods: {_methods.Count}", COLOR_INFO);
+            WriteMessage($"  Total cross-points: {_points.Count}", COLOR_INFO);
             //WriteMessage($"  Block size of cross-points: {_pointRange}", infoColor);
             return true;
         }

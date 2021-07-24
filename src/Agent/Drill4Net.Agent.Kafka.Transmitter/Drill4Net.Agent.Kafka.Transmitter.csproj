@@ -18,4 +18,15 @@
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="svc.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

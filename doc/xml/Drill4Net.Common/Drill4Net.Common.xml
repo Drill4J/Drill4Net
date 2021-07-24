@@ -201,6 +201,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Drill4Net.Common.AbstractOptions">
+            <summary>
+            Base abstract options
+            </summary>
+        </member>
         <member name="P:Drill4Net.Common.AbstractOptions.Type">
             <summary>
             Descriptive type of the config (for Injector, Test Engine, Agent, etc)

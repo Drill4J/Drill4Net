@@ -2,6 +2,9 @@
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Base abstract options
+    /// </summary>
     public abstract class AbstractOptions
     {
         /// <summary>

@@ -155,6 +155,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.File", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.File.Debug", "src\RnD\Drill4Net.Agent.File.Debug\Drill4Net.Agent.File.Debug.csproj", "{1D938EA3-5ED2-4D23-B38B-C54102768912}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Kafka.Transmitter.Debug", "src\Agent\Drill4Net.Agent.Kafka.Transmitter.Debug\Drill4Net.Agent.Kafka.Transmitter.Debug.csproj", "{840CA2ED-682A-4EFB-98EF-2E9C1789F245}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -333,6 +335,10 @@ Global
 		{1D938EA3-5ED2-4D23-B38B-C54102768912}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D938EA3-5ED2-4D23-B38B-C54102768912}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D938EA3-5ED2-4D23-B38B-C54102768912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{840CA2ED-682A-4EFB-98EF-2E9C1789F245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{840CA2ED-682A-4EFB-98EF-2E9C1789F245}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{840CA2ED-682A-4EFB-98EF-2E9C1789F245}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{840CA2ED-682A-4EFB-98EF-2E9C1789F245}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -401,6 +407,7 @@ Global
 		{3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8} = {F5B1697D-C26A-4165-B810-6A4C8621F902}
 		{318745AA-C0D4-4340-9E94-AEDEAE95B36E} = {15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}
 		{1D938EA3-5ED2-4D23-B38B-C54102768912} = {15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}
+		{840CA2ED-682A-4EFB-98EF-2E9C1789F245} = {3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
