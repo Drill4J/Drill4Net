@@ -7,8 +7,6 @@ namespace Drill4Net.Agent.Kafka.Debug
 {
     public class KafkaConsumerRepository : AbstractRepository<ConverterOptions>
     {
-        /******************************************************************/
-
         public KafkaConsumerRepository() : base(ConverterConstants.SUBSYSTEM)
         {
             var optHelper = new BaseOptionsHelper<ConverterOptions>();
@@ -16,7 +14,5 @@ namespace Drill4Net.Agent.Kafka.Debug
 
             PrepareLogger();
         }
-
-        /******************************************************************/
     }
 }

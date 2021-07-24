@@ -2,17 +2,24 @@
 using System.Linq;
 using System.Threading;
 using Confluent.Kafka;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
-    public class KafkaConsumer
+    public delegate void ReceivedMessageHandler(string message);
+    public delegate void ErrorOccuredHandler(bool isFatal, bool isLocal, string message);
+
+    public class KafkaConsumer : IProbeConsumer
     {
+        public event ReceivedMessageHandler MessageReceived;
+        public event ErrorOccuredHandler ErrorOccured;
+
         private readonly ConsumerConfig _cfg;
-        private readonly KafkaConsumerRepository _rep;
+        private readonly AbstractRepository<ConverterOptions> _rep;
 
-        /*******************************************************************/
+        /****************************************************************************************/
 
-        public KafkaConsumer(KafkaConsumerRepository rep)
+        public KafkaConsumer(AbstractRepository<ConverterOptions> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             var opts = _rep.Options;
@@ -27,13 +34,11 @@ namespace Drill4Net.Agent.Kafka.Debug
                 // earliest message in the topic 'my-topic' the first time you run the program.
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };
-
-            Consume();
         }
 
-        /*******************************************************************/
+        /****************************************************************************************/
 
-        private void Consume()
+        public void Consume()
         {
             var opts = _rep.Options;
 
@@ -54,18 +59,22 @@ namespace Drill4Net.Agent.Kafka.Debug
                     try
                     {
                         var cr = c.Consume(cts.Token);
-                        Console.WriteLine($"Consumed message '{cr.Value}' at: '{cr.TopicPartitionOffset}'.");
+                        var val = cr.Message.Value;
+                        MessageReceived?.Invoke(val);
                     }
                     catch (ConsumeException e)
                     {
-                        Console.WriteLine($"Error occured: {e.Error.Reason}");
+                        var err = e.Error;
+                        ErrorOccured?.Invoke(err.IsFatal, err.IsLocalError, err.Reason);
                     }
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException opex)
             {
                 // Ensure the consumer leaves the group cleanly and final offsets are committed.
                 c.Close();
+
+                ErrorOccured?.Invoke(true, false, opex.Message);
             }
         }
     }
