@@ -8,6 +8,9 @@ namespace Drill4Net.Target.Net50.App
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Press any key when you'll start the session on Admin side (if needed)");
+            Console.ReadKey(true);
+
             StartAsync().GetAwaiter().GetResult();
 
             Console.WriteLine("\nDone.");
