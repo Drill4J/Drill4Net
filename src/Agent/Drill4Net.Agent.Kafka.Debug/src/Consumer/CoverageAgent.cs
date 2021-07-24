@@ -1,38 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
-    public class KafkaAgent
+    public class CoverageAgent
     {
         public event ReceivedMessageHandler MessageReceived;
         public event ErrorOccuredHandler ErrorOccured;
 
-        private readonly IProbeConsumer _agent;
+        private readonly IProbeReceiver _receiver;
 
         /***************************************************************************/
 
-        public KafkaAgent(IProbeConsumer agent)
+        public CoverageAgent(IProbeReceiver receiver)
         {
-            _agent = agent ?? throw new ArgumentNullException(nameof(agent));
-            agent.MessageReceived += Agent_MessageReceived;
-            agent.ErrorOccured += Agent_ErrorOccured;
+            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            receiver.MessageReceived += Receiver_MessageReceived;
+            receiver.ErrorOccured += Receiver_ErrorOccured;
         }
 
         /***************************************************************************/
 
         public void Start()
         {
-            _agent.Consume();
+            _receiver.Start();
         }
 
-        private void Agent_MessageReceived(string message)
+        private void Receiver_MessageReceived(string message)
         {
             MessageReceived?.Invoke(message);
         }
 
-        private void Agent_ErrorOccured(bool isFatal, bool isLocal, string message)
+        private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
         {
             ErrorOccured?.Invoke(isFatal, isLocal, message);
         }

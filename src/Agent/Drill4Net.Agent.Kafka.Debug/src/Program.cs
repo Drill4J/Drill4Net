@@ -18,10 +18,12 @@ namespace Drill4Net.Agent.Kafka.Debug
             SetTitle();
 
             AbstractRepository<ConverterOptions> rep = new KafkaConsumerRepository();
-            IProbeConsumer consumer = new KafkaConsumer(rep);
-            var agent = new KafkaAgent(consumer);
+            IProbeReceiver consumer = new KafkaConsumer(rep);
+            var agent = new CoverageAgent(consumer);
+
             agent.MessageReceived += Agent_MessageReceived;
             agent.ErrorOccured += Agent_ErrorOccured;
+
             agent.Start();
         }
 
@@ -35,6 +37,7 @@ namespace Drill4Net.Agent.Kafka.Debug
             WriteMessage($"Error (Fatal: {isFatal}/Local: {isLocal}): {error}", COLOR_ERROR);
         }
 
+        #region Info
         private static void SetTitle()
         {
             var version = GetAppVersion();
@@ -56,5 +59,6 @@ namespace Drill4Net.Agent.Kafka.Debug
             Console.WriteLine(mess);
             Console.ForegroundColor = COLOR_DEFAULT;
         }
+        #endregion
     }
 }

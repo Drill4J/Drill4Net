@@ -6,10 +6,12 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
+    //https://github.com/patsevanton/docker-compose-kafka-zk-kafdrop-cmak/blob/main/docker-compose.yml
+
     public delegate void ReceivedMessageHandler(string message);
     public delegate void ErrorOccuredHandler(bool isFatal, bool isLocal, string message);
 
-    public class KafkaConsumer : IProbeConsumer
+    public class KafkaConsumer : IProbeReceiver
     {
         public event ReceivedMessageHandler MessageReceived;
         public event ErrorOccuredHandler ErrorOccured;
@@ -38,7 +40,7 @@ namespace Drill4Net.Agent.Kafka.Debug
 
         /****************************************************************************************/
 
-        public void Consume()
+        public void Start()
         {
             var opts = _rep.Options;
 

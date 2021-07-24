@@ -18,7 +18,8 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
             SetTitle();
 
             AbstractRepository<TransmitterOptions> rep = new KafkaSenderRepository(); //rep
-            IProbeSender sender = new KafkaSender(rep); //concrete sender the data to middleware (Kafka)
+            IProbeSender sender = new KafkaProducer(rep); //concrete sender the data to middleware (Kafka)
+            var trans = new ProbeTransmitter(sender);
 
             while (true)
             {
@@ -31,7 +32,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
                     input = Guid.NewGuid().ToString();
                 WriteMessage($"Data: {input}", COLOR_DATA);
 
-                var res = sender.Send(input);
+                var res = trans.Send(input); //TODO: return normal Status object
                 Console.WriteLine(res != 0
                     ? $"Delivered message"
                     : $"Delivery error: {sender.LastError}");
@@ -40,6 +41,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
             Console.ReadKey(true);
         }
 
+        #region Info
         private static void SetTitle()
         {
             var version = GetAppVersion();
@@ -61,5 +63,6 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
             Console.WriteLine(mess);
             Console.ForegroundColor = COLOR_DEFAULT;
         }
+        #endregion
     }
 }

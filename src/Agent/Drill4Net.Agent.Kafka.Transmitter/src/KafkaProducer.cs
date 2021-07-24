@@ -4,7 +4,7 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
-    public class KafkaSender : IProbeSender
+    public class KafkaProducer : IProbeSender
     {
         public bool IsError { get; private set; }
 
@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         /****************************************************************************/
 
-        public KafkaSender(AbstractRepository<TransmitterOptions> rep)
+        public KafkaProducer(AbstractRepository<TransmitterOptions> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
 
