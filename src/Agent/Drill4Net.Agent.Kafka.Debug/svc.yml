@@ -1,9 +1,9 @@
 ﻿Description: Converter point uid to data consuming the Admin side
 Type: Converter #type as hint
 Servers: #list of servers
-   - 'localhost:9092'
+   - 'localhost:9093'
 GroupId: test-consumer-group
-Topic: my-topic
+Topic: probes
 Logs:
     - Type: console
       Level: debug

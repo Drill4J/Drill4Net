@@ -7,6 +7,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
     class Program
     {
         private const ConsoleColor COLOR_INFO = ConsoleColor.Green;
+        private const ConsoleColor COLOR_ERROR = ConsoleColor.Red;
         private const ConsoleColor COLOR_DATA = ConsoleColor.Cyan;
         private const ConsoleColor COLOR_DEFAULT = ConsoleColor.White;
 
@@ -31,7 +32,10 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
                 WriteMessage($"Data: {input}", COLOR_DATA);
 
                 var res = sender.Send(input);
-                WriteMessage($"Res: {res}", COLOR_INFO);
+                Console.WriteLine(res != 0
+                    ? $"Delivered message"
+                    : $"Delivery error: {sender.LastError}");
+                WriteMessage($"Res: {res}", sender.IsError ? COLOR_ERROR : COLOR_INFO);
             }
             Console.ReadKey(true);
         }

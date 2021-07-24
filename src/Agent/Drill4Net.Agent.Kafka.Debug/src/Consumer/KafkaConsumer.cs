@@ -7,6 +7,7 @@ namespace Drill4Net.Agent.Kafka.Debug
 {
     public class KafkaConsumer
     {
+        private readonly ConsumerConfig _cfg;
         private readonly KafkaConsumerRepository _rep;
 
         /*******************************************************************/
@@ -14,15 +15,8 @@ namespace Drill4Net.Agent.Kafka.Debug
         public KafkaConsumer(KafkaConsumerRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            Consume();
-        }
-
-        /*******************************************************************/
-
-        private void Consume()
-        {
             var opts = _rep.Options;
-            var conf = new ConsumerConfig
+            _cfg = new ConsumerConfig
             {
                 GroupId = opts.GroupId,
                 BootstrapServers = string.Join(",", opts.Servers),
@@ -34,7 +28,16 @@ namespace Drill4Net.Agent.Kafka.Debug
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };
 
-            using var c = new ConsumerBuilder<Ignore, string>(conf).Build();
+            Consume();
+        }
+
+        /*******************************************************************/
+
+        private void Consume()
+        {
+            var opts = _rep.Options;
+
+            using var c = new ConsumerBuilder<Ignore, string>(_cfg).Build();
             c.Subscribe(opts.Topic);
 
             CancellationTokenSource cts = new();
