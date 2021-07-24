@@ -15,6 +15,7 @@
 
 # Drill4Net class' XML docs
 ./doc/xml/
+/doc/xml/
 
 # Build results
 [Dd]ebug/
