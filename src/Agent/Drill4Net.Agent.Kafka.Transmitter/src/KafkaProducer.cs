@@ -14,6 +14,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         private readonly string _topic;
         private readonly ProducerConfig _cfg;
+        private readonly IProducer<Null, string> _producer;
         private readonly AbstractRepository<TransmitterOptions> _rep;
 
         /****************************************************************************/
@@ -25,22 +26,21 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             var servers = string.Join(",", _rep.Options.Servers);
             _cfg = new ProducerConfig { BootstrapServers = servers };
             _topic = _rep.Options.Topic;
+            _producer = new ProducerBuilder<Null, string>(_cfg).Build();
+        }
+
+        ~KafkaProducer()
+        {
+            _producer?.Flush(TimeSpan.FromSeconds(10));
+            _producer?.Dispose();
         }
 
         /****************************************************************************/
 
-        //TODO: сообщения локально копить? Concurrent Subsriber?
-
         public int Send(string str)
         {
-            using (var p = new ProducerBuilder<Null, string>(_cfg).Build())
-            {
-                p.Produce(_topic, new Message<Null, string> { Value = str }, Handle);
+            _producer.Produce(_topic, new Message<Null, string> { Value = str }, Handle);
 
-                // wait for up to 10 seconds for any inflight messages to be delivered.
-                p.Flush(TimeSpan.FromSeconds(10));
-            }
-            //
             if (!IsError) //если нет коннекта сюда придёт без ошибки
                 return 0;
             return IsFatalError ? -2 : -1;

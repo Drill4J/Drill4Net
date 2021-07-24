@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Drill4Net.Common;
 using Drill4Net.Core.Repository;
 
