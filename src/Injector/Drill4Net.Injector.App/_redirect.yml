@@ -1,4 +1,5 @@
-﻿Path: inj_Std # Full/relative path or simple name of real injection cfg (as name with or without extension)
+﻿Path: inj_Kafka # Full/relative path or simple name of real injection cfg (as name with or without extension)
+      #inj_Kafka
       #inj_RnD 
       #inj_Std
       #inj_IHS_bdd_FILE 

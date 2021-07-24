@@ -1,5 +1,5 @@
 ﻿Description: Transmitter the probes data from Target to Agent service through Kafka
-Type: Kafka transmitter #type as hint
+Type: kafka-transmitter #type as hint
 Servers: #list of servers
    - 'localhost:9093'
 Topic: probes

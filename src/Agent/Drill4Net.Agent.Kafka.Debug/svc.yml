@@ -1,5 +1,5 @@
 ﻿Description: Converter point uid to data consuming the Admin side
-Type: Converter #type as hint
+Type: probe-converter #type as hint
 Servers: #list of servers
    - 'localhost:9093'
 GroupId: test-consumer-group
