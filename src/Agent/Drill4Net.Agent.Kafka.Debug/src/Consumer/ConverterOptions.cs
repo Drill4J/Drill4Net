@@ -7,6 +7,12 @@ namespace Drill4Net.Agent.Kafka.Debug
     {
         public List<string> Servers { get; set; }
         public string GroupId { get; set; }
-        public string Topic { get; set; }
+        public List<string> Topics { get; set; }
+
+        public ConverterOptions()
+        {
+            Servers = new();
+            Topics = new();
+        }
     }
 }

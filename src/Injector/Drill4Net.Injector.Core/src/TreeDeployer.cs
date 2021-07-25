@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Core
 
         /**************************************************************/
 
-        public void InjectTree(InjectedSolution tree)
+        public void Deploy(InjectedSolution tree)
         {
             SaveTree(tree);
             NotifyAboutTree(tree);

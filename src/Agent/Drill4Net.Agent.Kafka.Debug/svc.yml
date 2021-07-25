@@ -3,7 +3,8 @@ Type: probe-converter #type as hint
 Servers: #list of servers
    - 'localhost:9093'
 GroupId: test-consumer-group
-Topic: probes
+Topics: 
+    - probes
 Logs:
     - Type: console
       Level: debug

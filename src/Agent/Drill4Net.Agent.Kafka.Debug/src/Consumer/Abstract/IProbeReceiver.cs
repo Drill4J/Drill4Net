@@ -6,5 +6,6 @@
         event ReceivedMessageHandler MessageReceived;
 
         void Start();
+        void Stop();
     }
 }

@@ -23,7 +23,6 @@ namespace Drill4Net.Core.Repository
         /// </value>
         public string DefaultCfgPath { get; internal set; }
 
-        protected NetSerializer.Serializer _ser;
         protected THelper _optHelper;
 
         /**********************************************************************************/
@@ -35,7 +34,7 @@ namespace Drill4Net.Core.Repository
         protected ConfiguredRepository(string cfgPath, string subsystem): base(subsystem)
         {
             var types = InjectedSolution.GetInjectedTreeTypes();
-            _ser = new NetSerializer.Serializer(types);
+            _ser.AddTypes(types);
             _optHelper = new THelper();
 
             //options

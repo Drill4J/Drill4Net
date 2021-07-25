@@ -2,7 +2,8 @@
 Type: kafka-transmitter #type as hint
 Servers: #list of servers
    - 'localhost:9093'
-Topic: probes
+Topics: 
+    - probes
 Logs:
     - Type: console
       Level: debug

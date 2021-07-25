@@ -5,6 +5,18 @@
     /// </summary>
     public static class CoreConstants
     {
+        #region Subsystems
+        public const string SUBSYSTEM_INJECTOR = "Injector";
+        public const string SUBSYSTEM_TESTER = "Tester";
+        public const string SUBSYSTEM_AGENT = "Agent";
+        public const string SUBSYSTEM_TRANSMITTER = "ProbeTransmitter";
+        //public const string SUBSYSTEM_CONVERTER = "ProbeConverter";
+        #endregion
+        #region 
+        public const string HEADER_SUBSYSTEM = "SUBSYSTEM";
+        public const string HEADER_TARGET = "TARGET";
+        #endregion
+
         /// <summary>
         /// Name of the file for the redirecting to the certain config
         /// </summary>
@@ -20,6 +32,8 @@
         /// </summary>
         public const string CONFIG_TESTS_NAME = "tests_cfg.yml";
 
+        public const string CONFIG_SERVICE_NAME = "svc.yml";
+
         /// <summary>
         /// File name for the injected entities' metadata (files, types, classes, methods, cross-points, etc)
         /// </summary>
@@ -31,11 +45,5 @@
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
-
-        #region Subsystems
-        public const string SUBSYSTEM_INJECTOR = "Injector";
-        public const string SUBSYSTEM_TESTER = "Tester";
-        public const string SUBSYSTEM_AGENT = "Agent";
-        #endregion
     }
 }

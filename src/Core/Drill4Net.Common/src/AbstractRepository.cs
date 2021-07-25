@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -25,11 +26,18 @@ namespace Drill4Net.Common
         /// </summary>
         public TOptions Options { get; set; }
 
+        protected NetSerializer.Serializer _ser;
+
         /*********************************************************************************/
 
         public AbstractRepository(string subsystem)
         {
             Subsystem = subsystem;
+
+            //serializer
+            var sets = new NetSerializer.Settings();
+            var types = new List<Type> { typeof(string) };
+            _ser = new NetSerializer.Serializer(types, sets);
         }
 
         /*********************************************************************************/
@@ -129,5 +137,12 @@ namespace Drill4Net.Common
         //    }
         //}
         #endregion
+
+        public byte[] SerializeToByte(object data)
+        {
+            using var ms = new MemoryStream();
+            _ser.Serialize(ms, data);
+            return ms.ToArray();
+        }
     }
 }

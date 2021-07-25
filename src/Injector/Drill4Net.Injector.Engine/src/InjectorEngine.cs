@@ -118,7 +118,7 @@ namespace Drill4Net.Injector.Engine
             //the tree's deploying
             tree.RemoveEmpties();
             var deployer = new TreeDeployer(runCtx.Repository);
-            deployer.InjectTree(tree); //copying tree data to target root directories
+            deployer.Deploy(tree); //copying tree data to target root directories
             tree.FinishTime = DateTime.Now;
 
             #region Debug

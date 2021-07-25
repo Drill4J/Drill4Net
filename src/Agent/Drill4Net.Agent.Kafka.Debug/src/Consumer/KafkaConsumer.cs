@@ -16,6 +16,7 @@ namespace Drill4Net.Agent.Kafka.Debug
         public event ReceivedMessageHandler MessageReceived;
         public event ErrorOccuredHandler ErrorOccured;
 
+        private CancellationTokenSource _cts;
         private readonly ConsumerConfig _cfg;
         private readonly AbstractRepository<ConverterOptions> _rep;
 
@@ -43,16 +44,10 @@ namespace Drill4Net.Agent.Kafka.Debug
         public void Start()
         {
             var opts = _rep.Options;
+            _cts = new();
 
             using var c = new ConsumerBuilder<Ignore, string>(_cfg).Build();
-            c.Subscribe(opts.Topic);
-
-            CancellationTokenSource cts = new();
-            Console.CancelKeyPress += (_, e) =>
-            {
-                e.Cancel = true; // prevent the process from terminating.
-                cts.Cancel();
-            };
+            c.Subscribe(opts.Topics);
 
             try
             {
@@ -60,7 +55,7 @@ namespace Drill4Net.Agent.Kafka.Debug
                 {
                     try
                     {
-                        var cr = c.Consume(cts.Token);
+                        var cr = c.Consume(_cts.Token);
                         var val = cr.Message.Value;
                         MessageReceived?.Invoke(val);
                     }
@@ -78,6 +73,11 @@ namespace Drill4Net.Agent.Kafka.Debug
 
                 ErrorOccured?.Invoke(true, false, opex.Message);
             }
+        }
+
+        public void Stop()
+        {
+            _cts.Cancel();
         }
     }
 }
