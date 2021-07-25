@@ -1,0 +1,59 @@
+﻿Description: IHS adoption for BDD tests
+Type: Injector #type as hint
+Target: # some metadata about target
+    Name: IHS-bdd #optional injection name
+Source: # what and how processing
+    Directory: d:\Projects\IHS-bdd\
+    Filter: # mask for search files, namespaces, classes...
+      Includes:
+        Directories:
+        Files: 
+        Namespaces:
+          - Ipreo
+        Classes:
+        Attributes:
+      Excludes:
+        Directories:
+        Folders:
+          - "*"
+        Files:
+Destination: # where copying injected assemblies
+    Directory: # or full directory...
+    FolderPostfix: Injected #...or prefix to source dir
+Profiler: # data collector/processor in separate assembly
+  Name: Standard agent # name exactly for agent subsystem
+  Directory: ..\..\Drill4Net.Agent.Kafka.Transmitter\netstandard2.0\ # for developers in VS
+  #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
+  AssemblyName: Drill4Net.Agent.Kafka.Transmitter.dll
+  Namespace: Drill4Net.Agent.Kafka.Transmitter
+  Class: ProbeTransmitter
+  Method: Transmit
+  Static: true
+Proxy: # the injecting for transfer data to profiler
+  Class: ProfilerProxy
+  Method: Register
+  Static: true
+Probes: # types of cross-cutting points
+    Ctor: true
+    Private: true
+    Getter: true
+    Setter: true
+    EventAdd: false
+    EventRemove: false
+    SkipEnterType: true
+    SkipIfElseType: true
+Logs: # for Injector
+    - Type: console
+      Level: debug
+    #local log
+    - Type: file
+      Level: trace
+    #common place
+    - Type: file
+      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Level: trace
+Debug:
+    CrossPointInfo: true # cross-point information is included into injected probe data. By default is true if this section presents
+    IgnoreErrors: true
+Silent: false # no wait, no questions...
+

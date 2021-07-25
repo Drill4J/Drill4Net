@@ -26,7 +26,7 @@ namespace Drill4Net.Common
         /// </summary>
         public TOptions Options { get; set; }
 
-        protected NetSerializer.Serializer _ser;
+        private readonly NetSerializer.Serializer _ser; //DON'T merge it with another serializer in descendant classes (yet)
 
         /*********************************************************************************/
 
