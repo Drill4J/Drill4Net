@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Confluent.Kafka;
 using Drill4Net.Common;
 
@@ -20,7 +19,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         private readonly IProducer<Null, string> _producer;
         private readonly TransmitterRepository _rep;
 
-        /****************************************************************************/
+        /***************************************************************************************/
 
         public KafkaProducer(TransmitterRepository rep)
         {
@@ -34,6 +33,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
             _headers = new Headers
             {
+                new Header(CoreConstants.HEADER_MESSAGE_TYPE, _rep.SerializeToByte(CoreConstants.MESSAGE_TYPE_PROBE)),
                 new Header(CoreConstants.HEADER_SUBSYSTEM, _rep.SerializeToByte(_rep.Subsystem)),
                 new Header(CoreConstants.HEADER_TARGET, _rep.SerializeToByte(_rep.Target)),
             };
@@ -47,18 +47,17 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             _producer?.Dispose();
         }
 
-        /****************************************************************************/
+        /***************************************************************************************/
 
         public int Send(string str)
         {
-            //var headers = new
             foreach (var topic in _topics)
             {
                 var mess = new Message<Null, string> { Value = str, Headers = _headers };
                 _producer.Produce(topic, mess, Handle);
             }
 
-            if (!IsError) //если нет коннекта, сюда придёт без ошибки
+            if (!IsError) //if there is no connection, it will come here without an error ((
                 return 0;
             return IsFatalError ? -2 : -1;
         }
