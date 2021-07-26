@@ -26,4 +26,16 @@
     <ProjectReference Include="..\Drill4Net.Agent.Kafka.Transmitter\Drill4Net.Agent.Kafka.Transmitter.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="IHS.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="std.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_redirect.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

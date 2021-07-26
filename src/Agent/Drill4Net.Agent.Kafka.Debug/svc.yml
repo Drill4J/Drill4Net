@@ -2,7 +2,7 @@
 Type: probe-converter #type as hint
 Servers: #list of servers
    - 'localhost:9093'
-GroupId: test-consumer-group
+GroupId: dodnet-agent
 Topics: 
     - probes
 Logs:

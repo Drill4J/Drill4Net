@@ -54,7 +54,7 @@ namespace Drill4Net.Agent.Standard
 
                 Log.Debug("Initializing...");
 
-                //TEST!!!
+                //TEST assembly resolving!!!
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
                 //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
 
@@ -77,8 +77,8 @@ namespace Drill4Net.Agent.Standard
                 Receiver.StartSession += OnStartSession;
                 Receiver.CancelSession += OnCancelSession;
                 Receiver.CancelAllSessions += OnCancelAllSessions;
-                Receiver.StopSession += OnStopSession;
-                Receiver.StopAllSessions += OnStopAllSessions;
+                Receiver.StopSession += OnFinishSession;
+                Receiver.StopAllSessions += OnFinishAllSessions;
 
                 _comm.Connect();
 
@@ -207,17 +207,17 @@ namespace Drill4Net.Agent.Standard
             Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
         }
 
-        private static void OnStopSession(StopAgentSession info)
+        private static void OnFinishSession(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
             Repository.SessionStop(info);
             Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
-        private static void OnCancelAllSessions()
+        private static void OnFinishAllSessions()
         {
-            var uids = Repository.CancelAllSessions();
-            Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            var uids = Repository.StopAllSessions();
+            Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         private static void OnCancelSession(CancelAgentSession info)
@@ -227,10 +227,10 @@ namespace Drill4Net.Agent.Standard
             Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
-        private static void OnStopAllSessions()
+        private static void OnCancelAllSessions()
         {
-            var uids = Repository.StopAllSessions();
-            Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            var uids = Repository.CancelAllSessions();
+            Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
         }
         #endregion
         #endregion

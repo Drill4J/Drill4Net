@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Agent.Kafka.Common\Drill4Net.Agent.Kafka.Common.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Standard\Drill4Net.Agent.Standard.csproj" />
   </ItemGroup>
 

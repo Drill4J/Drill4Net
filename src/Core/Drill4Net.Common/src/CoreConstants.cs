@@ -9,19 +9,10 @@
         public const string SUBSYSTEM_INJECTOR = "Injector";
         public const string SUBSYSTEM_TESTER = "Tester";
         public const string SUBSYSTEM_AGENT = "Agent";
-        public const string SUBSYSTEM_TRANSMITTER = "ProbeTransmitter";
+        public const string SUBSYSTEM_TRANSMITTER = "Transmitter";
         //public const string SUBSYSTEM_CONVERTER = "ProbeConverter";
         #endregion
-        #region Message headers
-        public const string HEADER_MESSAGE_TYPE = "TYPE";
-        public const string HEADER_SUBSYSTEM = "SUBSYSTEM";
-        public const string HEADER_TARGET = "TARGET";
-        #endregion
-        #region Message type
-        public const string MESSAGE_TYPE_PROBE = "Probe";
-        public const string MESSAGE_TYPE_TARGET_INFO = "Target";
-        #endregion
-
+        #region CONFIG & TREE
         /// <summary>
         /// Name of the file for the redirecting to the certain config
         /// </summary>
@@ -50,5 +41,6 @@
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
+        #endregion
     }
 }

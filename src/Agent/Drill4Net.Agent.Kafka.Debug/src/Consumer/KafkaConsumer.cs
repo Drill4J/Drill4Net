@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using Confluent.Kafka;
+using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Debug
@@ -33,9 +34,12 @@ namespace Drill4Net.Agent.Kafka.Debug
                 // Note: The AutoOffsetReset property determines the start offset in the event
                 // there are not yet any committed offsets for the consumer group for the
                 // topic/partitions of interest. By default, offsets are committed
-                // automatically, so in this example, consumption will only start from the
-                // earliest message in the topic 'my-topic' the first time you run the program.
-                AutoOffsetReset = AutoOffsetReset.Earliest
+                // automatically, so in this case, consumption will only start from the
+                // earliest message in the topic the first time you run the program.
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+                EnableAutoCommit = true,
+                EnableAutoOffsetStore = true,
+                MessageMaxBytes = KafkaConstants.MaxMessageSize,
             };
         }
 
