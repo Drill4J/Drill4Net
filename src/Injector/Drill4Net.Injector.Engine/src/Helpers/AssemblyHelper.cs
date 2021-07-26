@@ -390,13 +390,16 @@ namespace Drill4Net.Injector.Engine
             }
 
             // calc delta for the biz index
+            var lastIndex = methodCtx.OrigIndex - 1;
             var orderedPoints = points.OrderBy(a => a.OrigInd);
             foreach (var point in orderedPoints) //by ordered points
             {
                 var origInd = point.OrigInd;
                 var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); //only for the local code body
-                if (localBizInd > 0 && point.PointType != CrossPointType.Return) //because currently cross-point are setted before instruction which they relate
-                    localBizInd--;
+                if (localBizInd > 0 && origInd < lastIndex)
+                {
+                    localBizInd--; //because currently cross-points are setted before instruction which they relate
+                }
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
                 end2EndBusinessIndexes.Add((bizInd, point.PointUid));

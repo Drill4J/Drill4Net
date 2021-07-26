@@ -20,6 +20,8 @@ namespace Drill4Net.Injector.Core
         {
             if (ctx.IsStrictEdgeCrosspoints)
                 return;
+            if (ctx.LastOperation.OpCode.Code == Code.Throw)
+                return;
 
             //CG methods don't should processed
 
