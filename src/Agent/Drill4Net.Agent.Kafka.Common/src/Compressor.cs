@@ -18,13 +18,14 @@ namespace Drill4Net.Agent.Kafka.Common
             return destination;
         }
 
-        public static byte[] Decompress(byte[] source)
+        public static byte[] Decompress(byte[] source, int knownSize = 0)
         {
-            //Decode(byte[] source, int sourceOffset, int sourceLength, byte[] target, int targetOffset, int targetLength);
-            var buffer = new byte[source.Length * 255]; // to be safe
+            var buffer = new byte[knownSize == 0 ? source.Length * 255 : knownSize]; // to be safe
             var decodedLength = LZ4Codec.Decode(source, 0, source.Length, buffer, 0, buffer.Length);
             if (decodedLength < 0)
                 throw new InvalidOperationException("Decompress' buffer is too small");
+            if (knownSize > 0)
+                return buffer;
             var destination = new byte[decodedLength];
             Array.Copy(buffer, 0, destination, 0, decodedLength);
             return destination;

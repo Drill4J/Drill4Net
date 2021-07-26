@@ -11,6 +11,8 @@ namespace Drill4Net.Profiling.Tree
 
         /*************************************************************************/
 
+        public InjectedDirectory():base(null, null) { } //Serializable
+
         public InjectedDirectory(string sourceDir, string destDir):
             base(GetLastFolder(sourceDir), sourceDir)
         {

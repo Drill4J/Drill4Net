@@ -5,6 +5,7 @@ using Drill4Net.Common;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Kafka.Common;
 using System.Collections.Generic;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
@@ -53,12 +54,14 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
             var targetInfo = new TargetInfo
             {
-                Uid = Guid.NewGuid(),
+                Uid = Session,
                 Options = Options,
                 Solution = tree,
             };
 
-            _ser.AddTypes(new List<Type> { typeof(TargetInfo) });
+            var types = InjectedSolution.GetInjectedTreeTypes();
+            types.Add(typeof(TargetInfo));
+            AddSeriazibleTypes(types);
             var bytes = Serialize(targetInfo);
             //var test = Deserialize(bytes) as TargetInfo;
             return bytes;

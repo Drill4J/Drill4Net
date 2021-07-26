@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Common
 {
     /// <summary>
     /// Base abstract options
     /// </summary>
+    [Serializable]
     public abstract class AbstractOptions
     {
         /// <summary>

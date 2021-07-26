@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Drill4Net.Common;
 
 namespace Drill4Net.Profiling.Tree
 {
@@ -17,6 +16,8 @@ namespace Drill4Net.Profiling.Tree
         public string Description { get; set; }
 
         /************************************************************************/
+
+        public InjectedSolution(): base(null, null) { } //Serializable
 
         public InjectedSolution(string path) : this(null, path)
         {

@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Base options for the Drill4Net system generally
     /// </summary>
+    [Serializable]
     public abstract class BaseTargetOptions : AbstractOptions
     {
         /// <summary>

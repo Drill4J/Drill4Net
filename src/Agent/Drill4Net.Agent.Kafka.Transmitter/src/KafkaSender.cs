@@ -65,32 +65,36 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         public int SendTargetInfo(byte[] info)
         {
-            SetHeaderValue(_infoHeaders, KafkaConstants.HEADER_REQUEST, _rep.Session);
+            SetHeaderValue<Guid>(_infoHeaders, KafkaConstants.HEADER_REQUEST, _rep.Session);
+            SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, info.Length);
 
             var data = Compressor.Compress(info);
 
             //if needed break down array to chunks by size of _infoHeaders and
             //send separately transactionally
             //TODO: transactionally!!!
+
             var len = data.Length;
+            SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_COMPRESSED_SIZE, len);
             if (len <= _packetMaxSize)
             {
-                SetHeaderValue(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKETS, 1);
-                SetHeaderValue(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKET, 0);
+                SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKETS, 1);
+                SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKET, 0);
                 return SendPacket(data);
             }
             else
             {
                 var packetCnt = len / _packetMaxSize + 1;
-                SetHeaderValue(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKETS, packetCnt);
+                SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKETS, packetCnt);
 
                 for (var i = 0; i < packetCnt; i++)
                 {
-                    var packet = new byte[_packetMaxSize];
                     var start = i * _packetMaxSize;
-                    Array.Copy(data, start, packet, 0, Math.Min(_packetMaxSize, len - start));
+                    var size = Math.Min(_packetMaxSize, len - start);
+                    var packet = new byte[size];
+                    Array.Copy(data, start, packet, 0, size);
 
-                    SetHeaderValue(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKET, i);
+                    SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKET, i);
                     SendPacket(packet);
                 }
             }
@@ -104,10 +108,10 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             return LastError == null ? 0 : -2;
         }
 
-        private void SetHeaderValue(Headers headers, string key, object val)
+        private void SetHeaderValue<T>(Headers headers, string key, object val)
         {
             headers.Remove(key);
-            var header = new Header(key, _rep.Serialize(val));
+            var header = new Header(key, _rep.ToArray<T>(val));
             headers.Add(header);
         }
 
@@ -151,21 +155,21 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         internal void CreateTargetHeaders()
         {
             _infoHeaders = GetCommonHeaders();
-            _infoHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, _rep.StringToBytes(KafkaConstants.MESSAGE_TYPE_TARGET_INFO)));
+            _infoHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, _rep.StringToArray(KafkaConstants.MESSAGE_TYPE_TARGET_INFO)));
         }
 
         internal void CreateProbeHeaders()
         {
             _probeHeaders = GetCommonHeaders();
-            _probeHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, _rep.StringToBytes(KafkaConstants.MESSAGE_TYPE_PROBE)));
+            _probeHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, _rep.StringToArray(KafkaConstants.MESSAGE_TYPE_PROBE)));
         }
 
         internal Headers GetCommonHeaders()
         {
             return new Headers
             {
-                new Header(KafkaConstants.HEADER_SUBSYSTEM, _rep.StringToBytes(_rep.Subsystem)),
-                new Header(KafkaConstants.HEADER_TARGET, _rep.StringToBytes(_rep.Target)),
+                new Header(KafkaConstants.HEADER_SUBSYSTEM, _rep.StringToArray(_rep.Subsystem)),
+                new Header(KafkaConstants.HEADER_TARGET, _rep.StringToArray(_rep.Target)),
             };
         }
         #endregion

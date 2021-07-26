@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Agent.Kafka.Debug
+﻿using System.Threading.Tasks;
+
+namespace Drill4Net.Agent.Kafka.Debug
 {
     public interface IProbeReceiver
     {

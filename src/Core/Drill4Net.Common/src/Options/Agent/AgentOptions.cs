@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Agent's options
     /// </summary>
+    [Serializable]
     public class AgentOptions : BaseTargetOptions
     {
         /// <summary>

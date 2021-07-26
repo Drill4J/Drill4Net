@@ -2,22 +2,30 @@
 using System.Linq;
 using System.Threading;
 using Confluent.Kafka;
-using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Common;
+using Drill4Net.Agent.Kafka.Common;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
     //https://github.com/patsevanton/docker-compose-kafka-zk-kafdrop-cmak/blob/main/docker-compose.yml
 
     public delegate void ReceivedMessageHandler(string message);
+    public delegate void ReceivedTargetInfoHandler(TargetInfo target);
     public delegate void ErrorOccuredHandler(bool isFatal, bool isLocal, string message);
+
+    /***************************************************************************************************************/
 
     public class KafkaReceiver : IProbeReceiver
     {
         public event ReceivedMessageHandler MessageReceived;
+        public event ReceivedTargetInfoHandler TargetInfoReceived;
         public event ErrorOccuredHandler ErrorOccured;
 
-        private CancellationTokenSource _cts;
+        private CancellationTokenSource _targetsCts;
+        private CancellationTokenSource _probesCts;
+
         private readonly ConsumerConfig _cfg;
         private readonly AbstractRepository<ConverterOptions> _rep;
 
@@ -47,8 +55,108 @@ namespace Drill4Net.Agent.Kafka.Debug
 
         public void Start()
         {
+            Task.Run(RetriveTargets);
+            RetriveProbes();
+        }
+
+        private void RetriveTargets()
+        {
             var opts = _rep.Options;
-            _cts = new();
+            _targetsCts = new();
+            var targets = new Dictionary<Guid, List<byte[]>>();
+
+            using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
+            c.Subscribe(KafkaConstants.TOPIC_TARGET_INFO);
+
+            try
+            {
+                while (true)
+                {
+                    try
+                    {
+                        var cr = c.Consume(_targetsCts.Token);
+                        var mess = cr.Message;
+                        var headers = mess.Headers;
+                        var packet = mess.Value;
+                        try
+                        {
+                            if (!headers.TryGetLastBytes(KafkaConstants.HEADER_REQUEST, out byte[] uidAr))
+                                throw new Exception("No Uid in packet header");
+                            var uid = _rep.FromArray<Guid>(uidAr);
+
+                            if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_PACKETS, out byte[] packetsCntAr))
+                                throw new Exception("No packets count in packet header");
+                            var packetsCnt = _rep.FromArray<int>(packetsCntAr);
+
+                            if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
+                                throw new Exception("No packet's index in packet header");
+                            var packetInd = _rep.FromArray<int>(packetIndAr);
+
+                            //add packet
+                            List<byte[]> packets;
+                            if (targets.ContainsKey(uid))
+                            {
+                                packets = targets[uid];
+                            }
+                            else
+                            {
+                                packets = new List<byte[]>();
+                                targets.Add(uid, packets);
+                            }
+                            packets.Add(packet);
+
+                            //end?
+                            if (packetInd == packetsCnt - 1)
+                            {
+                                // merging packets
+                                if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_COMPRESSED_SIZE, out byte[] messSizeAr))
+                                    throw new Exception("No compressed message size in packet header");
+                                var messSize = _rep.FromArray<int>(messSizeAr);
+                                var messAr = new byte[messSize];
+
+                                var start = 0;
+                                foreach (var p in packets)
+                                {
+                                    var len = p.Length;
+                                    Array.Copy(p, 0, messAr, start, len);
+                                    start += len;
+                                }
+
+                                //decompression
+                                if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, out messSizeAr))
+                                    throw new Exception("No decompressed message size in packet header");
+                                messSize = _rep.FromArray<int>(messSizeAr);
+
+                                var decompressed = Compressor.Decompress(messAr, messSize);
+                                var info = _rep.FromArray<TargetInfo>(decompressed);
+                                TargetInfoReceived?.Invoke(info);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorOccured?.Invoke(true, true, ex.Message);
+                        }
+                    }
+                    catch (ConsumeException e)
+                    {
+                        var err = e.Error;
+                        ErrorOccured?.Invoke(err.IsFatal, err.IsLocalError, err.Reason);
+                    }
+                }
+            }
+            catch (OperationCanceledException opex)
+            {
+                // Ensure the consumer leaves the group cleanly and final offsets are committed.
+                c.Close();
+
+                ErrorOccured?.Invoke(true, false, opex.Message);
+            }
+        }
+
+        private void RetriveProbes()
+        {
+            var opts = _rep.Options;
+            _probesCts = new();
 
             using var c = new ConsumerBuilder<Ignore, string>(_cfg).Build();
             c.Subscribe(opts.Topics);
@@ -59,7 +167,7 @@ namespace Drill4Net.Agent.Kafka.Debug
                 {
                     try
                     {
-                        var cr = c.Consume(_cts.Token);
+                        var cr = c.Consume(_probesCts.Token);
                         var val = cr.Message.Value;
                         MessageReceived?.Invoke(val);
                     }
@@ -81,7 +189,8 @@ namespace Drill4Net.Agent.Kafka.Debug
 
         public void Stop()
         {
-            _cts.Cancel();
+            _targetsCts.Cancel();
+            _probesCts.Cancel();
         }
     }
 }

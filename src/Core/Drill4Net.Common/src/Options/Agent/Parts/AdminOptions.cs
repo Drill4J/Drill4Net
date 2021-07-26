@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for communicate with Admin side of Drill system
     /// </summary>
+    [Serializable]
     public class AdminOptions
     {
         /// <summary>

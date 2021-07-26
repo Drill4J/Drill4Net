@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using MsgPack.Serialization;
 using Serilog;
 using Serilog.Events;
 
@@ -137,12 +138,56 @@ namespace Drill4Net.Common
         //    }
         //}
         #endregion
+        #region Serialization
+        public void AddSeriazibleType(Type t)
+        {
+            _ser.AddTypes(new List<Type> { t });
+        }
 
-        public byte[] StringToBytes(string data)
+        public void AddSeriazibleTypes(List<Type> types)
+        {
+            _ser.AddTypes(types);
+        }
+
+        public byte[] Serialize(object data)
         {
             using var ms = new MemoryStream();
             _ser.Serialize(ms, data);
             return ms.ToArray();
         }
+
+        public object Deserialize(byte[] data)
+        {
+            using var ms = new MemoryStream(data);
+            return _ser.Deserialize(ms);
+        }
+
+        public byte[] StringToArray(string str)
+        {
+            return ToArray<string>(str);
+        }
+
+        public string ArrayToString(byte[] ar)
+        {
+            return FromArray<string>(ar);
+        }
+
+        public byte[] ToArray<T>(object obj)
+        {
+            var serializer = MessagePackSerializer.Get<T>();
+            using var ms = new MemoryStream();
+            serializer.Pack(ms, obj);
+            return ms.ToArray();
+        }
+
+        public T FromArray<T>(byte[] data)
+        {
+            MemoryStream ms = new(data);
+            var serializer = MessagePackSerializer.Get<T>();
+            var unpackedObject = serializer.Unpack(ms);
+            return unpackedObject;
+        }
+
+        #endregion
     }
 }

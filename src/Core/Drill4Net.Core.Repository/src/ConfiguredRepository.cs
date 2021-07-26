@@ -96,17 +96,5 @@ namespace Drill4Net.Core.Repository
         }
         #endregion
 
-        public byte[] Serialize(object data)
-        {
-            using var ms = new MemoryStream();
-            _ser.Serialize(ms, data);
-            return ms.ToArray();
-        }
-
-        public object Deserialize(byte[] data)
-        {
-            using var ms = new MemoryStream(data);
-            return _ser.Deserialize(ms);
-        }
     }
 }

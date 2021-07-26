@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for the logging
     /// </summary>
+    [Serializable]
     public class LogOptions
     {
         /// <summary>
