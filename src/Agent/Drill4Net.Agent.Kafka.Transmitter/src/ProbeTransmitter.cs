@@ -6,40 +6,47 @@ namespace Drill4Net.Agent.Kafka.Transmitter
     {
         public static ProbeTransmitter Transmitter { get; }
 
-        public IProbeSender Sender { get; }
+        public IDataSender Sender { get; }
 
-        /*************************************************************************/
+        /***********************************************************************************/
 
         static ProbeTransmitter()
         {
             var rep = new TransmitterRepository(); //just rep
-            IProbeSender sender = new KafkaProducer(rep); //concrete sender the data of probes to the middleware (Kafka)
+            IDataSender sender = new KafkaSender(rep); //concrete sender the data of probes to the middleware (Kafka)
             Transmitter = new ProbeTransmitter(sender); //what is loaded into the Target process and used by the Proxy class
+
+            Transmitter.SendTargetInfo(rep.GetTargetInfo());
         }
 
-        public ProbeTransmitter(IProbeSender sender)
+        public ProbeTransmitter(IDataSender sender)
         {
             Sender = sender ?? throw new ArgumentNullException(nameof(sender));
         }
 
-        /*************************************************************************/
+        /************************************************************************************/
+
+        internal void SendTargetInfo(byte[] info)
+        {
+            Sender.SendTargetInfo(info);
+        }
 
         /// <summary>
-        /// Transmits the specified probe by Proxy class injected into Target to the middleware.
+        /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
         /// </summary>
         /// <param name="str">The cross-point data.</param>
         public static void Transmit(string str)
         {
-            Transmitter.Send(str);
+            Transmitter.SendProbe(str);
         }
 
         /// <summary>
         /// Sends the specified probe to the middleware.
         /// </summary>
         /// <param name="str">The cross-point data.</param>
-        public int Send(string str)
+        public int SendProbe(string str)
         {
-            return Sender.Send(str);
+            return Sender.SendProbe(str);
         }
     }
 }

@@ -396,7 +396,7 @@ namespace Drill4Net.Target.Common
             }
             else
             {
-                info[0, 1] = false;
+                info[1, 1] = false;
                 Console.WriteLine($"{nameof(IfElse_Consec_Full)}: NO2");
             }
         }

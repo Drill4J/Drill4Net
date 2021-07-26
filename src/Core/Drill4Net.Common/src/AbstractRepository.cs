@@ -138,7 +138,7 @@ namespace Drill4Net.Common
         //}
         #endregion
 
-        public virtual byte[] SerializeToByte(string data)
+        public byte[] StringToBytes(string data)
         {
             using var ms = new MemoryStream();
             _ser.Serialize(ms, data);

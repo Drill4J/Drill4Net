@@ -1,5 +1,5 @@
-﻿using Drill4Net.Profiling.Tree;
-using System;
+﻿using System;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Kafka.Common
 {
@@ -9,6 +9,8 @@ namespace Drill4Net.Agent.Kafka.Common
     [Serializable]
     public class TargetInfo
     {
+        public Guid Uid { get; set; }
+
         public InjectedSolution Solution { get; set; }
     }
 }

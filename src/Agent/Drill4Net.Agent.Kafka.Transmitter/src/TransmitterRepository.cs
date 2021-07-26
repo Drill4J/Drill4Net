@@ -1,6 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using Drill4Net.Common;
 using Drill4Net.Core.Repository;
+using Drill4Net.Agent.Kafka.Common;
+using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
@@ -21,16 +25,52 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         /// </value>
         public string Target { get; set; }
 
-        /*********************************************************************************/
+        public Guid Session { get; }
+
+        /*********************************************************************************************/
 
         public TransmitterRepository(): base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
             var optHelper = new BaseOptionsHelper<TransmitterOptions>();
             var path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);
             TransmitterOptions = optHelper.ReadOptions(path);
-            Target = Options.Target.Name;
-
+            Target = Options.Target?.Name ?? GenerateTargetName();
+            Session = GetSession();
             PrepareLogger();
+        }
+
+        /*********************************************************************************************/
+
+        private Guid GetSession()
+        {
+            return Guid.NewGuid();
+        }
+
+        public byte[] GetTargetInfo()
+        {
+            var tree = ReadInjectedTree();
+            //TODO: remove not current version of Targets from Solution
+
+            var targetInfo = new TargetInfo
+            {
+                Uid = Guid.NewGuid(),
+                Solution = tree,
+            };
+
+            _ser.AddTypes(new List<Type> { typeof(TargetInfo) });
+            var bytes = Serialize(targetInfo);
+            //var test = Deserialize(bytes) as TargetInfo;
+            return bytes;
+        }
+
+        /// <summary>
+        /// Generates the name of the target if in injected Options doesn't contains one.
+        /// </summary>
+        /// <returns></returns>
+        private string GenerateTargetName()
+        {
+            var entryType = Assembly.GetEntryAssembly().EntryPoint.DeclaringType.FullName;
+            return $"{Environment.MachineName}-{entryType.Replace(".", "-")} (generated)";
         }
     }
 }

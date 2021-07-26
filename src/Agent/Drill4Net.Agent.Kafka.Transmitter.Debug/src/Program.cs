@@ -40,7 +40,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
                     input = Guid.NewGuid().ToString();
                 WriteMessage($"Data: {input}", COLOR_DATA);
 
-                var res = trans.Send(input); //TODO: return normal Status object
+                var res = trans.SendProbe(input); //TODO: return normal Status object
 
                 Console.WriteLine(res != 0
                     ? $"Delivered message"

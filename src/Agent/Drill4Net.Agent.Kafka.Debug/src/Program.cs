@@ -27,7 +27,7 @@ namespace Drill4Net.Agent.Kafka.Debug
             SetTitle();
 
             AbstractRepository<ConverterOptions> rep = new KafkaConsumerRepository();
-            IProbeReceiver consumer = new KafkaConsumer(rep);
+            IProbeReceiver consumer = new KafkaReceiver(rep);
             var agent = new CoverageAgent(consumer);
 
             agent.Start();

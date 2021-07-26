@@ -23,7 +23,7 @@ namespace Drill4Net.Core.Repository
         /// </value>
         public string DefaultCfgPath { get; internal set; }
 
-        private readonly NetSerializer.Serializer _ser;
+        protected readonly NetSerializer.Serializer _ser;
         protected THelper _optHelper;
 
         /**********************************************************************************/
@@ -95,5 +95,18 @@ namespace Drill4Net.Core.Repository
             return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
         }
         #endregion
+
+        public byte[] Serialize(object data)
+        {
+            using var ms = new MemoryStream();
+            _ser.Serialize(ms, data);
+            return ms.ToArray();
+        }
+
+        public object Deserialize(byte[] data)
+        {
+            using var ms = new MemoryStream(data);
+            return _ser.Deserialize(ms);
+        }
     }
 }

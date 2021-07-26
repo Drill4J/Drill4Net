@@ -12,7 +12,7 @@ namespace Drill4Net.Agent.Kafka.Debug
     public delegate void ReceivedMessageHandler(string message);
     public delegate void ErrorOccuredHandler(bool isFatal, bool isLocal, string message);
 
-    public class KafkaConsumer : IProbeReceiver
+    public class KafkaReceiver : IProbeReceiver
     {
         public event ReceivedMessageHandler MessageReceived;
         public event ErrorOccuredHandler ErrorOccured;
@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.Kafka.Debug
 
         /****************************************************************************************/
 
-        public KafkaConsumer(AbstractRepository<ConverterOptions> rep)
+        public KafkaReceiver(AbstractRepository<ConverterOptions> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             var opts = _rep.Options;
