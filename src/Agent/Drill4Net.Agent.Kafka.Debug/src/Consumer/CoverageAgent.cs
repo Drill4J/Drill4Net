@@ -29,7 +29,7 @@ namespace Drill4Net.Agent.Kafka.Debug
 
         private void Receiver_MessageReceived(string message)
         {
-           // Log.Debug("Message: {Message}", message);
+           // Log.Debug("Message: {Message}", message); //TODO: options from cfg (true only for RnD/debug/small projects, etc)
             StandardAgent.RegisterStatic(message);
         }
 

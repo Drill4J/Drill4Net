@@ -1,5 +1,4 @@
 ﻿using System;
-using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {

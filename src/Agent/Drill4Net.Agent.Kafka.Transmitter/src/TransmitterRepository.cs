@@ -4,6 +4,11 @@ using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
+    /// <summary>
+    /// Repository for the transmitting of retrieved data from the Proxy class
+    /// in Target's memory to the real Agent in another (micro)service
+    /// </summary>
+    /// <seealso cref="Drill4Net.Common.AbstractRepository;Drill4Net.Agent.Kafka.Transmitter.TransmitterOptions;"/>
     public class TransmitterRepository : AbstractRepository<TransmitterOptions>
     {
         /// <summary>
@@ -12,7 +17,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         /// <value>
         /// The target.
         /// </value>
-        public string Target { get; set; } //TODO: retrieve it from... proxy??
+        public string Target { get; set; } //TODO: retrieve it from... proxy by Kafka??
 
         /*********************************************************************************/
 

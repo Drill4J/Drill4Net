@@ -118,9 +118,21 @@ namespace Drill4Net.Common
         /// <returns></returns>
         public static string ToHexString(string s)
         {
-            var ba = Encoding.Default.GetBytes(s);
+            var ba = Encoding.UTF8.GetBytes(s);
             var hexString = BitConverter.ToString(ba);
             return hexString.Replace("-", "");
+        }
+
+        public static string ToBase64String(string plainText)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string FromBase64String(string base64EncodedData)
+        {
+            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         public static long GetCurrentUnixTimeMs()
