@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for the Source of the Target (instrumenting App) - what and how processing
     /// </summary>
+    [Serializable]
     public class SourceOptions
     {
         /// <summary>

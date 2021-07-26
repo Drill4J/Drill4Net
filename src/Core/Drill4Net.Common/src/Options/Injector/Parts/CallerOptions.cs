@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Base options for abstract Caller entity
     /// </summary>
+    [Serializable]
     public class CallerOptions
     {
         /// <summary>

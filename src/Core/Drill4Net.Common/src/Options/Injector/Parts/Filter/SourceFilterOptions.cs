@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace Drill4Net.Common
@@ -6,6 +7,7 @@ namespace Drill4Net.Common
     /// <summary>
     /// Options for the Filter of directories, folders, namespaces, type names, etc
     /// </summary>
+    [Serializable]
     public class SourceFilterOptions
     {
         private readonly TypeChecker _typeChecker;

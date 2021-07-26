@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Common
 {
     /// <summary>
     /// Parameters of Filter for the Source Target
     /// </summary>
+    [Serializable]
     public class SourceFilterParams
     {
         public List<string> Directories { get; set; }

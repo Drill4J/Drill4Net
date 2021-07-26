@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for the Destination: path, naming, etc
     /// </summary>
+    [Serializable]
     public class DestinationOptions
     {
         /// <summary>

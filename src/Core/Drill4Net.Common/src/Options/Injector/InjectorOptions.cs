@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for the Injector App
     /// </summary>
+    [Serializable]
     public class InjectorOptions : BaseTargetOptions
     {
         /// <summary>

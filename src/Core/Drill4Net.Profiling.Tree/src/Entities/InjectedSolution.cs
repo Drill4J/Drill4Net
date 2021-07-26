@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Drill4Net.Common;
 
 namespace Drill4Net.Profiling.Tree
 {

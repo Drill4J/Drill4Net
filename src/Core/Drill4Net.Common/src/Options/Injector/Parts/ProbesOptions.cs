@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for the injecting process (types of methods, cross-points, etc)
     /// </summary>
+    [Serializable]
     public class ProbesOptions
     {
         /// <summary>

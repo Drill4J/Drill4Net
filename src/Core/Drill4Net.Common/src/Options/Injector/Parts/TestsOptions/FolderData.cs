@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Common
 {
     /// <summary>
     /// Data for assemblies and it's classes in folder for testing 
     /// </summary>
+    [Serializable]
     public class FolderData
     {
         /// <summary>

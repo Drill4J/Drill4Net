@@ -54,6 +54,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             var targetInfo = new TargetInfo
             {
                 Uid = Guid.NewGuid(),
+                Options = Options,
                 Solution = tree,
             };
 

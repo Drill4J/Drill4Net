@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Common
+﻿using System;
+
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Options for the Profiler (Agent)
     /// </summary>
+    [Serializable]
     public class ProfilerOptions : CallerOptions
     {
         /// <summary>

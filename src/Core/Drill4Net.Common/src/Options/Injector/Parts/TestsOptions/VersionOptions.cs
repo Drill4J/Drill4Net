@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Common
 {
     /// <summary>
     /// Parameters for the target object versions to be processed
     /// </summary>
+    [Serializable]
     public class VersionOptions
     {
         /// <summary>
