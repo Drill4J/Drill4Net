@@ -1,8 +1,9 @@
 ﻿Path: inj_IHS_Kafka # Full/relative path or simple name of real injection cfg (as name with or without extension)
       #inj_Kafka
-      #inj_RnD 
+      #inj_File 
       #inj_Std
-      #inj_IHS_bdd_FILE 
+      #inj_IHS_bdd_FILE
+      #inj_IHS_Kafka
       #inj_IHS_bdd 
       #inj_razor 
       #inj_blazor_wasm
