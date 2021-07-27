@@ -70,6 +70,10 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
             var data = Compressor.Compress(info);
 
+            //TEST
+            //var data2 = Compressor.Decompress(data, info.Length);
+            //var aaa = _rep.Deserialize(data2) as TargetInfo; // 
+
             //if needed break down array to chunks by size of _infoHeaders and
             //send separately transactionally
             //TODO: transactionally!!!

@@ -6,6 +6,7 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
@@ -49,6 +50,10 @@ namespace Drill4Net.Agent.Kafka.Debug
                 EnableAutoOffsetStore = true,
                 MessageMaxBytes = KafkaConstants.MaxMessageSize,
             };
+
+            var types = InjectedSolution.GetInjectedTreeTypes();
+            types.Add(typeof(TargetInfo));
+            _rep.AddSeriazibleTypes(types);
         }
 
         /****************************************************************************************/
@@ -128,7 +133,10 @@ namespace Drill4Net.Agent.Kafka.Debug
                                 messSize = _rep.FromArray<int>(messSizeAr);
 
                                 var decompressed = Compressor.Decompress(messAr, messSize);
-                                var info = _rep.FromArray<TargetInfo>(decompressed);
+                                var info = _rep.Deserialize(decompressed) as TargetInfo; // _rep.FromArray<TargetInfo>(decompressed);
+                                targets.Remove(uid);
+                                GC.Collect();
+
                                 TargetInfoReceived?.Invoke(info);
                             }
                         }
