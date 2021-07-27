@@ -113,10 +113,10 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             return LastError == null ? 0 : -2;
         }
 
-        private void SetHeaderValue<T>(Headers headers, string key, object val)
+        private void SetHeaderValue<T>(Headers headers, string key, T val)
         {
             headers.Remove(key);
-            var header = new Header(key, _rep.ToArray<T>(val));
+            var header = new Header(key, Serializer.ToArray<T>(val));
             headers.Add(header);
         }
 
@@ -160,21 +160,21 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         internal void CreateTargetHeaders()
         {
             _infoHeaders = GetCommonHeaders();
-            _infoHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, _rep.StringToArray(KafkaConstants.MESSAGE_TYPE_TARGET_INFO)));
+            _infoHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, Serializer.StringToArray(KafkaConstants.MESSAGE_TYPE_TARGET_INFO)));
         }
 
         internal void CreateProbeHeaders()
         {
             _probeHeaders = GetCommonHeaders();
-            _probeHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, _rep.StringToArray(KafkaConstants.MESSAGE_TYPE_PROBE)));
+            _probeHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, Serializer.StringToArray(KafkaConstants.MESSAGE_TYPE_PROBE)));
         }
 
         internal Headers GetCommonHeaders()
         {
             return new Headers
             {
-                new Header(KafkaConstants.HEADER_SUBSYSTEM, _rep.StringToArray(_rep.Subsystem)),
-                new Header(KafkaConstants.HEADER_TARGET, _rep.StringToArray(_rep.Target)),
+                new Header(KafkaConstants.HEADER_SUBSYSTEM, Serializer.StringToArray(_rep.Subsystem)),
+                new Header(KafkaConstants.HEADER_TARGET, Serializer.StringToArray(_rep.Target)),
             };
         }
         #endregion

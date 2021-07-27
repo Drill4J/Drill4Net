@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using MsgPack.Serialization;
 using Serilog;
 using Serilog.Events;
 
@@ -27,18 +25,11 @@ namespace Drill4Net.Common
         /// </summary>
         public TOptions Options { get; set; }
 
-        private readonly NetSerializer.Serializer _ser; //DON'T merge it with another serializer in descendant classes (yet)
-
         /*********************************************************************************/
 
         public AbstractRepository(string subsystem)
         {
             Subsystem = subsystem;
-
-            //serializer
-            var sets = new NetSerializer.Settings();
-            var types = new List<Type> { typeof(string) };
-            _ser = new NetSerializer.Serializer(types, sets);
         }
 
         /*********************************************************************************/
@@ -137,57 +128,6 @@ namespace Drill4Net.Common
         //            break;
         //    }
         //}
-        #endregion
-        #region Serialization
-        public void AddSeriazibleType(Type t)
-        {
-            _ser.AddTypes(new List<Type> { t });
-        }
-
-        public void AddSeriazibleTypes(List<Type> types)
-        {
-            _ser.AddTypes(types);
-        }
-
-        public byte[] Serialize(object data)
-        {
-            using var ms = new MemoryStream();
-            _ser.Serialize(ms, data);
-            return ms.ToArray();
-        }
-
-        public object Deserialize(byte[] data)
-        {
-            using var ms = new MemoryStream(data);
-            return _ser.Deserialize(ms);
-        }
-
-        public byte[] StringToArray(string str)
-        {
-            return ToArray<string>(str);
-        }
-
-        public string ArrayToString(byte[] ar)
-        {
-            return FromArray<string>(ar);
-        }
-
-        public byte[] ToArray<T>(object obj)
-        {
-            var serializer = MessagePackSerializer.Get<T>();
-            using var ms = new MemoryStream();
-            serializer.Pack(ms, obj);
-            return ms.ToArray();
-        }
-
-        public T FromArray<T>(byte[] data)
-        {
-            MemoryStream ms = new(data);
-            var serializer = MessagePackSerializer.Get<T>();
-            var unpackedObject = serializer.Unpack(ms);
-            return unpackedObject;
-        }
-
         #endregion
     }
 }

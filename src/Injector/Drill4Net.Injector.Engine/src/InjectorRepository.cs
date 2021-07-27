@@ -191,11 +191,8 @@ namespace Drill4Net.Injector.Engine
         /// <param name="tree"></param>
         public virtual void WriteInjectedTree(string path, InjectedSolution tree)
         {
-            var types = InjectedSolution.GetInjectedTreeTypes();
-            var ser = new NetSerializer.Serializer(types);
-            using var ms = new MemoryStream();
-            ser.Serialize(ms, tree);
-            File.WriteAllBytes(path, ms.ToArray());
+            var data = Serializer.ToArray<InjectedSolution>(tree);
+            File.WriteAllBytes(path, data);
         }
         #endregion
     }

@@ -50,10 +50,6 @@ namespace Drill4Net.Agent.Kafka.Debug
                 EnableAutoOffsetStore = true,
                 MessageMaxBytes = KafkaConstants.MaxMessageSize,
             };
-
-            var types = InjectedSolution.GetInjectedTreeTypes();
-            types.Add(typeof(TargetInfo));
-            _rep.AddSeriazibleTypes(types);
         }
 
         /****************************************************************************************/
@@ -87,15 +83,15 @@ namespace Drill4Net.Agent.Kafka.Debug
                         {
                             if (!headers.TryGetLastBytes(KafkaConstants.HEADER_REQUEST, out byte[] uidAr))
                                 throw new Exception("No Uid in packet header");
-                            var uid = _rep.FromArray<Guid>(uidAr);
+                            var uid = Serializer.FromArray<Guid>(uidAr);
 
                             if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_PACKETS, out byte[] packetsCntAr))
                                 throw new Exception("No packets count in packet header");
-                            var packetsCnt = _rep.FromArray<int>(packetsCntAr);
+                            var packetsCnt = Serializer.FromArray<int>(packetsCntAr);
 
                             if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
                                 throw new Exception("No packet's index in packet header");
-                            var packetInd = _rep.FromArray<int>(packetIndAr);
+                            var packetInd = Serializer.FromArray<int>(packetIndAr);
 
                             //add packet
                             List<byte[]> packets;
@@ -116,7 +112,7 @@ namespace Drill4Net.Agent.Kafka.Debug
                                 // merging packets
                                 if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_COMPRESSED_SIZE, out byte[] messSizeAr))
                                     throw new Exception("No compressed message size in packet header");
-                                var messSize = _rep.FromArray<int>(messSizeAr);
+                                var messSize = Serializer.FromArray<int>(messSizeAr);
                                 var messAr = new byte[messSize];
 
                                 var start = 0;
@@ -130,10 +126,10 @@ namespace Drill4Net.Agent.Kafka.Debug
                                 //decompression
                                 if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, out messSizeAr))
                                     throw new Exception("No decompressed message size in packet header");
-                                messSize = _rep.FromArray<int>(messSizeAr);
+                                messSize = Serializer.FromArray<int>(messSizeAr);
 
                                 var decompressed = Compressor.Decompress(messAr, messSize);
-                                var info = _rep.Deserialize(decompressed) as TargetInfo; // _rep.FromArray<TargetInfo>(decompressed);
+                                var info = Serializer.FromArray<TargetInfo>(decompressed);
                                 targets.Remove(uid);
                                 GC.Collect();
 

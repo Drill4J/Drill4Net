@@ -22,8 +22,6 @@ namespace Drill4Net.Core.Repository
         /// The default config path.
         /// </value>
         public string DefaultCfgPath { get; internal set; }
-
-        protected readonly NetSerializer.Serializer _ser;
         protected THelper _optHelper;
 
         /**********************************************************************************/
@@ -34,9 +32,6 @@ namespace Drill4Net.Core.Repository
 
         protected ConfiguredRepository(string cfgPath, string subsystem): base(subsystem)
         {
-            var types = InjectedSolution.GetInjectedTreeTypes();
-            _ser = new NetSerializer.Serializer(types);
-            //_ser.AddTypes(types); //buggy if in base class the same serializer object
             _optHelper = new THelper();
 
             //options
@@ -66,10 +61,16 @@ namespace Drill4Net.Core.Repository
             //
             try
             {
+                InjectedSolution tree;
                 var bytes2 = File.ReadAllBytes(path);
-                using var ms2 = new MemoryStream(bytes2);
-                if (_ser.Deserialize(ms2) is not InjectedSolution tree)
-                    throw new System.Exception($"Tree data not read: [{path}]");
+                try
+                {
+                    tree = Serializer.FromArray<InjectedSolution>(bytes2);
+                }
+                catch(Exception ex)
+                {
+                    throw new System.Exception($"Tree data not serialized: [{path}].\n{ex}");
+                }
                 return tree;
             }
             catch (Exception ex)

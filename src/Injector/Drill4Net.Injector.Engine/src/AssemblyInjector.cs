@@ -186,7 +186,6 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="runCtx">The Injector Engine's Run</param>
         /// <param name="asmCtx">Assembly context</param>
-        /// <param name="opts">Injector options</param>
         internal void InjectProxyType(RunContext runCtx, AssemblyContext asmCtx)
         {
             //here we generate proxy class which will be calling of real profiler by cached Reflection

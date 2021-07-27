@@ -59,11 +59,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
                 Solution = tree,
             };
 
-            var types = InjectedSolution.GetInjectedTreeTypes();
-            types.Add(typeof(TargetInfo));
-            AddSeriazibleTypes(types);
-            var bytes = Serialize(targetInfo);
-            //var test = Deserialize(bytes) as TargetInfo;
+            var bytes = Serializer.ToArray<TargetInfo>(targetInfo);
             return bytes;
         }
 
