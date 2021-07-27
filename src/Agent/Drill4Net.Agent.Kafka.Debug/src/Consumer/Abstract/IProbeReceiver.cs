@@ -1,11 +1,10 @@
-﻿using System.Threading.Tasks;
-
-namespace Drill4Net.Agent.Kafka.Debug
+﻿namespace Drill4Net.Agent.Kafka.Debug
 {
     public interface IProbeReceiver
     {
-        event ErrorOccuredHandler ErrorOccured;
+        event ReceivedTargetInfoHandler TargetInfoReceived;
         event ReceivedMessageHandler MessageReceived;
+        event ErrorOccuredHandler ErrorOccured;
 
         void Start();
         void Stop();

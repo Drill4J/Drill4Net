@@ -6,7 +6,6 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {

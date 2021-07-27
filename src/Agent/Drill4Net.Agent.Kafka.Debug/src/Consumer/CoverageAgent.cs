@@ -2,6 +2,7 @@
 using System.Linq;
 using Serilog;
 using Drill4Net.Agent.Standard;
+using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Debug
 {
@@ -14,6 +15,7 @@ namespace Drill4Net.Agent.Kafka.Debug
         public CoverageAgent(IProbeReceiver receiver)
         {
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            receiver.TargetInfoReceived += Receiver_TargetInfoReceived;
             receiver.MessageReceived += Receiver_MessageReceived;
             receiver.ErrorOccured += Receiver_ErrorOccured;
 
@@ -30,6 +32,11 @@ namespace Drill4Net.Agent.Kafka.Debug
         public void Stop()
         {
             _receiver.Stop();
+        }
+
+        private void Receiver_TargetInfoReceived(TargetInfo target)
+        {
+
         }
 
         private void Receiver_MessageReceived(string message)
