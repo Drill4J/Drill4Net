@@ -1,7 +1,7 @@
 ﻿using System;
 using K4os.Compression.LZ4;
 
-namespace Drill4Net.Agent.Kafka.Common
+namespace Drill4Net.Common
 {
     //https://github.com/MiloszKrajewski/K4os.Compression.LZ4
 

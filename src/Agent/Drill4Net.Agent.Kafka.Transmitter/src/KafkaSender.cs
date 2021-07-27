@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Confluent.Kafka;
 using Drill4Net.Agent.Kafka.Common;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
