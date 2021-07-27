@@ -15,22 +15,29 @@ namespace Drill4Net.Agent.Kafka.Debug
 {
     class Program
     {
-        private const ConsoleColor COLOR_INFO = ConsoleColor.Green;
+        private const ConsoleColor COLOR_INFO = ConsoleColor.White;
         private const ConsoleColor COLOR_ERROR = ConsoleColor.Red;
         private const ConsoleColor COLOR_DATA = ConsoleColor.Cyan;
-        private const ConsoleColor COLOR_DEFAULT = ConsoleColor.White;
+        private const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
 
         /*******************************************************************************/
 
         static void Main(string[] args)
         {
-            SetTitle();
+            try
+            {
+                SetTitle();
 
-            AbstractRepository<ConverterOptions> rep = new KafkaConsumerRepository();
-            IProbeReceiver consumer = new KafkaReceiver(rep);
-            var agent = new CoverageAgent(consumer);
+                AbstractRepository<ConverterOptions> rep = new KafkaConsumerRepository();
+                IProbeReceiver consumer = new KafkaReceiver(rep);
+                var agent = new CoverageAgent(consumer);
 
-            agent.Start();
+                agent.Start();
+            }
+            catch (Exception ex)
+            {
+                WriteMessage(ex.ToString(), COLOR_ERROR);
+            }
         }
 
         #region Info
@@ -40,7 +47,7 @@ namespace Drill4Net.Agent.Kafka.Debug
             var appName = Assembly.GetExecutingAssembly().GetName().Name;
             var title = $"{appName} {version}";
             Console.Title = title;
-            WriteMessage(title, ConsoleColor.Cyan);
+            WriteMessage(title, COLOR_DATA);
         }
 
         internal static string GetAppVersion()
