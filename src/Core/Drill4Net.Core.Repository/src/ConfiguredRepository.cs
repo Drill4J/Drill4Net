@@ -22,6 +22,7 @@ namespace Drill4Net.Core.Repository
         /// The default config path.
         /// </value>
         public string DefaultCfgPath { get; internal set; }
+
         protected THelper _optHelper;
 
         /**********************************************************************************/

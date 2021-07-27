@@ -14,6 +14,10 @@ namespace Drill4Net.Common
             return FromArray<string>(ar);
         }
 
+        //http://mbraceproject.github.io/FsPickler/
+        // there is written: "a library designed for cross-platform communication."
+        //TODO: need to check transfer data between Win & Linux (Docker) !!!!
+
         public static byte[] ToArray<T>(T obj)
         {
             var binarySerializer = FsPickler.CreateBinarySerializer();

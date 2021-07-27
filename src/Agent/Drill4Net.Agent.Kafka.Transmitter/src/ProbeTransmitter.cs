@@ -2,6 +2,11 @@
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
+    /// <summary>
+    /// Entity which is loaded by Proxy to Target's process and next transmits
+    /// the probe's data from it to the real Agent located in separate service 
+    /// (direct or, e.g. through Kafka as middleware)
+    /// </summary>
     public class ProbeTransmitter
     {
         public static ProbeTransmitter Transmitter { get; }

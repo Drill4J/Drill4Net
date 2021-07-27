@@ -4,8 +4,6 @@ using System.Reflection;
 using Drill4Net.Common;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Kafka.Common;
-using System.Collections.Generic;
-using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
@@ -26,6 +24,12 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         /// </value>
         public string Target { get; set; }
 
+        /// <summary>
+        /// Gets the session of Target/Transmitter's Run.
+        /// </summary>
+        /// <value>
+        /// The session.
+        /// </value>
         public Guid Session { get; }
 
         /*********************************************************************************************/
