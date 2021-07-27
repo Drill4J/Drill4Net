@@ -19,7 +19,10 @@
 
   <ItemGroup>
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
-    <PackageReference Include="System.Threading.Channels" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
   </ItemGroup>
 
 </Project>

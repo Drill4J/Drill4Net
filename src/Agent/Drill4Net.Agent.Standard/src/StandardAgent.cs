@@ -116,6 +116,8 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public static void Init() { }
 
+        //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
+
         private static void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "first_chance_error.log"),
