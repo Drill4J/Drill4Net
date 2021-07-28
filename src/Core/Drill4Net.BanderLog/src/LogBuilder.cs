@@ -1,7 +1,8 @@
-﻿using Drill4Net.BanderLog.Sinks;
+﻿using System;
+using Drill4Net.BanderLog.Sinks;
 using Drill4Net.BanderLog.Sinks.Console;
 using Drill4Net.BanderLog.Sinks.File;
-using System;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog
 {
@@ -29,7 +30,7 @@ namespace Drill4Net.BanderLog
             return _log;
         }
 
-        public Logger CreateLogger(LogConfiguration cfg)
+        public Logger CreateLogger(LogConfiguration cfg) //use LogOptions?
         {
             throw new NotImplementedException();
         }
@@ -43,6 +44,22 @@ namespace Drill4Net.BanderLog
             _log.Sinks.Add(file);
             //
             return _log;
+        }
+
+        /// <summary>
+        /// Creates the standard factory.
+        /// Next: ILogger logger = loggerFactory.CreateLogger<Startup>();
+        /// </summary>
+        /// <param name="filepath">The filepath.</param>
+        /// <returns></returns>
+        public ILoggerFactory CreateStandardFactory(string filepath = null)
+        {
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddProvider(new ConsoleLoggerProvider());
+                builder.AddProvider(new FileLoggerProvider(filepath));
+            });
+            return loggerFactory;
         }
     }
 }

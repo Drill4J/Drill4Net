@@ -2,7 +2,7 @@
 
 namespace Drill4Net.BanderLog
 {
-    public class LogConfiguration
+    public class LogConfiguration //use LogOptions instead?
     {
     }
 }

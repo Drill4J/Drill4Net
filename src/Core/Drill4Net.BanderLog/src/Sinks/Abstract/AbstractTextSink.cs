@@ -14,9 +14,16 @@ namespace Drill4Net.BanderLog.Sinks
                 Func<TState, Exception, string> formatter)
         {
             //TODO: structure of message - by CONFIG !!!
-            var data = $"{CommonUtils.GetPreciseTime()}{DELIM}{logLevel}{DELIM}{eventId}{DELIM}{state}";
+            var data = $"{CommonUtils.GetPreciseTime()}{DELIM}{logLevel}";
+
+            if(eventId.Id != 0)
+                data += $"{DELIM}{eventId}";
+
             if (formatter != null)
                 data += $"{DELIM}{formatter(state, exception)}";
+            else
+                data += $"{DELIM}{state}";
+
             return data;
         }
     }

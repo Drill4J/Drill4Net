@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Drill4Net.Common;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +24,10 @@ namespace Drill4Net.BanderLog.Sinks.File
         #pragma warning disable DF0025 // Marks undisposed objects assinged to a field, originated from method invocation.
             _writer = System.IO.File.AppendText(_filepath); //writes to memory and flushes at the end (but perhaps can be leaks & last data losses) - for IHS BDD 09:43 min
             //Action<string> action = (string str) => File.AppendAllLines(_filepath, new string[] { str }); //opens & closes file each time - for IHS BDD 18:08 min
-            Action<string> action = (string str) => _writer.WriteLine(str);
+            Action<string> action = (string str) =>
+            {
+                _writer.WriteLine(str);
+            };
             _queue = new ChannelsQueue<string>(action);
         #pragma warning restore DF0025 // Marks undisposed objects assinged to a field, originated from method invocation.
         }
@@ -37,9 +41,16 @@ namespace Drill4Net.BanderLog.Sinks.File
             _queue.Enqueue(data);
         }
 
-        public override void Flush()
+        public override IDisposable BeginScope<TState>(TState state)
         {
-            _queue.Stop();
+            Flush();
+            return _writer;
+        }
+
+        public async override void Flush()
+        {
+            await Task.Run(() => _queue.Flush());
+            _writer.Close();
         }
     }
 }
