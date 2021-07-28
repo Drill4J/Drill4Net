@@ -1,31 +1,25 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using Drill4Net.Common;
+using Microsoft.Extensions.Logging;
 
-namespace Drill4Net.Agent.File
+namespace Drill4Net.BanderLog.Sinks.File
 {
-    //add this in project's csproj file: 
-    //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-
-    /// <summary>
-    /// Profiler for researches. Now just writes log to the file.
-    /// </summary>
-    public static class LoggerAgent
+    public class FileSink : AbstractTextSink
     {
-        private static readonly string _filepath;
-        private static readonly ChannelsQueue<string> _queue;
-        private static readonly StreamWriter _writer;
+        private const string NAME_DEFAULT = "log.txt";
+
+        private readonly string _filepath;
+        private readonly ChannelsQueue<string> _queue;
+        private readonly StreamWriter _writer;
 
         /*****************************************************************************/
 
-        static LoggerAgent()
+        public FileSink(string filepath = null)
         {
-            _filepath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "crosspoints.txt");
-            if (System.IO.File.Exists(_filepath))
-                System.IO.File.Delete(_filepath);
-
-            //we just write probes to the file
+            if (string.IsNullOrWhiteSpace(filepath))
+                filepath = Path.Combine(FileUtils.GetEntryDir(), NAME_DEFAULT);
+            _filepath = filepath;
         #pragma warning disable DF0025 // Marks undisposed objects assinged to a field, originated from method invocation.
             _writer = System.IO.File.AppendText(_filepath); //writes to memory and flushes at the end (but perhaps can be leaks & last data losses) - for IHS BDD 09:43 min
             //Action<string> action = (string str) => File.AppendAllLines(_filepath, new string[] { str }); //opens & closes file each time - for IHS BDD 18:08 min
@@ -36,9 +30,16 @@ namespace Drill4Net.Agent.File
 
         /*****************************************************************************/
 
-        public static void RegisterStatic(string data)
+        public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, 
+            Func<TState, Exception, string> formatter)
         {
+            var data = FormatData(logLevel, eventId, state, exception, formatter);
             _queue.Enqueue(data);
+        }
+
+        public override void Flush()
+        {
+            _queue.Stop();
         }
     }
 }

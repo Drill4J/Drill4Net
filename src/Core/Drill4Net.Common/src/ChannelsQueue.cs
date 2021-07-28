@@ -38,7 +38,7 @@ namespace Drill4Net.Common
 
         public void Enqueue(T data)
         {
-            _writer.TryWrite(data);
+            _writer.TryWrite(data); //TODO: if false, wtite to local queue, then repeat attempt 
         }
 
         public void Stop()
