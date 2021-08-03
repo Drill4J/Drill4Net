@@ -8,9 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using Serilog;
+using NLog;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Benchmark.Logger
 {
+    /// <summary>
+    /// Benchmarks for comparison of different loggers
+    /// </summary>
     [MemoryDiagnoser]
     [HtmlExporter]
     [Config(typeof(Config))]
@@ -19,11 +24,13 @@ namespace Drill4Net.Benchmark.Logger
         private List<string> _testData;
         private string _testString;
         private int _amountOfStrings;
+        private NLog.Logger _loggerNlog;
+        private BanderLog.Logger _loggerBanderLog;
         private string _fileName="LogFile.txt";
         private string _fileNameSeriLog = "LogFileSerilog.txt";
         private string _fileNameNLog = "LogFileNlog.txt";
         private string _fileNameBanderLog = "LogFileBanderLog.txt";
-        //private Serilog.ILogger _seriLog;
+        
         private class Config : ManualConfig
         {
 
@@ -40,14 +47,26 @@ namespace Drill4Net.Benchmark.Logger
             Log.Logger=new LoggerConfiguration()
                 .WriteTo.File(_fileNameSeriLog)
                 .CreateLogger();
+            _loggerNlog= LogManager.GetCurrentClassLogger();
+            var logBld = new LogBuilder();
+            _loggerBanderLog = logBld.CreateStandardLogger();
+
         }
         [Benchmark]
-        public void WriteLogToFile()
+        public void WriteLogWithAppendAllLines()
         {
             File.AppendAllLines(_fileName, _testData);
         }
         [Benchmark]
-        public void WriteLogSerilogForEach()
+        public void WriteLogWithAppendAllTextCycle()
+        {
+            for (var i = 0; i < _amountOfStrings; i++)
+            {
+                File.AppendAllText(_fileName, _testString);
+            }
+        }
+        [Benchmark]
+        public void WriteLogWithSerilogCycle()
         {
             for(var i=0;i< _amountOfStrings; i++)
             {
@@ -55,19 +74,34 @@ namespace Drill4Net.Benchmark.Logger
             }
         }
         [Benchmark]
-        public void WriteLogSerilog()
+        public void WriteLogWithSerilog()
         {
             Log.Logger.Information("{_testData}", _testData);
         }
         [Benchmark]
-        public void WriteLogNLog()
+        public void WriteLogWithNLogCycle()
         {
-           
+            for (var i = 0; i < _amountOfStrings; i++)
+            {
+                _loggerNlog.Info(_testString);
+            }
         }
+
+        [Benchmark]
+        public void WriteLogWithBanderLogCycle()
+        {
+            for (var i = 0; i < _amountOfStrings; i++)
+            {
+                _loggerBanderLog.Log(Microsoft.Extensions.Logging.LogLevel.Information, _testString);
+            }
+        }
+
         [GlobalCleanup]
         public void GlobalCleanUp()
         {
             Log.CloseAndFlush();
+            NLog.LogManager.Shutdown();
+            _loggerBanderLog.Flush();
         }
     }
 
