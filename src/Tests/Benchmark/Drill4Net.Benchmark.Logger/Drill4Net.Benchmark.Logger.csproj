@@ -8,9 +8,6 @@
     <Configurations>Debug;Release;Release_Benchmark</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Benchmark|AnyCPU'">
-    <Optimize>true</Optimize>
-  </PropertyGroup>
 
   <ItemGroup>
     <None Remove="src\NLog.config" />
@@ -35,8 +32,8 @@
     <ProjectReference Include="..\..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call &quot;$(OutDir)$(ProjectName).exe&quot;" IgnoreStandardErrorWarningFormat="True" />
-  </Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="if $(ConfigurationName) == Release call &quot;$(OutDir)$(ProjectName).exe&quot;" IgnoreStandardErrorWarningFormat="True" />
+	</Target>
 
 </Project>
