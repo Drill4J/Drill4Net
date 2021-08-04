@@ -161,7 +161,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog", "src\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj", "{6CC60C8B-4DFB-4FF4-B32D-981F99B40C8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.BanderLog.Debug", "src\Core\Drill4Net.BanderLog.Debug\Drill4Net.BanderLog.Debug.csproj", "{4EE46F47-AE8F-4011-971E-8435FC1260F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog.Debug", "src\Core\Drill4Net.BanderLog.Debug\Drill4Net.BanderLog.Debug.csproj", "{4EE46F47-AE8F-4011-971E-8435FC1260F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{2381CFA4-C747-4E41-8470-3C197CC4F6CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.BanderLog.Testing", "src\Tests\IntegrationTests\Core\Drill4Net.BanderLog.Testing\Drill4Net.BanderLog.Testing.csproj", "{17C3EAC5-648E-4B23-8A0C-078D70DCBB33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -357,6 +361,10 @@ Global
 		{4EE46F47-AE8F-4011-971E-8435FC1260F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EE46F47-AE8F-4011-971E-8435FC1260F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EE46F47-AE8F-4011-971E-8435FC1260F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17C3EAC5-648E-4B23-8A0C-078D70DCBB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17C3EAC5-648E-4B23-8A0C-078D70DCBB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17C3EAC5-648E-4B23-8A0C-078D70DCBB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17C3EAC5-648E-4B23-8A0C-078D70DCBB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -429,6 +437,8 @@ Global
 		{1A4F1986-F799-422B-A878-ABA172DE7818} = {3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}
 		{6CC60C8B-4DFB-4FF4-B32D-981F99B40C8C} = {1D6CE589-D18D-4682-A950-003BAC9B7B04}
 		{4EE46F47-AE8F-4011-971E-8435FC1260F5} = {1D6CE589-D18D-4682-A950-003BAC9B7B04}
+		{2381CFA4-C747-4E41-8470-3C197CC4F6CA} = {AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}
+		{17C3EAC5-648E-4B23-8A0C-078D70DCBB33} = {2381CFA4-C747-4E41-8470-3C197CC4F6CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
