@@ -9,10 +9,10 @@ namespace Drill4Net.BanderLog.Testing
 {
     public class LoggerTest
     {
-        private const int logLengh=1000;
+        private const int logLengh = 1000;
         private const int _logLineCount = 1000000;
-        private string _logString=new string ('a', logLengh);
-        private string _logPath = "BanderLog_Log.txt";
+        private string _logString = new string('a', logLengh);
+        private string _logPath = "BanderLog.txt";
 
         public Logger InitializeLogger(string fileName)
         {
@@ -21,43 +21,37 @@ namespace Drill4Net.BanderLog.Testing
             return logger;
         }
 
-        public void WriteLog(string fileName)
-        {
-            var logger = InitializeLogger(_logPath);
 
-            for (var i = 1; i <= _logLineCount; i++)
-            {
-                logger.Log(LogLevel.Information, $"{i}_{_logString}");
-            }
-            logger.Flush();
-
-        }
-        public void WriteLog(Logger logger)
+        public void WriteLog(Logger logger, string additionalInfo = "")
         {
             for (var i = 1; i <= _logLineCount; i++)
             {
-                logger.Log(LogLevel.Information, $"{i}_{_logString}");
+                logger.Log(LogLevel.Information, $"{i}_{additionalInfo}{_logString}");
             }
+
 
         }
         [Fact]
-        public void Test1()
+        public void OneThreadOneLoggerTest()
         {
             File.Delete(_logPath);
-            WriteLog(_logPath);
+            var logger = InitializeLogger(_logPath);
+            WriteLog(logger);
+            System.Threading.Thread.Sleep(50);
+            logger.Flush();
+            System.Threading.Thread.Sleep(50);
             int lineCounter = 0;
             string logLine;
-            System.Threading.Thread.Sleep(5000);
-            var file =
+            using var file2 =
                 new System.IO.StreamReader(_logPath);
-            while ((logLine = file.ReadLine()) != null)
+            while ((logLine = file2.ReadLine()) != null)
             {
                 int actualLineNumber;
-                var lineNumberInLog = logLine.Substring(logLine.LastIndexOf("|")+1, logLine.LastIndexOf("_")- logLine.LastIndexOf("|")-1);
+                var lineNumberInLog = logLine.Substring(logLine.LastIndexOf("|") + 1, logLine.IndexOf("_") - logLine.LastIndexOf("|") - 1);
                 int.TryParse(lineNumberInLog, out actualLineNumber);
                 //Check the fact that the lines do not change their order
                 //(it's not terrible if it changes within small limits)
-                Assert.True(lineCounter - 1 <= actualLineNumber && actualLineNumber <= lineCounter + 1);
+                Assert.True(lineCounter <= actualLineNumber && actualLineNumber <= lineCounter + 1);
                 //The content is not distorted (at least the last line).
                 Assert.EndsWith(_logString, logLine);
                 lineCounter++;
@@ -66,7 +60,68 @@ namespace Drill4Net.BanderLog.Testing
             Assert.Equal(_logLineCount, lineCounter);
 
         }
+        [Fact]
+        public void ParallelThreadsOneLoggerTest()
+        {
+            File.Delete($"Threads_{_logPath}");
+            var logger = InitializeLogger($"Threads_{_logPath}");
+            Task[] tasks = new Task[2];
+            tasks[0] = Task.Run(() => WriteLog(logger, "thread_1_"));
+            tasks[1] = Task.Run(() => WriteLog(logger, "thread_2_"));
+            try
+            {
+                Task.WaitAll(tasks);
+            }
+            catch (AggregateException ae)
+            {
+                Console.WriteLine("An exception occurred.");
+                foreach (var ex in ae.Flatten().InnerExceptions)
+                    Console.WriteLine("   {0}", ex.Message);
 
+            }
+            finally
+            {
+                System.Threading.Thread.Sleep(50);
+                logger.Flush();
+                System.Threading.Thread.Sleep(50);
+            }
+            using var file =
+                new System.IO.StreamReader($"Threads_{_logPath}");
+            string logLine;
+            int lineCounterThread1 = 0;
+            int lineCounterThread2 = 0;
+            while ((logLine = file.ReadLine()) != null)
+            {
+                int actualLineNumber;
+                var lineNumberInLog = logLine.Substring(logLine.LastIndexOf("|") + 1, logLine.IndexOf("_") - logLine.LastIndexOf("|") - 1);
+                int.TryParse(lineNumberInLog, out actualLineNumber);
+                if (logLine.Contains("thread_1_"))
+                {
+                    //Check the fact that the lines do not change their order
+                    //(it's not terrible if it changes within small limits)
+                    Assert.True(lineCounterThread1 <= actualLineNumber && actualLineNumber <= lineCounterThread1 + 1);
+                    //The content is not distorted (at least the last line).
+                    Assert.EndsWith(_logString, logLine);
+                    lineCounterThread1++;
+                }
+                if (logLine.Contains("thread_2_"))
+                {
+                    //Check the fact that the lines do not change their order
+                    //(it's not terrible if it changes within small limits)
+                    Assert.True(lineCounterThread2 <= actualLineNumber && actualLineNumber <= lineCounterThread2 + 1);
+                    //The content is not distorted (at least the last line).
+                    Assert.EndsWith(_logString, logLine);
+                    lineCounterThread2++;
+                }
+
+            }
+            //One hundred thousand lines (maybe million) are written to the file and not a single one is lost.
+            Assert.Equal(_logLineCount, lineCounterThread1);
+            Assert.Equal(_logLineCount, lineCounterThread2);
+
+        }
+       
+    
 
     }
 }
