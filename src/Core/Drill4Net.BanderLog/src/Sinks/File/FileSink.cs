@@ -8,18 +8,14 @@ namespace Drill4Net.BanderLog.Sinks.File
 {
     public class FileSink : AbstractTextSink
     {
-        private const string NAME_DEFAULT = "log.txt";
-
-        private readonly string _filepath;
+         private readonly string _filepath;
         private readonly ChannelsQueue<string> _queue;
         private readonly StreamWriter _writer;
 
         /*****************************************************************************/
 
-        public FileSink(string filepath = null)
+        internal FileSink(string filepath)
         {
-            if (string.IsNullOrWhiteSpace(filepath))
-                filepath = Path.Combine(FileUtils.GetEntryDir(), NAME_DEFAULT);
             _filepath = filepath;
         #pragma warning disable DF0025 // Marks undisposed objects assinged to a field, originated from method invocation.
             _writer = System.IO.File.AppendText(_filepath); //writes to memory and flushes at the end (but perhaps can be leaks & last data losses) - for IHS BDD 09:43 min

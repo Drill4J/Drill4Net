@@ -17,7 +17,7 @@ namespace Drill4Net.BanderLog.Testing
         public Logger InitializeLogger(string fileName)
         {
             var logBld = new LogBuilder();
-            var logger = logBld.AddSink(new FileSink(fileName)).Build();
+            var logger = logBld.AddSink(FileSinkBuilder.CreateSink(fileName)).Build();
             return logger;
         }
 
@@ -32,14 +32,16 @@ namespace Drill4Net.BanderLog.Testing
 
         }
         [Fact]
-        public void OneThreadOneLoggerTest()
+        public void OneThreadOneLoggerTestAsync()
         {
             File.Delete(_logPath);
+            System.Threading.Thread.Sleep(50);
             var logger = InitializeLogger(_logPath);
             WriteLog(logger);
-            System.Threading.Thread.Sleep(50);
+
+            System.Threading.Thread.Sleep(1000);
             logger.Flush();
-            System.Threading.Thread.Sleep(50);
+            System.Threading.Thread.Sleep(1000);
             int lineCounter = 0;
             string logLine;
             using var file2 =
@@ -81,9 +83,9 @@ namespace Drill4Net.BanderLog.Testing
             }
             finally
             {
-                System.Threading.Thread.Sleep(50);
+                System.Threading.Thread.Sleep(10000);
                 logger.Flush();
-                System.Threading.Thread.Sleep(50);
+                System.Threading.Thread.Sleep(10000);
             }
             using var file =
                 new System.IO.StreamReader($"Threads_{_logPath}");
@@ -120,8 +122,69 @@ namespace Drill4Net.BanderLog.Testing
             Assert.Equal(_logLineCount, lineCounterThread2);
 
         }
-       
-    
+        [Fact]
+        public void ParallelThreadsTwoLoggersTest()
+        {
+            File.Delete($"Threads2Loggers_{_logPath}");
+            var logger1 = InitializeLogger($"Threads2Loggers_{_logPath}");
+            var logger2 = InitializeLogger($"Threads2Loggers_{_logPath}");
+            Task[] tasks = new Task[2];
+            tasks[0] = Task.Run(() => WriteLog(logger1, "thread_1_"));
+            tasks[1] = Task.Run(() => WriteLog(logger2, "thread_2_"));
+            try
+            {
+                Task.WaitAll(tasks);
+            }
+            catch (AggregateException ae)
+            {
+                Console.WriteLine("An exception occurred.");
+                foreach (var ex in ae.Flatten().InnerExceptions)
+                    Console.WriteLine("   {0}", ex.Message);
+
+            }
+            finally
+            {
+                System.Threading.Thread.Sleep(20000);
+                logger1.Flush();
+                System.Threading.Thread.Sleep(20000);
+            }
+            using var file =
+                new System.IO.StreamReader($"Threads2Loggers_{_logPath}");
+            string logLine;
+            int lineCounterThread1 = 0;
+            int lineCounterThread2 = 0;
+            while ((logLine = file.ReadLine()) != null)
+            {
+                int actualLineNumber;
+                var lineNumberInLog = logLine.Substring(logLine.LastIndexOf("|") + 1, logLine.IndexOf("_") - logLine.LastIndexOf("|") - 1);
+                int.TryParse(lineNumberInLog, out actualLineNumber);
+                if (logLine.Contains("thread_1_"))
+                {
+                    //Check the fact that the lines do not change their order
+                    //(it's not terrible if it changes within small limits)
+                    Assert.True(lineCounterThread1 <= actualLineNumber && actualLineNumber <= lineCounterThread1 + 1);
+                    //The content is not distorted (at least the last line).
+                    Assert.EndsWith(_logString, logLine);
+                    lineCounterThread1++;
+                }
+                if (logLine.Contains("thread_2_"))
+                {
+                    //Check the fact that the lines do not change their order
+                    //(it's not terrible if it changes within small limits)
+                    Assert.True(lineCounterThread2 <= actualLineNumber && actualLineNumber <= lineCounterThread2 + 1);
+                    //The content is not distorted (at least the last line).
+                    Assert.EndsWith(_logString, logLine);
+                    lineCounterThread2++;
+                }
+
+            }
+            //One hundred thousand lines (maybe million) are written to the file and not a single one is lost.
+            Assert.Equal(_logLineCount, lineCounterThread1);
+            Assert.Equal(_logLineCount, lineCounterThread2);
+
+        }
+
+
 
     }
 }
