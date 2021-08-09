@@ -10,6 +10,7 @@ using System.IO;
 using Serilog;
 using NLog;
 using Drill4Net.BanderLog;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Benchmark.Logger
 {
@@ -23,7 +24,8 @@ namespace Drill4Net.Benchmark.Logger
     {
         private List<string> _testData;
         private string _testString;
-        private int _amountOfStrings;
+        [Params(100, 1000)]
+        public int AmountOfStrings { get; set; }
         private NLog.Logger _loggerNlog;
         private BanderLog.Logger _loggerBanderLog;
         private string _fileName="LogFile.txt";
@@ -43,7 +45,7 @@ namespace Drill4Net.Benchmark.Logger
         public void GlobalSetup()
         {
             _testString = new string('a', 5000);
-            _testData = Enumerable.Repeat(_testString, _amountOfStrings).ToList();         
+            _testData = Enumerable.Repeat(_testString, AmountOfStrings).ToList();         
             Log.Logger=new LoggerConfiguration()
                 .WriteTo.File(_fileNameSeriLog)
                 .CreateLogger();
@@ -58,43 +60,49 @@ namespace Drill4Net.Benchmark.Logger
             File.AppendAllLines(_fileName, _testData);
         }
         [Benchmark]
-        public void WriteLogWithAppendAllTextCycle()
+        public void WriteLogWithAppendAllText()
         {
-            for (var i = 0; i < _amountOfStrings; i++)
+            for (var i = 0; i < AmountOfStrings; i++)
             {
                 File.AppendAllText(_fileName, _testString);
             }
         }
         [Benchmark]
-        public void WriteLogWithSerilogCycle()
+        public void WriteLogWithSerilog()
         {
-            for(var i=0;i< _amountOfStrings; i++)
+            for(var i=0;i< AmountOfStrings; i++)
             {
                 Log.Logger.Information(_testString);
             }
         }
         [Benchmark]
-        public void WriteLogWithSerilog()
+        public void WriteLogWithNLog()
         {
-            Log.Logger.Information("{_testData}", _testData);
-        }
-        [Benchmark]
-        public void WriteLogWithNLogCycle()
-        {
-            for (var i = 0; i < _amountOfStrings; i++)
+            for (var i = 0; i < AmountOfStrings; i++)
             {
                 _loggerNlog.Info(_testString);
             }
         }
 
         [Benchmark]
-        public void WriteLogWithBanderLogCycle()
+        public void WriteLogWithBanderLog()
         {
-            for (var i = 0; i < _amountOfStrings; i++)
+            for (var i = 0; i < AmountOfStrings; i++)
             {
                 _loggerBanderLog.Log(Microsoft.Extensions.Logging.LogLevel.Information, _testString);
             }
         }
+        [Benchmark]
+        public void WriteLogWithBanderLog5yTasks()
+        {
+            Task[] tasks = new Task[5];
+            for (var i = 0; i < 5; i++)
+            {
+                tasks[i] = Task.Run(() => WriteLogWithBanderLog());
+            }
+
+        }
+
 
         [GlobalCleanup]
         public void GlobalCleanUp()
