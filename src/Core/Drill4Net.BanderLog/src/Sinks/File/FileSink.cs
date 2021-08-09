@@ -47,6 +47,7 @@ namespace Drill4Net.BanderLog.Sinks.File
         {
             await Task.Run(() => _queue.Flush());
             _writer.Close();
+            FileSinkBuilder.RemoveSink(_filepath);
         }
     }
 }
