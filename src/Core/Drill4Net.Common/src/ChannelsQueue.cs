@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -13,6 +14,8 @@ namespace Drill4Net.Common
     {
         private readonly ChannelReader<T> _reader;
         private readonly ChannelWriter<T> _writer;
+        private int _queueItemsCounter;
+
 
         /**************************************************************************/
 
@@ -39,7 +42,20 @@ namespace Drill4Net.Common
 
         public void Enqueue(T data)
         {
+            IncrementItemsCounter();
             _writer.TryWrite(data); //TODO: if false, wtite to local queue, then repeat attempt 
+        }
+        public void DecrementItemsCounter()
+        {
+            _queueItemsCounter = Interlocked.Decrement(ref _queueItemsCounter);
+        }
+        public void IncrementItemsCounter()
+        {
+            _queueItemsCounter = Interlocked.Increment(ref _queueItemsCounter);
+        }
+        public void AddItemsCounter( int amount)
+        {
+            _queueItemsCounter = Interlocked.Add(ref _queueItemsCounter, amount);
         }
 
         public void Stop()
@@ -51,15 +67,16 @@ namespace Drill4Net.Common
         {
             Stop();
 
-            if (_reader.CanCount)
+            if (_queueItemsCounter > 0)
             {
-                while (_reader.Count > 0)
+                while (_queueItemsCounter > 0)
                     await Task.Delay(10);
             }
             else
             {
                 await Task.Delay(250);
             }
+
         }
     }
 }
