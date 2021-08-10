@@ -9,8 +9,6 @@ namespace Drill4Net.BanderLog.Sinks.File
 {
     public class FileSink : AbstractTextSink
     {
-        
-
         private readonly string _filepath;
         private readonly ChannelsQueue<string> _queue;
         private  StreamWriter _writer;
@@ -21,10 +19,8 @@ namespace Drill4Net.BanderLog.Sinks.File
 
         /*****************************************************************************/
 
-        public FileSink(string filepath = null)
+        internal FileSink(string filepath)
         {
-            if (string.IsNullOrWhiteSpace(filepath))
-                filepath = Path.Combine(FileUtils.GetEntryDir(), FileSinkConstants.NAME_DEFAULT);
             _filepath = filepath;
         #pragma warning disable DF0025 // Marks undisposed objects assinged to a field, originated from method invocation.
             _writer=InitializeWriter(_filepath);
@@ -79,12 +75,9 @@ namespace Drill4Net.BanderLog.Sinks.File
 
         public async override void Flush()
         {
-            if (_writer != null)
-            {
-                await Task.Run(() => _queue.Flush());
-                _writer.Close();
-                _writer = null;
-            }
+            await Task.Run(() => _queue.Flush());
+            _writer.Close();
+            FileSinkBuilder.RemoveSink(_filepath);
         }
     }
 }
