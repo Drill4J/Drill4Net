@@ -61,13 +61,7 @@ namespace Drill4Net.BanderLog.Sinks.File
             _queue.Enqueue(data);
         }
 
-        public override IDisposable BeginScope<TState>(TState state)
-        {
-            Flush();
-            return _writer;
-        }
-
-        public async override void Flush()
+        public async override Task Flush()
         {
             await Task.Run(() => _queue.Flush());
             if (_queue.QueueItemsCounter > 0)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog.Sinks
@@ -22,6 +23,8 @@ namespace Drill4Net.BanderLog.Sinks
         }
 
         public abstract void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
-        public abstract void Flush();
+        public abstract Task Flush();
+
+
     }
 }

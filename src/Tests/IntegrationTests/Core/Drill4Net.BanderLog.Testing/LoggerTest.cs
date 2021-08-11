@@ -17,7 +17,7 @@ namespace Drill4Net.BanderLog.Testing
         public Logger InitializeLogger(string fileName)
         {
             var logBld = new LogBuilder();
-            var logger = logBld.AddSink(FileSinkBuilder.CreateSink(fileName)).Build();
+            var logger = logBld.AddSink(FileSinkCreator.CreateSink(fileName)).Build();
             return logger;
         }
 
@@ -28,25 +28,21 @@ namespace Drill4Net.BanderLog.Testing
             {
                 logger.Log(LogLevel.Information, $"{i}_{additionalInfo}{_logString}");
             }
-
-
         }
         [Fact]
-        public void OneThreadOneLoggerTestAsync()
+        public async void OneThreadOneLoggerTestAsync()
         {
             File.Delete(_logPath);
             System.Threading.Thread.Sleep(50);
             var logger = InitializeLogger(_logPath);
             WriteLog(logger);
-
-            System.Threading.Thread.Sleep(1000);
-            logger.Flush();
-            System.Threading.Thread.Sleep(1000);
+            await  logger.Flush();
+            //await Task.Delay(30000);
             int lineCounter = 0;
             string logLine;
-            using var file2 =
+            using var file =
                 new System.IO.StreamReader(_logPath);
-            while ((logLine = file2.ReadLine()) != null)
+            while ((logLine = file.ReadLine()) != null)
             {
                 int actualLineNumber;
                 var lineNumberInLog = logLine.Substring(logLine.LastIndexOf("|") + 1, logLine.IndexOf("_") - logLine.LastIndexOf("|") - 1);
@@ -63,7 +59,7 @@ namespace Drill4Net.BanderLog.Testing
 
         }
         [Fact]
-        public void ParallelThreadsOneLoggerTest()
+        public async void ParallelThreadsOneLoggerTest()
         {
             File.Delete($"Threads_{_logPath}");
             var logger = InitializeLogger($"Threads_{_logPath}");
@@ -83,9 +79,8 @@ namespace Drill4Net.BanderLog.Testing
             }
             finally
             {
-                System.Threading.Thread.Sleep(10000);
-                logger.Flush();
-                System.Threading.Thread.Sleep(10000);
+
+                await logger.Flush();
             }
             using var file =
                 new System.IO.StreamReader($"Threads_{_logPath}");
@@ -123,7 +118,7 @@ namespace Drill4Net.BanderLog.Testing
 
         }
         [Fact]
-        public void ParallelThreadsTwoLoggersTest()
+        public async void ParallelThreadsTwoLoggersTest()
         {
             File.Delete($"Threads2Loggers_{_logPath}");
             var logger1 = InitializeLogger($"Threads2Loggers_{_logPath}");
@@ -144,9 +139,8 @@ namespace Drill4Net.BanderLog.Testing
             }
             finally
             {
-                System.Threading.Thread.Sleep(20000);
-                logger1.Flush();
-                System.Threading.Thread.Sleep(20000);
+                
+                await logger1.Flush();
             }
             using var file =
                 new System.IO.StreamReader($"Threads2Loggers_{_logPath}");
