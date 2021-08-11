@@ -40,7 +40,7 @@ namespace Drill4Net.BanderLog
             var console = new ConsoleSink();
             _log.Sinks.Add(console);
             //
-            var file = new FileSink(filepath);
+            var file = FileSinkCreator.CreateSink(filepath);
             _log.Sinks.Add(file);
             //
             return _log;

@@ -15,8 +15,6 @@ namespace Drill4Net.BanderLog.Sinks.File
         private DateTime? _lastLogTime;
         private int _linesToFlushCounter;
 
-
-
         /*****************************************************************************/
 
         internal FileSink(string filepath)
@@ -34,6 +32,7 @@ namespace Drill4Net.BanderLog.Sinks.File
         {
             if (_writer == null)
                 _writer = InitializeWriter(_filepath);
+
                 _writer.WriteLine(str);
                 _linesToFlushCounter=Interlocked.Increment(ref _linesToFlushCounter);
             
@@ -47,8 +46,6 @@ namespace Drill4Net.BanderLog.Sinks.File
                 _linesToFlushCounter = 0;
             }
             _lastLogTime = DateTime.Now;
-
-
         }
 
         private StreamWriter InitializeWriter( string filepath)
@@ -62,9 +59,6 @@ namespace Drill4Net.BanderLog.Sinks.File
         {
             var data = FormatData(logLevel, eventId, state, exception, formatter);
             _queue.Enqueue(data);
-            _linesToFlushCounter = Interlocked.Increment(ref _linesToFlushCounter);
-
-
         }
 
         public override IDisposable BeginScope<TState>(TState state)
@@ -76,8 +70,18 @@ namespace Drill4Net.BanderLog.Sinks.File
         public async override void Flush()
         {
             await Task.Run(() => _queue.Flush());
-            _writer.Close();
-            FileSinkBuilder.RemoveSink(_filepath);
+            if (_queue.QueueItemsCounter > 0)
+            {
+               
+                while (_queue.QueueItemsCounter > 0)
+                    await Task.Delay(10);
+            }
+            if (_writer != null)
+            {
+                _writer.Close();
+                _writer = null;
+            }
+            
         }
     }
 }

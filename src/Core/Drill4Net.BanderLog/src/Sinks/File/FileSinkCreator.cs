@@ -6,15 +6,15 @@ using System.Text;
 
 namespace Drill4Net.BanderLog.Sinks.File
 {
-    public static class FileSinkBuilder
+    public static class FileSinkCreator
     {
         private static Dictionary<string, FileSink> _fileSinkDictionary=new Dictionary<string, FileSink>();
-        private const string NAME_DEFAULT = "log.txt";
+
 
         public static FileSink CreateSink(string filepath = null)
         {
             if (string.IsNullOrWhiteSpace(filepath))
-                filepath = Path.Combine(FileUtils.GetEntryDir(), NAME_DEFAULT);
+                filepath = Path.Combine(FileUtils.GetEntryDir(), FileSinkConstants.NAME_DEFAULT);
             FileSink fileSink;
             if (_fileSinkDictionary.TryGetValue(filepath, out fileSink))
                 return fileSink;
@@ -25,10 +25,5 @@ namespace Drill4Net.BanderLog.Sinks.File
                 return fileSink;
             }
         }
-        internal static void RemoveSink(string filepath)
-        {
-            _fileSinkDictionary.Remove(filepath);
-        }
-
     }
 }

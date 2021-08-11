@@ -15,7 +15,7 @@ namespace Drill4Net.Common
         private readonly ChannelReader<T> _reader;
         private readonly ChannelWriter<T> _writer;
         private int _queueItemsCounter;
-
+        public int QueueItemsCounter { get=> _queueItemsCounter; }
 
         /**************************************************************************/
 
@@ -66,17 +66,6 @@ namespace Drill4Net.Common
         public async void Flush()
         {
             Stop();
-
-            if (_queueItemsCounter > 0)
-            {
-                while (_queueItemsCounter > 0)
-                    await Task.Delay(10);
-            }
-            else
-            {
-                await Task.Delay(250);
-            }
-
         }
     }
 }
