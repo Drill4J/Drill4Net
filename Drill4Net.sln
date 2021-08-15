@@ -165,12 +165,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog.Debug",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{2381CFA4-C747-4E41-8470-3C197CC4F6CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.BanderLog.Testing", "src\Tests\IntegrationTests\Core\Drill4Net.BanderLog.Testing\Drill4Net.BanderLog.Testing.csproj", "{17C3EAC5-648E-4B23-8A0C-078D70DCBB33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog.Testing", "src\Tests\IntegrationTests\Core\Drill4Net.BanderLog.Testing\Drill4Net.BanderLog.Testing.csproj", "{17C3EAC5-648E-4B23-8A0C-078D70DCBB33}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{6C10442A-5611-4E01-A65E-5A4F649A8FE6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{A02A7228-EE23-46AE-82ED-CFACF724E9FA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Benchmark.Logger", "src\Tests\Benchmark\Drill4Net.Benchmark.Logger\Drill4Net.Benchmark.Logger.csproj", "{AA053806-F6AF-468E-A2EC-1A8D00E721F2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{84B7C061-0BB5-4F93-A110-ED6209E47A73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FsPicklerCheck", "FsPicklerCheck", "{301B8F10-41A4-4521-A9EF-A8EC7A2685C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FsPickler.Deserializer", "src\Tests\Demo\Service\FsPickler.Deserializer\FsPickler.Deserializer.csproj", "{AA5E3337-1BF5-4790-92D2-2E6AB77CBB7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FsPickler.Deserializer.Checker", "src\Tests\Demo\Service\FsPickler.Deserializer.Checker\FsPickler.Deserializer.Checker.csproj", "{7BD1A09A-A9BB-4C01-88B3-72899DA77F96}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -374,6 +383,14 @@ Global
 		{AA053806-F6AF-468E-A2EC-1A8D00E721F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA053806-F6AF-468E-A2EC-1A8D00E721F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA053806-F6AF-468E-A2EC-1A8D00E721F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA5E3337-1BF5-4790-92D2-2E6AB77CBB7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA5E3337-1BF5-4790-92D2-2E6AB77CBB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA5E3337-1BF5-4790-92D2-2E6AB77CBB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA5E3337-1BF5-4790-92D2-2E6AB77CBB7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BD1A09A-A9BB-4C01-88B3-72899DA77F96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BD1A09A-A9BB-4C01-88B3-72899DA77F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BD1A09A-A9BB-4C01-88B3-72899DA77F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BD1A09A-A9BB-4C01-88B3-72899DA77F96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -451,6 +468,10 @@ Global
 		{6C10442A-5611-4E01-A65E-5A4F649A8FE6} = {C2C77100-B789-417D-A387-E2C4A668C15C}
 		{A02A7228-EE23-46AE-82ED-CFACF724E9FA} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
 		{AA053806-F6AF-468E-A2EC-1A8D00E721F2} = {6C10442A-5611-4E01-A65E-5A4F649A8FE6}
+		{84B7C061-0BB5-4F93-A110-ED6209E47A73} = {C856DEA2-275C-4529-8B89-08F9E933C7CE}
+		{301B8F10-41A4-4521-A9EF-A8EC7A2685C0} = {84B7C061-0BB5-4F93-A110-ED6209E47A73}
+		{AA5E3337-1BF5-4790-92D2-2E6AB77CBB7B} = {301B8F10-41A4-4521-A9EF-A8EC7A2685C0}
+		{7BD1A09A-A9BB-4C01-88B3-72899DA77F96} = {301B8F10-41A4-4521-A9EF-A8EC7A2685C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
