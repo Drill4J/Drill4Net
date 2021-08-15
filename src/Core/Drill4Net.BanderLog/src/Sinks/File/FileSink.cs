@@ -38,7 +38,7 @@ namespace Drill4Net.BanderLog.Sinks.File
             
             if ((_linesToFlushCounter >= FileSinkConstants.LINES_TO_FLUSH_COUNTER) || (_lastLogTime != null && (DateTime.Now - _lastLogTime)?.TotalSeconds >= FileSinkConstants.MAX_TIME_GAP_FOR_FLUSH))
             {
-                System.Console.WriteLine(_linesToFlushCounter + "   " + (DateTime.Now - _lastLogTime)?.TotalSeconds);
+                //System.Console.WriteLine(_linesToFlushCounter + "   " + (DateTime.Now - _lastLogTime)?.TotalSeconds);
                 _writer.Flush();
                 _writer.Close();
                 _writer = null;
