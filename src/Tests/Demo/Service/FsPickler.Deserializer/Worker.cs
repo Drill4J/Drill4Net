@@ -51,7 +51,7 @@ namespace FsPickler.Deserializer
                 {
                     var data = Serializer.ToArray<InjectedSolution>(tree);
                     File.WriteAllBytes(
-                        System.IO.Path.Combine("test_folder", "injected_rewrited.tree"), data);
+                        System.IO.Path.Combine("test_folder", "injected_rewritten.tree"), data);
                 }
 
                 catch (Exception ex)

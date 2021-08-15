@@ -13,13 +13,14 @@ namespace FsPickler.Deserializer.Checker
             try
             {
                 InjectedSolution tree = null;
-                var bytes2 = File.ReadAllBytes(@"C:\Docker\injected_rewrited.tree");
+                var bytes2 = File.ReadAllBytes(@"C:\Docker\injected_rewritten.tree");
                 var bytes1 = File.ReadAllBytes(@"C:\Docker\injected.tree");
                 bool isEqual = Enumerable.SequenceEqual(bytes1, bytes2);
+                Console.WriteLine($"Difference in bytes:");
                 for (int i=0;i<bytes1.Length; i++)
                 {
                     if (bytes1[i]!=bytes2[i])
-                        Console.WriteLine($"Difference in element {i}");
+                        Console.WriteLine($"Difference in element: {i}   injected_rewritten.tree {bytes2[i]}  injected.tree {bytes1[i]}");
                 }
                 try
                 {
@@ -28,7 +29,7 @@ namespace FsPickler.Deserializer.Checker
 
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Tree data not serialized: [C:\\Docker\\injected_rewrited.tree].\n{ex}");
+                    Console.WriteLine($"Tree data not serialized: [C:\\Docker\\injected_rewritten.tree].\n{ex}");
 
                 }
                 Console.WriteLine($"Tree Description {tree?.Description}");
