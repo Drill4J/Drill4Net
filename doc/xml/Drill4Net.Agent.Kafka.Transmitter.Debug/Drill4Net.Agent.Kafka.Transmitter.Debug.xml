@@ -20,19 +20,19 @@
             <summary>Repository URL: https://github.com/IvanEpam/TestA.git</summary>
         </member>
         <member name="F:ThisAssembly.Git.Branch">
-            <summary>Branch: main</summary>
+            <summary>Branch: task-8224</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: a681982</summary>
+            <summary>Commit: 00721dc</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: a6819822728d46da71f96cdd764404c0a906b54b</summary>
+            <summary>Sha: 00721dc0b93f74cc486c8c79386c41cfb553a639</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-07-27T15:46:12+03:00</summary>
+            <summary>Commit date: 2021-08-15T16:55:33+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 629</summary>
+            <summary>Commits on top of base version: 648</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -62,7 +62,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 629</summary>
+            <summary>Patch: 648</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog.Sinks
@@ -19,12 +18,12 @@ namespace Drill4Net.BanderLog.Sinks
 
         public virtual IDisposable BeginScope<TState>(TState state)
         {
-            return null;
+            return null; //this?
         }
 
         public abstract void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
-        public abstract Task Flush();
+        public abstract void Flush();
 
-
+        public abstract void Shutdown();
     }
 }
