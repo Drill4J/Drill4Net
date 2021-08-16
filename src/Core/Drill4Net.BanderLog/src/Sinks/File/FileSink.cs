@@ -68,18 +68,12 @@ namespace Drill4Net.BanderLog.Sinks.File
         /// <param name="state">Unused state</param>
         private void TimeFlushing(object state)
         {
-            if (_writer == null)
-                return;
-            lock (_locker)
-            {
-                try
-                {
-                    EndUpWriter();
-                }
-                catch { }
-            }
+            EndUpWriter();
         }
 
+        /// <summary>
+        /// End up work with the file sink (with the flushing).
+        /// </summary>
         public override void Shutdown()
         {
             _queue.Stop();
@@ -87,6 +81,9 @@ namespace Drill4Net.BanderLog.Sinks.File
             Flush();
         }
 
+        /// <summary>
+        /// Waiting flushing for the all data to the file (with the timeout)
+        /// </summary>
         public override void Flush()
         {
             var task = Task.Run(async() =>
@@ -98,21 +95,24 @@ namespace Drill4Net.BanderLog.Sinks.File
             Task.WaitAll(task);
         }
 
+        /// <summary>
+        /// Flush data to the file and release the writer
+        /// </summary>
         private void EndUpWriter()
         {
-            if (_writer != null)
-            {
-                lock (_locker)
-                {
-                    try
-                    {
-                        _writer.Flush();
-                    }
-                    catch { } //TODO: emergency log
+            if (_writer == null)
+                return;
 
-                    _writer.Dispose();
-                    _writer = null;
+            lock (_locker)
+            {
+                try
+                {
+                    _writer.Flush();
                 }
+                catch { } //TODO: emergency log
+
+                _writer.Dispose();
+                _writer = null;
             }
         }
     }
