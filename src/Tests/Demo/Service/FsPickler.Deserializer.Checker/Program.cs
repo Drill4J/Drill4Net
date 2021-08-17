@@ -8,22 +8,30 @@ namespace FsPickler.Deserializer.Checker
 {
     class Program
     {
+        private const string FILE_ORIG = @"C:\Docker\injected.tree";
+        private const string FILE_REWRITTEN = @"C:\Docker\injected_rewritten.tree";
+
+        /*********************************************************************************/
+
         static void Main(string[] args)
         {
-            // get byte arrays of the tree's files
+            // get byte arrays of the tree's files and check
             byte[] rewrBytes = null;
             try
             {
-                var origBytes = File.ReadAllBytes(@"C:\Docker\injected.tree");
-                rewrBytes = File.ReadAllBytes(@"C:\Docker\injected_rewritten.tree");
-                bool isEqual = Enumerable.SequenceEqual(origBytes, rewrBytes);
+                var origBytes = File.ReadAllBytes(FILE_ORIG);
+                rewrBytes = File.ReadAllBytes(FILE_REWRITTEN);
 
+                bool isEqual = origBytes.SequenceEqual(rewrBytes);
                 Console.WriteLine($"Difference in bytes exists: {!isEqual}");
 
-                for (var i = 0; i < origBytes.Length; i++)
+                if (!isEqual)
                 {
-                    if (origBytes[i] != rewrBytes[i])
-                        Console.WriteLine($"Difference in element: {i} -> injected_rewritten.tree {rewrBytes[i]} : injected.tree {origBytes[i]}");
+                    for (var i = 0; i < origBytes.Length; i++)
+                    {
+                        if (origBytes[i] != rewrBytes[i])
+                            Console.WriteLine($"Difference in element: {i} -> injected_rewritten.tree {rewrBytes[i]} : injected.tree {origBytes[i]}");
+                    }
                 }
             }
             catch (IOException iex)
@@ -43,7 +51,7 @@ namespace FsPickler.Deserializer.Checker
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Tree data is not deserialized: [C:\\Docker\\injected_rewritten.tree].\n{ex}");
+                Console.WriteLine($"Tree data is not deserialized: [{FILE_REWRITTEN}].\n{ex}");
             }
             
             // view Tree's info
