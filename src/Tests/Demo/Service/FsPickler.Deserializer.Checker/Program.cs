@@ -10,38 +10,48 @@ namespace FsPickler.Deserializer.Checker
     {
         static void Main(string[] args)
         {
+            // get byte arrays of the tree's files
+            byte[] rewrBytes = null;
             try
             {
-                InjectedSolution tree = null;
-                var bytes2 = File.ReadAllBytes(@"C:\Docker\injected_rewritten.tree");
-                var bytes1 = File.ReadAllBytes(@"C:\Docker\injected.tree");
-                bool isEqual = Enumerable.SequenceEqual(bytes1, bytes2);
-                Console.WriteLine($"Difference in bytes:");
-                for (int i=0;i<bytes1.Length; i++)
-                {
-                    if (bytes1[i]!=bytes2[i])
-                        Console.WriteLine($"Difference in element: {i}   injected_rewritten.tree {bytes2[i]}  injected.tree {bytes1[i]}");
-                }
-                try
-                {
-                    tree = Serializer.FromArray<InjectedSolution>(bytes2);
-                }
+                var origBytes = File.ReadAllBytes(@"C:\Docker\injected.tree");
+                rewrBytes = File.ReadAllBytes(@"C:\Docker\injected_rewritten.tree");
+                bool isEqual = Enumerable.SequenceEqual(origBytes, rewrBytes);
 
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Tree data not serialized: [C:\\Docker\\injected_rewritten.tree].\n{ex}");
+                Console.WriteLine($"Difference in bytes exists: {!isEqual}");
 
+                for (var i = 0; i < origBytes.Length; i++)
+                {
+                    if (origBytes[i] != rewrBytes[i])
+                        Console.WriteLine($"Difference in element: {i} -> injected_rewritten.tree {rewrBytes[i]} : injected.tree {origBytes[i]}");
                 }
-                Console.WriteLine($"Tree Description {tree?.Description}");
-                Console.WriteLine($"Tree Count {tree?.Count.ToString()}");
-                Console.WriteLine($"Tree Name {tree?.Name}");
-                Console.WriteLine($"Tree StartTime {tree?.StartTime.ToString()}");
-                Console.WriteLine($"Tree StartTime {tree?.StartTime.ToString()}");
+            }
+            catch (IOException iex)
+            {
+                Console.WriteLine($"Can't read the Tree's file:\n{iex}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Can't deserialize Tree data:  { ex}");
+                Console.WriteLine($"Error:\n{ex}");
             }
+
+            // try to deserialize tree's file from another site (for example, OS version)
+            InjectedSolution tree = null;
+            try
+            {
+                tree = Serializer.FromArray<InjectedSolution>(rewrBytes);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Tree data is not deserialized: [C:\\Docker\\injected_rewritten.tree].\n{ex}");
+            }
+            
+            // view Tree's info
+            Console.WriteLine($"Tree Description: {tree?.Description}");
+            Console.WriteLine($"Tree Count: {tree?.Count}");
+            Console.WriteLine($"Tree Name: {tree?.Name}");
+            Console.WriteLine($"Tree StartTime: {tree?.StartTime}");
+            Console.WriteLine($"Tree FinishTime: {tree?.FinishTime}");
         }
     }
 }
