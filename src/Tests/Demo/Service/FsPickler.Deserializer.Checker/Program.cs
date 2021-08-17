@@ -44,20 +44,22 @@ namespace FsPickler.Deserializer.Checker
             }
 
             // try to deserialize tree's file from another site (for example, OS version)
-            InjectedSolution tree = null;
-            try
+            if (rewrBytes != null)
             {
-                tree = Serializer.FromArray<InjectedSolution>(rewrBytes);
+                try
+                {
+                    var tree = Serializer.FromArray<InjectedSolution>(rewrBytes);
 
-                // view Tree's info
-                Console.WriteLine($"Tree Name: {tree?.Name}");
-                Console.WriteLine($"Tree Description: {tree?.Description}");
-                Console.WriteLine($"Tree StartTime: {tree?.StartTime}");
-                Console.WriteLine($"Tree FinishTime: {tree?.FinishTime}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Tree data is not deserialized: [{FILE_REWRITTEN}].\n{ex}");
+                    // view Tree's info
+                    Console.WriteLine($"Tree Name: {tree?.Name}");
+                    Console.WriteLine($"Tree Description: {tree?.Description}");
+                    Console.WriteLine($"Tree StartTime: {tree?.StartTime}");
+                    Console.WriteLine($"Tree FinishTime: {tree?.FinishTime}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Tree data is not deserialized: [{FILE_REWRITTEN}].\n{ex}");
+                }
             }
         }
     }
