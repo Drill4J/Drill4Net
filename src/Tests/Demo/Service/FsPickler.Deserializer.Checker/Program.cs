@@ -48,18 +48,17 @@ namespace FsPickler.Deserializer.Checker
             try
             {
                 tree = Serializer.FromArray<InjectedSolution>(rewrBytes);
+
+                // view Tree's info
+                Console.WriteLine($"Tree Name: {tree?.Name}");
+                Console.WriteLine($"Tree Description: {tree?.Description}");
+                Console.WriteLine($"Tree StartTime: {tree?.StartTime}");
+                Console.WriteLine($"Tree FinishTime: {tree?.FinishTime}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Tree data is not deserialized: [{FILE_REWRITTEN}].\n{ex}");
             }
-            
-            // view Tree's info
-            Console.WriteLine($"Tree Description: {tree?.Description}");
-            Console.WriteLine($"Tree Count: {tree?.Count}");
-            Console.WriteLine($"Tree Name: {tree?.Name}");
-            Console.WriteLine($"Tree StartTime: {tree?.StartTime}");
-            Console.WriteLine($"Tree FinishTime: {tree?.FinishTime}");
         }
     }
 }
