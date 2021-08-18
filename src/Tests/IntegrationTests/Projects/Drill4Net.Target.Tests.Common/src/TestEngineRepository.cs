@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Serilog;
 using NUnit.Framework;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing;
-using Drill4Net.Core.Repository;
-using System.Linq;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Target.Tests.Common
 {

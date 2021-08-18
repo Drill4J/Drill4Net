@@ -114,7 +114,7 @@ namespace Drill4Net.Injector.Core
             Options = options ?? throw new ArgumentNullException(nameof(options));
             SourceFile = filePath ?? throw new ArgumentNullException(nameof(filePath));
             SourceDir = $"{Path.GetFullPath(Path.GetDirectoryName(filePath) ?? string.Empty)}\\";
-            DestinationDir = FileUtils.GetDestinationDirectory(Options, SourceDir);
+            DestinationDir = InjectorCoreUtils.GetDestinationDirectory(Options, SourceDir);
             Version = version;
 
             var ext = Path.GetExtension(filePath);

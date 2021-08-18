@@ -11,28 +11,28 @@
             <summary>Provides access to the git information for the current assembly.</summary>
         </member>
         <member name="F:ThisAssembly.Git.IsDirty">
-            <summary>IsDirty: false</summary>
+            <summary>IsDirty: true</summary>
         </member>
         <member name="F:ThisAssembly.Git.IsDirtyString">
-            <summary>IsDirtyString: false</summary>
+            <summary>IsDirtyString: true</summary>
         </member>
         <member name="F:ThisAssembly.Git.RepositoryUrl">
             <summary>Repository URL: https://github.com/IvanEpam/TestA.git</summary>
         </member>
         <member name="F:ThisAssembly.Git.Branch">
-            <summary>Branch: main</summary>
+            <summary>Branch: options</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: a681982</summary>
+            <summary>Commit: d4cb3e4</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: a6819822728d46da71f96cdd764404c0a906b54b</summary>
+            <summary>Sha: d4cb3e4972b5b2d24d2eb6df12fe6207de03522e</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-07-27T15:46:12+03:00</summary>
+            <summary>Commit date: 2021-07-28T11:11:24+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 629</summary>
+            <summary>Commits on top of base version: 632</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -62,7 +62,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 629</summary>
+            <summary>Patch: 632</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
+using Drill4Net.Common;
 using Drill4Net.Core.Repository;
 
-namespace Drill4Net.Common
+namespace Drill4Net.Injector.Core
 {
     public class InjectorOptionsHelper : BaseOptionsHelper<InjectorOptions>
     {
