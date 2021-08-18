@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,6 +8,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
     <ProjectReference Include="..\..\..\Targets\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data\injected.tree">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="data\injected_rewritten.tree">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -8,8 +8,8 @@ namespace FsPickler.Deserializer.Checker
 {
     class Program
     {
-        private const string FILE_ORIG = @"C:\Docker\injected.tree";
-        private const string FILE_REWRITTEN = @"C:\Docker\injected_rewritten.tree";
+        private const string FILE_ORIG = @"data\injected.tree";
+        private const string FILE_REWRITTEN = @"data\injected_rewritten.tree";
 
         /*********************************************************************************/
 

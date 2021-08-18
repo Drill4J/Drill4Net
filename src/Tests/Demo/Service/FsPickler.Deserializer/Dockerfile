@@ -18,5 +18,5 @@ RUN dotnet publish "FsPickler.Deserializer.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ADD ["src/Tests/Demo/Service/FsPickler.Deserializer/test_folder", "test_folder/"]
+ADD ["src/Tests/Demo/Service/FsPickler.Deserializer/data", "data/"]
 ENTRYPOINT ["dotnet", "FsPickler.Deserializer.dll"]

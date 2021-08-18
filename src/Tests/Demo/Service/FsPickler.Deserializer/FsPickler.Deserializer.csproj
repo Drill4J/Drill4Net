@@ -18,10 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="test_folder\injected.tree">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="test_folder\injected_rewritten_copied.tree">
+    <None Update="data\injected.tree">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
