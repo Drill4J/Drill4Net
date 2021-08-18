@@ -19,7 +19,7 @@ namespace Drill4Net.Agent.Transport
         static extern int agent_connector_symbols();
 
         [DllImport("agent_connector")]
-        static extern void initialize_agent(string agentId, string adminAddress, string buildVersion,
+        static extern void initialize_agent(string agentId, string adminAddress, string buildVersion, string agentVersion,
                                             string groupId, string instanceId, ReceivedMessageHandler received);
 
         [DllImport("agent_connector")]
@@ -40,6 +40,7 @@ namespace Drill4Net.Agent.Transport
                 agentCfg.Id,
                 url, //"localhost:8090",
                 agentCfg.BuildVersion,
+                agentCfg.AgentVersion,
                 agentCfg.ServiceGroupId,
                 agentCfg.InstanceId,
                 _received);
