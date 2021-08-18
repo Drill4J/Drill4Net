@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
-namespace FsPickler.Deserializer
+namespace Deserializer.Service.Tests
 {
     /// <summary>
     /// Test serialization process for different sites (for example, OS versions)

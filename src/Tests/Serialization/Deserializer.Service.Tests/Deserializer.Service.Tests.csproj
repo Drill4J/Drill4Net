@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>dotnet-FsPickler.Deserializer-E81958FE-F76C-44DF-918C-225C8816FB56</UserSecretsId>
+    <UserSecretsId>dotnet-Deserializer.Service.Tests-E81958FE-F76C-44DF-918C-225C8816FB56</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..\..\..</DockerfileContext>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
-    <ProjectReference Include="..\..\..\Targets\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
+    <ProjectReference Include="..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+    <ProjectReference Include="..\..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
   </ItemGroup>
 
   <ItemGroup>

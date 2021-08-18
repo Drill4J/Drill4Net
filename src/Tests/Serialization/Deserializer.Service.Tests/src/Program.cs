@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace FsPickler.Deserializer
+namespace Deserializer.Service.Tests
 {
     public class Program
     {

@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "FsPickler.Deserializer": {
+    "Deserializer.Service.Tests": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
