@@ -17,22 +17,22 @@
             <summary>IsDirtyString: true</summary>
         </member>
         <member name="F:ThisAssembly.Git.RepositoryUrl">
-            <summary>Repository URL: https://github.com/IvanEpam/TestA.git</summary>
+            <summary>Repository URL: git@github.com:epamX/Drill4Net.git</summary>
         </member>
         <member name="F:ThisAssembly.Git.Branch">
-            <summary>Branch: options</summary>
+            <summary>Branch: task-8152</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: d4cb3e4</summary>
+            <summary>Commit: 59f4a28</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: d4cb3e4972b5b2d24d2eb6df12fe6207de03522e</summary>
+            <summary>Sha: 59f4a281d4c8613aae77e2b3f8f4e54a28a83852</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-07-28T11:11:24+03:00</summary>
+            <summary>Commit date: 2021-08-18T18:02:01+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 632</summary>
+            <summary>Commits on top of base version: 662</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -62,7 +62,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 632</summary>
+            <summary>Patch: 662</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Drill4Net.BanderLog.Sinks;
+using System.Threading.Tasks;
 
 namespace Drill4Net.BanderLog
 {
@@ -31,10 +32,10 @@ namespace Drill4Net.BanderLog
                 sink.Log(logLevel, eventId, state, exception, formatter);
         }
 
-        public override void Flush()
+        public override async Task Flush()
         {
             foreach (var sink in Sinks)
-                sink.Flush();
+                await sink.Flush();
         }
     }
 }
