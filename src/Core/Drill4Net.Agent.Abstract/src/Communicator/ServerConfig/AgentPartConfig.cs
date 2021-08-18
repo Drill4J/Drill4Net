@@ -29,6 +29,11 @@ namespace Drill4Net.Agent.Abstract
         public string BuildVersion { get; set; }
 
         /// <summary>
+        /// Agent Version
+        /// </summary>
+        public string AgentVersion { get; set; }
+
+        /// <summary>
         /// Service group Id
         /// </summary>
         public string ServiceGroupId { get; set; }
@@ -62,7 +67,7 @@ namespace Drill4Net.Agent.Abstract
             AgentType = "DOTNET";
             NeedSync = true;
             ServiceGroupId = "";
-            //AgentVerion = agentVersion;
+            AgentVersion = agentVersion;
         }
     }
 }

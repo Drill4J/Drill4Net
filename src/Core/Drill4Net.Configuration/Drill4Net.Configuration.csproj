@@ -4,8 +4,17 @@
     <TargetFramework>netstandard2.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
   </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Configuration</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Common\Drill4Net.Configuration.xml</DocumentationFile>
+  </PropertyGroup>
 
-  <ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Configuration</OutputPath>
+  </PropertyGroup>
+	
+  <ItemGroup>	  
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
   </ItemGroup>
