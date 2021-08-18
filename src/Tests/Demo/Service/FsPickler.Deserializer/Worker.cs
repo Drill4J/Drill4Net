@@ -78,14 +78,14 @@ namespace FsPickler.Deserializer
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Can't serialize tree data:  { ex}", DateTimeOffset.Now);
+                _logger.LogError($"Can't serialize tree data: {ex}", DateTimeOffset.Now);
             }
 
             //try to write data to tree's file on current site (for example, OS version)
             try
             {
                 File.WriteAllBytes(pathToFile, serializedTree);
-                _logger.LogInformation($"Tree was saved successfully to {pathToFile} ", DateTimeOffset.Now);
+                _logger.LogInformation($"Tree was saved successfully to {pathToFile}", DateTimeOffset.Now);
             }
             catch (IOException ex)
             {
