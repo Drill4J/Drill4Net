@@ -99,7 +99,6 @@ namespace FsPickler.Deserializer
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
             //try to get Tree from tree's file generated on another site (for example, OS version)
             _logger.LogInformation($"Getting Tree from tree's file generated on another site [{FILE_ORIG}]...", DateTimeOffset.Now);
             var anoterSiteTree = GetTreeFromFile(FILE_ORIG);
@@ -120,7 +119,6 @@ namespace FsPickler.Deserializer
             // try to get Tree from tree's file generated on the same site (for example, OS version)
             _logger.LogInformation($"Getting Tree from tree's file generated on the same site [{FILE_REWRITTEN}]...", DateTimeOffset.Now);
             GetTreeFromFile(FILE_REWRITTEN);
-
         }
     }
 }
