@@ -29,13 +29,12 @@ namespace FsPickler.Deserializer
         /// </summary>
         private InjectedSolution GetTreeFromFile(string pathToFile)
         {
-            byte[] origBytes = null;
             InjectedSolution tree = null;
 
             // try to read data to tree's file
             try
             {
-                origBytes = File.ReadAllBytes(pathToFile);
+                byte[] origBytes = File.ReadAllBytes(pathToFile);
                 _logger.LogInformation($"Tree data was read successfully", DateTimeOffset.Now);
 
                 // try to deserialize tree's file
@@ -61,7 +60,7 @@ namespace FsPickler.Deserializer
                 Console.WriteLine($"Error:\n{ex}");
             }
 
-            return tree;                
+            return tree;
         }
 
         /// <summary>
@@ -102,7 +101,7 @@ namespace FsPickler.Deserializer
         {
 
             //try to get Tree from tree's file generated on another site (for example, OS version)
-            _logger.LogInformation($"Getting Tree from tree's file generated on another site [{FILE_ORIG}] ...", DateTimeOffset.Now);
+            _logger.LogInformation($"Getting Tree from tree's file generated on another site [{FILE_ORIG}]...", DateTimeOffset.Now);
             var anoterSiteTree = GetTreeFromFile(FILE_ORIG);
 
             if (anoterSiteTree != null)
@@ -115,11 +114,11 @@ namespace FsPickler.Deserializer
             }
 
             // try to save deserialized Tree to file on the same site (for example, OS version)
-            _logger.LogInformation($"Saving deserialized Tree to file on the same site [{FILE_REWRITTEN}] ...", DateTimeOffset.Now);
+            _logger.LogInformation($"Saving deserialized Tree to file on the same site [{FILE_REWRITTEN}]...", DateTimeOffset.Now);
             SaveTreeToFile(FILE_REWRITTEN, anoterSiteTree);
 
             // try to get Tree from tree's file generated on the same site (for example, OS version)
-            _logger.LogInformation($"Getting Tree from tree's file generated on the same site [{FILE_REWRITTEN}] ...", DateTimeOffset.Now);
+            _logger.LogInformation($"Getting Tree from tree's file generated on the same site [{FILE_REWRITTEN}]...", DateTimeOffset.Now);
             GetTreeFromFile(FILE_REWRITTEN);
 
         }
