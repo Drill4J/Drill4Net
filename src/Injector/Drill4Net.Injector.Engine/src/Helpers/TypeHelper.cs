@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Core;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.Engine
 {

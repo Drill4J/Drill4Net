@@ -74,11 +74,6 @@ namespace Drill4Net.Common
             return dir1.Equals(dir2, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static string GetSourceDirectory(InjectorOptions opts)
-        {
-            return GetFullPath(opts?.Source?.Directory);
-        }
-
         /// <summary>
         /// Gets the full path from relative one.
         /// </summary>
@@ -92,17 +87,6 @@ namespace Drill4Net.Common
             if (!Path.IsPathRooted(path))
                 path = Path.GetFullPath(Path.Combine(basePath ?? EntryDir, path));
             return path;
-        }
-
-        public static string GetDestinationDirectory(InjectorOptions opts, string currentDir)
-        {
-            string destDir = GetFullPath(opts.Destination.Directory);
-            if (!IsSameDirectories(currentDir, opts.Source.Directory))
-            {
-                var origPath = GetFullPath(opts.Source.Directory);
-                destDir = Path.Combine(destDir, currentDir.Remove(0, origPath.Length));
-            }
-            return destDir;
         }
 
         public static void DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)

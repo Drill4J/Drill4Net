@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Drill4Net.Common;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
