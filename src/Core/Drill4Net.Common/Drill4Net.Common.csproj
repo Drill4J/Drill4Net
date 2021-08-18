@@ -26,4 +26,8 @@
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Configuration\Drill4Net.Configuration.csproj" />
+  </ItemGroup>
+
 </Project>

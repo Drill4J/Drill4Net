@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Drill4Net.Common;
+using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Core.Repository

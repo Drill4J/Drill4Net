@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Common
 {

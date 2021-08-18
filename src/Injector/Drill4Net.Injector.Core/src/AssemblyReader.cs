@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Drill4Net.Common;
+using System.Diagnostics;
 using System.Collections.Generic;
+using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Core
 {

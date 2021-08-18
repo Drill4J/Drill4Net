@@ -1,5 +1,5 @@
 ﻿using System;
-using Drill4Net.Common;
+using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Kafka.Common
