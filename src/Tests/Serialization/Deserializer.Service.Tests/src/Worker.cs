@@ -15,13 +15,13 @@ namespace Deserializer.Service.Tests
     1. Open in Terminal solution directory.
     2. Run command: docker build -f src\Tests\Serialization\Deserializer.Service.Tests\src\Dockerfile -t deserializer_ser.
         Now you can see deserializer_ser image in docker.
-    3. Run command: docker run --name cont1  deserializer_serv
+    3. Run command: docker run --name cont1 deserializer_serv
         Now you can see running container in Docker.
     4. When service has complited serialization the file can be copied to host after stopping  the container. Run command:
         docker cp cont1:/app/data/injected_rewritten.tree <host_dir> (write desired dir)
         (docker cp <container_name>:<container_dir> <host_dir>)
-    5. Or you can connect the shared folder with command: docker run -v /c/test_folder:/app/data --name cont1  deserializer_serv
-            (docker run -v <host_dir>:<container_dir> )
+    5. Or you can connect the shared folder with command: docker run -v /c/test_folder:/app/data --name cont1 deserializer_serv
+        (docker run -v <host_dir>:<container_dir>)
     
     ******************************************************************************************************************************/
 
@@ -56,7 +56,7 @@ namespace Deserializer.Service.Tests
             try
             {
                 byte[] origBytes = File.ReadAllBytes(pathToFile);
-                _logger.LogInformation($"Tree data was read successfully");
+                _logger.LogInformation("Tree data was read successfully");
 
                 // try to deserialize tree's file
                 if (origBytes != null)
@@ -64,7 +64,7 @@ namespace Deserializer.Service.Tests
                     try
                     {
                         tree = Serializer.FromArray<InjectedSolution>(origBytes);
-                        _logger.LogInformation($"Tree data was deserialized successfully");
+                        _logger.LogInformation("Tree data was deserialized successfully");
                     }
                     catch (Exception ex)
                     {
@@ -91,6 +91,7 @@ namespace Deserializer.Service.Tests
         private void SaveTreeToFile(string pathToFile, InjectedSolution tree)
         {
             byte[] serializedTree = null;
+
             // try to save Tree data to file on current site (for example, OS version)
             try
             {

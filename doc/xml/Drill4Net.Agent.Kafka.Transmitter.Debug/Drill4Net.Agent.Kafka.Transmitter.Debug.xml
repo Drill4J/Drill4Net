@@ -11,28 +11,28 @@
             <summary>Provides access to the git information for the current assembly.</summary>
         </member>
         <member name="F:ThisAssembly.Git.IsDirty">
-            <summary>IsDirty: true</summary>
+            <summary>IsDirty: false</summary>
         </member>
         <member name="F:ThisAssembly.Git.IsDirtyString">
-            <summary>IsDirtyString: true</summary>
+            <summary>IsDirtyString: false</summary>
         </member>
         <member name="F:ThisAssembly.Git.RepositoryUrl">
-            <summary>Repository URL: git@github.com:epamX/Drill4Net.git</summary>
+            <summary>Repository URL: https://github.com/IvanEpam/TestA.git</summary>
         </member>
         <member name="F:ThisAssembly.Git.Branch">
-            <summary>Branch: task-8152</summary>
+            <summary>Branch: main</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 59f4a28</summary>
+            <summary>Commit: fa470e5</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 59f4a281d4c8613aae77e2b3f8f4e54a28a83852</summary>
+            <summary>Sha: fa470e5ebef7e6e281875c8aac1a62946f8e6250</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-08-18T18:02:01+03:00</summary>
+            <summary>Commit date: 2021-08-18T19:07:47+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 662</summary>
+            <summary>Commits on top of base version: 670</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -62,7 +62,7 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
-            <summary>Patch: 662</summary>
+            <summary>Patch: 670</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

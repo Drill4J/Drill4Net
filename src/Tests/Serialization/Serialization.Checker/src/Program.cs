@@ -30,7 +30,7 @@ namespace Serialization.Checker
                     for (var i = 0; i < origBytes.Length; i++)
                     {
                         if (origBytes[i] != rewrBytes[i])
-                            Console.WriteLine($"Difference in element: {i} -> injected_rewritten.tree {rewrBytes[i]} : injected.tree {origBytes[i]}");
+                            Console.WriteLine($"Difference in element {i}: orig {origBytes[i]} -> rewritten {rewrBytes[i]}");
                     }
                 }
             }
