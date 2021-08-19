@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Drill4Net.BanderLog.Sinks.File;
-using Drill4Net.Common;
 using Microsoft.Extensions.Logging;
+using Drill4Net.Common;
+using Drill4Net.BanderLog.Sinks.File;
 
 namespace Drill4Net.BanderLog.Debug
 {
@@ -25,7 +25,7 @@ namespace Drill4Net.BanderLog.Debug
             //
             var filepath = Path.Combine(FileUtils.GetExecutionDir(), "log2.txt");
             var fileLogger = FileSinkCreator.CreateSink(filepath);
-            var cnt = 100000;
+            const int cnt = 100000;
             Console.WriteLine($"Write {cnt} records...");
             for (var i = 0; i < cnt; i++)
                 fileLogger.LogTrace($"i={i + 1}");
