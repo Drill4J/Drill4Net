@@ -1,23 +1,22 @@
-﻿using Drill4Net.Common;
-using System;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using Drill4Net.Common;
 
 namespace Drill4Net.BanderLog.Sinks.File
 {
     public static class FileSinkCreator
     {
-        private static Dictionary<string, FileSink> _fileSinkDictionary=new Dictionary<string, FileSink>();
-
+        private static readonly Dictionary<string, FileSink> _fileSinkDictionary = new Dictionary<string, FileSink>();
 
         public static FileSink CreateSink(string filepath = null)
         {
             if (string.IsNullOrWhiteSpace(filepath))
                 filepath = Path.Combine(FileUtils.GetEntryDir(), FileSinkConstants.NAME_DEFAULT);
-            FileSink fileSink;
-            if (_fileSinkDictionary.TryGetValue(filepath, out fileSink))
+
+            if (_fileSinkDictionary.TryGetValue(filepath, out FileSink fileSink))
+            {
                 return fileSink;
+            }
             else
             {
                 fileSink = new FileSink(filepath);

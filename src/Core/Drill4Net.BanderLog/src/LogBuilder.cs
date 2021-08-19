@@ -1,8 +1,8 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Drill4Net.BanderLog.Sinks;
 using Drill4Net.BanderLog.Sinks.Console;
 using Drill4Net.BanderLog.Sinks.File;
-using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog
 {

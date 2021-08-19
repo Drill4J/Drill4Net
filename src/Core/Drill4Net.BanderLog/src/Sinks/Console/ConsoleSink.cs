@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog.Sinks.Console
@@ -13,6 +12,8 @@ namespace Drill4Net.BanderLog.Sinks.Console
             System.Console.WriteLine(data);
         }
 
-        public override async Task Flush() { }
+        public override void Flush() { }
+
+        public override void Shutdown() { }
     }
 }

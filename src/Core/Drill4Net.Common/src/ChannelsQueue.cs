@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Threading.Channels;
 
 namespace Drill4Net.Common
 {
@@ -12,10 +12,17 @@ namespace Drill4Net.Common
     /// </summary>
     public class ChannelsQueue<T>
     {
+        /// <summary>
+        /// Gets the queue items current counter.
+        /// </summary>
+        /// <value>
+        /// The queue items current counter.
+        /// </value>
+        public int ItemCount { get => _queueItemCount; }
+
         private readonly ChannelReader<T> _reader;
         private readonly ChannelWriter<T> _writer;
-        private int _queueItemsCounter;
-        public int QueueItemsCounter { get=> _queueItemsCounter; }
+        private int _queueItemCount;
 
         /**************************************************************************/
 
@@ -33,6 +40,7 @@ namespace Drill4Net.Common
                     while (_reader.TryRead(out var data))
                     {
                         job.Invoke(data);
+                        _queueItemCount--;
                     }
                 }
             });
@@ -42,30 +50,23 @@ namespace Drill4Net.Common
 
         public void Enqueue(T data)
         {
-            IncrementItemsCounter();
-            _writer.TryWrite(data); //TODO: if false, wtite to local queue, then repeat attempt 
+            IncrementItemCounter();
+            _writer.TryWrite(data); //TODO: if false, wtite to local queue, then repeat attempt? 
         }
-        public void DecrementItemsCounter()
+
+        public int DecrementItemCounter()
         {
-            _queueItemsCounter = Interlocked.Decrement(ref _queueItemsCounter);
+            return Interlocked.Decrement(ref _queueItemCount);
         }
-        public void IncrementItemsCounter()
+
+        public int IncrementItemCounter()
         {
-            _queueItemsCounter = Interlocked.Increment(ref _queueItemsCounter);
-        }
-        public void AddItemsCounter( int amount)
-        {
-            _queueItemsCounter = Interlocked.Add(ref _queueItemsCounter, amount);
+            return Interlocked.Increment(ref _queueItemCount);
         }
 
         public void Stop()
         {
             _writer.Complete();
-        }
-
-        public async void Flush()
-        {
-            Stop();
         }
     }
 }
