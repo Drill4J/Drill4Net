@@ -31,7 +31,6 @@ namespace Drill4Net.BanderLog.Tests
             //act
             Helper.WriteLog(logger);
             logger.Shutdown();
-            Thread.Sleep(10);
 
             //assert
             var lineCounter = 0;
@@ -77,7 +76,6 @@ namespace Drill4Net.BanderLog.Tests
             finally
             {
                 logger.Shutdown();
-                Thread.Sleep(10);
             }
             
             //assert
@@ -104,6 +102,6 @@ namespace Drill4Net.BanderLog.Tests
             //One hundred thousand lines (maybe million) are written to the file and not a single one is lost.
             Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread1);
             Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread2);
-        }       
+        }
     }
 }
