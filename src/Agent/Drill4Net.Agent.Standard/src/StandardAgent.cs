@@ -30,7 +30,6 @@ namespace Drill4Net.Agent.Standard
         public static string EmergencyLogDir { get; }
 
         private static readonly ICommunicator _comm;
-
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
@@ -127,7 +126,7 @@ namespace Drill4Net.Agent.Standard
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
-            Log.Debug("Need resolve assembly: [{Name}]", name);
+            Log.Debug("Need resolve the assembly: [{Name}]", name);
             var asm = _resolver.Resolve(name, args.RequestingAssembly.Location);
             if (asm != null)
                 return asm;
@@ -241,8 +240,9 @@ namespace Drill4Net.Agent.Standard
         /// Registering probe's data from injected Target app
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="ctx"></param>
         // ReSharper disable once MemberCanBePrivate.Global
-        public static void RegisterStatic(string data)
+        public static void RegisterStatic(string data, string ctx = null)
         {
             try
             {
@@ -264,7 +264,7 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];         
 
-                var res = Repository.RegisterCoverage(probeUid);
+                var res = Repository.RegisterCoverage(probeUid, ctx);
                 if (!res) //for tests
                 { }
             }
@@ -278,9 +278,10 @@ namespace Drill4Net.Agent.Standard
         /// Registering probe's data from injected Target app
         /// </summary>
         /// <param name="data"></param>
-        public override void Register(string data)
+        /// <param name="ctx"></param>
+        public override void Register(string data, string ctx = null)
         {
-            RegisterStatic(data);
+            RegisterStatic(data, ctx);
         }
         #endregion
         #region Temporary tests

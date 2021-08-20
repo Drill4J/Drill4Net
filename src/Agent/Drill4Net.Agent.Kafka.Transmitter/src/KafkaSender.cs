@@ -21,7 +21,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         private List<string> _probeTopics;
         private readonly int _packetMaxSize;
 
-        private IProducer<Null, string> _probeProducer;
+        private IProducer<Null, Probe> _probeProducer;
         private IProducer<Null, byte[]> _infoProducer;
 
         private readonly ProducerConfig _cfg;
@@ -35,7 +35,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             _cfg = CreateProducerConfig(rep);
 
             //https://stackoverflow.com/questions/21020347/how-can-i-send-large-messages-with-kafka-over-15mb
-            _packetMaxSize = (_cfg.MessageMaxBytes ?? KafkaConstants.MaxMessageSize) - 512; //less because also service info included
+            _packetMaxSize = (_cfg.MessageMaxBytes ?? KafkaConstants.MaxMessageSize) - 512; //less because also service info included!
 
             CreateProbeHeaders();
             CreateTargetHeaders();
@@ -51,12 +51,13 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         /***************************************************************************************/
 
-        public int SendProbe(string str)
+        public int SendProbe(string data, string ctx)
         {
+            var probe = new Probe { Context = ctx, Data = data };
             foreach (var topic in _probeTopics)
             {
-                var mess = new Message<Null, string> { Value = str, Headers = _probeHeaders };
-                _probeProducer.Produce(topic, mess, HandleStringData);
+                var mess = new Message<Null, Probe> { Value = probe, Headers = _probeHeaders };
+                _probeProducer.Produce(topic, mess, HandleProbeData);
             }
 
             if (!IsError) //if there is no connection, it will come here without an error :(
@@ -135,7 +136,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             _infoProducer = new ProducerBuilder<Null, byte[]>(_cfg).Build();
 
             _probeTopics = _rep.TransmitterOptions.Topics;
-            _probeProducer = new ProducerBuilder<Null, string>(_cfg).Build();
+            _probeProducer = new ProducerBuilder<Null, Probe>(_cfg).Build();
         }
 
         #region Handle sending
@@ -144,7 +145,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             Handle(report.Error);
         }
 
-        private void HandleStringData(DeliveryReport<Null, string> report)
+        private void HandleProbeData(DeliveryReport<Null, Probe> report)
         {
             Handle(report.Error);
         }

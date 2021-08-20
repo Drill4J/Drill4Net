@@ -179,6 +179,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Benchmark.Logger", "src\Tests\Benchmark\Drill4Net.Benchmark.Logger\Drill4Net.Benchmark.Logger.csproj", "{B9D01633-7E7C-473B-907E-63CFD762148F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Kafka.Service", "src\Agent\Drill4Net.Agent.Kafka.Service\Drill4Net.Agent.Kafka.Service.csproj", "{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -498,6 +500,12 @@ Global
 		{B9D01633-7E7C-473B-907E-63CFD762148F}.Release_Benchmark|Any CPU.Build.0 = Release_Benchmark|Any CPU
 		{B9D01633-7E7C-473B-907E-63CFD762148F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9D01633-7E7C-473B-907E-63CFD762148F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -578,6 +586,7 @@ Global
 		{844E6928-5F49-42FD-9E9D-3CAA1A944DA7} = {3D131867-1828-4ECC-BEF7-34F789F6266B}
 		{19C87884-82DF-4B2D-89AA-C23C58DB62D6} = {C2C77100-B789-417D-A387-E2C4A668C15C}
 		{B9D01633-7E7C-473B-907E-63CFD762148F} = {19C87884-82DF-4B2D-89AA-C23C58DB62D6}
+		{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5} = {3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

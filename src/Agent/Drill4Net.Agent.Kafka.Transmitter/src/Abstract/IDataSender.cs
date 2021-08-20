@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Drill4Net.Agent.Kafka.Transmitter
+﻿namespace Drill4Net.Agent.Kafka.Transmitter
 {
     public interface IDataSender
     {
@@ -12,6 +10,11 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         int SendTargetInfo(byte[] info);
 
-        int SendProbe(string str);
+        /// <summary>
+        /// Sends the specified probe to the middleware.
+        /// </summary>
+        /// <param name="data">The cross-point data.</param>
+        /// <param name="ctx">The context of data (user, process, worker, etc)</param>
+        int SendProbe(string data, string ctx);
     }
 }

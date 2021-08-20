@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Drill4Net.Common;
+using System;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
@@ -39,19 +40,21 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         /// <summary>
         /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
         /// </summary>
-        /// <param name="str">The cross-point data.</param>
-        public static void Transmit(string str)
+        /// <param name="data">The cross-point data.</param>
+        public static void Transmit(string data)
         {
-            Transmitter.SendProbe(str);
+            var ctx = Contexter.GetContextId();
+            Transmitter.SendProbe(data, ctx);
         }
 
         /// <summary>
         /// Sends the specified probe to the middleware.
         /// </summary>
-        /// <param name="str">The cross-point data.</param>
-        public int SendProbe(string str)
+        /// <param name="data">The cross-point data.</param>
+        /// <param name="ctx">The context of data (user, process, worker, etc)</param>
+        public int SendProbe(string data, string ctx)
         {
-            return Sender.SendProbe(str);
+            return Sender.SendProbe(data, ctx);
         }
     }
 }

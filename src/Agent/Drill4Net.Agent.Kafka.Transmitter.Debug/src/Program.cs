@@ -28,6 +28,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
 
             var trans = ProbeTransmitter.Transmitter; //what is loaded into the Target process and used by the Proxy class
             var sender = trans.Sender;
+            const string ctx = "DBG";
 
             while (true)
             {
@@ -40,7 +41,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
                     input = Guid.NewGuid().ToString();
                 WriteMessage($"Data: {input}", COLOR_DATA);
 
-                var res = trans.SendProbe(input); //TODO: return normal Status object
+                var res = trans.SendProbe(input, ctx); //TODO: return normal Status object
 
                 Console.WriteLine(res != 0
                     ? $"Delivered message"

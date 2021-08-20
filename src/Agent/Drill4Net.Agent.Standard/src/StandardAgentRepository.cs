@@ -33,11 +33,11 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public bool IsAnySession => _sessionToCtx.Any();
 
-        private readonly ConcurrentDictionary<int, string> _ctxToSession;
-        private readonly ConcurrentDictionary<string, int> _sessionToCtx;
+        private readonly ConcurrentDictionary<string, string> _ctxToSession;
+        private readonly ConcurrentDictionary<string, string> _sessionToCtx;
         private readonly ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
-        private readonly ConcurrentDictionary<int, CoverageRegistrator> _ctxToRegistrator;
-        private readonly ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
+        private readonly ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
         private CoverageRegistrator _globalRegistrator;
         private readonly TreeConverter _converter;
@@ -55,15 +55,15 @@ namespace Drill4Net.Agent.Standard
         public StandardAgentRepository(string cfgPath = null): base(cfgPath)
         {
             //ctx maps
-            _ctxToSession = new ConcurrentDictionary<int, string>();
-            _ctxToRegistrator = new ConcurrentDictionary<int, CoverageRegistrator>();
+            _ctxToSession = new ConcurrentDictionary<string, string>();
+            _ctxToRegistrator = new ConcurrentDictionary<string, CoverageRegistrator>();
             
             //session maps
-            _sessionToCtx = new ConcurrentDictionary<string, int>();
+            _sessionToCtx = new ConcurrentDictionary<string, string>();
             _sessionToObject = new ConcurrentDictionary<string, StartSessionPayload>();
             
             // execution data by session ids
-            _ctxToExecData = new ConcurrentDictionary<int, ConcurrentDictionary<string, ExecClassData>>();
+            _ctxToExecData = new ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>>();
 
             _converter = new TreeConverter();
             _sendLocker = new object();
@@ -178,7 +178,11 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Session
-        #region Start
+        #region Start        
+        /// <summary>
+        /// Session started on the admin side.
+        /// </summary>
+        /// <param name="info">The information.</param>
         public void StartSession(StartAgentSession info)
         {
             var load = info.Payload;
@@ -189,8 +193,8 @@ namespace Drill4Net.Agent.Standard
 
         internal void AddSession(StartSessionPayload session)
         {
-            var ctxId = GetContextId();
-            if (_ctxToSession.ContainsKey(ctxId))
+            var ctxId = Contexter.GetContextId(); //GUANO: it's WRONG!!! HOW DO I GET THE REAL CONTEXT FROM A TARGET?!!
+            if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
 
             var sessionUid = session.SessionId;
@@ -241,7 +245,7 @@ namespace Drill4Net.Agent.Standard
 
         internal void RemoveSession(string sessionUid)
         {
-            if (!_sessionToCtx.TryRemove(sessionUid, out var ctxId)) 
+            if (!_sessionToCtx.TryRemove(sessionUid, out var ctxId))
                 return;
             _ctxToSession.TryRemove(ctxId, out var _);
             _ctxToExecData.TryRemove(ctxId, out var _);
@@ -263,16 +267,17 @@ namespace Drill4Net.Agent.Standard
         /// Register coverage from instrumented target by cross-point Uid 
         /// </summary>
         /// <param name="pointUid"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
-        public bool RegisterCoverage(string pointUid)
+        public bool RegisterCoverage(string pointUid, string ctx = null)
         {
             //global session
             var isGlobalReg = false;
             if (_globalRegistrator != null)
-                isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid);
+                isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid); //always register
 
             //user session
-            var reg = GetUserRegistrator();
+            var reg = GetUserRegistrator(ctx);
             if (reg != null)
                 return reg.RegisterCoverage(pointUid);
             else
@@ -300,23 +305,24 @@ namespace Drill4Net.Agent.Standard
             lock (_sendLocker)
             {
                 if (_globalRegistrator != null)
-                    SendCoverageDataFor(_globalRegistrator);
+                    SendCoverageData(_globalRegistrator);
 
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
                     if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
-                        reg = GetUserRegistrator(); //?? hmmm...
-                    SendCoverageDataFor(reg);
+                        continue; // reg = GetUserRegistrator(); //?? hmmm...
+                    SendCoverageData(reg);
                 }
             }
         }
 
-        private void SendCoverageDataFor(CoverageRegistrator reg)
+        private void SendCoverageData(CoverageRegistrator reg)
         {
             var sessionUid = reg?.Session?.SessionId;
             if (sessionUid == null)
                 return;
             var execClasses = reg.AffectedTypes.ToList();
+
             switch (execClasses.Count)
             {
                 case 0:
@@ -328,6 +334,7 @@ namespace Drill4Net.Agent.Standard
                     Communicator.Sender.SendCoverageData(sessionUid, execClasses);
                     break;
             }
+
             var session = reg.Session;
             if (session is { IsRealtime: true })
                 Communicator.Sender.SendSessionChangedMessage(sessionUid, reg.AffectedProbeCount);
@@ -354,17 +361,17 @@ namespace Drill4Net.Agent.Standard
         /// Get the coverage registrator by current context if exists and otherwise create it
         /// </summary>
         /// <returns></returns>
-        public CoverageRegistrator GetUserRegistrator()
+        public CoverageRegistrator GetUserRegistrator(string ctx = null)
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
-            var ctxId = GetContextId();
-            Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
+            ctx = Contexter.GetContextId();
+            //Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
 
             CoverageRegistrator reg;
-            if (_ctxToRegistrator.ContainsKey(ctxId))
+            if (_ctxToRegistrator.ContainsKey(ctx))
             {
-                _ctxToRegistrator.TryGetValue(ctxId, out reg);
+                _ctxToRegistrator.TryGetValue(ctx, out reg);
                 if(reg is {Session: null})
                     reg.Session = GetManualUserSession();
             }
@@ -375,7 +382,7 @@ namespace Drill4Net.Agent.Standard
                 if (session == null)
                     return null;
                 reg = CreateCoverageRegistrator(session);
-                _ctxToRegistrator.TryAdd(ctxId, reg);
+                _ctxToRegistrator.TryAdd(ctx, reg);
             }
             return reg;
         }
@@ -392,15 +399,5 @@ namespace Drill4Net.Agent.Standard
             return _converter.CreateCoverageRegistrator(session, _injTypes);
         }
         #endregion
-
-        /// <summary>
-        /// Gets the context identifier.
-        /// </summary>
-        /// <returns></returns>
-        internal int GetContextId()
-        {
-            var ctx = Thread.CurrentThread.ExecutionContext;
-            return ctx?.GetHashCode() ?? 0;
-        }
     }
 }
