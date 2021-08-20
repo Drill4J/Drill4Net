@@ -9,7 +9,7 @@ using Serilog;
 using Drill4Net.BanderLog;
 using Drill4Net.BanderLog.Sinks.File;
 
-namespace Drill4Net.Benchmark.Logger
+namespace Drill4Net.BanderLog.Benchmarks
 {
     /// <summary>
     /// Benchmarks for comparison of different loggers
