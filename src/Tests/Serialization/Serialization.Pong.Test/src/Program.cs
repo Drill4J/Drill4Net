@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Deserializer.Service.Tests
+namespace Serialization.Pong.Test
 {
     public class Program
     {

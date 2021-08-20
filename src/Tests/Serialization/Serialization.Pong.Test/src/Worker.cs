@@ -7,13 +7,13 @@ using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
-namespace Deserializer.Service.Tests
+namespace Serialization.Pong.Test
 {
     /***************************************************************************************************************************
 
     To run service in Docker container follow the following steps:
     1. Open in Terminal solution directory.
-    2. Run command: docker build -f src\Tests\Serialization\Deserializer.Service.Tests\src\Dockerfile -t deserializer_ser.
+    2. Run command: docker build -f src\Tests\Serialization\Serialization.Pong.Test\Dockerfile -t deserializer_ser.
         Now you can see deserializer_ser image in docker.
     3. Run command: docker run --name cont1 deserializer_serv
         Now you can see running container in Docker.
