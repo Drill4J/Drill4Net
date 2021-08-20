@@ -13,7 +13,7 @@ namespace Drill4Net.BanderLog.Tests
     /// </summary>
     public class LoggerTests
     {
-        public BanderLog.Logger InitializeLogger(string[] fileNames)
+        private BanderLog.Logger InitializeLogger(string[] fileNames)
         {
             var logBld = new LogBuilder();
 
@@ -65,10 +65,10 @@ namespace Drill4Net.BanderLog.Tests
                 var lineCounter = 0;
                 var logLinesSinks = File.ReadAllLines(fileName);
                 foreach (var logLine in logLinesSinks)
-                {                 
+                {
                     var actualLineNumber = Helper.GetLineNumber(logLine);
                     Helper.AssertLogLine(lineCounter, actualLineNumber, logLine);
-                    lineCounter++;           
+                    lineCounter++;
                 }
                 //One hundred thousand lines (maybe million) are written to the file and not a single one is lost.
                 Assert.Equal(Const.LOG_LINE_COUNT, lineCounter);

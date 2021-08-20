@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Drill4Net.BanderLog.Sinks.File;
