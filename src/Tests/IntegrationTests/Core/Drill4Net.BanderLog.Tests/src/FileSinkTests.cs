@@ -10,6 +10,9 @@ using Helper = Drill4Net.BanderLog.Tests.BanderlogTestsHelper;
 
 namespace Drill4Net.BanderLog.Tests
 {
+    /// <summary>
+    /// Tests for Banderlog File Sinks
+    /// </summary>
     public class FileSinkTests
     {
         public AbstractSink InitializeSink(string fileName)
@@ -101,7 +104,6 @@ namespace Drill4Net.BanderLog.Tests
             //One hundred thousand lines (maybe million) are written to the file and not a single one is lost.
             Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread1);
             Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread2);
-        }
-       
+        }       
     }
 }

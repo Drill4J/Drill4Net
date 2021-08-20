@@ -9,6 +9,9 @@ using Helper = Drill4Net.BanderLog.Tests.BanderlogTestsHelper;
 
 namespace Drill4Net.BanderLog.Tests
 {
+    /// <summary>
+    /// Tests for Banderlog Logger
+    /// </summary>
     public class LoggerTests
     {
         public BanderLog.Logger InitializeLogger(string[] fileNames)

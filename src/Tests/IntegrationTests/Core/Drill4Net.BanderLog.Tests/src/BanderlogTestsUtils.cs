@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.BanderLog.Tests
 {
+    /// <summary>
+    /// Utils for Banderlog Tests
+    /// </summary>
     static class BanderlogTestsUtils
     {
+        /// <summary>
+        /// Write aggrecate exception to console
+        /// </summary>
+        ///<param name="ae">(Aggregate Exceptionr</param>
         public static void WriteAggregateException(AggregateException ae)
         {
             Console.WriteLine("An exception occurred:");
