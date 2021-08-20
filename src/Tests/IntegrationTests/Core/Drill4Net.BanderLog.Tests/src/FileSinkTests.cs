@@ -14,7 +14,7 @@ namespace Drill4Net.BanderLog.Tests
     /// </summary>
     public class FileSinkTests
     {
-        public AbstractSink InitializeSink(string fileName)
+        private AbstractSink InitializeSink(string fileName)
         {
             return FileSinkCreator.CreateSink(fileName);
         }
