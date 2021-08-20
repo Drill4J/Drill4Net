@@ -4,7 +4,7 @@ using System.Linq;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
-namespace Serialization.Checker
+namespace Serialization.Ping.Test
 {
     class Program
     {

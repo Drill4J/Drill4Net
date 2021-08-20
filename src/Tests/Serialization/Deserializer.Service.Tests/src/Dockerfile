@@ -6,17 +6,17 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["src/Tests/Serialization/Deserializer.Service.Tests/Deserializer.Service.Tests.csproj", "src/Tests/Serialization/Deserializer.Service.Tests/"]
-RUN dotnet restore "src/Tests/Serialization/Deserializer.Service.Tests/Deserializer.Service.Tests.csproj"
+COPY ["src/Tests/Serialization/Serialization.Pong.Test/Serialization.Pong.Test.csproj", "src/Tests/Serialization/Serialization.Pong.Test/"]
+RUN dotnet restore "src/Tests/Serialization/Serialization.Pong.Test/Serialization.Pong.Test.csproj"
 COPY . .
-WORKDIR "/src/src/Tests/Serialization/Deserializer.Service.Tests"
-RUN dotnet build "Deserializer.Service.Tests.csproj" -c Release -o /app/build
+WORKDIR "/src/src/Tests/Serialization/Serialization.Pong.Test"
+RUN dotnet build "Serialization.Pong.Test.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Deserializer.Service.Tests.csproj" -c Release -o /app/publish
+RUN dotnet publish "Serialization.Pong.Test.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ADD ["src/Tests/Serialization/Deserializer.Service.Tests/data", "data/"]
-ENTRYPOINT ["dotnet", "Deserializer.Service.Tests.dll"]
+ADD ["src/Tests/Serialization/Serialization.Pong.Test/data", "data/"]
+ENTRYPOINT ["dotnet", "Serialization.Pong.Test.dll"]

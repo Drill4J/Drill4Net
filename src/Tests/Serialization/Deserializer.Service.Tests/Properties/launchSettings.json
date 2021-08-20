@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Deserializer.Service.Tests": {
+    "Serialization.Pong.Test": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

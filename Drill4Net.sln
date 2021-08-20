@@ -165,9 +165,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog.Debug",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serialization", "{9951D0FB-A3A2-44C0-B0B6-13206B81E35A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deserializer.Service.Tests", "src\Tests\Serialization\Deserializer.Service.Tests\Deserializer.Service.Tests.csproj", "{FB1DE336-8BB7-4CF0-9BF8-720F882E1D7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Pong.Test", "src\Tests\Serialization\Deserializer.Service.Tests\Serialization.Pong.Test.csproj", "{FB1DE336-8BB7-4CF0-9BF8-720F882E1D7A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Checker", "src\Tests\Serialization\Serialization.Checker\Serialization.Checker.csproj", "{14BBC21E-B4DD-4798-A6B6-367E1A92E06A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Ping.Test", "src\Tests\Serialization\Serialization.Checker\Serialization.Ping.Test.csproj", "{14BBC21E-B4DD-4798-A6B6-367E1A92E06A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Configuration", "src\Core\Drill4Net.Configuration\Drill4Net.Configuration.csproj", "{2CF57D45-C717-4DD4-B0B6-B03EF7CC95F1}"
 EndProject

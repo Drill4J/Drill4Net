@@ -6,6 +6,17 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..\..\..</DockerfileContext>
     <StartupObject></StartupObject>
+    <AssemblyName>Serialization.Pong.Test</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Serialization.Pong.Test</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Serialization.Pong.Test</OutputPath>
+    <DocumentationFile>..\..\..\..\..\build\bin\Debug\Tests\Serialization.Pong.Test\Serialization.Pong.Test.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
