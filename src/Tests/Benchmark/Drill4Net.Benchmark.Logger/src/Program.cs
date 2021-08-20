@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
 
-namespace Drill4Net.Benchmark.Logger
+namespace Drill4Net.BanderLog.Benchmarks
 {
     class Program
     {

@@ -173,9 +173,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Configuration", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{3D131867-1828-4ECC-BEF7-34F789F6266B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{19C87884-82DF-4B2D-89AA-C23C58DB62D6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{19C87884-82DF-4B2D-89AA-C23C58DB62D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Benchmark.Logger", "src\Tests\Benchmark\Drill4Net.Benchmark.Logger\Drill4Net.Benchmark.Logger.csproj", "{B9D01633-7E7C-473B-907E-63CFD762148F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog.Benchmarks", "src\Tests\Benchmark\Drill4Net.Benchmark.Logger\Drill4Net.BanderLog.Benchmarks.csproj", "{B9D01633-7E7C-473B-907E-63CFD762148F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog.Tests", "src\Tests\IntegrationTests\Core\Drill4Net.BanderLog.Tests\Drill4Net.BanderLog.Tests.csproj", "{ADBE3A76-0C63-4E03-9973-1F1BDDB2598E}"
 EndProject
