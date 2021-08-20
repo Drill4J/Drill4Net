@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
+using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Service
 {
@@ -34,9 +35,9 @@ namespace Drill4Net.Agent.Kafka.Service
             //    await Task.Delay(1000, stoppingToken);
             //}
 
-            AbstractRepository<ConverterOptions> rep = new KafkaConsumerRepository();
-            IProbeReceiver consumer = new KafkaReceiver(rep);
-            var agent = new CoverageAgent(consumer);
+            AbstractRepository<CommunicatorOptions> rep = new KafkaConsumerRepository();
+            IKafkaServerReceiver consumer = new KafkaServerReceiver(rep);
+            var agent = new CoverageServer(consumer);
             _logger.LogInformation("Worker ready.");
 
             //TODO: accept stoppingToken

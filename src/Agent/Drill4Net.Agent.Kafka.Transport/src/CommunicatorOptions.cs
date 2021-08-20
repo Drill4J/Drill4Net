@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Drill4Net.Configuration;
 
-namespace Drill4Net.Agent.Kafka.Service
+namespace Drill4Net.Agent.Kafka.Transport
 {
-    public class ConverterOptions : AbstractOptions
+    public class CommunicatorOptions : AbstractOptions
     {
         public List<string> Servers { get; set; }
         public string GroupId { get; set; }
@@ -16,7 +16,9 @@ namespace Drill4Net.Agent.Kafka.Service
         /// </value>
         public List<string> Topics { get; set; }
 
-        public ConverterOptions()
+        /**************************************************************/
+
+        public CommunicatorOptions()
         {
             Servers = new();
             Topics = new();

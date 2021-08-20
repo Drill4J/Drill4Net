@@ -19,7 +19,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         static ProbeTransmitter()
         {
             var rep = new TransmitterRepository(); //just rep
-            IDataSender sender = new KafkaSender(rep); //concrete sender the data of probes to the middleware (Kafka)
+            IDataSender sender = new KafkaTransmitterSender(rep); //concrete sender the data of probes to the middleware (Kafka)
             Transmitter = new ProbeTransmitter(sender); //what is loaded into the Target process and used by the Proxy class
 
             Transmitter.SendTargetInfo(rep.GetTargetInfo());

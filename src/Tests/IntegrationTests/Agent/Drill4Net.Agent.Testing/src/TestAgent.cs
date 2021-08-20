@@ -81,8 +81,9 @@ namespace Drill4Net.Agent.Testing
         /// <summary>
         ///  Registers the probe data from the injected Target app
         /// </summary>
-        /// <param name="data"></param>
-        public static void RegisterStatic(string data)
+        /// <param name="data">The coverage data.</param>
+        /// <param name="context">The context of data (usually user, logical or execution context, testing method, etc)</param>
+        public static void RegisterStatic(string data, string context = null)
         {
             try
             {
@@ -92,7 +93,7 @@ namespace Drill4Net.Agent.Testing
                     return;
                 }
 
-                var ctxId = GetContextId();
+                var ctxId = context ?? GetContextId();
                 var ar = data.Split('^'); //data can contains some additional info in the debug mode
                 var probeUid = ar[0];
                 //var asmName = ar[1];
@@ -107,12 +108,13 @@ namespace Drill4Net.Agent.Testing
         }
 
         /// <summary>
-        ///Registers the probe data from the injected Target app  
+        ///Registers the probe data from the injected Target app.
         /// </summary>
-        /// <param name="data">The data.</param>
-        public override void Register(string data)
+        /// <param name="data">The coverage data.</param>
+        /// <param name="context">The context of data (usually user, logical or execution context, testing method, etc)</param>
+        public override void Register(string data, string context = null)
         {
-            RegisterStatic(data);
+            RegisterStatic(data, context);
         }
         #endregion
         #region Context

@@ -6,59 +6,38 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
+using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Service
 {
     //https://github.com/patsevanton/docker-compose-kafka-zk-kafdrop-cmak/blob/main/docker-compose.yml
 
-    public delegate void ProbeReceivedHandler(Probe probe);
     public delegate void TargetReceivedInfoHandler(TargetInfo target);
-    public delegate void ErrorOccuredHandler(bool isFatal, bool isLocal, string message);
 
     /***************************************************************************************************************/
 
-    public class KafkaReceiver : IProbeReceiver
+    public class KafkaServerReceiver : AbstractKafkaReceiver, IKafkaServerReceiver
     {
-        public event ProbeReceivedHandler ProbeReceived;
         public event TargetReceivedInfoHandler TargetInfoReceived;
-        public event ErrorOccuredHandler ErrorOccured;
 
         private CancellationTokenSource _targetsCts;
-        private CancellationTokenSource _probesCts;
-
-        private readonly ConsumerConfig _cfg;
-        private readonly AbstractRepository<ConverterOptions> _rep;
 
         /****************************************************************************************/
 
-        public KafkaReceiver(AbstractRepository<ConverterOptions> rep)
+        public KafkaServerReceiver(AbstractRepository<CommunicatorOptions> rep) : base(rep)
         {
-            _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            var opts = _rep.Options;
-            _cfg = new ConsumerConfig
-            {
-                GroupId = opts.GroupId,
-                BootstrapServers = string.Join(",", opts.Servers),
-
-                // Note: The AutoOffsetReset property determines the start offset in the event
-                // there are not yet any committed offsets for the consumer group for the
-                // topic/partitions of interest. By default, offsets are committed
-                // automatically, so in this case, consumption will only start from the
-                // earliest message in the topic the first time you run the program.
-                AutoOffsetReset = AutoOffsetReset.Earliest,
-
-                EnableAutoCommit = true,
-                EnableAutoOffsetStore = true,
-                MessageMaxBytes = KafkaConstants.MaxMessageSize,
-            };
         }
 
         /****************************************************************************************/
 
-        public void Start()
+        public override void Start()
         {
             Task.Run(RetriveTargets);
-            RetriveProbes();
+        }
+
+        public override void Stop()
+        {
+            _targetsCts.Cancel();
         }
 
         private void RetriveTargets()
@@ -139,13 +118,13 @@ namespace Drill4Net.Agent.Kafka.Service
                         }
                         catch (Exception ex)
                         {
-                            ErrorOccured?.Invoke(true, true, ex.Message);
+                            ErrorOccuredHandler(true, true, ex.Message);
                         }
                     }
                     catch (ConsumeException e)
                     {
                         var err = e.Error;
-                        ErrorOccured?.Invoke(err.IsFatal, err.IsLocalError, err.Reason);
+                        ErrorOccuredHandler(err.IsFatal, err.IsLocalError, err.Reason);
                     }
                 }
             }
@@ -154,48 +133,8 @@ namespace Drill4Net.Agent.Kafka.Service
                 // Ensure the consumer leaves the group cleanly and final offsets are committed.
                 c.Close();
 
-                ErrorOccured?.Invoke(true, false, opex.Message);
+                ErrorOccuredHandler(true, false, opex.Message);
             }
-        }
-
-        private void RetriveProbes()
-        {
-            var opts = _rep.Options;
-            _probesCts = new();
-
-            using var c = new ConsumerBuilder<Ignore, Probe>(_cfg).Build();
-            c.Subscribe(opts.Topics);
-
-            try
-            {
-                while (true)
-                {
-                    try
-                    {
-                        var cr = c.Consume(_probesCts.Token);
-                        var probe = cr.Message.Value;
-                        ProbeReceived?.Invoke(probe);
-                    }
-                    catch (ConsumeException e)
-                    {
-                        var err = e.Error;
-                        ErrorOccured?.Invoke(err.IsFatal, err.IsLocalError, err.Reason);
-                    }
-                }
-            }
-            catch (OperationCanceledException opex)
-            {
-                // Ensure the consumer leaves the group cleanly and final offsets are committed.
-                c.Close();
-
-                ErrorOccured?.Invoke(true, false, opex.Message);
-            }
-        }
-
-        public void Stop()
-        {
-            _targetsCts.Cancel();
-            _probesCts.Cancel();
         }
     }
 }

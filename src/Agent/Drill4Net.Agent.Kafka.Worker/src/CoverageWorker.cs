@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Linq;
-using Serilog;
-using Drill4Net.Agent.Kafka.Common;
 using System.Collections.Concurrent;
-using Drill4Net.Agent.Standard;
+using Serilog;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Standard;
+using Drill4Net.Agent.Kafka.Common;
 
-namespace Drill4Net.Agent.Kafka.Service
+namespace Drill4Net.Agent.Kafka.Worker
 {
-    public class CoverageAgent
+    public class CoverageWorker
     {
-        private readonly IProbeReceiver _receiver;
+        private readonly IKafkaWorkerReceiver _receiver;
         private readonly ConcurrentDictionary<string, AbstractAgent> _agents;
 
         /***************************************************************************/
 
-        public CoverageAgent(IProbeReceiver receiver)
+        public CoverageWorker(IKafkaWorkerReceiver receiver)
         {
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
-            receiver.TargetInfoReceived += Receiver_TargetInfoReceived;
+            //receiver.TargetInfoReceived += Receiver_TargetInfoReceived;
             receiver.ProbeReceived += Receiver_ProbeReceived;
             receiver.ErrorOccured += Receiver_ErrorOccured;
 
@@ -46,7 +46,7 @@ namespace Drill4Net.Agent.Kafka.Service
         private void Receiver_ProbeReceived(Probe probe)
         {
             // Log.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
-            StandardAgent.RegisterStatic(message);
+            StandardAgent.RegisterStatic(probe.Data, probe.Context);
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)

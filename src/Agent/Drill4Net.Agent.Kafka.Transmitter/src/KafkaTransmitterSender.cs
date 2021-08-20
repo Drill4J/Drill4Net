@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Collections.Generic;
 using Confluent.Kafka;
-using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Common;
+using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
-    public class KafkaSender : IDataSender
+    public class KafkaTransmitterSender : IDataSender
     {
         public bool IsError { get; private set; }
 
@@ -29,7 +29,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         /***************************************************************************************/
 
-        public KafkaSender(TransmitterRepository rep)
+        public KafkaTransmitterSender(TransmitterRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _cfg = CreateProducerConfig(rep);
@@ -43,7 +43,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             CreateProducers();
         }
 
-        ~KafkaSender()
+        ~KafkaTransmitterSender()
         {
             _probeProducer?.Flush(TimeSpan.FromSeconds(10));
             _probeProducer?.Dispose();
