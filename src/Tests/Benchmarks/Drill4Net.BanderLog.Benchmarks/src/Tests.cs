@@ -4,12 +4,8 @@ using System.IO;
 using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using NLog;
 using Serilog;
-using Drill4Net.BanderLog;
 using Drill4Net.BanderLog.Sinks.File;
-using System.Threading.Tasks;
-using BenchmarkDotNet.Loggers;
 
 namespace Drill4Net.BanderLog.Benchmarks
 {
@@ -25,24 +21,26 @@ namespace Drill4Net.BanderLog.Benchmarks
     [Config(typeof(Config))]
     public class Tests
     {
-        [Params(50, 250)]
+        [Params(2500, 10000)]
         public int RecordCount { get; set; }
 
         private NLog.Logger _loggerNlog;
         private BanderLog.Logger _loggerBanderLog;
-        private List<string> _testData;
+
+        private IEnumerable<string> _testData;
         private string _testString;
         private const string _fileName="LogFile.txt";
         private const string _fileNameSeriLog = "LogFileSerilog.txt";
         private const string _fileNameBanderLog = "LogFileBanderLog.txt";
 
         /******************************************************************************************/
-        
+
         private class Config : ManualConfig
         {
             public Config()
             {
                 //AddLogger(ConsoleLogger.Default);
+                WithOptions(ConfigOptions.DisableOptimizationsValidator);
             }
         }
 
@@ -50,38 +48,29 @@ namespace Drill4Net.BanderLog.Benchmarks
         public void GlobalSetup()
         {
             _testString = new string('a', 50);
-            _testData = Enumerable.Repeat(_testString, RecordCount).ToList();         
-            Log.Logger=new LoggerConfiguration()
+            _testData = Enumerable.Repeat(_testString, RecordCount);
+
+            //Serilog
+            Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(_fileNameSeriLog)
                 .CreateLogger();
-            _loggerNlog= LogManager.GetCurrentClassLogger();
+
+            //NLog
+            _loggerNlog = NLog.LogManager.GetCurrentClassLogger();
+
+            //BanderLog
             var logBld = new LogBuilder();
             _loggerBanderLog = logBld.AddSink(FileSinkCreator.CreateSink(_fileNameBanderLog)).Build();
         }
 
+        /******************************************************************************************/
+
         [Benchmark]
         public void UseBanderLog()
         {
-           
             for (var i = 0; i < RecordCount; i++)
             {
                 _loggerBanderLog.Log(Microsoft.Extensions.Logging.LogLevel.Information, _testString);
-            }
-            
-        }
-
-        [Benchmark]
-        public void UseAppendAllLines()
-        {
-            File.AppendAllLines(_fileName, _testData);
-        }
-
-        [Benchmark]
-        public void UseAppendAllText()
-        {
-            for (var i = 0; i < RecordCount; i++)
-            {
-                File.AppendAllText(_fileName, _testString);
             }
         }
 
@@ -104,6 +93,21 @@ namespace Drill4Net.BanderLog.Benchmarks
         }
 
         //[Benchmark]
+        //public void UseAppendAllLines()
+        //{
+        //    File.AppendAllLines(_fileName, _testData);
+        //}
+
+        //[Benchmark]
+        //public void UseAppendAllText()
+        //{
+        //    for (var i = 0; i < RecordCount; i++)
+        //    {
+        //        File.AppendAllText(_fileName, _testString);
+        //    }
+        //}
+
+        //[Benchmark]
         //public void WriteLogWithBanderLog5yTasks()
         //{
         //    //Task[] tasks = new Task[2];
@@ -112,7 +116,6 @@ namespace Drill4Net.BanderLog.Benchmarks
         //    //    tasks[i] = Task.Run(() => UseBanderLog());
         //    //}
         //    //Task.WaitAll(tasks);
-
         //}
 
         [GlobalCleanup]
