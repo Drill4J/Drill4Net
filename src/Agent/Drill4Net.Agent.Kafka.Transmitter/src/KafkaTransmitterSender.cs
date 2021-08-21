@@ -9,6 +9,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 {
     public class KafkaTransmitterSender : IDataSender
     {
+        //TODO: incapsulate Error props
         public bool IsError { get; private set; }
 
         public string LastError { get; private set; }

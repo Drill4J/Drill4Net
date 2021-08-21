@@ -9,20 +9,20 @@ using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Service
 {
-    public class Worker : BackgroundService
+    public class ServerHost : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<ServerHost> _logger;
 
         /*****************************************************************************/
 
-        public Worker(ILogger<Worker> logger)
+        public ServerHost(ILogger<ServerHost> logger)
         {
             _logger = logger;
             //
             var appName = ServiceUtils.GetAppName();
             var version = ServiceUtils.GetAppVersion();
             var title = $"{appName} {version}";
-            _logger.LogInformation($"Worker created: {title}");
+            _logger.LogInformation($"{nameof(ServerHost)} created: {title}");
         }
 
         /*****************************************************************************/
@@ -38,9 +38,8 @@ namespace Drill4Net.Agent.Kafka.Service
             AbstractRepository<CommunicatorOptions> rep = new KafkaConsumerRepository();
             IKafkaServerReceiver consumer = new KafkaServerReceiver(rep);
             var agent = new CoverageServer(consumer);
-            _logger.LogInformation("Worker ready.");
+            _logger.LogInformation($"{nameof(ServerHost)} ready.");
 
-            //TODO: accept stoppingToken
             agent.Start();
         }
     }

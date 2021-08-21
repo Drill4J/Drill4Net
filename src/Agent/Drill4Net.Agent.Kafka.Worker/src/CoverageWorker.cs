@@ -5,11 +5,14 @@ using Serilog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Kafka.Common;
+using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Worker
 {
-    public class CoverageWorker
+    public class CoverageWorker : IProbeReceiver
     {
+        public event ErrorOccuredDelegate ErrorOccured;
+
         private readonly IKafkaWorkerReceiver _receiver;
         private readonly ConcurrentDictionary<string, AbstractAgent> _agents;
 
@@ -18,29 +21,30 @@ namespace Drill4Net.Agent.Kafka.Worker
         public CoverageWorker(IKafkaWorkerReceiver receiver)
         {
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
-            //receiver.TargetInfoReceived += Receiver_TargetInfoReceived;
-            receiver.ProbeReceived += Receiver_ProbeReceived;
-            receiver.ErrorOccured += Receiver_ErrorOccured;
+
+
 
             _agents = new ConcurrentDictionary<string, AbstractAgent>();
-            StandardAgent.Init();
+
         }
 
         /***************************************************************************/
 
         public void Start()
         {
+            _receiver.ProbeReceived += Receiver_ProbeReceived;
+            _receiver.ErrorOccured += Receiver_ErrorOccured;
+
+            StandardAgent.Init();
             _receiver.Start();
         }
 
         public void Stop()
         {
             _receiver.Stop();
-        }
 
-        private void Receiver_TargetInfoReceived(TargetInfo target)
-        {
-
+            _receiver.ProbeReceived -= Receiver_ProbeReceived;
+            _receiver.ErrorOccured -= Receiver_ErrorOccured;
         }
 
         private void Receiver_ProbeReceived(Probe probe)

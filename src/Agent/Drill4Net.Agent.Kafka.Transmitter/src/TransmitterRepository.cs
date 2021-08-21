@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
             var targetInfo = new TargetInfo
             {
-                Uid = Session,
+                SessionUid = Session,
                 Options = Options,
                 Solution = tree,
             };

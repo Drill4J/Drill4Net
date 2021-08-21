@@ -10,7 +10,9 @@ namespace Drill4Net.Agent.Kafka.Common
     [Serializable]
     public class TargetInfo
     {
-        public Guid Uid { get; set; }
+        public Guid Uid { get; set; } = Guid.NewGuid();
+
+        public Guid SessionUid { get; set; }
 
         public AgentOptions Options { get; set; }
 

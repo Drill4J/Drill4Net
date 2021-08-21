@@ -5,10 +5,6 @@ using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Transport
 {
-    public delegate void ErrorOccuredDelegate(bool isFatal, bool isLocal, string message);
-
-    /*************************************************************************************************/
-
     public abstract class AbstractKafkaReceiver : IProbeReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
@@ -16,7 +12,7 @@ namespace Drill4Net.Agent.Kafka.Transport
         protected readonly ConsumerConfig _cfg;
         protected readonly AbstractRepository<CommunicatorOptions> _rep;
 
-        /*********************************************************************************************/
+        /*************************************************************************************************/
 
         public AbstractKafkaReceiver(AbstractRepository<CommunicatorOptions> rep)
         {

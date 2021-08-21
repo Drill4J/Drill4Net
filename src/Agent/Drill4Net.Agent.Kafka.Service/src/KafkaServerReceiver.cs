@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Kafka.Service
 
     public delegate void TargetReceivedInfoHandler(TargetInfo target);
 
-    /***************************************************************************************************************/
+    /********************************************************************************************/
 
     public class KafkaServerReceiver : AbstractKafkaReceiver, IKafkaServerReceiver
     {
@@ -24,8 +24,9 @@ namespace Drill4Net.Agent.Kafka.Service
 
         /****************************************************************************************/
 
-        public KafkaServerReceiver(AbstractRepository<CommunicatorOptions> rep) : base(rep)
+        public KafkaServerReceiver(AbstractRepository<CommunicatorOptions> rep, CancellationTokenSource targetsCts = null) : base(rep)
         {
+            _targetsCts = targetsCts;
         }
 
         /****************************************************************************************/
@@ -37,14 +38,15 @@ namespace Drill4Net.Agent.Kafka.Service
 
         public override void Stop()
         {
-            _targetsCts.Cancel();
+            _targetsCts?.Cancel();
         }
 
         private void RetriveTargets()
         {
             var opts = _rep.Options;
-            _targetsCts = new();
             var targets = new Dictionary<Guid, List<byte[]>>();
+            if (_targetsCts == null)
+                _targetsCts = new();
 
             using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
             c.Subscribe(KafkaConstants.TOPIC_TARGET_INFO);

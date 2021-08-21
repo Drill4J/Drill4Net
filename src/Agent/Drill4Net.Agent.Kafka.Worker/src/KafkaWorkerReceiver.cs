@@ -28,7 +28,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         public override void Start()
         {
-            RetriveProbes();
+            RetrieveProbes();
         }
 
         public override void Stop()
@@ -36,7 +36,7 @@ namespace Drill4Net.Agent.Kafka.Worker
             _probesCts.Cancel();
         }
 
-        private void RetriveProbes()
+        private void RetrieveProbes()
         {
             var opts = _rep.Options;
             _probesCts = new();
