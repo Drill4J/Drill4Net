@@ -1,9 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Transport;
 
@@ -35,12 +35,29 @@ namespace Drill4Net.Agent.Kafka.Service
             //    await Task.Delay(1000, stoppingToken);
             //}
 
-            AbstractRepository<CommunicatorOptions> rep = new KafkaConsumerRepository();
-            IKafkaServerReceiver consumer = new KafkaServerReceiver(rep);
-            var agent = new CoverageServer(consumer);
-            _logger.LogInformation($"{nameof(ServerHost)} ready.");
+            try
+            {
+                AbstractRepository<CommunicatorOptions> rep = new KafkaConsumerRepository();
+                IKafkaServerReceiver consumer = new KafkaServerReceiver(rep);
+                var server = new CoverageServer(consumer);
+                server.ErrorOccured += Server_ErrorOccured;
+                _logger.LogInformation($"{nameof(ServerHost)} ready.");
 
-            agent.Start();
+                server.Start();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Server start is failed");
+            }
+        }
+
+        private void Server_ErrorOccured(bool isFatal, bool isLocal, string message)
+        {
+            var mess = $"Local: {isLocal} -> {message}";
+            if (isFatal)
+                Log.Fatal(mess);
+            else
+                Log.Error(mess);
         }
     }
 }

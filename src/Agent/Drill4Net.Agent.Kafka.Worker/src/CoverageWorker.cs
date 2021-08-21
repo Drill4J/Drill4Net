@@ -14,22 +14,23 @@ namespace Drill4Net.Agent.Kafka.Worker
         private readonly TargetInfo _target;
         private readonly IKafkaWorkerReceiver _receiver;
 
-        /***************************************************************************/
+        /*******************************************************************************/
 
         public CoverageWorker(TargetInfo target, IKafkaWorkerReceiver receiver)
         {
             _target = target ?? throw new ArgumentNullException(nameof(target));
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
-        }
 
-        /***************************************************************************/
-
-        public void Start()
-        {
             _receiver.ProbeReceived += Receiver_ProbeReceived;
             _receiver.ErrorOccured += Receiver_ErrorOccured;
 
             StandardAgent.Init();
+        }
+
+        /*******************************************************************************/
+
+        public void Start()
+        {
             _receiver.Start();
         }
 
