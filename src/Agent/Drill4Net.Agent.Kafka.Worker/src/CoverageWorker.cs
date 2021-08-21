@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Concurrent;
 using Serilog;
-using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
@@ -13,19 +11,15 @@ namespace Drill4Net.Agent.Kafka.Worker
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
+        private readonly TargetInfo _target;
         private readonly IKafkaWorkerReceiver _receiver;
-        private readonly ConcurrentDictionary<string, AbstractAgent> _agents;
 
         /***************************************************************************/
 
-        public CoverageWorker(IKafkaWorkerReceiver receiver)
+        public CoverageWorker(TargetInfo target, IKafkaWorkerReceiver receiver)
         {
+            _target = target ?? throw new ArgumentNullException(nameof(target));
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
-
-
-
-            _agents = new ConcurrentDictionary<string, AbstractAgent>();
-
         }
 
         /***************************************************************************/
@@ -49,7 +43,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         private void Receiver_ProbeReceived(Probe probe)
         {
-            // Log.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
+            //Log.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
             StandardAgent.RegisterStatic(probe.Data, probe.Context);
         }
 

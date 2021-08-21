@@ -1,5 +1,4 @@
-﻿using Drill4Net.Common;
-using Drill4Net.Agent.Kafka.Transport;
+﻿using System;
 
 namespace Drill4Net.Agent.Kafka.Worker
 {
@@ -7,11 +6,17 @@ namespace Drill4Net.Agent.Kafka.Worker
     {
         static void Main(string[] args)
         {
-            AbstractRepository<CommunicatorOptions> rep = new KafkaConsumerRepository();
-            IKafkaWorkerReceiver consumer = new KafkaWorkerReceiver(rep);
-            var agent = new CoverageWorker(consumer);
-
-            agent.Start();
+            try
+            {
+                var creator = new WorkerCreator(args);
+                var worker = creator.CreateWorker();
+                worker.Start();
+            }
+            catch (Exception ex)
+            {
+                //TODO: log
+                Console.WriteLine($"Error:\n{ex}");
+            }
         }
     }
 }
