@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
 
@@ -37,7 +38,16 @@ namespace Drill4Net.Agent.Kafka.Service
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            throw new NotImplementedException();
+            var processName = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Kafka.Worker\net5.0\Drill4Net.Agent.Kafka.Worker.exe";
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = processName,
+                    Arguments = "-username=Alice"
+                }
+            };
+            process.Start();
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)

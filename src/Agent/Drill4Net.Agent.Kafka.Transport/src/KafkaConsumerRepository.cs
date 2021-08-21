@@ -6,11 +6,13 @@ namespace Drill4Net.Agent.Kafka.Transport
 {
     public class KafkaConsumerRepository : AbstractRepository<CommunicatorOptions>
     {
-        public KafkaConsumerRepository() : base(CoreConstants.SUBSYSTEM_AGENT)
+        public KafkaConsumerRepository(string cfgPath = null) : base(CoreConstants.SUBSYSTEM_AGENT)
         {
             var optHelper = new BaseOptionsHelper<CommunicatorOptions>();
-            var path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);
-            Options = optHelper.ReadOptions(path);
+
+            if(string.IsNullOrWhiteSpace(cfgPath))
+                cfgPath = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);
+            Options = optHelper.ReadOptions(cfgPath);
 
             PrepareLogger();
         }

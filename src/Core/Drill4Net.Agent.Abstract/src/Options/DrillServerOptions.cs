@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.Abstract
     /// Options for communicate with Admin side of Drill system
     /// </summary>
     [Serializable]
-    public class AdminOptions
+    public class DrillServerOptions
     {
         /// <summary>
         /// Endpoint for communication (address with port)

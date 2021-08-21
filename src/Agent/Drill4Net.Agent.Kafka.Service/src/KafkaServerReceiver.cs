@@ -113,7 +113,7 @@ namespace Drill4Net.Agent.Kafka.Service
                                 var decompressed = Compressor.Decompress(messAr, messSize);
                                 var info = Serializer.FromArray<TargetInfo>(decompressed);
                                 targets.Remove(uid);
-                                GC.Collect();
+                                GC.Collect(1, GCCollectionMode.Forced);
 
                                 TargetInfoReceived?.Invoke(info);
                             }

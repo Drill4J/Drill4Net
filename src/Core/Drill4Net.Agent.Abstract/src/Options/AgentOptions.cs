@@ -1,5 +1,5 @@
-﻿using Drill4Net.Configuration;
-using System;
+﻿using System;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -12,6 +12,6 @@ namespace Drill4Net.Agent.Abstract
         /// <summary>
         /// Options for the communicating between Agent part of instrumented App and the admin side
         /// </summary>
-        public AdminOptions Admin { get; set; }
+        public DrillServerOptions Admin { get; set; }
     }
 }

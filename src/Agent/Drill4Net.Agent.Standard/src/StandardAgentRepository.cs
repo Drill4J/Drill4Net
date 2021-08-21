@@ -82,7 +82,7 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         #region Init
-        private AbstractCommunicator GetCommunicator(AdminOptions adminOpts, TargetOptions targetOpts)
+        private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetOptions targetOpts)
         {
             if (adminOpts == null)
                 throw new ArgumentNullException(nameof(adminOpts));

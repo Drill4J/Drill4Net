@@ -22,7 +22,7 @@ namespace Drill4Net.Common
         public string Subsystem { get; }
 
         /// <summary>
-        /// Options for the injection
+        /// Options for different purposes: injection, communication, testing, etc
         /// </summary>
         public TOptions Options { get; set; }
 
