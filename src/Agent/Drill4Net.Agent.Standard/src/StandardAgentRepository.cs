@@ -31,35 +31,56 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public bool IsAnySession => _sessionToCtx.Any();
 
-        private readonly ConcurrentDictionary<string, string> _ctxToSession;
-        private readonly ConcurrentDictionary<string, string> _sessionToCtx;
-        private readonly ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
-        private readonly ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
-        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
+        private ConcurrentDictionary<string, string> _ctxToSession;
+        private ConcurrentDictionary<string, string> _sessionToCtx;
+        private ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
+        private ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
+        private ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
         private CoverageRegistrator _globalRegistrator;
-        private readonly TreeConverter _converter;
-        private readonly IEnumerable<InjectedType> _injTypes;
+        private TreeConverter _converter;
+        private IEnumerable<InjectedType> _injTypes;
 
-        private readonly System.Timers.Timer _sendTimer;
-        private readonly object _sendLocker;
+        private System.Timers.Timer _sendTimer;
+        private object _sendLocker;
         private bool _inTimer;
 
         /**************************************************************************************/
 
         /// <summary>
-        /// Create repository for Standard Agent
+        /// Create repository for Standard Agent by options specified by the file path
         /// </summary>
+        /// <param name="cfgPath"></param>
         public StandardAgentRepository(string cfgPath = null): base(cfgPath)
+        {
+            Init(null);
+        }
+
+        /// <summary>
+        /// Create repository for Standard Agent specified the known options
+        /// </summary>
+        /// <param name="opts"></param>
+        /// <param name="tree"></param>
+        public StandardAgentRepository(AgentOptions opts, InjectedSolution tree) : base(opts)
+        {
+            if (tree == null)
+                throw new ArgumentNullException(nameof(tree));
+            Init(tree);
+        }
+
+        /**************************************************************************************/
+
+        #region Init
+        private void Init(InjectedSolution tree = null)
         {
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();
             _ctxToRegistrator = new ConcurrentDictionary<string, CoverageRegistrator>();
-            
+
             //session maps
             _sessionToCtx = new ConcurrentDictionary<string, string>();
             _sessionToObject = new ConcurrentDictionary<string, StartSessionPayload>();
-            
+
             // execution data by session ids
             _ctxToExecData = new ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>>();
 
@@ -69,7 +90,8 @@ namespace Drill4Net.Agent.Standard
             Communicator = GetCommunicator(Options.Admin, Options.Target);
 
             //target classes' tree
-            var tree = ReadInjectedTree();
+            if(tree == null)
+                tree = ReadInjectedTree();
             _injTypes = GetTypesByCallerVersion(tree);
 
             //timer for periodically sending coverage data to admin side
@@ -77,9 +99,6 @@ namespace Drill4Net.Agent.Standard
             _sendTimer.Elapsed += Timer_Elapsed;
         }
 
-        /**************************************************************************************/
-
-        #region Init
         private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetOptions targetOpts)
         {
             if (adminOpts == null)

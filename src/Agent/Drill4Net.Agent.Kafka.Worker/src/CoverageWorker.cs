@@ -24,7 +24,7 @@ namespace Drill4Net.Agent.Kafka.Worker
             _receiver.ProbeReceived += Receiver_ProbeReceived;
             _receiver.ErrorOccured += Receiver_ErrorOccured;
 
-            StandardAgent.Init();
+            StandardAgent.Init(target.Options, target.Solution);
         }
 
         /*******************************************************************************/

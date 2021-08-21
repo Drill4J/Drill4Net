@@ -7,6 +7,7 @@ using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -19,7 +20,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Agent as singleton
         /// </summary>
-        public static StandardAgent Agent { get; }
+        public static StandardAgent Agent { get; private set; }
 
         private IReceiver Receiver => _comm.Receiver;
         private ISender Sender => _comm.Sender;
@@ -50,7 +51,9 @@ namespace Drill4Net.Agent.Standard
                 throw new Exception($"Creation of {nameof(StandardAgent)} is failed");
         }
 
-        private StandardAgent()
+        private StandardAgent(): this(null, null) { }
+
+        private StandardAgent(AgentOptions opts, InjectedSolution tree)
         {
             try
             {
@@ -78,7 +81,7 @@ namespace Drill4Net.Agent.Standard
 
                 //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
 
-                Repository = new StandardAgentRepository();
+                Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
                 _comm = Repository.Communicator;
 
                 //events from admin side
@@ -112,11 +115,16 @@ namespace Drill4Net.Agent.Standard
 
         #region Init
         /// <summary>
-        /// It just run the ctor with the main init procedure.
-        /// This function mainly used for debugging. It's not necessary
-        /// in a real system because the ctor will be arised due Register call.
+        /// Init of the static Agent singleton.
         /// </summary>
-        public static void Init() { } //for calling the static ctor
+        /// <param name="opts"></param>
+        /// <param name="tree"></param>
+        public static void Init(AgentOptions opts, InjectedSolution tree)
+        {
+            Agent = new StandardAgent(opts, tree);
+            if (Agent == null)
+                throw new Exception($"Creation of {nameof(StandardAgent)} is failed");
+        }
 
         //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
 
