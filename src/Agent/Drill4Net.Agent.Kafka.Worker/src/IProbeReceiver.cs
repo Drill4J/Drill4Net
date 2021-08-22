@@ -2,7 +2,7 @@
 
 namespace Drill4Net.Agent.Kafka.Worker
 {
-    public interface IKafkaWorkerReceiver : IProbeReceiver
+    public interface IProbeReceiver : IMessageReceiver
     {
         event ProbeReceivedHandler ProbeReceived;
     }

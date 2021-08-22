@@ -12,7 +12,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
     /********************************************************************************************/
 
-    public class KafkaWorkerReceiver : AbstractKafkaReceiver, IKafkaWorkerReceiver
+    public class ProbeReceiver : AbstractKafkaReceiver, IProbeReceiver
     {
         public event ProbeReceivedHandler ProbeReceived;
 
@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         /****************************************************************************************/
 
-        public KafkaWorkerReceiver(AbstractRepository<CommunicatorOptions> rep) : base(rep)
+        public ProbeReceiver(AbstractRepository<CommunicatorOptions> rep) : base(rep)
         {
         }
 

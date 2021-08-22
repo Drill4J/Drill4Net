@@ -8,50 +8,50 @@ namespace Drill4Net.Agent.Abstract
 
     #region Delegates
     /// <summary>
-    /// Handler for <see cref="IReceiver.InitScopeData"/>
+    /// Handler for <see cref="IAgentReceiver.InitScopeData"/>
     /// </summary>
     public delegate void InitScopeDataHandler(InitActiveScope scope);
     
     /// <summary>
-    /// Handler for <see cref="IReceiver.RequestClassesData"/>
+    /// Handler for <see cref="IAgentReceiver.RequestClassesData"/>
     /// </summary>
     public delegate void RequestClassesDataHandler();
     
     /// <summary>
-    /// Handler for <see cref="IReceiver.TogglePlugin"/> 
+    /// Handler for <see cref="IAgentReceiver.TogglePlugin"/> 
     /// </summary>
     public delegate void TogglePluginHandler(string plugin);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.StartSession"/>
+    /// Handler for <see cref="IAgentReceiver.StartSession"/>
     /// </summary>
     /// <param name="info"></param>
     public delegate void StartSessionHandler(StartAgentSession info);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.StopSession"/>
+    /// Handler for <see cref="IAgentReceiver.StopSession"/>
     /// </summary>
     /// <param name="info"></param>
     public delegate void StopSessionHandler(StopAgentSession info);
     
     /// <summary>
-    /// Handler for <see cref="IReceiver.CancelSession"/>
+    /// Handler for <see cref="IAgentReceiver.CancelSession"/>
     /// </summary>
     public delegate void StopAllSessionsHandler();
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.CancelSession"/>
+    /// Handler for <see cref="IAgentReceiver.CancelSession"/>
     /// </summary>
     /// <param name="info"></param>
     public delegate void CancelSessionHandler(CancelAgentSession info);
 
     /// <summary>
-    /// Handler for <see cref="IReceiver.CancelAllSessions"/>
+    /// Handler for <see cref="IAgentReceiver.CancelAllSessions"/>
     /// </summary>
     public delegate void CancelAllSessionsHandler();
     #endregion
     
-    public interface IReceiver
+    public interface IAgentReceiver
     {
         /// <summary>
         /// New scope data is initialized

@@ -23,21 +23,21 @@ namespace Drill4Net.Agent.Kafka.Worker
             return new KafkaConsumerRepository();
         }
 
-        internal virtual TargetInfo GetTarget(string[] args)
-        {
-            var targetArg = AbstractRepository<CommunicatorOptions>.GetArgument(args, KafkaTransportConstants.ARGUMENT_TARGET_INFO);
-            var target = TargetInfoArgumentSerializer.Deserialize(targetArg);
-            if (targetArg == null)
-                throw new Exception("Target info doesn't deserialize");
-            return target;
-        }
+        //internal virtual TargetInfo GetTarget(string[] args)
+        //{
+        //    var targetArg = AbstractRepository<CommunicatorOptions>.GetArgument(args, KafkaTransportConstants.ARGUMENT_TARGET_INFO);
+        //    var target = TargetInfoArgumentSerializer.Deserialize(targetArg);
+        //    if (targetArg == null)
+        //        throw new Exception("Target info doesn't deserialize");
+        //    return target;
+        //}
 
         public virtual IProbeReceiver CreateWorker()
         {
             var rep = GetRepository();
-            IKafkaWorkerReceiver consumer = new KafkaWorkerReceiver(rep);
-            var target = GetTarget(_args);
-            var worker = new CoverageWorker(target, consumer);
+            IProbeReceiver probeReceiver = new ProbeReceiver(rep);
+            ITargetInfoReceiver targetReceiver = new TargetInfoReceiver(rep);
+            var worker = new CoverageWorker(targetReceiver, probeReceiver);
             return worker;
         }
     }

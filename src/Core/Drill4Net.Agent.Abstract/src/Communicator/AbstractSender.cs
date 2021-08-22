@@ -3,7 +3,7 @@ using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Abstract
 {
-    public abstract class AbstractSender : ISender
+    public abstract class AbstractSender : IAgentSender
     {
         #region Send messages
         #region Init

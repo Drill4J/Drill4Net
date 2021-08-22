@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
-using Drill4Net.Agent.Kafka.Transport;
 
-namespace Drill4Net.Agent.Kafka.Service
+namespace Drill4Net.Agent.Kafka.Transport
 {
     //https://github.com/patsevanton/docker-compose-kafka-zk-kafdrop-cmak/blob/main/docker-compose.yml
 
@@ -16,7 +15,7 @@ namespace Drill4Net.Agent.Kafka.Service
 
     /********************************************************************************************/
 
-    public class KafkaServerReceiver : AbstractKafkaReceiver, IKafkaServerReceiver
+    public class TargetInfoReceiver : AbstractKafkaReceiver, ITargetInfoReceiver
     {
         public event TargetReceivedInfoHandler TargetInfoReceived;
 
@@ -24,7 +23,7 @@ namespace Drill4Net.Agent.Kafka.Service
 
         /****************************************************************************************/
 
-        public KafkaServerReceiver(AbstractRepository<CommunicatorOptions> rep, CancellationTokenSource targetsCts = null) : base(rep)
+        public TargetInfoReceiver(AbstractRepository<CommunicatorOptions> rep, CancellationTokenSource targetsCts = null): base(rep)
         {
             _targetsCts = targetsCts;
         }
@@ -63,6 +62,7 @@ namespace Drill4Net.Agent.Kafka.Service
                         var packet = mess.Value;
                         try
                         {
+                            #region Params
                             if (!headers.TryGetLastBytes(KafkaConstants.HEADER_REQUEST, out byte[] uidAr))
                                 throw new Exception("No Uid in packet header");
                             var uid = Serializer.FromArray<Guid>(uidAr);
@@ -74,8 +74,8 @@ namespace Drill4Net.Agent.Kafka.Service
                             if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
                                 throw new Exception("No packet's index in packet header");
                             var packetInd = Serializer.FromArray<int>(packetIndAr);
-
-                            //add packet
+                            #endregion
+                            #region Add packet
                             List<byte[]> packets;
                             if (targets.ContainsKey(uid))
                             {
@@ -87,7 +87,8 @@ namespace Drill4Net.Agent.Kafka.Service
                                 targets.Add(uid, packets);
                             }
                             packets.Add(packet);
-
+                            #endregion
+                            #region Data is collected
                             //end?
                             if (packetInd == packetsCnt - 1)
                             {
@@ -117,6 +118,7 @@ namespace Drill4Net.Agent.Kafka.Service
 
                                 TargetInfoReceived?.Invoke(info);
                             }
+                            #endregion
                         }
                         catch (Exception ex)
                         {

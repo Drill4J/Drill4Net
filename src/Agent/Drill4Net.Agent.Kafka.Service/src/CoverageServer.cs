@@ -6,15 +6,15 @@ using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Service
 {
-    public class CoverageServer : IProbeReceiver
+    public class CoverageServer : IMessageReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
-        private readonly IKafkaServerReceiver _receiver;
+        private readonly ITargetInfoReceiver _receiver;
 
         /******************************************************************/
 
-        public CoverageServer(IKafkaServerReceiver receiver)
+        public CoverageServer(ITargetInfoReceiver receiver)
         {
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
 

@@ -5,7 +5,7 @@ using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Transport
 {
-    public abstract class AbstractKafkaReceiver : IProbeReceiver
+    public abstract class AbstractKafkaReceiver : IMessageReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
 

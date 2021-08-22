@@ -4,7 +4,7 @@
 
     /*************************************************************************************************/
 
-    public interface IProbeReceiver
+    public interface IMessageReceiver
     {
         event ErrorOccuredDelegate ErrorOccured;
 

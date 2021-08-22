@@ -16,8 +16,9 @@ namespace Drill4Net.Agent.Kafka.Worker
             }
             catch (Exception ex)
             {
-                //TODO: log
-                Console.WriteLine($"Error:\n{ex}");
+                var mess = ex.ToString();
+                Log.Error(mess);
+                Console.WriteLine($"Error:\n{mess}");
             }
         }
 

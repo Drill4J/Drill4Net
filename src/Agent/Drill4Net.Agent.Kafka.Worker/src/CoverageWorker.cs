@@ -8,37 +8,52 @@ namespace Drill4Net.Agent.Kafka.Worker
 {
     public class CoverageWorker : IProbeReceiver
     {
+        public bool IsTargetReceived { get; private set; }
         public event ErrorOccuredDelegate ErrorOccured;
+        public event ProbeReceivedHandler ProbeReceived;
 
-        private readonly IKafkaWorkerReceiver _receiver;
+        private readonly ITargetInfoReceiver _targetReceiver;
+        private readonly IProbeReceiver _probeReceiver;
 
         /*******************************************************************************/
 
-        public CoverageWorker(TargetInfo target, IKafkaWorkerReceiver receiver)
+        public CoverageWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
-            if(target == null)
-                throw new ArgumentNullException(nameof(target));
-            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
+            _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
 
-            _receiver.ProbeReceived += Receiver_ProbeReceived;
-            _receiver.ErrorOccured += Receiver_ErrorOccured;
+            _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
+            _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
 
-            StandardAgent.Init(target.Options, target.Solution);
+            _probeReceiver.ProbeReceived += Receiver_ProbeReceived;
+            _probeReceiver.ErrorOccured += Receiver_ErrorOccured;
         }
 
         /*******************************************************************************/
 
         public void Start()
         {
-            _receiver.Start();
+            _targetReceiver.Start();
         }
 
         public void Stop()
         {
-            _receiver.ProbeReceived -= Receiver_ProbeReceived;
-            _receiver.ErrorOccured -= Receiver_ErrorOccured;
+            _targetReceiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
+            _targetReceiver.ErrorOccured -= Receiver_ErrorOccured;
+            _targetReceiver.Stop();
 
-            _receiver.Stop();
+            _probeReceiver.ProbeReceived -= Receiver_ProbeReceived;
+            _probeReceiver.ErrorOccured -= Receiver_ErrorOccured;
+            _probeReceiver.Stop();
+        }
+
+        private void Receiver_TargetInfoReceived(TargetInfo target)
+        {
+            IsTargetReceived = true;
+            _targetReceiver.Stop();
+
+            _probeReceiver.Start();
+            StandardAgent.Init(target.Options, target.Solution);
         }
 
         private void Receiver_ProbeReceived(Probe probe)
