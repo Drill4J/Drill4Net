@@ -8,6 +8,8 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         public List<string> Servers { get; set; }
         public List<string> Topics { get; set; }
 
+        /************************************************/
+
         public TransmitterOptions()
         {
             Servers = new();

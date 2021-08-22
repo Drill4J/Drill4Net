@@ -1,5 +1,5 @@
-﻿using Drill4Net.Common;
-using System;
+﻿using System;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
@@ -8,24 +8,24 @@ namespace Drill4Net.Agent.Kafka.Transmitter
     /// the probe's data from it to the real Agent located in separate service 
     /// (direct or, e.g. through Kafka as middleware)
     /// </summary>
-    public class ProbeTransmitter
+    public class TargetDataTransmitter
     {
-        public static ProbeTransmitter Transmitter { get; }
+        public static TargetDataTransmitter Transmitter { get; }
 
         public IDataSender Sender { get; }
 
         /***********************************************************************************/
 
-        static ProbeTransmitter()
+        static TargetDataTransmitter()
         {
             var rep = new TransmitterRepository(); //just rep
-            IDataSender sender = new KafkaTransmitterSender(rep); //concrete sender the data of probes to the middleware (Kafka)
-            Transmitter = new ProbeTransmitter(sender); //what is loaded into the Target process and used by the Proxy class
+            IDataSender sender = new TargetDataSender(rep); //concrete sender the data of probes to the middleware (Kafka)
+            Transmitter = new TargetDataTransmitter(sender); //what is loaded into the Target process and used by the Proxy class
 
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
         }
 
-        public ProbeTransmitter(IDataSender sender)
+        public TargetDataTransmitter(IDataSender sender)
         {
             Sender = sender ?? throw new ArgumentNullException(nameof(sender));
         }

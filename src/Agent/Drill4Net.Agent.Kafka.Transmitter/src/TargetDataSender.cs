@@ -7,7 +7,7 @@ using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
-    public class KafkaTransmitterSender : IDataSender
+    public class TargetDataSender : IDataSender
     {
         //TODO: incapsulate Error props
         public bool IsError { get; private set; }
@@ -30,10 +30,10 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         /***************************************************************************************/
 
-        public KafkaTransmitterSender(TransmitterRepository rep)
+        public TargetDataSender(TransmitterRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            _cfg = CreateProducerConfig(rep);
+            _cfg = CreateProducerConfig(rep.TransmitterOptions);
 
             //https://stackoverflow.com/questions/21020347/how-can-i-send-large-messages-with-kafka-over-15mb
             _packetMaxSize = (_cfg.MessageMaxBytes ?? KafkaConstants.MaxMessageSize) - 512; //less because also service info included!
@@ -44,7 +44,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             CreateProducers();
         }
 
-        ~KafkaTransmitterSender()
+        ~TargetDataSender()
         {
             _probeProducer?.Flush(TimeSpan.FromSeconds(10));
             _probeProducer?.Dispose();
@@ -122,12 +122,11 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             headers.Add(header);
         }
 
-        private ProducerConfig CreateProducerConfig(TransmitterRepository rep)
+        private ProducerConfig CreateProducerConfig(TransmitterOptions opts)
         {
-            var transOpts = rep.TransmitterOptions;
             return new ProducerConfig
             {
-                BootstrapServers = string.Join(",", transOpts.Servers),
+                BootstrapServers = string.Join(",", opts.Servers),
                 MessageMaxBytes = KafkaConstants.MaxMessageSize,
             };
         }

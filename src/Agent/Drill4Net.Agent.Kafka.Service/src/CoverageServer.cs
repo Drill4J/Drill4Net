@@ -44,13 +44,15 @@ namespace Drill4Net.Agent.Kafka.Service
         /// <param name="target">The target.</param>
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
+            //start the Worker
+
             //TODO: to cfg
             var workerDir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Kafka.Worker\net5.0\";
             var processName = Path.Combine(workerDir, "Drill4Net.Agent.Kafka.Worker.exe");
 
             var dir = FileUtils.GetExecutionDir();
             var cfgArg = Path.Combine(dir, CoreConstants.CONFIG_SERVICE_NAME);
-            var topic = "";
+            var topic = $"worker_{Guid.NewGuid()}";
             var process = new Process
             {
                 StartInfo =
@@ -63,6 +65,10 @@ namespace Drill4Net.Agent.Kafka.Service
                 }
             };
             process.Start();
+            var pid = process.Id;
+
+            //send to worker the Target info by the exclusive topic
+
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
