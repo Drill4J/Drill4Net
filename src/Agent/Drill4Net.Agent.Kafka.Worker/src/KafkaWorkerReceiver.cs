@@ -42,7 +42,9 @@ namespace Drill4Net.Agent.Kafka.Worker
             var opts = _rep.Options;
             _probesCts = new();
 
-            using var c = new ConsumerBuilder<Ignore, Probe>(_cfg).Build();
+            using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
+                .SetValueDeserializer(new ProbeDeserializer())
+                .Build();
             c.Subscribe(opts.Topics);
 
             try

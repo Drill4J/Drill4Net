@@ -137,7 +137,9 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             _infoProducer = new ProducerBuilder<Null, byte[]>(_cfg).Build();
 
             _probeTopics = _rep.TransmitterOptions.Topics;
-            _probeProducer = new ProducerBuilder<Null, Probe>(_cfg).Build();
+            _probeProducer = new ProducerBuilder<Null, Probe>(_cfg)
+                .SetValueSerializer(new ProbeSerializer())
+                .Build();
         }
 
         #region Handle sending

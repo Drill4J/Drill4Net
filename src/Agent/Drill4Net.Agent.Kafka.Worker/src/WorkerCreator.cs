@@ -37,8 +37,8 @@ namespace Drill4Net.Agent.Kafka.Worker
             var rep = GetRepository();
             IKafkaWorkerReceiver consumer = new KafkaWorkerReceiver(rep);
             var target = GetTarget(_args);
-            var agent = new CoverageWorker(target, consumer);
-            return agent;
+            var worker = new CoverageWorker(target, consumer);
+            return worker;
         }
     }
 }

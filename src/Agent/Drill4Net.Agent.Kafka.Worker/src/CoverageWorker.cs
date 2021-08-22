@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Serilog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
@@ -11,14 +10,14 @@ namespace Drill4Net.Agent.Kafka.Worker
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
-        private readonly TargetInfo _target;
         private readonly IKafkaWorkerReceiver _receiver;
 
         /*******************************************************************************/
 
         public CoverageWorker(TargetInfo target, IKafkaWorkerReceiver receiver)
         {
-            _target = target ?? throw new ArgumentNullException(nameof(target));
+            if(target == null)
+                throw new ArgumentNullException(nameof(target));
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
 
             _receiver.ProbeReceived += Receiver_ProbeReceived;
@@ -36,10 +35,10 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         public void Stop()
         {
-            _receiver.Stop();
-
             _receiver.ProbeReceived -= Receiver_ProbeReceived;
             _receiver.ErrorOccured -= Receiver_ErrorOccured;
+
+            _receiver.Stop();
         }
 
         private void Receiver_ProbeReceived(Probe probe)
@@ -50,11 +49,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
         {
-            var mess = $"Local: {isLocal} -> {message}";
-            if (isFatal)
-                Log.Fatal(mess);
-            else
-                Log.Error(mess);
+            ErrorOccured?.Invoke(isFatal, isLocal, message);
         }
     }
 }
