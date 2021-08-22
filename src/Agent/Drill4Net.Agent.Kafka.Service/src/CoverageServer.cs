@@ -39,21 +39,21 @@ namespace Drill4Net.Agent.Kafka.Service
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Kafka.Worker\net5.0\";
-            var processName = Path.Combine(dir, "Drill4Net.Agent.Kafka.Worker.exe");
-            var targetArg = TargetInfoArgumentSerializer.Serialize(target);
-            var process = new Process
-            {
-                StartInfo =
-                {
-                    FileName = processName,
-                    Arguments = $"{KafkaTransportConstants.ARGUMENT_TARGET_INFO}={targetArg}",
-                    WorkingDirectory = dir,
-                    //CreateNoWindow = true,
-                    //UseShellExecute = 
-                }
-            };
-            process.Start();
+            //var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Kafka.Worker\net5.0\";
+            //var processName = Path.Combine(dir, "Drill4Net.Agent.Kafka.Worker.exe");
+            //var targetArg = TargetInfoArgumentSerializer.Serialize(target);
+            //var process = new Process
+            //{
+            //    StartInfo =
+            //    {
+            //        FileName = processName,
+            //        Arguments = $"{KafkaTransportConstants.ARGUMENT_TARGET_INFO}={targetArg}",
+            //        WorkingDirectory = dir,
+            //        //CreateNoWindow = true,
+            //        //UseShellExecute = 
+            //    }
+            //};
+            //process.Start();
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)

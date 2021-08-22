@@ -7,6 +7,15 @@
     <DockerfileContext>..\..\..</DockerfileContext>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Kafka.Service</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Kafka.Service\Drill4Net.Agent.Kafka.Service.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Kafka.Service</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
     <PackageReference Include="DumpExtensions" Version="2.0.0" />

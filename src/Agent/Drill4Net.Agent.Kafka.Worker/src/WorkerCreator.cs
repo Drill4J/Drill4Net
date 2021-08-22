@@ -18,20 +18,6 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         /**************************************************************************/
 
-        internal virtual AbstractRepository<CommunicatorOptions> GetRepository()
-        {
-            return new KafkaConsumerRepository();
-        }
-
-        //internal virtual TargetInfo GetTarget(string[] args)
-        //{
-        //    var targetArg = AbstractRepository<CommunicatorOptions>.GetArgument(args, KafkaTransportConstants.ARGUMENT_TARGET_INFO);
-        //    var target = TargetInfoArgumentSerializer.Deserialize(targetArg);
-        //    if (targetArg == null)
-        //        throw new Exception("Target info doesn't deserialize");
-        //    return target;
-        //}
-
         public virtual IProbeReceiver CreateWorker()
         {
             var rep = GetRepository();
@@ -39,6 +25,29 @@ namespace Drill4Net.Agent.Kafka.Worker
             ITargetInfoReceiver targetReceiver = new TargetInfoReceiver(rep);
             var worker = new CoverageWorker(targetReceiver, probeReceiver);
             return worker;
+        }
+
+        internal virtual AbstractRepository<CommunicatorOptions> GetRepository()
+        {
+            var opts = GetBaseOptions(_args);
+            var targetTopic = GetTargetTopic(_args);
+            if(!string.IsNullOrWhiteSpace(targetTopic))
+                opts.Topics.Add(targetTopic);
+            return new KafkaReceiverRepository(opts);
+        }
+
+        private string GetTargetTopic(string[] args)
+        {
+            return KafkaReceiverRepository.GetArgument(args, KafkaTransportConstants.ARGUMENT_TARGET_TOPIC);
+        }
+
+        internal virtual CommunicatorOptions GetBaseOptions(string[] args)
+        {
+            var cfgPathArg = KafkaReceiverRepository.GetArgument(args, KafkaTransportConstants.ARGUMENT_CONFIG_PATH);
+            var opts = KafkaReceiverRepository.GetOptionsByPath(cfgPathArg);
+            if (opts == null)
+                throw new Exception("Communicator options hasn't retrieved");
+            return opts;
         }
     }
 }

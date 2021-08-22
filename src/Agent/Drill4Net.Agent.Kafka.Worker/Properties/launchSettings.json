@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Drill4Net.Agent.Kafka.Worker": {
+      "commandName": "Project"
+    },
+    "WithArgs": {
+      "commandName": "Project",
+      "commandLineArgs": "cfg_path=d:\\Projects\\EPM-D4J\\Drill4Net\\build\\bin\\Debug\\Drill4Net.Agent.Kafka.Service\\net5.0\\svc.yml target_topic=agent_12345"
+    }
+  }
+}
