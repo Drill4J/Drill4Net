@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
 
@@ -10,50 +11,58 @@ namespace Drill4Net.Agent.Kafka.Service
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
-        private readonly ITargetInfoReceiver _receiver;
+        private readonly ITargetInfoReceiver _targetReceiver;
 
         /******************************************************************/
 
         public CoverageServer(ITargetInfoReceiver receiver)
         {
-            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            _targetReceiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
 
-            _receiver.TargetInfoReceived += Receiver_TargetInfoReceived;
-            _receiver.ErrorOccured += Receiver_ErrorOccured;
+            _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
+            _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
         }
 
         /******************************************************************/
 
         public void Start()
         {
-            _receiver.Start();
+            _targetReceiver.Start();
         }
 
         public void Stop()
         {
-            _receiver.Stop();
+            _targetReceiver.Stop();
 
-            _receiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
-            _receiver.ErrorOccured -= Receiver_ErrorOccured;
+            _targetReceiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
+            _targetReceiver.ErrorOccured -= Receiver_ErrorOccured;
         }
 
+        /// <summary>
+        /// Receive the target information from Target.
+        /// </summary>
+        /// <param name="target">The target.</param>
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            //var dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Kafka.Worker\net5.0\";
-            //var processName = Path.Combine(dir, "Drill4Net.Agent.Kafka.Worker.exe");
-            //var targetArg = TargetInfoArgumentSerializer.Serialize(target);
-            //var process = new Process
-            //{
-            //    StartInfo =
-            //    {
-            //        FileName = processName,
-            //        Arguments = $"{KafkaTransportConstants.ARGUMENT_TARGET_INFO}={targetArg}",
-            //        WorkingDirectory = dir,
-            //        //CreateNoWindow = true,
-            //        //UseShellExecute = 
-            //    }
-            //};
-            //process.Start();
+            var workerDir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Kafka.Worker\net5.0\";
+            var processName = Path.Combine(workerDir, "Drill4Net.Agent.Kafka.Worker.exe");
+
+            var dir = FileUtils.GetExecutionDir();
+            var cfgArg = Path.Combine(dir, CoreConstants.CONFIG_SERVICE_NAME);
+            var topic = "";
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = processName,
+
+                    Arguments = $"{KafkaTransportConstants.ARGUMENT_CONFIG_PATH}={cfgArg} {KafkaTransportConstants.ARGUMENT_TARGET_TOPIC}={topic}",
+                    WorkingDirectory = workerDir,
+                    CreateNoWindow = false, //true for real using
+                    UseShellExecute = true, //false for real using
+                }
+            };
+            process.Start();
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)

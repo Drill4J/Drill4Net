@@ -12,6 +12,7 @@ namespace Drill4Net.Agent.Kafka.Worker
                 var creator = new WorkerCreator(args);
                 var worker = creator.CreateWorker();
                 worker.ErrorOccured += Receiver_ErrorOccured;
+                Console.WriteLine("Worker has initialized");
                 worker.Start();
             }
             catch (Exception ex)

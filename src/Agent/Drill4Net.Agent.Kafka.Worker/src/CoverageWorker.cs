@@ -3,14 +3,16 @@ using System.Linq;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Kafka.Worker
 {
     public class CoverageWorker : IProbeReceiver
     {
-        public bool IsTargetReceived { get; private set; }
         public event ErrorOccuredDelegate ErrorOccured;
         public event ProbeReceivedHandler ProbeReceived;
+
+        public bool IsTargetReceived { get; private set; }
 
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;

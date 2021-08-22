@@ -32,7 +32,7 @@ namespace Drill4Net.Agent.Kafka.Transport
 
         public override void Start()
         {
-            Task.Run(RetriveTargets);
+            RetriveTargets();
         }
 
         public override void Stop()
