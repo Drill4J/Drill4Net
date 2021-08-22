@@ -3,8 +3,8 @@ using System.IO;
 using System.Reflection;
 using Drill4Net.Common;
 using Drill4Net.Core.Repository;
-using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
@@ -15,10 +15,10 @@ namespace Drill4Net.Agent.Kafka.Transmitter
     /// <seealso cref="Drill4Net.Common.AbstractRepository;Drill4Net.Agent.Kafka.Transmitter.TransmitterOptions;"/>
     public class TransmitterRepository : ConfiguredRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>
     {
-        public TransmitterOptions TransmitterOptions { get; set; }
+        public MessageSenderOptions SenderOptions { get; set; }
 
         /// <summary>
-        /// Gets or sets the testin gtarget which transmitter will be loaded into.
+        /// Gets or sets the testing target which transmitter will be loaded into.
         /// </summary>
         /// <value>
         /// The target.
@@ -37,9 +37,9 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         public TransmitterRepository(): base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
-            var optHelper = new BaseOptionsHelper<TransmitterOptions>();
+            var optHelper = new BaseOptionsHelper<MessageSenderOptions>();
             var path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);
-            TransmitterOptions = optHelper.ReadOptions(path);
+            SenderOptions = optHelper.ReadOptions(path);
             Target = Options.Target?.Name ?? GenerateTargetName();
             Session = GetSession();
             PrepareLogger();

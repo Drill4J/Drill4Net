@@ -3,7 +3,7 @@ using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.Kafka.Transport
 {
-    public class CommunicatorOptions : AbstractOptions
+    public class MessageReceiverOptions : AbstractOptions
     {
         public List<string> Servers { get; set; }
         public string GroupId { get; set; }
@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.Kafka.Transport
 
         /**************************************************************/
 
-        public CommunicatorOptions()
+        public MessageReceiverOptions()
         {
             Servers = new();
             Topics = new();

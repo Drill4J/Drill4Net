@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         /****************************************************************************************/
 
-        public ProbeReceiver(AbstractRepository<CommunicatorOptions> rep) : base(rep)
+        public ProbeReceiver(AbstractRepository<MessageReceiverOptions> rep) : base(rep)
         {
         }
 

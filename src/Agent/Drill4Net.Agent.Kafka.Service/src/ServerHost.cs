@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Kafka.Service
         {
             try
             {
-                AbstractRepository<CommunicatorOptions> rep = new KafkaReceiverRepository();
+                AbstractRepository<MessageReceiverOptions> rep = new KafkaReceiverRepository();
                 ITargetInfoReceiver receiver = new TargetInfoReceiver(rep);
                 var server = new CoverageServer(receiver);
                 server.ErrorOccured += Server_ErrorOccured;

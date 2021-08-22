@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         public TargetDataSender(TransmitterRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            _cfg = CreateProducerConfig(rep.TransmitterOptions);
+            _cfg = CreateProducerConfig(rep.SenderOptions);
 
             //https://stackoverflow.com/questions/21020347/how-can-i-send-large-messages-with-kafka-over-15mb
             _packetMaxSize = (_cfg.MessageMaxBytes ?? KafkaConstants.MaxMessageSize) - 512; //less because also service info included!
@@ -122,7 +122,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
             headers.Add(header);
         }
 
-        private ProducerConfig CreateProducerConfig(TransmitterOptions opts)
+        private ProducerConfig CreateProducerConfig(MessageSenderOptions opts)
         {
             return new ProducerConfig
             {
@@ -135,7 +135,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         {
             _infoProducer = new ProducerBuilder<Null, byte[]>(_cfg).Build();
 
-            _probeTopics = _rep.TransmitterOptions.Topics;
+            _probeTopics = _rep.SenderOptions.Topics;
             _probeProducer = new ProducerBuilder<Null, Probe>(_cfg)
                 .SetValueSerializer(new ProbeSerializer())
                 .Build();

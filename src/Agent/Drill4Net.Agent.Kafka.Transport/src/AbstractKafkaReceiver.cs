@@ -10,11 +10,11 @@ namespace Drill4Net.Agent.Kafka.Transport
         public event ErrorOccuredDelegate ErrorOccured;
 
         protected readonly ConsumerConfig _cfg;
-        protected readonly AbstractRepository<CommunicatorOptions> _rep;
+        protected readonly AbstractRepository<MessageReceiverOptions> _rep;
 
         /*************************************************************************************************/
 
-        public AbstractKafkaReceiver(AbstractRepository<CommunicatorOptions> rep)
+        public AbstractKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             var opts = _rep.Options;

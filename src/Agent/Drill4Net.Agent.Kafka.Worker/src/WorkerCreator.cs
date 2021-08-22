@@ -27,7 +27,7 @@ namespace Drill4Net.Agent.Kafka.Worker
             return worker;
         }
 
-        internal virtual AbstractRepository<CommunicatorOptions> GetRepository()
+        internal virtual AbstractRepository<MessageReceiverOptions> GetRepository()
         {
             var opts = GetBaseOptions(_args);
             var targetTopic = GetTargetTopic(_args);
@@ -41,7 +41,7 @@ namespace Drill4Net.Agent.Kafka.Worker
             return KafkaReceiverRepository.GetArgument(args, KafkaTransportConstants.ARGUMENT_TARGET_TOPIC);
         }
 
-        internal virtual CommunicatorOptions GetBaseOptions(string[] args)
+        internal virtual MessageReceiverOptions GetBaseOptions(string[] args)
         {
             var cfgPathArg = KafkaReceiverRepository.GetArgument(args, KafkaTransportConstants.ARGUMENT_CONFIG_PATH);
             var opts = KafkaReceiverRepository.GetOptionsByPath(cfgPathArg);

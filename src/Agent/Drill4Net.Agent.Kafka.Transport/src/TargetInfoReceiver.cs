@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Confluent.Kafka;
 using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
@@ -23,7 +22,7 @@ namespace Drill4Net.Agent.Kafka.Transport
 
         /****************************************************************************************/
 
-        public TargetInfoReceiver(AbstractRepository<CommunicatorOptions> rep, CancellationTokenSource targetsCts = null): base(rep)
+        public TargetInfoReceiver(AbstractRepository<MessageReceiverOptions> rep, CancellationTokenSource targetsCts = null): base(rep)
         {
             _targetsCts = targetsCts;
         }
