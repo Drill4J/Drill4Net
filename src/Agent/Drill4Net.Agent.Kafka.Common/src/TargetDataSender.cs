@@ -3,11 +3,10 @@ using System.Linq;
 using System.Collections.Generic;
 using Confluent.Kafka;
 using Drill4Net.Common;
-using Drill4Net.Agent.Kafka.Common;
 
-namespace Drill4Net.Agent.Kafka.Transmitter
+namespace Drill4Net.Agent.Kafka.Common
 {
-    public class TargetDataSender : IDataSender
+    public class TargetDataSender : IDataSender, IDisposable
     {
         //TODO: incapsulate Error props
         public bool IsError { get; private set; }
@@ -26,11 +25,13 @@ namespace Drill4Net.Agent.Kafka.Transmitter
         private IProducer<Null, byte[]> _infoProducer;
 
         private readonly ProducerConfig _cfg;
-        private readonly TransmitterRepository _rep;
+        private readonly IMessageSenderRepository _rep;
+
+        private bool _disposed;
 
         /***************************************************************************************/
 
-        public TargetDataSender(TransmitterRepository rep)
+        public TargetDataSender(IMessageSenderRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _cfg = CreateProducerConfig(rep.SenderOptions);
@@ -46,8 +47,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         ~TargetDataSender()
         {
-            _probeProducer?.Flush(TimeSpan.FromSeconds(10));
-            _probeProducer?.Dispose();
+            Dispose(false);
         }
 
         /***************************************************************************************/
@@ -179,6 +179,38 @@ namespace Drill4Net.Agent.Kafka.Transmitter
                 new Header(KafkaConstants.HEADER_SUBSYSTEM, Serializer.StringToArray(_rep.Subsystem)),
                 new Header(KafkaConstants.HEADER_TARGET, Serializer.StringToArray(_rep.Target)),
             };
+        }
+        #endregion
+        #region Dispose
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
+                if (disposing)
+                {
+                    // Dispose managed resources.
+                    _probeProducer?.Flush(TimeSpan.FromSeconds(10));
+                    _probeProducer?.Dispose();
+                }
+
+                // Call the appropriate methods to clean up
+                // unmanaged resources here.
+                // If disposing is false,
+                // only the following code is executed.
+                //.....
+
+                // Note disposing has been done.
+                _disposed = true;
+            }
         }
         #endregion
     }

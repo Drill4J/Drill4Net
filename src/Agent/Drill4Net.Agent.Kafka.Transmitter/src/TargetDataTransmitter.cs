@@ -1,5 +1,6 @@
 ﻿using System;
 using Drill4Net.Common;
+using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Transmitter
 {
@@ -18,7 +19,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         static TargetDataTransmitter()
         {
-            var rep = new TransmitterRepository();
+            IMessageSenderRepository rep = new TransmitterRepository();
             IDataSender sender = new TargetDataSender(rep); //concrete sender the data of probes to the middleware (Kafka)
             Transmitter = new TargetDataTransmitter(sender); //what is loaded into the Target process and used by the Proxy class
 

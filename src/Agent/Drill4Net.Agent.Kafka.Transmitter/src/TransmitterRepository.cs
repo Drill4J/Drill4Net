@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
     /// in Target's memory to the real Agent in another (micro)service
     /// </summary>
     /// <seealso cref="Drill4Net.Common.AbstractRepository;Drill4Net.Agent.Kafka.Transmitter.TransmitterOptions;"/>
-    public class TransmitterRepository : ConfiguredRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>
+    public class TransmitterRepository : ConfiguredRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, IMessageSenderRepository
     {
         public MessageSenderOptions SenderOptions { get; set; }
 
@@ -35,7 +35,7 @@ namespace Drill4Net.Agent.Kafka.Transmitter
 
         /*********************************************************************************************/
 
-        public TransmitterRepository(): base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
+        public TransmitterRepository() : base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
             var optHelper = new BaseOptionsHelper<MessageSenderOptions>();
             var path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);

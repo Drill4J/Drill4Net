@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Agent.Kafka.Transmitter
+﻿namespace Drill4Net.Agent.Kafka.Common
 {
     public interface IDataSender
     {

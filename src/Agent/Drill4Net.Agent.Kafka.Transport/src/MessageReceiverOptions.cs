@@ -1,27 +1,9 @@
-﻿using System.Collections.Generic;
-using Drill4Net.Configuration;
+﻿using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Transport
 {
-    public class MessageReceiverOptions : AbstractOptions
+    public class MessageReceiverOptions : BaseMessageOptions
     {
-        public List<string> Servers { get; set; }
         public string GroupId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the topics for retrieving the Target's probes.
-        /// </summary>
-        /// <value>
-        /// The topics.
-        /// </value>
-        public List<string> Topics { get; set; }
-
-        /**************************************************************/
-
-        public MessageReceiverOptions()
-        {
-            Servers = new();
-            Topics = new();
-        }
     }
 }

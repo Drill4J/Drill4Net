@@ -11,13 +11,15 @@ namespace Drill4Net.Agent.Kafka.Service
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
+        private readonly AbstractRepository<MessageReceiverOptions> _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
 
         /******************************************************************/
 
-        public CoverageServer(ITargetInfoReceiver receiver)
+        public CoverageServer(AbstractRepository<MessageReceiverOptions> rep, ITargetInfoReceiver receiver)
         {
             _targetReceiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            _rep = rep ?? throw new ArgumentNullException(nameof(rep));
 
             _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
@@ -68,7 +70,19 @@ namespace Drill4Net.Agent.Kafka.Service
             var pid = process.Id;
 
             //send to worker the Target info by the exclusive topic
+            //TODO: from header of incoming messages of Target info
+            var targetName = "xyz";
 
+            //for sending we use the same server options
+            var recOpts = _rep.Options;
+            var senderOpts = new MessageSenderOptions();
+            senderOpts.Servers.AddRange(recOpts.Servers);
+            senderOpts.Topics.AddRange(recOpts.Topics);
+            senderOpts.Topics.Add(topic);
+
+            IMessageSenderRepository rep = new ServerSenderRepository(targetName, CoreConstants.SUBSYSTEM_TRANSMITTER, target, senderOpts);
+            IDataSender sender = new TargetDataSender(rep);
+            sender.SendTargetInfo(rep.GetTargetInfo());
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
