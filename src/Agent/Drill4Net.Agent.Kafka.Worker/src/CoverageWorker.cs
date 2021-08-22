@@ -3,7 +3,6 @@ using System.Linq;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Kafka.Worker
 {
@@ -51,11 +50,15 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
+            Console.WriteLine($"{nameof(TargetInfo)} has received");
+
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
-            _probeReceiver.Start();
             StandardAgent.Init(target.Options, target.Solution);
+            Console.WriteLine($"{nameof(StandardAgent)} has initialized");
+
+            _probeReceiver.Start();
         }
 
         private void Receiver_ProbeReceived(Probe probe)

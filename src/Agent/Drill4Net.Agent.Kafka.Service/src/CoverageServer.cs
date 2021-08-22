@@ -44,6 +44,7 @@ namespace Drill4Net.Agent.Kafka.Service
         /// <param name="target">The target.</param>
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
+            //TODO: to cfg
             var workerDir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Kafka.Worker\net5.0\";
             var processName = Path.Combine(workerDir, "Drill4Net.Agent.Kafka.Worker.exe");
 
@@ -55,7 +56,6 @@ namespace Drill4Net.Agent.Kafka.Service
                 StartInfo =
                 {
                     FileName = processName,
-
                     Arguments = $"{KafkaTransportConstants.ARGUMENT_CONFIG_PATH}={cfgArg} {KafkaTransportConstants.ARGUMENT_TARGET_TOPIC}={topic}",
                     WorkingDirectory = workerDir,
                     CreateNoWindow = false, //true for real using

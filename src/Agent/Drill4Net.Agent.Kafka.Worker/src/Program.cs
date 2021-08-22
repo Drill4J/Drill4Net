@@ -7,6 +7,11 @@ namespace Drill4Net.Agent.Kafka.Worker
     {
         static void Main(string[] args)
         {
+            SetCaption();
+            StartWorker(args);
+        }
+        private static void StartWorker(string[] args)
+        {
             try
             {
                 var creator = new WorkerCreator(args);
@@ -30,6 +35,12 @@ namespace Drill4Net.Agent.Kafka.Worker
                 Log.Fatal(mess);
             else
                 Log.Error(mess);
+        }
+
+        private static void SetCaption()
+        {
+            var name = typeof(CoverageWorker).Assembly.GetName().Name;
+            Console.Title = $"{name}: {Environment.ProcessId}";
         }
     }
 }

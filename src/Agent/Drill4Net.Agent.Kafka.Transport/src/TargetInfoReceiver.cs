@@ -42,6 +42,8 @@ namespace Drill4Net.Agent.Kafka.Transport
 
         private void RetriveTargets()
         {
+            Console.WriteLine("Starting retrieving target info...");
+
             var opts = _rep.Options;
             var targets = new Dictionary<Guid, List<byte[]>>();
             if (_targetsCts == null)
