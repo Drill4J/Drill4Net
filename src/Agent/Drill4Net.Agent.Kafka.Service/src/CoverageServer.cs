@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using System.Diagnostics;
+using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
@@ -14,12 +15,16 @@ namespace Drill4Net.Agent.Kafka.Service
         private readonly AbstractRepository<MessageReceiverOptions> _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
 
+        private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
+
         /******************************************************************/
 
         public CoverageServer(AbstractRepository<MessageReceiverOptions> rep, ITargetInfoReceiver receiver)
         {
             _targetReceiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+
+            _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
 
             _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
@@ -46,6 +51,9 @@ namespace Drill4Net.Agent.Kafka.Service
         /// <param name="target">The target.</param>
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
+            if (_workers.ContainsKey(target.SessionUid))
+                return;
+
             //start the Worker
 
             //TODO: to cfg
@@ -67,7 +75,10 @@ namespace Drill4Net.Agent.Kafka.Service
                 }
             };
             process.Start();
-            var pid = process.Id;
+
+            //worker info
+            var worker = new WorkerInfo(target, process.Id);
+            _workers.TryAdd(target.SessionUid, worker);
 
             //send to worker the Target info by the exclusive topic
             //TODO: from header of incoming messages of Target info
@@ -80,7 +91,7 @@ namespace Drill4Net.Agent.Kafka.Service
             senderOpts.Topics.AddRange(recOpts.Topics);
             senderOpts.Topics.Add(topic);
 
-            IMessageSenderRepository rep = new ServerSenderRepository(targetName, CoreConstants.SUBSYSTEM_TRANSMITTER, target, senderOpts);
+            IMessageSenderRepository rep = new ServerSenderRepository(targetName, target, senderOpts);
             IDataSender sender = new TargetDataSender(rep);
             sender.SendTargetInfo(rep.GetTargetInfo());
         }

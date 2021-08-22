@@ -1,6 +1,6 @@
 ﻿using System;
-using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Common;
+using Drill4Net.Agent.Kafka.Common;
 
 namespace Drill4Net.Agent.Kafka.Service
 {
@@ -18,22 +18,20 @@ namespace Drill4Net.Agent.Kafka.Service
 
         /*******************************************************************************/
 
-        public ServerSenderRepository(string target, string subsystem, TargetInfo targetInfo,
-            MessageSenderOptions senderOptions)
+        public ServerSenderRepository(string target, TargetInfo targetInfo, MessageSenderOptions senderOptions)
         {
             _targetInfo = targetInfo ?? throw new ArgumentNullException(nameof(targetInfo));
             SenderOptions = senderOptions ?? throw new ArgumentNullException(nameof(senderOptions));
+            Subsystem = CoreConstants.SUBSYSTEM_TRANSMITTER;
             Session = targetInfo.SessionUid;
-            Target = target;
-            Subsystem = subsystem;
+            Target = target ?? targetInfo.Solution?.Name;
         }
 
         /*******************************************************************************/
 
         public byte[] GetTargetInfo()
         {
-            var bytes = Serializer.ToArray<TargetInfo>(_targetInfo);
-            return bytes;
+            return Serializer.ToArray<TargetInfo>(_targetInfo);
         }
     }
 }

@@ -6,10 +6,9 @@ using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Worker
 {
-    public class CoverageWorker : IProbeReceiver
+    public class CoverageWorker : IMessageReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
-        public event ProbeReceivedHandler ProbeReceived;
 
         public bool IsTargetReceived { get; private set; }
 

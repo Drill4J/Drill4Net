@@ -1,6 +1,5 @@
 ﻿using System;
 using Drill4Net.Common;
-using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Worker
@@ -18,7 +17,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         /**************************************************************************/
 
-        public virtual IProbeReceiver CreateWorker()
+        public virtual IMessageReceiver CreateWorker()
         {
             var rep = GetRepository();
             IProbeReceiver probeReceiver = new ProbeReceiver(rep);
