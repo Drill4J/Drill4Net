@@ -36,7 +36,7 @@ namespace Drill4Net.Agent.Kafka.Transport
 
                 EnableAutoCommit = true,
                 EnableAutoOffsetStore = true,
-                MessageMaxBytes = KafkaConstants.MaxMessageSize,
+                MessageMaxBytes = MessagingConstants.MaxMessageSize,
             };
         }
 

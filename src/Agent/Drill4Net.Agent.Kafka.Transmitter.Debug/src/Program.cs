@@ -26,7 +26,8 @@ namespace Drill4Net.Agent.Kafka.Transmitter.Debug
         {
             SetTitle();
 
-            var trans = TargetDataTransmitter.Transmitter; //what is loaded into the Target process and used by the Proxy class
+            //what is loaded into the Target process and used by the Proxy class
+            var trans = TargetDataTransmitter.Transmitter;
             var sender = trans.Sender;
             const string ctx = "DBG";
 

@@ -8,7 +8,7 @@
 
         bool IsFatalError { get; }
 
-        int SendTargetInfo(byte[] info);
+        int SendTargetInfo(byte[] info, string topic = MessagingConstants.TOPIC_TARGET_INFO);
 
         /// <summary>
         /// Sends the specified probe to the middleware.

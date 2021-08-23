@@ -9,7 +9,7 @@ namespace Drill4Net.Agent.Kafka.Worker
     {
         private static string _logPrefix;
 
-        /***********************************************************/
+        /******************************************************************/
 
         static void Main(string[] args)
         {

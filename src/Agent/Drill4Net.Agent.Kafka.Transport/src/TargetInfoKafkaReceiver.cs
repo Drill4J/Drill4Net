@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Confluent.Kafka;
 using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Kafka.Transport
 {
@@ -14,7 +15,7 @@ namespace Drill4Net.Agent.Kafka.Transport
 
     /********************************************************************************************/
 
-    public class TargetInfoReceiver : AbstractKafkaReceiver, ITargetInfoReceiver
+    public class TargetInfoKafkaReceiver : AbstractKafkaReceiver, ITargetInfoReceiver
     {
         public event TargetReceivedInfoHandler TargetInfoReceived;
 
@@ -22,7 +23,7 @@ namespace Drill4Net.Agent.Kafka.Transport
 
         /****************************************************************************************/
 
-        public TargetInfoReceiver(AbstractRepository<MessageReceiverOptions> rep, CancellationTokenSource targetsCts = null): base(rep)
+        public TargetInfoKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep, CancellationTokenSource targetsCts = null): base(rep)
         {
             _targetsCts = targetsCts;
         }
@@ -43,13 +44,16 @@ namespace Drill4Net.Agent.Kafka.Transport
         {
             Console.WriteLine($"{_logPrefix}Starting retrieving target info...");
 
-            var opts = _rep.Options;
             var targets = new Dictionary<Guid, List<byte[]>>();
             if (_targetsCts == null)
                 _targetsCts = new();
 
+            var opts = _rep.Options;
+            var topics = TransportUtils.GetTargetTopics(opts.Topics);
+            Console.WriteLine($"{_logPrefix}Topics: {string.Join(",", topics)}");
+
             using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
-            c.Subscribe(KafkaConstants.TOPIC_TARGET_INFO);
+            c.Subscribe(topics);
 
             try
             {
@@ -64,15 +68,15 @@ namespace Drill4Net.Agent.Kafka.Transport
                         try
                         {
                             #region Params
-                            if (!headers.TryGetLastBytes(KafkaConstants.HEADER_REQUEST, out byte[] uidAr))
+                            if (!headers.TryGetLastBytes(MessagingConstants.HEADER_REQUEST, out byte[] uidAr))
                                 throw new Exception("No Uid in packet header");
                             var uid = Serializer.FromArray<Guid>(uidAr);
 
-                            if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_PACKETS, out byte[] packetsCntAr))
+                            if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKETS, out byte[] packetsCntAr))
                                 throw new Exception("No packets count in packet header");
                             var packetsCnt = Serializer.FromArray<int>(packetsCntAr);
 
-                            if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
+                            if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
                                 throw new Exception("No packet's index in packet header");
                             var packetInd = Serializer.FromArray<int>(packetIndAr);
                             #endregion
@@ -94,7 +98,7 @@ namespace Drill4Net.Agent.Kafka.Transport
                             if (packetInd == packetsCnt - 1)
                             {
                                 // merging packets
-                                if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_COMPRESSED_SIZE, out byte[] messSizeAr))
+                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_COMPRESSED_SIZE, out byte[] messSizeAr))
                                     throw new Exception("No compressed message size in packet header");
                                 var messSize = Serializer.FromArray<int>(messSizeAr);
                                 var messAr = new byte[messSize];
@@ -108,7 +112,7 @@ namespace Drill4Net.Agent.Kafka.Transport
                                 }
 
                                 //decompression
-                                if (!headers.TryGetLastBytes(KafkaConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, out messSizeAr))
+                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, out messSizeAr))
                                     throw new Exception("No decompressed message size in packet header");
                                 messSize = Serializer.FromArray<int>(messSizeAr);
 

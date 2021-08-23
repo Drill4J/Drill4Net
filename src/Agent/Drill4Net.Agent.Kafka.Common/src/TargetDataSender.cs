@@ -37,7 +37,7 @@ namespace Drill4Net.Agent.Kafka.Common
             _cfg = CreateProducerConfig(rep.SenderOptions);
 
             //https://stackoverflow.com/questions/21020347/how-can-i-send-large-messages-with-kafka-over-15mb
-            _packetMaxSize = (_cfg.MessageMaxBytes ?? KafkaConstants.MaxMessageSize) - 512; //less because also service info included!
+            _packetMaxSize = (_cfg.MessageMaxBytes ?? MessagingConstants.MaxMessageSize) - 512; //less because also service info included!
 
             CreateProbeHeaders();
             CreateTargetHeaders();
@@ -66,10 +66,10 @@ namespace Drill4Net.Agent.Kafka.Common
             return IsFatalError ? -2 : -1;
         }
 
-        public int SendTargetInfo(byte[] info)
+        public int SendTargetInfo(byte[] info, string topic = MessagingConstants.TOPIC_TARGET_INFO)
         {
-            SetHeaderValue<Guid>(_infoHeaders, KafkaConstants.HEADER_REQUEST, _rep.Session);
-            SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, info.Length);
+            SetHeaderValue<Guid>(_infoHeaders, MessagingConstants.HEADER_REQUEST, _rep.Session);
+            SetHeaderValue<int>(_infoHeaders, MessagingConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, info.Length);
 
             var data = Compressor.Compress(info);
 
@@ -82,17 +82,17 @@ namespace Drill4Net.Agent.Kafka.Common
             //TODO: transactionally!!!
 
             var len = data.Length;
-            SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_COMPRESSED_SIZE, len);
+            SetHeaderValue<int>(_infoHeaders, MessagingConstants.HEADER_MESSAGE_COMPRESSED_SIZE, len);
             if (len <= _packetMaxSize)
             {
-                SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKETS, 1);
-                SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKET, 0);
+                SetHeaderValue<int>(_infoHeaders, MessagingConstants.HEADER_MESSAGE_PACKETS, 1);
+                SetHeaderValue<int>(_infoHeaders, MessagingConstants.HEADER_MESSAGE_PACKET, 0);
                 return SendPacket(data);
             }
             else
             {
                 var packetCnt = len / _packetMaxSize + 1;
-                SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKETS, packetCnt);
+                SetHeaderValue<int>(_infoHeaders, MessagingConstants.HEADER_MESSAGE_PACKETS, packetCnt);
 
                 for (var i = 0; i < packetCnt; i++)
                 {
@@ -101,17 +101,17 @@ namespace Drill4Net.Agent.Kafka.Common
                     var packet = new byte[size];
                     Array.Copy(data, start, packet, 0, size);
 
-                    SetHeaderValue<int>(_infoHeaders, KafkaConstants.HEADER_MESSAGE_PACKET, i);
-                    SendPacket(packet);
+                    SetHeaderValue<int>(_infoHeaders, MessagingConstants.HEADER_MESSAGE_PACKET, i);
+                    SendPacket(packet, topic);
                 }
             }
             return LastError == null ? 0 : -2;
         }
 
-        private int SendPacket(byte[] packet)
+        private int SendPacket(byte[] packet, string topic = MessagingConstants.TOPIC_TARGET_INFO)
         {
             var mess = new Message<Null, byte[]> { Value = packet, Headers = _infoHeaders };
-            _infoProducer.Produce(KafkaConstants.TOPIC_TARGET_INFO, mess, HandleBytesData);
+            _infoProducer.Produce(topic, mess, HandleBytesData);
             return LastError == null ? 0 : -2;
         }
 
@@ -127,7 +127,7 @@ namespace Drill4Net.Agent.Kafka.Common
             return new ProducerConfig
             {
                 BootstrapServers = string.Join(",", opts.Servers),
-                MessageMaxBytes = KafkaConstants.MaxMessageSize,
+                MessageMaxBytes = MessagingConstants.MaxMessageSize,
             };
         }
 
@@ -163,21 +163,21 @@ namespace Drill4Net.Agent.Kafka.Common
         internal void CreateTargetHeaders()
         {
             _infoHeaders = GetCommonHeaders();
-            _infoHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, Serializer.StringToArray(KafkaConstants.MESSAGE_TYPE_TARGET_INFO)));
+            _infoHeaders.Add(new Header(MessagingConstants.HEADER_MESSAGE_TYPE, Serializer.StringToArray(MessagingConstants.MESSAGE_TYPE_TARGET_INFO)));
         }
 
         internal void CreateProbeHeaders()
         {
             _probeHeaders = GetCommonHeaders();
-            _probeHeaders.Add(new Header(KafkaConstants.HEADER_MESSAGE_TYPE, Serializer.StringToArray(KafkaConstants.MESSAGE_TYPE_PROBE)));
+            _probeHeaders.Add(new Header(MessagingConstants.HEADER_MESSAGE_TYPE, Serializer.StringToArray(MessagingConstants.MESSAGE_TYPE_PROBE)));
         }
 
         internal Headers GetCommonHeaders()
         {
             return new Headers
             {
-                new Header(KafkaConstants.HEADER_SUBSYSTEM, Serializer.StringToArray(_rep.Subsystem)),
-                new Header(KafkaConstants.HEADER_TARGET, Serializer.StringToArray(_rep.Target)),
+                new Header(MessagingConstants.HEADER_SUBSYSTEM, Serializer.StringToArray(_rep.Subsystem)),
+                new Header(MessagingConstants.HEADER_TARGET, Serializer.StringToArray(_rep.Target)),
             };
         }
         #endregion

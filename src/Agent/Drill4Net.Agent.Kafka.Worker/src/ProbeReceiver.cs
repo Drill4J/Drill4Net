@@ -39,7 +39,7 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         private void RetrieveProbes()
         {
-            Console.WriteLine("Starting retrieving probes...");
+            Console.WriteLine($"{_logPrefix}Starting retrieving probes...");
 
             var opts = _rep.Options;
             _probesCts = new();

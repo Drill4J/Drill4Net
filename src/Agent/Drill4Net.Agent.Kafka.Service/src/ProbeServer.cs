@@ -65,22 +65,23 @@ namespace Drill4Net.Agent.Kafka.Service
 
             var dir = FileUtils.GetExecutionDir();
             var cfgArg = Path.Combine(dir, CoreConstants.CONFIG_SERVICE_NAME);
-            var topic = $"worker_{Guid.NewGuid()}";
+            var topic = TransportUtils.GetTopicBySessionId(target.SessionUid);
+
             var process = new Process
             {
                 StartInfo =
                 {
                     FileName = processName,
-                    Arguments = $"{KafkaTransportConstants.ARGUMENT_CONFIG_PATH}={cfgArg} {KafkaTransportConstants.ARGUMENT_TARGET_TOPIC}={topic}",
+                    Arguments = $"{TransportConstants.ARGUMENT_CONFIG_PATH}={cfgArg} {TransportConstants.ARGUMENT_TARGET_TOPIC}={topic}",
                     WorkingDirectory = workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
                 }
             };
             process.Start();
-            var pid = process.Id;
 
-            Console.WriteLine($"{_logPrefix}Has started the Worker with pid={pid} and topic={topic}");
+            var pid = process.Id;
+            Console.WriteLine($"{_logPrefix}Worker was started with pid={pid} and topic={topic}");
 
             //worker info
             var worker = new WorkerInfo(target, pid);
@@ -98,9 +99,9 @@ namespace Drill4Net.Agent.Kafka.Service
 
             IMessageSenderRepository rep = new ServerSenderRepository(targetName, target, senderOpts);
             IDataSender sender = new TargetDataSender(rep);
-            sender.SendTargetInfo(rep.GetTargetInfo());
+            sender.SendTargetInfo(rep.GetTargetInfo(), topic); //here exclusive topic for the Worker
 
-            Console.WriteLine($"{_logPrefix}Has sent Target info to the Worker with pid={pid} and topic={topic}");
+            Console.WriteLine($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={topic}");
         }
 
         private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)

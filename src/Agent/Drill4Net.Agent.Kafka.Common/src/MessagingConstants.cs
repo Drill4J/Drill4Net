@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Kafka.Common
 {
-    public static class KafkaConstants
+    public static class MessagingConstants
     {
         #region Message headers
         public const string HEADER_SUBSYSTEM = "SUBSYSTEM";
