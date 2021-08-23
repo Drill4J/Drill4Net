@@ -7,6 +7,11 @@ using BenchmarkDotNet.Configs;
 using Serilog;
 using Drill4Net.BanderLog.Sinks.File;
 using System.Threading.Tasks;
+using log4net;
+using log4net.Config;
+using System.Reflection;
+using log4net.Layout;
+using log4net.Appender;
 
 namespace Drill4Net.BanderLog.Benchmarks
 {
@@ -24,12 +29,13 @@ namespace Drill4Net.BanderLog.Benchmarks
     {
         private NLog.Logger _loggerNlog;
         private BanderLog.Logger _loggerBanderLog;
-
-        private IEnumerable<string> _testData;
+        private log4net.ILog _log4net;
         private string _testString;
         private const string _fileName="LogFile.txt";
         private const string _fileNameSeriLog = "LogFileSerilog.txt";
         private const string _fileNameBanderLog = "LogFileBanderLog.txt";
+        private const string _fileNameNLog = "LogFileN.txt";
+        private const string _fileNameLog4Net = "LogFileLog4Net.txt";
 
         /******************************************************************************************/
 
@@ -54,7 +60,23 @@ namespace Drill4Net.BanderLog.Benchmarks
                 .CreateLogger();
 
             //NLog
+            var nlogConfig = new NLog.Config.LoggingConfiguration();
+            var nlogFileTarget = new NLog.Targets.FileTarget("logfile") { FileName = _fileNameNLog };
+            nlogConfig.AddRuleForAllLevels(nlogFileTarget);
             _loggerNlog = NLog.LogManager.GetCurrentClassLogger();
+            NLog.LogManager.Configuration = nlogConfig;
+
+            //log4net
+            var layout = new PatternLayout("%date [%thread] %-5level - %message%newline");
+            var appender = new RollingFileAppender
+            {
+                File = _fileNameLog4Net,
+                Layout = layout
+            };
+            layout.ActivateOptions();
+            appender.ActivateOptions();
+            BasicConfigurator.Configure(appender);
+            _log4net = log4net.LogManager.GetLogger(typeof(Tests));
 
             //BanderLog
             var logBld = new LogBuilder();
@@ -89,26 +111,35 @@ namespace Drill4Net.BanderLog.Benchmarks
 
         [Benchmark]
         [Arguments(2500)]
-        public void AppendAllLinesTest(int recordCount)
+        [Arguments(10000)]
+        public void Log4NetTest(int recordCount)
         {
-            var testData = Enumerable.Repeat(_testString, recordCount);
-            File.AppendAllLines(_fileName, testData);
+            Targets.UseLog4Net(_log4net, recordCount, _testString);
         }
 
-        [Benchmark]
-        [Arguments(2500)]
-        [Arguments(10000)]
-        public void AppendAllTextTest(int recordCount)
-        {
-            for (var i = 0; i < recordCount; i++)
-            {
-                File.AppendAllText(_fileName, _testString);
-            }
-        }
+        //[Benchmark]
+        //[Arguments(2500)]
+        //public void AppendAllLinesTest(int recordCount)
+        //{
+        //    var testData = Enumerable.Repeat(_testString, recordCount);
+        //    File.AppendAllLines(_fileName, testData);
+        //}
+
+        //[Benchmark]
+        //[Arguments(2500)]
+        //[Arguments(10000)]
+        //public void AppendAllTextTest(int recordCount)
+        //{
+        //    for (var i = 0; i < recordCount; i++)
+        //    {
+        //        File.AppendAllText(_fileName, _testString);
+        //    }
+        //}
 
         [Benchmark]
         [Arguments(2500, 2)]
         [Arguments(2500, 5)]
+        [Arguments(2500, 10)]
         public void BanderLogMultiTaskTest(int recordCount, int taskCount)
         {
             Task[] tasks = new Task[taskCount];
@@ -139,6 +170,7 @@ namespace Drill4Net.BanderLog.Benchmarks
             Serilog.Log.CloseAndFlush();
             NLog.LogManager.Shutdown();
             _loggerBanderLog.Shutdown();
+            log4net.LogManager.Shutdown();
         }
     }
 }

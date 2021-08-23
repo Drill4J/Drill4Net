@@ -11,7 +11,7 @@ namespace Drill4Net.BanderLog.Benchmarks
                 loggerBanderLog.Log(Microsoft.Extensions.Logging.LogLevel.Information, logString);
             }
         }
-        public static void UseSerilog(Serilog.ILogger loggerSerilog , int recordCount, string logString)
+        public static void UseSerilog(Serilog.ILogger loggerSerilog, int recordCount, string logString)
         {
             for (var i = 0; i < recordCount; i++)
             {
@@ -23,6 +23,13 @@ namespace Drill4Net.BanderLog.Benchmarks
             for (var i = 0; i < recordCount; i++)
             {
                 loggerNLog.Info(logString);
+            }
+        }
+        public static void UseLog4Net(log4net.ILog loggerLog4Net, int recordCount, string logString)
+        {
+            for (var i = 0; i < recordCount; i++)
+            {
+                loggerLog4Net.Info(logString);
             }
         }
     }
