@@ -20,9 +20,9 @@ namespace Drill4Net.Agent.Kafka.Service
 
         public ServerSenderRepository(string target, TargetInfo targetInfo, MessageSenderOptions senderOptions)
         {
+            Subsystem = CoreConstants.SUBSYSTEM_PROBE_SERVER;
             _targetInfo = targetInfo ?? throw new ArgumentNullException(nameof(targetInfo));
             SenderOptions = senderOptions ?? throw new ArgumentNullException(nameof(senderOptions));
-            Subsystem = CoreConstants.SUBSYSTEM_TRANSMITTER;
             Session = targetInfo.SessionUid;
             Target = target ?? targetInfo.Solution?.Name;
         }

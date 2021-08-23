@@ -2,6 +2,8 @@
 Type: probe-converter # type as hint
 Servers: # list of servers
    - 'localhost:9093'
+   - 'localhost:9094'
+   - 'localhost:9095'
 GroupId: dodnet-agent
 Topics:  # topics for the probes
     - probes

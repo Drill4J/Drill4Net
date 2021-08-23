@@ -7,11 +7,11 @@ namespace Drill4Net.Agent.Kafka.Transport
 {
     public class KafkaReceiverRepository : AbstractRepository<MessageReceiverOptions>
     {
-        public KafkaReceiverRepository(string cfgPath = null): this(GetOptionsByPath(cfgPath))
+        public KafkaReceiverRepository(string subsystem, string cfgPath = null): this(subsystem, GetOptionsByPath(cfgPath))
         {
         }
 
-        public KafkaReceiverRepository(MessageReceiverOptions opts): base(CoreConstants.SUBSYSTEM_AGENT)
+        public KafkaReceiverRepository(string subsystem, MessageReceiverOptions opts): base(subsystem)
         {
             Options = opts ?? throw new ArgumentNullException(nameof(opts));
             PrepareLogger();

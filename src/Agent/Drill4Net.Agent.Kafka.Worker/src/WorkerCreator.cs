@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Kafka.Worker
             var rep = GetRepository();
             IProbeReceiver probeReceiver = new ProbeReceiver(rep);
             ITargetInfoReceiver targetReceiver = new TargetInfoReceiver(rep);
-            var worker = new CoverageWorker(targetReceiver, probeReceiver);
+            var worker = new ProbeWorker(targetReceiver, probeReceiver);
             return worker;
         }
 
@@ -32,7 +32,7 @@ namespace Drill4Net.Agent.Kafka.Worker
             var targetTopic = GetTargetTopic(_args);
             if(!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Topics.Add(targetTopic);
-            return new KafkaReceiverRepository(opts);
+            return new KafkaReceiverRepository(CoreConstants.SUBSYSTEM_PROBE_WORKER, opts);
         }
 
         private string GetTargetTopic(string[] args)

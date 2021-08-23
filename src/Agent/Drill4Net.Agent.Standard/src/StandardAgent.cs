@@ -41,14 +41,20 @@ namespace Drill4Net.Agent.Standard
         private static InitActiveScope _scope;
         private readonly AssemblyResolver _resolver;
         private static readonly object _entLocker = new();
+        private static readonly string _logPrefix;
 
         /*****************************************************************************/
 
         static StandardAgent() //it's needed for invocation from Target
         {
+            _logPrefix = $"{CommonUtils.CurrentProcessId}: {nameof(StandardAgent)}";
+
+            if (StandardAgentCCtorParameters.SkipCctor)
+                return;
+
             Agent = new StandardAgent();
             if (Agent == null)
-                throw new Exception($"Creation of {nameof(StandardAgent)} is failed");
+                throw new Exception($"{_logPrefix}: creation is failed");
         }
 
         private StandardAgent(): this(null, null) { }
@@ -66,7 +72,7 @@ namespace Drill4Net.Agent.Standard
                 EmergencyLogDir = FileUtils.GetEmergencyDir();
                 AbstractRepository<AgentOptions>.PrepareInitLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
-                Log.Debug($"{nameof(StandardAgent)} is initializing...");
+                Log.Debug($"{_logPrefix} is initializing...");
 
                 //TEST assembly resolving!!!
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
@@ -99,11 +105,11 @@ namespace Drill4Net.Agent.Standard
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                Log.Debug($"{nameof(StandardAgent)} is initialized.");
+                Log.Debug($"{_logPrefix} is initialized.");
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Error of {nameof(StandardAgent)}'s initializing");
+                Log.Fatal(ex, $"{_logPrefix}: error of initializing");
             }
             finally
             {
@@ -123,7 +129,7 @@ namespace Drill4Net.Agent.Standard
         {
             Agent = new StandardAgent(opts, tree);
             if (Agent == null)
-                throw new Exception($"Creation of {nameof(StandardAgent)} is failed");
+                throw new Exception($"{_logPrefix}: creation is failed");
         }
 
         //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
@@ -131,19 +137,19 @@ namespace Drill4Net.Agent.Standard
         private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "first_chance_error.log"),
-                new string[] { $"{CommonUtils.GetPreciseTime()}: {e.Exception}" });
+                new string[] { $"{CommonUtils.GetPreciseTime()}|{_logPrefix}:\n{e.Exception}" });
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
-            Log.Debug("Need resolve the assembly: [{Name}]", name);
+            Log.Debug($"{_logPrefix}: need resolve the assembly: [{name}]");
             var asm = _resolver.Resolve(name, args.RequestingAssembly.Location);
             if (asm != null)
                 return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_failed.log"), new string[] { info });
-            Log.Debug("Assembly [{Name}] didn't resolve", name);
+            Log.Debug($"{_logPrefix}: assembly [{name}] didn't resolve");
             return args.RequestingAssembly; //null
         }
 
@@ -153,7 +159,7 @@ namespace Drill4Net.Agent.Standard
             var asm = _resolver.ResolveResource(args.RequestingAssembly.Location, name);
             if (asm != null)
                 return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request resource from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request resource from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_resource_failed.log"), new string[] { info });
             return null;
         }
@@ -161,7 +167,7 @@ namespace Drill4Net.Agent.Standard
         private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_type_failed.log"), new string[] { info });
             return null;
         }

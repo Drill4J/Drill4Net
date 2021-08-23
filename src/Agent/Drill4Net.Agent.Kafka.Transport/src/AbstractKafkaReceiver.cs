@@ -12,12 +12,16 @@ namespace Drill4Net.Agent.Kafka.Transport
         protected readonly ConsumerConfig _cfg;
         protected readonly AbstractRepository<MessageReceiverOptions> _rep;
 
+        protected readonly string _logPrefix;
+
         /*************************************************************************************************/
 
         public AbstractKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+            _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, GetType());
             var opts = _rep.Options;
+
             _cfg = new ConsumerConfig
             {
                 GroupId = opts.GroupId,

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using Drill4Net.Common;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Kafka.Common;
 using Drill4Net.Agent.Kafka.Transport;
 
 namespace Drill4Net.Agent.Kafka.Worker
 {
-    public class CoverageWorker : IMessageReceiver
+    public class ProbeWorker : IMessageReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
@@ -15,10 +16,14 @@ namespace Drill4Net.Agent.Kafka.Worker
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
 
+        private readonly string _logPrefix;
+
         /*******************************************************************************/
 
-        public CoverageWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
+        public ProbeWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
+            _logPrefix = TransportUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_PROBE_WORKER, typeof(ProbeWorker));
+
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
 
@@ -49,14 +54,16 @@ namespace Drill4Net.Agent.Kafka.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            Console.WriteLine($"{nameof(TargetInfo)} has received");
+            Console.WriteLine($"{_logPrefix}{nameof(TargetInfo)} has received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
+            StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            Console.WriteLine($"{nameof(StandardAgent)} has initialized");
+            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} has initialized");
 
+            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} has started to receive probes...");
             _probeReceiver.Start();
         }
 

@@ -8,9 +8,11 @@
         #region Subsystems
         public const string SUBSYSTEM_INJECTOR = "Injector";
         public const string SUBSYSTEM_TESTER = "Tester";
+        public const string SUBSYSTEM_TEST_SERVER = "TestServer";
         public const string SUBSYSTEM_AGENT = "Agent";
         public const string SUBSYSTEM_TRANSMITTER = "Transmitter";
-        //public const string SUBSYSTEM_CONVERTER = "ProbeConverter";
+        public const string SUBSYSTEM_PROBE_SERVER = "ProbeServer";
+        public const string SUBSYSTEM_PROBE_WORKER = "ProbeWorker";
         #endregion
         #region CONFIG & TREE
         /// <summary>
