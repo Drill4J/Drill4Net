@@ -6,6 +6,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Serilog;
 using Drill4Net.BanderLog.Sinks.File;
+using System.Threading.Tasks;
 
 namespace Drill4Net.BanderLog.Benchmarks
 {
@@ -21,9 +22,6 @@ namespace Drill4Net.BanderLog.Benchmarks
     [Config(typeof(Config))]
     public class Tests
     {
-        [Params(2500, 10000)]
-        public int RecordCount { get; set; }
-
         private NLog.Logger _loggerNlog;
         private BanderLog.Logger _loggerBanderLog;
 
@@ -47,8 +45,8 @@ namespace Drill4Net.BanderLog.Benchmarks
         [GlobalSetup]
         public void GlobalSetup()
         {
-            _testString = new string('a', 50);
-            _testData = Enumerable.Repeat(_testString, RecordCount);
+            _testString = new string('a', 100);
+            
 
             //Serilog
             Log.Logger = new LoggerConfiguration()
@@ -66,57 +64,74 @@ namespace Drill4Net.BanderLog.Benchmarks
         /******************************************************************************************/
 
         [Benchmark]
-        public void UseBanderLog()
+        [Arguments(2500)]
+        [Arguments(10000)]
+        public void BanderLogTest(int recordCount)
         {
-            for (var i = 0; i < RecordCount; i++)
+            Targets.UseBanderLog(_loggerBanderLog, recordCount, _testString);
+        }
+
+        [Benchmark]
+        [Arguments(2500)]
+        [Arguments(10000)]
+        public void SerilogTest(int recordCount)
+        {
+            Targets.UseSerilog(Log.Logger, recordCount, _testString);
+        }
+
+        [Benchmark]
+        [Arguments(2500)]
+        [Arguments(10000)]
+        public void NLogTest(int recordCount)
+        {
+            Targets.UseNLog(_loggerNlog, recordCount, _testString);
+        }
+
+        [Benchmark]
+        [Arguments(2500)]
+        public void AppendAllLinesTest(int recordCount)
+        {
+            var testData = Enumerable.Repeat(_testString, recordCount);
+            File.AppendAllLines(_fileName, testData);
+        }
+
+        [Benchmark]
+        [Arguments(2500)]
+        [Arguments(10000)]
+        public void AppendAllTextTest(int recordCount)
+        {
+            for (var i = 0; i < recordCount; i++)
             {
-                _loggerBanderLog.Log(Microsoft.Extensions.Logging.LogLevel.Information, _testString);
+                File.AppendAllText(_fileName, _testString);
             }
         }
 
         [Benchmark]
-        public void UseSerilog()
+        [Arguments(2500, 2)]
+        [Arguments(2500, 5)]
+        public void BanderLogMultiTaskTest(int recordCount, int taskCount)
         {
-            for (var i = 0; i < RecordCount; i++)
+            Task[] tasks = new Task[taskCount];
+            for (var i = 0; i < taskCount; i++)
             {
-                Log.Logger.Information(_testString);
+                tasks[i] = new Task(() => Targets.UseBanderLog(_loggerBanderLog, recordCount, _testString));
+            }
+
+            foreach (var t in tasks)
+                t.Start();
+
+            try
+            {
+                Task.WaitAll(tasks);
+            }
+
+            catch (AggregateException ae)
+            {
+                Console.WriteLine("An exception occurred:");
+                foreach (var ex in ae.Flatten().InnerExceptions)
+                    Console.WriteLine("   {0}", ex.Message);
             }
         }
-
-        [Benchmark]
-        public void UseNLog()
-        {
-            for (var i = 0; i < RecordCount; i++)
-            {
-                _loggerNlog.Info(_testString);
-            }
-        }
-
-        //[Benchmark]
-        //public void UseAppendAllLines()
-        //{
-        //    File.AppendAllLines(_fileName, _testData);
-        //}
-
-        //[Benchmark]
-        //public void UseAppendAllText()
-        //{
-        //    for (var i = 0; i < RecordCount; i++)
-        //    {
-        //        File.AppendAllText(_fileName, _testString);
-        //    }
-        //}
-
-        //[Benchmark]
-        //public void WriteLogWithBanderLog5yTasks()
-        //{
-        //    //Task[] tasks = new Task[2];
-        //    //for (var i = 0; i < tasks.Length; i++)
-        //    //{
-        //    //    tasks[i] = Task.Run(() => UseBanderLog());
-        //    //}
-        //    //Task.WaitAll(tasks);
-        //}
 
         [GlobalCleanup]
         public void GlobalCleanUp()
