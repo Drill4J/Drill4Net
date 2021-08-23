@@ -145,19 +145,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Adoption_cfg", "!!_Adopt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Debug", "src\Agent\Drill4Net.Agent.Kafka.Debug\Drill4Net.Agent.Kafka.Debug.csproj", "{3FB0F998-6ED8-49CD-AE52-71E27A54B9DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Transmitter", "src\Agent\Drill4Net.Agent.Kafka.Transmitter\Drill4Net.Agent.Kafka.Transmitter.csproj", "{E0883971-0670-4E44-B9CA-218A72A33BF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter", "src\Agent\Drill4Net.Agent.Transmitter\Drill4Net.Agent.Transmitter.csproj", "{E0883971-0670-4E44-B9CA-218A72A33BF0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standard", "Standard", "{5A5AB43E-890A-48AA-B426-8913AE372ADE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kafka", "Kafka", "{3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messaging", "Messaging", "{3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.File", "src\RnD\Drill4Net.Agent.File\Drill4Net.Agent.File.csproj", "{318745AA-C0D4-4340-9E94-AEDEAE95B36E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.File.Debug", "src\RnD\Drill4Net.Agent.File.Debug\Drill4Net.Agent.File.Debug.csproj", "{1D938EA3-5ED2-4D23-B38B-C54102768912}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Transmitter.Debug", "src\Agent\Drill4Net.Agent.Kafka.Transmitter.Debug\Drill4Net.Agent.Kafka.Transmitter.Debug.csproj", "{840CA2ED-682A-4EFB-98EF-2E9C1789F245}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.Debug", "src\Agent\Drill4Net.Agent.Transmitter.Debug\Drill4Net.Agent.Transmitter.Debug.csproj", "{840CA2ED-682A-4EFB-98EF-2E9C1789F245}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Common", "src\Agent\Drill4Net.Agent.Kafka.Common\Drill4Net.Agent.Kafka.Common.csproj", "{1A4F1986-F799-422B-A878-ABA172DE7818}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Messaging", "src\Agent\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj", "{1A4F1986-F799-422B-A878-ABA172DE7818}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.BanderLog", "src\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj", "{6CC60C8B-4DFB-4FF4-B32D-981F99B40C8C}"
 EndProject
@@ -179,17 +179,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Benchmark.Logger", "src\Tests\Benchmark\Drill4Net.Benchmark.Logger\Drill4Net.Benchmark.Logger.csproj", "{B9D01633-7E7C-473B-907E-63CFD762148F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Service", "src\Agent\Drill4Net.Agent.Kafka.Service\Drill4Net.Agent.Kafka.Service.csproj", "{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Service", "src\Agent\Drill4Net.Agent.Service\Drill4Net.Agent.Service.csproj", "{3D59D0C3-E93B-4AF4-8B06-15F8DAFA9BC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Kafka.Worker", "src\Agent\Drill4Net.Agent.Kafka.Worker\Drill4Net.Agent.Kafka.Worker.csproj", "{4B5B238F-5969-479B-A46F-273B78D01803}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Worker", "src\Agent\Drill4Net.Agent.Worker\Drill4Net.Agent.Worker.csproj", "{4B5B238F-5969-479B-A46F-273B78D01803}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{4C445D5D-11B5-4749-8779-BBB0C36BD6DD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transmitter", "Transmitter", "{FB5DB42A-0362-4A50-A484-A41EC41EE270}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Kafka.Transport", "src\Agent\Drill4Net.Agent.Kafka.Transport\Drill4Net.Agent.Kafka.Transport.csproj", "{E8196771-7469-4EDF-AB50-418411E1569A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Messaging.Transport", "src\Agent\Drill4Net.Agent.Messaging.Transport\Drill4Net.Agent.Messaging.Transport.csproj", "{E8196771-7469-4EDF-AB50-418411E1569A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{70981B87-31C8-4690-9FC3-A9ACBEF528CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kafka", "Kafka", "{289A2582-651C-49A4-B4D3-55EA7A9B9B01}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Messaging.Transport.Kafka", "src\Agent\Drill4Net.Agent.Messaging.Transport.Kafka\Drill4Net.Agent.Messaging.Transport.Kafka.csproj", "{D961B649-7A3A-4150-8413-493D9D5CEB1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Messaging.Kafka", "src\Agent\Drill4Net.Agent.Messaging.Kafka\Drill4Net.Agent.Messaging.Kafka.csproj", "{6C39ACF0-1942-47B2-89C4-2F991481FC32}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -528,6 +534,18 @@ Global
 		{E8196771-7469-4EDF-AB50-418411E1569A}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{E8196771-7469-4EDF-AB50-418411E1569A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8196771-7469-4EDF-AB50-418411E1569A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D961B649-7A3A-4150-8413-493D9D5CEB1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D961B649-7A3A-4150-8413-493D9D5CEB1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D961B649-7A3A-4150-8413-493D9D5CEB1B}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{D961B649-7A3A-4150-8413-493D9D5CEB1B}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{D961B649-7A3A-4150-8413-493D9D5CEB1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D961B649-7A3A-4150-8413-493D9D5CEB1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C39ACF0-1942-47B2-89C4-2F991481FC32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C39ACF0-1942-47B2-89C4-2F991481FC32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C39ACF0-1942-47B2-89C4-2F991481FC32}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{6C39ACF0-1942-47B2-89C4-2F991481FC32}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{6C39ACF0-1942-47B2-89C4-2F991481FC32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C39ACF0-1942-47B2-89C4-2F991481FC32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -614,6 +632,9 @@ Global
 		{FB5DB42A-0362-4A50-A484-A41EC41EE270} = {3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}
 		{E8196771-7469-4EDF-AB50-418411E1569A} = {70981B87-31C8-4690-9FC3-A9ACBEF528CE}
 		{70981B87-31C8-4690-9FC3-A9ACBEF528CE} = {3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}
+		{289A2582-651C-49A4-B4D3-55EA7A9B9B01} = {3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}
+		{D961B649-7A3A-4150-8413-493D9D5CEB1B} = {289A2582-651C-49A4-B4D3-55EA7A9B9B01}
+		{6C39ACF0-1942-47B2-89C4-2F991481FC32} = {289A2582-651C-49A4-B4D3-55EA7A9B9B01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
