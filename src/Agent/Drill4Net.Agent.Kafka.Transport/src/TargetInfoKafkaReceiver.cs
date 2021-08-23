@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Confluent.Kafka;
 using Drill4Net.Common;
 using Drill4Net.Agent.Kafka.Common;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Kafka.Transport
 {
@@ -57,6 +56,7 @@ namespace Drill4Net.Agent.Kafka.Transport
 
             try
             {
+                var unknownTopicCounter = 0;
                 while (true)
                 {
                     try
@@ -133,7 +133,14 @@ namespace Drill4Net.Agent.Kafka.Transport
                     catch (ConsumeException e)
                     {
                         var err = e.Error;
-                        ErrorOccuredHandler(err.IsFatal, err.IsLocalError, err.Reason);
+                        var code = err.Code;
+                        var mess = $"({code}) {err.Reason}";
+
+                        //Server can sent the info a little later than this method starts
+                        if (code == ErrorCode.UnknownTopicOrPart)
+                            unknownTopicCounter++;
+                         if (code != ErrorCode.UnknownTopicOrPart || unknownTopicCounter > 5)
+                            ErrorOccuredHandler(err.IsFatal, err.IsLocalError, mess);
                     }
                 }
             }
