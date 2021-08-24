@@ -46,9 +46,9 @@ namespace Drill4Net.Agent.Messaging
             _sender.SendPing(_state);
         }
 
-        internal string GetTime()
+        internal virtual string GetTime()
         {
-            return DateTime.Now.Ticks.ToString();
+            return DateTime.UtcNow.Ticks.ToString();
         }
 
         private string GetMemory()

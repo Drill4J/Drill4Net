@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -12,17 +13,23 @@ using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Service
 {
-    public class AgentServer : IMessageReceiver
+    public class AgentServer : IMessageReceiver, IDisposable
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
+        public bool IsStarted { get; private set; }
+
         private readonly AbstractRepository<MessageReceiverOptions> _rep;
+
         private readonly IPingReceiver _pingReceiver;
         private readonly ITargetInfoReceiver _targetReceiver;
 
         private readonly ConcurrentDictionary<Guid, StringDictionary> _pings;
         private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
 
+        private const long _oldPingTickDelta = 30000000; //3 sec
+
+        private Timer _timeoutTimer;
         private readonly string _logPrefix;
 
         /*****************************************************************************************************/
@@ -47,30 +54,86 @@ namespace Drill4Net.Agent.Service
 
         public void Start()
         {
+            var period = new TimeSpan(0, 0, 0, 1, 500);
+            _timeoutTimer = new Timer(PingCheckCallback, null, period, period);
+
             var tasks = new List<Task>
             {
                Task.Run(_pingReceiver.Start),
                Task.Run(_targetReceiver.Start),
             };
+
+            IsStarted = true;
             Task.WaitAll(tasks.ToArray());
         }
 
         public void Stop()
         {
-            _targetReceiver.Stop();
+            _timeoutTimer.Dispose();
 
+            _pingReceiver.Stop();
+            _pingReceiver.PingReceived -= PingReceiver_PingReceived;
+
+            _targetReceiver.Stop();
             _targetReceiver.TargetInfoReceived -= TargetReceiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured -= TargetReceiver_ErrorOccured;
+
+            CheckWorkers();
+            IsStarted = true;
         }
 
         private void PingReceiver_PingReceived(string targetSession, StringDictionary data)
         {
-            var time = long.Parse(data[MessagingConstants.PING_TIME]);
-            Console.WriteLine($"{targetSession}: {DateTime.FromBinary(time)}");
-
             if (!Guid.TryParse(targetSession, out Guid session)) //log carefully
                 return;
+            var ticks = long.Parse(data[MessagingConstants.PING_TIME]);
+            var now = GetTime();
+            if (now.Ticks - ticks > _oldPingTickDelta)
+                return;
+            //
+            var subsystem = data[MessagingConstants.PING_SUBSYSTEM];
+            //switch(subsystem) //TODO
+            //{ 
+            //}
+
+            Console.WriteLine($"{subsystem} [{targetSession}]: {DateTime.FromBinary(ticks)}");
+
             _pings.AddOrUpdate(session, data, (key, oldValue) => data);
+        }
+
+        private void PingCheckCallback(object state)
+        {
+            CheckWorkers();
+        }
+
+        internal void CheckWorkers()
+        {
+            if (_workers.IsEmpty || _pings.IsEmpty)
+                return;
+            var now = GetTime();
+            foreach (var uid in _pings.Keys)
+            {
+                var data = _pings[uid];
+                var ticks = long.Parse(data[MessagingConstants.PING_TIME]);
+                if (now.Ticks - ticks < _oldPingTickDelta)
+                    continue;
+                Task.Run(() => CloseWorker(uid));
+            }
+        }
+
+        internal void CloseWorker(Guid uid)
+        {
+            if (!_workers.TryRemove(uid, out WorkerInfo worker))
+                return;
+            var pid = worker.PID;
+            //TODO: more gracefuly with command
+            var proc = Process.GetProcessById(pid);
+            proc.Kill();
+        }
+
+        internal virtual DateTime GetTime()
+        {
+            return DateTime.UtcNow;
         }
 
         /// <summary>
@@ -113,15 +176,13 @@ namespace Drill4Net.Agent.Service
             _workers.TryAdd(target.SessionUid, worker);
 
             //send to worker the Target info by the exclusive topic
-            //TODO: from header of incoming messages of Target info
-            var targetName = target.TargetName;
-
             //for sending we use the same server options
             var recOpts = _rep.Options;
             var senderOpts = new MessageSenderOptions();
             senderOpts.Servers.AddRange(recOpts.Servers);
             senderOpts.Topics.Add(topic);
 
+            var targetName = target.TargetName;
             ITargetSenderRepository rep = new ServerSenderRepository(targetName, target, senderOpts);
             ITargetInfoSender sender = new TargetInfoKafkaSender(rep);
             sender.SendTargetInfo(rep.GetTargetInfo(), topic); //here exclusive topic for the Worker
@@ -133,6 +194,12 @@ namespace Drill4Net.Agent.Service
         {
             //TODO: log
             ErrorOccured?.Invoke(isFatal, isLocal, message);
+        }
+
+        //TODO: full pattern
+        public void Dispose()
+        {
+            Stop();
         }
     }
 }
