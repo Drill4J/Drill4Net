@@ -31,6 +31,7 @@ namespace Drill4Net.Agent.Transmitter
 
         public DataTransmitter(ITargetSenderRepository rep)
         {
+            //TODO: factory
             InfoSender = new TargetInfoKafkaSender(rep); //concrete sender the target info to the middleware
             ProbeSender = new ProbeKafkaSender(rep); //concrete sender the data of probes to the middleware
 

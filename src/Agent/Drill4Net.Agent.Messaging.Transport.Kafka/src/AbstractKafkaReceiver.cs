@@ -11,6 +11,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         protected readonly ConsumerConfig _cfg;
         protected readonly AbstractRepository<MessageReceiverOptions> _rep;
 
+        private int _unknownTopicCounter = 0;
         protected readonly string _logPrefix;
 
         /*************************************************************************************************/
@@ -44,6 +45,19 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         public abstract void Start();
 
         public abstract void Stop();
+
+        protected void ProcessConsumeExcepton(ConsumeException e)
+        {
+            var err = e.Error;
+            var code = err.Code;
+            var mess = $"({code}) {err.Reason}";
+
+            //Server can sent the info a little later than this method starts
+            if (code == ErrorCode.UnknownTopicOrPart)
+                _unknownTopicCounter++;
+            if (code != ErrorCode.UnknownTopicOrPart || _unknownTopicCounter > 5)
+                ErrorOccuredHandler(err.IsFatal, err.IsLocalError, mess);
+        }
 
         protected void ErrorOccuredHandler(bool isFatal, bool isLocal, string message)
         {

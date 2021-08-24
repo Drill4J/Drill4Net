@@ -2,10 +2,13 @@
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using System.Collections.Specialized;
 using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Service
 {
@@ -14,46 +17,60 @@ namespace Drill4Net.Agent.Service
         public event ErrorOccuredDelegate ErrorOccured;
 
         private readonly AbstractRepository<MessageReceiverOptions> _rep;
+        private readonly IPingReceiver _pingReceiver;
         private readonly ITargetInfoReceiver _targetReceiver;
 
         private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
 
         private readonly string _logPrefix;
 
-        /******************************************************************/
+        /*****************************************************************************************************/
 
-        public AgentServer(AbstractRepository<MessageReceiverOptions> rep, ITargetInfoReceiver receiver)
+        public AgentServer(AbstractRepository<MessageReceiverOptions> rep, ITargetInfoReceiver targetReceiver,
+            IPingReceiver pingReceiver)
         {
-            _targetReceiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+            _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
+            _pingReceiver = pingReceiver ?? throw new ArgumentNullException(nameof(pingReceiver));
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
-
             _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
 
-            _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
-            _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
+            _pingReceiver.PingReceived += PingReceiver_PingReceived;
+
+            _targetReceiver.TargetInfoReceived += TargetReceiver_TargetInfoReceived;
+            _targetReceiver.ErrorOccured += TargetReceiver_ErrorOccured;
         }
 
-        /******************************************************************/
+        /*****************************************************************************************************/
 
         public void Start()
         {
-            _targetReceiver.Start();
+            var tasks = new List<Task>
+            {
+               Task.Run(_pingReceiver.Start),
+               Task.Run(_targetReceiver.Start),
+            };
+            Task.WaitAll(tasks.ToArray());
         }
 
         public void Stop()
         {
             _targetReceiver.Stop();
 
-            _targetReceiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
-            _targetReceiver.ErrorOccured -= Receiver_ErrorOccured;
+            _targetReceiver.TargetInfoReceived -= TargetReceiver_TargetInfoReceived;
+            _targetReceiver.ErrorOccured -= TargetReceiver_ErrorOccured;
+        }
+
+        private void PingReceiver_PingReceived(string targetSession, StringDictionary data)
+        {
+
         }
 
         /// <summary>
         /// Receive the target information from Target.
         /// </summary>
         /// <param name="target">The target.</param>
-        private void Receiver_TargetInfoReceived(TargetInfo target)
+        private void TargetReceiver_TargetInfoReceived(TargetInfo target)
         {
             if (_workers.ContainsKey(target.SessionUid))
                 return;
@@ -105,7 +122,7 @@ namespace Drill4Net.Agent.Service
             Console.WriteLine($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={topic}");
         }
 
-        private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
+        private void TargetReceiver_ErrorOccured(bool isFatal, bool isLocal, string message)
         {
             //TODO: log
 

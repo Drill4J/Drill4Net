@@ -5,10 +5,6 @@ using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
-    public delegate void TargetReceivedInfoHandler(TargetInfo target);
-
-    /***************************************************************************************************/
-
     public class MessageReceiverRepository : AbstractRepository<MessageReceiverOptions>
     {
         public MessageReceiverRepository(string subsystem, string cfgPath = null): this(subsystem, GetOptionsByPath(cfgPath))

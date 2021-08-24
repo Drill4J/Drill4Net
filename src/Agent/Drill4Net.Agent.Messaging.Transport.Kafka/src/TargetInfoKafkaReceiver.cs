@@ -13,34 +13,35 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public event TargetReceivedInfoHandler TargetInfoReceived;
 
-        private CancellationTokenSource _targetsCts;
+        private CancellationTokenSource _cts;
 
         /****************************************************************************************/
 
-        public TargetInfoKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep, CancellationTokenSource targetsCts = null): base(rep)
+        public TargetInfoKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep,
+            CancellationTokenSource cts = null): base(rep)
         {
-            _targetsCts = targetsCts;
+            _cts = cts;
         }
 
         /****************************************************************************************/
 
         public override void Start()
         {
-            RetriveTargets();
+            RetrieveTargets();
         }
 
         public override void Stop()
         {
-            _targetsCts?.Cancel();
+            _cts?.Cancel();
         }
 
-        private void RetriveTargets()
+        private void RetrieveTargets()
         {
             Console.WriteLine($"{_logPrefix}Starting retrieving target info...");
 
             var targets = new Dictionary<Guid, List<byte[]>>();
-            if (_targetsCts == null)
-                _targetsCts = new();
+            if (_cts == null)
+                _cts = new();
 
             var opts = _rep.Options;
             var topics = TransportUtils.GetTargetTopics(opts.Topics);
@@ -51,12 +52,11 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             try
             {
-                var unknownTopicCounter = 0;
                 while (true)
                 {
                     try
                     {
-                        var cr = c.Consume(_targetsCts.Token);
+                        var cr = c.Consume(_cts.Token);
                         var mess = cr.Message;
                         var headers = mess.Headers;
                         var packet = mess.Value;
@@ -127,15 +127,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                     }
                     catch (ConsumeException e)
                     {
-                        var err = e.Error;
-                        var code = err.Code;
-                        var mess = $"({code}) {err.Reason}";
-
-                        //Server can sent the info a little later than this method starts
-                        if (code == ErrorCode.UnknownTopicOrPart)
-                            unknownTopicCounter++;
-                         if (code != ErrorCode.UnknownTopicOrPart || unknownTopicCounter > 5)
-                            ErrorOccuredHandler(err.IsFatal, err.IsLocalError, mess);
+                        ProcessConsumeExcepton(e);
                     }
                 }
             }
