@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using Confluent.Kafka;
 
 namespace Drill4Net.Agent.Messaging.Kafka
@@ -7,7 +6,6 @@ namespace Drill4Net.Agent.Messaging.Kafka
     public class PingKafkaSender : AbstractKafkaSender, IPingSender
     {
         private IProducer<string, StringDictionary> _producer;
-        private bool _isSending;
 
         /*************************************************************************/
 
@@ -19,30 +17,16 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         public void SendPing(StringDictionary state, string topic = null)
         {
-            if (_isSending)
-                return;
-            _isSending = true;
             if (topic == null)
                 topic = MessagingConstants.TOPIC_PING;
 
-            try
+            var mess = new Message<string, StringDictionary>
             {
-                var mess = new Message<string, StringDictionary>
-                {
-                    Key = _rep.TargetSession.ToString(),
-                    Value = state,
-                    Headers = _headers
-                };
-                _producer.Produce(topic, mess, HandleStringStringDictData);
-            }
-            catch(Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
-                _isSending = false;
-            }
+                Key = _rep.TargetSession.ToString(),
+                Value = state,
+                Headers = _headers
+            };
+            _producer.Produce(topic, mess, HandleStringStringDictData);
         }
 
         protected override void CreateProducers()

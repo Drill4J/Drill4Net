@@ -11,6 +11,7 @@ namespace Drill4Net.Agent.Messaging
         private readonly IPingSender _sender;
         private readonly TimeSpan _period;
         private readonly Timer _timer;
+        private bool _isSending;
 
         /***************************************************************/
 
@@ -35,7 +36,22 @@ namespace Drill4Net.Agent.Messaging
 
         private void TimerCallback(object state)
         {
-            SendPing();
+            if (_isSending)
+                return;
+            _isSending = true;
+
+            try
+            {
+                SendPing();
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _isSending = false;
+            }
         }
 
         internal virtual void SendPing()

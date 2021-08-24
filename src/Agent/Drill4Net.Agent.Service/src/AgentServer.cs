@@ -30,6 +30,8 @@ namespace Drill4Net.Agent.Service
         private const long _oldPingTickDelta = 30000000; //3 sec
 
         private Timer _timeoutTimer;
+        private bool _inPingCheck;
+
         private readonly string _logPrefix;
 
         /*****************************************************************************************************/
@@ -103,7 +105,22 @@ namespace Drill4Net.Agent.Service
 
         private void PingCheckCallback(object state)
         {
-            CheckWorkers();
+            if (_inPingCheck)
+                return;
+            _inPingCheck = true;
+
+            try
+            {
+                CheckWorkers();
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _inPingCheck = false;
+            }
         }
 
         internal void CheckWorkers()
@@ -125,10 +142,11 @@ namespace Drill4Net.Agent.Service
         {
             if (!_workers.TryRemove(uid, out WorkerInfo worker))
                 return;
+
+            //TODO: more gracefuly with command by messaging
             var pid = worker.PID;
-            //TODO: more gracefuly with command
             var proc = Process.GetProcessById(pid);
-            proc.Kill();
+            proc?.Kill();
         }
 
         internal virtual DateTime GetTime()
