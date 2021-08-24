@@ -25,18 +25,17 @@ namespace Drill4Net.Agent.Transmitter
         static DataTransmitter()
         {
             ITargetSenderRepository rep = new TransmitterRepository();
-            ITargetInfoSender infoSender = new TargetInfoKafkaSender(rep); //concrete sender the target info to the middleware
-            IProbeSender probeSender = new ProbeKafkaSender(rep); //concrete sender the data of probes to the middleware
-            Transmitter = new DataTransmitter(infoSender, probeSender); //what is loaded into the Target process and used by the Proxy class
-
+            Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
         }
 
-        public DataTransmitter(ITargetInfoSender infoSender, IProbeSender probeSender)
+        public DataTransmitter(ITargetSenderRepository rep)
         {
-            InfoSender = infoSender ?? throw new ArgumentNullException(nameof(infoSender));
-            ProbeSender = probeSender ?? throw new ArgumentNullException(nameof(probeSender));
-            //_pinger = new Pinger()
+            InfoSender = new TargetInfoKafkaSender(rep); //concrete sender the target info to the middleware
+            ProbeSender = new ProbeKafkaSender(rep); //concrete sender the data of probes to the middleware
+
+            var pingSender = new PingKafkaSender(rep);
+            _pinger = new Pinger(rep, pingSender);
         }
 
         ~DataTransmitter()

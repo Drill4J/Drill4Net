@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Threading;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace Drill4Net.Agent.Messaging
 {
     public class Pinger : IDisposable
     {
-        private readonly Dictionary<string, string> _state;
+        private readonly IMessageSenderRepository _rep;
+        private readonly StringDictionary _state;
         private readonly IPingSender _sender;
         private readonly TimeSpan _period;
         private readonly Timer _timer;
 
         /***************************************************************/
 
-        public Pinger(string subsystem, string targetSessionUid, IPingSender sender)
+        public Pinger(IMessageSenderRepository rep, IPingSender sender)
         {
-            if (string.IsNullOrWhiteSpace(subsystem))
-                throw new ArgumentNullException(nameof(subsystem));
+            _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _sender = sender ?? throw new ArgumentNullException(nameof(sender));
-            _state = new Dictionary<string, string>
+            _state = new StringDictionary
             {
-                { MessagingConstants.PING_SUBSYSTEM, subsystem },
-                { MessagingConstants.PING_TARGET_SESSION, targetSessionUid },
+                { MessagingConstants.PING_SUBSYSTEM, rep.Subsystem },
+                { MessagingConstants.PING_TARGET_SESSION, rep.TargetSession.ToString() },
                 { MessagingConstants.PING_TIME, GetTime() },
             };
 
@@ -51,6 +51,7 @@ namespace Drill4Net.Agent.Messaging
         public void Dispose()
         {
             _timer?.Dispose();
+            _sender?.Dispose();
         }
     }
 }

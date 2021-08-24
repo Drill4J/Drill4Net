@@ -17,14 +17,6 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         /**************************************************************************/
 
-        protected override void CreateProducers()
-        {
-            _probeTopics = _rep.SenderOptions.Topics;
-            _probeProducer = new ProducerBuilder<Null, Probe>(_cfg)
-                .SetValueSerializer(new ProbeSerializer())
-                .Build();
-        }
-
         public int SendProbe(string data, string ctx)
         {
             var probe = new Probe { Context = ctx, Data = data };
@@ -42,6 +34,14 @@ namespace Drill4Net.Agent.Messaging.Kafka
         private void HandleProbeData(DeliveryReport<Null, Probe> report)
         {
             Handle(report.Error);
+        }
+
+        protected override void CreateProducers()
+        {
+            _probeTopics = _rep.SenderOptions.Topics;
+            _probeProducer = new ProducerBuilder<Null, Probe>(_cfg)
+                .SetValueSerializer(new ProbeSerializer())
+                .Build();
         }
 
         protected override string GetMessageType()

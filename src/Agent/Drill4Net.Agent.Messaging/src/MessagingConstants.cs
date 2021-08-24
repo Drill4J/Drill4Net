@@ -14,6 +14,7 @@
         public const string HEADER_MESSAGE_DECOMPRESSED_SIZE = "DECOMPRESSED_SIZE";
         #endregion
         #region Message type
+        public const string MESSAGE_TYPE_PING = "Ping";
         public const string MESSAGE_TYPE_PROBE = "Probe";
         public const string MESSAGE_TYPE_TARGET_INFO = "Target";
         #endregion
@@ -22,7 +23,7 @@
         public const string TOPIC_TARGET_INFO = "target-info";
         #endregion
         #region Ping data
-        public const string PING_SUBSYSTEM = "target_session";
+        public const string PING_SUBSYSTEM = "subsystem";
         public const string PING_TIME = "time";
         public const string PING_TARGET_SESSION = "target_session";
         #endregion

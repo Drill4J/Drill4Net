@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using Confluent.Kafka;
 
 namespace Drill4Net.Agent.Messaging.Kafka
 {
     public class PingKafkaSender : AbstractKafkaSender, IPingSender
     {
-        private readonly IProducer<string, Dictionary<string, string>> _producer;
+        private IProducer<string, StringDictionary> _producer;
+        private bool _isSending;
 
         /*************************************************************************/
 
@@ -16,24 +17,49 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         /*************************************************************************/
 
-        public void SendPing(Dictionary<string, string> state, string topic = MessagingConstants.TOPIC_PING)
+        public void SendPing(StringDictionary state, string topic = null)
         {
-            throw new NotImplementedException();
-        }
+            if (_isSending)
+                return;
+            _isSending = true;
+            if (topic == null)
+                topic = MessagingConstants.TOPIC_PING;
 
-        protected override void AddSpecificHeaders()
-        {
-            throw new NotImplementedException();
+            try
+            {
+                var mess = new Message<string, StringDictionary>
+                {
+                    Key = _rep.TargetSession.ToString(),
+                    Value = state,
+                    Headers = _headers
+                };
+                _producer.Produce(topic, mess, HandleStringStringDictData);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                _isSending = false;
+            }
         }
 
         protected override void CreateProducers()
         {
-            throw new NotImplementedException();
+            _producer = new ProducerBuilder<string, StringDictionary>(_cfg)
+                .SetValueSerializer(new StringDictionarySerializer())
+                .Build();
         }
 
-        private void HandleStringStringData(DeliveryReport<string, string> report)
+        private void HandleStringStringDictData(DeliveryReport<string, StringDictionary> report)
         {
             Handle(report.Error);
+        }
+
+        protected override string GetMessageType()
+        {
+            return MessagingConstants.MESSAGE_TYPE_PING;
         }
 
         /// <summary>
@@ -43,11 +69,6 @@ namespace Drill4Net.Agent.Messaging.Kafka
         protected override void ConcreteDisposing()
         {
             _producer?.Dispose();
-        }
-
-        protected override string GetMessageType()
-        {
-            throw new NotImplementedException();
         }
     }
 }
