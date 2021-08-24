@@ -114,7 +114,7 @@ namespace Drill4Net.Agent.Service
 
             //send to worker the Target info by the exclusive topic
             //TODO: from header of incoming messages of Target info
-            var targetName = "xyz";
+            var targetName = target.TargetName;
 
             //for sending we use the same server options
             var recOpts = _rep.Options;

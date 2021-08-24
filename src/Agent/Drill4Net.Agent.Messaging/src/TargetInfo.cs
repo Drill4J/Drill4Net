@@ -18,6 +18,8 @@ namespace Drill4Net.Agent.Messaging
         /// </value>
         public Guid Uid { get; set; } = Guid.NewGuid();
 
+        public string TargetName { get; set; }
+
         /// <summary>
         /// Gets or sets the session uid.
         /// </summary>

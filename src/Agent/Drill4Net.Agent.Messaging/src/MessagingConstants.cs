@@ -26,6 +26,7 @@
         public const string PING_SUBSYSTEM = "subsystem";
         public const string PING_TIME = "time";
         public const string PING_TARGET_SESSION = "target_session";
+        public const string PING_TARGET_NAME = "target_name";
 
         public const string PING_MEMORY = "working_set";
         #endregion

@@ -59,6 +59,7 @@ namespace Drill4Net.Agent.Transmitter
 
             var targetInfo = new TargetInfo
             {
+                TargetName = Target,
                 SessionUid = TargetSession,
                 Options = Options,
                 Solution = tree,
@@ -75,7 +76,7 @@ namespace Drill4Net.Agent.Transmitter
         private string GenerateTargetName()
         {
             var entryType = Assembly.GetEntryAssembly().EntryPoint.DeclaringType.FullName;
-            return $"{Environment.MachineName}-{entryType.Replace(".", "-")} (generated)";
+            return $"{entryType.Replace(".", "-")} (generated)";
         }
     }
 }
