@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Transmitter
     /// in Target's memory to the real Agent in another (micro)service
     /// </summary>
     /// <seealso cref="Drill4Net.Common.AbstractRepository;Drill4Net.Agent.Transmitter.TransmitterOptions;"/>
-    public class TransmitterRepository : ConfiguredRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, IMessageSenderRepository
+    public class TransmitterRepository : ConfiguredRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, ITargetSenderRepository
     {
         public MessageSenderOptions SenderOptions { get; set; }
 
@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Transmitter
         /// <value>
         /// The session.
         /// </value>
-        public Guid Session { get; }
+        public Guid TargetSession { get; }
 
         /*********************************************************************************************/
 
@@ -41,7 +41,7 @@ namespace Drill4Net.Agent.Transmitter
             var path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);
             SenderOptions = optHelper.ReadOptions(path);
             Target = Options.Target?.Name ?? GenerateTargetName();
-            Session = GetSession();
+            TargetSession = GetSession();
             PrepareLogger();
         }
 
@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Transmitter
 
             var targetInfo = new TargetInfo
             {
-                SessionUid = Session,
+                SessionUid = TargetSession,
                 Options = Options,
                 Solution = tree,
             };

@@ -7,7 +7,7 @@ using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Worker
 {
-    public class ProbeWorker : IMessageReceiver
+    public class AgentWorker : IMessageReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
@@ -20,9 +20,9 @@ namespace Drill4Net.Agent.Worker
 
         /*******************************************************************************/
 
-        public ProbeWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
+        public AgentWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
-            _logPrefix = TransportUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_PROBE_WORKER, typeof(ProbeWorker));
+            _logPrefix = TransportUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_PROBE_WORKER, typeof(AgentWorker));
 
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));

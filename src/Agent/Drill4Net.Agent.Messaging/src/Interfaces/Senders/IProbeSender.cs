@@ -1,15 +1,7 @@
 ﻿namespace Drill4Net.Agent.Messaging
 {
-    public interface IDataSender
+    public interface IProbeSender : IDataSender
     {
-        bool IsError { get; }
-
-        string LastError { get; }
-
-        bool IsFatalError { get; }
-
-        int SendTargetInfo(byte[] info, string topic = MessagingConstants.TOPIC_TARGET_INFO);
-
         /// <summary>
         /// Sends the specified probe to the middleware.
         /// </summary>

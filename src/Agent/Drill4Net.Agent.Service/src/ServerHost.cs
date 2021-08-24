@@ -35,7 +35,7 @@ namespace Drill4Net.Agent.Service
                 AbstractRepository<MessageReceiverOptions> rep =
                     new MessageReceiverRepository(CoreConstants.SUBSYSTEM_PROBE_SERVER);
                 ITargetInfoReceiver receiver = new TargetInfoKafkaReceiver(rep);
-                var server = new ProbeServer(rep, receiver);
+                var server = new AgentServer(rep, receiver);
                 server.ErrorOccured += Server_ErrorOccured;
                 _logger.LogInformation($"{nameof(ServerHost)} ready.");
 

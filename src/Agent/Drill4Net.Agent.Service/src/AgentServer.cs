@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
-using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Kafka;
+using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Service
 {
-    public class ProbeServer : IMessageReceiver
+    public class AgentServer : IMessageReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
@@ -22,13 +22,13 @@ namespace Drill4Net.Agent.Service
 
         /******************************************************************/
 
-        public ProbeServer(AbstractRepository<MessageReceiverOptions> rep, ITargetInfoReceiver receiver)
+        public AgentServer(AbstractRepository<MessageReceiverOptions> rep, ITargetInfoReceiver receiver)
         {
             _targetReceiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
 
-            _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, typeof(ProbeServer));
+            _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
 
             _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
@@ -98,8 +98,8 @@ namespace Drill4Net.Agent.Service
             senderOpts.Servers.AddRange(recOpts.Servers);
             senderOpts.Topics.Add(topic);
 
-            IMessageSenderRepository rep = new ServerSenderRepository(targetName, target, senderOpts);
-            IDataSender sender = new TargetDataSender(rep);
+            ITargetSenderRepository rep = new ServerSenderRepository(targetName, target, senderOpts);
+            ITargetInfoSender sender = new TargetInfoKafkaSender(rep);
             sender.SendTargetInfo(rep.GetTargetInfo(), topic); //here exclusive topic for the Worker
 
             Console.WriteLine($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={topic}");

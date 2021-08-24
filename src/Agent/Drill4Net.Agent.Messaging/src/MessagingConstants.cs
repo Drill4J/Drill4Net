@@ -17,8 +17,15 @@
         public const string MESSAGE_TYPE_PROBE = "Probe";
         public const string MESSAGE_TYPE_TARGET_INFO = "Target";
         #endregion
-
+        #region Topics
+        public const string TOPIC_PING = "ping";
         public const string TOPIC_TARGET_INFO = "target-info";
+        #endregion
+        #region Ping data
+        public const string PING_SUBSYSTEM = "target_session";
+        public const string PING_TIME = "time";
+        public const string PING_TARGET_SESSION = "target_session";
+        #endregion
 
         public const int MaxMessageSize = 1000000;
     }

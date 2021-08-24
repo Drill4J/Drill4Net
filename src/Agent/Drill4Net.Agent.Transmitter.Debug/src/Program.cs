@@ -27,8 +27,8 @@ namespace Drill4Net.Agent.Transmitter.Debug
             SetTitle();
 
             //what is loaded into the Target process and used by the Proxy class
-            var trans = TargetDataTransmitter.Transmitter;
-            var sender = trans.Sender;
+            var trans = DataTransmitter.Transmitter;
+            var sender = trans.ProbeSender;
             const string ctx = "DBG";
 
             while (true)
