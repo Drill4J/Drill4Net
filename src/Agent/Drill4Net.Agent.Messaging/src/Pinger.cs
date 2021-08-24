@@ -23,6 +23,7 @@ namespace Drill4Net.Agent.Messaging
                 { MessagingConstants.PING_SUBSYSTEM, rep.Subsystem },
                 { MessagingConstants.PING_TARGET_SESSION, rep.TargetSession.ToString() },
                 { MessagingConstants.PING_TIME, GetTime() },
+                { MessagingConstants.PING_MEMORY, GetMemory() },
             };
 
             _period = new TimeSpan(0, 0, 1);
@@ -39,12 +40,19 @@ namespace Drill4Net.Agent.Messaging
         internal virtual void SendPing()
         {
             _state[MessagingConstants.PING_TIME] = GetTime();
+            _state[MessagingConstants.PING_MEMORY] = GetMemory();
+            //
             _sender.SendPing(_state);
         }
 
         internal string GetTime()
         {
             return DateTime.Now.Ticks.ToString();
+        }
+
+        private string GetMemory()
+        {
+            return Environment.WorkingSet.ToString();
         }
 
         //TODO: full Dispose pattern
