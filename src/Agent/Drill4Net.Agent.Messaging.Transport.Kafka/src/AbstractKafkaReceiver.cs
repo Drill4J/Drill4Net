@@ -11,12 +11,12 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         protected readonly ConsumerConfig _cfg;
         protected readonly AbstractRepository<MessageReceiverOptions> _rep;
 
-        private int _unknownTopicCounter = 0;
+        private int _unknownTopicCounter;
         protected readonly string _logPrefix;
 
-        /*************************************************************************************************/
+        /*****************************************************************************************/
 
-        public AbstractKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep)
+        protected AbstractKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, GetType());
@@ -34,13 +34,14 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 // earliest message in the topic the first time you run the program.
                 AutoOffsetReset = AutoOffsetReset.Earliest,
 
+                AllowAutoCreateTopics = true,
                 EnableAutoCommit = true,
                 EnableAutoOffsetStore = true,
                 MessageMaxBytes = MessagingConstants.MaxMessageSize,
             };
         }
 
-        /*************************************************************************************************/
+        /*****************************************************************************************/
 
         public abstract void Start();
 

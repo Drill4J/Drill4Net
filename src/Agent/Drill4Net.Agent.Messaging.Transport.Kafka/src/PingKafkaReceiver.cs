@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Threading;
+using System.Collections.Specialized;
 using Confluent.Kafka;
-using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Common;
+using Drill4Net.Agent.Messaging.Kafka;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -19,6 +19,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             CancellationTokenSource cts = null) : base(rep)
         {
             _cts = cts;
+            _cfg.AutoOffsetReset = AutoOffsetReset.Latest; //TODO: IT'S DON'T WORK!!!! AAAAA!!!!
         }
 
         /*******************************************************************************/
