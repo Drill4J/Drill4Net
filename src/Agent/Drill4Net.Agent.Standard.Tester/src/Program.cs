@@ -70,13 +70,13 @@ namespace Drill4Net.Agent.Standard.Tester
             WriteMessage("Please wait for the init...", ConsoleColor.White);
             await Task.Delay(3000).ConfigureAwait(false); //wait for the reading
 
-            StandardAgent.Init();
+            //StandardAgent.Init();
 
             _opts = GetOptions();
             _targetPath = _opts.CurrentDirectory;
 
             //tree's data (in fact, we can use the TestEngine's one)
-            var rep = StandardAgent.Repository;
+            var rep = StandardAgent.Agent.Repository;
             _injSolution = rep.ReadInjectedTree();
             _injDirectory = _injSolution.GetDirectories().FirstOrDefault(a => a.Name == _opts.TreeFolder);
             if (_injDirectory == null)

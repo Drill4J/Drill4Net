@@ -46,6 +46,13 @@ namespace Drill4Net.Core.Repository
             PrepareLogger();
         }
 
+        protected ConfiguredRepository(TOptions opts, string subsystem) : base(subsystem)
+        {
+            _optHelper = new THelper();
+            Options = opts ?? throw new ArgumentNullException(nameof(opts));
+            PrepareLogger();
+        }
+
         /**********************************************************************************/
 
         #region Injected Tree

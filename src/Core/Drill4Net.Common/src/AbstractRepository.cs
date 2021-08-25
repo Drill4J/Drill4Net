@@ -22,7 +22,7 @@ namespace Drill4Net.Common
         public string Subsystem { get; }
 
         /// <summary>
-        /// Options for the injection
+        /// Options for different purposes: injection, communication, testing, etc
         /// </summary>
         public TOptions Options { get; set; }
 
@@ -36,15 +36,20 @@ namespace Drill4Net.Common
         /*********************************************************************************/
 
         #region Arguments
-        public static string GetArgumentConfigPath(string[] args, string defaultPath = null)
+        public static string GetArgument(string[] args, string parameter, string @default = null)
         {
-            var cfgArg = GetArgument(args, CoreConstants.ARGUMENT_CONFIG_PATH);
-            return cfgArg == null ? defaultPath : cfgArg.Split('=')[1];
+            var cfgArg = GetArgumentPair(args, parameter);
+            return cfgArg?.Contains("=") != true ? @default : cfgArg.Split('=')[1];
         }
 
-        internal static string GetArgument(string[] args, string arg)
+        public static string GetArgumentConfigPath(string[] args, string defaultPath = null)
         {
-            return args?.FirstOrDefault(a => a.StartsWith($"-{arg}="));
+            return GetArgument(args, CoreConstants.ARGUMENT_CONFIG_PATH, defaultPath);
+        }
+
+        internal static string GetArgumentPair(string[] args, string arg)
+        {
+            return args?.FirstOrDefault(a => a.StartsWith($"{arg}="));
         }
         #endregion
         #region Log config

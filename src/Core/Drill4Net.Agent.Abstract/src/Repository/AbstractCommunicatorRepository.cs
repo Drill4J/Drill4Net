@@ -15,5 +15,9 @@
         public AbstractCommunicatorRepository(string cfgPath = null) : base(cfgPath)
         {
         }
+
+        public AbstractCommunicatorRepository(AgentOptions opts) : base(opts)
+        {
+        }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
+using System.Reflection;
+using System.Diagnostics;
+using System.Collections.Generic;
 using Mono.Cecil;
 
 namespace Drill4Net.Common
@@ -13,6 +14,13 @@ namespace Drill4Net.Common
     /// </summary>
     public static class CommonUtils
     {
+        public static int CurrentProcessId { get; }
+
+        static CommonUtils()
+        {
+            CurrentProcessId = Process.GetCurrentProcess().Id;
+        }
+
         #region TargetVersioning
         /// <summary>
         /// Get target version for the entry assembly of current process

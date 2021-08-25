@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Worker</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Worker\Drill4Net.Agent.Worker.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Worker</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DumpExtensions" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Agent.Messaging.Kafka\Drill4Net.Agent.Messaging.Kafka.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport.Kafka\Drill4Net.Agent.Messaging.Transport.Kafka.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport\Drill4Net.Agent.Messaging.Transport.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.Standard\Drill4Net.Agent.Standard.csproj" />
+  </ItemGroup>
+
+</Project>

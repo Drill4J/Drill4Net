@@ -10,7 +10,7 @@ namespace Drill4Net.Configuration
     public abstract class AbstractOptions
     {
         /// <summary>
-        /// Descriptive type of the config (for Injector, Test Engine, Agent, etc)
+        /// Descriptive type of the config (for Injector, Test Engine, Agent, Server/Worker, etc)
         /// </summary>
         public string Type { get; set; }
 
@@ -23,7 +23,7 @@ namespace Drill4Net.Configuration
         public List<LogOptions> Logs { get; set; }
 
         /// <summary>
-        /// Description for injection process
+        /// Description for the entity config/process/app
         /// </summary>
         public string Description { get; set; }
     }

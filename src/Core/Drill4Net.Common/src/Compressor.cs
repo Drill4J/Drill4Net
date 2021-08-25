@@ -18,6 +18,16 @@ namespace Drill4Net.Common
             return destination;
         }
 
+        #region Decompress
+        //public static Span<byte> Decompress(ReadOnlySpan<byte> source, int knownSize = 0)
+        //{
+        //    var target = new Span<byte>();
+        //    var decodedLength = LZ4Codec.Decode(source, target);
+        //    if (decodedLength < 0)
+        //        throw new InvalidOperationException("Decompress' buffer is too small");
+        //    return target;
+        //}
+
         public static byte[] Decompress(byte[] source, int knownSize = 0)
         {
             var buffer = new byte[knownSize == 0 ? source.Length * 255 : knownSize]; // to be safe
@@ -30,5 +40,6 @@ namespace Drill4Net.Common
             Array.Copy(buffer, 0, destination, 0, decodedLength);
             return destination;
         }
+        #endregion
     }
 }
