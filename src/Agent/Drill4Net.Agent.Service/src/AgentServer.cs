@@ -50,9 +50,10 @@ namespace Drill4Net.Agent.Service
             _pings = new ConcurrentDictionary<Guid, StringDictionary>();
             _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
 
-            _processName = _rep.Options.WorkerPath;
+            _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.GetExecutionDir());
             _workerDir = Path.GetDirectoryName(_processName);
 
+            //for using by workers
             var dir = FileUtils.GetExecutionDir();
             _cfgPath = Path.Combine(dir, CoreConstants.CONFIG_SERVICE_NAME);
 
@@ -163,6 +164,7 @@ namespace Drill4Net.Agent.Service
                 //
                 Console.WriteLine($"{_logPrefix}Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
                 Task.Run(() => CloseWorker(uid));
+
                 //TODO: delete topic!!!
             }
         }

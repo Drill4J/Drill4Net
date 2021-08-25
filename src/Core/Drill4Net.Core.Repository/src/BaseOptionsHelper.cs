@@ -18,8 +18,6 @@ namespace Drill4Net.Core.Repository
 
         public BaseOptionsHelper()
         {
-            //_deser = new Deserializer();
-
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
                 .Build();

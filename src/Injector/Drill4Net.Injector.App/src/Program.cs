@@ -24,6 +24,7 @@ namespace Drill4Net.Injector.App
                 Log.Debug("Options: {@Options}", rep.Options);
 
                 var injector = new InjectorEngine(rep);
+
                 injector.Process();
 
                 Log.Information("Injection is done.");
