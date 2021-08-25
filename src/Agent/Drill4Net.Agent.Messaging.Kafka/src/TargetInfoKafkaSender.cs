@@ -59,6 +59,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
                     SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET, i);
                     SendPacket(packet, topic);
                 }
+                _infoProducer.Flush();
             }
             return LastError == null ? 0 : -2;
         }
