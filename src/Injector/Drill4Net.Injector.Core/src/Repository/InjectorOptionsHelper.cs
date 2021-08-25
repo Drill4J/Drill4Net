@@ -100,6 +100,7 @@ namespace Drill4Net.Injector.Core
             SetDestinationDirectory(opts, destDir);
         }
 
+        //Guanito:
         internal string PotentialPath(string arg)
         {
             //TODO: regex!!!

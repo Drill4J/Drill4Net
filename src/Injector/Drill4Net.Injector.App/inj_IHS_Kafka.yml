@@ -22,10 +22,10 @@ Destination: # where copying injected assemblies
     FolderPostfix: Injected #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Kafka.Transmitter\netstandard2.0\ # for developers in VS
+  Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\ # for developers in VS
   #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
-  AssemblyName: Drill4Net.Agent.Kafka.Transmitter.dll
-  Namespace: Drill4Net.Agent.Kafka.Transmitter
+  AssemblyName: Drill4Net.Agent.Transmitter.dll
+  Namespace: Drill4Net.Agent.Transmitter
   Class: ProbeTransmitter
   Method: Transmit
   Static: true

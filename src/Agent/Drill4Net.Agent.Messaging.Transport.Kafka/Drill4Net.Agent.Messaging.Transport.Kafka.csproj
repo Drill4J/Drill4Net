@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Messaging.Transport.Kafka</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Messaging.Transport.Kafka\Drill4Net.Agent.Messaging.Transport.Kafka.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Messaging.Transport.Kafka</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
+    <PackageReference Include="DumpExtensions" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.Messaging.Kafka\Drill4Net.Agent.Messaging.Kafka.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport\Drill4Net.Agent.Messaging.Transport.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Abstract
         /// <value>
         /// The receiver.
         /// </value>
-        public IReceiver Receiver { get; protected set; }
+        public IAgentReceiver Receiver { get; protected set; }
 
         /// <summary>
         /// Sender of the data from Admin side.
@@ -28,7 +28,7 @@ namespace Drill4Net.Agent.Abstract
 
         protected AbstractCommunicator() { }
 
-        protected AbstractCommunicator(IReceiver receiver, AbstractSender sender)
+        protected AbstractCommunicator(IAgentReceiver receiver, AbstractSender sender)
         {
             Receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             Sender = sender ?? throw new ArgumentNullException(nameof(sender));

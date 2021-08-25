@@ -7,6 +7,7 @@ using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -14,32 +15,51 @@ namespace Drill4Net.Agent.Standard
     /// Standard Agent (Profiler) for the Drill Admin side
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class StandardAgent : AbstractAgent
+    public sealed class StandardAgent : AbstractAgent
     {
-        private static IReceiver Receiver => _comm.Receiver;
-        private static ISender Sender => _comm.Sender;
+        /// <summary>
+        /// Agent as singleton
+        /// </summary>
+        public static StandardAgent Agent { get; private set; }
+
+        private IAgentReceiver Receiver => _comm.Receiver;
+        private IAgentSender Sender => _comm.Sender;
 
         /// <summary>
         /// Repository for Agent
         /// </summary>
-        public static StandardAgentRepository Repository { get; }
+        public StandardAgentRepository Repository { get; }
 
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
-        public static string EmergencyLogDir { get; }
+        public string EmergencyLogDir { get; }
 
-        private static readonly ICommunicator _comm;
-
+        private readonly ICommunicator _comm;
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
-        private static readonly AssemblyResolver _resolver;
+        private readonly AssemblyResolver _resolver;
         private static readonly object _entLocker = new();
+        private static readonly string _logPrefix;
 
         /*****************************************************************************/
 
-        static StandardAgent()
+        static StandardAgent() //it's needed for invocation from Target
+        {
+            _logPrefix = $"{CommonUtils.CurrentProcessId}: {nameof(StandardAgent)}";
+
+            if (StandardAgentCCtorParameters.SkipCctor)
+                return;
+
+            Agent = new StandardAgent();
+            if (Agent == null)
+                throw new Exception($"{_logPrefix}: creation is failed");
+        }
+
+        private StandardAgent(): this(null, null) { }
+
+        private StandardAgent(AgentOptions opts, InjectedSolution tree)
         {
             try
             {
@@ -52,7 +72,7 @@ namespace Drill4Net.Agent.Standard
                 EmergencyLogDir = FileUtils.GetEmergencyDir();
                 AbstractRepository<AgentOptions>.PrepareInitLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
-                Log.Debug("Initializing...");
+                Log.Debug($"{_logPrefix} is initializing...");
 
                 //TEST assembly resolving!!!
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
@@ -67,7 +87,7 @@ namespace Drill4Net.Agent.Standard
 
                 //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
 
-                Repository = new StandardAgentRepository();
+                Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
                 _comm = Repository.Communicator;
 
                 //events from admin side
@@ -80,25 +100,16 @@ namespace Drill4Net.Agent.Standard
                 Receiver.StopSession += OnFinishSession;
                 Receiver.StopAllSessions += OnFinishAllSessions;
 
-                _comm.Connect();
+                _comm.Connect(); //connect to Drill Admin side
 
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                #region local tests
-                // var testUid = Guid.NewGuid().ToString();
-                // SendTest_StartSession(testUid);
-                // SendTest_StopSession(testUid);
-                // SendTest_StopAllSessions();
-                // SendTest_CancelSession(testUid);
-                // SendTest_CancelAllSessions();
-                #endregion
-
-                Log.Debug("Initialized.");
+                Log.Debug($"{_logPrefix} is initialized.");
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Error of {nameof(StandardAgent)} initializing");
+                Log.Fatal(ex, $"{_logPrefix}: error of initializing");
             }
             finally
             {
@@ -110,48 +121,53 @@ namespace Drill4Net.Agent.Standard
 
         #region Init
         /// <summary>
-        /// It just run the ctor with the main init procedure.
-        /// This function mainly used for debugging. It's not necessary
-        /// in a real system because the ctor will be arised due Register call.
+        /// Init of the static Agent singleton.
         /// </summary>
-        public static void Init() { }
+        /// <param name="opts"></param>
+        /// <param name="tree"></param>
+        public static void Init(AgentOptions opts, InjectedSolution tree)
+        {
+            Agent = new StandardAgent(opts, tree);
+            if (Agent == null)
+                throw new Exception($"{_logPrefix}: creation is failed");
+        }
 
         //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
 
-        private static void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "first_chance_error.log"),
-                new string[] { $"{CommonUtils.GetPreciseTime()}: {e.Exception}" });
+                new string[] { $"{CommonUtils.GetPreciseTime()}|{_logPrefix}:\n{e.Exception}" });
         }
 
-        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
-            Log.Debug("Need resolve assembly: [{Name}]", name);
+            Log.Debug($"{_logPrefix}: need resolve the assembly: [{name}]");
             var asm = _resolver.Resolve(name, args.RequestingAssembly.Location);
             if (asm != null)
                 return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_failed.log"), new string[] { info });
-            Log.Debug("Assembly [{Name}] didn't resolve", name);
+            Log.Debug($"{_logPrefix}: assembly [{name}] didn't resolve");
             return args.RequestingAssembly; //null
         }
 
-        private static Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
+        private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
             var asm = _resolver.ResolveResource(args.RequestingAssembly.Location, name);
             if (asm != null)
                 return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request resource from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request resource from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_resource_failed.log"), new string[] { info });
             return null;
         }
 
-        private static Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
+        private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
         {
             var name = args.Name;
-            var info = $"{CommonUtils.GetPreciseTime()}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_type_failed.log"), new string[] { info });
             return null;
         }
@@ -160,7 +176,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Handler of the event for the creating new test scope on the Admin side
         /// </summary>
-        private static void OnInitScopeData(InitActiveScope scope)
+        private void OnInitScopeData(InitActiveScope scope)
         {
             Repository.CancelAllSessions(); //just in case
             _scope = scope;
@@ -170,7 +186,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Handler of the event for the requsteing classes data of the Target from the Admin side
         /// </summary>
-        private static void OnRequestClassesData()
+        private void OnRequestClassesData()
         {
             lock (_entLocker)
             {
@@ -181,7 +197,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Handler of the event for the toggling some plugin on the Admin side
         /// </summary>
-        private static void OnTogglePlugin(string plugin)
+        private void OnTogglePlugin(string plugin)
         {
             lock (_entLocker)
             {
@@ -202,34 +218,34 @@ namespace Drill4Net.Agent.Standard
         }
 
         #region Session
-        private static void OnStartSession(StartAgentSession info)
+        private void OnStartSession(StartAgentSession info)
         {
             Repository.StartSession(info);
             var load = info.Payload;
             Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
         }
 
-        private static void OnFinishSession(StopAgentSession info)
+        private void OnFinishSession(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
             Repository.SessionStop(info);
             Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
-        private static void OnFinishAllSessions()
+        private void OnFinishAllSessions()
         {
             var uids = Repository.StopAllSessions();
             Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
         }
 
-        private static void OnCancelSession(CancelAgentSession info)
+        private void OnCancelSession(CancelAgentSession info)
         {
             var uid = info.Payload.SessionId;
             Repository.CancelSession(info);
             Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
-        private static void OnCancelAllSessions()
+        private void OnCancelAllSessions()
         {
             var uids = Repository.CancelAllSessions();
             Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
@@ -241,8 +257,19 @@ namespace Drill4Net.Agent.Standard
         /// Registering probe's data from injected Target app
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="ctx"></param>
         // ReSharper disable once MemberCanBePrivate.Global
-        public static void RegisterStatic(string data)
+        public static void RegisterStatic(string data, string ctx = null)
+        {
+            Agent?.Register(data, ctx);
+        }
+
+        /// <summary>
+        /// Registering probe's data from injected Target app
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="ctx"></param>
+        public override void Register(string data, string ctx = null)
         {
             try
             {
@@ -264,7 +291,7 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];         
 
-                var res = Repository.RegisterCoverage(probeUid);
+                var res = Repository.RegisterCoverage(probeUid, ctx);
                 if (!res) //for tests
                 { }
             }
@@ -273,60 +300,6 @@ namespace Drill4Net.Agent.Standard
                 Log.Error(ex, "{Data}", data);
             }
         }
-
-        /// <summary>
-        /// Registering probe's data from injected Target app
-        /// </summary>
-        /// <param name="data"></param>
-        public override void Register(string data)
-        {
-            RegisterStatic(data);
-        }
-        #endregion
-        #region Temporary tests
-        // private static void SendTest_StartSession(string sessionUid)
-        // {
-        //     var payload = new StartSessionPayload()
-        //     {
-        //         IsGlobal = false,
-        //         IsRealtime = true,
-        //         SessionId = sessionUid,
-        //         TestName = "TEST1",
-        //         TestType = "AUTO",
-        //     };
-        //     var data = new StartAgentSession {Payload = payload};
-        //     Sender.SendTest(data);
-        // }
-        //
-        // private static void SendTest_StopSession(string sessionUid)
-        // {
-        //     var payload = new AgentSessionPayload()
-        //     {
-        //         SessionId = sessionUid,
-        //     };
-        //     var data = new StopAgentSession {Payload = payload};
-        //     Sender.SendTest(data);
-        // }
-        //
-        // private static void SendTest_StopAllSessions()
-        // {
-        //     Sender.SendTest(new StopAllAgentSessions());
-        // }
-        //
-        // private static void SendTest_CancelSession(string sessionUid)
-        // {
-        //     var payload = new AgentSessionPayload()
-        //     {
-        //         SessionId = sessionUid,
-        //     };
-        //     var data = new CancelAgentSession {Payload = payload};
-        //     Sender.SendTest(data);
-        // }
-        //
-        // private static void SendTest_CancelAllSessions()
-        // {
-        //     Sender.SendTest(new CancelAllAgentSessions());
-        // }
         #endregion
     }
 }

@@ -11,5 +11,9 @@ namespace Drill4Net.Agent.Abstract
         public AgentRepository(string cfgPath = null) : base(cfgPath, CoreConstants.SUBSYSTEM_AGENT)
         {
         }
+
+        public AgentRepository(AgentOptions opts) : base(opts, CoreConstants.SUBSYSTEM_AGENT)
+        {
+        }
     }
 }

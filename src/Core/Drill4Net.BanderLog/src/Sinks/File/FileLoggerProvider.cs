@@ -20,6 +20,7 @@ namespace Drill4Net.BanderLog.Sinks.File
 
         public void Dispose()
         {
+            //TODO: create getting & removing sink in FileSinkCreator + its Disposing here !!!
         }
     }
 }

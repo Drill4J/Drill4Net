@@ -20,19 +20,19 @@
             <summary>Repository URL: https://github.com/IvanEpam/TestA.git</summary>
         </member>
         <member name="F:ThisAssembly.Git.Branch">
-            <summary>Branch: task-8150</summary>
+            <summary>Branch: task-8317</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 6a8b19e</summary>
+            <summary>Commit: d78979d</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 6a8b19e4daf5397760cea5fb1ac86a083fcd6874</summary>
+            <summary>Sha: d78979d6c9419f42ee5fc5a93e1d8faadb7ceb00</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-08-20T10:27:56+03:00</summary>
+            <summary>Commit date: 2021-08-23T10:25:37+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 686</summary>
+            <summary>Commits on top of base version: 696</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
@@ -62,7 +62,11 @@
             <summary>Minor: 0</summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
+<<<<<<< HEAD
             <summary>Patch: 690</summary>
+=======
+            <summary>Patch: 696</summary>
+>>>>>>> origin/main
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
             <summary>Label: </summary>

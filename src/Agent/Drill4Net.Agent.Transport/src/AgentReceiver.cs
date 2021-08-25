@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Transport
     /// <summary>
     /// Receiver of data from admin side
     /// </summary>
-    public class AgentReceiver : IReceiver
+    public class AgentReceiver : IAgentReceiver
     {
         #region Events
         /// <summary>
