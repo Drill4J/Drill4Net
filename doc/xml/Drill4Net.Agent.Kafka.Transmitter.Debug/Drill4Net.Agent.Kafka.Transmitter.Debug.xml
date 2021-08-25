@@ -23,16 +23,16 @@
             <summary>Branch: task-8150</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
-            <summary>Commit: 50fac48</summary>
+            <summary>Commit: 6a8b19e</summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
-            <summary>Sha: 50fac488d45e40f2338e021da9e436d0e6f18990</summary>
+            <summary>Sha: 6a8b19e4daf5397760cea5fb1ac86a083fcd6874</summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
-            <summary>Commit date: 2021-08-20T21:08:01+03:00</summary>
+            <summary>Commit date: 2021-08-20T10:27:56+03:00</summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
-            <summary>Commits on top of base version: 690</summary>
+            <summary>Commits on top of base version: 686</summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>Tag: </summary>
