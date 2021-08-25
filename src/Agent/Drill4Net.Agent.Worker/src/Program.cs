@@ -1,7 +1,8 @@
 ﻿using System;
-using Drill4Net.Agent.Messaging.Transport;
-using Drill4Net.Common;
 using Serilog;
+using Drill4Net.Common;
+using Drill4Net.Agent.Messaging.Transport;
+using System.Diagnostics;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -9,7 +10,7 @@ namespace Drill4Net.Agent.Worker
     {
         private static string _logPrefix;
 
-        /******************************************************************/
+        /*********************************************************************/
 
         static void Main(string[] args)
         {
@@ -46,14 +47,17 @@ namespace Drill4Net.Agent.Worker
 
         private static void Init()
         {
-            _logPrefix = TransportUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_PROBE_WORKER, typeof(Program));
+            _logPrefix = TransportUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(Program));
             SetCaption();
         }
 
         private static void SetCaption()
         {
-            //var name = typeof(ProbeWorker).Assembly.GetName().Name;
-           // Console.Title = $"{name}: {Environment.ProcessId}";
+            if (Debugger.IsAttached)
+            {
+                var name = typeof(AgentWorker).Assembly.GetName().Name;
+                Console.Title = $"{name}: {Environment.ProcessId}";
+            }
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using Drill4Net.Common;
-using Drill4Net.Agent.Messaging;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
@@ -13,12 +12,12 @@ namespace Drill4Net.Agent.Messaging.Transport
             return $"{subsystem}|{CommonUtils.CurrentProcessId}|{type.Name}|";
         }
 
-        public static string GetTopicBySessionId(Guid sessionUid)
+        public static string GetTargetWorkerTopic(Guid sessionUid)
         {
             return $"{MessagingConstants.TOPIC_TARGET_INFO}_{sessionUid}";
         }
 
-        public static List<string> GetTargetTopics(IEnumerable<string> topics)
+        public static List<string> FilterTargetTopics(IEnumerable<string> topics)
         {
             var targTopics = topics?.Where(a => a == MessagingConstants.TOPIC_TARGET_INFO ||
                                                 a.StartsWith($"{MessagingConstants.TOPIC_TARGET_INFO}_")

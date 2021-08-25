@@ -4,7 +4,7 @@ using Drill4Net.Agent.Messaging;
 
 namespace Drill4Net.Agent.Service
 {
-    public class ServerSenderRepository : ITargetSenderRepository
+    public class TargetedSenderRepository : ITargetSenderRepository
     {
         public Guid TargetSession { get; }
 
@@ -18,13 +18,13 @@ namespace Drill4Net.Agent.Service
 
         /*******************************************************************************/
 
-        public ServerSenderRepository(string target, TargetInfo targetInfo, MessageSenderOptions senderOptions)
+        public TargetedSenderRepository(TargetInfo targetInfo, MessageSenderOptions senderOptions)
         {
-            Subsystem = CoreConstants.SUBSYSTEM_PROBE_SERVER;
+            Subsystem = CoreConstants.SUBSYSTEM_AGENT_SERVER;
             _targetInfo = targetInfo ?? throw new ArgumentNullException(nameof(targetInfo));
             SenderOptions = senderOptions ?? throw new ArgumentNullException(nameof(senderOptions));
             TargetSession = targetInfo.SessionUid;
-            Target = target ?? targetInfo.Solution?.Name;
+            Target = targetInfo.TargetName ?? targetInfo.Solution?.Name;
         }
 
         /*******************************************************************************/

@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Messaging
             _state[MessagingConstants.PING_TIME] = GetTime();
             _state[MessagingConstants.PING_MEMORY] = GetMemory();
             //
-            _sender.SendPing(_state);
+            _sender.SendPing(_state); //TODO: by JSON/YAML?
         }
 
         internal virtual string GetTime()

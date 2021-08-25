@@ -11,8 +11,8 @@
         public const string SUBSYSTEM_TEST_SERVER = "TestServer";
         public const string SUBSYSTEM_AGENT = "Agent";
         public const string SUBSYSTEM_TRANSMITTER = "Transmitter";
-        public const string SUBSYSTEM_PROBE_SERVER = "ProbeServer";
-        public const string SUBSYSTEM_PROBE_WORKER = "ProbeWorker";
+        public const string SUBSYSTEM_AGENT_SERVER = "AgentServer";
+        public const string SUBSYSTEM_AGENT_WORKER = "AgentWorker";
         #endregion
         #region CONFIG & TREE
         /// <summary>

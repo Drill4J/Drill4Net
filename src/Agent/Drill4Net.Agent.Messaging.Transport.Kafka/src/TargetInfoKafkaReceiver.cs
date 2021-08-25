@@ -44,7 +44,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 _cts = new();
 
             var opts = _rep.Options;
-            var topics = TransportUtils.GetTargetTopics(opts.Topics);
+            var topics = TransportUtils.FilterTargetTopics(opts.Topics);
             Console.WriteLine($"{_logPrefix}Topics: {string.Join(",", topics)}");
 
             using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();

@@ -10,10 +10,6 @@ using Drill4Net.Agent.Messaging.Kafka;
 
 namespace Drill4Net.Agent.Worker
 {
-    public delegate void ProbeReceivedHandler(Probe probe);
-
-    /********************************************************************************************/
-
     public class ProbeReceiver : AbstractKafkaReceiver, IProbeReceiver
     {
         public event ProbeReceivedHandler ProbeReceived;

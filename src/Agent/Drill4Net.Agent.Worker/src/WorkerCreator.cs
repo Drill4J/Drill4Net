@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.Worker
             var targetTopic = GetTargetTopic(_args);
             if(!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Topics.Add(targetTopic);
-            return new MessageReceiverRepository(CoreConstants.SUBSYSTEM_PROBE_WORKER, opts);
+            return new MessageReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, opts);
         }
 
         private string GetTargetTopic(string[] args)
