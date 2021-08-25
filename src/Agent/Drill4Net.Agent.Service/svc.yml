@@ -7,6 +7,7 @@ Servers: # list of servers
 GroupId: dodnet-agent
 Topics:  # topics for the probes
     - probes
+WorkerPath: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe 
 Logs:
     - Type: console
       Level: debug

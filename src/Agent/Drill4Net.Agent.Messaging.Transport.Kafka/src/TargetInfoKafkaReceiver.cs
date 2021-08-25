@@ -9,7 +9,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
     //https://github.com/patsevanton/docker-compose-kafka-zk-kafdrop-cmak/blob/main/docker-compose.yml
 
-    public class TargetInfoKafkaReceiver : AbstractKafkaReceiver, ITargetInfoReceiver
+    public class TargetInfoKafkaReceiver<T> : AbstractKafkaReceiver<T>, ITargetInfoReceiver
+        where T : MessageReceiverOptions, new()
     {
         public event TargetReceivedInfoHandler TargetInfoReceived;
 
@@ -17,7 +18,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         /****************************************************************************************/
 
-        public TargetInfoKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep,
+        public TargetInfoKafkaReceiver(AbstractRepository<T> rep,
             CancellationTokenSource cts = null): base(rep)
         {
             _cts = cts;

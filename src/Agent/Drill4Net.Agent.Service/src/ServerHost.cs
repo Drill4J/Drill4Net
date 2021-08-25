@@ -33,10 +33,10 @@ namespace Drill4Net.Agent.Service
             try
             {
                 //TODO: factory
-                AbstractRepository<MessageReceiverOptions> rep =
-                    new MessageReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER);
-                ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver(rep);
-                IPingReceiver pingReceiver = new PingKafkaReceiver(rep);
+                AbstractRepository<AgentServerOptions> rep =
+                    new AgentServerRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER);
+                ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<AgentServerOptions>(rep);
+                IPingReceiver pingReceiver = new PingKafkaReceiver<AgentServerOptions>(rep);
                 using var server = new AgentServer(rep, targetReceiver, pingReceiver);
                 server.ErrorOccured += Server_ErrorOccured;
                 _logger.LogInformation($"{nameof(ServerHost)} ready.");

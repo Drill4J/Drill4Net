@@ -4,13 +4,13 @@ using System.Threading;
 using Confluent.Kafka;
 using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
+using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using Drill4Net.Agent.Messaging.Kafka;
 
 namespace Drill4Net.Agent.Worker
 {
-    public class ProbeReceiver : AbstractKafkaReceiver, IProbeReceiver
+    public class ProbeReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, IProbeReceiver
     {
         public event ProbeReceivedHandler ProbeReceived;
 

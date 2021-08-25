@@ -4,7 +4,7 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Messaging.Kafka
 {
-    public abstract class AbstractKafkaSender : IDataSender, IDisposable
+    public abstract class AbstractKafkaSender : IDataSender
     {
         //TODO: incapsulate Error props
         public bool IsError { get; private set; }

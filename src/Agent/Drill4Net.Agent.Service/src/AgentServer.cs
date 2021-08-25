@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Drill4Net.Agent.Service
 
         public bool IsStarted { get; private set; }
 
-        private readonly AbstractRepository<MessageReceiverOptions> _rep;
+        private readonly AbstractRepository<AgentServerOptions> _rep;
 
         private readonly IPingReceiver _pingReceiver;
         private readonly ITargetInfoReceiver _targetReceiver;
@@ -35,10 +36,11 @@ namespace Drill4Net.Agent.Service
         private readonly string _logPrefix;
         private readonly string _workerDir;
         private readonly string _processName;
+        private bool _disposed;
 
         /*****************************************************************************************************/
 
-        public AgentServer(AbstractRepository<MessageReceiverOptions> rep, ITargetInfoReceiver targetReceiver,
+        public AgentServer(AbstractRepository<AgentServerOptions> rep, ITargetInfoReceiver targetReceiver,
             IPingReceiver pingReceiver)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
@@ -48,9 +50,8 @@ namespace Drill4Net.Agent.Service
             _pings = new ConcurrentDictionary<Guid, StringDictionary>();
             _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
 
-            //TODO: to cfg
-            _workerDir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Worker\net5.0\";
-            _processName = Path.Combine(_workerDir, "Drill4Net.Agent.Worker.exe");
+            _processName = _rep.Options.WorkerPath;
+            _workerDir = Path.GetDirectoryName(_processName);
 
             var dir = FileUtils.GetExecutionDir();
             _cfgPath = Path.Combine(dir, CoreConstants.CONFIG_SERVICE_NAME);
@@ -60,6 +61,11 @@ namespace Drill4Net.Agent.Service
 
             _targetReceiver.TargetInfoReceived += TargetReceiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured += TargetReceiver_ErrorOccured;
+        }
+
+        ~AgentServer()
+        {
+            Dispose(false);
         }
 
         /*****************************************************************************************************/
@@ -148,13 +154,16 @@ namespace Drill4Net.Agent.Service
             if (_workers.IsEmpty || _pings.IsEmpty)
                 return;
             var now = GetTime();
-            foreach (var uid in _pings.Keys)
+            foreach (var uid in _pings.Keys.AsParallel())
             {
                 var data = _pings[uid];
                 var ticks = long.Parse(data[MessagingConstants.PING_TIME]);
                 if (now.Ticks - ticks < _oldPingTickDelta)
                     continue;
+                //
+                Console.WriteLine($"{_logPrefix}Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
                 Task.Run(() => CloseWorker(uid));
+                //TODO: delete topic!!!
             }
         }
 
@@ -254,10 +263,36 @@ namespace Drill4Net.Agent.Service
             return DateTime.UtcNow;
         }
 
-        //TODO: full pattern
+        #region Dispose
         public void Dispose()
         {
-            Stop();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
+                if (disposing)
+                {
+                    // Dispose managed resources.
+                    Stop();
+                }
+
+                // Call the appropriate methods to clean up
+                // unmanaged resources here.
+                // If disposing is false,
+                // only the following code is executed.
+                //.....
+
+                // Note disposing has been done.
+                _disposed = true;
+            }
+        }
+        #endregion
     }
 }

@@ -7,7 +7,8 @@ using Drill4Net.Agent.Messaging.Kafka;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class PingKafkaReceiver : AbstractKafkaReceiver, IPingReceiver
+    public class PingKafkaReceiver<T> : AbstractKafkaReceiver<T>, IPingReceiver
+        where T : MessageReceiverOptions, new()
     {
         public event PingReceivedHandler PingReceived;
 
@@ -15,8 +16,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         /*******************************************************************************/
 
-        public PingKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep,
-            CancellationTokenSource cts = null) : base(rep)
+        public PingKafkaReceiver(AbstractRepository<T> rep, CancellationTokenSource cts = null) : base(rep)
         {
             _cts = cts;
             _cfg.AutoOffsetReset = AutoOffsetReset.Latest; //TODO: IT'S DON'T WORK!!!! AAAAA!!!!

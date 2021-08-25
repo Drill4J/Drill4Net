@@ -1,6 +1,4 @@
-﻿using Drill4Net.Agent.Messaging;
-
-namespace Drill4Net.Agent.Messaging.Transport
+﻿namespace Drill4Net.Agent.Messaging.Transport
 {
     public class MessageReceiverOptions : BaseMessageOptions
     {

@@ -12,13 +12,17 @@ namespace Drill4Net.Core.Repository
     /// <typeparam name="T"></typeparam>
     public class BaseOptionsHelper<T> where T : AbstractOptions, new()
     {
-        private readonly Deserializer _deser;
+        private readonly IDeserializer _deser;
 
         /********************************************************************/
 
         public BaseOptionsHelper()
         {
-            _deser = new Deserializer();
+            //_deser = new Deserializer();
+
+            _deser = new DeserializerBuilder()
+                .IgnoreUnmatchedProperties()
+                .Build();
         }
 
         /********************************************************************/

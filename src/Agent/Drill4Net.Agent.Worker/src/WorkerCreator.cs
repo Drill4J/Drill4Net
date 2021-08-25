@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Worker
         {
             var rep = GetRepository();
             IProbeReceiver probeReceiver = new ProbeReceiver(rep);
-            ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver(rep);
+            ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessageReceiverOptions>(rep);
             var worker = new AgentWorker(targetReceiver, probeReceiver);
             return worker;
         }
@@ -33,18 +33,18 @@ namespace Drill4Net.Agent.Worker
             var targetTopic = GetTargetTopic(_args);
             if(!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Topics.Add(targetTopic);
-            return new MessageReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, opts);
+            return new AgentWorkerRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, opts);
         }
 
         private string GetTargetTopic(string[] args)
         {
-            return MessageReceiverRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_TOPIC);
+            return AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_TOPIC);
         }
 
         internal virtual MessageReceiverOptions GetBaseOptions(string[] args)
         {
-            var cfgPathArg = MessageReceiverRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
-            var opts = MessageReceiverRepository.GetOptionsByPath(cfgPathArg);
+            var cfgPathArg = AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
+            var opts = AgentWorkerRepository.GetOptionsByPath(cfgPathArg);
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
             return opts;

@@ -4,19 +4,20 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public abstract class AbstractKafkaReceiver : IMessageReceiver
+    public abstract class AbstractKafkaReceiver<T> : IMessageReceiver
+        where T : MessageReceiverOptions, new()
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
         protected readonly ConsumerConfig _cfg;
-        protected readonly AbstractRepository<MessageReceiverOptions> _rep;
+        protected readonly AbstractRepository<T> _rep;
 
         private int _unknownTopicCounter;
         protected readonly string _logPrefix;
 
         /*****************************************************************************************/
 
-        protected AbstractKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep)
+        protected AbstractKafkaReceiver(AbstractRepository<T> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, GetType());
