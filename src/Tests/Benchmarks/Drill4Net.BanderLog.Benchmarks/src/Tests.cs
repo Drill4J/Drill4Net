@@ -137,7 +137,7 @@ namespace Drill4Net.BanderLog.Benchmarks
         //}
 
         [Benchmark]
-        [Arguments(2500, 2)]
+        [Arguments(10000, 2)]
         [Arguments(2500, 5)]
         [Arguments(2500, 10)]
         public void BanderLogMultiTaskTest(int recordCount, int taskCount)
@@ -146,6 +146,90 @@ namespace Drill4Net.BanderLog.Benchmarks
             for (var i = 0; i < taskCount; i++)
             {
                 tasks[i] = new Task(() => Targets.UseBanderLog(_loggerBanderLog, recordCount, _testString));
+            }
+
+            foreach (var t in tasks)
+                t.Start();
+
+            try
+            {
+                Task.WaitAll(tasks);
+            }
+
+            catch (AggregateException ae)
+            {
+                Console.WriteLine("An exception occurred:");
+                foreach (var ex in ae.Flatten().InnerExceptions)
+                    Console.WriteLine("   {0}", ex.Message);
+            }
+        }
+
+        [Benchmark]
+        [Arguments(10000, 2)]
+        [Arguments(2500, 5)]
+        [Arguments(2500, 10)]
+        public void SerilogMultiTaskTest(int recordCount, int taskCount)
+        {
+            Task[] tasks = new Task[taskCount];
+            for (var i = 0; i < taskCount; i++)
+            {
+                tasks[i] = new Task(() => Targets.UseSerilog(Log.Logger, recordCount, _testString));
+            }
+
+            foreach (var t in tasks)
+                t.Start();
+
+            try
+            {
+                Task.WaitAll(tasks);
+            }
+
+            catch (AggregateException ae)
+            {
+                Console.WriteLine("An exception occurred:");
+                foreach (var ex in ae.Flatten().InnerExceptions)
+                    Console.WriteLine("   {0}", ex.Message);
+            }
+        }
+
+        [Benchmark]
+        [Arguments(10000, 2)]
+        [Arguments(2500, 5)]
+        [Arguments(2500, 10)]
+        public void NLogMultiTaskTest(int recordCount, int taskCount)
+        {
+            Task[] tasks = new Task[taskCount];
+            for (var i = 0; i < taskCount; i++)
+            {
+                tasks[i] = new Task(() => Targets.UseNLog(_loggerNlog, recordCount, _testString));
+            }
+
+            foreach (var t in tasks)
+                t.Start();
+
+            try
+            {
+                Task.WaitAll(tasks);
+            }
+
+            catch (AggregateException ae)
+            {
+                Console.WriteLine("An exception occurred:");
+                foreach (var ex in ae.Flatten().InnerExceptions)
+                    Console.WriteLine("   {0}", ex.Message);
+            }
+        }
+
+        [Benchmark]
+        [Arguments(10000, 2)]
+        [Arguments(2500, 5)]
+        [Arguments(2500, 10)]
+        public void Log4NetMultiTaskTest(int recordCount, int taskCount)
+        {
+            Task[] tasks = new Task[taskCount];
+            for (var i = 0; i < taskCount; i++)
+            {
+                tasks[i] = new Task(() => Targets.UseLog4Net(_log4net, recordCount, _testString));
             }
 
             foreach (var t in tasks)

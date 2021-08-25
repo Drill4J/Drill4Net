@@ -60,26 +60,27 @@ namespace Drill4Net.BanderLog.ManualBenchmarks
             var startDate = DateTime.Now;
             Targets.UseBanderLogMultiTask(_loggerBanderLog, recordCount, _testString, taskCount);
             var finishDate = DateTime.Now;
+            var baseDuration = (finishDate - startDate).TotalSeconds;
             Console.WriteLine($"BanderLogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
-                $"Record count: {recordCount}; Task count:{taskCount}.");
+                $"Record count: {recordCount}; Task count:{taskCount}; Coeff: 1 (base Duration).");
 
             startDate = DateTime.Now;
             Targets.UseSerilogMultiTask(Log.Logger, recordCount, _testString, taskCount);
             finishDate = DateTime.Now;
             Console.WriteLine($"SerilogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
-                $"Record count: {recordCount}; Task count:{taskCount}.");
+                $"Record count: {recordCount}; Task count:{taskCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");
 
             startDate = DateTime.Now;
             Targets.UseNLogMultiTask(_loggerNlog, recordCount, _testString, taskCount);
             finishDate = DateTime.Now;
             Console.WriteLine($"NLogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
-                $"Record count: {recordCount}; Task count:{taskCount}.");
+                $"Record count: {recordCount}; Task count:{taskCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");
 
             startDate = DateTime.Now;
             Targets.UseLog4NetMultiTask(_log4net, recordCount, _testString, taskCount);
             finishDate = DateTime.Now;
             Console.WriteLine($"Log4NetTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
-                $"Record count: {recordCount}; Task count:{taskCount}.");
+                $"Record count: {recordCount}; Task count:{taskCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");
         }
 
         internal void RunSimpleTests(int recordCount)
@@ -87,22 +88,27 @@ namespace Drill4Net.BanderLog.ManualBenchmarks
             var startDate = DateTime.Now;
             Targets.UseBanderLog(_loggerBanderLog, recordCount, _testString);
             var finishDate = DateTime.Now;
-            Console.WriteLine($"BanderLogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; Record count: {recordCount}.");
+            var baseDuration = (finishDate - startDate).TotalSeconds;
+            Console.WriteLine($"BanderLogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
+                $"Record count: {recordCount}; Coeff: 1 (base Duration).");
 
             startDate = DateTime.Now;
             Targets.UseSerilog(Log.Logger, recordCount, _testString);
             finishDate = DateTime.Now;
-            Console.WriteLine($"SerilogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; Record count: {recordCount}.");
+            Console.WriteLine($"SerilogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
+                $"Record count: {recordCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");
 
             startDate = DateTime.Now;
             Targets.UseNLog(_loggerNlog, recordCount, _testString);
             finishDate = DateTime.Now;
-            Console.WriteLine($"NLogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; Record count: {recordCount}.");
+            Console.WriteLine($"NLogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
+                $"Record count: {recordCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");
 
             startDate = DateTime.Now;
             Targets.UseLog4Net(_log4net, recordCount, _testString);
             finishDate = DateTime.Now;
-            Console.WriteLine($"Log4NetTest. Duration: {(finishDate - startDate).TotalSeconds} sec; Record count: {recordCount}.");
+            Console.WriteLine($"Log4NetTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
+                $"Record count: {recordCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");
 
         }
 
