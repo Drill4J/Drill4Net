@@ -166,11 +166,15 @@ namespace Drill4Net.Agent.Service
         {
             if (!_workers.TryRemove(uid, out WorkerInfo worker))
                 return;
+            _pings.TryRemove(uid, out _);
 
             //TODO: more gracefully with command by messaging
-            var pid = worker.PID;
-            var proc = Process.GetProcessById(pid);
-            proc?.Kill();
+            try
+            {
+                var proc = Process.GetProcessById(worker.PID);
+                proc?.Kill();
+            }
+            catch { }
         }
         #endregion
         #region Targets
