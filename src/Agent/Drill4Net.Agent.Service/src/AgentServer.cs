@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.Service
 
         public bool IsStarted { get; private set; }
 
-        private readonly AbstractRepository<AgentServerOptions> _rep;
+        private readonly AbstractAgentServerRepository _rep;
 
         private readonly IPingReceiver _pingReceiver;
         private readonly ITargetInfoReceiver _targetReceiver;
@@ -40,7 +40,7 @@ namespace Drill4Net.Agent.Service
 
         /*****************************************************************************************************/
 
-        public AgentServer(AbstractRepository<AgentServerOptions> rep, ITargetInfoReceiver targetReceiver,
+        public AgentServer(AbstractAgentServerRepository rep, ITargetInfoReceiver targetReceiver,
             IPingReceiver pingReceiver)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.Service
             _pingReceiver = pingReceiver ?? throw new ArgumentNullException(nameof(pingReceiver));
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _pings = new ConcurrentDictionary<Guid, StringDictionary>();
-            _logPrefix = TransportUtils.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
+            _logPrefix = TransportAdmin.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
 
             _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.GetExecutionDir());
             _workerDir = Path.GetDirectoryName(_processName);
@@ -163,9 +163,10 @@ namespace Drill4Net.Agent.Service
                     continue;
                 //
                 Console.WriteLine($"{_logPrefix}Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
+                if (!_workers.TryGetValue(uid, out WorkerInfo worker))
+                    continue;
                 Task.Run(() => CloseWorker(uid));
-
-                //TODO: delete topic!!!
+                Task.Run(() => DeleteTopic(worker.Topic));
             }
         }
 
@@ -186,6 +187,12 @@ namespace Drill4Net.Agent.Service
                 proc?.Kill();
             }
             catch { }
+        }
+
+        internal void DeleteTopic(string topic)
+        {
+            var admin = _rep.GetTransportAdmin();
+            admin.DeleteTopics(_rep.Options.Servers, new List<string> { topic });
         }
         #endregion
         #region Targets
@@ -209,12 +216,12 @@ namespace Drill4Net.Agent.Service
                 return;
 
             //start the Worker
-            var topic = TransportUtils.GetTargetWorkerTopic(sessionUid);
+            var topic = TransportAdmin.GetTargetWorkerTopic(sessionUid);
             var pid = StartAgentWorkerProcess(topic);
             Console.WriteLine($"{_logPrefix}Worker was started with pid={pid} and topic={topic}");
 
             //add local worker info
-            var worker = new WorkerInfo(target, pid);
+            var worker = new WorkerInfo(target, topic, pid);
             if (!_workers.TryAdd(target.SessionUid, worker))
                 return;
 

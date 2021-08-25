@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Worker
 
         public AgentWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
-            _logPrefix = TransportUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(AgentWorker));
+            _logPrefix = TransportAdmin.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(AgentWorker));
 
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));

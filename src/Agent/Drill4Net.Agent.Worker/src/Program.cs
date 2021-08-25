@@ -47,7 +47,7 @@ namespace Drill4Net.Agent.Worker
 
         private static void Init()
         {
-            _logPrefix = TransportUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(Program));
+            _logPrefix = TransportAdmin.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(Program));
             SetCaption();
         }
 

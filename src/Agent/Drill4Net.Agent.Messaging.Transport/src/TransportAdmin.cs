@@ -5,7 +5,7 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
-    public static class TransportUtils
+    public abstract class TransportAdmin
     {
         public static string GetLogPrefix(string subsystem, Type type)
         {
@@ -26,5 +26,8 @@ namespace Drill4Net.Agent.Messaging.Transport
                 targTopics.Add(MessagingConstants.TOPIC_TARGET_INFO);
             return targTopics;
         }
+
+
+        public abstract void DeleteTopics(IEnumerable<string> servers, IEnumerable<string> topicNameList);
     }
 }

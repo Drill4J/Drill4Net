@@ -11,7 +11,7 @@ namespace Drill4Net.Common
     /// <summary>
     /// Root level of Repository's hieararchy
     /// </summary>
-    public class AbstractRepository<TOptions> where TOptions : AbstractOptions, new()
+    public abstract class AbstractRepository<TOptions> where TOptions : AbstractOptions, new()
     {
         /// <summary>
         /// Gets the name of subsystem.
@@ -28,7 +28,7 @@ namespace Drill4Net.Common
 
         /*********************************************************************************/
 
-        public AbstractRepository(string subsystem)
+        protected AbstractRepository(string subsystem)
         {
             Subsystem = subsystem;
         }

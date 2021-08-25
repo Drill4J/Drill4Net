@@ -7,12 +7,14 @@ namespace Drill4Net.Agent.Service
     {
         public TargetInfo Target { get; }
         public int PID { get; }
+        public string Topic { get; }
 
         /******************************************************/
 
-        public WorkerInfo(TargetInfo target, int pID)
+        public WorkerInfo(TargetInfo target, string topic, int pID)
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
+            Topic = topic ?? throw new ArgumentNullException(nameof(topic));
             PID = pID;
         }
     }
