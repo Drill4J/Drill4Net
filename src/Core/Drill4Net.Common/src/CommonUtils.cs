@@ -105,6 +105,8 @@ namespace Drill4Net.Common
 
         public static Assembly TryResolveAssembly(string dir, string context, ResolveEventArgs args, AssemblyResolver resolver, ILogger log)
         {
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
             var name = args.Name;
             log?.LogDebug($"{context}: need resolve the assembly: [{name}]");
             var asm = resolver.Resolve(name, args.RequestingAssembly.Location);
@@ -118,6 +120,8 @@ namespace Drill4Net.Common
 
         public static Assembly TryResolveResource(string dir, string context, ResolveEventArgs args, AssemblyResolver resolver, ILogger log)
         {
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
             var name = args.Name;
             var asm = resolver.ResolveResource(args.RequestingAssembly.Location, name);
             if (asm != null)
@@ -130,6 +134,8 @@ namespace Drill4Net.Common
 
         public static Assembly TryResolveType(string dir, string context, ResolveEventArgs args, ILogger log)
         {
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
             var name = args.Name;
             var info = $"{GetPreciseTime()}|{context}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             log?.LogDebug(info);
