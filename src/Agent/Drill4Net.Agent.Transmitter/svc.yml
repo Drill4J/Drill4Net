@@ -2,6 +2,8 @@
 Type: kafka-transmitter #type as hint
 Servers: # list of servers
    - 'localhost:9093'
+   - 'localhost:9094'
+   - 'localhost:9095'
 Topics: # topics for the probes
     - probes
 Logs:

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Serilog;
-using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
@@ -117,9 +116,9 @@ namespace Drill4Net.Injector.Engine
 
             //the tree's deploying
             tree.RemoveEmpties();
+            tree.FinishTime = DateTime.Now;
             var deployer = new TreeDeployer(runCtx.Repository);
             deployer.Deploy(tree); //copying tree data to target root directories
-            tree.FinishTime = DateTime.Now;
 
             #region Debug
             // debug TODO: to tests

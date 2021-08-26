@@ -78,7 +78,7 @@ namespace Drill4Net.Core.Repository
                 }
                 catch(Exception ex)
                 {
-                    throw new System.Exception($"Tree data not serialized: [{path}].\n{ex}");
+                    throw new System.Exception($"Tree data did't serialized: [{path}].\n{ex}");
                 }
                 return tree;
             }
