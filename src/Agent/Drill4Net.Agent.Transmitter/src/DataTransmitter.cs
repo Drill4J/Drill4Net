@@ -2,6 +2,8 @@
 using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
+using System.Reflection;
+using System.IO;
 
 namespace Drill4Net.Agent.Transmitter
 {
@@ -17,13 +19,22 @@ namespace Drill4Net.Agent.Transmitter
         public ITargetInfoSender InfoSender { get; }
         public IProbeSender ProbeSender { get; }
 
+        /// <summary>
+        /// Directory for the emergency logs out of scope of the common log system
+        /// </summary>
+        public string EmergencyLogDir { get; }
+
         private readonly Pinger _pinger;
+        private readonly AssemblyResolver _resolver;
+        private static readonly string _logPrefix;
         private bool _disposed;
 
         /***********************************************************************************/
 
         static DataTransmitter()
         {
+            _logPrefix = $"{CommonUtils.CurrentProcessId}: {nameof(DataTransmitter)}";
+
             ITargetSenderRepository rep = new TransmitterRepository();
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
@@ -31,9 +42,17 @@ namespace Drill4Net.Agent.Transmitter
 
         public DataTransmitter(ITargetSenderRepository rep)
         {
+            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
+            AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
+            _resolver = new AssemblyResolver();
+
+            EmergencyLogDir = FileUtils.GetEmergencyDir();
+
             //TODO: factory
-            InfoSender = new TargetInfoKafkaSender(rep); //concrete sender the target info to the middleware
-            ProbeSender = new ProbeKafkaSender(rep); //concrete sender the data of probes to the middleware
+            InfoSender = new TargetInfoKafkaSender(rep); //sender the target info
+            ProbeSender = new ProbeKafkaSender(rep); //sender the data of probes
 
             var pingSender = new PingKafkaSender(rep);
             _pinger = new Pinger(rep, pingSender);
@@ -45,6 +64,28 @@ namespace Drill4Net.Agent.Transmitter
         }
 
         /************************************************************************************/
+
+        #region Init
+        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        {
+            CommonUtils.LogFirstChanceException(EmergencyLogDir, _logPrefix, e.Exception);
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return CommonUtils.TryResolveAssembly(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
+        }
+
+        private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
+        {
+            return CommonUtils.TryResolveResource(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
+        }
+
+        private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
+        {
+            return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
+        }
+        #endregion
 
         internal void SendTargetInfo(byte[] info)
         {
