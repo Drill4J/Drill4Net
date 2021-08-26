@@ -28,7 +28,7 @@ namespace Drill4Net.Agent.Service
         private readonly ConcurrentDictionary<Guid, StringDictionary> _pings;
         private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
 
-        private const long _oldPingTickDelta = 30000000; //3 sec
+        private const long _oldPingTickDelta = 50000000; //3 sec
 
         private Timer _timeoutTimer;
         private bool _inPingCheck;

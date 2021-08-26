@@ -3,7 +3,6 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using System.Reflection;
-using System.IO;
 
 namespace Drill4Net.Agent.Transmitter
 {
