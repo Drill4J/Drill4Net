@@ -41,11 +41,12 @@ namespace Drill4Net.Agent.Transmitter
 
         public DataTransmitter(ITargetSenderRepository rep)
         {
-            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
-            AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
-            _resolver = new AssemblyResolver();
+            //TODO: find out - on IHS adoption it falls
+            //AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+            //AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            //AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
+            //AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
+            //_resolver = new AssemblyResolver();
 
             EmergencyLogDir = FileUtils.GetEmergencyDir();
 
@@ -65,25 +66,26 @@ namespace Drill4Net.Agent.Transmitter
         /************************************************************************************/
 
         #region Init
-        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
-        {
-            CommonUtils.LogFirstChanceException(EmergencyLogDir, _logPrefix, e.Exception);
-        }
+        //TODO: find out - on IHS adoption it falls
+        //private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        //{
+        //    CommonUtils.LogFirstChanceException(EmergencyLogDir, _logPrefix, e.Exception);
+        //}
 
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            return CommonUtils.TryResolveAssembly(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
-        }
+        //private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        //{
+        //    return CommonUtils.TryResolveAssembly(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
+        //}
 
-        private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
-        {
-            return CommonUtils.TryResolveResource(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
-        }
+        //private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
+        //{
+        //    return CommonUtils.TryResolveResource(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
+        //}
 
-        private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
-        {
-            return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
-        }
+        //private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
+        //{
+        //    return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
+        //}
         #endregion
 
         internal void SendTargetInfo(byte[] info)
