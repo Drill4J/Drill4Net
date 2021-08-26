@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Messaging
             _state = new StringDictionary
             {
                 { MessagingConstants.PING_SUBSYSTEM, rep.Subsystem },
-                { MessagingConstants.PING_TARGET_NAME, rep.Target },
+                { MessagingConstants.PING_TARGET_NAME, rep.TargetName },
                 { MessagingConstants.PING_TARGET_SESSION, rep.TargetSession.ToString() },
                 { MessagingConstants.PING_TIME, GetTime() },
                 { MessagingConstants.PING_MEMORY, GetMemory() },
