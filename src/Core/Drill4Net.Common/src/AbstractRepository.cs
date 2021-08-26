@@ -72,7 +72,7 @@ namespace Drill4Net.Common
             Log.Logger = cfg.CreateLogger();
         }
 
-        internal void AddLogOption(LoggerConfiguration cfg, LogOptions logOpt, LoggerHelper helper)
+        internal void AddLogOption(LoggerConfiguration cfg, LogData logOpt, LoggerHelper helper)
         {
             //https://github.com/serilog/serilog/wiki/Configuration-Basics#overriding-per-sink
             var seriLvl = ConvertToSerilogLogLevel(logOpt.Level);

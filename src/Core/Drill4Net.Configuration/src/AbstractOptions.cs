@@ -20,7 +20,7 @@ namespace Drill4Net.Configuration
         /// <value>
         /// The logs' options.
         /// </value>
-        public List<LogOptions> Logs { get; set; }
+        public List<LogData> Logs { get; set; }
 
         /// <summary>
         /// Description for the entity config/process/app

@@ -38,7 +38,7 @@ namespace Drill4Net.Core.Repository
                 return Path.Combine(dir, defName);
             Deserializer deser = new();
             var cfg = File.ReadAllText(redirectPath);
-            var redirect = deser.Deserialize<RedirectOptions>(cfg);
+            var redirect = deser.Deserialize<RedirectData>(cfg);
             var path = redirect?.Path;
             if (!path.EndsWith(".yml"))
                 path += ".yml";

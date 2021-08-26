@@ -75,7 +75,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="typeCtx">Type's context</param>
         /// <param name="opts">Options for method filtering</param>
         /// <returns></returns>
-        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, ProbesOptions opts)
+        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext typeCtx, ProbeData opts)
         {
             return GetMethods(typeCtx, null, opts);
         }
@@ -88,7 +88,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="linkType">Current nested type in the <paramref name="rootTypeCtx"/></param>
         /// <param name="opts">Options for the method filtering</param>
         /// <returns></returns>
-        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext rootTypeCtx, TypeDefinition linkType, ProbesOptions opts)
+        internal static IEnumerable<MethodDefinition> GetMethods(TypeContext rootTypeCtx, TypeDefinition linkType, ProbeData opts)
         {
             #region Own methods
             var type = linkType ?? rootTypeCtx.Definition;
@@ -183,7 +183,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="type">The type definition</param>
         /// <param name="probOpts">Options for the filtering</param>
         /// <returns></returns>
-        internal static IEnumerable<MethodDefinition> FilterMethods(TypeDefinition type, ProbesOptions probOpts)
+        internal static IEnumerable<MethodDefinition> FilterMethods(TypeDefinition type, ProbeData probOpts)
         {
             var isAngleBracket = type.Name.StartsWith("<");
             var fltMethods = type.Methods

@@ -6,7 +6,7 @@ namespace Drill4Net.Configuration
     /// Options for the injecting process (types of methods, cross-points, etc)
     /// </summary>
     [Serializable]
-    public class ProbesOptions
+    public class ProbeData
     {
         /// <summary>
         /// Need private methods?
@@ -53,7 +53,7 @@ namespace Drill4Net.Configuration
         /// <summary>
         /// Create options for the injecting process (types of methods, cross-points, etc)
         /// </summary>
-        public ProbesOptions()
+        public ProbeData()
         {
             Private = true;
             Ctor = true;

@@ -7,7 +7,7 @@ namespace Drill4Net.Injector.Core
     /// Options for the Injector App
     /// </summary>
     [Serializable]
-    public class InjectorOptions : BaseTargetOptions
+    public class InjectorOptions : TargetOptions
     {
         /// <summary>
         /// Options for the Source of the Target (instrumenting App) - what and how processing
@@ -37,12 +37,12 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Options for the injecting process (types of methods, cross-points, etc)
         /// </summary>
-        public ProbesOptions Probes { get; set; }
+        public ProbeData Probes { get; set; }
 
         /// <summary>
         /// Parameters for the target object versions to be processed
         /// </summary>
-        public VersionOptions Versions { get; set; }
+        public VersionData Versions { get; set; }
 
         /// <summary>
         /// Is the silent mode set (no interactive with defaults for the Injector)?
