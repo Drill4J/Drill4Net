@@ -17,9 +17,24 @@ namespace Drill4Net.Common
     {
         public static int CurrentProcessId { get; }
 
+        /******************************************************************/
+
         static CommonUtils()
         {
             CurrentProcessId = Process.GetCurrentProcess().Id;
+        }
+
+        /******************************************************************/
+
+        public static string GetAppVersion()
+        {
+            var asm = Assembly.GetExecutingAssembly();
+            return FileUtils.GetProductVersion(asm.Location);
+        }
+
+        public static string GetAppName()
+        {
+            return Assembly.GetEntryAssembly().GetName().Name;
         }
 
         #region TargetVersioning

@@ -12,6 +12,6 @@
 
         /*****************************************************************************/
 
-        public abstract TransportAdmin GetTransportAdmin();
+        public abstract AbstractTransportAdmin GetTransportAdmin();
     }
 }

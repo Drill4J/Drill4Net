@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.Service
             _pingReceiver = pingReceiver ?? throw new ArgumentNullException(nameof(pingReceiver));
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _pings = new ConcurrentDictionary<Guid, StringDictionary>();
-            _logPrefix = TransportAdmin.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
+            _logPrefix = MessagingUtils.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
 
             _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.GetExecutionDir());
             _workerDir = Path.GetDirectoryName(_processName);

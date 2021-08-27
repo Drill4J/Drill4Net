@@ -1,8 +1,8 @@
 ﻿using System;
 using Serilog;
 using Drill4Net.Common;
-using Drill4Net.Agent.Messaging.Transport;
 using System.Diagnostics;
+using Drill4Net.Agent.Messaging;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -47,7 +47,7 @@ namespace Drill4Net.Agent.Worker
 
         private static void Init()
         {
-            _logPrefix = TransportAdmin.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(Program));
+            _logPrefix = MessagingUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(Program));
             SetCaption();
         }
 

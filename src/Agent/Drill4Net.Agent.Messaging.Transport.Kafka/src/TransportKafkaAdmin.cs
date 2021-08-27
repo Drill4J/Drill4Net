@@ -5,7 +5,7 @@ using Confluent.Kafka;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class TransportKafkaAdmin : TransportAdmin
+    public class TransportKafkaAdmin : AbstractTransportAdmin
     {
         public override void DeleteTopics(IEnumerable<string> brokerList, IEnumerable<string> topicNameList)
         {

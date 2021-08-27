@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,15 @@ using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
+
+//automatic version tagger including Git info
+//https://github.com/devlooped/GitInfo
+[assembly: AssemblyInformationalVersion(
+      ThisAssembly.Git.SemVer.Major + "." +
+      ThisAssembly.Git.SemVer.Minor + "." +
+      ThisAssembly.Git.SemVer.Patch + "-" +
+      ThisAssembly.Git.Branch + "+" +
+      ThisAssembly.Git.Commit)]
 
 namespace Drill4Net.Agent.Service
 {
@@ -20,8 +30,8 @@ namespace Drill4Net.Agent.Service
         {
             _logger = logger;
             //
-            var appName = ServiceUtils.GetAppName();
-            var version = ServiceUtils.GetAppVersion();
+            var appName = CommonUtils.GetAppName();
+            var version = CommonUtils.GetAppVersion();
             var title = $"{appName} {version}";
             _logger.LogInformation($"{nameof(ServerHost)} created: {title}");
         }

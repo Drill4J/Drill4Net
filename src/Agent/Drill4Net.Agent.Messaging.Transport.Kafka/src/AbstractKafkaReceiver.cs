@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         protected AbstractKafkaReceiver(AbstractRepository<T> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            _logPrefix = TransportAdmin.GetLogPrefix(rep.Subsystem, GetType());
+            _logPrefix = MessagingUtils.GetLogPrefix(rep.Subsystem, GetType());
             var opts = _rep.Options;
 
             _cfg = new ConsumerConfig

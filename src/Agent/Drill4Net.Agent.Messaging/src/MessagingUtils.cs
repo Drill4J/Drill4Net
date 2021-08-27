@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Messaging
 {
@@ -28,6 +30,11 @@ namespace Drill4Net.Agent.Messaging
         public static string GetProbeTopic(string sessionUid)
         {
             return $"{MessagingConstants.TOPIC_PROBE_PREFIX}_{sessionUid}";
+        }
+
+        public static string GetLogPrefix(string subsystem, Type type)
+        {
+            return $"{subsystem}|{CommonUtils.CurrentProcessId}|{type.Name}|";
         }
     }
 }
