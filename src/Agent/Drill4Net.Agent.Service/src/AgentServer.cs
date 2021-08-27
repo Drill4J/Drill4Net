@@ -166,7 +166,8 @@ namespace Drill4Net.Agent.Service
                 if (!_workers.TryGetValue(uid, out WorkerInfo worker))
                     continue;
                 Task.Run(() => CloseWorker(uid));
-                Task.Run(() => DeleteTopic(worker.Topic));
+                Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
+                Task.Run(() => DeleteTopic(worker.ProbeTopic));
             }
         }
 
@@ -216,18 +217,19 @@ namespace Drill4Net.Agent.Service
                 return;
 
             //start the Worker
-            var topic = MessagingUtils.GetTargetWorkerTopic(sessionUid.ToString());
+            var trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid.ToString());
+            var probeTopic = MessagingUtils.GetProbeTopic(sessionUid.ToString());
             var pid = StartAgentWorkerProcess(target.SessionUid);
-            Console.WriteLine($"{_logPrefix}Worker was started with pid={pid} and topic={topic}");
+            Console.WriteLine($"{_logPrefix}Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
 
             //add local worker info
-            var worker = new WorkerInfo(target, topic, pid);
+            var worker = new WorkerInfo(target, trgTopic, probeTopic, pid);
             if (!_workers.TryAdd(target.SessionUid, worker))
                 return;
 
             //send to worker the info
-            SendTargetInfoToAgentWorker(topic, target);
-            Console.WriteLine($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={topic}");
+            SendTargetInfoToAgentWorker(trgTopic, target);
+            Console.WriteLine($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={trgTopic}");
         }
 
         internal int StartAgentWorkerProcess(Guid targetSession)

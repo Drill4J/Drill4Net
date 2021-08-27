@@ -76,12 +76,14 @@ namespace Drill4Net.Agent.Messaging.Kafka
         #endregion
         #region Producer
         protected abstract void CreateProducers();
+
         private ProducerConfig CreateBaseProducerConfig(MessageSenderOptions opts)
         {
             return new ProducerConfig
             {
                 BootstrapServers = string.Join(",", opts.Servers),
                 MessageMaxBytes = MessagingConstants.MaxMessageSize,
+                Acks = Acks.None, //no acks for real writing messaging
             };
         }
 

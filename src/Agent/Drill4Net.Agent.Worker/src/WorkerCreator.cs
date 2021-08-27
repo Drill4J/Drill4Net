@@ -32,9 +32,16 @@ namespace Drill4Net.Agent.Worker
         {
             var opts = GetBaseOptions(_args);
             var targetSession = GetTargetSession(_args);
+            Console.WriteLine($"WORKER SESSION = {targetSession}");
+
             var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
             if (!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Topics.Add(targetTopic);
+
+            var probeTopic = MessagingUtils.GetProbeTopic(targetSession);
+            if (!string.IsNullOrWhiteSpace(probeTopic))
+                opts.Topics.Add(probeTopic);
+
             return new AgentWorkerRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, opts);
         }
 

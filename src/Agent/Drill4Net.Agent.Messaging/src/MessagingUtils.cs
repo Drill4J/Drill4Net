@@ -12,10 +12,7 @@ namespace Drill4Net.Agent.Messaging
 
         public static List<string> FilterProbeTopics(IEnumerable<string> topics)
         {
-            var targTopics = topics?.Where(a => a.StartsWith($"{MessagingConstants.TOPIC_PROBE_PREFIX}")).ToList();
-            if (!targTopics.Any())
-                targTopics.Add(MessagingConstants.TOPIC_TARGET_INFO);
-            return targTopics;
+            return topics?.Where(a => a.StartsWith($"{MessagingConstants.TOPIC_PROBE_PREFIX}")).ToList();
         }
 
         public static List<string> FilterTargetTopics(IEnumerable<string> topics)
@@ -28,7 +25,7 @@ namespace Drill4Net.Agent.Messaging
             return targTopics;
         }
 
-        public static string GetPobeTopic(string sessionUid)
+        public static string GetProbeTopic(string sessionUid)
         {
             return $"{MessagingConstants.TOPIC_PROBE_PREFIX}_{sessionUid}";
         }
