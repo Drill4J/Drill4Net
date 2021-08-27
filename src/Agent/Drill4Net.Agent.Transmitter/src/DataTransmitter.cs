@@ -3,6 +3,7 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using System.Reflection;
+using System.Collections.Concurrent;
 
 namespace Drill4Net.Agent.Transmitter
 {
@@ -23,6 +24,7 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         public string EmergencyLogDir { get; }
 
+        private static ConcurrentDictionary<string, bool> _probes;
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
         private static readonly string _logPrefix;
@@ -49,6 +51,7 @@ namespace Drill4Net.Agent.Transmitter
             //_resolver = new AssemblyResolver();
 
             EmergencyLogDir = FileUtils.GetEmergencyDir();
+            _probes = new ConcurrentDictionary<string, bool>();
 
             //TODO: factory
             InfoSender = new TargetInfoKafkaSender(rep); //sender the target info
@@ -99,6 +102,8 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="data">The cross-point data.</param>
         public static void Transmit(string data)
         {
+            if (!_probes.TryAdd(data, true))
+                return;
             var ctx = Contexter.GetContextId();
             Transmitter.SendProbe(data, ctx);
         }
