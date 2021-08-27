@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Service
             _logger = logger;
             //
             var appName = CommonUtils.GetAppName();
-            var version = CommonUtils.GetAppVersion();
+            var version = FileUtils.GetProductVersion(typeof(AgentServer));
             var title = $"{appName} {version}";
             _logger.LogInformation($"{nameof(ServerHost)} created: {title}");
         }
