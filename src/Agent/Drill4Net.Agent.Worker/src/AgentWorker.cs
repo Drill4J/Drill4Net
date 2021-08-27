@@ -54,16 +54,16 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            Console.WriteLine($"{_logPrefix}{nameof(TargetInfo)} has received");
+            Console.WriteLine($"{_logPrefix}{nameof(TargetInfo)} received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} has initialized");
+            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} initialized");
 
-            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} has started to receive probes...");
+            Console.WriteLine($"{_logPrefix}{nameof(AgentWorker)} starts receiving probes...");
             _probeReceiver.Start();
         }
 

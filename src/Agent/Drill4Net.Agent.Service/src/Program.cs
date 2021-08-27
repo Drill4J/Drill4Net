@@ -1,6 +1,5 @@
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Drill4Net.Agent.Service
 {

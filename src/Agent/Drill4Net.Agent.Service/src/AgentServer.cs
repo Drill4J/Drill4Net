@@ -30,6 +30,7 @@ namespace Drill4Net.Agent.Service
 
         private const long _oldPingTickDelta = 50000000; //3 sec
 
+        private AbstractTransportAdmin _admin;
         private Timer _timeoutTimer;
         private bool _inPingCheck;
         private readonly string _cfgPath;
@@ -49,6 +50,7 @@ namespace Drill4Net.Agent.Service
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _pings = new ConcurrentDictionary<Guid, StringDictionary>();
             _logPrefix = MessagingUtils.GetLogPrefix(rep.Subsystem, typeof(AgentServer));
+            _admin = _rep.GetTransportAdmin();
 
             _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.GetExecutionDir());
             _workerDir = Path.GetDirectoryName(_processName);
@@ -192,8 +194,7 @@ namespace Drill4Net.Agent.Service
 
         internal void DeleteTopic(string topic)
         {
-            var admin = _rep.GetTransportAdmin();
-            admin.DeleteTopics(_rep.Options.Servers, new List<string> { topic });
+            _admin.DeleteTopics(_rep.Options.Servers, new List<string> { topic });
         }
         #endregion
         #region Targets

@@ -23,8 +23,8 @@ namespace Drill4Net.Agent.Service
             Subsystem = CoreConstants.SUBSYSTEM_AGENT_SERVER;
             _targetInfo = targetInfo ?? throw new ArgumentNullException(nameof(targetInfo));
             SenderOptions = senderOptions ?? throw new ArgumentNullException(nameof(senderOptions));
-            TargetSession = targetInfo.SessionUid;
             TargetName = targetInfo.TargetName ?? targetInfo.Solution?.Name;
+            TargetSession = targetInfo.SessionUid;
         }
 
         /*******************************************************************************/
