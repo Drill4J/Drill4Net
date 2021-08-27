@@ -28,9 +28,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Kafka\Drill4Net.Agent.Messaging.Kafka.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport.Kafka\Drill4Net.Agent.Messaging.Transport.Kafka.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport\Drill4Net.Agent.Messaging.Transport.csproj" />
-    <ProjectReference Include="..\Drill4Net.Agent.Worker\Drill4Net.Agent.Worker.csproj" />
   </ItemGroup>
 
   <ItemGroup>
