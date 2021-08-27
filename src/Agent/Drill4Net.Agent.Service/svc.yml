@@ -5,8 +5,8 @@ Servers: # list of servers
    - 'localhost:9094'
    - 'localhost:9095'
 GroupId: dodnet-agent
-Topics:  # topics for the probes
-    - probes
+#Topics: # additional topics for the probes
+#    #- probes
 WorkerPath: ..\..\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe 
 Logs:
     - Type: console

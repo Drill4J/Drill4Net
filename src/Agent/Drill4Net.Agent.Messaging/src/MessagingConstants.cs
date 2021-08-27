@@ -19,8 +19,10 @@
         public const string MESSAGE_TYPE_TARGET_INFO = "Target";
         #endregion
         #region Topics
-        public const string TOPIC_PING = "ping";
-        public const string TOPIC_TARGET_INFO = "target-info";
+        public const string TOPIC_PREFIX = "d4n";
+        public static readonly string TOPIC_PING = $"{TOPIC_PREFIX}-ping";
+        public static readonly string TOPIC_TARGET_INFO = $"{TOPIC_PREFIX}-server-target-info";
+        public static readonly string TOPIC_PROBE_PREFIX = $"{TOPIC_PREFIX}-probes";
         #endregion
         #region Ping data
         public const string PING_SUBSYSTEM = "subsystem";
@@ -30,10 +32,7 @@
 
         public const string PING_MEMORY = "working_set";
         #endregion
-        #region Environment
 
-        #endregion
-
-        public const int MaxMessageSize = 1000000;
+        public const int MaxMessageSize = 1000000; //even 1 megabyte is too large
     }
 }

@@ -21,8 +21,11 @@ namespace Drill4Net.Agent.Messaging.Kafka
             _infoProducer = new ProducerBuilder<Null, byte[]>(_cfg).Build();
         }
 
-        public int SendTargetInfo(byte[] info, string topic = MessagingConstants.TOPIC_TARGET_INFO)
+        public int SendTargetInfo(byte[] info, string topic)
         {
+            if (string.IsNullOrWhiteSpace(topic))
+                topic = MessagingConstants.TOPIC_TARGET_INFO;
+
             SetHeaderValue<Guid>(MessagingConstants.HEADER_REQUEST, _rep.TargetSession);
             SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, info.Length);
 
@@ -64,8 +67,11 @@ namespace Drill4Net.Agent.Messaging.Kafka
             return LastError == null ? 0 : -2;
         }
 
-        private int SendPacket(byte[] packet, string topic = MessagingConstants.TOPIC_TARGET_INFO)
+        private int SendPacket(byte[] packet, string topic = null)
         {
+            if (string.IsNullOrWhiteSpace(topic))
+                topic = MessagingConstants.TOPIC_TARGET_INFO;
+            //
             var mess = new Message<Null, byte[]> { Value = packet, Headers = _headers };
             _infoProducer.Produce(topic, mess, HandleBytesData);
             return LastError == null ? 0 : -2;

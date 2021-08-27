@@ -38,7 +38,12 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         protected override void CreateProducers()
         {
-            _probeTopics = _rep.SenderOptions.Topics;
+            //topics
+            _probeTopics = _rep.SenderOptions.Topics ?? new List<string>(); //additional probe topics from cfg
+            var baseProbeTopic = MessagingUtils.GetPobeTopic(_rep.TargetSession.ToString()); //the base one
+            _probeTopics.Add(baseProbeTopic);
+
+            //producer
             _probeProducer = new ProducerBuilder<Null, Probe>(_cfg)
                 .SetValueSerializer(new ProbeSerializer())
                 .Build();

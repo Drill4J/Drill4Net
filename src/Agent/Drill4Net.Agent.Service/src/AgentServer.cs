@@ -216,8 +216,8 @@ namespace Drill4Net.Agent.Service
                 return;
 
             //start the Worker
-            var topic = TransportAdmin.GetTargetWorkerTopic(sessionUid);
-            var pid = StartAgentWorkerProcess(topic);
+            var topic = MessagingUtils.GetTargetWorkerTopic(sessionUid.ToString());
+            var pid = StartAgentWorkerProcess(target.SessionUid);
             Console.WriteLine($"{_logPrefix}Worker was started with pid={pid} and topic={topic}");
 
             //add local worker info
@@ -230,21 +230,20 @@ namespace Drill4Net.Agent.Service
             Console.WriteLine($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={topic}");
         }
 
-        internal int StartAgentWorkerProcess(string topic)
+        internal int StartAgentWorkerProcess(Guid targetSession)
         {
             var process = new Process
             {
                 StartInfo =
                 {
                     FileName = _processName,
-                    Arguments = $"{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} {MessagingTransportConstants.ARGUMENT_TARGET_TOPIC}={topic}",
+                    Arguments = $"{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} {MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession}",
                     WorkingDirectory = _workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
                 }
             };
             process.Start();
-
             return process.Id;
         }
 

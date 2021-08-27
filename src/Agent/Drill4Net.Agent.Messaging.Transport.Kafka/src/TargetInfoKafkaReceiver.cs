@@ -38,15 +38,15 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrieveTargets()
         {
-            Console.WriteLine($"{_logPrefix}Starting retrieving target info...");
+            Console.WriteLine($"{_logPrefix}Start retrieving target info...");
 
             var targets = new Dictionary<Guid, List<byte[]>>();
             if (_cts == null)
                 _cts = new();
 
-            var opts = _rep.Options;
-            var topics = TransportAdmin.FilterTargetTopics(opts.Topics);
-            Console.WriteLine($"{_logPrefix}Topics: {string.Join(",", topics)}");
+            var opts = _rep.Options; //can contains diferent topics
+            var topics = MessagingUtils.FilterTargetTopics(opts.Topics); //get only target info topics
+            Console.WriteLine($"{_logPrefix}Target info topics: {string.Join(",", topics)}");
 
             using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
             c.Subscribe(topics);

@@ -37,15 +37,17 @@ namespace Drill4Net.Agent.Worker
 
         private void RetrieveProbes()
         {
-            Console.WriteLine($"{_logPrefix}Starting retrieving probes...");
+            Console.WriteLine($"{_logPrefix}Start retrieving probes...");
 
-            var opts = _rep.Options;
             _probesCts = new();
+            var opts = _rep.Options;
+            var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
+            Console.WriteLine($"{_logPrefix}Probe topics: {string.Join(",", probeTopics)}");
 
             using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
                 .SetValueDeserializer(new ProbeDeserializer())
                 .Build();
-            c.Subscribe(opts.Topics);
+            c.Subscribe(probeTopics);
 
             try
             {

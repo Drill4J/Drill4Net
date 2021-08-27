@@ -36,7 +36,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrievePings()
         {
-            Console.WriteLine($"{_logPrefix}Starting retrieving pings...");
+            Console.WriteLine($"{_logPrefix}Start retrieving pings...");
 
             if (_cts == null)
                 _cts = new();

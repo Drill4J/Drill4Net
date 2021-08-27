@@ -1,5 +1,6 @@
 ﻿using System;
 using Drill4Net.Common;
+using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
 
@@ -30,15 +31,16 @@ namespace Drill4Net.Agent.Worker
         internal virtual AbstractRepository<MessageReceiverOptions> GetRepository()
         {
             var opts = GetBaseOptions(_args);
-            var targetTopic = GetTargetTopic(_args);
-            if(!string.IsNullOrWhiteSpace(targetTopic))
+            var targetSession = GetTargetSession(_args);
+            var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
+            if (!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Topics.Add(targetTopic);
             return new AgentWorkerRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, opts);
         }
 
-        private string GetTargetTopic(string[] args)
+        private string GetTargetSession(string[] args)
         {
-            return AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_TOPIC);
+            return AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
         }
 
         internal virtual MessageReceiverOptions GetBaseOptions(string[] args)

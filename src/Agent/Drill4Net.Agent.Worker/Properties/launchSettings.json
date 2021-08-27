@@ -5,7 +5,7 @@
     },
     "WithArgs": {
       "commandName": "Project",
-      "commandLineArgs": "cfg_path=d:\\Projects\\EPM-D4J\\Drill4Net\\build\\bin\\Debug\\Drill4Net.Agent.Service\\net5.0\\svc.yml target_topic=target-info_8832120a-bef1-4e5d-a370-db8e148ce495"
+      "commandLineArgs": "cfg_path=d:\\Projects\\EPM-D4J\\Drill4Net\\build\\bin\\Debug\\Drill4Net.Agent.Service\\net5.0\\svc.yml target_session=8832120a-bef1-4e5d-a370-db8e148ce495"
     }
   }
 }
