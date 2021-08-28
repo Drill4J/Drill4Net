@@ -7,7 +7,7 @@ namespace Drill4Net.Agent.Messaging.Transport
 {
     public class MessageReceiverRepository<T> : AbstractRepository<T> where T: MessageReceiverOptions, new()
     {
-        public MessageReceiverRepository(string subsystem, string cfgPath = null): 
+        public MessageReceiverRepository(string subsystem, string cfgPath = null):
             this(subsystem, GetOptionsByPath(cfgPath))
         {
         }

@@ -11,6 +11,7 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.Agent.Service
 {
@@ -31,6 +32,7 @@ namespace Drill4Net.Agent.Service
         private const long _oldPingTickDelta = 50000000; //3 sec
 
         private readonly AbstractTransportAdmin _admin;
+        private ILogger<AgentServer> _logger;
         private Timer _timeoutTimer;
         private bool _inPingCheck;
         private readonly string _cfgPath;

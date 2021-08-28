@@ -3,12 +3,15 @@ using Microsoft.Extensions.Logging;
 using Drill4Net.BanderLog.Sinks;
 using Drill4Net.BanderLog.Sinks.Console;
 using Drill4Net.BanderLog.Sinks.File;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Drill4Net.BanderLog
 {
-    public class LogBuilder
+    public class LogBuilder : ILoggingBuilder
     {
         private readonly Logger _log;
+
+        public IServiceCollection Services => throw new NotImplementedException();
 
         /*****************************************************************/
 
