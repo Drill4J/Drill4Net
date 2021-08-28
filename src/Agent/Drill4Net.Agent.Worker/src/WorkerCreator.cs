@@ -3,6 +3,7 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -22,7 +23,7 @@ namespace Drill4Net.Agent.Worker
         public virtual IMessageReceiver CreateWorker()
         {
             var rep = GetRepository();
-            IProbeReceiver probeReceiver = new ProbeReceiver(rep);
+            IProbeReceiver probeReceiver = new ProbeKafkaReceiver(rep);
             ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessageReceiverOptions>(rep);
             var worker = new AgentWorker(targetReceiver, probeReceiver);
             return worker;

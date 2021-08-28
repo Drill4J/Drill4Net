@@ -5,8 +5,9 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Drill4Net.Configuration;
+using Drill4Net.Common;
 
-namespace Drill4Net.Common
+namespace Drill4Net.Core.Repository
 {
     /// <summary>
     /// Root level of Repository's hieararchy

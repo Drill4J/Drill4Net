@@ -55,7 +55,7 @@ namespace Drill4Net.BanderLog.Benchmarks
             
 
             //Serilog
-            Log.Logger = new LoggerConfiguration()
+            Serilog.Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(_fileNameSeriLog)
                 .CreateLogger();
 
@@ -98,7 +98,7 @@ namespace Drill4Net.BanderLog.Benchmarks
         [Arguments(10000)]
         public void SerilogTest(int recordCount)
         {
-            Targets.UseSerilog(Log.Logger, recordCount, _testString);
+            Targets.UseSerilog(Serilog.Log.Logger, recordCount, _testString);
         }
 
         [Benchmark]
@@ -173,7 +173,7 @@ namespace Drill4Net.BanderLog.Benchmarks
             Task[] tasks = new Task[taskCount];
             for (var i = 0; i < taskCount; i++)
             {
-                tasks[i] = new Task(() => Targets.UseSerilog(Log.Logger, recordCount, _testString));
+                tasks[i] = new Task(() => Targets.UseSerilog(Serilog.Log.Logger, recordCount, _testString));
             }
 
             foreach (var t in tasks)

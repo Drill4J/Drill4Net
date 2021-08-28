@@ -1,6 +1,6 @@
 ﻿using System;
 using Confluent.Kafka;
-using Drill4Net.Common;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {

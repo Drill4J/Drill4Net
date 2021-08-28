@@ -8,6 +8,7 @@ using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Configuration;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Target.Tests.Common
 {

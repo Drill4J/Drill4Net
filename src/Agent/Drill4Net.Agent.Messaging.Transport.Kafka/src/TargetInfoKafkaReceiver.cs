@@ -4,6 +4,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Confluent.Kafka;
 using Drill4Net.Common;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -18,8 +19,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         /****************************************************************************************/
 
-        public TargetInfoKafkaReceiver(AbstractRepository<T> rep,
-            CancellationTokenSource cts = null): base(rep)
+        public TargetInfoKafkaReceiver(AbstractRepository<T> rep, CancellationTokenSource cts = null): 
+            base(rep)
         {
             _cts = cts;
         }
