@@ -2,13 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using Serilog;
 using NUnit.Framework;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Configuration;
 using Drill4Net.Core.Repository;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -74,7 +74,7 @@ namespace Drill4Net.Target.Tests.Common
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Creating {nameof(TestEngineRepository)} is failed");
+                Log.Fatal($"Creating {nameof(TestEngineRepository)} is failed", ex);
             }
         }
 

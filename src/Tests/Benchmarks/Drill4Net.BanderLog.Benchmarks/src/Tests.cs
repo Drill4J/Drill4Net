@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.IO;
-using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Serilog;
 using Drill4Net.BanderLog.Sinks.File;
 using System.Threading.Tasks;
-using log4net;
 using log4net.Config;
-using System.Reflection;
 using log4net.Layout;
 using log4net.Appender;
 

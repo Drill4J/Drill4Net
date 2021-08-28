@@ -1,8 +1,8 @@
 ﻿using System;
-using Serilog;
 using Drill4Net.Common;
 using System.Diagnostics;
 using Drill4Net.Agent.Messaging;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Worker
 {

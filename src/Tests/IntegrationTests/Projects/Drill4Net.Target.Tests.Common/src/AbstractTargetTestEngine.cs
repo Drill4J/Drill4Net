@@ -5,9 +5,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Serilog;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -36,7 +36,7 @@ namespace Drill4Net.Target.Tests.Common
             {
                 _testsRep = new TestEngineRepository();
                 LoadTreeData();
-                Log.Information("Engine is initialized.");
+                Log.Info("Engine is initialized.");
             }
             catch (Exception ex)
             {

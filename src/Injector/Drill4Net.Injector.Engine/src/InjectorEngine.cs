@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Serilog;
+using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
@@ -67,7 +67,7 @@ namespace Drill4Net.Injector.Engine
             var monikers = opts.Versions?.Targets;
             Log.Debug("The source is copying...");
             _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the filter
-            Log.Information("The source is copied");
+            Log.Info("The source is copied");
 
             //tree
             var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
@@ -152,7 +152,7 @@ namespace Drill4Net.Injector.Engine
             var isRoot = runCtx.SourceDirectory == runCtx.RootDirectory;
             if (!isRoot && !opts.Source.Filter.IsFolderNeed(folder))
                 return false;
-            Log.Information("Processing dir [{Directory}]", directory);
+            Log.Info($"Processing dir [{directory}]");
 
             //files
             var files = _rep.GetAssemblies(directory);
@@ -202,12 +202,12 @@ namespace Drill4Net.Injector.Engine
                 //processing
                 runCtx.Inject(asmCtx);
 
-                Log.Debug("Injected: [{File}]", runCtx.SourceFile);
+                Log.Debug($"Injected: [{runCtx.SourceFile}]");
 
                 //writing modified assembly and symbols to new file
                 var writer = new AssemblyWriter();
                 var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-                Log.Information("Writed: [{ModifiedPath}]", modifiedPath);
+                Log.Info($"Writed: [{modifiedPath}]");
             }
             catch (Exception ex)
             {

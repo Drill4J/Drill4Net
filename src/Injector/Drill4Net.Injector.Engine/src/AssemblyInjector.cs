@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Serilog;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -175,7 +175,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Handling instruction: {ctx.ModuleName}; {ctx.Method.FullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}");
+                Log.Error($"Handling instruction: {ctx.ModuleName}; {ctx.Method.FullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}", ex);
                 throw;
             }
         }

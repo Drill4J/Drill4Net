@@ -22,9 +22,9 @@ namespace Drill4Net.BanderLog
 
         /*****************************************************************/
 
-        public LogBuilder AddSink(ILogSink sink)
+        public LogBuilder AddSink(AbstractSink sink)
         {
-            _log.Sinks.Add(sink);
+            _log.AddSink(sink);
             return this;
         }
 
@@ -41,10 +41,10 @@ namespace Drill4Net.BanderLog
         public Logger CreateStandardLogger(string filepath = null)
         {
             var console = new ConsoleSink();
-            _log.Sinks.Add(console);
+            _log.AddSink(console);
             //
             var file = FileSinkCreator.CreateSink(filepath);
-            _log.Sinks.Add(file);
+            _log.AddSink(file);
             //
             return _log;
         }

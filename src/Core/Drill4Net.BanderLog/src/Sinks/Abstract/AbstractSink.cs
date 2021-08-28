@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog.Sinks
 {
-    public abstract class AbstractSink : ILogSink
+    public abstract class AbstractSink : ILogSink, IEquatable<AbstractSink>
     {
         public virtual void Log(LogLevel logLevel, string message, Exception exception = null)
         {
@@ -25,5 +25,15 @@ namespace Drill4Net.BanderLog.Sinks
         public abstract void Flush();
 
         public abstract void Shutdown();
+
+        public abstract string GetKey();
+
+        public bool Equals(AbstractSink other)
+        {
+            var key = GetKey();
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+            return key == other?.GetKey();
+        }
     }
 }

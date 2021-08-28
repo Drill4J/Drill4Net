@@ -2,10 +2,12 @@
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
-using Drill4Net.Configuration;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
+using Drill4Net.Configuration;
+using Drill4Net.BanderLog.Sinks.Console;
+using Drill4Net.BanderLog.Sinks;
+using Drill4Net.BanderLog.Sinks.File;
 
 namespace Drill4Net.Core.Repository
 {
@@ -59,31 +61,36 @@ namespace Drill4Net.Core.Repository
         /// </summary>
         internal protected void PrepareLogger()
         {
-            var helper = new LoggerHelper();
-            var cfg = new LoggerConfiguration();
-            cfg.MinimumLevel.Verbose(); //global min level must be the most "verbosing"
+            Logger logger;
+            var bld = new LogBuilder();
+            //cfg.MinimumLevel.Verbose(); //global min level must be the most "verbosing"
             if (Options.Logs != null)
             {
                 var opts = Options.Logs.Where(a => !a.Disabled).OrderBy(a => a.Level);
                 foreach (var opt in opts)
                 {
-                    AddLogOption(cfg, opt, helper);
+                    AddLogOption(bld, opt);
                 }
+                logger = bld.Build();
             }
-            Log.Logger = cfg.CreateLogger();
+            else
+            {
+                logger = bld.CreateStandardLogger();
+            }
+            Log.Configure(logger);
         }
 
-        internal void AddLogOption(LoggerConfiguration cfg, LogData logOpt, LoggerHelper helper)
+        internal void AddLogOption(LogBuilder bld, LogData logOpt)
         {
-            //https://github.com/serilog/serilog/wiki/Configuration-Basics#overriding-per-sink
-            var seriLvl = ConvertToSerilogLogLevel(logOpt.Level);
+            //TODO: set Log level individually for each!!!
+            AbstractSink sink;
             switch (logOpt.Type)
             {
                 case LogSinkType.Console:
-                    cfg.WriteTo.Logger(lc => lc.WriteTo.Console(seriLvl));
+                    sink = new ConsoleSink();
                     break;
                 case LogSinkType.File:
-                    var path = logOpt.Path ?? helper.GetCommonFilePath();
+                    var path = logOpt.Path ?? LoggerHelper.GetCommonFilePath();
                     if (string.IsNullOrWhiteSpace(Path.GetExtension(path))) //path without file name
                     {
                         var type = Options.Type ?? Subsystem;
@@ -91,25 +98,12 @@ namespace Drill4Net.Core.Repository
                         path = Path.Combine(path, fileName);
                     }
                     path = FileUtils.GetFullPath(path);
-                    cfg.WriteTo.Logger(lc => lc.WriteTo.File(path, seriLvl));
+                    sink = new FileSink(path);
                     break;
                 default:
                     throw new ArgumentException($"Unknown logger sink: {logOpt.Type}");
             }
-        }
-
-        internal LogEventLevel ConvertToSerilogLogLevel(LogLevel level)
-        {
-            return level switch
-            {
-                LogLevel.Trace => LogEventLevel.Verbose,
-                LogLevel.Debug => LogEventLevel.Debug,
-                LogLevel.Information => LogEventLevel.Information,
-                LogLevel.Warning => LogEventLevel.Warning,
-                LogLevel.Error => LogEventLevel.Error,
-                LogLevel.Critical => LogEventLevel.Fatal,
-                _ => throw new ArgumentException("Need set concrete logging level"),
-            };
+            bld.AddSink(sink);
         }
 
         /// <summary>
@@ -117,8 +111,11 @@ namespace Drill4Net.Core.Repository
         /// </summary>
         public static void PrepareInitLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
         {
-            var cfg = new LoggerHelper().GetBaseLoggerConfiguration(folder);
-            Log.Logger = cfg.CreateLogger();
+            var path = LoggerHelper.GetCommonFilePath(folder);
+            var logger = new LogBuilder()
+                .AddSink(new FileSink(path))
+                .Build();
+            Log.Configure(logger);
         }
 
         //internal void SetLogLevel(LoggerMinimumLevelConfiguration cfg, LogLevel level)

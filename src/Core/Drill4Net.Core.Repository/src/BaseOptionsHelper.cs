@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using Serilog;
 using YamlDotNet.Serialization;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Core.Repository
 {
@@ -55,7 +55,7 @@ namespace Drill4Net.Core.Repository
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Options file not found: [{path}]");
-            Log.Debug("Reading config: [{Path}]", path);
+            Log.Debug($"Reading config: [{path}]");
             var cfg = File.ReadAllText(path);
             var opts = _deser.Deserialize<T>(cfg);
             Log.Debug("Config deserialized.");

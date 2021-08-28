@@ -15,5 +15,15 @@ namespace Drill4Net.BanderLog.Sinks.Console
         public override void Flush() { }
 
         public override void Shutdown() { }
+
+        public override string ToString()
+        {
+            return "Simple console";
+        }
+
+        public override string GetKey()
+        {
+            return "console";
+        }
     }
 }

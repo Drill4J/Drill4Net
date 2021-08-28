@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Reflection;
-using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -109,7 +109,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"{_logPrefix}: error of initializing");
+                Log.Fatal($"{_logPrefix}: error of initializing", ex);
             }
             finally
             {
@@ -277,7 +277,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "{Data}", data);
+                Log.Error($"{data}", ex);
             }
         }
         #endregion

@@ -18,7 +18,7 @@ namespace Drill4Net.BanderLog.Sinks.File
 
         /*****************************************************************************/
 
-        internal FileSink(string filepath)
+        public FileSink(string filepath)
         {
             _locker = new object();
             _filepath = filepath ?? throw new ArgumentNullException(nameof(filepath));
@@ -100,11 +100,11 @@ namespace Drill4Net.BanderLog.Sinks.File
         /// </summary>
         private void EndUpWriter()
         {
-            if (_writer == null)
-                return;
-
             lock (_locker)
             {
+                if (_writer == null)
+                    return;
+
                 try
                 {
                     _writer.Flush();
@@ -115,5 +115,17 @@ namespace Drill4Net.BanderLog.Sinks.File
                 _writer = null;
             }
         }
+
+        public override string GetKey()
+        {
+            return _filepath;
+        }
+
+        public override string ToString()
+        {
+            return $"File: {_filepath}";
+        }
+
+
     }
 }

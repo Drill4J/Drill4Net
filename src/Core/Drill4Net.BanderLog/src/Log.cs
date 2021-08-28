@@ -1,26 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Drill4Net.Configuration;
 
 namespace Drill4Net.BanderLog
 {
     public static class Log
     {
-        public static ILogger Logger { get; private set; }
+        public static Logger Logger { get; private set; }
 
         /*************************************************************************/
 
-        public static void Configure(ILogger logger)
+        public static void Configure(Logger logger, bool removeOldSinks = false)
         {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-
-        public static void Configure(List<LogData> opts)
-        {
-            //TODO: use opts!!!
-            var logBld = new LogBuilder();
-            Logger = logBld.CreateStandardLogger();
+            if (logger == null)
+                throw new ArgumentNullException(nameof(logger));
+            if (Logger == null || removeOldSinks)
+            {
+                Logger = logger;
+            }
+            else
+            {
+                foreach(var sink in logger.GetSinks())
+                    Logger.AddSink(sink);
+            }
         }
 
         #region Specific
@@ -66,5 +67,10 @@ namespace Drill4Net.BanderLog
             Logger.Log(logLevel, eventId, state, exception, formatter);
         }
         #endregion
+
+        public static void Shutdown()
+        {
+            Logger.Shutdown();
+        }
     }
 }
