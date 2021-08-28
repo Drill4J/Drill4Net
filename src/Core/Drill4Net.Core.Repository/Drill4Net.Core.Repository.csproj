@@ -5,6 +5,15 @@
 	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Core.Repository</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Core.Repository\Drill4Net.Core.Repository.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Core.Repository</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
   </ItemGroup>

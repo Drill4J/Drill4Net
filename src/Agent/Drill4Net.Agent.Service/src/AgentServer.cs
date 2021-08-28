@@ -30,7 +30,7 @@ namespace Drill4Net.Agent.Service
 
         private const long _oldPingTickDelta = 50000000; //3 sec
 
-        private AbstractTransportAdmin _admin;
+        private readonly AbstractTransportAdmin _admin;
         private Timer _timeoutTimer;
         private bool _inPingCheck;
         private readonly string _cfgPath;
@@ -75,6 +75,9 @@ namespace Drill4Net.Agent.Service
 
         public void Start()
         {
+            if (_disposed)
+                throw new Exception($"Object of {nameof(AgentServer)} is disposed");
+            //
             var period = new TimeSpan(0, 0, 0, 1, 500);
             _timeoutTimer = new Timer(PingCheckCallback, null, period, period);
 
@@ -100,7 +103,7 @@ namespace Drill4Net.Agent.Service
             _targetReceiver.ErrorOccured -= TargetReceiver_ErrorOccured;
 
             CheckWorkers();
-            IsStarted = true;
+            IsStarted = false;
         }
 
         private void PingReceiver_PingReceived(string targetSession, StringDictionary data)
@@ -117,7 +120,7 @@ namespace Drill4Net.Agent.Service
             //{ 
             //}
 
-            Console.WriteLine($"{subsystem} [{targetSession}]: {DateTime.FromBinary(ticks)}");
+            Console.WriteLine($"{now}|{subsystem}|{targetSession}|{DateTime.FromBinary(ticks)}");
 
             //update data
             _pings.AddOrUpdate(session, data, (key, oldValue) => data);
