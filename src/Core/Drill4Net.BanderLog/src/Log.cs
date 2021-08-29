@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog
@@ -7,7 +8,7 @@ namespace Drill4Net.BanderLog
     {
         public static Logger Logger { get; private set; }
 
-        /*************************************************************************/
+        /****************************************************************************/
 
         public static void Configure(Logger logger, bool removeOldSinks = false)
         {
@@ -25,40 +26,40 @@ namespace Drill4Net.BanderLog
         }
 
         #region Specific
-        public static void Trace(string message, Exception exception = null)
+        public static void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            Logger.Log(LogLevel.Trace, message, exception);
+            Logger.Log(LogLevel.Trace, message, exception, callerMethod);
         }
 
-        public static void Debug(string message, Exception exception = null)
+        public static void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            Logger.Log(LogLevel.Debug, message, exception);
+            Logger.Log(LogLevel.Debug, message, exception, callerMethod);
         }
 
-        public static void Info(string message, Exception exception = null)
+        public static void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            Logger.Log(LogLevel.Information, message, exception);
+            Logger.Log(LogLevel.Information, message, exception, callerMethod);
         }
 
-        public static void Warning(string message, Exception exception = null)
+        public static void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            Logger.Log(LogLevel.Warning, message, exception);
+            Logger.Log(LogLevel.Warning, message, exception, callerMethod);
         }
 
-        public static void Error(string message, Exception exception = null)
+        public static void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            Logger.Log(LogLevel.Error, message, exception);
+            Logger.Log(LogLevel.Error, message, exception, callerMethod);
         }
 
-        public static void Fatal(string message, Exception exception = null)
+        public static void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            Logger.Log(LogLevel.Critical, message, exception);
+            Logger.Log(LogLevel.Critical, message, exception, callerMethod);
         }
         #endregion
         #region Write
-        public static void Write(LogLevel logLevel, string message, Exception exception = null)
+        public static void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            Logger.Log(logLevel, message, exception);
+            Logger.Log(logLevel, message, exception, callerMethod);
         }
 
         public static void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,

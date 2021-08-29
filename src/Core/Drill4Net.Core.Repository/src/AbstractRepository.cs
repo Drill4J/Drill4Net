@@ -107,7 +107,7 @@ namespace Drill4Net.Core.Repository
         }
 
         /// <summary>
-        /// Prepares the initialize logger.
+        /// Prepares the initialize logger (it is usually for simple emergency logging).
         /// </summary>
         public static void PrepareInitLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
         {

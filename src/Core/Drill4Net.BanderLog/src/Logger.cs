@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Drill4Net.BanderLog.Sinks;
+using System.Runtime.CompilerServices;
 
 namespace Drill4Net.BanderLog
 {
@@ -40,10 +41,18 @@ namespace Drill4Net.BanderLog
             return _sinks.Values.ToList();
         }
 
-        public override void Log(LogLevel logLevel, string message, Exception exception = null)
+        #region Log
+        public override void Log(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string caller = "")
         {
             foreach (var sink in _sinks.Values)
-                sink.Log(logLevel, message, exception);
+                sink.Log(logLevel, message, exception, caller);
+        }
+
+        public override void Log<TState>(LogLevel logLevel, TState state, Exception exception, string caller,
+            Func<TState, Exception, string> formatter)
+        {
+            foreach (var sink in _sinks.Values)
+                sink.Log(logLevel, state, exception, caller, formatter);
         }
 
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
@@ -52,6 +61,7 @@ namespace Drill4Net.BanderLog
             foreach (var sink in _sinks.Values)
                 sink.Log(logLevel, eventId, state, exception, formatter);
         }
+        #endregion
 
         public override void Flush()
         {
@@ -69,5 +79,7 @@ namespace Drill4Net.BanderLog
         {
             return "Logger";
         }
+
+
     }
 }

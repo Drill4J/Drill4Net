@@ -35,12 +35,21 @@ namespace Drill4Net.BanderLog.Sinks.File
             return System.IO.File.AppendText(filepath);
         }
 
+        #region Log
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
             var data = FormatData(logLevel, eventId, state, exception, formatter);
             _queue.Enqueue(data);
         }
+
+        public override void Log<TState>(LogLevel logLevel, TState state, Exception exception, string caller,
+            Func<TState, Exception, string> formatter)
+        {
+            var data = FormatData(logLevel, caller, state, exception, formatter);
+            _queue.Enqueue(data);
+        }
+        #endregion
 
         /// <summary>
         /// Concrete writing string data to the file
@@ -125,7 +134,5 @@ namespace Drill4Net.BanderLog.Sinks.File
         {
             return $"File: {_filepath}";
         }
-
-
     }
 }

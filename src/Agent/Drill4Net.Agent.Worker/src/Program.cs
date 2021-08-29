@@ -8,10 +8,6 @@ namespace Drill4Net.Agent.Worker
 {
     class Program
     {
-        private static string _logPrefix;
-
-        /*********************************************************************/
-
         static void Main(string[] args)
         {
             Init();
@@ -25,20 +21,19 @@ namespace Drill4Net.Agent.Worker
                 var creator = new WorkerCreator(args);
                 var worker = creator.CreateWorker();
                 worker.ErrorOccured += Receiver_ErrorOccured;
-                Console.WriteLine($"{_logPrefix}Worker has initialized");
+                Log.Debug("Worker has initialized");
                 worker.Start();
             }
             catch (Exception ex)
             {
                 var mess = ex.ToString();
                 Log.Error(mess);
-                Console.WriteLine($"{_logPrefix}Error:\n{mess}");
             }
         }
 
         private static void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
         {
-            var mess = $"{_logPrefix}Local: {isLocal} -> {message}";
+            var mess = $"Error (local: {isLocal}): {message}";
             if (isFatal)
                 Log.Fatal(mess);
             else
@@ -47,7 +42,7 @@ namespace Drill4Net.Agent.Worker
 
         private static void Init()
         {
-            _logPrefix = MessagingUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(Program));
+            //_logPrefix = MessagingUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(Program));
             SetCaption();
         }
 

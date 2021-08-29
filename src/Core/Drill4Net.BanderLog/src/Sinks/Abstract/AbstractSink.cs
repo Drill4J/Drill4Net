@@ -5,9 +5,13 @@ namespace Drill4Net.BanderLog.Sinks
 {
     public abstract class AbstractSink : ILogSink, IEquatable<AbstractSink>
     {
-        public virtual void Log(LogLevel logLevel, string message, Exception exception = null)
+        //TODO: using formatters
+        public virtual void Log(LogLevel logLevel, string message, Exception exception = null, string caller = "")
         {
-            Log<string>(logLevel, new EventId(0), message, exception, null);
+            if(string.IsNullOrWhiteSpace(caller))
+                Log<string>(logLevel, new EventId(0), message, exception, null);
+            else
+                Log<string>(logLevel, message, exception, caller, null);
         }
 
         public virtual bool IsEnabled(LogLevel logLevel)
@@ -22,6 +26,8 @@ namespace Drill4Net.BanderLog.Sinks
         }
 
         public abstract void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
+        public abstract void Log<TState>(LogLevel logLevel, TState state, Exception exception, string caller, Func<TState, Exception, string> formatter);
+
         public abstract void Flush();
 
         public abstract void Shutdown();
