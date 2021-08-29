@@ -9,7 +9,7 @@ namespace Drill4Net.BanderLog
 {
     public class LogBuilder : ILoggingBuilder
     {
-        private readonly SinkManager _log;
+        private readonly LogManager _log;
 
         public IServiceCollection Services => throw new NotImplementedException();
 
@@ -17,7 +17,7 @@ namespace Drill4Net.BanderLog
 
         public LogBuilder()
         {
-            _log = new SinkManager();
+            _log = new LogManager();
         }
 
         /*****************************************************************/
@@ -28,17 +28,17 @@ namespace Drill4Net.BanderLog
             return this;
         }
 
-        public SinkManager Build()
+        public LogManager Build()
         {
             return _log;
         }
 
-        public SinkManager CreateLogger(LogConfiguration cfg) //use LogOptions?
+        public LogManager CreateLogger(LogConfiguration cfg) //use LogOptions?
         {
             throw new NotImplementedException();
         }
 
-        public SinkManager CreateStandardLogger(string filepath = null)
+        public LogManager CreateStandardLogger(string filepath = null)
         {
             var console = new ConsoleSink();
             _log.AddSink(console);

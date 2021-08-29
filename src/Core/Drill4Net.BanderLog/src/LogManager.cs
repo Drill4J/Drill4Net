@@ -7,13 +7,13 @@ using System.Runtime.CompilerServices;
 
 namespace Drill4Net.BanderLog
 {
-    public class SinkManager : AbstractSink
+    public class LogManager : AbstractSink
     {
         public Dictionary<string, AbstractSink> _sinks;
 
         /*************************************************************************/
 
-        public SinkManager(IEnumerable<AbstractSink> sinks = null)
+        public LogManager(IEnumerable<AbstractSink> sinks = null)
         {
             _sinks = new Dictionary<string, AbstractSink>();
             if (sinks != null)

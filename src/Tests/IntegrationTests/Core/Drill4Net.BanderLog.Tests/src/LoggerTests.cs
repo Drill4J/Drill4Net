@@ -13,7 +13,7 @@ namespace Drill4Net.BanderLog.Tests
     /// </summary>
     public class LoggerTests
     {
-        private BanderLog.SinkManager InitializeLogger(string[] fileNames)
+        private BanderLog.LogManager InitializeLogger(string[] fileNames)
         {
             var logBld = new LogBuilder();
 

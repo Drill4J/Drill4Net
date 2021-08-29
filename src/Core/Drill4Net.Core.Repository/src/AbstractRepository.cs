@@ -78,7 +78,7 @@ namespace Drill4Net.Core.Repository
         /// </summary>
         internal protected void PrepareLogger()
         {
-            SinkManager logger;
+            LogManager logger;
             var bld = new LogBuilder();
             //cfg.MinimumLevel.Verbose(); //global min level must be the most "verbosing"
             if (Options.Logs != null)
