@@ -13,7 +13,7 @@ namespace Drill4Net.BanderLog.ManualBenchmarks
     internal class Tests: IDisposable
     {
         private readonly NLog.Logger _loggerNlog;
-        private readonly BanderLog.Logger _loggerBanderLog;
+        private readonly BanderLog.SinkManager _loggerBanderLog;
         private readonly log4net.ILog _log4net;
 
         private readonly string _testString;

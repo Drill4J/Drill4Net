@@ -24,7 +24,7 @@ namespace Drill4Net.BanderLog.Benchmarks
     public class Tests
     {
         private NLog.Logger _loggerNlog;
-        private BanderLog.Logger _loggerBanderLog;
+        private BanderLog.SinkManager _loggerBanderLog;
         private log4net.ILog _log4net;
         private string _testString;
         private const string _fileName="LogFile.txt";

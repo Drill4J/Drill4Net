@@ -6,11 +6,11 @@ namespace Drill4Net.BanderLog
 {
     public static class Log
     {
-        public static Logger Logger { get; private set; }
+        public static SinkManager Logger { get; private set; }
 
         /****************************************************************************/
 
-        public static void Configure(Logger logger, bool removeOldSinks = false)
+        public static void Configure(SinkManager logger, bool removeOldSinks = false)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));

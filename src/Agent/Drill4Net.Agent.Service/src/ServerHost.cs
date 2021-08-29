@@ -54,7 +54,7 @@ namespace Drill4Net.Agent.Service
             }
             catch (Exception ex)
             {
-                Log.Fatal("Server start is failed", ex);
+                Log.Fatal("Server's start is failed", ex);
             }
         }
 

@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Reflection;
+using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
-using System.Reflection;
-using System.Collections.Concurrent;
 
 namespace Drill4Net.Agent.Transmitter
 {
@@ -27,6 +27,7 @@ namespace Drill4Net.Agent.Transmitter
         private static ConcurrentDictionary<string, bool> _probes;
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
+
         private static readonly string _logPrefix;
         private bool _disposed;
 

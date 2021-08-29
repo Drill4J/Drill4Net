@@ -1,85 +1,78 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Drill4Net.BanderLog.Sinks;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog
 {
-    public class Logger : AbstractSink
+    public class Logger<T> : Logger where T : class
     {
-        public Dictionary<string, AbstractSink> _sinks;
-
-        /*************************************************************************/
-
-        public Logger(IEnumerable<AbstractSink> sinks = null)
+        public Logger() : base(nameof(T))
         {
-            _sinks = new Dictionary<string, AbstractSink>();
-            if (sinks != null)
-            {
-                foreach (var sink in sinks)
-                    AddSink(sink);
-            }
+        }
+    }
+
+    public class Logger
+    {
+        public string Category { get; }
+
+        /***************************************************************************/
+
+        public Logger(string category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                throw new ArgumentNullException(nameof(category));
+            Category = category;
         }
 
-        /*************************************************************************/
+        /***************************************************************************/
 
-        public void AddSink(AbstractSink sink)
+        #region Specific
+        public void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            if (sink == null)
-                throw new ArgumentNullException(nameof(sink));
-            //
-            var key = sink.GetKey();
-            if (_sinks.ContainsKey(key))
-                _sinks.Remove(key); //return? exception? remove old? -> add func parameter?
-            _sinks.Add(key, sink);
+            Log.Trace(message, exception, callerMethod);
         }
 
-        public IList<AbstractSink> GetSinks()
+        public void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            return _sinks.Values.ToList();
+            Log.Debug(message, exception, callerMethod);
         }
 
-        #region Log
-        public override void Log(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string caller = "")
+        public void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            foreach (var sink in _sinks.Values)
-                sink.Log(logLevel, message, exception, caller);
+            Log.Info(message, exception, callerMethod);
         }
 
-        public override void Log<TState>(LogLevel logLevel, TState state, Exception exception, string caller,
-            Func<TState, Exception, string> formatter)
+        public void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            foreach (var sink in _sinks.Values)
-                sink.Log(logLevel, state, exception, caller, formatter);
+            Log.Warning(message, exception, callerMethod);
         }
 
-        public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-            Func<TState, Exception, string> formatter)
+        public void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            foreach (var sink in _sinks.Values)
-                sink.Log(logLevel, eventId, state, exception, formatter);
+            Log.Error(message, exception, callerMethod);
+        }
+
+        public void Error(Exception exception, [CallerMemberName] string callerMethod = "")
+        {
+            Log.Error(null, exception, callerMethod);
+        }
+
+        public void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        {
+            Log.Fatal(message, exception, callerMethod);
         }
         #endregion
-
-        public override void Flush()
+        #region Write
+        public static void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            foreach (var sink in _sinks.Values)
-                sink.Flush();
+            Log.Write(logLevel, message, exception, callerMethod);
         }
 
-        public override void Shutdown()
+        public static void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            foreach (var sink in _sinks.Values)
-                sink.Shutdown();
+            Log.Write(logLevel, eventId, state, exception, formatter);
         }
-
-        public override string GetKey()
-        {
-            return "Logger";
-        }
-
-
+        #endregion
     }
 }

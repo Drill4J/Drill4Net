@@ -4,7 +4,7 @@ namespace Drill4Net.BanderLog.Benchmarks
 {
     static class Targets
     {
-        public static void UseBanderLog(BanderLog.Logger loggerBanderLog, int recordCount, string logString)
+        public static void UseBanderLog(BanderLog.SinkManager loggerBanderLog, int recordCount, string logString)
         {
             for (var i = 0; i < recordCount; i++)
             {
