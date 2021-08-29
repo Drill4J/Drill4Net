@@ -6,7 +6,7 @@ namespace Drill4Net.BanderLog
 {
     public static class Log
     {
-        public static LogManager SinkManager { get; private set; }
+        public static LogManager Manager { get; private set; }
 
         /****************************************************************************/
 
@@ -14,69 +14,69 @@ namespace Drill4Net.BanderLog
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
-            if (SinkManager == null || removeOldSinks)
+            if (Manager == null || removeOldSinks)
             {
-                SinkManager = logger;
+                Manager = logger;
             }
             else
             {
                 foreach(var sink in logger.GetSinks())
-                    SinkManager.AddSink(sink);
+                    Manager.AddSink(sink);
             }
         }
 
         #region Specific
         public static void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(LogLevel.Trace, message, exception, callerMethod);
+            Manager?.Log(LogLevel.Trace, message, exception, callerMethod);
         }
 
         public static void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(LogLevel.Debug, message, exception, callerMethod);
+            Manager?.Log(LogLevel.Debug, message, exception, callerMethod);
         }
 
         public static void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(LogLevel.Information, message, exception, callerMethod);
+            Manager?.Log(LogLevel.Information, message, exception, callerMethod);
         }
 
         public static void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(LogLevel.Warning, message, exception, callerMethod);
+            Manager?.Log(LogLevel.Warning, message, exception, callerMethod);
         }
 
         public static void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(LogLevel.Error, message, exception, callerMethod);
+            Manager?.Log(LogLevel.Error, message, exception, callerMethod);
         }
 
         public static void Error(Exception exception, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(LogLevel.Error, null, exception, callerMethod);
+            Manager?.Log(LogLevel.Error, null, exception, callerMethod);
         }
 
         public static void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(LogLevel.Critical, message, exception, callerMethod);
+            Manager?.Log(LogLevel.Critical, message, exception, callerMethod);
         }
         #endregion
         #region Write
         public static void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            SinkManager?.Log(logLevel, message, exception, callerMethod);
+            Manager?.Log(logLevel, message, exception, callerMethod);
         }
 
         public static void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            SinkManager?.Log(logLevel, eventId, state, exception, formatter);
+            Manager?.Log(logLevel, eventId, state, exception, formatter);
         }
         #endregion
 
         public static void Shutdown()
         {
-            SinkManager?.Shutdown();
+            Manager?.Shutdown();
         }
     }
 }
