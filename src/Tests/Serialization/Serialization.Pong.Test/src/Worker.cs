@@ -115,7 +115,7 @@ namespace Serialization.Pong.Test
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error:\n{ex}");
+                _logger.LogError($"Error:\n{ex}");
             }
         }
 

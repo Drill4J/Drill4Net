@@ -12,6 +12,7 @@ using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Microsoft.Extensions.Logging;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Service
 {
@@ -32,7 +33,7 @@ namespace Drill4Net.Agent.Service
         private const long _oldPingTickDelta = 50000000; //3 sec
 
         private readonly AbstractTransportAdmin _admin;
-        private ILogger<AgentServer> _logger;
+        private readonly ILogger<AgentServer> _logger;
         private Timer _timeoutTimer;
         private bool _inPingCheck;
         private readonly string _cfgPath;
@@ -122,7 +123,7 @@ namespace Drill4Net.Agent.Service
             //{ 
             //}
 
-            Console.WriteLine($"{now}|{subsystem}|{targetSession}|{DateTime.FromBinary(ticks)}");
+            Console.WriteLine($"{subsystem}|{targetSession}|{DateTime.FromBinary(ticks)}");
 
             //update data
             _pings.AddOrUpdate(session, data, (key, oldValue) => data);
@@ -169,7 +170,7 @@ namespace Drill4Net.Agent.Service
                 if (now.Ticks - ticks < _oldPingTickDelta)
                     continue;
                 //
-                Console.WriteLine($"{_logPrefix}Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
+                Log.Info($"{_logPrefix}Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
                 if (!_workers.TryGetValue(uid, out WorkerInfo worker))
                     continue;
                 Task.Run(() => CloseWorker(uid));
@@ -226,7 +227,7 @@ namespace Drill4Net.Agent.Service
             var trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid.ToString());
             var probeTopic = MessagingUtils.GetProbeTopic(sessionUid.ToString());
             var pid = StartAgentWorkerProcess(target.SessionUid);
-            Console.WriteLine($"{_logPrefix}Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
+            Log.Info($"{_logPrefix}Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
 
             //add local worker info
             var worker = new WorkerInfo(target, trgTopic, probeTopic, pid);
@@ -235,7 +236,7 @@ namespace Drill4Net.Agent.Service
 
             //send to worker the info
             SendTargetInfoToAgentWorker(trgTopic, target);
-            Console.WriteLine($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={trgTopic}");
+            Log.Debug($"{_logPrefix}Target info was sent to the Worker with pid={pid} and topic={trgTopic}");
         }
 
         internal int StartAgentWorkerProcess(Guid targetSession)

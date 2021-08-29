@@ -4,6 +4,7 @@ using System.Threading;
 using Confluent.Kafka;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging.Kafka;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -34,12 +35,12 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrieveProbes()
         {
-            Console.WriteLine($"{_logPrefix}Start retrieving probes...");
+            Log.Info($"{_logPrefix}Start retrieving probes...");
 
             _probesCts = new();
             var opts = _rep.Options;
             var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
-            Console.WriteLine($"{_logPrefix}Probe topics: {string.Join(",", probeTopics)}");
+            Log.Debug($"{_logPrefix}Probe topics: {string.Join(",", probeTopics)}");
 
             using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
                 .SetValueDeserializer(new ProbeDeserializer())

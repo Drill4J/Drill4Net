@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
@@ -11,10 +10,28 @@ using Drill4Net.BanderLog.Sinks.File;
 
 namespace Drill4Net.Core.Repository
 {
+    public abstract class AbstractRepository
+    {
+        /// <summary>
+        /// Prepares the initialize logger (it is usually for simple emergency logging).
+        /// </summary>
+        public static void PrepareEmergencyLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
+        {
+            var path = LoggerHelper.GetCommonFilePath(folder);
+            var logger = new LogBuilder()
+                .AddSink(new FileSink(path))
+                .Build();
+            Log.Configure(logger);
+        }
+    }
+
+    /******************************************************************************************/
+
+
     /// <summary>
     /// Root level of Repository's hieararchy
     /// </summary>
-    public abstract class AbstractRepository<TOptions> where TOptions : AbstractOptions, new()
+    public abstract class AbstractRepository<TOptions>: AbstractRepository where TOptions : AbstractOptions, new()
     {
         /// <summary>
         /// Gets the name of subsystem.
@@ -105,33 +122,6 @@ namespace Drill4Net.Core.Repository
             }
             bld.AddSink(sink);
         }
-
-        /// <summary>
-        /// Prepares the initialize logger (it is usually for simple emergency logging).
-        /// </summary>
-        public static void PrepareInitLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
-        {
-            var path = LoggerHelper.GetCommonFilePath(folder);
-            var logger = new LogBuilder()
-                .AddSink(new FileSink(path))
-                .Build();
-            Log.Configure(logger);
-        }
-
-        //internal void SetLogLevel(LoggerMinimumLevelConfiguration cfg, LogLevel level)
-        //{
-        //    switch (level)
-        //    {
-        //        case LogLevel.Trace: cfg.Verbose(); break;
-        //        case LogLevel.Debug: cfg.Debug(); break;
-        //        case LogLevel.Information: cfg.Information(); break;
-        //        case LogLevel.Warning: cfg.Warning(); break;
-        //        case LogLevel.Error: cfg.Error(); break;
-        //        case LogLevel.Critical: cfg.Fatal(); break;
-        //        case LogLevel.None:
-        //            break;
-        //    }
-        //}
         #endregion
     }
 }

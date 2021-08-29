@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.Worker
         {
             var opts = GetBaseOptions(_args);
             var targetSession = GetTargetSession(_args);
-            Console.WriteLine($"WORKER SESSION = {targetSession}");
+            Console.WriteLine($"Worker session = {targetSession}");
 
             var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
             if (!string.IsNullOrWhiteSpace(targetTopic))

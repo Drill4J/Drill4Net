@@ -70,7 +70,7 @@ namespace Drill4Net.Agent.Standard
                 _resolver = new AssemblyResolver();
 
                 EmergencyLogDir = FileUtils.GetEmergencyDir();
-                StandardAgentRepository.PrepareInitLogger(FileUtils.LOG_FOLDER_EMERGENCY);
+                StandardAgentRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
                 Log.Debug($"{_logPrefix} is initializing...");
 

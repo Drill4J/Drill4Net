@@ -5,6 +5,7 @@ using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -55,16 +56,16 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            Console.WriteLine($"{_logPrefix}{nameof(TargetInfo)} received");
+            Log.Info($"{_logPrefix}{nameof(TargetInfo)} received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} initialized");
+            Log.Debug($"{_logPrefix}{nameof(StandardAgent)} initialized");
 
-            Console.WriteLine($"{_logPrefix}{nameof(AgentWorker)} starts receiving probes...");
+            Log.Info($"{_logPrefix}{nameof(AgentWorker)} starts receiving probes...");
             _probeReceiver.Start();
         }
 

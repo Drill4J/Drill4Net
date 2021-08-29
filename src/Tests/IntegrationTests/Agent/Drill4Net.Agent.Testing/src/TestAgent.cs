@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Testing
 
         static TestAgent()
         {
-            AbstractRepository<AgentOptions>.PrepareInitLogger();
+            AbstractRepository<AgentOptions>.PrepareEmergencyLogger();
             Log.Debug("Initializing...");
 
             try

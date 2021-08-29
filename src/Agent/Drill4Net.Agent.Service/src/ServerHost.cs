@@ -22,20 +22,20 @@ namespace Drill4Net.Agent.Service
 {
     public class ServerHost : BackgroundService
     {
-        private AbstractAgentServerRepository _rep;
+        private readonly AbstractAgentServerRepository _rep;
 
         /****************************************************************************/
 
         public ServerHost(ILogger<ServerHost> logger)
         {
+            //TODO: factory
+            _rep = new AgentServerKafkaRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER); //...it will be created here
+
             //TODO: use also logger from ctor
             var appName = CommonUtils.GetAppName();
             var version = FileUtils.GetProductVersion(typeof(AgentServer));
             var title = $"{appName} {version}";
-            logger.LogInformation($"{nameof(ServerHost)} created: {title}"); //on that moment inner logger don't exists yet
-
-            //TODO: factory
-            _rep = new AgentServerKafkaRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER); //...it will be created here
+            Log.Debug($"{nameof(ServerHost)} created: {title}");
         }
 
         /*****************************************************************************/

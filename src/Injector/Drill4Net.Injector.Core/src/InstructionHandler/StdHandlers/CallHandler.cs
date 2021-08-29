@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 using static Drill4Net.Injector.Core.InjectorCoreConstants;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Core
 {
@@ -85,7 +86,7 @@ namespace Drill4Net.Injector.Core
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Log.Error(e);
                 throw;
             }
         }

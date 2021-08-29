@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Confluent.Kafka;
 using Drill4Net.Common;
 using Drill4Net.Core.Repository;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -39,7 +40,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrieveTargets()
         {
-            Console.WriteLine($"{_logPrefix}Start retrieving target info...");
+            Log.Info($"{_logPrefix}Start retrieving target info...");
 
             var targets = new Dictionary<Guid, List<byte[]>>();
             if (_cts == null)
@@ -47,7 +48,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             var opts = _rep.Options; //can contains diferent topics
             var topics = MessagingUtils.FilterTargetTopics(opts.Topics); //get only target info topics
-            Console.WriteLine($"{_logPrefix}Target info topics: {string.Join(",", topics)}");
+            Log.Debug($"{_logPrefix}Target info topics: {string.Join(",", topics)}");
 
             using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
             c.Subscribe(topics);

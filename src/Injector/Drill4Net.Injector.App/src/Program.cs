@@ -14,7 +14,7 @@ namespace Drill4Net.Injector.App
             var name = typeof(Program).Namespace.Split('.')[0];
             Console.WriteLine($"{name} is starting");
 
-            AbstractRepository<InjectorOptions>.PrepareInitLogger();
+            AbstractRepository<InjectorOptions>.PrepareEmergencyLogger();
             IInjectorRepository rep = null;
             try
             {

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using Confluent.Kafka;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging.Kafka;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -36,7 +37,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrievePings()
         {
-            Console.WriteLine($"{_logPrefix}Start retrieving pings...");
+            Log.Debug($"{_logPrefix}Start retrieving pings...");
 
             if (_cts == null)
                 _cts = new();
