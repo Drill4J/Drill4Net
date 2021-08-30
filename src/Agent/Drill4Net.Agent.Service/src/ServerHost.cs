@@ -22,6 +22,7 @@ namespace Drill4Net.Agent.Service
 {
     public class ServerHost : BackgroundService
     {
+        private readonly Logger _logger;
         private readonly AbstractAgentServerRepository _rep;
 
         /****************************************************************************/
@@ -30,6 +31,8 @@ namespace Drill4Net.Agent.Service
         {
             //TODO: factory
             _rep = new AgentServerKafkaRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER); //...it will be created here
+            _logger = new TypedLogger<ServerHost>(_rep.Subsystem);
+            _logger.GetManager().AddSink(logger);
 
             //TODO: use also logger from ctor
             var appName = CommonUtils.GetAppName();

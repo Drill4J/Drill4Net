@@ -2,20 +2,20 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Drill4Net.BanderLog.Sinks;
 using System.Runtime.CompilerServices;
+using Drill4Net.BanderLog.Sinks;
 
 namespace Drill4Net.BanderLog
 {
     public class LogManager : AbstractSink
     {
-        public Dictionary<string, AbstractSink> _sinks;
+        public Dictionary<int, AbstractSink> _sinks;
 
         /*************************************************************************/
 
         public LogManager(IEnumerable<AbstractSink> sinks = null)
         {
-            _sinks = new Dictionary<string, AbstractSink>();
+            _sinks = new Dictionary<int, AbstractSink>();
             if (sinks != null)
             {
                 foreach (var sink in sinks)
@@ -48,18 +48,18 @@ namespace Drill4Net.BanderLog
                 sink.Log(logLevel, message, exception, caller);
         }
 
-        public override void Log<TState>(LogLevel logLevel, TState state, Exception exception, string caller,
-            Func<TState, Exception, string> formatter)
-        {
-            foreach (var sink in _sinks.Values)
-                sink.Log(logLevel, state, exception, caller, formatter);
-        }
-
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
             foreach (var sink in _sinks.Values)
                 sink.Log(logLevel, eventId, state, exception, formatter);
+        }
+
+        internal override void LogEx<TState>(LogLevel logLevel, string subsystem, string category, TState state, Exception exception,
+            string caller, Func<TState, Exception, string> formatter)
+        {
+            foreach (var sink in _sinks.Values)
+                sink.LogEx(logLevel, subsystem, category, state, exception, caller, formatter);
         }
         #endregion
 
@@ -75,11 +75,9 @@ namespace Drill4Net.BanderLog
                 sink.Shutdown();
         }
 
-        public override string GetKey()
+        public override int GetKey()
         {
-            return "Logger";
+            return "Logger".GetHashCode();
         }
-
-
     }
 }

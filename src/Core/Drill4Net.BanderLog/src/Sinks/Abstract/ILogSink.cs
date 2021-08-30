@@ -7,7 +7,7 @@ namespace Drill4Net.BanderLog.Sinks
     {
         void Log(LogLevel logLevel, string state, Exception exception = null, string caller = "");
 
-        string GetKey();
+        int GetKey();
         void Flush();
         void Shutdown();
     }

@@ -46,12 +46,12 @@ namespace Drill4Net.Agent.Service
         public AgentServer(AbstractAgentServerRepository rep, ITargetInfoReceiver targetReceiver,
             IPingReceiver pingReceiver)
         {
-            _logger = new TypedLogger<AgentServer>(rep.Subsystem);
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+            _logger = new TypedLogger<AgentServer>(rep.Subsystem);
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _pingReceiver = pingReceiver ?? throw new ArgumentNullException(nameof(pingReceiver));
-            _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _pings = new ConcurrentDictionary<Guid, StringDictionary>();
+            _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _admin = _rep.GetTransportAdmin();
 
             _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.GetExecutionDir());
