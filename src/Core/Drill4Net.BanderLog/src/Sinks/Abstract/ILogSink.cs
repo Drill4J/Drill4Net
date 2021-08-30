@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog.Sinks
 {
-    public interface ILogSink<Tcategory> : ILogSink, ILogger<Tcategory>
+    public interface ILogSink<TСategory> : ILogSink, ILogger<TСategory>
     {
     }
 

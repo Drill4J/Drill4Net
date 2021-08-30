@@ -32,13 +32,14 @@ namespace Drill4Net.Agent.Service
             //TODO: factory
             _rep = new AgentServerKafkaRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER); //...it will be created here
             _logger = new TypedLogger<ServerHost>(_rep.Subsystem);
-            _logger.GetManager().AddSink(logger);
+            if(logger != null)
+                _logger.GetManager().AddSink(logger);
 
             //TODO: use also logger from ctor
             var appName = CommonUtils.GetAppName();
             var version = FileUtils.GetProductVersion(typeof(AgentServer));
             var title = $"{appName} {version}";
-            Log.Debug($"{nameof(ServerHost)} created: {title}");
+            _logger.Debug($"{nameof(ServerHost)} created: {title}");
         }
 
         /*****************************************************************************/
@@ -51,13 +52,13 @@ namespace Drill4Net.Agent.Service
                 IPingReceiver pingReceiver = new PingKafkaReceiver<AgentServerOptions>(_rep);
                 using var server = new AgentServer(_rep, targetReceiver, pingReceiver);
                 server.ErrorOccured += Server_ErrorOccured;
-                Log.Info($"{nameof(ServerHost)} ready.");
+                _logger.Info($"{nameof(ServerHost)} ready.");
 
                 server.Start();
             }
             catch (Exception ex)
             {
-                Log.Fatal("Server's start is failed", ex);
+                _logger.Fatal("Server's start is failed", ex);
             }
         }
 
@@ -65,9 +66,9 @@ namespace Drill4Net.Agent.Service
         {
             var mess = $"Local: {isLocal} -> {message}";
             if (isFatal)
-                Log.Fatal(mess);
+                _logger.Fatal(mess);
             else
-                Log.Error(mess);
+                _logger.Error(mess);
         }
     }
 }

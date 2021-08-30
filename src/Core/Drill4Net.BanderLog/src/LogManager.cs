@@ -11,7 +11,7 @@ namespace Drill4Net.BanderLog
     {
         public Dictionary<int, ILogger> _sinks;
 
-        /*************************************************************************/
+        /*****************************************************************************/
 
         public LogManager(IEnumerable<AbstractSink> sinks = null)
         {
@@ -23,7 +23,7 @@ namespace Drill4Net.BanderLog
             }
         }
 
-        /*************************************************************************/
+        /*****************************************************************************/
 
         public void AddSink(ILogger sink)
         {
