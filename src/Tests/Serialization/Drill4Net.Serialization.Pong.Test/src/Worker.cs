@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
-namespace Serialization.Pong.Test
+namespace Drill4Net.Serialization.Pong.Test
 {
     /***************************************************************************************************************************
 
