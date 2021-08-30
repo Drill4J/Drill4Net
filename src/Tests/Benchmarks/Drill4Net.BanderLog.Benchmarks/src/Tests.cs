@@ -16,7 +16,7 @@ using log4net.Appender;
 namespace Drill4Net.BanderLog.Benchmarks
 {
     /******************************************************************************************
-       To run benchmark test build Drill4Net.BanderLog.Benchmarks with Release|Any CPU
+       Run Drill4Net.BanderLog.Benchmarks with Release|Any CPU to perform benchmark tests
      ******************************************************************************************/
 
     /// <summary>
