@@ -8,7 +8,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Transmitter\Drill4Net.Agent.Transmitter.xml</DocumentationFile>
-    <OutputPath>..\..\..\build\bin\Debug\DDrill4Net.Agent.Transmitter</OutputPath>
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Transmitter</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
