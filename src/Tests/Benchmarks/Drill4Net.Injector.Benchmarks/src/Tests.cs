@@ -13,6 +13,15 @@ using BenchmarkDotNet.Diagnosers;
 
 namespace Drill4Net.Injector.Benchmarks
 {
+    /******************************************************************************************
+     To perform benchmark test run Drill4Net.Injector.Benchmarks with Release|Any CPU
+     In listing you can find path to EventPipeProfiler json generated file that can be
+     converted to plot which can be analyzed using SpeedScope (), PerfView, and Visual Studio Profiler
+    ******************************************************************************************/
+
+    /// <summary>
+    /// Benchmarks for Injector
+    /// </summary>
     [MemoryDiagnoser]
     [SimpleJob(RunStrategy.ColdStart)]
     [HardwareCounters(HardwareCounter.Timer, HardwareCounter.BranchMispredictions, HardwareCounter.BranchInstructions)]
