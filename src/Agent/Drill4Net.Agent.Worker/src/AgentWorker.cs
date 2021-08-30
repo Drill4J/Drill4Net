@@ -18,13 +18,13 @@ namespace Drill4Net.Agent.Worker
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
 
-        private readonly string _logPrefix;
+        private readonly Logger _logger;
 
         /*******************************************************************************/
 
         public AgentWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
-            _logPrefix = MessagingUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(AgentWorker));
+            _logger = new TypedLogger<AgentWorker>(CoreConstants.SUBSYSTEM_AGENT_WORKER);
 
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
@@ -56,16 +56,16 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            Log.Info($"{_logPrefix}{nameof(TargetInfo)} received");
+            _logger.Info($"{nameof(TargetInfo)} received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            Log.Debug($"{_logPrefix}{nameof(StandardAgent)} initialized");
+            _logger.Debug($"{nameof(StandardAgent)} initialized");
 
-            Log.Info($"{_logPrefix}{nameof(AgentWorker)} starts receiving probes...");
+            _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
             _probeReceiver.Start();
         }
 
