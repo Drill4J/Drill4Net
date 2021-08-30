@@ -30,4 +30,8 @@
     </None>
   </ItemGroup>
 
+	<Target Name="CustomClean" BeforeTargets="BeforeClean">
+		<Exec Command="powershell.exe -file &quot;$(SolutionDir)scripts\clean_obj.ps1&quot; -path $(SolutionDir)" />
+	</Target>
+
 </Project>
