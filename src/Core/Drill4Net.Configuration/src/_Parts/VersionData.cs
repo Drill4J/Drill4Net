@@ -7,7 +7,7 @@ namespace Drill4Net.Configuration
     /// Parameters for the target object versions to be processed
     /// </summary>
     [Serializable]
-    public class VersionOptions
+    public class VersionData
     {
         /// <summary>
         /// Base directory of the testing targets
@@ -24,7 +24,7 @@ namespace Drill4Net.Configuration
         /// <summary>
         /// Create parameters for the target object versions to be processed
         /// </summary>
-        public VersionOptions()
+        public VersionData()
         {
             Targets = new Dictionary<string, MonikerData>();
         }

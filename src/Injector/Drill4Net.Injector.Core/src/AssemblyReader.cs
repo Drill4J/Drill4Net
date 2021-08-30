@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Core
 {
@@ -78,7 +78,7 @@ namespace Drill4Net.Injector.Core
                     if (!Debugger.IsAttached)
                         // Log.Warning(ex, $"Reading PDB (from IDE): {nameof(ProcessAssembly)}");
                         //else
-                        Log.Error(ex, $"Reading PDB: {nameof(ReadAssembly)}");
+                        Log.Error($"Reading PDB: {nameof(ReadAssembly)}", ex);
                 }
                 asmCtx.IsNeedPdb = needPdb;
             }
@@ -86,7 +86,7 @@ namespace Drill4Net.Injector.Core
             #endregion
             #region Reading
             // read subject assembly with symbols
-            Log.Debug("Reading: [{FilePath}]", filePath);
+            Log.Debug($"Reading: [{filePath}]");
         #pragma warning disable DF0010 // Marks undisposed local variables.
             var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
         #pragma warning restore DF0010 // Marks undisposed local variables.

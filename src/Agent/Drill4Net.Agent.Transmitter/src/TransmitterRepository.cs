@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.Transmitter
         /// <value>
         /// The target.
         /// </value>
-        public string Target { get; set; }
+        public string TargetName { get; set; }
 
         /// <summary>
         /// Gets the session of Target/Transmitter's Run.
@@ -40,7 +40,7 @@ namespace Drill4Net.Agent.Transmitter
             var optHelper = new BaseOptionsHelper<MessageSenderOptions>();
             var path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);
             SenderOptions = optHelper.ReadOptions(path);
-            Target = Options.Target?.Name ?? GenerateTargetName();
+            TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();
             PrepareLogger();
         }
@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Transmitter
 
             var targetInfo = new TargetInfo
             {
-                TargetName = Target,
+                TargetName = TargetName,
                 SessionUid = TargetSession,
                 Options = Options,
                 Solution = tree,

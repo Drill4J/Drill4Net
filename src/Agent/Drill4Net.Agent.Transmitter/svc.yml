@@ -2,8 +2,10 @@
 Type: kafka-transmitter #type as hint
 Servers: # list of servers
    - 'localhost:9093'
-Topics: # topics for the probes
-    - probes
+   - 'localhost:9094'
+   - 'localhost:9095'
+Topics: # additional topics for the probes
+#    #- probes
 Logs:
     - Type: console
       Level: debug
@@ -12,5 +14,5 @@ Logs:
       Level: trace
     # common place
     - Type: file
-      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Path: ..\..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
       Level: trace

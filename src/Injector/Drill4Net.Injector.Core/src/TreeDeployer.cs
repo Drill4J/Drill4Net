@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Serilog;
+using Drill4Net.BanderLog;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
@@ -43,13 +43,13 @@ namespace Drill4Net.Injector.Core
 
             var pathInText = _rep.GetTreeFilePath(tree);
             Console.WriteLine("");
-            Log.Debug("Tree saved to: [{PathInText}]", pathInText);
+            Log.Debug($"Tree saved to: [{pathInText}]");
 
             foreach (var dir in dirs)
             {
                 var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
                 File.WriteAllText(hintPath, pathInText);
-                Log.Debug("Hint placed to: [{HintPath}]", hintPath);
+                Log.Debug($"Hint placed to: [{hintPath}]");
             }
         }
     }

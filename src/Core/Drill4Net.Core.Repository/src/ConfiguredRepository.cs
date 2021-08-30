@@ -13,7 +13,7 @@ namespace Drill4Net.Core.Repository
     /// <typeparam name="TOptions">Concrete options</typeparam>
     /// <typeparam name="THelper">Helper for manipulating the concrete type of options</typeparam>
     public abstract class ConfiguredRepository<TOptions, THelper> : AbstractRepository<TOptions>
-                    where TOptions : BaseTargetOptions, new()
+                    where TOptions : TargetOptions, new()
                     where THelper : BaseOptionsHelper<TOptions>, new()
     {
         /// <summary>
@@ -78,7 +78,7 @@ namespace Drill4Net.Core.Repository
                 }
                 catch(Exception ex)
                 {
-                    throw new System.Exception($"Tree data not serialized: [{path}].\n{ex}");
+                    throw new System.Exception($"Tree data did't serialized: [{path}].\n{ex}");
                 }
                 return tree;
             }

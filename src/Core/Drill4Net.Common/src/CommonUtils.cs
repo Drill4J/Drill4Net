@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Mono.Cecil;
 
 namespace Drill4Net.Common
@@ -16,9 +17,18 @@ namespace Drill4Net.Common
     {
         public static int CurrentProcessId { get; }
 
+        /******************************************************************/
+
         static CommonUtils()
         {
             CurrentProcessId = Process.GetCurrentProcess().Id;
+        }
+
+        /******************************************************************/
+
+        public static string GetAppName()
+        {
+            return Assembly.GetEntryAssembly().GetName().Name;
         }
 
         #region TargetVersioning
@@ -89,6 +99,57 @@ namespace Drill4Net.Common
             var ar = fullName.Split(',');
             var ver = ar[1].Trim().Split('=')[1];
             return (ar[0], new Version(ver));
+        }
+        #endregion
+        #region FirstChanceException & Resolving
+        //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
+
+        public static void LogFirstChanceException(string emergencyLogDir, string context, Exception e)
+        {
+            if (!Directory.Exists(emergencyLogDir))
+                Directory.CreateDirectory(emergencyLogDir);
+            File.WriteAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
+                new List<string> { $"{GetPreciseTime()}|{context}:\n{e}" });
+        }
+
+        public static Assembly TryResolveAssembly(string dir, string context, ResolveEventArgs args, AssemblyResolver resolver, ILogger log)
+        {
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            var name = args.Name;
+            log?.LogDebug($"{context}: need resolve the assembly: [{name}]");
+            var asm = resolver.Resolve(name, args.RequestingAssembly.Location);
+            if (asm != null)
+                return asm;
+            var info = $"{GetPreciseTime()}|{context}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            File.AppendAllLines(Path.Combine(dir, "resolve_failed.log"), new string[] { info });
+            log?.LogDebug($"{context}: assembly [{name}] didn't resolve");
+            return args.RequestingAssembly; //null
+        }
+
+        public static Assembly TryResolveResource(string dir, string context, ResolveEventArgs args, AssemblyResolver resolver, ILogger log)
+        {
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            var name = args.Name;
+            var asm = resolver.ResolveResource(args.RequestingAssembly.Location, name);
+            if (asm != null)
+                return asm;
+            var info = $"{GetPreciseTime()}|{context}: {name} -> request resource from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            log?.LogDebug(info);
+            File.AppendAllLines(Path.Combine(dir, "resolve_resource_failed.log"), new string[] { info });
+            return null;
+        }
+
+        public static Assembly TryResolveType(string dir, string context, ResolveEventArgs args, ILogger log)
+        {
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            var name = args.Name;
+            var info = $"{GetPreciseTime()}|{context}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
+            log?.LogDebug(info);
+            File.AppendAllLines(Path.Combine(dir, "resolve_type_failed.log"), new string[] { info });
+            return null;
         }
         #endregion
 

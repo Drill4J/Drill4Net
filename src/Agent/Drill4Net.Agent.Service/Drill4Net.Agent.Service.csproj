@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
-    <PackageReference Include="GitInfo" Version="2.1.2">
+    <PackageReference Include="GitInfo" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -27,10 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Kafka\Drill4Net.Agent.Messaging.Kafka.csproj" />
+    <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport.Kafka\Drill4Net.Agent.Messaging.Transport.Kafka.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport\Drill4Net.Agent.Messaging.Transport.csproj" />
-    <ProjectReference Include="..\Drill4Net.Agent.Worker\Drill4Net.Agent.Worker.csproj" />
   </ItemGroup>
 
   <ItemGroup>

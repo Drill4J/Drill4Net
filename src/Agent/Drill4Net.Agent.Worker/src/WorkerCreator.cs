@@ -1,7 +1,9 @@
 ﻿using System;
 using Drill4Net.Common;
+using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -21,7 +23,7 @@ namespace Drill4Net.Agent.Worker
         public virtual IMessageReceiver CreateWorker()
         {
             var rep = GetRepository();
-            IProbeReceiver probeReceiver = new ProbeReceiver(rep);
+            IProbeReceiver probeReceiver = new ProbeKafkaReceiver(rep);
             ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessageReceiverOptions>(rep);
             var worker = new AgentWorker(targetReceiver, probeReceiver);
             return worker;
@@ -30,15 +32,23 @@ namespace Drill4Net.Agent.Worker
         internal virtual AbstractRepository<MessageReceiverOptions> GetRepository()
         {
             var opts = GetBaseOptions(_args);
-            var targetTopic = GetTargetTopic(_args);
-            if(!string.IsNullOrWhiteSpace(targetTopic))
+            var targetSession = GetTargetSession(_args);
+            Console.WriteLine($"Worker session = {targetSession}");
+
+            var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
+            if (!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Topics.Add(targetTopic);
+
+            var probeTopic = MessagingUtils.GetProbeTopic(targetSession);
+            if (!string.IsNullOrWhiteSpace(probeTopic))
+                opts.Topics.Add(probeTopic);
+
             return new AgentWorkerRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, opts);
         }
 
-        private string GetTargetTopic(string[] args)
+        private string GetTargetSession(string[] args)
         {
-            return AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_TOPIC);
+            return AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
         }
 
         internal virtual MessageReceiverOptions GetBaseOptions(string[] args)

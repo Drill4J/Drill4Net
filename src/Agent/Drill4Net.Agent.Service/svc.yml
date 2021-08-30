@@ -1,12 +1,12 @@
-﻿Description: Convert point uids from Kafka to the format consuming the Admin side
-Type: probe-converter # type as hint
+﻿Description: Agent Server for controlling workers processing the probes for Drill Admin side by messaging
+Type: agent-service # type as hint
 Servers: # list of servers
    - 'localhost:9093'
    - 'localhost:9094'
    - 'localhost:9095'
 GroupId: dodnet-agent
-Topics:  # topics for the probes
-    - probes
+#Topics: # additional topics for the probes
+#    #- probes
 WorkerPath: ..\..\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe 
 Logs:
     - Type: console
@@ -16,5 +16,5 @@ Logs:
       Level: trace
     # common place
     - Type: file
-      Path: #..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
       Level: trace

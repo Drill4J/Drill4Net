@@ -10,7 +10,7 @@
         {
         }
 
-        public override TransportAdmin GetTransportAdmin()
+        public override AbstractTransportAdmin GetTransportAdmin()
         {
             return new TransportKafkaAdmin();
         }

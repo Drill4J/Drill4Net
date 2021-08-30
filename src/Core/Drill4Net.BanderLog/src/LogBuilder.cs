@@ -3,45 +3,48 @@ using Microsoft.Extensions.Logging;
 using Drill4Net.BanderLog.Sinks;
 using Drill4Net.BanderLog.Sinks.Console;
 using Drill4Net.BanderLog.Sinks.File;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Drill4Net.BanderLog
 {
-    public class LogBuilder
+    public class LogBuilder : ILoggingBuilder
     {
-        private readonly Logger _log;
+        private readonly LogManager _log;
+
+        public IServiceCollection Services => throw new NotImplementedException();
 
         /*****************************************************************/
 
         public LogBuilder()
         {
-            _log = new Logger();
+            _log = new LogManager();
         }
 
         /*****************************************************************/
 
-        public LogBuilder AddSink(ILogSink sink)
+        public LogBuilder AddSink(AbstractSink sink)
         {
-            _log.Sinks.Add(sink);
+            _log.AddSink(sink);
             return this;
         }
 
-        public Logger Build()
+        public LogManager Build()
         {
             return _log;
         }
 
-        public Logger CreateLogger(LogConfiguration cfg) //use LogOptions?
+        public LogManager CreateLogger(LogConfiguration cfg) //use LogOptions?
         {
             throw new NotImplementedException();
         }
 
-        public Logger CreateStandardLogger(string filepath = null)
+        public LogManager CreateStandardLogger(string filepath = null)
         {
             var console = new ConsoleSink();
-            _log.Sinks.Add(console);
+            _log.AddSink(console);
             //
             var file = FileSinkCreator.CreateSink(filepath);
-            _log.Sinks.Add(file);
+            _log.AddSink(file);
             //
             return _log;
         }

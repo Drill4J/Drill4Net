@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace Drill4Net.Common
 {

@@ -6,28 +6,30 @@ using log4net.Layout;
 using Serilog;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Drill4Net.BanderLog.ManualBenchmarks
 {
     internal class Tests: IDisposable
     {
-        private NLog.Logger _loggerNlog;
-        private BanderLog.Logger _loggerBanderLog;
-        private log4net.ILog _log4net;
-        private string _testString;
+        private readonly NLog.Logger _loggerNlog;
+        private readonly BanderLog.LogManager _loggerBanderLog;
+        private readonly log4net.ILog _log4net;
+
+        private readonly string _testString;
         private const string _fileNameSeriLog = "LogFileSerilog.txt";
         private const string _fileNameBanderLog = "LogFileBanderLog.txt";
         private const string _fileNameNLog = "LogFileN.txt";
         private const string _fileNameLog4Net = "LogFileLog4Net.txt";
+
+        /****************************************************************************/
+
         internal Tests()
         {
             _testString = new string('a', 100);
 
             //Serilog
-            Log.Logger = new LoggerConfiguration()
+            Serilog.Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(_fileNameSeriLog)
                 .CreateLogger();
 
@@ -65,7 +67,7 @@ namespace Drill4Net.BanderLog.ManualBenchmarks
                 $"Record count: {recordCount}; Task count:{taskCount}; Coeff: 1 (base Duration).");
 
             startDate = DateTime.Now;
-            Targets.UseSerilogMultiTask(Log.Logger, recordCount, _testString, taskCount);
+            Targets.UseSerilogMultiTask(Serilog.Log.Logger, recordCount, _testString, taskCount);
             finishDate = DateTime.Now;
             Console.WriteLine($"SerilogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
                 $"Record count: {recordCount}; Task count:{taskCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");
@@ -93,7 +95,7 @@ namespace Drill4Net.BanderLog.ManualBenchmarks
                 $"Record count: {recordCount}; Coeff: 1 (base Duration).");
 
             startDate = DateTime.Now;
-            Targets.UseSerilog(Log.Logger, recordCount, _testString);
+            Targets.UseSerilog(Serilog.Log.Logger, recordCount, _testString);
             finishDate = DateTime.Now;
             Console.WriteLine($"SerilogTest. Duration: {(finishDate - startDate).TotalSeconds} sec; " +
                 $"Record count: {recordCount}; Coeff: {Math.Round((finishDate - startDate).TotalSeconds / baseDuration, 2)}.");

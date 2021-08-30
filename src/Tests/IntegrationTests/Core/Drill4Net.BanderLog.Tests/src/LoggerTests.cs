@@ -13,7 +13,7 @@ namespace Drill4Net.BanderLog.Tests
     /// </summary>
     public class LoggerTests
     {
-        private BanderLog.Logger InitializeLogger(string[] fileNames)
+        private BanderLog.LogManager InitializeLogger(string[] fileNames)
         {
             var logBld = new LogBuilder();
 
@@ -37,10 +37,11 @@ namespace Drill4Net.BanderLog.Tests
             var logger = InitializeLogger(Const.LOG_PATH_SINKS);
 
             //act
+            var sinks = logger.GetSinks();
             Task[] tasks = new Task[2]
             {
-                new Task(() => Helper.WriteLog(logger.Sinks[0])),
-                new Task(() => Helper.WriteLog(logger.Sinks[1]))
+                new Task(() => Helper.WriteLog(sinks[0])),
+                new Task(() => Helper.WriteLog(sinks[1]))
             };
 
             foreach (var t in tasks)

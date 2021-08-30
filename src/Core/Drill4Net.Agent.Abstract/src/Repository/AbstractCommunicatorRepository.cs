@@ -12,11 +12,13 @@
         /// </summary>
         public AbstractCommunicator Communicator { get; set; }
 
-        public AbstractCommunicatorRepository(string cfgPath = null) : base(cfgPath)
+        /**********************************************************************************/
+
+        protected AbstractCommunicatorRepository(string cfgPath = null) : base(cfgPath)
         {
         }
 
-        public AbstractCommunicatorRepository(AgentOptions opts) : base(opts)
+        protected AbstractCommunicatorRepository(AgentOptions opts) : base(opts)
         {
         }
     }

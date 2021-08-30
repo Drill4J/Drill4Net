@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.IO;
+using Microsoft.Extensions.Logging;
+using Drill4Net.Common;
 
 namespace Drill4Net.BanderLog.Sinks.File
 {
@@ -8,8 +10,11 @@ namespace Drill4Net.BanderLog.Sinks.File
 
         /***************************************************/
 
-        public FileLoggerProvider(string path)
+        public FileLoggerProvider(string path = null)
         {
+
+            if (string.IsNullOrWhiteSpace(path))
+                path = Path.Combine(FileUtils.GetExecutionDir(), "log_test.txt");
             _path = path;
         }
 

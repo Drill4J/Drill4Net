@@ -2,15 +2,13 @@
 using System.Linq;
 using System.Threading;
 using Confluent.Kafka;
-using Drill4Net.Common;
-using Drill4Net.Agent.Messaging;
+using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging.Kafka;
-using Drill4Net.Agent.Messaging.Transport;
-using Drill4Net.Agent.Messaging.Transport.Kafka;
+using Drill4Net.BanderLog;
 
-namespace Drill4Net.Agent.Worker
+namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class ProbeReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, IProbeReceiver
+    public class ProbeKafkaReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, IProbeReceiver
     {
         public event ProbeReceivedHandler ProbeReceived;
 
@@ -18,7 +16,7 @@ namespace Drill4Net.Agent.Worker
 
         /****************************************************************************************/
 
-        public ProbeReceiver(AbstractRepository<MessageReceiverOptions> rep) : base(rep)
+        public ProbeKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep) : base(rep)
         {
         }
 
@@ -37,15 +35,17 @@ namespace Drill4Net.Agent.Worker
 
         private void RetrieveProbes()
         {
-            Console.WriteLine($"{_logPrefix}Starting retrieving probes...");
+            Log.Info($"{_logPrefix}Start retrieving probes...");
 
-            var opts = _rep.Options;
             _probesCts = new();
+            var opts = _rep.Options;
+            var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
+            Log.Debug($"{_logPrefix}Probe topics: {string.Join(",", probeTopics)}");
 
             using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
                 .SetValueDeserializer(new ProbeDeserializer())
                 .Build();
-            c.Subscribe(opts.Topics);
+            c.Subscribe(probeTopics);
 
             try
             {

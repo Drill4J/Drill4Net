@@ -1,46 +1,94 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Drill4Net.BanderLog.Sinks;
+using System.Runtime.CompilerServices;
 
 namespace Drill4Net.BanderLog
 {
-    public class Logger : AbstractSink
+    public class Logger : ILogger
     {
-        public List<ILogSink> Sinks { get; set; }
+        public string Subsystem { get; }
+        public string Category { get; }
 
-        /*************************************************************************/
+        /***************************************************************************/
 
-        public Logger(List<ILogSink> sinks = null)
+        public Logger(string category = null, string subsystem = null)
         {
-            Sinks = sinks ?? new List<ILogSink>();
+            Category = category;
+            Subsystem = subsystem;
         }
 
-        /*************************************************************************/
+        /***************************************************************************/
 
-        public override void Log(LogLevel logLevel, string message, Exception exception = null)
+        public LogManager GetManager() => BanderLog.Log.Manager;
+
+        #region Specific
+        public void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            foreach (var sink in Sinks)
-                sink.Log(logLevel, message, exception);
+            BanderLog.Log.Trace(message, exception, callerMethod);
         }
 
-        public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, 
+        public void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        {
+            BanderLog.Log.Debug(message, exception, callerMethod);
+        }
+
+        public void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        {
+            BanderLog.Log.Info(message, exception, callerMethod);
+        }
+
+        public void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        {
+            BanderLog.Log.Warning(message, exception, callerMethod);
+        }
+
+        public void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        {
+            BanderLog.Log.Error(message, exception, callerMethod);
+        }
+
+        public void Error(Exception exception, [CallerMemberName] string callerMethod = "")
+        {
+            BanderLog.Log.Error(null, exception, callerMethod);
+        }
+
+        public void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        {
+            BanderLog.Log.Fatal(message, exception, callerMethod);
+        }
+        #endregion
+        #region Write
+        public static void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        {
+            BanderLog.Log.Write(logLevel, message, exception, callerMethod);
+        }
+
+        public static void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            foreach (var sink in Sinks)
-                sink.Log(logLevel, eventId, state, exception, formatter);
+            BanderLog.Log.Write(logLevel, eventId, state, exception, formatter);
+        }
+        #endregion
+        #region Interface ILogger
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            GetManager()?.Log(logLevel, eventId, state, exception, formatter);
         }
 
-        public override void Flush()
+        public bool IsEnabled(LogLevel logLevel)
         {
-            foreach (var sink in Sinks)
-                sink.Flush();
+            return GetManager()?.IsEnabled(logLevel) == true;
         }
 
-        public override void Shutdown()
+        public IDisposable BeginScope<TState>(TState state)
         {
-            foreach (var sink in Sinks)
-                sink.Shutdown();
+            return GetManager()?.BeginScope(state);
+        }
+        #endregion
+
+        public override string ToString()
+        {
+            return Category;
         }
     }
 }

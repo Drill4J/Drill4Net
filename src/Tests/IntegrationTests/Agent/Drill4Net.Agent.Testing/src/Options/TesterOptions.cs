@@ -5,17 +5,17 @@ namespace Drill4Net.Agent.Testing
     /// <summary>
     /// Options for the Tester Subsystem for the Project Solution
     /// </summary>
-    public class TesterOptions : BaseTargetOptions
+    public class TesterOptions : TargetOptions
     {
         /// <summary>
         /// Versions of Terget for teh testing
         /// </summary>
-        public VersionOptions Versions { get; set; }
+        public VersionData Versions { get; set; }
 
         /// <summary>
         /// Options for the injecting process (types of methods, cross-point, etc)
         /// </summary>
-        public ProbesOptions Probes { get; set; }
+        public ProbeData Probes { get; set; }
 
         /// <summary>
         /// Debug mode for the Tester

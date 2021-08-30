@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Injection;
 using Drill4Net.Configuration;
@@ -12,6 +11,7 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Strategies.Flow;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -149,7 +149,7 @@ namespace Drill4Net.Injector.Engine
                 //TODO: we don't work with strong names yet (it's possible)
                 if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
                 {
-                    Log.Warning("Assembly [{FilePath}] having the strong name", filePath);
+                    Log.Warning($"Assembly [{filePath}] having the strong name");
                     return new AssemblyVersioning() { IsStrongName = true };
                 }
 
@@ -164,7 +164,7 @@ namespace Drill4Net.Injector.Engine
             catch (Exception ex)
             {
                 if (ex.HResult != -2146234344) //The module was expected to contain an assembly manifest
-                    Log.Warning("Getting assembly version for [{FilePath}]: {Message}", filePath, ex.Message);
+                    Log.Warning($"Getting assembly version for [{filePath}]: {ex.Message}");
                 return null;
             }
         }

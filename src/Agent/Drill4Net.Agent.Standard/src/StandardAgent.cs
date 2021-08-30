@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Reflection;
-using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -70,7 +70,7 @@ namespace Drill4Net.Agent.Standard
                 _resolver = new AssemblyResolver();
 
                 EmergencyLogDir = FileUtils.GetEmergencyDir();
-                AbstractRepository<AgentOptions>.PrepareInitLogger(FileUtils.LOG_FOLDER_EMERGENCY);
+                StandardAgentRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
                 Log.Debug($"{_logPrefix} is initializing...");
 
@@ -109,7 +109,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"{_logPrefix}: error of initializing");
+                Log.Fatal($"{_logPrefix}: error of initializing", ex);
             }
             finally
             {
@@ -132,44 +132,24 @@ namespace Drill4Net.Agent.Standard
                 throw new Exception($"{_logPrefix}: creation is failed");
         }
 
-        //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
-
         private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         {
-            File.AppendAllLines(Path.Combine(EmergencyLogDir, "first_chance_error.log"),
-                new string[] { $"{CommonUtils.GetPreciseTime()}|{_logPrefix}:\n{e.Exception}" });
+            CommonUtils.LogFirstChanceException(EmergencyLogDir, _logPrefix, e.Exception);
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            var name = args.Name;
-            Log.Debug($"{_logPrefix}: need resolve the assembly: [{name}]");
-            var asm = _resolver.Resolve(name, args.RequestingAssembly.Location);
-            if (asm != null)
-                return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
-            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_failed.log"), new string[] { info });
-            Log.Debug($"{_logPrefix}: assembly [{name}] didn't resolve");
-            return args.RequestingAssembly; //null
+            return CommonUtils.TryResolveAssembly(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
         }
 
         private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
         {
-            var name = args.Name;
-            var asm = _resolver.ResolveResource(args.RequestingAssembly.Location, name);
-            if (asm != null)
-                return asm;
-            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request resource from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
-            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_resource_failed.log"), new string[] { info });
-            return null;
+            return CommonUtils.TryResolveResource(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
         }
 
         private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
         {
-            var name = args.Name;
-            var info = $"{CommonUtils.GetPreciseTime()}|{_logPrefix}: {name} -> request type from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
-            File.AppendAllLines(Path.Combine(EmergencyLogDir, "resolve_type_failed.log"), new string[] { info });
-            return null;
+            return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
         }
         #endregion
         #region Events
@@ -297,7 +277,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "{Data}", data);
+                Log.Error($"{data}", ex);
             }
         }
         #endregion

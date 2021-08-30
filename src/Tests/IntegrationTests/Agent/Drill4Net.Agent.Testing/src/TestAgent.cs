@@ -9,12 +9,12 @@ using System.Linq;
 using System.Threading;
 using System.Reflection;
 using NUnit.Framework.Internal;
-using Serilog;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing.NetFxUtils;
 using Drill4Net.Core.Repository;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Testing
 {
@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Testing
 
         static TestAgent()
         {
-            AbstractRepository<AgentOptions>.PrepareInitLogger();
+            AbstractRepository<AgentOptions>.PrepareEmergencyLogger();
             Log.Debug("Initializing...");
 
             try
@@ -70,7 +70,7 @@ namespace Drill4Net.Agent.Testing
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, $"Error of {nameof(TestAgent)} initializing");
+                Log.Fatal($"Error of {nameof(TestAgent)} initializing", ex);
             }
         }
 
@@ -103,7 +103,7 @@ namespace Drill4Net.Agent.Testing
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "{Data}", data);
+                Log.Error($"{data}", ex);
             }
         }
 

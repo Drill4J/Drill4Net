@@ -45,7 +45,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="sourcePath">Source directory</param>
         /// <param name="destPath">destintation directory</param>
-        /// <param name="monikers">Dictionary of framework versions monikers from <see cref="VersionOptions.Targets"/>.
+        /// <param name="monikers">Dictionary of framework versions monikers from <see cref="VersionData.Targets"/>.
         /// Key is moniker (for example, net5.0)</param>
         void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers);
 

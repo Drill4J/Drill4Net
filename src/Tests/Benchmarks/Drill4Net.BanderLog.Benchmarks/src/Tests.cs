@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.IO;
-using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Serilog;
 using Drill4Net.BanderLog.Sinks.File;
 using System.Threading.Tasks;
-using log4net;
 using log4net.Config;
-using System.Reflection;
 using log4net.Layout;
 using log4net.Appender;
 
@@ -28,7 +24,7 @@ namespace Drill4Net.BanderLog.Benchmarks
     public class Tests
     {
         private NLog.Logger _loggerNlog;
-        private BanderLog.Logger _loggerBanderLog;
+        private BanderLog.LogManager _loggerBanderLog;
         private log4net.ILog _log4net;
         private string _testString;
         private const string _fileName="LogFile.txt";
@@ -55,7 +51,7 @@ namespace Drill4Net.BanderLog.Benchmarks
             
 
             //Serilog
-            Log.Logger = new LoggerConfiguration()
+            Serilog.Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(_fileNameSeriLog)
                 .CreateLogger();
 
@@ -98,7 +94,7 @@ namespace Drill4Net.BanderLog.Benchmarks
         [Arguments(10000)]
         public void SerilogTest(int recordCount)
         {
-            Targets.UseSerilog(Log.Logger, recordCount, _testString);
+            Targets.UseSerilog(Serilog.Log.Logger, recordCount, _testString);
         }
 
         [Benchmark]
@@ -173,7 +169,7 @@ namespace Drill4Net.BanderLog.Benchmarks
             Task[] tasks = new Task[taskCount];
             for (var i = 0; i < taskCount; i++)
             {
-                tasks[i] = new Task(() => Targets.UseSerilog(Log.Logger, recordCount, _testString));
+                tasks[i] = new Task(() => Targets.UseSerilog(Serilog.Log.Logger, recordCount, _testString));
             }
 
             foreach (var t in tasks)

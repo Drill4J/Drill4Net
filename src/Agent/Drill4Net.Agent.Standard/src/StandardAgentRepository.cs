@@ -99,14 +99,14 @@ namespace Drill4Net.Agent.Standard
             _sendTimer.Elapsed += Timer_Elapsed;
         }
 
-        private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetOptions targetOpts)
+        private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetData targetOpts)
         {
             if (adminOpts == null)
                 throw new ArgumentNullException(nameof(adminOpts));
             return new Communicator(adminOpts.Url, GetAgentPartConfig(targetOpts));
         }
 
-        internal AgentPartConfig GetAgentPartConfig(TargetOptions targOpts)
+        internal AgentPartConfig GetAgentPartConfig(TargetData targOpts)
         {
             string targVersion = targOpts.Version;
             if (string.IsNullOrWhiteSpace(targVersion))

@@ -2,12 +2,11 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Serilog;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -218,7 +217,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Getting real name of func method: [{ExtOp}]", extOp);
+                Log.Error($"Getting real name of func method: [{extOp}]", ex);
             }
         }
 
@@ -268,7 +267,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error(ex, nameof(TryGetBusinessMethod));
+                Log.Error(nameof(TryGetBusinessMethod), ex);
             }
             return realMethodName;
         }

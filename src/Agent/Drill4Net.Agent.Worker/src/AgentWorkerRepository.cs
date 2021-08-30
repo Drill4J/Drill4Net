@@ -6,10 +6,12 @@ namespace Drill4Net.Agent.Worker
     {
         public AgentWorkerRepository(string subsystem, string cfgPath = null) : base(subsystem, cfgPath)
         {
+            PrepareLogger();
         }
 
         public AgentWorkerRepository(string subsystem, MessageReceiverOptions opts) : base(subsystem, opts)
         {
+            PrepareLogger();
         }
     }
 }

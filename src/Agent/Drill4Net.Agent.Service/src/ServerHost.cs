@@ -1,29 +1,41 @@
 using System;
 using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
+
+//automatic version tagger including Git info
+//https://github.com/devlooped/GitInfo
+[assembly: AssemblyInformationalVersion(
+      ThisAssembly.Git.SemVer.Major + "." +
+      ThisAssembly.Git.SemVer.Minor + "." +
+      ThisAssembly.Git.SemVer.Patch + "-" +
+      ThisAssembly.Git.Branch + "+" +
+      ThisAssembly.Git.Commit)]
 
 namespace Drill4Net.Agent.Service
 {
     public class ServerHost : BackgroundService
     {
-        private readonly ILogger<ServerHost> _logger;
+        private readonly AbstractAgentServerRepository _rep;
 
-        /*****************************************************************************/
+        /****************************************************************************/
 
         public ServerHost(ILogger<ServerHost> logger)
         {
-            _logger = logger;
-            //
-            var appName = ServiceUtils.GetAppName();
-            var version = ServiceUtils.GetAppVersion();
+            //TODO: factory
+            _rep = new AgentServerKafkaRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER); //...it will be created here
+
+            //TODO: use also logger from ctor
+            var appName = CommonUtils.GetAppName();
+            var version = FileUtils.GetProductVersion(typeof(AgentServer));
             var title = $"{appName} {version}";
-            _logger.LogInformation($"{nameof(ServerHost)} created: {title}");
+            Log.Debug($"{nameof(ServerHost)} created: {title}");
         }
 
         /*****************************************************************************/
@@ -32,20 +44,17 @@ namespace Drill4Net.Agent.Service
         {
             try
             {
-                //TODO: factory
-                AbstractAgentServerRepository rep =
-                    new AgentServerKafkaRepository(CoreConstants.SUBSYSTEM_AGENT_SERVER);
-                ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<AgentServerOptions>(rep);
-                IPingReceiver pingReceiver = new PingKafkaReceiver<AgentServerOptions>(rep);
-                using var server = new AgentServer(rep, targetReceiver, pingReceiver);
+                ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<AgentServerOptions>(_rep);
+                IPingReceiver pingReceiver = new PingKafkaReceiver<AgentServerOptions>(_rep);
+                using var server = new AgentServer(_rep, targetReceiver, pingReceiver);
                 server.ErrorOccured += Server_ErrorOccured;
-                _logger.LogInformation($"{nameof(ServerHost)} ready.");
+                Log.Info($"{nameof(ServerHost)} ready.");
 
                 server.Start();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Server start is failed");
+                Log.Fatal("Server's start is failed", ex);
             }
         }
 

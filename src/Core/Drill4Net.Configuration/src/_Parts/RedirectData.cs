@@ -3,7 +3,7 @@
     /// <summary>
     /// Simple redirection cfg to real Injection cfg
     /// </summary>
-    public class RedirectOptions
+    public class RedirectData
     {
         /// <summary>
         /// Full/relative path or simple name of real injection cfg (in this case with or without extension)

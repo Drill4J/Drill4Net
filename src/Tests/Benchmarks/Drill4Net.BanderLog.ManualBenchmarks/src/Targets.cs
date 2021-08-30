@@ -5,7 +5,7 @@ namespace Drill4Net.BanderLog.ManualBenchmarks
 {
     static class Targets
     {
-        public static void UseBanderLog(BanderLog.Logger loggerBanderLog, int recordCount, string logString)
+        public static void UseBanderLog(BanderLog.LogManager loggerBanderLog, int recordCount, string logString)
         {
             for (var i = 0; i < recordCount; i++)
             {
@@ -33,7 +33,7 @@ namespace Drill4Net.BanderLog.ManualBenchmarks
                 loggerLog4Net.Info(logString);
             }
         }
-        public static void UseBanderLogMultiTask(BanderLog.Logger loggerBanderLog, int recordCount, string logString, int taskCount)
+        public static void UseBanderLogMultiTask(BanderLog.LogManager loggerBanderLog, int recordCount, string logString, int taskCount)
         {
             Task[] tasks = new Task[taskCount];
             for (var i = 0; i < taskCount; i++)

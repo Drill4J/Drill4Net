@@ -4,6 +4,8 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
+using Drill4Net.Agent.Messaging.Transport.Kafka;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -22,7 +24,7 @@ namespace Drill4Net.Agent.Worker
 
         public AgentWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
-            _logPrefix = TransportAdmin.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(AgentWorker));
+            _logPrefix = MessagingUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(AgentWorker));
 
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
@@ -54,16 +56,16 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            Console.WriteLine($"{_logPrefix}{nameof(TargetInfo)} has received");
+            Log.Info($"{_logPrefix}{nameof(TargetInfo)} received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} has initialized");
+            Log.Debug($"{_logPrefix}{nameof(StandardAgent)} initialized");
 
-            Console.WriteLine($"{_logPrefix}{nameof(StandardAgent)} has started to receive probes...");
+            Log.Info($"{_logPrefix}{nameof(AgentWorker)} starts receiving probes...");
             _probeReceiver.Start();
         }
 

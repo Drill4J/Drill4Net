@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using Serilog;
-using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
+using Drill4Net.Core.Repository;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.App
 {
@@ -15,14 +15,14 @@ namespace Drill4Net.Injector.App
             var name = typeof(Program).Namespace.Split('.')[0];
             Console.WriteLine($"{name} is starting");
 
-            AbstractRepository<InjectorOptions>.PrepareInitLogger();
+            AbstractRepository<InjectorOptions>.PrepareEmergencyLogger();
             IInjectorRepository rep = null;
             try
             {
                 rep = new InjectorRepository(args);
 
-                Log.Debug("Arguments: {@Args}", args);
-                Log.Debug("Options: {@Options}", rep.Options);
+                Log.Debug($"Arguments: {args}");
+                Log.Debug($"Options: {rep.Options}");
 
                 var injector = new InjectorEngine(rep);
 #if DEBUG
@@ -32,11 +32,10 @@ namespace Drill4Net.Injector.App
 #if DEBUG
                 watcher.Stop();
 #endif
-
-                Log.Information("Injection is done.");
-                Log.Verbose("");
+                Log.Info("Injection is done.");
+                Log.Trace("");
 #if DEBUG
-                Log.Information($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
+                Log.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
 #endif
             }
             catch (Exception ex)
@@ -44,7 +43,7 @@ namespace Drill4Net.Injector.App
                 Log.Error(ex.ToString());
             }
 
-            Log.CloseAndFlush();
+            Log.Shutdown();
             if (rep?.Options?.Silent == false)
                 Console.ReadKey(true);
         }

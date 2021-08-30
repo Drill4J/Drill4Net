@@ -7,10 +7,10 @@ namespace Drill4Net.Configuration
     /// Options for the logging
     /// </summary>
     [Serializable]
-    public class LogOptions
+    public class LogData
     {
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="LogOptions"/> is disabled.
+        /// Gets or sets a value indicating whether this <see cref="LogData"/> is disabled.
         /// </summary>
         /// <value>
         ///   <c>true</c> if disabled; otherwise, <c>false</c>.
