@@ -9,13 +9,13 @@ namespace Drill4Net.BanderLog
 {
     public class LogManager : AbstractSink
     {
-        public Dictionary<int, AbstractSink> _sinks;
+        public Dictionary<int, ILogger> _sinks;
 
         /*************************************************************************/
 
         public LogManager(IEnumerable<AbstractSink> sinks = null)
         {
-            _sinks = new Dictionary<int, AbstractSink>();
+            _sinks = new Dictionary<int, ILogger>();
             if (sinks != null)
             {
                 foreach (var sink in sinks)
@@ -25,20 +25,29 @@ namespace Drill4Net.BanderLog
 
         /*************************************************************************/
 
-        public void AddSink(AbstractSink sink)
+        public void AddSink(ILogger sink)
         {
             if (sink == null)
                 throw new ArgumentNullException(nameof(sink));
             //
-            var key = sink.GetKey();
+            int key = 0;
+            switch (sink)
+            {
+                case AbstractSink abstractSink:
+                    key = abstractSink.GetKey();
+                    break;
+                case ILogger _:
+                    key = sink.GetKey();
+                    break;
+            }
             if (_sinks.ContainsKey(key))
                 _sinks.Remove(key); //return? exception? remove old? -> add func parameter?
             _sinks.Add(key, sink);
         }
 
-        public IList<AbstractSink> GetSinks()
+        public IList<ILogSink> GetSinks()
         {
-            return _sinks.Values.ToList();
+            return _sinks.Values.OfType<ILogSink>().ToList();
         }
 
         #region Log
@@ -59,25 +68,36 @@ namespace Drill4Net.BanderLog
             string caller, Func<TState, Exception, string> formatter)
         {
             foreach (var sink in _sinks.Values)
-                sink.LogEx(logLevel, subsystem, category, state, exception, caller, formatter);
+            {
+                //hmmm....
+                switch (sink)
+                {
+                    case AbstractSink abstractSink:
+                        abstractSink.LogEx(logLevel, subsystem, category, state, exception, caller, formatter);
+                        break;
+                    case ILogger _:
+                        sink.Log(logLevel, subsystem, category, state, exception, caller, formatter);
+                        break;
+                }
+            }
         }
         #endregion
 
         public override void Flush()
         {
-            foreach (var sink in _sinks.Values)
+            foreach (ILogSink sink in GetSinks())
                 sink.Flush();
         }
 
         public override void Shutdown()
         {
-            foreach (var sink in _sinks.Values)
+            foreach (ILogSink sink in GetSinks())
                 sink.Shutdown();
         }
 
         public override int GetKey()
         {
-            return "Logger".GetHashCode();
+            return nameof(LogManager).GetHashCode();
         }
     }
 }
