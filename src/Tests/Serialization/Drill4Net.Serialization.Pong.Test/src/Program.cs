@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Serialization.Pong.Test
+namespace Drill4Net.Serialization.Pong.Test
 {
     public class Program
     {

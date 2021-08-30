@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.BanderLog.Benchmarks</OutputPath>
+    <OutputPath>..\..\..\..\build\bin\Release\Tests\Drill4Net.BanderLog.Benchmarks</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.BanderLog.Benchmarks\Drill4Net.BanderLog.Benchmarks.xml</DocumentationFile>
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.BanderLog.Benchmarks</OutputPath>
+    <DocumentationFile>..\..\..\..\build\bin\Debug\Tests\Drill4Net.BanderLog.Benchmarks\Drill4Net.BanderLog.Benchmarks.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.BanderLog.Benchmarks</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,12 +36,8 @@
     <ProjectReference Include="..\..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
   </ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="if $(ConfigurationName) == Release call &quot;$(OutDir)$(ProjectName).exe&quot;" IgnoreStandardErrorWarningFormat="True" />
-	</Target>
-
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="rmdir $(SolutionDir)src\Tests\Benchmarks\Drill4Net.BanderLog.Benchmarks\obj /s /Q&#xD;&#xA;rmdir $(SolutionDir)src\Core\Drill4Net.Configuration\obj /s /Q&#xD;&#xA;rmdir $(SolutionDir)src\Core\Drill4Net.Common\obj /s /Q&#xD;&#xA;rmdir $(SolutionDir)src\Core\Drill4Net.BanderLog\obj /s /Q&#xD;&#xA;&#xD;&#xA;" />
+	<Target Name="CustomClean" BeforeTargets="BeforeClean">
+		<Exec Command="powershell.exe -file &quot;$(SolutionDir)scripts\clean_obj.ps1&quot; -path $(SolutionDir)" />
 	</Target>
 
 </Project>
