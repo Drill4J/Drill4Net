@@ -74,6 +74,8 @@ namespace Drill4Net.BanderLog.Sinks
         {
             if (ex == null)
             {
+                if (state is string)
+                    return state as string;
                 return JsonConvert.SerializeObject(state, Formatting.None, _jsonSettings);
             }
             else

@@ -19,13 +19,13 @@ namespace Drill4Net.Injector.App
 
             //program name... yep, from namespace
             var name = typeof(Program).Namespace.Split('.')[0];
-            Log.Info($"{name} is starting");
+            Log.Info($"{name} is starting"); //using emergency logger by simple static call
 
             IInjectorRepository rep = null;
             try
             {
                 rep = new InjectorRepository(args);
-                _logger = new TypedLogger<Program>(rep.Subsystem);
+                _logger = new TypedLogger<Program>(rep.Subsystem); //real logger from cfg
 
                 //_logger.Debug($"Arguments: {args}");
                 // _logger.Debug($"Options: {rep.Options}");
