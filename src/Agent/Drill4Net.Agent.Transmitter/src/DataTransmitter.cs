@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Reflection;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 
@@ -28,16 +30,18 @@ namespace Drill4Net.Agent.Transmitter
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
-        private static readonly string _logPrefix;
+        private static readonly Logger _logger;
         private bool _disposed;
 
         /***********************************************************************************/
 
         static DataTransmitter()
         {
-            _logPrefix = $"{CommonUtils.CurrentProcessId}: {nameof(DataTransmitter)}";
-
             ITargetSenderRepository rep = new TransmitterRepository();
+
+            var extrasData = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
+            _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extrasData);
+
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
         }

@@ -43,10 +43,10 @@ namespace Drill4Net.BanderLog.Sinks.File
             _queue.Enqueue(data);
         }
 
-        public override void Log<TState>(LogLevel logLevel, TState state, Exception exception, string caller,
-            Func<TState, Exception, string> formatter)
+        internal override void LogEx<TState>(LogLevel logLevel, string subsystem, string category, TState state, Exception exception,
+            string caller, Func<TState, Exception, string> formatter)
         {
-            var data = FormatData(logLevel, caller, state, exception, formatter);
+            var data = FormatData(logLevel, caller, state, exception, formatter, subsystem, category);
             _queue.Enqueue(data);
         }
         #endregion
@@ -125,9 +125,9 @@ namespace Drill4Net.BanderLog.Sinks.File
             }
         }
 
-        public override string GetKey()
+        public override int GetKey()
         {
-            return _filepath;
+            return _filepath.GetHashCode();
         }
 
         public override string ToString()

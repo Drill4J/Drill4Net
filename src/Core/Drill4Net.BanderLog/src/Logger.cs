@@ -1,6 +1,8 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Drill4Net.BanderLog
 {
@@ -8,62 +10,83 @@ namespace Drill4Net.BanderLog
     {
         public string Subsystem { get; }
         public string Category { get; }
+        public Dictionary<string, object> Extras { get; }
 
-        /***************************************************************************/
+        private readonly string _extrasStr;
 
-        public Logger(string category = null, string subsystem = null)
+        /**********************************************************************************************/
+
+        public Logger(string category = null, string subsystem = null): this(category, subsystem, null)
+        {
+        }
+
+        public Logger(string category, string subsystem, Dictionary<string, object> extras)
         {
             Category = category;
             Subsystem = subsystem;
+            Extras = extras ?? new Dictionary<string, object>();
+
+            //serialization
+
+            if (Extras.Count > 0)
+            {
+                //https://www.newtonsoft.com/json/help/html/SerializationSettings.htm
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+
+                };
+                _extrasStr = JsonConvert.SerializeObject(Extras, Formatting.None, settings); //as one object yet
+            }
         }
 
-        /***************************************************************************/
+        /**********************************************************************************************/
 
         public LogManager GetManager() => BanderLog.Log.Manager;
 
         #region Specific
         public void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Trace(message, exception, callerMethod);
+            BanderLog.Log.Trace(Subsystem, Category, message, exception, callerMethod);
         }
 
         public void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Debug(message, exception, callerMethod);
+            BanderLog.Log.Debug(Subsystem, Category, message, exception, callerMethod);
         }
 
         public void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Info(message, exception, callerMethod);
+            BanderLog.Log.Info(Subsystem, Category, message, exception, callerMethod);
         }
 
         public void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Warning(message, exception, callerMethod);
+            BanderLog.Log.Warning(Subsystem, Category, message, exception, callerMethod);
         }
 
         public void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Error(message, exception, callerMethod);
+            BanderLog.Log.Error(Subsystem, Category, message, exception, callerMethod);
         }
 
         public void Error(Exception exception, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Error(null, exception, callerMethod);
+            BanderLog.Log.Error(Subsystem, Category, null, exception, callerMethod);
         }
 
         public void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Fatal(message, exception, callerMethod);
+            BanderLog.Log.Fatal(Subsystem, Category, message, exception, callerMethod);
         }
         #endregion
         #region Write
-        public static void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Write(logLevel, message, exception, callerMethod);
+            BanderLog.Log.Write(logLevel, Subsystem, Category, message, exception, callerMethod);
         }
 
-        public static void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+        public void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
             BanderLog.Log.Write(logLevel, eventId, state, exception, formatter);
@@ -88,7 +111,7 @@ namespace Drill4Net.BanderLog
 
         public override string ToString()
         {
-            return Category;
+            return $"{Subsystem}: {Category}";
         }
     }
 }

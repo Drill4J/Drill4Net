@@ -32,10 +32,16 @@ namespace Drill4Net.BanderLog.Sinks
         }
 
         protected internal string FormatData<TState>(LogLevel logLevel, string caller, TState state, Exception exception,
-        Func<TState, Exception, string> formatter)
+            Func<TState, Exception, string> formatter, string subsystem = null, string category = null)
         {
             //TODO: structure of message - by CONFIG !!!
             var data = $"{CommonUtils.GetPreciseTime()}{DELIM}{logLevel}";
+
+            if (!string.IsNullOrWhiteSpace(subsystem))
+                data += $"{DELIM}{subsystem}";
+
+            if (!string.IsNullOrWhiteSpace(category))
+                data += $"{DELIM}{category}";
 
             if (!string.IsNullOrWhiteSpace(caller))
                 data += $"{DELIM}{caller}";

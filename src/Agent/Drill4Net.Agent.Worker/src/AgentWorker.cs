@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Drill4Net.Common;
+using System.Collections.Generic;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
-using Drill4Net.Agent.Messaging.Transport.Kafka;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -15,16 +14,22 @@ namespace Drill4Net.Agent.Worker
 
         public bool IsTargetReceived { get; private set; }
 
+        private readonly AgentWorkerRepository _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
 
-        private readonly string _logPrefix;
+        private readonly Logger _logger;
 
         /*******************************************************************************/
 
-        public AgentWorker(ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
+        public AgentWorker(AgentWorkerRepository rep, ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
-            _logPrefix = MessagingUtils.GetLogPrefix(CoreConstants.SUBSYSTEM_AGENT_WORKER, typeof(AgentWorker));
+            _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+
+            var extrasData = new Dictionary<string, object> { { "TargetSession", _rep.TargetSession } };
+            _logger = new TypedLogger<AgentWorker>(_rep.Subsystem, extrasData);
+
+            _logger.Debug($"Target session: {_rep.TargetSession}");
 
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
@@ -56,22 +61,22 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            Log.Info($"{_logPrefix}{nameof(TargetInfo)} received");
+            _logger.Info($"{nameof(TargetInfo)} received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            Log.Debug($"{_logPrefix}{nameof(StandardAgent)} initialized");
+            _logger.Debug($"{nameof(StandardAgent)} initialized");
 
-            Log.Info($"{_logPrefix}{nameof(AgentWorker)} starts receiving probes...");
+            _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
             _probeReceiver.Start();
         }
 
         private void Receiver_ProbeReceived(Probe probe)
         {
-            //Log.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
+            //_logger.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
             StandardAgent.RegisterStatic(probe.Data, probe.Context);
         }
 

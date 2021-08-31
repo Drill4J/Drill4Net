@@ -13,10 +13,10 @@ namespace Drill4Net.BanderLog.Sinks.Console
             System.Console.WriteLine(data);
         }
 
-        public override void Log<TState>(LogLevel logLevel, TState state, Exception exception, string caller,
-            Func<TState, Exception, string> formatter)
+        internal override void LogEx<TState>(LogLevel logLevel, string subsystem, string category, TState state, Exception exception,
+            string caller, Func<TState, Exception, string> formatter)
         {
-            var data = FormatData(logLevel, caller, state, exception, formatter);
+            var data = FormatData(logLevel, caller, state, exception, formatter, subsystem, category);
             System.Console.WriteLine(data);
         }
         #endregion
@@ -30,9 +30,9 @@ namespace Drill4Net.BanderLog.Sinks.Console
             return "Simple console";
         }
 
-        public override string GetKey()
+        public override int GetKey()
         {
-            return "console";
+            return "console".GetHashCode();
         }
     }
 }

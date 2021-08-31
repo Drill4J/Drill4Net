@@ -3,7 +3,6 @@ using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -22,18 +21,18 @@ namespace Drill4Net.Agent.Worker
 
         public virtual IMessageReceiver CreateWorker()
         {
+            //TODO: factory!
             var rep = GetRepository();
             IProbeReceiver probeReceiver = new ProbeKafkaReceiver(rep);
             ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessageReceiverOptions>(rep);
-            var worker = new AgentWorker(targetReceiver, probeReceiver);
+            var worker = new AgentWorker(rep, targetReceiver, probeReceiver);
             return worker;
         }
 
-        internal virtual AbstractRepository<MessageReceiverOptions> GetRepository()
+        internal virtual AgentWorkerRepository GetRepository()
         {
             var opts = GetBaseOptions(_args);
             var targetSession = GetTargetSession(_args);
-            Console.WriteLine($"Worker session = {targetSession}");
 
             var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
             if (!string.IsNullOrWhiteSpace(targetTopic))
@@ -43,7 +42,7 @@ namespace Drill4Net.Agent.Worker
             if (!string.IsNullOrWhiteSpace(probeTopic))
                 opts.Topics.Add(probeTopic);
 
-            return new AgentWorkerRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, opts);
+            return new AgentWorkerRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, opts);
         }
 
         private string GetTargetSession(string[] args)

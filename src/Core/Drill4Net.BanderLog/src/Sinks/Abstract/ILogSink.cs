@@ -3,11 +3,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog.Sinks
 {
+    public interface ILogSink<TСategory> : ILogSink, ILogger<TСategory>
+    {
+    }
+
     public interface ILogSink : ILogger
     {
         void Log(LogLevel logLevel, string state, Exception exception = null, string caller = "");
 
-        string GetKey();
+        int GetKey();
         void Flush();
         void Shutdown();
     }

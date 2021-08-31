@@ -4,13 +4,25 @@ namespace Drill4Net.Agent.Worker
 {
     public class AgentWorkerRepository : MessageReceiverRepository<MessageReceiverOptions>
     {
-        public AgentWorkerRepository(string subsystem, string cfgPath = null) : base(subsystem, cfgPath)
+        public string TargetSession { get; private set; }
+
+        /***************************************************************************************************/
+
+        public AgentWorkerRepository(string subsystem, string targetSession, string cfgPath = null) : base(subsystem, cfgPath)
         {
-            PrepareLogger();
+            Init(targetSession);
         }
 
-        public AgentWorkerRepository(string subsystem, MessageReceiverOptions opts) : base(subsystem, opts)
+        public AgentWorkerRepository(string subsystem, string targetSession, MessageReceiverOptions opts) : base(subsystem, opts)
         {
+            Init(targetSession);
+        }
+
+        /***************************************************************************************************/
+
+        private void Init(string targetSession)
+        {
+            TargetSession = targetSession;
             PrepareLogger();
         }
     }

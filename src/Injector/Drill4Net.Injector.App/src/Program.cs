@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
 using Drill4Net.Core.Repository;
@@ -24,11 +25,18 @@ namespace Drill4Net.Injector.App
                 Log.Debug($"Options: {rep.Options}");
 
                 var injector = new InjectorEngine(rep);
-
+#if DEBUG
+                var watcher = Stopwatch.StartNew();
+#endif
                 injector.Process();
-
+#if DEBUG
+                watcher.Stop();
+#endif
                 Log.Info("Injection is done.");
                 Log.Trace("");
+#if DEBUG
+                Log.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
+#endif
             }
             catch (Exception ex)
             {

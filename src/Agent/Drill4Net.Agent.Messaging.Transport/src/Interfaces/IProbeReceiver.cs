@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Agent.Messaging.Transport.Kafka
+﻿namespace Drill4Net.Agent.Messaging.Transport
 {
     public delegate void ProbeReceivedHandler(Probe probe);
 
