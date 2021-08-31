@@ -8,6 +8,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.BanderLog;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -39,6 +40,7 @@ namespace Drill4Net.Agent.Standard
         private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
+        private static readonly Logger _logger;
         private readonly AssemblyResolver _resolver;
         private static readonly object _entLocker = new();
         private static readonly string _logPrefix;
@@ -47,14 +49,18 @@ namespace Drill4Net.Agent.Standard
 
         static StandardAgent() //it's needed for invocation from Target
         {
-            _logPrefix = $"{CommonUtils.CurrentProcessId}: {nameof(StandardAgent)}";
+            var extrasData = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
+            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, extrasData);
 
             if (StandardAgentCCtorParameters.SkipCctor)
                 return;
 
             Agent = new StandardAgent();
             if (Agent == null)
+            {
+                _logger.Fatal("Creation is failed");
                 throw new Exception($"{_logPrefix}: creation is failed");
+            }
         }
 
         private StandardAgent(): this(null, null) { }
@@ -70,9 +76,9 @@ namespace Drill4Net.Agent.Standard
                 _resolver = new AssemblyResolver();
 
                 EmergencyLogDir = FileUtils.GetEmergencyDir();
-                StandardAgentRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
+                AbstractRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
-                Log.Debug($"{_logPrefix} is initializing...");
+                _logger.Debug($"{_logPrefix} is initializing...");
 
                 //TEST assembly resolving!!!
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
@@ -105,11 +111,11 @@ namespace Drill4Net.Agent.Standard
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                Log.Debug($"{_logPrefix} is initialized.");
+                _logger.Debug($"{_logPrefix} is initialized.");
             }
             catch (Exception ex)
             {
-                Log.Fatal($"{_logPrefix}: error of initializing", ex);
+                _logger.Fatal($"{_logPrefix}: error of initializing", ex);
             }
             finally
             {

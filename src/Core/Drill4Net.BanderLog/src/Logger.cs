@@ -1,6 +1,8 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Drill4Net.BanderLog
 {
@@ -8,16 +10,37 @@ namespace Drill4Net.BanderLog
     {
         public string Subsystem { get; }
         public string Category { get; }
+        public Dictionary<string, object> Extras { get; }
 
-        /***************************************************************************/
+        private readonly string _extrasStr;
 
-        public Logger(string category = null, string subsystem = null)
+        /**********************************************************************************************/
+
+        public Logger(string category = null, string subsystem = null): this(category, subsystem, null)
+        {
+        }
+
+        public Logger(string category, string subsystem, Dictionary<string, object> extras)
         {
             Category = category;
             Subsystem = subsystem;
+            Extras = extras ?? new Dictionary<string, object>();
+
+            //serialization
+
+            if (Extras.Count > 0)
+            {
+                //https://www.newtonsoft.com/json/help/html/SerializationSettings.htm
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+
+                };
+                _extrasStr = JsonConvert.SerializeObject(Extras, Formatting.None, settings); //as one object yet
+            }
         }
 
-        /***************************************************************************/
+        /**********************************************************************************************/
 
         public LogManager GetManager() => BanderLog.Log.Manager;
 
