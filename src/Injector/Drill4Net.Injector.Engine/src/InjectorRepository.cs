@@ -20,14 +20,20 @@ namespace Drill4Net.Injector.Engine
     /// injector for them, the reading/writing of resulting tree data, etc)
     /// </summary>
     public class InjectorRepository : ConfiguredRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
-    { 
+    {
+        private Logger _logger;
+        private const string _subsystem = CoreConstants.SUBSYSTEM_INJECTOR;
+
+        /*****************************************************************************************/
+
         /// <summary>
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
         /// injector for them, the reading/writing of resulting tree data, etc).
         /// </summary>
         /// <param name="cfgPath">Path to the config of injection</param>
-        public InjectorRepository(string cfgPath): base(cfgPath, CoreConstants.SUBSYSTEM_INJECTOR)
+        public InjectorRepository(string cfgPath): base(cfgPath, _subsystem)
         {
+            CreateLogger();
         }
 
         /// <summary>
@@ -35,12 +41,18 @@ namespace Drill4Net.Injector.Engine
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
         /// <param name="args">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(string[] args): base(args, CoreConstants.SUBSYSTEM_INJECTOR)
+        public InjectorRepository(string[] args): base(args, _subsystem)
         {
+            CreateLogger();
             _optHelper.Clarify(args, Options);
         }
 
-        /*************************************************************************************/
+        private void CreateLogger()
+        {
+            _logger = new TypedLogger<InjectorRepository>(_subsystem);
+        }
+
+        /*****************************************************************************************/
 
         /// <summary>
         /// Get the concrete assembly injector
@@ -149,7 +161,7 @@ namespace Drill4Net.Injector.Engine
                 //TODO: we don't work with strong names yet (it's possible)
                 if (!asmName.FullName.EndsWith("PublicKeyToken=null"))
                 {
-                    Log.Warning($"Assembly [{filePath}] having the strong name");
+                    _logger.Warning($"Assembly [{filePath}] having the strong name");
                     return new AssemblyVersioning() { IsStrongName = true };
                 }
 
@@ -164,7 +176,7 @@ namespace Drill4Net.Injector.Engine
             catch (Exception ex)
             {
                 if (ex.HResult != -2146234344) //The module was expected to contain an assembly manifest
-                    Log.Warning($"Getting assembly version for [{filePath}]: {ex.Message}");
+                    _logger.Warning($"Getting assembly version for [{filePath}]: {ex.Message}");
                 return null;
             }
         }

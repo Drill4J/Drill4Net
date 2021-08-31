@@ -15,12 +15,14 @@ namespace Drill4Net.Injector.Core
     public class CallHandler : AbstractSimpleHandler
     {
         protected readonly TypeChecker _typeChecker;
-        
+        private Logger _logger;
+
         /*****************************************************************************/
-        
+
         public CallHandler(AbstractProbeHelper probeHelper):
             base(INSTRUCTION_HANDLER_CALL, CrossPointType.Call, probeHelper)
         {
+            _logger = new TypedLogger<CallHandler>(CoreConstants.SUBSYSTEM_INJECTOR);
             _typeChecker = new TypeChecker();
         }
         
@@ -86,7 +88,7 @@ namespace Drill4Net.Injector.Core
             }
             catch (Exception e)
             {
-                Log.Error(e);
+                _logger.Error("Error for defining condition for instruction", e);
                 throw;
             }
         }

@@ -15,11 +15,12 @@ namespace Drill4Net.Injector.App
 
         static void Main(string[] args)
         {
+            AbstractRepository.PrepareEmergencyLogger();
+
             //program name... yep, from namespace
             var name = typeof(Program).Namespace.Split('.')[0];
-            Console.WriteLine($"{name} is starting");
+            Log.Info($"{name} is starting");
 
-            AbstractRepository.PrepareEmergencyLogger();
             IInjectorRepository rep = null;
             try
             {
@@ -40,14 +41,14 @@ namespace Drill4Net.Injector.App
                 watcher.Stop();
 #endif
                 _logger.Info("Injection is done.");
-                _logger.Trace("");
+                Console.WriteLine("");
 #if DEBUG
                 _logger.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
 #endif
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.ToString());
+                _logger.Fatal(ex);
             }
 
             Log.Shutdown();

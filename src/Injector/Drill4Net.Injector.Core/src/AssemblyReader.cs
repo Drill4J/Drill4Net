@@ -9,11 +9,23 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Core
 {
+
     /// <summary>
     /// Assembly reader for an <see cref="AssemblyContext"/> creation 
     /// </summary>
     public class AssemblyReader
     {
+        private readonly Logger _logger;
+
+        /*****************************************************************************/
+
+        public AssemblyReader()
+        {
+            _logger = new TypedLogger<AssemblyReader>(CoreConstants.SUBSYSTEM_INJECTOR);
+        }
+
+        /*****************************************************************************/
+
         /// <summary>
         /// Reads the assembly.
         /// </summary>
@@ -76,9 +88,9 @@ namespace Drill4Net.Injector.Core
                 catch (IOException ex) //may be in VS for NET Core .exe
                 {
                     if (!Debugger.IsAttached)
-                        // Log.Warning(ex, $"Reading PDB (from IDE): {nameof(ProcessAssembly)}");
+                        // _logger.Warning(ex, $"Reading PDB (from IDE): {nameof(ProcessAssembly)}");
                         //else
-                        Log.Error($"Reading PDB: {nameof(ReadAssembly)}", ex);
+                        _logger.Error($"Reading PDB: {nameof(ReadAssembly)}", ex);
                 }
                 asmCtx.IsNeedPdb = needPdb;
             }
@@ -86,7 +98,7 @@ namespace Drill4Net.Injector.Core
             #endregion
             #region Reading
             // read subject assembly with symbols
-            Log.Debug($"Reading: [{filePath}]");
+            _logger.Debug($"Reading: [{filePath}]");
         #pragma warning disable DF0010 // Marks undisposed local variables.
             var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
         #pragma warning restore DF0010 // Marks undisposed local variables.

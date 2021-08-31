@@ -21,6 +21,8 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         public CodeHandlerStrategy Strategy { get; }
 
+        private readonly Logger _logger;
+
         /**********************************************************************************/
 
         /// <summary>
@@ -30,6 +32,7 @@ namespace Drill4Net.Injector.Engine
         public AssemblyInjector(CodeHandlerStrategy strategy)
         {
             Strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+            _logger = new TypedLogger<AssemblyInjector>(CoreConstants.SUBSYSTEM_INJECTOR);
         }
 
         /**********************************************************************************/
@@ -175,7 +178,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                Log.Error($"Handling instruction: {ctx.ModuleName}; {ctx.Method.FullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}", ex);
+                _logger.Error($"Handling instruction: {ctx.ModuleName}; {ctx.Method.FullName}; {nameof(ctx.CurIndex)}: {ctx.CurIndex}", ex);
                 throw;
             }
         }

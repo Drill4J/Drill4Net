@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core

@@ -12,12 +12,14 @@ namespace Drill4Net.Injector.Core
     public class TreeDeployer
     {
         private readonly IInjectorRepository _rep;
+        private readonly Logger _logger;
 
         /**************************************************************/
 
         public TreeDeployer(IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+            _logger = new TypedLogger<AssemblyReader>(rep.Subsystem);
         }
 
         /**************************************************************/
@@ -43,13 +45,13 @@ namespace Drill4Net.Injector.Core
 
             var pathInText = _rep.GetTreeFilePath(tree);
             Console.WriteLine("");
-            Log.Debug($"Tree saved to: [{pathInText}]");
+            _logger.Debug($"Tree saved to: [{pathInText}]");
 
             foreach (var dir in dirs)
             {
                 var hintPath = _rep.GetTreeFileHintPath(dir.DestinationPath);
                 File.WriteAllText(hintPath, pathInText);
-                Log.Debug($"Hint placed to: [{hintPath}]");
+                _logger.Debug($"Hint placed to: [{hintPath}]");
             }
         }
     }

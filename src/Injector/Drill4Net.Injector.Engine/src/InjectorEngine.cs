@@ -26,6 +26,7 @@ namespace Drill4Net.Injector.Engine
             Mono.Cecil maintainer: jbevain@gmail.com
         */
 
+        private readonly Logger _logger;
         private readonly IInjectorRepository _rep;
 
         /*****************************************************************/
@@ -36,6 +37,7 @@ namespace Drill4Net.Injector.Engine
         public InjectorEngine(IInjectorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+            _logger = new TypedLogger<InjectorEngine>(rep.Subsystem);
         }
 
         /*****************************************************************/
@@ -57,7 +59,7 @@ namespace Drill4Net.Injector.Engine
         /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
         public InjectedSolution Process(InjectorOptions opts)
         {
-            Log.Debug("Process is starting...");
+            _logger.Debug("Process is starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
 
             var sourceDir = opts.Source.Directory;
@@ -65,9 +67,9 @@ namespace Drill4Net.Injector.Engine
 
             //copying of all needed data in needed targets
             var monikers = opts.Versions?.Targets;
-            Log.Debug("The source is copying...");
+            _logger.Debug("The source is copying...");
             _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the filter
-            Log.Info("The source is copied");
+            _logger.Info("The source is copied");
 
             //tree
             var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
@@ -152,7 +154,7 @@ namespace Drill4Net.Injector.Engine
             var isRoot = runCtx.SourceDirectory == runCtx.RootDirectory;
             if (!isRoot && !opts.Source.Filter.IsFolderNeed(folder))
                 return false;
-            Log.Info($"Processing dir [{directory}]");
+            _logger.Info($"Processing dir [{directory}]");
 
             //files
             var files = _rep.GetAssemblies(directory);
@@ -202,16 +204,16 @@ namespace Drill4Net.Injector.Engine
                 //processing
                 runCtx.Inject(asmCtx);
 
-                Log.Debug($"Injected: [{runCtx.SourceFile}]");
+                _logger.Debug($"Injected: [{runCtx.SourceFile}]");
 
                 //writing modified assembly and symbols to new file
                 var writer = new AssemblyWriter();
                 var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-                Log.Info($"Writed: [{modifiedPath}]");
+                _logger.Info($"Writed: [{modifiedPath}]");
             }
             catch (Exception ex)
             {
-                Log.Error("Error: {Ex}", ex);
+                _logger.Error("Error: {Ex}", ex);
                 if (opts.Debug?.IgnoreErrors != true)
                     throw ex;
                 return false;
