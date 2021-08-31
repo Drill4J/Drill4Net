@@ -37,7 +37,7 @@ namespace Drill4Net.BanderLog
                     key = abstractSink.GetKey();
                     break;
                 case ILogger _:
-                    key = sink.GetKey();
+                    key = sink.GetHashCode();
                     break;
             }
             if (_sinks.ContainsKey(key))
@@ -51,10 +51,21 @@ namespace Drill4Net.BanderLog
         }
 
         #region Log
-        public override void Log(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string caller = "")
+        public override void Log<TState>(LogLevel logLevel, TState message, Exception exception = null, [CallerMemberName] string caller = "")
         {
             foreach (var sink in _sinks.Values)
-                sink.Log(logLevel, message, exception, caller);
+            {
+                //sink.Log(logLevel, message, exception, caller,);
+                switch (sink)
+                {
+                    case AbstractSink abstractSink:
+                        abstractSink.Log(logLevel, message, exception, caller);
+                        break;
+                    case ILogger _:
+                        sink.Log(logLevel, $"{caller}: {message}", exception, caller);
+                        break;
+                }
+            }
         }
 
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,

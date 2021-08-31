@@ -16,6 +16,8 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         InjectorOptions Options { get; set; }
 
+        string Subsystem { get; }
+
         /// <summary>
         /// Get the concrete assembly injector
         /// </summary>

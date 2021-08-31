@@ -27,77 +27,82 @@ namespace Drill4Net.BanderLog
 
         #region Specific
         #region Trace
-        public static void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Trace<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             Manager?.Log(LogLevel.Trace, message, exception, callerMethod);
         }
 
-        internal static void Trace(string subsystem, string category, string extra, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        internal static void Trace<TState>(string subsystem, string category, string extra, TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx(LogLevel.Trace, subsystem, category, message, exception, callerMethod, extra, null);
         }
         #endregion
         #region Debug
-        public static void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Debug<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             Manager?.Log(LogLevel.Debug, message, exception, callerMethod);
         }
 
-        internal static void Debug(string subsystem, string category, string extra, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        internal static void Debug<TState>(string subsystem, string category, string extra, TState message, Exception exception = null, 
+            [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx(LogLevel.Debug, subsystem, category, message, exception, callerMethod, extra, null);
         }
         #endregion
         #region Info
-        public static void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Info<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             Manager?.Log(LogLevel.Information, message, exception, callerMethod);
         }
 
-        internal static void Info(string subsystem, string category, string extra, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        internal static void Info<TState>(string subsystem, string category, string extra, TState message, Exception exception = null,
+            [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx(LogLevel.Information, subsystem, category, message, exception, callerMethod, extra, null);
         }
         #endregion
         #region Warning
-        public static void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Warning<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             Manager?.Log(LogLevel.Warning, message, exception, callerMethod);
         }
 
-        internal static void Warning(string subsystem, string category, string extra, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        internal static void Warning<TState>(string subsystem, string category, string extra, TState message, Exception exception = null,
+            [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx(LogLevel.Warning, subsystem, category, message, exception, callerMethod, extra, null);
         }
         #endregion
         #region Error
-        public static void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Error<TState>(TState message, Exception exception, [CallerMemberName] string callerMethod = "")
         {
             Manager?.Log(LogLevel.Error, message, exception, callerMethod);
         }
 
-        internal static void Error(string subsystem, string category, string extra, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Error(Exception exception, [CallerMemberName] string callerMethod = "")
+        {
+            Manager?.Log<string>(LogLevel.Error, null, exception, callerMethod);
+        }
+
+        internal static void Error<TState>(string subsystem, string category, string extra, TState message, Exception exception = null,
+            [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx(LogLevel.Error, subsystem, category, message, exception, callerMethod, extra, null);
         }
 
-        public static void Error(Exception exception, [CallerMemberName] string callerMethod = "")
-        {
-            Manager?.Log(LogLevel.Error, null, exception, callerMethod);
-        }
-
-        internal static void Error(string subsystem, string category, string extra, Exception exception, [CallerMemberName] string callerMethod = "")
+        internal static void Error(string subsystem, string category, string extra, Exception exception,
+            [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx<string>(LogLevel.Error, subsystem, category, null, exception, callerMethod, extra, null);
         }
         #endregion
         #region Fatal
-        public static void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Fatal<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             Manager?.Log(LogLevel.Critical, message, exception, callerMethod);
         }
 
-        internal static void Fatal(string subsystem, string category, string extra, string message, Exception exception = null, 
+        internal static void Fatal<TState>(string subsystem, string category, string extra, TState message, Exception exception = null,
             [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx(LogLevel.Critical, subsystem, category, message, exception, callerMethod, extra, null);
@@ -105,13 +110,14 @@ namespace Drill4Net.BanderLog
         #endregion
         #endregion
         #region Write
-        public static void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public static void Write<TState>(LogLevel logLevel, TState message, Exception exception = null, 
+            [CallerMemberName] string callerMethod = "")
         {
             Manager?.Log(logLevel, message, exception, callerMethod);
         }
 
-        internal static void Write(LogLevel logLevel, string subsystem, string category, string extra, string message, Exception exception = null,
-            [CallerMemberName] string callerMethod = "")
+        internal static void Write<TState>(LogLevel logLevel, string subsystem, string category, string extra, TState message,
+            Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             Manager?.LogEx(logLevel, subsystem, category, message, exception, callerMethod, extra, null);
         }

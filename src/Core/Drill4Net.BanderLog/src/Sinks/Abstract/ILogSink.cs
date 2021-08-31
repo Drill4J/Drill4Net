@@ -9,7 +9,7 @@ namespace Drill4Net.BanderLog.Sinks
 
     public interface ILogSink : ILogger
     {
-        void Log(LogLevel logLevel, string state, Exception exception = null, string caller = "");
+        void Log<TState>(LogLevel logLevel, TState state, Exception exception = null, string caller = "");
 
         int GetKey();
         void Flush();

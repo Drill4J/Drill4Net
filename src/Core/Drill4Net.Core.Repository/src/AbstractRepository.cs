@@ -4,34 +4,13 @@ using System.Linq;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
-using Drill4Net.BanderLog.Sinks.Console;
 using Drill4Net.BanderLog.Sinks;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.BanderLog.Sinks.Console;
 
 namespace Drill4Net.Core.Repository
 {
     public abstract class AbstractRepository
-    {
-        /// <summary>
-        /// Prepares the initialize logger (it is usually for simple emergency logging).
-        /// </summary>
-        public static void PrepareEmergencyLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
-        {
-            var path = LoggerHelper.GetCommonFilePath(folder);
-            var logger = new LogBuilder()
-                .AddSink(new FileSink(path))
-                .Build();
-            Log.Configure(logger);
-        }
-    }
-
-    /******************************************************************************************/
-
-
-    /// <summary>
-    /// Root level of Repository's hieararchy
-    /// </summary>
-    public abstract class AbstractRepository<TOptions>: AbstractRepository where TOptions : AbstractOptions, new()
     {
         /// <summary>
         /// Gets the name of subsystem.
@@ -40,11 +19,6 @@ namespace Drill4Net.Core.Repository
         /// The subsystem.
         /// </value>
         public string Subsystem { get; }
-
-        /// <summary>
-        /// Options for different purposes: injection, communication, testing, etc
-        /// </summary>
-        public TOptions Options { get; set; }
 
         /*********************************************************************************/
 
@@ -72,6 +46,41 @@ namespace Drill4Net.Core.Repository
             return args?.FirstOrDefault(a => a.StartsWith($"-{arg}="));
         }
         #endregion
+
+        /// <summary>
+        /// Prepares the initialize logger (it is usually for simple emergency logging).
+        /// </summary>
+        public static void PrepareEmergencyLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
+        {
+            var path = LoggerHelper.GetCommonFilePath(folder);
+            var logger = new LogBuilder()
+                .AddSink(new FileSink(path))
+                .Build();
+            Log.Configure(logger);
+        }
+    }
+
+    /******************************************************************************************/
+
+    /// <summary>
+    /// Root level of Repository's hieararchy
+    /// </summary>
+    public abstract class AbstractRepository<TOptions>: AbstractRepository where TOptions : AbstractOptions, new()
+    {
+
+        /// <summary>
+        /// Options for different purposes: injection, communication, testing, etc
+        /// </summary>
+        public TOptions Options { get; set; }
+
+        /*********************************************************************************/
+
+        protected AbstractRepository(string subsystem) : base(subsystem)
+        {
+        }
+
+        /*********************************************************************************/
+
         #region Log config
         /// <summary>
         /// The preparing the logger. It need be called from the client side.

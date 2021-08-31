@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Testing
 
         static TestAgent()
         {
-            AbstractRepository<AgentOptions>.PrepareEmergencyLogger();
+            AbstractRepository.PrepareEmergencyLogger();
             Log.Debug("Initializing...");
 
             try
@@ -89,7 +89,7 @@ namespace Drill4Net.Agent.Testing
             {
                 if (string.IsNullOrWhiteSpace(data))
                 {
-                    Log.Error("Data is empty");
+                    Log.Error("Data is empty", null);
                     return;
                 }
 

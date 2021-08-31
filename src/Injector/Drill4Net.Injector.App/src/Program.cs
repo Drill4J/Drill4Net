@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Diagnostics;
+using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
 using Drill4Net.Core.Repository;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.App
 {
     class Program
     {
+        private static Logger _logger;
+
+        /**************************************************************************/
+
         static void Main(string[] args)
         {
             //program name... yep, from namespace
             var name = typeof(Program).Namespace.Split('.')[0];
             Console.WriteLine($"{name} is starting");
 
-            AbstractRepository<InjectorOptions>.PrepareEmergencyLogger();
+            AbstractRepository.PrepareEmergencyLogger();
             IInjectorRepository rep = null;
             try
             {
                 rep = new InjectorRepository(args);
+                _logger = new TypedLogger<Program>(rep.Subsystem);
 
-                Log.Debug($"Arguments: {args}");
-                Log.Debug($"Options: {rep.Options}");
+                _logger.Debug($"Arguments: {args}");
+                _logger.Debug($"Options: {rep.Options}");
 
                 var injector = new InjectorEngine(rep);
 #if DEBUG
@@ -32,15 +37,15 @@ namespace Drill4Net.Injector.App
 #if DEBUG
                 watcher.Stop();
 #endif
-                Log.Info("Injection is done.");
-                Log.Trace("");
+                _logger.Info("Injection is done.");
+                _logger.Trace("");
 #if DEBUG
-                Log.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
+                _logger.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
 #endif
             }
             catch (Exception ex)
             {
-                Log.Error(ex.ToString());
+                _logger.Error(ex.ToString());
             }
 
             Log.Shutdown();

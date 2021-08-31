@@ -44,7 +44,7 @@ namespace Drill4Net.BanderLog
         public LogManager GetManager() => BanderLog.Log.Manager;
 
         #region Specific
-        public void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Trace<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Trace(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
@@ -71,7 +71,7 @@ namespace Drill4Net.BanderLog
 
         public void Error(Exception exception, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Error(Subsystem, Category, _extrasStr, null, exception, callerMethod);
+            BanderLog.Log.Error<string>(Subsystem, Category, _extrasStr, null, exception, callerMethod);
         }
 
         public void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
@@ -80,7 +80,7 @@ namespace Drill4Net.BanderLog
         }
         #endregion
         #region Write
-        public void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Write<TState>(LogLevel logLevel, TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Write(logLevel, Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }

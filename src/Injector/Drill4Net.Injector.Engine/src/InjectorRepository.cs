@@ -5,13 +5,13 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Injection;
+using Drill4Net.Injector.Core;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
-using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Strategies.Flow;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Engine
 {
