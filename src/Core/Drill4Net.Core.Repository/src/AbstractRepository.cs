@@ -10,6 +10,9 @@ using Drill4Net.BanderLog.Sinks.Console;
 
 namespace Drill4Net.Core.Repository
 {
+    /// <summary>
+    /// Root level of Repository's hieararchy
+    /// </summary>
     public abstract class AbstractRepository
     {
         /// <summary>
@@ -63,7 +66,7 @@ namespace Drill4Net.Core.Repository
     /******************************************************************************************/
 
     /// <summary>
-    /// Root level of Repository's hieararchy
+    /// Root level of Repository's hieararchy (generic by Options)
     /// </summary>
     public abstract class AbstractRepository<TOptions>: AbstractRepository where TOptions : AbstractOptions, new()
     {

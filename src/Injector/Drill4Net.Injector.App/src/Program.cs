@@ -26,8 +26,10 @@ namespace Drill4Net.Injector.App
                 rep = new InjectorRepository(args);
                 _logger = new TypedLogger<Program>(rep.Subsystem);
 
-                _logger.Debug($"Arguments: {args}");
-                _logger.Debug($"Options: {rep.Options}");
+                //_logger.Debug($"Arguments: {args}");
+                // _logger.Debug($"Options: {rep.Options}");
+                _logger.Debug(args);
+                _logger.Debug(rep.Options);
 
                 var injector = new InjectorEngine(rep);
 #if DEBUG

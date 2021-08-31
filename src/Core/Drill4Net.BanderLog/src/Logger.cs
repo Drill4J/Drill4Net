@@ -26,7 +26,8 @@ namespace Drill4Net.BanderLog
             Subsystem = subsystem;
             Extras = extras ?? new Dictionary<string, object>();
 
-            //serialization
+            //serialization 
+            //TODO: get options from parameters, etc
             if (Extras.Count > 0)
             {
                 //https://www.newtonsoft.com/json/help/html/SerializationSettings.htm
@@ -49,22 +50,22 @@ namespace Drill4Net.BanderLog
             BanderLog.Log.Trace(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
-        public void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Debug<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Debug(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
-        public void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Info<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Info(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
-        public void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Warning<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Warning(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
-        public void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Error<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Error(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
@@ -74,7 +75,7 @@ namespace Drill4Net.BanderLog
             BanderLog.Log.Error<string>(Subsystem, Category, _extrasStr, null, exception, callerMethod);
         }
 
-        public void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
+        public void Fatal<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Fatal(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }

@@ -93,10 +93,15 @@ namespace Drill4Net.Injector.Core
 
         private bool AboveUsedLinkedCgMethod(Mono.Collections.Generic.Collection<Instruction> instrs, int curInd)
         {
-            if (curInd > 2 && instrs[curInd - 1].OpCode.Code == Code.Newobj && instrs[curInd - 2].OpCode.Code == Code.Ldftn)
+            var prev1 = instrs[curInd - 1].OpCode.Code;
+            var prev2 = instrs[curInd - 2].OpCode.Code;
+            if (curInd > 2 && prev1 == Code.Newobj && prev2 == Code.Ldftn)
                 return true;
-            if (curInd > 3 && instrs[curInd - 1].OpCode.Code == Code.Stsfld && instrs[curInd - 2].OpCode.Code == Code.Dup && instrs[curInd - 3].OpCode.Code == Code.Newobj)
+            //
+            var prev3 = instrs[curInd - 3].OpCode.Code;
+            if (curInd > 3 && prev1 == Code.Stsfld && prev2 == Code.Dup && prev3 == Code.Newobj)
                 return true;
+            //
             return false;
         }
 

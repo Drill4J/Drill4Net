@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Drill4Net.Common;
 
 namespace Drill4Net.BanderLog.Sinks
@@ -10,7 +11,19 @@ namespace Drill4Net.BanderLog.Sinks
     /// <seealso cref="Drill4Net.BanderLog.Sinks.AbstractSink" />
     public abstract class AbstractTextSink : AbstractSink
     {
+        private readonly JsonSerializerSettings _jsonSettings;
         private const string DELIM = "|";
+
+        /*************************************************************************************************/
+
+        protected AbstractTextSink()
+        {
+            //https://www.newtonsoft.com/json/help/html/SerializationSettings.htm
+            _jsonSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+            };
+        }
 
         /*************************************************************************************************/
 
@@ -52,9 +65,28 @@ namespace Drill4Net.BanderLog.Sinks
             if (formatter != null)
                 data += $"{DELIM}{formatter(state, exception)}";
             else
-                data += $"{DELIM}{state}";
+                data += $"{DELIM}{DefaultFormat(state, exception)}";
 
             return data;
+        }
+
+        internal string DefaultFormat<TState>(TState state, Exception ex)
+        {
+            if (ex == null)
+            {
+                return JsonConvert.SerializeObject(state, Formatting.None, _jsonSettings);
+            }
+            else
+            {
+                var data = new LogSerializedInfo<TState> { State = state, Exception = ex };
+                return JsonConvert.SerializeObject(data, Formatting.None, _jsonSettings);
+            }
+        }
+
+        private struct LogSerializedInfo<TSate>
+        {
+            internal TSate State { get; set; }
+            internal Exception Exception { get; set; }
         }
     }
 }
