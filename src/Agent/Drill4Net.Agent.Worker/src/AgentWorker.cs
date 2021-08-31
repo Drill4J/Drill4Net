@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.Worker
 
         private readonly Logger _logger;
 
-        /*******************************************************************************/
+        /********************************************************************************************/
 
         public AgentWorker(AgentWorkerRepository rep, ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
         {
@@ -41,7 +41,7 @@ namespace Drill4Net.Agent.Worker
             _probeReceiver.ErrorOccured += Receiver_ErrorOccured;
         }
 
-        /*******************************************************************************/
+        /********************************************************************************************/
 
         public void Start()
         {
@@ -76,6 +76,9 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_ProbeReceived(Probe probe)
         {
+            if (probe == null)
+                return; //??
+
             //_logger.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
             StandardAgent.RegisterStatic(probe.Data, probe.Context);
         }

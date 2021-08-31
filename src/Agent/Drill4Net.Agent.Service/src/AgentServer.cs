@@ -247,7 +247,7 @@ namespace Drill4Net.Agent.Service
                 StartInfo =
                 {
                     FileName = _processName,
-                    Arguments = $"{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} {MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession}",
+                    Arguments = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession}",
                     WorkingDirectory = _workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
