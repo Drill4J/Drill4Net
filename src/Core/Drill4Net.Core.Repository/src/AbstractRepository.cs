@@ -69,7 +69,7 @@ namespace Drill4Net.Core.Repository
 
         internal static string GetArgumentPair(string[] args, string arg)
         {
-            return args?.FirstOrDefault(a => a.StartsWith($"{arg}="));
+            return args?.FirstOrDefault(a => a.StartsWith($"-{arg}="));
         }
         #endregion
         #region Log config
