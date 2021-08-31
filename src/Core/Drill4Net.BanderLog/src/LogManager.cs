@@ -65,7 +65,7 @@ namespace Drill4Net.BanderLog
         }
 
         internal override void LogEx<TState>(LogLevel logLevel, string subsystem, string category, TState state, Exception exception,
-            string caller, Func<TState, Exception, string> formatter)
+            string caller, string extra, Func<TState, Exception, string> formatter)
         {
             foreach (var sink in _sinks.Values)
             {
@@ -73,7 +73,7 @@ namespace Drill4Net.BanderLog
                 switch (sink)
                 {
                     case AbstractSink abstractSink:
-                        abstractSink.LogEx(logLevel, subsystem, category, state, exception, caller, formatter);
+                        abstractSink.LogEx(logLevel, subsystem, category, state, exception, caller, extra, formatter);
                         break;
                     case ILogger _:
                         sink.Log(logLevel, subsystem, category, state, exception, caller, formatter);

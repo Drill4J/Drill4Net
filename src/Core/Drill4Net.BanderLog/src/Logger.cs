@@ -27,7 +27,6 @@ namespace Drill4Net.BanderLog
             Extras = extras ?? new Dictionary<string, object>();
 
             //serialization
-
             if (Extras.Count > 0)
             {
                 //https://www.newtonsoft.com/json/help/html/SerializationSettings.htm
@@ -47,43 +46,43 @@ namespace Drill4Net.BanderLog
         #region Specific
         public void Trace(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Trace(Subsystem, Category, message, exception, callerMethod);
+            BanderLog.Log.Trace(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
         public void Debug(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Debug(Subsystem, Category, message, exception, callerMethod);
+            BanderLog.Log.Debug(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
         public void Info(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Info(Subsystem, Category, message, exception, callerMethod);
+            BanderLog.Log.Info(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
         public void Warning(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Warning(Subsystem, Category, message, exception, callerMethod);
+            BanderLog.Log.Warning(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
         public void Error(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Error(Subsystem, Category, message, exception, callerMethod);
+            BanderLog.Log.Error(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
         public void Error(Exception exception, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Error(Subsystem, Category, null, exception, callerMethod);
+            BanderLog.Log.Error(Subsystem, Category, _extrasStr, null, exception, callerMethod);
         }
 
         public void Fatal(string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Fatal(Subsystem, Category, message, exception, callerMethod);
+            BanderLog.Log.Fatal(Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
         #endregion
         #region Write
         public void Write(LogLevel logLevel, string message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Write(logLevel, Subsystem, Category, message, exception, callerMethod);
+            BanderLog.Log.Write(logLevel, Subsystem, Category, _extrasStr, message, exception, callerMethod);
         }
 
         public void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,

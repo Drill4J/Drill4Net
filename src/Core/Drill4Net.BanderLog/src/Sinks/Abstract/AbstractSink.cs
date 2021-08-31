@@ -12,17 +12,17 @@ namespace Drill4Net.BanderLog.Sinks
         }
 
         //TODO: using formatters
-        protected virtual void Log(LogLevel logLevel, string subsystem, string category, string message, Exception exception = null, string caller = "")
+        protected virtual void Log(LogLevel logLevel, string subsystem, string category, string message, Exception exception = null, string caller = "", string extra = null)
         {
             if (string.IsNullOrWhiteSpace(caller))
                 Log<string>(logLevel, new EventId(0), message, exception, null);
             else
-                LogEx<string>(logLevel, subsystem, category, message, exception, caller, null);
+                LogEx<string>(logLevel, subsystem, category, message, exception, caller, extra, null);
         }
 
         public abstract void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
         internal abstract void LogEx<TState>(LogLevel logLevel, string subsystem, string category, TState state, Exception exception, string caller,
-            Func<TState, Exception, string> formatter);
+            string extra, Func<TState, Exception, string> formatter);
         #endregion
 
         public virtual bool IsEnabled(LogLevel logLevel)

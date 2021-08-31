@@ -14,9 +14,9 @@ namespace Drill4Net.BanderLog.Sinks.Console
         }
 
         internal override void LogEx<TState>(LogLevel logLevel, string subsystem, string category, TState state, Exception exception,
-            string caller, Func<TState, Exception, string> formatter)
+            string caller, string extra, Func<TState, Exception, string> formatter)
         {
-            var data = FormatData(logLevel, caller, state, exception, formatter, subsystem, category);
+            var data = FormatData(logLevel, caller, state, exception, formatter, subsystem, category, extra);
             System.Console.WriteLine(data);
         }
         #endregion

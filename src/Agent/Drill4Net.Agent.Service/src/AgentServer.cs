@@ -146,9 +146,9 @@ namespace Drill4Net.Agent.Service
             {
                 CheckWorkers();
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                _logger.Error("Error for the closing the workers", ex);
             }
             finally
             {
@@ -163,21 +163,25 @@ namespace Drill4Net.Agent.Service
         {
             if (_workers.IsEmpty || _pings.IsEmpty)
                 return;
-            var now = GetTime();
             foreach (var uid in _pings.Keys.AsParallel())
-            {
-                var data = _pings[uid];
-                var ticks = long.Parse(data[MessagingConstants.PING_TIME]);
-                if (now.Ticks - ticks < _oldPingTickDelta)
-                    continue;
-                //
-                _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
-                if (!_workers.TryGetValue(uid, out WorkerInfo worker))
-                    continue;
-                Task.Run(() => CloseWorker(uid));
-                Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
-                Task.Run(() => DeleteTopic(worker.ProbeTopic));
-            }
+                CheckWorker(uid);
+        }
+
+        private void CheckWorker(Guid uid)
+        {
+            var now = GetTime();
+            if (!_pings.TryGetValue(uid, out StringDictionary data))
+                return;
+            var ticks = long.Parse(data[MessagingConstants.PING_TIME]);
+            if (now.Ticks - ticks < _oldPingTickDelta)
+                return;
+            //
+            _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
+            if (!_workers.TryGetValue(uid, out WorkerInfo worker))
+                return;
+            Task.Run(() => CloseWorker(uid));
+            Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
+            Task.Run(() => DeleteTopic(worker.ProbeTopic));
         }
 
         /// <summary>
