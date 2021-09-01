@@ -55,6 +55,11 @@ namespace Drill4Net.BanderLog
             BanderLog.Log.Debug(this, message, exception, callerMethod);
         }
 
+        //public void Debug(string template, params object[] data)
+        //{
+        //    //BanderLog.Log.Debug(this, message, exception, callerMethod);
+        //}
+
         public void Info<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
             BanderLog.Log.Info(this, message, exception, callerMethod);

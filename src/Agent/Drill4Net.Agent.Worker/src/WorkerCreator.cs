@@ -1,5 +1,6 @@
 ﻿using System;
 using Drill4Net.Common;
+using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
@@ -47,12 +48,12 @@ namespace Drill4Net.Agent.Worker
 
         private string GetTargetSession(string[] args)
         {
-            return AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
+            return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
         }
 
         internal virtual MessageReceiverOptions GetBaseOptions(string[] args)
         {
-            var cfgPathArg = AgentWorkerRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
+            var cfgPathArg = AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
             var opts = AgentWorkerRepository.GetOptionsByPath(cfgPathArg);
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
