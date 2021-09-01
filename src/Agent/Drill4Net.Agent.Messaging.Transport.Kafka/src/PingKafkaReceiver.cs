@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Collections.Specialized;
 using Confluent.Kafka;
+using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging.Kafka;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -29,17 +29,23 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         public override void Start()
         {
+            Stop();
+            IsStarted = true;
             RetrievePings();
         }
 
         public override void Stop()
         {
-            _cts?.Cancel();
+            if (!IsStarted)
+                return;
+            IsStarted = false;
+            if (_cts?.Token.IsCancellationRequested == false)
+                _cts.Cancel();
         }
 
         private void RetrievePings()
         {
-            _logger.Debug($"{_logPrefix}Start retrieving pings...");
+            _logger.Debug($"Start retrieving pings...");
 
             if (_cts == null)
                 _cts = new();
@@ -65,7 +71,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                         }
                         catch (Exception ex)
                         {
-                            ErrorOccuredHandler(true, true, ex.Message);
+                            ErrorOccuredHandler(this, true, true, ex.Message);
                         }
                     }
                     catch (ConsumeException e)
@@ -79,7 +85,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 // Ensure the consumer leaves the group cleanly and final offsets are committed.
                 c.Close();
 
-                ErrorOccuredHandler(true, false, opex.Message);
+                ErrorOccuredHandler(this, true, false, opex.Message);
             }
         }
     }

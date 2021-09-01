@@ -62,9 +62,9 @@ namespace Drill4Net.Agent.Service
             }
         }
 
-        private void Server_ErrorOccured(bool isFatal, bool isLocal, string message)
+        private void Server_ErrorOccured(IMessageReceiver source, bool isFatal, bool isLocal, string message)
         {
-            var mess = $"Local: {isLocal} -> {message}";
+            var mess = $"Source = {source} -> error (local: {isLocal}): {message}";
             if (isFatal)
                 _logger.Fatal(mess);
             else

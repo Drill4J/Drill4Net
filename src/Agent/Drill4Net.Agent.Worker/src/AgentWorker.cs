@@ -14,6 +14,8 @@ namespace Drill4Net.Agent.Worker
 
         public bool IsTargetReceived { get; private set; }
 
+        public bool IsStarted { get; private set; }
+
         private readonly AgentWorkerRepository _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
@@ -61,18 +63,18 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
         {
-            _logger.Info($"{nameof(TargetInfo)} received");
+            _logger.Info($"{nameof(TargetInfo)} is received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            _logger.Debug($"{nameof(StandardAgent)} initialized");
+            _logger.Debug($"{nameof(StandardAgent)} is initialized");
 
-            _logger.Warning("*** RETRIEVING OF PROBES IS COMMETNTED FOR DEBUG ***");
-            //_logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
-            //_probeReceiver.Start();
+            //_logger.Warning("*** RETRIEVING OF PROBES IS COMMENTED FOR DEBUG ***");
+            _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
+            _probeReceiver.Start();
         }
 
         private void Receiver_ProbeReceived(Probe probe)
@@ -84,9 +86,9 @@ namespace Drill4Net.Agent.Worker
             StandardAgent.RegisterStatic(probe.Data, probe.Context);
         }
 
-        private void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
+        private void Receiver_ErrorOccured(IMessageReceiver source, bool isFatal, bool isLocal, string message)
         {
-            ErrorOccured?.Invoke(isFatal, isLocal, message);
+            ErrorOccured?.Invoke(source, isFatal, isLocal, message);
         }
     }
 }

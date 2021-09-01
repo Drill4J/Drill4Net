@@ -1,7 +1,8 @@
 ﻿using System;
-using Drill4Net.Common;
 using System.Diagnostics;
+using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -9,7 +10,7 @@ namespace Drill4Net.Agent.Worker
     {
         private static Logger _logger;
 
-        /************************************************************/
+        /****************************************************************/
 
         static void Main(string[] args)
         {
@@ -34,9 +35,9 @@ namespace Drill4Net.Agent.Worker
             }
         }
 
-        private static void Receiver_ErrorOccured(bool isFatal, bool isLocal, string message)
+        private static void Receiver_ErrorOccured(IMessageReceiver source, bool isFatal, bool isLocal, string message)
         {
-            var mess = $"Error (local: {isLocal}): {message}";
+            var mess = $"Source = {source} -> error (local: {isLocal}): {message}";
             if (isFatal)
                 _logger.Fatal(mess);
             else

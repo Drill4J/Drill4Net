@@ -175,10 +175,10 @@ namespace Drill4Net.Agent.Service
             var ticks = long.Parse(data[MessagingConstants.PING_TIME]);
             if (now.Ticks - ticks < _oldPingTickDelta)
                 return;
-            //
-            _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
             if (!_workers.TryGetValue(uid, out WorkerInfo worker))
                 return;
+            //
+            _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
             Task.Run(() => CloseWorker(uid));
             Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
             Task.Run(() => DeleteTopic(worker.ProbeTopic));
@@ -273,10 +273,10 @@ namespace Drill4Net.Agent.Service
             sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here exclusive topic for the Worker
         }
 
-        private void TargetReceiver_ErrorOccured(bool isFatal, bool isLocal, string message)
+        private void TargetReceiver_ErrorOccured(IMessageReceiver source, bool isFatal, bool isLocal, string message)
         {
             //TODO: log
-            ErrorOccured?.Invoke(isFatal, isLocal, message);
+            ErrorOccured?.Invoke(source, isFatal, isLocal, message);
         }
         #endregion
 

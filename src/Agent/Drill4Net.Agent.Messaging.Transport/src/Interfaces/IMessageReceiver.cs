@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Messaging.Transport
 {
-    public delegate void ErrorOccuredDelegate(bool isFatal, bool isLocal, string message);
+    public delegate void ErrorOccuredDelegate(IMessageReceiver source, bool isFatal, bool isLocal, string message);
 
     /*************************************************************************************************/
 
@@ -8,6 +8,7 @@
     {
         event ErrorOccuredDelegate ErrorOccured;
 
+        bool IsStarted { get; }
         void Start();
         void Stop();
     }
