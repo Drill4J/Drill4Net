@@ -3,7 +3,6 @@ using System.Threading;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging.Transport;
@@ -55,6 +54,7 @@ namespace Drill4Net.Agent.Service
                 _logger.Info($"{nameof(ServerHost)} ready.");
 
                 server.Start();
+                _logger.Info($"{nameof(ServerHost)} finished.");
             }
             catch (Exception ex)
             {

@@ -70,8 +70,9 @@ namespace Drill4Net.Agent.Worker
             StandardAgent.Init(target.Options, target.Solution);
             _logger.Debug($"{nameof(StandardAgent)} initialized");
 
-            _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
-            _probeReceiver.Start();
+            _logger.Warning("*** RETRIEVING OF PROBES IS COMMETNTED FOR DEBUG ***");
+            //_logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
+            //_probeReceiver.Start();
         }
 
         private void Receiver_ProbeReceived(Probe probe)

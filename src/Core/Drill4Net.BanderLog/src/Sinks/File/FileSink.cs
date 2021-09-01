@@ -32,6 +32,9 @@ namespace Drill4Net.BanderLog.Sinks.File
         {
             if (string.IsNullOrWhiteSpace(filepath))
                 throw new ArgumentNullException(nameof(filepath));
+            var dir = Path.GetDirectoryName(filepath);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
             return System.IO.File.AppendText(filepath);
         }
 

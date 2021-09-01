@@ -97,7 +97,7 @@ namespace Drill4Net.Agent.Service
 
         public void Stop()
         {
-            _timeoutTimer.Dispose();
+            _timeoutTimer?.Dispose();
 
             _pingReceiver.Stop();
             _pingReceiver.PingReceived -= PingReceiver_PingReceived;
