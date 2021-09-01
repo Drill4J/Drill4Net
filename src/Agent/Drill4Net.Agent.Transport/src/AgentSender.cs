@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -18,12 +19,11 @@ namespace Drill4Net.Agent.Transport
 
         /************************************************************************/
 
-        public AgentSender(Connector connector)
+        public AgentSender(Connector connector): base(CoreConstants.SUBSYSTEM_AGENT)
         {
             _connector = connector ?? throw new ArgumentNullException(nameof(connector));
             _deserOpts = new JsonSerializerSettings
             {
-
             };
         }
 
@@ -31,7 +31,6 @@ namespace Drill4Net.Agent.Transport
 
         protected override string Serialize(object data)
         {
-            //return JsonSerializer.Serialize(data);
             return JsonConvert.SerializeObject(data, _deserOpts);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transport
@@ -27,13 +28,15 @@ namespace Drill4Net.Agent.Transport
         private string Url { get; }
 
         private readonly Connector _connector;
+        private readonly Logger _logger;
 
         /********************************************************************/
 
-        public Communicator(string url, AgentPartConfig agentCfg)
+        public Communicator(string subsystem, string url, AgentPartConfig agentCfg)
         {
             Url = url ?? throw new ArgumentNullException(nameof(url));
             AgentConfig = agentCfg ?? throw new ArgumentNullException(nameof(agentCfg));
+            _logger = new TypedLogger<Communicator>(subsystem);
 
             _connector = new Connector();
             Receiver = new AgentReceiver(_connector);
@@ -44,6 +47,7 @@ namespace Drill4Net.Agent.Transport
 
         public override void Connect()
         {
+            _logger.Info("Connect");
             _connector.Connect(Url, AgentConfig);
         }
     }
