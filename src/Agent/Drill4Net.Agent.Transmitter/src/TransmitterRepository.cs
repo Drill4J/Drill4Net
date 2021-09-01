@@ -55,7 +55,7 @@ namespace Drill4Net.Agent.Transmitter
         public byte[] GetTargetInfo()
         {
             var tree = ReadInjectedTree();
-            //TODO: remove not current version of Targets from Solution
+            //TODO: remove Target's data with "not current version" from the Solution
 
             var targetInfo = new TargetInfo
             {

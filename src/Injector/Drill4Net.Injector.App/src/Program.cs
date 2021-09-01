@@ -25,7 +25,7 @@ namespace Drill4Net.Injector.App
             try
             {
                 rep = new InjectorRepository(args);
-                _logger = new TypedLogger<Program>(rep.Subsystem); //real logger from cfg
+                _logger = new TypedLogger<Program>(rep.Subsystem); //real typed logger from cfg
 
                 //_logger.Debug($"Arguments: {args}");
                 // _logger.Debug($"Options: {rep.Options}");

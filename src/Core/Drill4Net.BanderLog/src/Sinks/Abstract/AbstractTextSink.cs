@@ -45,19 +45,19 @@ namespace Drill4Net.BanderLog.Sinks
         }
 
         protected internal string FormatData<TState>(LogLevel logLevel, string caller, TState state, Exception exception,
-            Func<TState, Exception, string> formatter, string subsystem, string category, string extra)
+            Func<TState, Exception, string> formatter, ILoggerData loggerData)
         {
             //TODO: structure of message - by CONFIG !!!
             var data = $"{CommonUtils.GetPreciseTime()}{DELIM}{logLevel}";
 
-            if (!string.IsNullOrWhiteSpace(subsystem))
-                data += $"{DELIM}{subsystem}";
+            if (!string.IsNullOrWhiteSpace(loggerData.Subsystem))
+                data += $"{DELIM}{loggerData.Subsystem}";
 
-            if (!string.IsNullOrWhiteSpace(category))
-                data += $"{DELIM}{category}";
+            if (!string.IsNullOrWhiteSpace(loggerData.Category))
+                data += $"{DELIM}{loggerData.Category}";
 
-            if (!string.IsNullOrWhiteSpace(extra))
-                data += $"{DELIM}{extra}";
+            if (!string.IsNullOrWhiteSpace(loggerData.ExtrasString))
+                data += $"{DELIM}{loggerData.ExtrasString}";
 
             if (!string.IsNullOrWhiteSpace(caller))
                 data += $"{DELIM}{caller}";
@@ -85,9 +85,9 @@ namespace Drill4Net.BanderLog.Sinks
             }
         }
 
-        private struct LogSerializedInfo<TSate>
+        private struct LogSerializedInfo<TState>
         {
-            internal TSate State { get; set; }
+            internal TState State { get; set; }
             internal Exception Exception { get; set; }
         }
     }

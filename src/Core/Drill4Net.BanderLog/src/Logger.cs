@@ -6,17 +6,17 @@ using Newtonsoft.Json;
 
 namespace Drill4Net.BanderLog
 {
-    public class Logger : ILogger
+    public class Logger : ILogger, IBanderLogger
     {
         public string Subsystem { get; }
         public string Category { get; }
         public Dictionary<string, object> Extras { get; }
 
-        private readonly string _extrasStr;
+        public string ExtrasString { get; }
 
         /**********************************************************************************************/
 
-        public Logger(string category = null, string subsystem = null): this(category, subsystem, null)
+        public Logger(string category = null, string subsystem = null) : this(category, subsystem, null)
         {
         }
 
@@ -36,7 +36,7 @@ namespace Drill4Net.BanderLog
                     ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
 
                 };
-                _extrasStr = JsonConvert.SerializeObject(Extras, Formatting.None, settings); //as one object yet
+                ExtrasString = JsonConvert.SerializeObject(Extras, Formatting.None, settings); //as one object yet
             }
         }
 
@@ -47,43 +47,43 @@ namespace Drill4Net.BanderLog
         #region Specific
         public void Trace<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Trace(Subsystem, Category, _extrasStr, message, exception, callerMethod);
+            BanderLog.Log.Trace(this, message, exception, callerMethod);
         }
 
         public void Debug<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Debug(Subsystem, Category, _extrasStr, message, exception, callerMethod);
+            BanderLog.Log.Debug(this, message, exception, callerMethod);
         }
 
         public void Info<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Info(Subsystem, Category, _extrasStr, message, exception, callerMethod);
+            BanderLog.Log.Info(this, message, exception, callerMethod);
         }
 
         public void Warning<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Warning(Subsystem, Category, _extrasStr, message, exception, callerMethod);
+            BanderLog.Log.Warning(this, message, exception, callerMethod);
         }
 
         public void Error<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Error(Subsystem, Category, _extrasStr, message, exception, callerMethod);
+            BanderLog.Log.Error(this, message, exception, callerMethod);
         }
 
         public void Error(Exception exception, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Error<string>(Subsystem, Category, _extrasStr, null, exception, callerMethod);
+            BanderLog.Log.Error<string>(this, null, exception, callerMethod);
         }
 
         public void Fatal<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Fatal(Subsystem, Category, _extrasStr, message, exception, callerMethod);
+            BanderLog.Log.Fatal(this, message, exception, callerMethod);
         }
         #endregion
         #region Write
         public void Write<TState>(LogLevel logLevel, TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")
         {
-            BanderLog.Log.Write(logLevel, Subsystem, Category, _extrasStr, message, exception, callerMethod);
+            BanderLog.Log.Write(logLevel, this, message, exception, callerMethod);
         }
 
         public void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
