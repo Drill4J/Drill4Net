@@ -88,7 +88,8 @@ namespace Drill4Net.BanderLog
                         break;
                     case ILogger _:
                         //guanito:
-                        sink.Log(logLevel, new EventId(0), state, exception, formatter);
+                        var data = new LoggerStateData<TState> { LoggerData = loggerData, State = state };
+                        sink.Log<LoggerStateData<TState>>(logLevel, new EventId(0), data, exception, null);
                         break;
                 }
             }
@@ -111,5 +112,11 @@ namespace Drill4Net.BanderLog
         {
             return nameof(LogManager).GetHashCode();
         }
+    }
+
+    internal class LoggerStateData<TState>
+    {
+        internal TState State { get; set; }
+        internal ILoggerData LoggerData { get; set; }
     }
 }

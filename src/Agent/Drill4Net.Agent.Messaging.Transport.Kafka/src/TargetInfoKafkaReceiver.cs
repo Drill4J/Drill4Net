@@ -16,6 +16,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public event TargetReceivedInfoHandler TargetInfoReceived;
 
+        private readonly Logger _logger;
         private CancellationTokenSource _cts;
 
         /****************************************************************************************/
@@ -24,6 +25,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             base(rep)
         {
             _cts = cts;
+            _logger = new TypedLogger<TargetInfoKafkaReceiver<T>>(rep.Subsystem);
         }
 
         /****************************************************************************************/
@@ -40,7 +42,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrieveTargets()
         {
-            Log.Info($"{_logPrefix}Start retrieving target info...");
+            _logger.Info($"{_logPrefix}Start retrieving target info...");
 
             var targets = new Dictionary<Guid, List<byte[]>>();
             if (_cts == null)
@@ -48,7 +50,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             var opts = _rep.Options; //can contains diferent topics
             var topics = MessagingUtils.FilterTargetTopics(opts.Topics); //get only target info topics
-            Log.Debug($"{_logPrefix}Target info topics: {string.Join(",", topics)}");
+            _logger.Debug($"{_logPrefix}Target info topics: {string.Join(",", topics)}");
 
             using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
             c.Subscribe(topics);

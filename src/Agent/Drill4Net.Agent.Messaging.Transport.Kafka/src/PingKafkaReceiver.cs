@@ -13,6 +13,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public event PingReceivedHandler PingReceived;
 
+        private readonly Logger _logger;
         private CancellationTokenSource _cts;
 
         /*******************************************************************************/
@@ -20,6 +21,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         public PingKafkaReceiver(AbstractRepository<T> rep, CancellationTokenSource cts = null) : base(rep)
         {
             _cts = cts;
+            _logger = new TypedLogger<PingKafkaReceiver<T>>(rep.Subsystem);
             _cfg.AutoOffsetReset = AutoOffsetReset.Latest; //TODO: IT'S DON'T WORK!!!! AAAAA!!!!
         }
 
@@ -37,7 +39,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrievePings()
         {
-            Log.Debug($"{_logPrefix}Start retrieving pings...");
+            _logger.Debug($"{_logPrefix}Start retrieving pings...");
 
             if (_cts == null)
                 _cts = new();

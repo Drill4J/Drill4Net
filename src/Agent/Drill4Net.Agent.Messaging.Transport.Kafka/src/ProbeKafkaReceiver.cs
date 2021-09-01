@@ -12,12 +12,14 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public event ProbeReceivedHandler ProbeReceived;
 
+        private readonly Logger _logger;
         private CancellationTokenSource _probesCts;
 
         /****************************************************************************************/
 
         public ProbeKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep) : base(rep)
         {
+            _logger = new TypedLogger<ProbeKafkaReceiver>(rep.Subsystem);
         }
 
         /****************************************************************************************/
@@ -35,12 +37,12 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         private void RetrieveProbes()
         {
-            Log.Info($"{_logPrefix}Start retrieving probes...");
+            _logger.Info($"{_logPrefix}Start retrieving probes...");
 
             _probesCts = new();
             var opts = _rep.Options;
             var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
-            Log.Debug($"{_logPrefix}Probe topics: {string.Join(",", probeTopics)}");
+            _logger.Debug($"{_logPrefix}Probe topics: {string.Join(",", probeTopics)}");
 
             using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
                 .SetValueDeserializer(new ProbeDeserializer())

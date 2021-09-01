@@ -50,14 +50,17 @@ namespace Drill4Net.BanderLog.Sinks
             //TODO: structure of message - by CONFIG !!!
             var data = $"{CommonUtils.GetPreciseTime()}{DELIM}{logLevel}";
 
-            if (!string.IsNullOrWhiteSpace(loggerData.Subsystem))
-                data += $"{DELIM}{loggerData.Subsystem}";
+            if (loggerData != null)
+            {
+                if (!string.IsNullOrWhiteSpace(loggerData.Subsystem))
+                    data += $"{DELIM}{loggerData.Subsystem}";
 
-            if (!string.IsNullOrWhiteSpace(loggerData.Category))
-                data += $"{DELIM}{loggerData.Category}";
+                if (!string.IsNullOrWhiteSpace(loggerData.Category))
+                    data += $"{DELIM}{loggerData.Category}";
 
-            if (!string.IsNullOrWhiteSpace(loggerData.ExtrasString))
-                data += $"{DELIM}{loggerData.ExtrasString}";
+                if (!string.IsNullOrWhiteSpace(loggerData.ExtrasString))
+                    data += $"{DELIM}{loggerData.ExtrasString}";
+            }
 
             if (!string.IsNullOrWhiteSpace(caller))
                 data += $"{DELIM}{caller}";
