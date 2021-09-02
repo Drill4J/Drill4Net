@@ -68,6 +68,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="src\Helpers\" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)src\Tests\IntegrationTests\Projects\Drill4Net.Target.Tests.Common\post_build_cfg.yml" />
   </Target>
