@@ -1,7 +1,7 @@
 ﻿using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Injector.Strategies.Flow
+namespace Drill4Net.Injector.Strategies.Blocks
 {
     /// <summary>
     /// Helper for the generating the cross-point's probe data

@@ -1,6 +1,6 @@
 ﻿using Drill4Net.Injector.Core;
 
-namespace Drill4Net.Injector.Strategies.Flow
+namespace Drill4Net.Injector.Strategies.Blocks
 {
     /// <summary>
     /// Strategy for target's injection with classics Flow cross-points
