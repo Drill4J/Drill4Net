@@ -221,23 +221,5 @@ namespace Drill4Net.Injector.Engine
 
             return true;
         }
-
-        /// <summary>
-        /// Get Git Source Branch Name for current assembly
-        /// </summary>
-        /// <returns>Git Source Branch Name</returns>
-        public string GetSourceBranchName()
-        {
-            return ThisAssembly.Git.Branch;
-        }
-
-        /// <summary>
-        /// Get Git commit for current assembly
-        /// </summary>
-        /// <returns>Git Commit</returns>
-        public string GetCommit()
-        {
-            return ThisAssembly.Git.Commit;
-        }
     }
 }
