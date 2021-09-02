@@ -4,6 +4,8 @@ using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
 using Drill4Net.Core.Repository;
+using Drill4Net.Injector.App.Helpers;
+using System.IO;
 
 namespace Drill4Net.Injector.App
 {
@@ -16,7 +18,6 @@ namespace Drill4Net.Injector.App
         static void Main(string[] args)
         {
             AbstractRepository.PrepareEmergencyLogger();
-
             //program name... yep, from namespace
             var name = typeof(Program).Namespace.Split('.')[0];
             Log.Info($"{name} is starting"); //using emergency logger by simple static call
@@ -43,7 +44,10 @@ namespace Drill4Net.Injector.App
                 _logger.Info("Injection is done.");
                 Console.WriteLine("");
 #if DEBUG
-                _logger.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
+                var msg = $"Duration of target injection: {watcher.ElapsedMilliseconds} ms.";
+                var benchmarkFileLogger = new BenchmarkFileLogger(Path.GetFullPath(@"logs\benchmarkLog.txt"));
+                _logger.Info(msg);
+                BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger, injector.GetSourceBranchName(), injector.GetCommit(), msg);
 #endif
             }
             catch (Exception ex)
