@@ -142,12 +142,12 @@ namespace Drill4Net.Agent.Transport
                                 CancelAllSessions?.Invoke();
                                 break;
                             default:
-                                //log
+                                _logger.Error($"Unknown message type for {nameof(AgentConstants.TOPIC_PLUGIN_ACTION)}: [{baseInfo.type}]\nMessage:\n{message}");
                                 break;
                         }
                         break;
                     default:
-                        //log
+                        _logger.Error($"Unknown topic [{topic}]");
                         break;
                 }
             }

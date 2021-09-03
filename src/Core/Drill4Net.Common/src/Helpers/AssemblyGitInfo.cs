@@ -1,11 +1,10 @@
-﻿namespace Drill4Net.Common.Helpers
+﻿namespace Drill4Net.Common
 {
     /// <summary>
     /// Get Git Information for sources
     /// </summary>
     public static class AssemblyGitInfo
     {
-
         /// <summary>
         /// Get Git Source Branch Name for current assembly
         /// </summary>

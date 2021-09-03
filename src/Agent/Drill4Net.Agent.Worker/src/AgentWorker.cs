@@ -5,6 +5,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
+using System.Threading;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -49,6 +50,8 @@ namespace Drill4Net.Agent.Worker
 
         public void Start()
         {
+            if (IsStarted)
+                return;
             IsStarted = true;
             _logger.Debug("Worker starts");
             _targetReceiver.Start();
@@ -56,8 +59,10 @@ namespace Drill4Net.Agent.Worker
 
         public void Stop()
         {
-            _logger.Debug("Worker stops");
+            if (!IsStarted)
+                return;
             IsStarted = false;
+            _logger.Debug("Worker stops");
 
             _targetReceiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured -= Receiver_ErrorOccured;
@@ -77,9 +82,13 @@ namespace Drill4Net.Agent.Worker
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            _logger.Info($"{nameof(StandardAgent)} is initialized");
+            _logger.Debug($"{nameof(StandardAgent)} is initialized");
 
             //_logger.Warning("*** RETRIEVING OF PROBES IS COMMENTED FOR DEBUG ***");
+            //while (true)
+            //{
+            //    Thread.Sleep(10);
+            //}
             _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
             _probeReceiver.Start();
         }

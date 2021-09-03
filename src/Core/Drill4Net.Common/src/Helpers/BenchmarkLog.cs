@@ -1,7 +1,6 @@
 ﻿using System;
-using Drill4Net.Injector.App.Helpers.Interfaces;
 
-namespace Drill4Net.Common.Helpers
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Helper for writing benchmark information to separate log

@@ -1,8 +1,7 @@
-﻿
-namespace Drill4Net.Injector.App.Helpers.Interfaces
+﻿namespace Drill4Net.Common
 {
      public interface IBenchmarkLogger
-    {
-        void WriteBenchmarkToLog(string msg);
-    }
+     {
+         void WriteBenchmarkToLog(string msg);
+     }
 }

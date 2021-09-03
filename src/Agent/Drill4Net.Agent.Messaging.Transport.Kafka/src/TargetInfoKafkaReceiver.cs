@@ -21,7 +21,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         /****************************************************************************************/
 
-        public TargetInfoKafkaReceiver(AbstractRepository<T> rep, CancellationTokenSource cts = null): 
+        public TargetInfoKafkaReceiver(AbstractRepository<T> rep, CancellationTokenSource cts = null):
             base(rep)
         {
             _cts = cts;

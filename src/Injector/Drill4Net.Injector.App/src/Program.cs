@@ -4,10 +4,8 @@ using System.Diagnostics;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
-using Drill4Net.Common.Helpers;
 using Drill4Net.Core.Repository;
 using Drill4Net.Injector.Engine;
-using Drill4Net.Injector.App.Helpers.Interfaces;
 
 namespace Drill4Net.Injector.App
 {
@@ -49,7 +47,8 @@ namespace Drill4Net.Injector.App
 #if DEBUG
                 _logger.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
                 IBenchmarkLogger benchmarkFileLogger = new BenchmarkFileLogger(Path.Combine(FileUtils.GetExecutionDir(), LOG_PATH));
-                BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger,AssemblyGitInfo.GetSourceBranchName(), AssemblyGitInfo.GetCommit(), watcher.ElapsedMilliseconds.ToString());
+                BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger,AssemblyGitInfo.GetSourceBranchName(), AssemblyGitInfo.GetCommit(),
+                    watcher.ElapsedMilliseconds.ToString());
 #endif
             }
             catch (Exception ex)

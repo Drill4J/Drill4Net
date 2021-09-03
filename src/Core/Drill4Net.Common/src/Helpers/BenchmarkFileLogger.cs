@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
-using Drill4Net.Injector.App.Helpers.Interfaces;
 
-namespace Drill4Net.Common.Helpers
+namespace Drill4Net.Common
 {
-    //File logger for benchmarks
+    /// <summary>
+    /// File logger for benchmarks
+    /// </summary>
     public class BenchmarkFileLogger : IBenchmarkLogger
     {
-        private string _filePath;
-        public string FilePath { get => _filePath; }
+        public string FilePath { get; }
 
         /**************************************************************/
         public BenchmarkFileLogger(string filePath)
         {
-            _filePath = filePath;
+            FilePath = filePath;
             if (!Directory.Exists(Path.GetDirectoryName(filePath)))
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
         }
@@ -21,7 +21,7 @@ namespace Drill4Net.Common.Helpers
 
         public void WriteBenchmarkToLog(string msg)
         {
-            File.AppendAllText(_filePath, msg + Environment.NewLine);
+            File.AppendAllText(FilePath, msg + Environment.NewLine);
         }
     }
 }
