@@ -140,7 +140,7 @@ namespace Drill4Net.Agent.Standard.Tester
 
         private static TesterOptions GetOptions()
         {
-            var cfgPath = Path.Combine(FileUtils.GetExecutionDir(), "app.yml");
+            var cfgPath = Path.Combine(FileUtils.ExecutingDir, "app.yml");
             var deser = new YamlDotNet.Serialization.Deserializer();
             return deser.Deserialize<TesterOptions>(File.ReadAllText(cfgPath));
         }
@@ -317,7 +317,7 @@ namespace Drill4Net.Agent.Standard.Tester
             }
 
             //writing
-            var path = Path.Combine(_opts.CSV ?? FileUtils.GetExecutionDir(), "tree.csv");
+            var path = Path.Combine(_opts.CSV ?? FileUtils.ExecutingDir, "tree.csv");
             try
             {
                 File.WriteAllLines(path, data);

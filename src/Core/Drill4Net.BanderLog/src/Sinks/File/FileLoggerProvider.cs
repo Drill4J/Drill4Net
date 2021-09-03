@@ -14,7 +14,7 @@ namespace Drill4Net.BanderLog.Sinks.File
         {
 
             if (string.IsNullOrWhiteSpace(path))
-                path = Path.Combine(FileUtils.GetExecutionDir(), "emergency.log");
+                path = Path.Combine(FileUtils.ExecutingDir, "emergency.log");
             _path = path;
         }
 

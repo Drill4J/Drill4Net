@@ -23,7 +23,7 @@ namespace Drill4Net.BanderLog.Debug
 
             logger.Shutdown();
             //
-            var filepath = Path.Combine(FileUtils.GetExecutionDir(), "log2.txt");
+            var filepath = Path.Combine(FileUtils.ExecutingDir, "log2.txt");
             var fileLogger = FileSinkCreator.CreateSink(filepath);
             const int cnt = 100000;
             Console.WriteLine($"Write {cnt} records...");

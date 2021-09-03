@@ -25,13 +25,14 @@ namespace Drill4Net.BanderLog.Tests
             
             return logBld.Build();
         }
+
         private string[] PrepareFilePaths(int count )
         {
             string[] filePaths = new string[2];
-            for(int i=0; i<count; i++)
+            for(var i = 0; i < count; i++)
             {
-                var logName = $"Log{i + 1}_{DateTime.UtcNow.ToString("ddMMyyyyHmmssff")}.txt";
-                filePaths[i]= Path.Combine(FileUtils.GetExecutionDir(), logName);
+                var logName = $"Log{i + 1}_{DateTime.UtcNow:ddMMyyyyHmmssff}.txt";
+                filePaths[i] = Path.Combine(FileUtils.ExecutingDir, logName);
             }
             return filePaths;
         }
@@ -40,7 +41,8 @@ namespace Drill4Net.BanderLog.Tests
         public void ParallelThreadsOneLoggerTest()
         {
             var filePaths = PrepareFilePaths(2);
-            try {
+            try
+            {
                 //arrange
                 var logger = InitializeLogger(filePaths);
 
@@ -48,8 +50,8 @@ namespace Drill4Net.BanderLog.Tests
                 var sinks = logger.GetSinks();
                 Task[] tasks = new Task[2]
                 {
-                new Task(() => Helper.WriteLog(sinks[0])),
-                new Task(() => Helper.WriteLog(sinks[1]))
+                    new Task(() => Helper.WriteLog(sinks[0])),
+                    new Task(() => Helper.WriteLog(sinks[1]))
                 };
 
                 foreach (var t in tasks)
@@ -83,6 +85,7 @@ namespace Drill4Net.BanderLog.Tests
                     }
                 }
             }
+            catch { }
             finally
             {
                 foreach (var filePath in filePaths)
@@ -90,7 +93,6 @@ namespace Drill4Net.BanderLog.Tests
                     if (File.Exists(filePath))
                         File.Delete(filePath);
                 }
-
             }
         }
     }

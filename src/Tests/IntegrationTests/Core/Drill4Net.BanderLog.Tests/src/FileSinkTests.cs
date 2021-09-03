@@ -23,8 +23,8 @@ namespace Drill4Net.BanderLog.Tests
         [Fact]
         public void OneThreadOneLoggerTest()
         {
-            var logName = $"Log_{DateTime.UtcNow.ToString("ddMMyyyyHmmssff")}.txt";
-            var filePath = Path.Combine(FileUtils.GetExecutionDir(), logName);
+            var logName = $"Log_{DateTime.UtcNow:ddMMyyyyHmmssff}.txt";
+            var filePath = Path.Combine(FileUtils.ExecutingDir, logName);
             try
             {
                 //arrange               
@@ -46,6 +46,7 @@ namespace Drill4Net.BanderLog.Tests
                     lineCounter++;
                 }
             }
+            catch { }
             finally
             {
                 if (File.Exists(filePath))
@@ -57,8 +58,8 @@ namespace Drill4Net.BanderLog.Tests
         [Fact]
         public void ParallelThreadsOneLoggerTest()
         {
-            string logName = $"Log_{DateTime.UtcNow.ToString("ddMMyyyyHmmssff")}.txt";
-            string filePath = Path.Combine(FileUtils.GetExecutionDir(), logName);
+            string logName = $"Log_{DateTime.UtcNow:ddMMyyyyHmmssff}.txt";
+            string filePath = Path.Combine(FileUtils.ExecutingDir, logName);
 
             try
             {
@@ -114,6 +115,7 @@ namespace Drill4Net.BanderLog.Tests
                 Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread1);
                 Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread2);
             }
+            catch { }
             finally
             {
                 if (File.Exists(filePath))

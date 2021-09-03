@@ -38,7 +38,7 @@ namespace Drill4Net.Agent.Transmitter
         public TransmitterRepository() : base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
             var optHelper = new BaseOptionsHelper<MessageSenderOptions>();
-            var path = Path.Combine(FileUtils.GetExecutionDir(), CoreConstants.CONFIG_SERVICE_NAME);
+            var path = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
             SenderOptions = optHelper.ReadOptions(path);
             TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();

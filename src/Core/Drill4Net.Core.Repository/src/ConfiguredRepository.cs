@@ -96,7 +96,7 @@ namespace Drill4Net.Core.Repository
         public virtual string GetTreeFilePath(string targetDir)
         {
             if (string.IsNullOrWhiteSpace(targetDir))
-                targetDir = FileUtils.GetExecutionDir();
+                targetDir = FileUtils.ExecutingDir;
             return Path.Combine(targetDir, CoreConstants.TREE_FILE_NAME);
         }
 
