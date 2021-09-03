@@ -43,12 +43,13 @@ namespace Drill4Net.Injector.App
                 watcher.Stop();
 #endif
                 _logger.Info("Injection is done.");
-                Console.WriteLine("");
 #if DEBUG
-                _logger.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
+                Console.WriteLine("");
+                var duration = watcher.ElapsedMilliseconds;
+                _logger.Info($"Duration of target injection: {duration} ms.");
                 IBenchmarkLogger benchmarkFileLogger = new BenchmarkFileLogger(Path.Combine(FileUtils.GetExecutionDir(), LOG_PATH));
                 BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger,AssemblyGitInfo.GetSourceBranchName(), AssemblyGitInfo.GetCommit(),
-                    watcher.ElapsedMilliseconds.ToString());
+                    duration.ToString());
 #endif
             }
             catch (Exception ex)
