@@ -1,6 +1,0 @@
-03.09.2021 8:37:34|main|2b6a244|Duration of target injection: 4926 ms.
-03.09.2021 8:37:34|main|2b6a244|Duration of target injection: 5796 ms.
-03.09.2021 9:10:16|main|2b6a244|Duration of target injection: 9336 ms.
-03.09.2021 9:10:22|main|2b6a244|Duration of target injection: 4822 ms.
-03.09.2021 9:43:03|main|73a82c3|Duration of target injection: 9293 ms.
-03.09.2021 10:23:44|main|07db74f|Duration of target injection: 5755 ms.

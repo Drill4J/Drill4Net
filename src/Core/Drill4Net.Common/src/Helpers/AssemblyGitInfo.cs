@@ -1,5 +1,4 @@
-﻿
-namespace Drill4Net.Common.Helpers
+﻿namespace Drill4Net.Common.Helpers
 {
     /// <summary>
     /// Get Git Information for sources
