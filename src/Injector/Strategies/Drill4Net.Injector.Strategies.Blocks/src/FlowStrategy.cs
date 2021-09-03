@@ -1,6 +1,15 @@
-﻿using Drill4Net.Injector.Core;
+﻿using System.Reflection;
+using Drill4Net.Injector.Core;
 
-namespace Drill4Net.Injector.Strategies.Flow
+//automatic version tagger including Git info
+//https://github.com/devlooped/GitInfo
+[assembly: AssemblyInformationalVersion(
+  ThisAssembly.Git.SemVer.Major + "." +
+  ThisAssembly.Git.SemVer.Minor + "." +
+  ThisAssembly.Git.SemVer.Patch + "-" +
+  ThisAssembly.Git.Branch + "+" +
+  ThisAssembly.Git.Commit)]
+namespace Drill4Net.Injector.Strategies.Blocks
 {
     /// <summary>
     /// Strategy for target's injection with classics Flow cross-points

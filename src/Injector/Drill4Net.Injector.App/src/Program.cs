@@ -1,17 +1,20 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
+using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
-using Drill4Net.Injector.Engine;
+using Drill4Net.Common.Helpers;
 using Drill4Net.Core.Repository;
-using Drill4Net.Injector.App.Helpers;
-using System.IO;
+using Drill4Net.Injector.Engine;
+using Drill4Net.Injector.App.Helpers.Interfaces;
 
 namespace Drill4Net.Injector.App
 {
     class Program
     {
         private static Logger _logger;
+        private const string LOG_PATH = @"logs\benchmarkLog.txt";
 
         /**************************************************************************/
 
@@ -44,10 +47,9 @@ namespace Drill4Net.Injector.App
                 _logger.Info("Injection is done.");
                 Console.WriteLine("");
 #if DEBUG
-                var msg = $"Duration of target injection: {watcher.ElapsedMilliseconds} ms.";
-                var benchmarkFileLogger = new BenchmarkFileLogger(Path.GetFullPath(@"logs\benchmarkLog.txt"));
-                _logger.Info(msg);
-                BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger, injector.GetSourceBranchName(), injector.GetCommit(), msg);
+                _logger.Info($"Duration of target injection: {watcher.ElapsedMilliseconds} ms.");
+                IBenchmarkLogger benchmarkFileLogger = new BenchmarkFileLogger(Path.Combine(FileUtils.GetExecutionDir(), LOG_PATH));
+                BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger,AssemblyGitInfo.GetSourceBranchName(), AssemblyGitInfo.GetCommit(), watcher.ElapsedMilliseconds.ToString());
 #endif
             }
             catch (Exception ex)

@@ -1,19 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
-//automatic version tagger including Git info
-//https://github.com/devlooped/GitInfo
-[assembly: AssemblyInformationalVersion(
-  ThisAssembly.Git.SemVer.Major + "." +
-  ThisAssembly.Git.SemVer.Minor + "." +
-  ThisAssembly.Git.SemVer.Patch + "-" +
-  ThisAssembly.Git.Branch + "+" +
-  ThisAssembly.Git.Commit)]
 namespace Drill4Net.Injector.Engine
 {
     /// <summary>
@@ -229,24 +220,6 @@ namespace Drill4Net.Injector.Engine
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Get Git Source Branch Name for current assembly
-        /// </summary>
-        /// <returns>Git Source Branch Name</returns>
-        public string GetSourceBranchName()
-        {
-            return ThisAssembly.Git.Branch;
-        }
-
-        /// <summary>
-        /// Get Git commit for current assembly
-        /// </summary>
-        /// <returns>Git Commit</returns>
-        public string GetCommit()
-        {
-            return ThisAssembly.Git.Commit;
         }
     }
 }

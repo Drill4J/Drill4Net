@@ -7,14 +7,18 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <OutputPath>..\..\..\..\build\bin\Debug\Drill4Net.Injector.Strategies.Flow</OutputPath>
-    <DocumentationFile>..\..\..\..\doc\xml\Drill4Net.Injector.Strategies.Flow\Drill4Net.Injector.Strategies.Flow.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\build\bin\Debug\Drill4Net.Injector.Strategies.Blocks</OutputPath>
+    <DocumentationFile>..\..\..\..\doc\xml\Drill4Net.Injector.Strategies.Blocks\Drill4Net.Injector.Strategies.Blocks.xml</DocumentationFile>
     <NoWarn>1591;NU1701</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
-    <OutputPath>..\..\..\..\build\bin\Release\Drill4Net.Injector.Strategies.Flow</OutputPath>
+    <OutputPath>..\..\..\..\build\bin\Release\Drill4Net.Injector.Strategies.Blocks</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitInfo" Version="2.2.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />

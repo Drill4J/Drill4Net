@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Engine
 {

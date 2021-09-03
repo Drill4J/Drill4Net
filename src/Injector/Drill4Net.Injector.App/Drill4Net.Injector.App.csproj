@@ -17,6 +17,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="src\Helpers\**" />
+    <EmbeddedResource Remove="src\Helpers\**" />
+    <None Remove="src\Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="RnD.yml" />
   </ItemGroup>
 

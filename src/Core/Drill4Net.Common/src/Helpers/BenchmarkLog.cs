@@ -1,12 +1,12 @@
 ﻿using System;
 using Drill4Net.Injector.App.Helpers.Interfaces;
 
-namespace Drill4Net.Injector.App.Helpers
+namespace Drill4Net.Common.Helpers
 {
     /// <summary>
     /// Helper for writing benchmark information to separate log
     /// </summary>
-    internal static class BenchmarkLog
+    public static class BenchmarkLog
     {
         /// <summary>
         /// Write benchmark information to log
@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.App.Helpers
         ///<param name="gitCommit">Git commit for benchmarked method</param>
         /// <param name="benchmarkData">Data collected by benchmark</param>
         /// <returns></returns>
-        internal static void WriteBenchmarkToLog(IBenchmarkLogger logger,string gitBranch, string gitCommit, string benchmarkData)
+        public static void WriteBenchmarkToLog(IBenchmarkLogger logger,string gitBranch, string gitCommit, string benchmarkData)
         {
             var msg = $"{DateTime.Now}|{gitBranch}|{gitCommit}|{benchmarkData}";
             logger.WriteBenchmarkToLog(msg);

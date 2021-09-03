@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Xunit;
 using Drill4Net.Common;
 using Drill4Net.BanderLog.Sinks.File;
-using Xunit;
 using Helper = Drill4Net.BanderLog.Tests.BanderlogTestsHelper;
 using Const = Drill4Net.BanderLog.Tests.BanderlogTestsConstants;
 
