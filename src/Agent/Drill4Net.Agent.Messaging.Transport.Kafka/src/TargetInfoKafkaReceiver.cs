@@ -34,6 +34,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         {
             Stop();
             IsStarted = true;
+            _logger.Debug("Start.");
             RetrieveTargets();
         }
 
@@ -42,7 +43,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             if (!IsStarted)
                 return;
             IsStarted = false;
-            if(_cts?.Token.IsCancellationRequested == false)
+            _logger.Debug("Stop.");
+            if (_cts?.Token.IsCancellationRequested == false)
                 _cts.Cancel();
         }
 

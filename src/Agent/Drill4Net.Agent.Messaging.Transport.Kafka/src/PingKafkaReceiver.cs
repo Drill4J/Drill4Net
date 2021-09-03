@@ -31,6 +31,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         {
             Stop();
             IsStarted = true;
+            _logger.Debug("Start.");
             RetrievePings();
         }
 
@@ -39,13 +40,14 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             if (!IsStarted)
                 return;
             IsStarted = false;
+            _logger.Debug("Stop.");
             if (_cts?.Token.IsCancellationRequested == false)
                 _cts.Cancel();
         }
 
         private void RetrievePings()
         {
-            _logger.Debug($"Start retrieving pings...");
+            _logger.Debug("Start retrieving pings...");
 
             if (_cts == null)
                 _cts = new();

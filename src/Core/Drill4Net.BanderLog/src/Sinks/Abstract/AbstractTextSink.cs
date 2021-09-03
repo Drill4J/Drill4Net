@@ -83,15 +83,15 @@ namespace Drill4Net.BanderLog.Sinks
             }
             else
             {
-                var data = new LogSerializedInfo<TState> { State = state, Exception = ex };
+                var data = new LogSerializedInfo<TState> { State = state, Exception = CommonUtils.GetExceptionDescription(ex) };
                 return JsonConvert.SerializeObject(data, Formatting.None, _jsonSettings);
             }
         }
 
-        private struct LogSerializedInfo<TState>
+        public class LogSerializedInfo<TState>
         {
-            internal TState State { get; set; }
-            internal Exception Exception { get; set; }
+            public TState State { get; set; }
+            public string Exception { get; set; }
         }
     }
 }

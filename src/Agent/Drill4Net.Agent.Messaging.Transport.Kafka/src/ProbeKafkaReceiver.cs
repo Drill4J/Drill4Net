@@ -28,6 +28,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         {
             Stop();
             IsStarted = true;
+            _logger.Debug("Start.");
             RetrieveProbes();
         }
 
@@ -36,6 +37,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             if (!IsStarted)
                 return;
             IsStarted = false;
+            _logger.Debug("Stop.");
             if (_cts?.Token.IsCancellationRequested == false)
                 _cts.Cancel();
         }

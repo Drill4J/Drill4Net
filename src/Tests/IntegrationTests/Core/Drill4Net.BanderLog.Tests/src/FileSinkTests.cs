@@ -81,7 +81,7 @@ namespace Drill4Net.BanderLog.Tests
                 }
                 catch (AggregateException ae)
                 {
-                    BanderlogTestsUtils.WriteAggregateException(ae);
+                    Console.WriteLine(CommonUtils.GetExceptionDescription(ae));
                 }
                 finally
                 {

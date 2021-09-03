@@ -76,7 +76,7 @@ namespace Drill4Net.Agent.Transport
             //};
 
             _deserOpts = new JsonSerializerSettings
-            {             
+            {
             };
 
             var connector = receiver ?? throw new ArgumentNullException(nameof(receiver));

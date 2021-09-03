@@ -68,6 +68,7 @@ namespace Drill4Net.Agent.Service
             _targetReceiver.ErrorOccured += TargetReceiver_ErrorOccured;
 
             _logger.Debug("Created.");
+            _logger.Warning("1111111111111111111111111111", new Exception("TEST")); //TEST!!
         }
 
         ~AgentServer()

@@ -152,6 +152,30 @@ namespace Drill4Net.Common
             return null;
         }
         #endregion
+        #region Exception Desc
+        /// <summary>
+        /// Get the description of the error (including AggregateException)
+        /// </summary>
+        public static string GetExceptionDescription(Exception ex)
+        {
+            var bld = new StringBuilder();
+            if (ex is AggregateException aex)
+            {
+                foreach (var e in aex.Flatten().InnerExceptions)
+                    bld.AppendLine(GetDesc(e));
+            }
+            else
+            {
+                bld.AppendLine(GetDesc(ex));
+            }
+            return bld.ToString();
+        }
+
+        internal static string GetDesc(Exception ex)
+        {
+            return ex?.ToString();
+        }
+        #endregion
 
         public static string GetTypeByMethod(string methodFullName)
         {
