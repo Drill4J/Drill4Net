@@ -1,5 +1,6 @@
 ﻿using System;
 using Confluent.Kafka;
+using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
@@ -9,18 +10,20 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
+        public bool IsStarted { get; protected set; }
+
         protected readonly ConsumerConfig _cfg;
         protected readonly AbstractRepository<T> _rep;
+        private readonly Logger _logger;
 
         private int _unknownTopicCounter;
-        protected readonly string _logPrefix;
 
         /*****************************************************************************************/
 
         protected AbstractKafkaReceiver(AbstractRepository<T> rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            _logPrefix = MessagingUtils.GetLogPrefix(rep.Subsystem, GetType());
+            _logger = new TypedLogger<AbstractKafkaReceiver<T>>(rep.Subsystem);
             var opts = _rep.Options;
 
             _cfg = new ConsumerConfig
@@ -58,12 +61,12 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             if (code == ErrorCode.UnknownTopicOrPart)
                 _unknownTopicCounter++;
             if (code != ErrorCode.UnknownTopicOrPart || _unknownTopicCounter > 5)
-                ErrorOccuredHandler(err.IsFatal, err.IsLocalError, mess);
+                ErrorOccuredHandler(this, err.IsFatal, err.IsLocalError, mess);
         }
 
-        protected void ErrorOccuredHandler(bool isFatal, bool isLocal, string message)
+        protected void ErrorOccuredHandler(IMessageReceiver source, bool isFatal, bool isLocal, string message)
         {
-            ErrorOccured?.Invoke(isFatal, isLocal, message);
+            ErrorOccured?.Invoke(source, isFatal, isLocal, message);
         }
     }
 }

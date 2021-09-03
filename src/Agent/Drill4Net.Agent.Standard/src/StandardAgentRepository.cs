@@ -103,7 +103,7 @@ namespace Drill4Net.Agent.Standard
         {
             if (adminOpts == null)
                 throw new ArgumentNullException(nameof(adminOpts));
-            return new Communicator(adminOpts.Url, GetAgentPartConfig(targetOpts));
+            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAgentPartConfig(targetOpts));
         }
 
         internal AgentPartConfig GetAgentPartConfig(TargetData targOpts)

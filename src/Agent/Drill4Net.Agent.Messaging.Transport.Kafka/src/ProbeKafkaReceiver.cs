@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         public event ProbeReceivedHandler ProbeReceived;
 
         private readonly Logger _logger;
-        private CancellationTokenSource _probesCts;
+        private CancellationTokenSource _cts;
 
         /****************************************************************************************/
 
@@ -27,51 +27,66 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         public override void Start()
         {
             Stop();
+            IsStarted = true;
+            _logger.Debug("Start.");
             RetrieveProbes();
         }
 
         public override void Stop()
         {
-            _probesCts?.Cancel();
+            if (!IsStarted)
+                return;
+            IsStarted = false;
+            _logger.Debug("Stop.");
+            if (_cts?.Token.IsCancellationRequested == false)
+                _cts.Cancel();
         }
 
         private void RetrieveProbes()
         {
-            _logger.Info($"{_logPrefix}Start retrieving probes...");
+            _logger.Info("Start retrieving probes...");
 
-            _probesCts = new();
+            _cts = new();
             var opts = _rep.Options;
             var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
-            _logger.Debug($"{_logPrefix}Probe topics: {string.Join(",", probeTopics)}");
-
-            using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
-                .SetValueDeserializer(new ProbeDeserializer())
-                .Build();
-            c.Subscribe(probeTopics);
+            _logger.Debug($"Probe topics: {string.Join(",", probeTopics)}");
 
             try
             {
-                while (true)
+                using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
+                    .SetValueDeserializer(new ProbeDeserializer())
+                    .Build();
+                c.Subscribe(probeTopics);
+
+                try
                 {
-                    try
+                    while (true)
                     {
-                        var cr = c.Consume(_probesCts.Token);
-                        var probe = cr.Message.Value;
-                        ProbeReceived?.Invoke(probe);
-                    }
-                    catch (ConsumeException e)
-                    {
-                        var err = e.Error;
-                        ErrorOccuredHandler(err.IsFatal, err.IsLocalError, err.Reason);
+                        try
+                        {
+                            var cr = c.Consume(_cts.Token);
+                            var probe = cr.Message.Value;
+                            ProbeReceived?.Invoke(probe);
+                        }
+                        catch (ConsumeException e)
+                        {
+                            var err = e.Error;
+                            ErrorOccuredHandler(this, err.IsFatal, err.IsLocalError, err.Reason);
+                        }
                     }
                 }
-            }
-            catch (OperationCanceledException opex)
-            {
-                // Ensure the consumer leaves the group cleanly and final offsets are committed.
-                c.Close();
+                catch (OperationCanceledException opex)
+                {
+                    // Ensure the consumer leaves the group cleanly and final offsets are committed.
+                    c.Close();
 
-                ErrorOccuredHandler(true, false, opex.Message);
+                    _logger.Warning("Consuming was cancelled", opex);
+                    ErrorOccuredHandler(this, true, false, opex.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal("Error for init retrieving of probes", ex);
             }
         }
     }

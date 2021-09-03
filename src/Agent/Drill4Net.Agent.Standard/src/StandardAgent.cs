@@ -266,7 +266,7 @@ namespace Drill4Net.Agent.Standard
                     return;
                 if (string.IsNullOrWhiteSpace(data))
                 {
-                    Log.Error("Data is empty", null);
+                    _logger.Error("Data is empty");
                     return;
                 }
                 #endregion
@@ -283,7 +283,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                Log.Error($"{data}", ex);
+                _logger.Error($"{data}", ex);
             }
         }
         #endregion

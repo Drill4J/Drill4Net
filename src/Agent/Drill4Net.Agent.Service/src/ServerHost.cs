@@ -3,7 +3,6 @@ using System.Threading;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging.Transport;
@@ -55,6 +54,7 @@ namespace Drill4Net.Agent.Service
                 _logger.Info($"{nameof(ServerHost)} ready.");
 
                 server.Start();
+                _logger.Info($"{nameof(ServerHost)} finished.");
             }
             catch (Exception ex)
             {
@@ -62,9 +62,9 @@ namespace Drill4Net.Agent.Service
             }
         }
 
-        private void Server_ErrorOccured(bool isFatal, bool isLocal, string message)
+        private void Server_ErrorOccured(IMessageReceiver source, bool isFatal, bool isLocal, string message)
         {
-            var mess = $"Local: {isLocal} -> {message}";
+            var mess = $"Source = {source} -> error (local: {isLocal}): {message}";
             if (isFatal)
                 _logger.Fatal(mess);
             else

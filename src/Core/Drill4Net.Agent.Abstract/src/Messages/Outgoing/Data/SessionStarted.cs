@@ -9,8 +9,17 @@ namespace Drill4Net.Agent.Abstract.Transfer
         public string testType { get; set; }
         public bool isRealtime { get; set; }
 
+        /*****************************************************************************/
+
         public SessionStarted() : base(AgentConstants.MESSAGE_OUT_SESSION_STARTED)
         {
+        }
+
+        /*****************************************************************************/
+
+        public override string ToString()
+        {
+            return $"Session={sessionId}, testType={testType}, isRealTime={isRealtime}";
         }
     }
 }

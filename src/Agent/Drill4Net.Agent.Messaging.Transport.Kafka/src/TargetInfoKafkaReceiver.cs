@@ -4,8 +4,8 @@ using System.Threading;
 using System.Collections.Generic;
 using Confluent.Kafka;
 using Drill4Net.Common;
-using Drill4Net.Core.Repository;
 using Drill4Net.BanderLog;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -32,17 +32,25 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         public override void Start()
         {
+            Stop();
+            IsStarted = true;
+            _logger.Debug("Start.");
             RetrieveTargets();
         }
 
         public override void Stop()
         {
-            _cts?.Cancel();
+            if (!IsStarted)
+                return;
+            IsStarted = false;
+            _logger.Debug("Stop.");
+            if (_cts?.Token.IsCancellationRequested == false)
+                _cts.Cancel();
         }
 
         private void RetrieveTargets()
         {
-            _logger.Info($"{_logPrefix}Start retrieving target info...");
+            _logger.Info("Start retrieving target info...");
 
             var targets = new Dictionary<Guid, List<byte[]>>();
             if (_cts == null)
@@ -50,98 +58,107 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             var opts = _rep.Options; //can contains diferent topics
             var topics = MessagingUtils.FilterTargetTopics(opts.Topics); //get only target info topics
-            _logger.Debug($"{_logPrefix}Target info topics: {string.Join(",", topics)}");
-
-            using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
-            c.Subscribe(topics);
+            _logger.Debug($"Target info topics: {string.Join(",", topics)}");
 
             try
             {
-                while (true)
+                using var c = new ConsumerBuilder<Ignore, byte[]>(_cfg).Build();
+                c.Subscribe(topics);
+
+                try
                 {
-                    try
+                    while (true)
                     {
-                        var cr = c.Consume(_cts.Token);
-                        var mess = cr.Message;
-                        var headers = mess.Headers;
-                        var packet = mess.Value;
                         try
                         {
-                            #region Params
-                            if (!headers.TryGetLastBytes(MessagingConstants.HEADER_REQUEST, out byte[] uidAr))
-                                throw new Exception("No Uid in packet header");
-                            var uid = Serializer.FromArray<Guid>(uidAr);
-
-                            if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKETS, out byte[] packetsCntAr))
-                                throw new Exception("No packets count in packet header");
-                            var packetsCnt = Serializer.FromArray<int>(packetsCntAr);
-
-                            if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
-                                throw new Exception("No packet's index in packet header");
-                            var packetInd = Serializer.FromArray<int>(packetIndAr);
-                            #endregion
-                            #region Add packet
-                            List<byte[]> packets;
-                            if (targets.ContainsKey(uid))
+                            var cr = c.Consume(_cts.Token);
+                            var mess = cr.Message;
+                            var headers = mess.Headers;
+                            var packet = mess.Value;
+                            try
                             {
-                                packets = targets[uid];
-                            }
-                            else
-                            {
-                                packets = new List<byte[]>();
-                                targets.Add(uid, packets);
-                            }
-                            packets.Add(packet);
-                            #endregion
-                            #region Data is collected
-                            //end?
-                            if (packetInd == packetsCnt - 1)
-                            {
-                                // merging packets
-                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_COMPRESSED_SIZE, out byte[] messSizeAr))
-                                    throw new Exception("No compressed message size in packet header");
-                                var messSize = Serializer.FromArray<int>(messSizeAr);
-                                var messAr = new byte[messSize];
+                                #region Params
+                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_REQUEST, out byte[] uidAr))
+                                    throw new Exception("No Uid in packet header");
+                                var uid = Serializer.FromArray<Guid>(uidAr);
 
-                                var start = 0;
-                                foreach (var p in packets)
+                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKETS, out byte[] packetsCntAr))
+                                    throw new Exception("No packets count in packet header");
+                                var packetsCnt = Serializer.FromArray<int>(packetsCntAr);
+
+                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
+                                    throw new Exception("No packet's index in packet header");
+                                var packetInd = Serializer.FromArray<int>(packetIndAr);
+                                #endregion
+                                #region Add packet
+                                List<byte[]> packets;
+                                if (targets.ContainsKey(uid))
                                 {
-                                    var len = p.Length;
-                                    Array.Copy(p, 0, messAr, start, len);
-                                    start += len;
+                                    packets = targets[uid];
                                 }
+                                else
+                                {
+                                    packets = new List<byte[]>();
+                                    targets.Add(uid, packets);
+                                }
+                                packets.Add(packet);
+                                #endregion
+                                #region Data is collected
+                                //end?
+                                if (packetInd == packetsCnt - 1)
+                                {
+                                    // merging packets
+                                    if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_COMPRESSED_SIZE, out byte[] messSizeAr))
+                                        throw new Exception("No compressed message size in packet header");
+                                    var messSize = Serializer.FromArray<int>(messSizeAr);
+                                    var messAr = new byte[messSize];
 
-                                //decompression
-                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, out messSizeAr))
-                                    throw new Exception("No decompressed message size in packet header");
-                                messSize = Serializer.FromArray<int>(messSizeAr);
+                                    var start = 0;
+                                    foreach (var p in packets)
+                                    {
+                                        var len = p.Length;
+                                        Array.Copy(p, 0, messAr, start, len);
+                                        start += len;
+                                    }
 
-                                var decompressed = Compressor.Decompress(messAr, messSize);
-                                var info = Serializer.FromArray<TargetInfo>(decompressed);
-                                targets.Remove(uid);
-                                GC.Collect(1, GCCollectionMode.Forced);
+                                    //decompression
+                                    if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_DECOMPRESSED_SIZE, out messSizeAr))
+                                        throw new Exception("No decompressed message size in packet header");
+                                    messSize = Serializer.FromArray<int>(messSizeAr);
 
-                                TargetInfoReceived?.Invoke(info);
+                                    var decompressed = Compressor.Decompress(messAr, messSize);
+                                    var info = Serializer.FromArray<TargetInfo>(decompressed);
+                                    targets.Remove(uid);
+                                    GC.Collect(1, GCCollectionMode.Forced);
+
+                                    TargetInfoReceived?.Invoke(info);
+                                }
+                                #endregion
                             }
-                            #endregion
+                            catch (Exception ex)
+                            {
+                                _logger.Warning("Processing of message is failed", ex);
+                                ErrorOccuredHandler(this, true, true, ex.Message);
+                            }
                         }
-                        catch (Exception ex)
+                        catch (ConsumeException e)
                         {
-                            ErrorOccuredHandler(true, true, ex.Message);
+                            _logger.Warning("Consume error raised", e);
+                            ProcessConsumeExcepton(e);
                         }
-                    }
-                    catch (ConsumeException e)
-                    {
-                        ProcessConsumeExcepton(e);
                     }
                 }
+                catch (OperationCanceledException opex)
+                {
+                    // Ensure the consumer leaves the group cleanly and final offsets are committed.
+                    c.Close();
+                    _logger.Warning("Consuming was cancelled", opex);
+                    ErrorOccuredHandler(this, true, false, opex.Message);
+                }
             }
-            catch (OperationCanceledException opex)
+            catch (Exception ex)
             {
-                // Ensure the consumer leaves the group cleanly and final offsets are committed.
-                c.Close();
-
-                ErrorOccuredHandler(true, false, opex.Message);
+                _logger.Fatal("Error for init retrieving of targets", ex);
             }
         }
     }

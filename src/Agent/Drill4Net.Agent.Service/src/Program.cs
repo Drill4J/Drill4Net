@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.BanderLog.Sinks.Console;
 using Drill4Net.BanderLog;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Service
 {
@@ -23,18 +24,18 @@ namespace Drill4Net.Agent.Service
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<ServerHost>();
-                    //services.AddLogging(ConfigureLogging);
+                    services.AddLogging(ConfigureLogging);
                 });
         }
 
-        //private static void ConfigureLogging(ILoggingBuilder logBld)
-        //{
-        //    //TODO: by cfg!!!
-        //    var consoleProvider = new ConsoleLoggerProvider();
-        //    logBld.AddProvider(consoleProvider);
+        private static void ConfigureLogging(ILoggingBuilder logBld)
+        {
+            ////TODO: by cfg!!!
+            //var consoleProvider = new ConsoleLoggerProvider();
+            //logBld.AddProvider(consoleProvider);
 
-        //    var filePrvd = new FileLoggerProvider();
-        //    logBld.AddProvider(filePrvd);
-        //}
+            var filePrvd = new FileLoggerProvider();
+            logBld.AddProvider(filePrvd);
+        }
     }
 }

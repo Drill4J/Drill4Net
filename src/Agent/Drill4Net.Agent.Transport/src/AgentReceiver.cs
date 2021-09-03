@@ -1,12 +1,14 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
-    /* 
-     * NOT USE $MS standard serializer from System.Text.Json!!! 
-     * Because it will fail to resolve in some cases (project is NetStandard 2.0 now)
-     */
+/* 
+ * NOT USE $MS standard serializer from System.Text.Json!!! 
+ * Because it will fail to resolve in some cases (project is NetStandard 2.0 now)
+ */
 
 namespace Drill4Net.Agent.Transport
 {
@@ -59,11 +61,14 @@ namespace Drill4Net.Agent.Transport
         #endregion
 
         private readonly JsonSerializerSettings _deserOpts; //JsonSerializerOptions
+        private readonly Logger _logger;
 
         /************************************************************************/
 
         public AgentReceiver(Connector receiver)
         {
+            _logger = new TypedLogger<AgentReceiver>(CoreConstants.SUBSYSTEM_AGENT);
+
             //_deserOpts = new JsonSerializerOptions
             //{
             //    AllowTrailingCommas = true,
@@ -72,7 +77,6 @@ namespace Drill4Net.Agent.Transport
 
             _deserOpts = new JsonSerializerSettings
             {
-                
             };
 
             var connector = receiver ?? throw new ArgumentNullException(nameof(receiver));
@@ -91,6 +95,7 @@ namespace Drill4Net.Agent.Transport
         {
             if (RequestClassesData == null)
                 throw new Exception("Handlers are not attached for received events");
+            _logger.Debug($"Message received: topic={topic}, message={message}");
             //
             try
             {
@@ -148,7 +153,7 @@ namespace Drill4Net.Agent.Transport
             }
             catch (Exception e)
             {
-                //TODO: log!!!
+                _logger.Error("Message receive error", e);
             }
         }
 

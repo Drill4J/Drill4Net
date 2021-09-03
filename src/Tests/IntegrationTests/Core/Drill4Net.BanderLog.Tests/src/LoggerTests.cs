@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Drill4Net.Common;
 using Drill4Net.BanderLog.Sinks.File;
 using Xunit;
-using Const = Drill4Net.BanderLog.Tests.BanderlogTestsConstants;
 using Helper = Drill4Net.BanderLog.Tests.BanderlogTestsHelper;
+using Const = Drill4Net.BanderLog.Tests.BanderlogTestsConstants;
 
 namespace Drill4Net.BanderLog.Tests
 {
@@ -24,55 +25,72 @@ namespace Drill4Net.BanderLog.Tests
             
             return logBld.Build();
         }
+        private string[] PrepareFilePaths(int count )
+        {
+            string[] filePaths = new string[2];
+            for(int i=0; i<count; i++)
+            {
+                var logName = $"Log{i + 1}_{DateTime.UtcNow.ToString("ddMMyyyyHmmssff")}.txt";
+                filePaths[i]= Path.Combine(FileUtils.GetExecutionDir(), logName);
+            }
+            return filePaths;
+        }
 
         [Fact]
         public void ParallelThreadsOneLoggerTest()
         {
-            //arrange
-            foreach (var fileName in Const.LOG_PATH_SINKS)
-            {
-                if (File.Exists(fileName))
-                    File.Delete(fileName);
-            }
-            var logger = InitializeLogger(Const.LOG_PATH_SINKS);
+            var filePaths = PrepareFilePaths(2);
+            try {
+                //arrange
+                var logger = InitializeLogger(filePaths);
 
-            //act
-            var sinks = logger.GetSinks();
-            Task[] tasks = new Task[2]
-            {
+                //act
+                var sinks = logger.GetSinks();
+                Task[] tasks = new Task[2]
+                {
                 new Task(() => Helper.WriteLog(sinks[0])),
                 new Task(() => Helper.WriteLog(sinks[1]))
-            };
+                };
 
-            foreach (var t in tasks)
-                t.Start();
+                foreach (var t in tasks)
+                    t.Start();
 
-            try
-            {
-                Task.WaitAll(tasks);
-            }
-            catch (AggregateException ae)
-            {
-                BanderlogTestsUtils.WriteAggregateException(ae);
+                try
+                {
+                    Task.WaitAll(tasks);
+                }
+                catch (AggregateException ae)
+                {
+                    Console.WriteLine(CommonUtils.GetExceptionDescription(ae));
+                }
+                finally
+                {
+                    logger.Shutdown();
+                }
+
+                //assert
+                foreach (var filePath in filePaths)
+                {
+                    var lineCounter = 0;
+                    var logLinesSinks = File.ReadAllLines(filePath);
+                    Assert.Equal(Const.LOG_LINE_COUNT, logLinesSinks.Length);
+
+                    foreach (var logLine in logLinesSinks)
+                    {
+                        var actualLineNumber = Helper.GetLineNumber(logLine);
+                        Helper.AssertLogLine(lineCounter, actualLineNumber, logLine);
+                        lineCounter++;
+                    }
+                }
             }
             finally
             {
-                logger.Shutdown();
-            }
-
-            //assert
-            foreach (var fileName in Const.LOG_PATH_SINKS)
-            {
-                var lineCounter = 0;
-                var logLinesSinks = File.ReadAllLines(fileName);
-                Assert.Equal(Const.LOG_LINE_COUNT, logLinesSinks.Length);
-
-                foreach (var logLine in logLinesSinks)
+                foreach (var filePath in filePaths)
                 {
-                    var actualLineNumber = Helper.GetLineNumber(logLine);
-                    Helper.AssertLogLine(lineCounter, actualLineNumber, logLine);
-                    lineCounter++;
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
                 }
+
             }
         }
     }

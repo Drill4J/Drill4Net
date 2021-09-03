@@ -14,5 +14,10 @@ namespace Drill4Net.Agent.Abstract.Transfer
         {
             this.type = type ?? throw new ArgumentNullException(nameof(type));
         }
+
+        public override string ToString()
+        {
+            return type;
+        }
     }
 }
