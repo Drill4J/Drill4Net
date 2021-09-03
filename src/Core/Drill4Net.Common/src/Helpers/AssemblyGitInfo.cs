@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Drill4Net.Common.Helpers
 {
+    /// <summary>
+    /// Get Git Information for sources
+    /// </summary>
     public static class AssemblyGitInfo
     {
 
@@ -17,7 +17,8 @@ namespace Drill4Net.Common.Helpers
         }
 
         /// <summary>
-        /// Get Git commit for current assembly
+        /// Get Git commit for current assembly.
+        /// Works correctly for entities using it only in case of full compilation from sources.
         /// </summary>
         /// <returns>Git Commit</returns>
         public static string GetCommit()

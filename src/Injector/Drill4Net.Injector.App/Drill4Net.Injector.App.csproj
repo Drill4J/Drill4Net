@@ -17,6 +17,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="src\Helpers\**" />
+    <EmbeddedResource Remove="src\Helpers\**" />
+    <None Remove="src\Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="RnD.yml" />
   </ItemGroup>
 
@@ -66,10 +72,6 @@
     <None Update="_redirect.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="src\Helpers\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
