@@ -51,8 +51,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
             _logger.Debug($"Probe topics: {string.Join(",", probeTopics)}");
 
-            try 
-            { 
+            try
+            {
                 using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
                     .SetValueDeserializer(new ProbeDeserializer())
                     .Build();
@@ -80,6 +80,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                     // Ensure the consumer leaves the group cleanly and final offsets are committed.
                     c.Close();
 
+                    _logger.Warning("Consuming was cancelled", opex);
                     ErrorOccuredHandler(this, true, false, opex.Message);
                 }
             }

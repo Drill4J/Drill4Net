@@ -87,6 +87,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 // Ensure the consumer leaves the group cleanly and final offsets are committed.
                 c.Close();
 
+                _logger.Warning("Consuming was cancelled", opex);
                 ErrorOccuredHandler(this, true, false, opex.Message);
             }
         }

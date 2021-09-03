@@ -87,11 +87,5 @@ namespace Drill4Net.BanderLog.Sinks
                 return JsonConvert.SerializeObject(data, Formatting.None, _jsonSettings);
             }
         }
-
-        public class LogSerializedInfo<TState>
-        {
-            public TState State { get; set; }
-            public string Exception { get; set; }
-        }
     }
 }

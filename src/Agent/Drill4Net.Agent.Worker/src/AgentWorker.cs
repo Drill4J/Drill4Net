@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Worker
             var extrasData = new Dictionary<string, object> { { "TargetSession", _rep.TargetSession } };
             _logger = new TypedLogger<AgentWorker>(_rep.Subsystem, extrasData);
 
-            _logger.Debug($"Target session: {_rep.TargetSession}");
+            _logger.Debug($"Worker is initializing for target session: {_rep.TargetSession}");
 
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
@@ -41,17 +41,24 @@ namespace Drill4Net.Agent.Worker
 
             _probeReceiver.ProbeReceived += Receiver_ProbeReceived;
             _probeReceiver.ErrorOccured += Receiver_ErrorOccured;
+
+            _logger.Debug($"{nameof(TargetInfo)} is created");
         }
 
         /********************************************************************************************/
 
         public void Start()
         {
+            IsStarted = true;
+            _logger.Debug("Worker starts");
             _targetReceiver.Start();
         }
 
         public void Stop()
         {
+            _logger.Debug("Worker stops");
+            IsStarted = false;
+
             _targetReceiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured -= Receiver_ErrorOccured;
             _targetReceiver.Stop();
@@ -70,7 +77,7 @@ namespace Drill4Net.Agent.Worker
 
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution);
-            _logger.Debug($"{nameof(StandardAgent)} is initialized");
+            _logger.Info($"{nameof(StandardAgent)} is initialized");
 
             //_logger.Warning("*** RETRIEVING OF PROBES IS COMMENTED FOR DEBUG ***");
             _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");

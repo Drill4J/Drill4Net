@@ -137,13 +137,13 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                             }
                             catch (Exception ex)
                             {
-                                _logger.Warning("1111111111111111111111111111", ex);
+                                _logger.Warning("Processing of message is failed", ex);
                                 ErrorOccuredHandler(this, true, true, ex.Message);
                             }
                         }
                         catch (ConsumeException e)
                         {
-                            _logger.Warning("222222222222222222222222222", e);
+                            _logger.Warning("Consume error raised", e);
                             ProcessConsumeExcepton(e);
                         }
                     }
@@ -152,7 +152,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 {
                     // Ensure the consumer leaves the group cleanly and final offsets are committed.
                     c.Close();
-                    _logger.Warning("3333333333333333333333333333333", opex);
+                    _logger.Warning("Consuming was cancelled", opex);
                     ErrorOccuredHandler(this, true, false, opex.Message);
                 }
             }
