@@ -69,8 +69,8 @@ namespace Drill4Net.BanderLog.Tests
                 //act
                 Task[] tasks = new Task[2]
                 {
-                new Task(() => Helper.WriteLog(logger, "thread_1_")),
-                new Task(() => Helper.WriteLog(logger, "thread_2_"))
+                    new Task(() => Helper.WriteLog(logger, "thread_1_")),
+                    new Task(() => Helper.WriteLog(logger, "thread_2_"))
                 };
 
                 foreach (var t in tasks)

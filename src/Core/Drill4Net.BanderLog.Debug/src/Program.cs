@@ -25,8 +25,10 @@ namespace Drill4Net.BanderLog.Debug
             //
             var filepath = Path.Combine(FileUtils.ExecutingDir, "log2.txt");
             var fileLogger = FileSinkCreator.CreateSink(filepath);
+
             const int cnt = 100000;
             Console.WriteLine($"Write {cnt} records...");
+
             for (var i = 0; i < cnt; i++)
                 fileLogger.LogTrace($"i={i + 1}");
             fileLogger.Shutdown();

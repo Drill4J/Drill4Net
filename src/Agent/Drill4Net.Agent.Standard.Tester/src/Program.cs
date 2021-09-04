@@ -317,7 +317,7 @@ namespace Drill4Net.Agent.Standard.Tester
             }
 
             //writing
-            var path = Path.Combine(_opts.CSV ?? FileUtils.ExecutingDir, "tree.csv");
+            var path = Path.Combine(_opts.CSV ?? FileUtils.ExecutingDir, "tree.csv"); //TODO: to const
             try
             {
                 File.WriteAllLines(path, data);

@@ -31,7 +31,7 @@ namespace Drill4Net.Core.Repository
         /// <returns></returns>
         protected internal string GetActualConfigPath(string configDefaultName)
         {
-            var dir = FileUtils.GetEntryDir();
+            var dir = FileUtils.EntryDir;
             var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_REDIRECT_NAME);
             var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_DEFAULT_NAME : configDefaultName;
             if (!File.Exists(redirectPath))

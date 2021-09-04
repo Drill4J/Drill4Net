@@ -75,7 +75,7 @@ namespace Drill4Net.Agent.Standard
                 AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
                 _resolver = new AssemblyResolver();
 
-                EmergencyLogDir = FileUtils.GetEmergencyDir();
+                EmergencyLogDir = FileUtils.EmergencyDir;
                 AbstractRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
                 _logger.Debug($"{_logPrefix} is initializing...");

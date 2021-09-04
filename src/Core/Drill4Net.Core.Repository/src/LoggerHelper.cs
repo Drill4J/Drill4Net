@@ -17,7 +17,7 @@ namespace Drill4Net.Core.Repository
         public static string GetCommonFilePath(string folder = LOG_DIR_DEFAULT)
         {
             var dir = string.IsNullOrWhiteSpace(folder) ? LOG_DIR_DEFAULT : folder;
-            return Path.Combine(FileUtils.GetEntryDir(), dir, LOG_FILENAME);
+            return Path.Combine(FileUtils.EntryDir, dir, LOG_FILENAME);
         }
     }
 }

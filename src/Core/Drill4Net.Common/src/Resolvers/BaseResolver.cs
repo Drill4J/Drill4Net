@@ -17,7 +17,7 @@ namespace Drill4Net.Common
         {
             SearchDirs = searchDirs ?? new List<string>();
             if(!SearchDirs.Any())
-                SearchDirs.Add(FileUtils.GetEntryDir());
+                SearchDirs.Add(FileUtils.EntryDir);
             var runtimeRootPath = GetRuntimeDir();
             _runtimeDirs = Directory.GetDirectories(runtimeRootPath).ToList();
         }

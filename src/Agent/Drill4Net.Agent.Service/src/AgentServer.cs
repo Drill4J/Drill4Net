@@ -54,7 +54,7 @@ namespace Drill4Net.Agent.Service
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _admin = _rep.GetTransportAdmin();
 
-            _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.GetExecutionDir());
+            _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.ExecutingDir);
             _workerDir = Path.GetDirectoryName(_processName);
 
             //for using by workers

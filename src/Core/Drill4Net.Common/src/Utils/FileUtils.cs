@@ -18,6 +18,8 @@ namespace Drill4Net.Common
 
         public static string ExecutingDir { get; }
 
+        public static string EmergencyDir { get; }
+
         public const string LOG_FOLDER_EMERGENCY = "logs_drill";
 
         /******************************************************************/
@@ -26,6 +28,7 @@ namespace Drill4Net.Common
         {
             ExecutingDir = GetExecutionDir();
             EntryDir = GetEntryDir() ?? ExecutingDir;
+            EmergencyDir = GetEmergencyDir();
         }
 
         /******************************************************************/

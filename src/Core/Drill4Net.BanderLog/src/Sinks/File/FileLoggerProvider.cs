@@ -8,7 +8,7 @@ namespace Drill4Net.BanderLog.Sinks.File
     {
         private readonly string _path;
 
-        /***************************************************/
+        /**********************************************************************/
 
         public FileLoggerProvider(string path = null)
         {

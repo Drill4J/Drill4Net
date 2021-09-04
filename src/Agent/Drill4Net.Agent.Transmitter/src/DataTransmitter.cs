@@ -55,7 +55,7 @@ namespace Drill4Net.Agent.Transmitter
             //AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
             //_resolver = new AssemblyResolver();
 
-            EmergencyLogDir = FileUtils.GetEmergencyDir();
+            EmergencyLogDir = FileUtils.EmergencyDir;
             _probes = new ConcurrentDictionary<string, bool>();
 
             //TODO: factory
