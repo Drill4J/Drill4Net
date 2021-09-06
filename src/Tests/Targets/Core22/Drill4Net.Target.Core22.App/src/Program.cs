@@ -6,24 +6,21 @@ namespace Drill4Net.Target.Core22.App
 {
     class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            StartAsync().GetAwaiter().GetResult();
-
-            Console.WriteLine("\nDone.");
+            Console.WriteLine("Press any key when you'll have started the session on Admin side (if needed)");
             Console.ReadKey(true);
-        }
 
-        private static async Task StartAsync()
-        {
             try
             {
                 await new InjectTarget().RunTests();
+                Console.WriteLine("\nDone.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+            Console.ReadKey(true);
         }
     }
 }

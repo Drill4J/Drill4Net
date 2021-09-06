@@ -34,12 +34,7 @@ namespace Drill4Net.Agent.Standard.Tester
 
         /*********************************************************************************/
 
-        public static void Main()
-        {
-            MainAsync().GetAwaiter().GetResult();
-        }
-
-        static async Task MainAsync()
+        public static async Task Main()
         {
             try
             {
