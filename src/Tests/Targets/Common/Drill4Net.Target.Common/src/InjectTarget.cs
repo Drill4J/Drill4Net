@@ -944,15 +944,15 @@ namespace Drill4Net.Target.Common
             return Task.Delay(100);
         }
 
-        public async Task Async_Lambda(bool cond)
+        public Task Async_Lambda(bool cond)
         {
-            await Task.Run(async () =>
+            return Task.Run(async () =>
             {
-                if (cond)
-                    await Task.Delay(50);
-                else
-                    await Task.Delay(100);
-                Console.WriteLine($"{nameof(Async_Lambda)}: {cond}");
+                 if (cond)
+                     await Task.Delay(50);
+                 else
+                     await Task.Delay(100);
+                 Console.WriteLine($"{nameof(Async_Lambda)}: {cond}");
             });
         }
 
