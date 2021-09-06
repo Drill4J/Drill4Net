@@ -31,8 +31,8 @@ namespace Drill4Net.BanderLog.Tests
             string[] filePaths = new string[2];
             for(var i = 0; i < count; i++)
             {
-                var logName = $"Log{i + 1}_{DateTime.UtcNow:ddMMyyyyHmmssff}.txt";
-                filePaths[i] = Path.Combine(FileUtils.ExecutingDir, logName);
+                var logName = Path.GetRandomFileName();
+                filePaths[i] = Path.Combine(Const.TEMP_PATH, logName);
             }
             return filePaths;
         }
@@ -85,7 +85,10 @@ namespace Drill4Net.BanderLog.Tests
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(CommonUtils.GetExceptionDescription(ex));
+            }
             finally
             {
                 foreach (var filePath in filePaths)
