@@ -8,6 +8,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -42,7 +43,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="runCtx">Context of Injector Engine's Run</param>
         /// <param name="asmCtx">Context of current assembly</param>
-        public async void Inject(RunContext runCtx, AssemblyContext asmCtx)
+        public async Task Inject(RunContext runCtx, AssemblyContext asmCtx)
         {
             if (!await AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)

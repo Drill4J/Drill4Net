@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
@@ -16,7 +17,7 @@ namespace Drill4Net.Injector.App
 
         /**************************************************************************/
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             AbstractRepository.PrepareEmergencyLogger();
             //program name... yep, from namespace
@@ -38,7 +39,8 @@ namespace Drill4Net.Injector.App
 #if DEBUG
                 var watcher = Stopwatch.StartNew();
 #endif
-                injector.Process();
+                await injector.Process()
+                    .ConfigureAwait(false);
 #if DEBUG
                 watcher.Stop();
 #endif

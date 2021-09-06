@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
@@ -154,9 +155,9 @@ namespace Drill4Net.Injector.Core
         /// Inject the assembly by it's context
         /// </summary>
         /// <param name="asmCtx"></param>
-        public void Inject(AssemblyContext asmCtx)
+        public Task Inject(AssemblyContext asmCtx)
         {
-            Injector.Inject(this, asmCtx);
+            return Injector.Inject(this, asmCtx);
         }
 
         public void Dispose()

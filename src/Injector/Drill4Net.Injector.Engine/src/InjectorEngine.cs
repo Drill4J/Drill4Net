@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
@@ -47,7 +48,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <returns>Tree of metadata for injected entities (processed directories, assemblies, 
         /// classes, methods, cross-points, etc)</returns>
-        public InjectedSolution Process()
+        public Task<InjectedSolution> Process()
         {
             return Process(_rep.Options);
         }
@@ -57,7 +58,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="opts">Config for target's injection</param>
         /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
-        public InjectedSolution Process(InjectorOptions opts)
+        public async Task<InjectedSolution> Process(InjectorOptions opts)
         {
             _logger.Debug("Process is starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
@@ -105,7 +106,7 @@ namespace Drill4Net.Injector.Engine
                 if (need)
                 {
                     runCtx.SourceDirectory = dir;
-                    ProcessDirectory(runCtx);
+                    await ProcessDirectory(runCtx);
                 }
             }
 
@@ -113,7 +114,7 @@ namespace Drill4Net.Injector.Engine
             {
                 //files in root
                 runCtx.SourceDirectory = runCtx.RootDirectory;
-                ProcessDirectory(runCtx);
+                await ProcessDirectory(runCtx);
             }
 
             //the tree's deploying
@@ -144,7 +145,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="runCtx">Context of Engine's Run</param>
         /// <returns>Is the directory processed?</returns>
-        internal bool ProcessDirectory(RunContext runCtx)
+        internal async Task<bool> ProcessDirectory(RunContext runCtx)
         {
             var opts = runCtx.Options;
             var directory = runCtx.SourceDirectory;
@@ -161,7 +162,7 @@ namespace Drill4Net.Injector.Engine
             foreach (var file in files)
             {
                 runCtx.SourceFile = file;
-                ProcessFile(runCtx);
+                await ProcessFile(runCtx).ConfigureAwait(false);
             }
 
             //subdirectories
@@ -169,7 +170,7 @@ namespace Drill4Net.Injector.Engine
             foreach (var dir in dirs)
             {
                 runCtx.SourceDirectory = dir;
-                ProcessDirectory(runCtx);
+                await ProcessDirectory(runCtx);
             }
             return true;
         }
@@ -179,7 +180,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="runCtx">Context of Engine's Run</param>
         ///<returns>Is the file processed?</returns>
-        private bool ProcessFile(RunContext runCtx)
+        private async Task<bool> ProcessFile(RunContext runCtx)
         {
             #region Checks
             var opts = runCtx.Options;
@@ -202,7 +203,7 @@ namespace Drill4Net.Injector.Engine
                     Directory.CreateDirectory(asmCtx.DestinationDir);
 
                 //processing
-                runCtx.Inject(asmCtx);
+                await runCtx.Inject(asmCtx);
 
                 _logger.Debug($"Injected: [{runCtx.SourceFile}]");
 

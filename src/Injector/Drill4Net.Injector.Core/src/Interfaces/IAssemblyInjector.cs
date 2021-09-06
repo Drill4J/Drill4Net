@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Injector.Core
+﻿using System.Threading.Tasks;
+
+namespace Drill4Net.Injector.Core
 {
     /// <summary>
     /// Interface of Injector of instrumenting code called by Target for Agent
@@ -10,6 +12,6 @@
         /// </summary>
         /// <param name="runCtx"></param>
         /// <param name="asmCtx"></param>
-        void Inject(RunContext runCtx, AssemblyContext asmCtx);
+        Task Inject(RunContext runCtx, AssemblyContext asmCtx);
     }
 }

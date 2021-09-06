@@ -1,4 +1,4 @@
-﻿using Drill4Net.Common;
+﻿using System.Threading.Tasks;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public interface IInjectorEngine
     {
-        InjectedSolution Process();
-        InjectedSolution Process(InjectorOptions opts);
+        Task<InjectedSolution> Process();
+        Task<InjectedSolution> Process(InjectorOptions opts);
     }
 }
