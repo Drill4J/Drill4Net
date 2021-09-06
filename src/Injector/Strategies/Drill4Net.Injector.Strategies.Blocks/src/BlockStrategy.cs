@@ -9,17 +9,18 @@ using Drill4Net.Injector.Core;
   ThisAssembly.Git.SemVer.Patch + "-" +
   ThisAssembly.Git.Branch + "+" +
   ThisAssembly.Git.Commit)]
+
 namespace Drill4Net.Injector.Strategies.Blocks
 {
     /// <summary>
     /// Strategy for target's injection with classics Flow cross-points
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.CodeHandlerStrategy" />
-    public class FlowStrategy : CodeHandlerStrategy
+    public class BlockStrategy: CodeHandlerStrategy
     {
-        public FlowStrategy(InjectorOptions opts)
+        public BlockStrategy(InjectorOptions opts)
         {
-            var helper = new FlowProbeHelper(opts);
+            var helper = new BlockProbeHelper(opts);
             var probeOpts = opts.Probes;
 
             //after if/else/switch instructions

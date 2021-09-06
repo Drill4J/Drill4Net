@@ -7,9 +7,9 @@ namespace Drill4Net.Injector.Strategies.Blocks
     /// Helper for the generating the cross-point's probe data
     /// </summary>
     /// <seealso cref="Drill4Net.Injector.Core.AbstractProbeHelper" />
-    public class FlowProbeHelper : AbstractProbeHelper
+    public class BlockProbeHelper: AbstractProbeHelper
     { 
-        public FlowProbeHelper(InjectorOptions opts): base(opts)
+        public BlockProbeHelper(InjectorOptions opts): base(opts)
         {
         }
 
