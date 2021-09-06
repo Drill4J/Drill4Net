@@ -95,7 +95,7 @@ namespace Drill4Net.Agent.Standard
             _injTypes = GetTypesByCallerVersion(tree);
 
             //timer for periodically sending coverage data to admin side
-            _sendTimer = new System.Timers.Timer(2000);
+            _sendTimer = new System.Timers.Timer(1500);
             _sendTimer.Elapsed += Timer_Elapsed;
         }
 
