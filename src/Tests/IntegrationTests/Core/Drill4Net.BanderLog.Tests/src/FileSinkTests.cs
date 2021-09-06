@@ -6,7 +6,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog.Sinks;
 using Drill4Net.BanderLog.Sinks.File;
 using Helper = Drill4Net.BanderLog.Tests.BanderlogTestsHelper;
-using Const = Drill4Net.BanderLog.Tests.BanderlogTestsConstants;
+using Config = Drill4Net.BanderLog.Tests.BanderlogTestsConfig;
 
 namespace Drill4Net.BanderLog.Tests
 {
@@ -24,7 +24,7 @@ namespace Drill4Net.BanderLog.Tests
         public void OneThreadOneLoggerTest()
         {
             var logName = Path.GetRandomFileName();
-            var filePath = Path.Combine(Const.TEMP_PATH, logName);
+            var filePath = Path.Combine(Config.TEMP_PATH, logName);
             try
             {
                 //arrange               
@@ -37,7 +37,7 @@ namespace Drill4Net.BanderLog.Tests
                 //assert
                 var lineCounter = 0;
                 var logLines = File.ReadAllLines(filePath);
-                Assert.Equal(Const.LOG_LINE_COUNT, logLines.Length);
+                Assert.Equal(Config.LOG_LINE_COUNT, logLines.Length);
 
                 foreach (var logLine in logLines)
                 {
@@ -62,7 +62,7 @@ namespace Drill4Net.BanderLog.Tests
         public void ParallelThreadsOneLoggerTest()
         {
             var logName = Path.GetRandomFileName();
-            var filePath = Path.Combine(Const.TEMP_PATH, logName);
+            var filePath = Path.Combine(Config.TEMP_PATH, logName);
 
             try
             {
@@ -96,7 +96,7 @@ namespace Drill4Net.BanderLog.Tests
                 var lineCounterThread1 = 0;
                 var lineCounterThread2 = 0;
                 var logLinesThreads = File.ReadAllLines(filePath);
-                Assert.Equal(Const.LOG_LINE_COUNT * 2, logLinesThreads.Length);
+                Assert.Equal(Config.LOG_LINE_COUNT * 2, logLinesThreads.Length);
 
                 foreach (var logLine in logLinesThreads)
                 {
@@ -115,8 +115,8 @@ namespace Drill4Net.BanderLog.Tests
                 }
 
                 //One hundred thousand lines (maybe million) are written to the file and not a single one is lost.
-                Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread1);
-                Assert.Equal(Const.LOG_LINE_COUNT, lineCounterThread2);
+                Assert.Equal(Config.LOG_LINE_COUNT, lineCounterThread1);
+                Assert.Equal(Config.LOG_LINE_COUNT, lineCounterThread2);
             }
             catch (Exception ex)
             {

@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using Microsoft.Extensions.Logging;
 using Drill4Net.BanderLog.Sinks;
-using Const = Drill4Net.BanderLog.Tests.BanderlogTestsConstants;
+using Const = Drill4Net.BanderLog.Tests.BanderlogTestsConfig;
 
 namespace Drill4Net.BanderLog.Tests
 {
