@@ -2,10 +2,10 @@
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using static Drill4Net.Injector.Core.InjectorCoreConstants;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Strategies.Blocks
 {
@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
     public class CallHandler : AbstractSimpleHandler
     {
         protected readonly TypeChecker _typeChecker;
-        private Logger _logger;
+        private readonly Logger _logger;
 
         /*****************************************************************************/
 

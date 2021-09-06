@@ -30,7 +30,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 var ind = instructions.IndexOf(instr);
 
                 //check for too short jump
-                var prev = SkipNop(ind, false, ctx);
+                var prev = SkipNops(ind, false, ctx);
                 var prevInd = instructions.IndexOf(prev);
                 if (!IsRealCondition(prevInd, ctx))
                     continue;
