@@ -11,7 +11,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// </summary>
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class AstMethod
+    public record AstMethod
     {
         /// <summary>
         /// Name of the method.

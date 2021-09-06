@@ -11,7 +11,18 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public interface IInjectorEngine
     {
+        /// <summary>
+        /// Inject the target accordingly by the current config from repository
+        /// </summary>
+        /// <returns>Tree of metadata for the injected entities (processed directories, assemblies,
+        /// classes, methods, cross-points, etc)</returns>
         Task<InjectedSolution> Process();
+
+        /// <summary>
+        ///  Inject the target accordingly by the config form parameters 
+        /// </summary>
+        /// <param name="opts">Config for target's injection</param>
+        /// <returns>Tree data of the injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
         Task<InjectedSolution> Process(InjectorOptions opts);
     }
 }

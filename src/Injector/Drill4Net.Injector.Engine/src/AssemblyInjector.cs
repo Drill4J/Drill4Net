@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -8,7 +9,6 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Injector.Engine
 {

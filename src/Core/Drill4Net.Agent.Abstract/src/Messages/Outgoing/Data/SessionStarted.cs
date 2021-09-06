@@ -4,7 +4,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class SessionStarted : AbstractSessionMessage
+    public record SessionStarted : AbstractSessionMessage
     {
         public string testType { get; set; }
         public bool isRealtime { get; set; }

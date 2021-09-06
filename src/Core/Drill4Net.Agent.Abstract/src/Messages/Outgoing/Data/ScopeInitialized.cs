@@ -4,7 +4,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     [Serializable]
-    public class ScopeInitialized: OutgoingMessage
+    public record ScopeInitialized: OutgoingMessage
     {
         public string id { get; set; }
         public string name { get; set; }
@@ -13,7 +13,8 @@ namespace Drill4Net.Agent.Abstract.Transfer
         
         /*********************************************/
         
-        public ScopeInitialized(string id, string name, string prevId, long ts) : base(AgentConstants.MESSAGE_OUT_SCOPE_INITIALIZED)
+        public ScopeInitialized(string id, string name, string prevId, long ts):
+            base(AgentConstants.MESSAGE_OUT_SCOPE_INITIALIZED)
         {
             this.id = id;
             this.name = name;

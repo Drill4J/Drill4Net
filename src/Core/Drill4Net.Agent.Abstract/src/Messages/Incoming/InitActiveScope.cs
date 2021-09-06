@@ -3,9 +3,11 @@
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
-    public class InitActiveScope : IncomingMessage
+    public record InitActiveScope : IncomingMessage
     {
         public InitScopePayload Payload { get; set; }
+
+        /***************************************************************************/
 
         public InitActiveScope()
         {

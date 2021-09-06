@@ -7,9 +7,11 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// (AgentAction class on Kotlin on admin side)
     /// </summary>
     [Serializable]
-    public class IncomingMessage : AbstractMessage
+    public record IncomingMessage : AbstractMessage
     {
         public IncomingMessage(): base("NOT_INIT") { }
+
+        /***************************************************************************/
 
         protected IncomingMessage(string type): base(type)
         {

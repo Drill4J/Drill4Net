@@ -4,9 +4,11 @@ namespace Drill4Net.Agent.Abstract.Transfer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     [Serializable]
-    public abstract class AbstractMessage
+    public abstract record AbstractMessage
     {
         public string type { get; set; }
+
+        /***********************************************************/
 
         protected AbstractMessage() { }
 
@@ -14,6 +16,8 @@ namespace Drill4Net.Agent.Abstract.Transfer
         {
             this.type = type ?? throw new ArgumentNullException(nameof(type));
         }
+
+        /***********************************************************/
 
         public override string ToString()
         {

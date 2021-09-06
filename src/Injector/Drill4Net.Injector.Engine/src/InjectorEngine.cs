@@ -46,7 +46,7 @@ namespace Drill4Net.Injector.Engine
         /// <summary>
         /// Inject the target accordingly by the current config from repository
         /// </summary>
-        /// <returns>Tree of metadata for injected entities (processed directories, assemblies, 
+        /// <returns>Tree of metadata for the injected entities (processed directories, assemblies,
         /// classes, methods, cross-points, etc)</returns>
         public Task<InjectedSolution> Process()
         {
@@ -57,7 +57,7 @@ namespace Drill4Net.Injector.Engine
         ///  Inject the target accordingly by the config form parameters 
         /// </summary>
         /// <param name="opts">Config for target's injection</param>
-        /// <returns>Tree data of injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
+        /// <returns>Tree data of the injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
         public async Task<InjectedSolution> Process(InjectorOptions opts)
         {
             _logger.Debug("Process is starting...");

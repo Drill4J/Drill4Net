@@ -5,9 +5,11 @@ namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class CoverDataPart : OutgoingMessage
+    public record CoverDataPart: OutgoingMessage
     {
         public string sessionId { get; set; }
+
+        /***************************************************************************/
 
         public List<ExecClassData> data { get; set; }
 

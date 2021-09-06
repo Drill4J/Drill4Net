@@ -3,7 +3,7 @@
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
-    public class StartSessionPayload
+    public record StartSessionPayload
     {
         public string SessionId { get; set; }
         

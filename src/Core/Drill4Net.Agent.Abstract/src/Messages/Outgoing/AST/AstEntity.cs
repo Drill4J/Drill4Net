@@ -10,7 +10,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// </summary>
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class AstEntity
+    public record AstEntity
     {
         /// <summary>
         /// The assembly where the class is located.

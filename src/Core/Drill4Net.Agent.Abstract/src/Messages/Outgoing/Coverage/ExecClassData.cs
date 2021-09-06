@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
@@ -11,7 +11,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
     /// </summary>
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class ExecClassData
+    public record ExecClassData
     {
         /// <summary>
         /// Name of the test (session)

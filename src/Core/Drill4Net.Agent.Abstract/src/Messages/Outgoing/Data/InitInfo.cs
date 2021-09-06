@@ -5,7 +5,7 @@ namespace Drill4Net.Agent.Abstract
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     [Serializable]
-    public class InitInfo : OutgoingMessage
+    public record InitInfo: OutgoingMessage
     {
         public string message { get; set; }
 
@@ -13,11 +13,11 @@ namespace Drill4Net.Agent.Abstract
 
         public bool init { get; set; }
 
-        /*****************************************************************/
+        /********************************************************************/
 
-        public InitInfo() : base(AgentConstants.MESSAGE_OUT_INIT) { }
+        public InitInfo(): base(AgentConstants.MESSAGE_OUT_INIT) { }
 
-        public InitInfo(int classesCount) : this()
+        public InitInfo(int classesCount): this()
         {
             this.classesCount = classesCount;
             message = "Init";

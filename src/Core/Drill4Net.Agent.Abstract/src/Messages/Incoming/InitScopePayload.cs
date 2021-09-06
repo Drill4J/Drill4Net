@@ -3,7 +3,7 @@
 namespace Drill4Net.Agent.Abstract.Transfer
 {
     [Serializable]
-    public class InitScopePayload
+    public record InitScopePayload
     {
         public string Id { get; set; }
         public string  Name { get; set; }
