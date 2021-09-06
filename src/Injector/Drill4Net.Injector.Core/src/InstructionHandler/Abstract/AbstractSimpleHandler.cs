@@ -28,7 +28,7 @@ namespace Drill4Net.Injector.Core
         
         /*****************************************************************************/
         
-        private protected AbstractSimpleHandler(string name, CrossPointType pointType, AbstractProbeHelper probeHelper, bool replaceJump = true):
+        protected AbstractSimpleHandler(string name, CrossPointType pointType, AbstractProbeHelper probeHelper, bool replaceJump = true):
             base(name, probeHelper)
         {
             IsReplaceJumps = replaceJump;

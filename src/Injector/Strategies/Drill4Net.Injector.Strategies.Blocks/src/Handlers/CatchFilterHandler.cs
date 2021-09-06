@@ -1,8 +1,9 @@
 ﻿using Mono.Cecil.Cil;
+using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using static Drill4Net.Injector.Core.InjectorCoreConstants;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Injector.Strategies.Blocks
 {
     /// <summary>
     /// IL code's handler for the cross-point of the "CatchFilter" type (Catch part of the try/ctach construction)

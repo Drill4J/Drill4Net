@@ -1,8 +1,9 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Injector.Strategies.Blocks
 {
     /// <summary>
     /// IL code's handler for the cross-point of the "Cycle" type (cycle constructions: do, while, etc)

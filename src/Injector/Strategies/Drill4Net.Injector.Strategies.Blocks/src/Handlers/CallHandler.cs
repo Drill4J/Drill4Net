@@ -2,11 +2,12 @@
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using static Drill4Net.Injector.Core.InjectorCoreConstants;
 using Drill4Net.BanderLog;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Injector.Strategies.Blocks
 {
     /// <summary>
     /// IL code's handler for the cross-point of the "Call" type (call another business-method from current one)

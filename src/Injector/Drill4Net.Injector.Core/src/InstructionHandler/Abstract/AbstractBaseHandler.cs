@@ -189,7 +189,7 @@ namespace Drill4Net.Injector.Core
         /// <param name="ind">Current index of instruction</param>
         /// <param name="instructions">List of method's instructions</param>
         /// <returns></returns>
-        internal bool IsRealCondition(int ind, MethodContext ctx)
+        protected bool IsRealCondition(int ind, MethodContext ctx)
         {
             var instructions = ctx.Instructions;
             if (ind < 0 || ind >= instructions.Count)
@@ -206,7 +206,7 @@ namespace Drill4Net.Injector.Core
         /// <param name="cur">Current instruction (original) earler connecting to HandlerEnd</param>
         /// <param name="to">Instruction for repacing the HandlerEnd</param>
         /// <param name="handlers">List of try/cacth handlers of current method</param>
-        internal void FixFinallyEnd(Instruction cur, Instruction to, IEnumerable<ExceptionHandler> handlers)
+        protected void FixFinallyEnd(Instruction cur, Instruction to, IEnumerable<ExceptionHandler> handlers)
         {
             if (cur.Previous == null)
                 return;
@@ -229,7 +229,7 @@ namespace Drill4Net.Injector.Core
         /// <param name="forward">Direction: forward or backward</param>
         /// <param name="instructions">List of method's instrunctions</param>
         /// <returns></returns>
-        internal Instruction SkipNop(int ind, bool forward, MethodContext methodCtx)
+        protected Instruction SkipNop(int ind, bool forward, MethodContext methodCtx)
         {
             var instructions = methodCtx.Instructions;
             int start, inc;
@@ -262,7 +262,7 @@ namespace Drill4Net.Injector.Core
         /// <param name="from">Original jump-target instruction</param>
         /// <param name="to">Final jump-target instruction</param>
         /// <param name="ctx">Method context</param>
-        internal void ReplaceJumps(Instruction from, Instruction to, MethodContext ctx)
+        protected void ReplaceJumps(Instruction from, Instruction to, MethodContext ctx)
         {
             ctx.ReplacedJumps.Add(to, from);
             var jumpers = ctx.Jumpers;

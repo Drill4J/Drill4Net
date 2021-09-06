@@ -947,13 +947,13 @@ namespace Drill4Net.Target.Common
         public Task Async_Lambda(bool cond)
         {
             return Task.Run(async () =>
-            {
+             {
                  if (cond)
                      await Task.Delay(50);
                  else
                      await Task.Delay(100);
                  Console.WriteLine($"{nameof(Async_Lambda)}: {cond}");
-            });
+             });
         }
 
         public void Async_Linq_Blocking(bool cond)
