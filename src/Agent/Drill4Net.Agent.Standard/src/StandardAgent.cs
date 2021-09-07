@@ -4,11 +4,11 @@ using System.IO;
 using System.Threading;
 using System.Reflection;
 using Drill4Net.Common;
-using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.Profiling.Tree;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
+using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -239,15 +239,14 @@ namespace Drill4Net.Agent.Standard
         #endregion
         #endregion
         #region Register
+        #region Static register
         /// <summary>
-        /// Registering probe's data from injected Target app
+        ///  Registers the probe data from the injected Target app
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="ctx"></param>
-        // ReSharper disable once MemberCanBePrivate.Global
-        public static void RegisterStatic(string data, string ctx = null)
+        public static void RegisterStatic(string data) //don't combine this signatute with next one
         {
-            Agent?.Register(data, ctx);
+            Agent?.Register(data);
         }
 
         /// <summary>
@@ -255,7 +254,28 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="data"></param>
         /// <param name="ctx"></param>
-        public override void Register(string data, string ctx = null)
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static void RegisterWithContextStatic(string data, string ctx)
+        {
+            Agent?.RegisterWithContext(data, ctx);
+        }
+        #endregion
+        #region Object's register
+        /// <summary>
+        /// Registering probe's data from injected Target app
+        /// </summary>
+        /// <param name="data"></param>
+        public override void Register(string data)
+        {
+            RegisterWithContext(data, null);
+        }
+
+        /// <summary>
+        /// Registering probe's data from injected Target app
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="ctx"></param>
+        public override void RegisterWithContext(string data, string ctx)
         {
             try
             {
@@ -286,6 +306,7 @@ namespace Drill4Net.Agent.Standard
                 _logger.Error($"{data}", ex);
             }
         }
+        #endregion
         #endregion
     }
 }

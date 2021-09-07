@@ -5,7 +5,6 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
-using System.Threading;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -99,7 +98,7 @@ namespace Drill4Net.Agent.Worker
                 return; //??
 
             //_logger.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
-            StandardAgent.RegisterStatic(probe.Data, probe.Context);
+            StandardAgent.RegisterWithContextStatic(probe.Data, probe.Context);
         }
 
         private void Receiver_ErrorOccured(IMessageReceiver source, bool isFatal, bool isLocal, string message)

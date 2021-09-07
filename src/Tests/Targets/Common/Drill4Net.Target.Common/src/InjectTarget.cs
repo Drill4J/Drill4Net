@@ -1140,12 +1140,12 @@ namespace Drill4Net.Target.Common
         #region Disposable
         public void Disposable_Using_Last_Exception()
         {
-            Console.WriteLine($"{nameof(Disposable_Using_Last_Exception)}");
+            Console.WriteLine(nameof(Disposable_Using_Last_Exception));
             #pragma warning disable IDE0063 // Use simple 'using' statement
             using (var ms = new MemoryStream())
             #pragma warning restore IDE0063 // Use simple 'using' statement
             {
-                throw new Exception($"The exception has been thrown");
+                throw new Exception("The exception has been thrown");
             }
         }
 

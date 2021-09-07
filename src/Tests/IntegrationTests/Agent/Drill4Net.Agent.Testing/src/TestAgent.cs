@@ -10,11 +10,11 @@ using System.Threading;
 using System.Reflection;
 using NUnit.Framework.Internal;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Core.Repository;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing.NetFxUtils;
-using Drill4Net.Core.Repository;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Testing
 {
@@ -77,13 +77,22 @@ namespace Drill4Net.Agent.Testing
         /*****************************************************************************/
 
         #region Register
+        /// <summary>
+        ///  Registers the probe data from the injected Target app
+        /// </summary>
+        /// <param name="data"></param>
+        public static void RegisterStatic(string data) //don't combine this signature with next one
+        {
+            RegisterWithContextStatic(data, null);
+        }
+
         // ReSharper disable once MemberCanBePrivate.Global
         /// <summary>
         ///  Registers the probe data from the injected Target app
         /// </summary>
         /// <param name="data"></param>
         /// <param name="ctx"></param>
-        public static void RegisterStatic(string data, string ctx = null)
+        public static void RegisterWithContextStatic(string data, string ctx)
         {
             try
             {
@@ -112,7 +121,16 @@ namespace Drill4Net.Agent.Testing
         /// </summary>
         /// <param name="data">The data.</param>
         /// <param name="ctx"></param>
-        public override void Register(string data, string ctx = null)
+        public override void RegisterWithContext(string data, string ctx)
+        {
+            RegisterWithContextStatic(data, ctx);
+        }
+
+        /// <summary>
+        ///  Registers the probe data from the injected Target app
+        /// </summary>
+        /// <param name="data"></param>
+        public override void Register(string data) //don't combine this signature with next one
         {
             RegisterStatic(data);
         }
