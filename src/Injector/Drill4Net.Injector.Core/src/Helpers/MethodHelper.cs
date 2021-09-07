@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Drill4Net.Injector.Core;
-using Drill4Net.Profiling.Tree;
 using Drill4Net.BanderLog;
+using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
+    //naming CG-entities - https://stackoverflow.com/questions/2508828/where-to-learn-about-vs-debugger-magic-names/2509524#2509524
+
     /// <summary>
     /// Helper for getting info about methods
     /// </summary>
@@ -169,7 +170,7 @@ namespace Drill4Net.Injector.Engine
                     asmCtx.InjClasses[extTypeFullName] :
                     (asmCtx.InjClasses.ContainsKey(extTypeName) ? asmCtx.InjClasses[extTypeName] : null);
 
-                //extType found, not local func, not '<>c' ('class-for-all')
+                //extType found, not local func, not '<>c'
                 if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
                 {
                     var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);

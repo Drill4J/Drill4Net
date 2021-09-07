@@ -1,12 +1,22 @@
 ﻿using Mono.Cecil.Cil;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
     /// <summary>
     /// Instruction helper
     /// </summary>
-    internal static class InstructionHelper
+    public static class InstructionHelper
     {
+        public static bool IsAsyncCompletedOperand(Instruction instr)
+        {
+            return instr.Operand?.ToString().Contains("::get_IsCompleted()") == true;
+        }
+
+        public static bool IsGetResultOperand(Instruction instr)
+        {
+            return instr.Operand?.ToString().Contains("::GetResult()") == true;
+        }
+
         /// <summary>
         /// Converting the short form of an IL instruction to the long form in cases of "jumping too far"
         /// </summary>

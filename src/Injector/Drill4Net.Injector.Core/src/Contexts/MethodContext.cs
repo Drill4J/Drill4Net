@@ -139,15 +139,17 @@ namespace Drill4Net.Injector.Core
             TypeCtx = typeCtx ?? throw new ArgumentNullException(nameof(typeCtx));
             Definition = methodDef ?? throw new ArgumentNullException(nameof(methodDef));
             Method = method ?? throw new ArgumentNullException(nameof(method));
+          
             var body = methodDef.Body;
             ExceptionHandlers = body.ExceptionHandlers;
             Processor = body.GetILProcessor();
+   
             var instructions = body.Instructions;
             Instructions = instructions ?? throw new ArgumentNullException(nameof(instructions));
             OrigInstructions = instructions.ToList();
             OrigSize = instructions.Count;
             LastOperation = instructions.Last();
-            //
+
             BusinessInstructions = new HashSet<Instruction>();
             BusinessInstructionList = new List<Instruction>();
             Processed = new HashSet<Instruction>();

@@ -1,15 +1,13 @@
 ﻿using System.Linq;
 using Mono.Cecil.Cil;
-using Drill4Net.Common;
-using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
     /// <summary>
     /// Helper for working with some contexts
     /// </summary>
-    internal static class ContextHelper
+    public static class ContextHelper
     {
         /// <summary>
         /// Prepare the Run's and Assembly's contexts
@@ -17,7 +15,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="runCtx">Context of Injector Engine's Run</param>
         /// <param name="asmCtx">Context of current assembly</param>
         /// <returns>Does the context contain any methods of interest to us and is it worth taking it into account?</returns>
-        internal static bool PrepareContextData(RunContext runCtx, AssemblyContext asmCtx)
+        public static bool PrepareContextData(RunContext runCtx, AssemblyContext asmCtx)
         {
             var treeAsm = asmCtx.InjAssembly;
             var opts = runCtx.Options;
@@ -70,7 +68,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="runCtx">Injector Engine's Run context</param>
         /// <param name="methCtx">Method's context</param>
         /// <returns></returns>
-        internal static bool IsEnterReturnRestrict(RunContext runCtx, MethodContext methCtx)
+        public static bool IsEnterReturnRestrict(RunContext runCtx, MethodContext methCtx)
         {
             var methodName = methCtx.Definition.Name;
             var treeFunc = methCtx.Method;
@@ -102,7 +100,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="methodSource"></param>
         /// <param name="body"></param>
         /// <returns></returns>
-        internal static int CalcStartIndex(MethodSource methodSource, MethodBody body)
+        public static int CalcStartIndex(MethodSource methodSource, MethodBody body)
         {
             var methodType = methodSource.MethodType;
             var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
@@ -145,7 +143,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="asmCtx"></param>
         /// <param name="opts"></param>
-        internal static void PrepareProxyCalls(AssemblyContext asmCtx, InjectorOptions opts)
+        public static void PrepareProxyCalls(AssemblyContext asmCtx, InjectorOptions opts)
         {
             asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
             asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);

@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Common;
-using Drill4Net.Profiling.Tree;
-using Drill4Net.Injector.Core;
 using Drill4Net.Configuration;
+using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
     /// <summary>
     /// Helper for getting info about types

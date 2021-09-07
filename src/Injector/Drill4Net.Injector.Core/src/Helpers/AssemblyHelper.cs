@@ -3,15 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Mono.Cecil.Cil;
-using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
     /// <summary>
     /// Helper for getting some info about assemblies
     /// </summary>
-    internal static class AssemblyHelper
+    public static class AssemblyHelper
     {
         /// <summary>
         /// Create and prepare the <see cref="InjectedAssembly"/> and its <see cref="InjectedDirectory"/> if needed
@@ -19,7 +18,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="runCtx">Context of the Injector Engine's Run</param>
         /// <param name="asmCtx">Assembly's context</param>
         /// <returns></returns>
-        internal async static Task<bool> PrepareInjectedAssembly(RunContext runCtx, AssemblyContext asmCtx)
+        public async static Task<bool> PrepareInjectedAssembly(RunContext runCtx, AssemblyContext asmCtx)
         {
             var sourceDir = asmCtx.SourceDir;
             var destDir = asmCtx.DestinationDir;
@@ -63,7 +62,7 @@ namespace Drill4Net.Injector.Engine
             return true;
         }
 
-        internal static void CollectJumperData(AssemblyContext asmCtx)
+        public static void CollectJumperData(AssemblyContext asmCtx)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
@@ -74,7 +73,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static void CollectJumpers(MethodContext methodCtx)
+        private static void CollectJumpers(MethodContext methodCtx)
         {
             //Hash table for separate addresses is almost useless,
             //because they may be recalculated inside the processor during inject...
@@ -86,20 +85,20 @@ namespace Drill4Net.Injector.Engine
                 var flow = instr.OpCode.FlowControl;
                 if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
                     continue;
-                methodCtx.Jumpers.Add(instr);
-                //
-                var anchor = instr.Operand;
+
+                methodCtx.Jumpers.Add(instr); //Code.Leave instructions are needed, too (for further correcting theirs jumps)
+
                 //need this jump for handle?
                 var curCode = instr.OpCode.Code;
-                //not needed jumps from by Leave from try/catch/finally semantically
                 if (curCode == Code.Leave || curCode == Code.Leave_S)
                     continue;
+                var anchor = instr.Operand;
                 if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))
                     methodCtx.Anchors.Add(anchor);
             }
         }
 
-        internal static void CalcMethodHashcodes(AssemblyContext asmCtx)
+        public static void CalcMethodHashcodes(AssemblyContext asmCtx)
         {
             var methCtxs = asmCtx.TypeContexts.Values.SelectMany(a => a.MethodContexts.Values).ToDictionary(a => a.Method.FullName);
             var bizMethCtxs = methCtxs.Values.Where(a => !a.Method.IsCompilerGenerated).ToDictionary(a => a.Method.FullName);
@@ -115,7 +114,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static void CalcWithCalleeHashCodes(ref int currentCode, MethodContext methCtx, Dictionary<string, MethodContext> methCtxs)
+        private static void CalcWithCalleeHashCodes(ref int currentCode, MethodContext methCtx, Dictionary<string, MethodContext> methCtxs)
         {
             var callees = methCtx.Method.CalleeOrigIndexes;
             foreach (var calleeName in callees.Keys)
@@ -131,7 +130,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static void CollectMoveNextMethods(AssemblyContext asmCtx)
+        public static void CollectMoveNextMethods(AssemblyContext asmCtx)
         {
             var moveNextMethods = asmCtx.InjAssembly.Filter(typeof(InjectedMethod), true)
                .Cast<InjectedMethod>()
@@ -161,7 +160,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static void MapBusinessMethodFirstPass(AssemblyContext asmCtx)
+        public static void MapBusinessMethodFirstPass(AssemblyContext asmCtx)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
@@ -205,7 +204,7 @@ namespace Drill4Net.Injector.Engine
             }
         }
 
-        internal static OperationType CheckInstruction(MethodContext ctx)
+        private static OperationType CheckInstruction(MethodContext ctx)
         {
             var instr = ctx.CurInstruction;
             var code = instr.OpCode.Code;
@@ -220,33 +219,28 @@ namespace Drill4Net.Injector.Engine
                 return OperationType.CycleContinue;
             }
 
+            if (code == Code.Leave || code == Code.Leave_S)
+            {
+                return OperationType.CycleContinue;
+            }
+
             var method = ctx.Method;
 
             #region Awaiters in MoveNext as a boundary
             //find the boundary between the business code and the compiler-generated one
             if (method.Source.IsMoveNext && method.Source.MethodType == MethodType.CompilerGenerated)
             {
-                if (IsAsyncCompletedOperand(instr))
+                if (InstructionHelper.IsAsyncCompletedOperand(instr))
                 {
-                    //leave the current first try/catch
-                    var res = LeaveTryCatch(ctx);
-
-                    //is second 'get_IsCompleted' exists(for example, for 'async stream' method)?
-                    if (res)
+                    if (NeedQuitTryCatch(ctx))
                     {
-                        var instructions = ctx.Instructions;
-                        for (var i = ctx.CurIndex + 1; i < instructions.Count; i++)
-                        {
-                            if (!IsAsyncCompletedOperand(instructions[i]))
-                                continue;
-                            ctx.SetPosition(i);
-                            LeaveTryCatch(ctx);
-                        }
+                        //leave the current try/catch
+                        var res = QuitTryCatch(ctx);
                     }
                 }
                 else
                 {
-                    //+margin if instruction starts the try/catch
+                    //+margin if instruction starts the try/catch - Guanito
                     var delta = ctx.ExceptionHandlers.Any(a => a.TryStart == instr) ? 6 : 0;
                     ctx.CorrectIndex(delta);
                 }
@@ -256,28 +250,57 @@ namespace Drill4Net.Injector.Engine
             return OperationType.NextOperand;
 
             //local funcs
-            static bool LeaveTryCatch(MethodContext ctx)
+            static bool QuitTryCatch(MethodContext ctx)
             {
-                var instr = ctx.CurInstruction;
-                var curTryCactches = ctx.ExceptionHandlers.Where(a => a.TryStart.Offset < instr.Offset && instr.Offset < a.HandlerEnd.Offset);
-                if (curTryCactches.Any())
-                {
-                    var maxStart = curTryCactches.Max(a => a.TryStart.Offset);
-                    var curTryCactch = curTryCactches.First(b => b.TryStart.Offset == maxStart);
-                    var endInd = ctx.Instructions.IndexOf(curTryCactch.HandlerEnd) + 1;
-                    ctx.SetPosition(endInd);
-                    return true;
-                }
-                return false;
+                var curTryCatch = GetCurExceptionHandler(ctx.CurInstruction, ctx.ExceptionHandlers);
+                if (curTryCatch == null)
+                    return false;
+                var handlerEndInd = ctx.Instructions.IndexOf(curTryCatch.HandlerEnd) + 1;
+                if(ctx.CurIndex < handlerEndInd)
+                    ctx.SetPosition(handlerEndInd);
+                return true;
             }
 
-            static bool IsAsyncCompletedOperand(Instruction instr)
+            static bool NeedQuitTryCatch(MethodContext ctx)
             {
-                return instr.Operand?.ToString().Contains("::get_IsCompleted()") == true;
+                var curTryCatch = GetCurExceptionHandler(ctx.CurInstruction, ctx.ExceptionHandlers);
+                var tryEndInd = ctx.Instructions.IndexOf(curTryCatch.TryEnd);
+                if (ctx.CurIndex < tryEndInd) //at all, this is strange
+                {
+                    var instrs = ctx.Instructions;
+                    for (var i = ctx.CurIndex + 1; i <= tryEndInd; i++)
+                    {
+                        if (!InstructionHelper.IsGetResultOperand(instrs[i])) //if more "GetResult/get_IsCompleted" -> more business code
+                            continue;
+                        ctx.SetPosition(i); //just in case
+
+                        //skip "GetResult" block
+                        for (var j = i + 1; j <= tryEndInd; j++)
+                        {
+                            if (instrs[j].OpCode.FlowControl is FlowControl.Branch or FlowControl.Cond_Branch)
+                            {
+                                ctx.SetPosition(j + 1);
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
             }
         }
 
-        internal static void MapBusinessMethodSecondPass(AssemblyContext asmCtx)
+        public static ExceptionHandler GetCurExceptionHandler(Instruction instr, Mono.Collections.Generic.Collection<ExceptionHandler> handlers)
+        {
+            var curTryCatches = handlers.Where(a => a.TryStart.Offset < instr.Offset && instr.Offset < a.HandlerEnd.Offset);
+            if (curTryCatches.Any())
+            {
+                var maxStart = handlers.Max(a => a.TryStart.Offset);
+                return handlers.First(b => b.TryStart.Offset == maxStart);
+            }
+            return null;
+        }
+
+        public static void MapBusinessMethodSecondPass(AssemblyContext asmCtx)
         {
             var badCtxs = new List<MethodContext>();
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
@@ -306,7 +329,7 @@ namespace Drill4Net.Injector.Engine
                 ctx.TypeCtx.MethodContexts.Remove(ctx.Method.FullName);
         }
 
-        internal static void CalcBusinessPartCodeSizes(AssemblyContext asmCtx)
+        public static void CalcBusinessPartCodeSizes(AssemblyContext asmCtx)
         {
             var bizMethods = asmCtx.InjMethodByFullname.Values
                 .Where(a => !a.IsCompilerGenerated).ToArray();
@@ -320,7 +343,7 @@ namespace Drill4Net.Injector.Engine
         }
 
         #region CalcBusinessIndex
-        internal static void CorrectBusinessIndexes(AssemblyContext asmCtx)
+        public static void CorrectBusinessIndexes(AssemblyContext asmCtx)
         {
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
@@ -432,7 +455,7 @@ namespace Drill4Net.Injector.Engine
         }
         #endregion
 
-        internal static MethodContext GetMethodContext(AssemblyContext asmCtx, string methodName)
+        public static MethodContext GetMethodContext(AssemblyContext asmCtx, string methodName)
         {
             if (!asmCtx.InjMethodByFullname.ContainsKey(methodName))
                 return null;

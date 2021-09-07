@@ -1,9 +1,7 @@
 ﻿using System;
 using Mono.Cecil;
-using Drill4Net.Common;
-using Drill4Net.Injector.Core;
 
-namespace Drill4Net.Injector.Engine
+namespace Drill4Net.Injector.Core
 {
     /// <summary>
     /// Helper for working with info for a injecting Proxy class

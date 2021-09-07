@@ -20,6 +20,7 @@ namespace Drill4Net.Injector.Engine
             http://ilgenerator.apphb.com/ - online C# -> IL
             https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (buggy and with restrictions!)
                 on Github - https://github.com/adrianoc/cecilifier
+            https://stackoverflow.com/questions/2508828/where-to-learn-about-vs-debugger-magic-names/2509524#2509524 - naming of CG-entites
             https://www.codeproject.com/Articles/671259/Reweaving-IL-code-with-Mono-Cecil
             https://blog.elishalom.com/2012/02/04/monitoring-execution-using-mono-cecil/
             https://stackoverflow.com/questions/48090703/run-mono-cecil-in-net-core
