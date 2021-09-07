@@ -29,13 +29,15 @@ namespace Drill4Net.Agent.Testing
         private static ConcurrentDictionary<string, Dictionary<string, List<string>>> _clientPoints;
         private static readonly Dictionary<string, InjectedMethod> _pointToMethods;
         private static readonly Dictionary<int, string> _execIdToTestId;
+        private static readonly BanderLog.Logger _logger;
 
         /*****************************************************************************/
 
         static TestAgent()
         {
             AbstractRepository.PrepareEmergencyLogger();
-            Log.Debug("Initializing...");
+            _logger = new TypedLogger<TestAgent>(CoreConstants.SUBSYSTEM_TESTER);
+            _logger.Debug("Initializing...");
 
             try
             {
@@ -65,12 +67,12 @@ namespace Drill4Net.Agent.Testing
                     _execIdToTestId = new Dictionary<int, string>();
                     domain.SetData(nameof(_execIdToTestId), _execIdToTestId);
 
-                    Log.Debug("Initialized.");
+                    _logger.Debug("Initialized.");
                 }
             }
             catch (Exception ex)
             {
-                Log.Fatal($"Error of {nameof(TestAgent)} initializing", ex);
+                _logger.Fatal($"Error of {nameof(TestAgent)} initializing", ex);
             }
         }
 
@@ -98,7 +100,7 @@ namespace Drill4Net.Agent.Testing
             {
                 if (string.IsNullOrWhiteSpace(data))
                 {
-                    Log.Error("Data is empty", null);
+                    _logger.Error("Data is empty", null);
                     return;
                 }
 
@@ -112,7 +114,7 @@ namespace Drill4Net.Agent.Testing
             }
             catch (Exception ex)
             {
-                Log.Error($"{data}", ex);
+                _logger.Error($"{data}", ex);
             }
         }
 

@@ -8,7 +8,7 @@ namespace Drill4Net.Agent.Messaging.Transport
     public class MessageReceiverRepository<T> : AbstractRepository<T> where T: MessageReceiverOptions, new()
     {
         public MessageReceiverRepository(string subsystem, string cfgPath = null):
-            this(subsystem, GetOptionsByPath(cfgPath))
+            this(subsystem, GetOptionsByPath(subsystem, cfgPath))
         {
         }
 
@@ -20,9 +20,9 @@ namespace Drill4Net.Agent.Messaging.Transport
 
         /************************************************************************************************/
 
-        public static T GetOptionsByPath(string cfgPath = null)
+        public static T GetOptionsByPath(string subsystem, string cfgPath = null)
         {
-             var optHelper = new BaseOptionsHelper<T>();
+             var optHelper = new BaseOptionsHelper<T>(subsystem);
              if(string.IsNullOrWhiteSpace(cfgPath))
                 cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
              return optHelper.ReadOptions(cfgPath);

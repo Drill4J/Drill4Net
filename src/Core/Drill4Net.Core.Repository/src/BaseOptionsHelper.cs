@@ -13,11 +13,16 @@ namespace Drill4Net.Core.Repository
     public class BaseOptionsHelper<T> where T : AbstractOptions, new()
     {
         private readonly IDeserializer _deser;
+        private readonly Logger _logger;
 
         /********************************************************************/
 
-        public BaseOptionsHelper()
+        public BaseOptionsHelper() : this(null) { }
+
+        public BaseOptionsHelper(string subsystem)
         {
+            _logger = new TypedLogger<BaseOptionsHelper<T>>(subsystem);
+
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
                 .Build();
@@ -55,12 +60,12 @@ namespace Drill4Net.Core.Repository
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Options file not found: [{path}]");
-            Log.Debug($"Reading config: [{path}]");
+            _logger.Debug($"Reading config: [{path}]");
             var cfg = File.ReadAllText(path);
             var opts = _deser.Deserialize<T>(cfg);
-            Log.Debug("Config deserialized.");
+            _logger.Debug("Config deserialized.");
             PostProcess(opts);
-            Log.Debug("Config prepared.");
+            _logger.Debug("Config prepared.");
             return opts;
         }
 

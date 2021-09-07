@@ -54,7 +54,7 @@ namespace Drill4Net.Agent.Worker
         internal virtual MessageReceiverOptions GetBaseOptions(string[] args)
         {
             var cfgPathArg = AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
-            var opts = AgentWorkerRepository.GetOptionsByPath(cfgPathArg);
+            var opts = AgentWorkerRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
             return opts;
