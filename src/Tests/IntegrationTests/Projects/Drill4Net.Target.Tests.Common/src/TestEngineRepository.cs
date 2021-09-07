@@ -4,11 +4,11 @@ using System.Linq;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Configuration;
 using Drill4Net.Core.Repository;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -17,6 +17,8 @@ namespace Drill4Net.Target.Tests.Common
     /// </summary>
     public class TestEngineRepository
     {
+        public string Subsystem { get; }
+
         /// <summary>
         /// Options for the Tester subsystem
         /// </summary>
@@ -38,6 +40,7 @@ namespace Drill4Net.Target.Tests.Common
         private const string DEBUG_PROBES_FOLDER_DEFAULT = "probes";
         private readonly string _debugProbesDir;
         private readonly TestAgentRepository _tstRep;
+        private readonly Logger _logger;
 
         /*******************************************************************************/
 
@@ -48,8 +51,11 @@ namespace Drill4Net.Target.Tests.Common
         {
             try
             {
+                Subsystem = CoreConstants.SUBSYSTEM_TEST_SERVER;
+                _logger = new TypedLogger<AbstractTargetTestEngine>(Subsystem);
+
                 AbstractRepository.PrepareEmergencyLogger();
-                Log.Debug("Repository is initializing...");
+                _logger.Debug("Repository is initializing...");
 
                 var callDir = FileUtils.GetCallingDir();
                 var cfgDir = FindConfigInDepth(callDir);
@@ -70,11 +76,11 @@ namespace Drill4Net.Target.Tests.Common
                     Directory.CreateDirectory(_debugProbesDir);
                 }
                 //
-                Log.Debug("Repository is initialized.");
+                _logger.Debug("Repository is initialized.");
             }
             catch (Exception ex)
             {
-                Log.Fatal($"Creating {nameof(TestEngineRepository)} is failed", ex);
+                _logger.Fatal($"Creating {nameof(TestEngineRepository)} is failed", ex);
             }
         }
 

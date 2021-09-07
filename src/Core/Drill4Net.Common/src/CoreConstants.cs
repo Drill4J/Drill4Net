@@ -14,6 +14,18 @@
         public const string SUBSYSTEM_AGENT_SERVER = "AgentServer";
         public const string SUBSYSTEM_AGENT_WORKER = "AgentWorker";
         #endregion
+        #region Monikers
+        public const string MONIKER_NET50 = "net5.0";
+
+        public const string MONIKER_CORE31 = "netcoreapp3.1";
+        public const string MONIKER_CORE22 = "netcoreapp2.2";
+
+        public const string MONIKER_STANDARD20 = "netstandard2.0";
+        public const string MONIKER_STANDARD21 = "netstandard2.1";
+
+        public const string MONIKER_NET48 = "net48";
+        public const string MONIKER_NET461 = "net461";
+        #endregion
         #region CONFIG & TREE
         /// <summary>
         /// Name of the file for the redirecting to the certain config

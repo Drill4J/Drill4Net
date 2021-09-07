@@ -217,7 +217,7 @@ namespace Drill4Net.Injector.Engine
             {
                 _logger.Error("Error: {Ex}", ex);
                 if (opts.Debug?.IgnoreErrors != true)
-                    throw ex;
+                    throw;
                 return false;
             }
 

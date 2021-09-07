@@ -5,9 +5,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Target.Tests.Common
 {
@@ -27,6 +27,7 @@ namespace Drill4Net.Target.Tests.Common
         private static Dictionary<string, CrossPoint> _pointMap;
         private static Dictionary<InjectedSimpleEntity, InjectedSimpleEntity> _parentMap;
         private static InjectedSolution _tree;
+        private static readonly Logger _logger;
 
         /****************************************************************************/
 
@@ -35,12 +36,14 @@ namespace Drill4Net.Target.Tests.Common
             try
             {
                 _testsRep = new TestEngineRepository();
+                _logger = new TypedLogger<AbstractTargetTestEngine>(_testsRep.Subsystem);
+
                 LoadTreeData();
-                Log.Info("Engine is initialized.");
+                _logger.Info("Engine is initialized.");
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex.ToString());
+                _logger.Fatal(ex.ToString());
                 throw;
             }
         }
@@ -235,13 +238,13 @@ namespace Drill4Net.Target.Tests.Common
         #region Auxiliary funcs
         private static void LoadTreeData()
         {
-            Log.Debug("Tree data is loading...");
+            _logger.Debug("Tree data is loading...");
 
             _tree = _testsRep.LoadTree();
             _parentMap = _tree.CalcParentMap();
             _pointMap = _tree.MapPoints(_parentMap);
 
-            Log.Debug("Tree data is loaded.");
+            _logger.Debug("Tree data is loaded.");
         }
 
         private void CheckLastReturnOrEnterOrThrow(List<PointLinkage> links)
@@ -323,10 +326,14 @@ namespace Drill4Net.Target.Tests.Common
         {
             //Assert.That(links.Select(a => a.Probe), Is.EqualTo(checks));
             var checkInd = -1;
+            var lastCheckInd = checks.Count - 1;
             for (int i = 0; i < reals.Count; i++)
             {
                 checkInd++;
                 var real = reals[i].Probe;
+                if (lastCheckInd < checkInd)
+                    Assert.Fail($"Index: {i}");
+
                 var must = checks[checkInd];
                 if (must.Contains('|'))
                 {
