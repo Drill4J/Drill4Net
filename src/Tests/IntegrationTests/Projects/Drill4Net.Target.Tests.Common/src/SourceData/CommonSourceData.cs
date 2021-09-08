@@ -243,8 +243,8 @@ namespace Drill4Net.Target.Tests.Common
                                        "Branch_18", "CycleEnd_18", "Branch_21" });
                 #endregion
                 #region Misc
-                yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { false }, new List<string> { "Branch_6", "If_7" }).SetCategory(CATEGORY_MISC);
-                yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { true }, new List<string> { "Branch_6", "Branch_9" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { false }, new List<string> { "Branch_6", "If_7", "Anchor_10" }).SetCategory(CATEGORY_MISC);
+                yield return GetCase(GetInfo(Target.Goto_Statement), new object[] { true }, new List<string> { "Branch_6", "Branch_7" }).SetCategory(CATEGORY_MISC);
 
                 yield return GetCase(GetInfo(Target.Goto_Statement_Cycle_Backward), Array.Empty<object>(), new List<string> { "Branch_11", "Anchor_21", "Branch_35", "Branch_20", "Branch_23", "Branch_11", "Anchor_21", "Branch_35", "Branch_20", "If_19", "Branch_28", "Anchor_24" }).SetCategory(CATEGORY_MISC);
 
