@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 
@@ -37,17 +38,25 @@ namespace Drill4Net.Agent.Transmitter
 
         static DataTransmitter()
         {
+            AbstractRepository.PrepareEmergencyLogger();
+            Log.Debug($"Enter to {nameof(DataTransmitter)} .cctor");
+
             ITargetSenderRepository rep = new TransmitterRepository();
+            Log.Debug("Repository created.");
 
             var extrasData = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
             _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extrasData);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
+
+            _logger.Debug("Initialized.");
         }
 
         public DataTransmitter(ITargetSenderRepository rep)
         {
+            _logger.Debug($"Creating object of {nameof(DataTransmitter)}...");
+
             //TODO: find out - on IHS adoption it falls
             //AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
             //AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -64,6 +73,8 @@ namespace Drill4Net.Agent.Transmitter
 
             var pingSender = new PingKafkaSender(rep);
             _pinger = new Pinger(rep, pingSender);
+
+            _logger.Debug($"Object of {nameof(DataTransmitter)} is created");
         }
 
         ~DataTransmitter()
