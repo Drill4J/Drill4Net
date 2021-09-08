@@ -66,12 +66,12 @@ namespace Drill4Net.Target.Tests.Common
 
                 yield return GetCase(GetInfo(Target.IfElse_Consec_HalfA_FullB), new object[] { false, false }, new List<string> { "Branch_4", "Branch_13", "Else_19", "Anchor_25", "Branch_27" });
                 yield return GetCase(GetInfo(Target.IfElse_Consec_HalfA_FullB), new object[] { false, true }, new List<string> { "Branch_4", "Branch_13", "If_13", "Branch_19", "Branch_27" });
-                yield return GetCase(GetInfo(Target.IfElse_Consec_HalfA_FullB), new object[] { true, false }, new List<string> { "Branch_4", "If_4", "Anchor_10", "Branch_13", "Else_19", "Anchor_25", "Branch_27" });
-                yield return GetCase(GetInfo(Target.IfElse_Consec_HalfA_FullB), new object[] { true, true }, new List<string> { "Branch_4", "If_4", "Anchor_10", "Branch_13", "If_13", "Branch_19", "Branch_27" });
+                yield return GetCase(GetInfo(Target.IfElse_Consec_HalfA_FullB), new object[] { true, false }, new List<string> { "Branch_4", "If_4", "Branch_13", "Else_19", "Anchor_25", "Branch_27" });
+                yield return GetCase(GetInfo(Target.IfElse_Consec_HalfA_FullB), new object[] { true, true }, new List<string> { "Branch_4", "If_4", "Branch_13", "If_13", "Branch_19", "Branch_27" });
 
                 yield return GetCase(GetInfo(Target.IfElse_FullA_HalfB), new object[] { false, false }, new List<string> { "Branch_4", "Else_16" });
                 yield return GetCase(GetInfo(Target.IfElse_FullA_HalfB), new object[] { true, false }, new List<string> { "Branch_4", "If_4", "Branch_9", "Branch_16" });
-                yield return GetCase(GetInfo(Target.IfElse_FullA_HalfB), new object[] { true, true }, new List<string> { "Branch_4", "If_4", "Branch_9", "If_9", "Anchor_15", "Branch_16" });
+                yield return GetCase(GetInfo(Target.IfElse_FullA_HalfB), new object[] { true, true }, new List<string> { "Branch_4", "If_4", "Branch_9", "If_9", "Branch_16" });
 
                 yield return GetCase(GetInfo(Target.IfElse_FullCompound), new object[] { false, false }, new List<string> { "Branch_4", "Else_22", "Branch_27", "Else_33", "Anchor_39" });
                 yield return GetCase(GetInfo(Target.IfElse_FullCompound), new object[] { false, true }, new List<string> { "Branch_4", "Else_22", "Branch_27", "If_27", "Branch_33" });
@@ -312,16 +312,16 @@ namespace Drill4Net.Target.Tests.Common
                     );
 
                 yield return GetCase(new object[] { true },
-                    new TestInfo(GetInfo(Target.Generics_Var), new List<string> { "Branch_18", "If_18", "Branch_26", "If_26", "Anchor_31", "Branch_32" })
+                    new TestInfo(GetInfo(Target.Generics_Var), new List<string> { "Branch_18", "If_18", "Branch_26", "If_26", "Branch_32" })
                     );
                 #endregion
                 #region Anonymous
-                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func), new List<string> { "Call_13", "Branch_6", "If_6", "Anchor_11", "Branch_18" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func), new List<string> { "Call_13", "Branch_6", "If_6", "Branch_18" }));
 
-                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_Invoke), new List<string> { "Call_13", "Branch_6", "If_6", "Anchor_11", "Branch_18" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_Invoke), new List<string> { "Call_13", "Branch_6", "If_6", "Branch_18" }));
 
                 //at the moment, we decided not to consider local functions as separate entities 
-                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_WithLocalFunc), new List<string> { "Call_7", "Branch_6", "If_6", "Anchor_11", "Branch_18" }));
+                yield return GetCase(Array.Empty<object>(), new TestInfo(GetInfo(Target.Anonymous_Func_WithLocalFunc), new List<string> { "Call_7", "Branch_6", "If_6", "Branch_18" }));
 
                 yield return GetCase(new object[] { false }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "Branch_3", "Else_3", "Branch_5" }));
                 yield return GetCase(new object[] { true }, true, new TestInfo(GetInfo(Target.Anonymous_Type), new List<string> { "Branch_3", "If_5", "Anchor_7" }));
@@ -633,7 +633,7 @@ namespace Drill4Net.Target.Tests.Common
 
                 //Event
                 yield return GetCase(Array.Empty<object>(), true,
-                    new TestInfo(GetInfo(Target.Event), new List<string> { "Branch_6", "Anchor_13", "Call_18", "Call_22", "Call_26" }),
+                    new TestInfo(GetInfo(Target.Event), new List<string> { "Branch_6", "Call_18", "Call_22", "Call_26" }),
                     new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "Branch_4", "If_6", "Call_8" })
                     ).SetCategory(CATEGORY_MISC);
 
