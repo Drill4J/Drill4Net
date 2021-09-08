@@ -279,15 +279,10 @@ namespace Drill4Net.Target.Common
             Parallel_Thread_New(true);
             #endregion
             #region Disposable
-            try
-            {
-                Disposable_Using_Exception(false);
-                Disposable_Using_Exception(true);
+            try { Disposable_Using_Exception(false); } catch{}
+            try { Disposable_Using_Exception(true); } catch{}
 
-                Disposable_Using_Last_Exception();
-            }
-            catch
-            { }
+            try { Disposable_Using_Last_Exception(); } catch{}
 
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
@@ -1141,11 +1136,14 @@ namespace Drill4Net.Target.Common
         public void Disposable_Using_Last_Exception()
         {
             Console.WriteLine(nameof(Disposable_Using_Last_Exception));
-            #pragma warning disable IDE0063 // Use simple 'using' statement
-            using (var ms = new MemoryStream())
-            #pragma warning restore IDE0063 // Use simple 'using' statement
+        #pragma warning disable IDE0063 // Use simple 'using' statement
+            using (var ms = new MemoryStream(new byte[128]))
+        #pragma warning restore IDE0063 // Use simple 'using' statement
             {
-                throw new Exception("The exception has been thrown");
+                const int a = 3;
+                const int b = 5;
+                int c = a + b;
+                throw new Exception($"The exception has been thrown. Value={c}");
             }
         }
 
@@ -1351,11 +1349,11 @@ namespace Drill4Net.Target.Common
             label:
             Console.WriteLine($"{nameof(Goto_Statement_Cycle_Forward)}: {cond} -> {s}");
         }
-        
+
         public void Goto_Statement_Cycle_Backward()
         {
             var a = -1;
-            label:
+    label:
             a++;
             var s = a.ToString();
             while (true)

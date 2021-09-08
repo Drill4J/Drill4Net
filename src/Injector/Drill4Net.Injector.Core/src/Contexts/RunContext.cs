@@ -160,7 +160,7 @@ namespace Drill4Net.Injector.Core
             return Injector.Inject(this, asmCtx);
         }
 
-        public void Dispose()
+        public void Dispose() //TODO: full Dispose pattern
         {
             ProxyGenerator.Dispose();
         }

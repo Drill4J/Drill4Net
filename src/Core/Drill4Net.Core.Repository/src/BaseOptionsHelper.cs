@@ -24,7 +24,7 @@ namespace Drill4Net.Core.Repository
             _logger = new TypedLogger<BaseOptionsHelper<T>>(subsystem);
 
             _deser = new DeserializerBuilder()
-                .IgnoreUnmatchedProperties()
+                .IgnoreUnmatchedProperties() //TODO: from cfg only if permitted
                 .Build();
         }
 
