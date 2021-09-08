@@ -1349,11 +1349,11 @@ namespace Drill4Net.Target.Common
             label:
             Console.WriteLine($"{nameof(Goto_Statement_Cycle_Forward)}: {cond} -> {s}");
         }
-        
+
         public void Goto_Statement_Cycle_Backward()
         {
             var a = -1;
-            label:
+    label:
             a++;
             var s = a.ToString();
             while (true)

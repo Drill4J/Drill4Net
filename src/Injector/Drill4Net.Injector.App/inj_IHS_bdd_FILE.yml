@@ -28,9 +28,9 @@ Proxy: # the injecting for transfer data to profiler
     Static: true
 Profiler: # data collector/processor in separate assembly
     Name: RnD agent # name exactly for agent subsystem
-    Directory: ..\..\Drill4Net.Agent.RnD\netstandard2.0\  # absolute path, or relatively Destination dir
-    AssemblyName: Drill4Net.Agent.RnD.dll
-    Namespace: Drill4Net.Agent.RnD
+    Directory: ..\..\Drill4Net.Agent.File\netstandard2.0\  # absolute path, or relatively Destination dir
+    AssemblyName: Drill4Net.Agent.File.dll
+    Namespace: Drill4Net.Agent.File
     Class: LoggerAgent
     Method: RegisterStatic
     Static: true
