@@ -8,9 +8,11 @@ namespace Drill4Net.Target.Common
     /// </summary>
     public class DynamicDictionary : DynamicObject
     {
-        readonly Dictionary<string, object> dictionary = new();
+        public int Count => _dict.Count;
 
-        public int Count => dictionary.Count;
+        private readonly Dictionary<string, object> _dict = new();
+
+        /******************************************************************************/
 
         // If you try to get a value of a property
         // not defined in the class, this method is called.
@@ -23,7 +25,7 @@ namespace Drill4Net.Target.Common
             // If the property name is found in a dictionary,
             // set the result parameter to the property value and return true.
             // Otherwise, return false.
-            return dictionary.TryGetValue(name, out result);
+            return _dict.TryGetValue(name, out result);
         }
 
         // If you try to set a value of a property that is
@@ -32,7 +34,7 @@ namespace Drill4Net.Target.Common
         {
             // Converting the property name to lowercase
             // so that property names become case-insensitive.
-            dictionary[binder.Name.ToLower()] = value;
+            _dict[binder.Name.ToLower()] = value;
 
             // You can always add a value to a dictionary,
             // so this method always returns true.
