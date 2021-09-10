@@ -39,7 +39,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 .Where(a => ctx.Anchors.Contains(a) &&
                             !ctx.Processed.Contains(a) &&
                             !ctx.ReplacedJumps.ContainsKey(a) &&
-                            !IsPreviousLeave(a) &&
+                            !IsPreviousBad(a) &&
                             a != ret
                         );
             foreach (var instr in instrs)
@@ -90,9 +90,9 @@ namespace Drill4Net.Injector.Strategies.Blocks
             return true;
         }
 
-        private bool IsPreviousLeave(Instruction instr)
+        private bool IsPreviousBad(Instruction instr)
         {
-            return instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S } };
+            return instr.Previous is { OpCode: { Code: Code.Leave or Code.Leave_S or Code.Br or Code.Br_S } };
         }
     }
 }

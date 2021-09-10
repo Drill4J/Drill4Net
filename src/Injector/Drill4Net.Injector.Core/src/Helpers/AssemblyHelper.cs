@@ -436,7 +436,7 @@ namespace Drill4Net.Injector.Core
 
                     if (callee != null)  //method call the callee
                     {
-                        var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
+                        var calleeCtx = methCtxs.SingleOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
                         {
                             delta = bizInd; //shift for the callee taking into account the index of its call instruction in parent
