@@ -130,10 +130,12 @@ namespace Drill4Net.Target.Common
             Switch_When(-1);
             Switch_When(0);
             Switch_When(1);
+            Switch_When(2);
 
-            Switch_Property(null);
-            Switch_Property(false);
-            Switch_Property(true);
+            Switch_Property(-1);
+            Switch_Property(0);
+            Switch_Property(1);
+            Switch_Property(2);
 
 #if NETCOREAPP
             Switch_AsReturn(-1);
@@ -345,7 +347,7 @@ namespace Drill4Net.Target.Common
             QA_IfElse(false);
             QA_IfElse(true);
 
-            QA_IfElse_Random();
+            //QA_IfElse_Random();
             #endregion
         }
 
@@ -637,20 +639,24 @@ namespace Drill4Net.Target.Common
             {
                 case int x when a < 0: s = "A"; x = 6; break;
                 case int x when a == 0: s = "B"; x = 3; break;
-                case int x when a > 0: s = "C"; x = 3; break;
+                case int x when a > 0 && a < 2: s = "C"; x = 3; break;
                 default: Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}"); return;
             }
             Console.WriteLine($"{nameof(Switch_When)}: {a} -> {s}");
         }
 
-        public string Switch_Property(bool? cond)
+        public string Switch_Property(int cond)
         {
-            var p = cond == null ?
-                new { Name = "John", IsAdmin = false, Language = "English" } :
-                (cond == true ?
-                    new { Name = "Андрей", IsAdmin = false, Language = "Russian" } :
-                    new { Name = "Woldemar", IsAdmin = true, Language = "German" }
-                );
+            var p = new { Name = "unknown", IsAdmin = false, Language = "unknown" };
+            if (cond > -1)
+            {
+                p = cond == 0 ?
+                    new { Name = "John", IsAdmin = false, Language = "English" } :
+                    (cond == 1 ?
+                        new { Name = "Андрей", IsAdmin = false, Language = "Russian" } :
+                        new { Name = "Woldemar", IsAdmin = true, Language = "German" }
+                    );
+            }
             //
             var s = p switch
             {
@@ -1465,17 +1471,17 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        public void QA_IfElse_Random()
-        {
-            if (DateTime.Now.Millisecond % 2 == 0)
-            {
-                Console.WriteLine($"{nameof(QA_IfElse_Random)}: even number");
-            }
-            else
-            {
-                Console.WriteLine($"{nameof(QA_IfElse_Random)}: odd number");
-            }
-        }
+        //public void QA_IfElse_Random()
+        //{
+        //    if (DateTime.Now.Millisecond % 2 == 0)
+        //    {
+        //        Console.WriteLine($"{nameof(QA_IfElse_Random)}: even number");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"{nameof(QA_IfElse_Random)}: odd number");
+        //    }
+        //}
         #endregion
 
 
