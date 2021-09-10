@@ -151,6 +151,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Switch_Logical), new object[] { 10 }, new List<string> { "Branch_2", "Branch_6", "Else_6", "Branch_9", "Branch_10", "Branch_19", "Branch_21", "Branch_32" });
                 #endregion
                 #region Elvis
+                //commented cases are located in Parented
                 yield return GetCase(GetInfo(Target.Elvis), new object[] { false }, new List<string> { "Branch_4", "Else_4", "Branch_6" });
                 //yield return GetCase(GetInfo(Target.Elvis), new object[] { true }, new List<string> { "Branch_4", "Else_4", "Branch_6" });
 

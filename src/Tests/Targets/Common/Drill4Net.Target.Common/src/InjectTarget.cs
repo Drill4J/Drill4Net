@@ -1467,7 +1467,6 @@ namespace Drill4Net.Target.Common
         //}
         #endregion
 
-
         private byte[] GetBytes(byte cnt)
         {
             var arr = new byte[cnt];

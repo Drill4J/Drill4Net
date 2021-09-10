@@ -4,7 +4,7 @@
     {
         public string WhoAreU()
         {
-            return "I'm another target!";
+            return "I'm an another target!";
         }
     }
 }

@@ -77,14 +77,14 @@ namespace Drill4Net.Injector.Core
             var isCompilerGenerated = methodType == MethodType.CompilerGenerated;
             var isAsyncStateMachine = methodSource.IsAsyncStateMachine;
             var isSpecFunc = MethodHelper.IsSpecialGeneratedMethod(methodType);
-            var strictEnterReturn = //what is forbidden principally?
+            var strictEnterReturn = //is point forbidden principally?
                 !isSpecFunc
                 //ASP.NET & Blazor rendering methods (may contains business logic)
                 && !methodName.Contains("CreateHostBuilder")
                 && !methodName.Contains("BuildRenderTree")
                 //others
                 && (
-                    methodName.Contains("|") || //local func                                                        
+                    methodName.Contains('|') || //local func                                                        
                     isAsyncStateMachine || //async/await
                     isCompilerGenerated ||
                     //Finalize() -> strange, but for Core 'Enter' & 'Return' lead to a crash                   
