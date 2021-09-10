@@ -161,14 +161,16 @@ namespace Drill4Net.Target.Common
 //#endif
             #endregion
             #region Elvis
-            Elvis_NotNull();
-            Elvis_Null();
+            Elvis(false);
+            Elvis(true);
 
-            Elvis_Sequence_NotNull();
-            Elvis_Sequence_Null();
+            Elvis_Sequence(false, false);
+            Elvis_Sequence(false, true);
+            Elvis_Sequence(true, false);
+            Elvis_Sequence(true, true);
 
-            Elvis_Double_NotNull();
-            Elvis_Double_Null();
+            Elvis_Double(false);
+            Elvis_Double(true);
             #endregion
             #region Cycle
             Cycle_For(-1);
@@ -526,46 +528,25 @@ namespace Drill4Net.Target.Common
         }
         #endregion
         #region Elvis
-        public void Elvis_NotNull()
+        public void Elvis(bool cond)
         {
-            var obj = new GenStr("aaa");
+            var obj = cond ? new GenStr("aaa") : null;
             var prop = obj?.Prop; //need Elvis !
-            Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
+            Console.WriteLine($"{nameof(Elvis)}: {prop}");
         }
 
-        public void Elvis_Null()
+        public void Elvis_Sequence(bool a, bool b)
         {
-            GenStr obj = null;
-            var prop = obj?.Prop; //need Elvis !
-            Console.WriteLine($"{nameof(Elvis_NotNull)}: {prop}");
-        }
-
-        public void Elvis_Sequence_NotNull()
-        {
-            var obj = new GenStr("aaa");
+            var obj = a ? new GenStr(b ? "aaa" : null) : null;
             var len = obj?.Prop?.Length;
-            Console.WriteLine($"{nameof(Elvis_Sequence_NotNull)}: {len}");
+            Console.WriteLine($"{nameof(Elvis_Sequence)}: {len}");
         }
 
-        public void Elvis_Sequence_Null()
+        public void Elvis_Double(bool cond)
         {
-            GenStr obj = null;
-            var len = obj?.Prop?.Length;
-            Console.WriteLine($"{nameof(Elvis_Sequence_Null)}: {len}");
-        }
-
-        public void Elvis_Double_NotNull()
-        {
-            var obj = "aaa";
+            var obj = cond ? "aaa" : null;
             var prop = obj ?? "bbb";
-            Console.WriteLine($"{nameof(Elvis_Double_NotNull)}: {prop}");
-        }
-
-        public void Elvis_Double_Null()
-        {
-            string obj = null;
-            var prop = obj ?? "bbb";
-            Console.WriteLine($"{nameof(Elvis_Double_Null)}: {prop}");
+            Console.WriteLine($"{nameof(Elvis_Double)}: {prop}");
         }
         #endregion
         #region Switch

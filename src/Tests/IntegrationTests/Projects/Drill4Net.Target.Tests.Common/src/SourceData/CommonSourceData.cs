@@ -151,9 +151,16 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Switch_Logical), new object[] { 10 }, new List<string> { "Branch_2", "Branch_6", "Else_6", "Branch_9", "Branch_10", "Branch_19", "Branch_21", "Branch_32" });
                 #endregion
                 #region Elvis
-                yield return GetCase(GetInfo(Target.Elvis_Null), Array.Empty<object>(), new List<string> { "Branch_4", "Else_4", "Branch_6" });
-                yield return GetCase(GetInfo(Target.Elvis_Sequence_Null), Array.Empty<object>(), new List<string> { "Branch_4", "Else_4", "Branch_8" });
-                yield return GetCase(GetInfo(Target.Elvis_Double_Null), Array.Empty<object>(), new List<string> { "Branch_5", "Else_5", "Anchor_8" });
+                yield return GetCase(GetInfo(Target.Elvis), new object[] { false }, new List<string> { "Branch_4", "Else_4", "Branch_6" });
+                //yield return GetCase(GetInfo(Target.Elvis), new object[] { true }, new List<string> { "Branch_4", "Else_4", "Branch_6" });
+
+                yield return GetCase(GetInfo(Target.Elvis_Sequence), new object[] { false, false }, new List<string> { "Branch_4", "Else_4", "Branch_8" });
+                yield return GetCase(GetInfo(Target.Elvis_Sequence), new object[] { false, true }, new List<string> { "Branch_4", "Else_4", "Branch_8" });
+                //yield return GetCase(GetInfo(Target.Elvis_Sequence), new object[] { true, false }, new List<string> { "Branch_4", "Else_4", "Branch_8" });
+                //yield return GetCase(GetInfo(Target.Elvis_Sequence), new object[] { true, true }, new List<string> { "Branch_4", "Else_4", "Branch_8" });
+
+                yield return GetCase(GetInfo(Target.Elvis_Double), new object[] { false }, new List<string> { "Branch_5", "Else_5", "Anchor_8" });
+                //yield return GetCase(GetInfo(Target.Elvis_Double), new object[] { true }, new List<string> { "Branch_5", "Else_5", "Anchor_8" });
                 #endregion
                 #region Linq
                 yield return GetCase(GetInfo(Target.Linq_Query), new object[] { false }, new List<string> { "Call_24", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6", "Branch_2", "Else_2", "Branch_6" });
@@ -268,18 +275,22 @@ namespace Drill4Net.Target.Tests.Common
             get
             {
                 #region Elvis
-                yield return GetCase(Array.Empty<object>(), false,
-                    new TestInfo(GetInfo(Target.Elvis_NotNull),  new List<string> { "Branch_5", "If_7", "Call_9", "Anchor_10" }),
+                yield return GetCase(new object[] { true }, false,
+                    new TestInfo(GetInfo(Target.Elvis),  new List<string> { "Branch_5", "If_7", "Call_9", "Anchor_10" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" })
                     );
 
-                yield return GetCase(Array.Empty<object>(), false,
-                    new TestInfo(GetInfo(Target.Elvis_Sequence_NotNull),  new List<string> { "Branch_5", "If_9", "Call_11", "Branch_13", "If_18", "Anchor_21" }),
+                yield return GetCase(new object[] { true, false }, false,
+                    new TestInfo(GetInfo(Target.Elvis_Sequence),  new List<string> { "Branch_5", "If_9", "Call_11", "Branch_13", "If_18", "Anchor_21" }),
+                    new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" })
+                    );
+                yield return GetCase(new object[] { true, true }, false,
+                    new TestInfo(GetInfo(Target.Elvis_Sequence), new List<string> { "Branch_5", "If_9", "Call_11", "Branch_13", "If_18", "Anchor_21" }),
                     new TestInfo(GetSourceFromFullSig(Target, "System.Void Drill4Net.Target.Common.AbstractGen`1::.ctor(T)"), false, new List<string> { "Call_6" })
                     );
 
-                yield return GetCase(Array.Empty<object>(), false,
-                    new TestInfo(GetInfo(Target.Elvis_Double_NotNull), new List<string> { "Branch_5", "Anchor_8" })
+                yield return GetCase(new object[] { true }, false,
+                    new TestInfo(GetInfo(Target.Elvis_Double), new List<string> { "Branch_5", "Anchor_8" })
                     );
                 #endregion
                 #region Generics
