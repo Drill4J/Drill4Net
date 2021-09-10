@@ -209,8 +209,8 @@ namespace Drill4Net.Injector.Core
         {
             var instr = OrigInstructions[origIndex];
             var ind = BusinessInstructionList.IndexOf(instr);
-            if (ind == -1)
-                throw new Exception($"Business instruction not found: {instr}");
+            if (ind == -1) //IF/ELSE points added to Branch points...
+                return 0; // throw new Exception($"Business instruction not found: {instr}");
             return ind;
         }
 

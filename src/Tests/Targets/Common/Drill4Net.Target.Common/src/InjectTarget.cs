@@ -201,7 +201,9 @@ namespace Drill4Net.Target.Common
             Lambda(5);
             Lambda(10);
 
+            Lambda_AdditionalBranch(5);
             Lambda_AdditionalBranch(10);
+            Lambda_AdditionalBranch(12);
 
             Lambda_AdditionalSwitch(5);
             Lambda_AdditionalSwitch(10);
