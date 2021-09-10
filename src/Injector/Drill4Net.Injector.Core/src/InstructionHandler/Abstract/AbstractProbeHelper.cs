@@ -59,7 +59,7 @@ namespace Drill4Net.Injector.Core
         public virtual CrossPoint GetOrCreatePoint(MethodContext ctx, CrossPointType pointType, int origInd)
         {
             var point = ctx.Method.Points
-                .FirstOrDefault(a => a.PointType == pointType && a.OrigInd == origInd); //check for PointType need to use also
+                .SingleOrDefault(a => a.PointType == pointType && a.OrigInd == origInd); //check for PointType need to use also
             if (point != null)
                 return point;
             point = CreateCrossPoint(ctx, pointType, origInd);

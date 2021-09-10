@@ -170,7 +170,7 @@ namespace Drill4Net.Injector.Core
         public void SetPosition(int index)
         {
             if (index < 0)
-                throw new ArgumentException("Index must greater zero");
+                throw new ArgumentException("Index must be greater zero");
             if (index >= Instructions.Count)
                 index = Instructions.Count - 1;
             CurIndex = index;
@@ -207,8 +207,11 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         public int GetLocalBusinessIndex(int origIndex)
         {
-            var ind = BusinessInstructionList.IndexOf(OrigInstructions[origIndex]);
-            return ind == -1 ? origIndex : ind;
+            var instr = OrigInstructions[origIndex];
+            var ind = BusinessInstructionList.IndexOf(instr);
+            if (ind == -1)
+                throw new Exception($"Business instruction not found: {instr}");
+            return ind;
         }
 
         public override string ToString()

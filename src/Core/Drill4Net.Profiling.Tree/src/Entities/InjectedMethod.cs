@@ -72,7 +72,7 @@ namespace Drill4Net.Profiling.Tree
         /// </summary>
         public IEnumerable<CrossPoint> Points => Filter(typeof(CrossPoint), false).Cast<CrossPoint>();
 
-        /********************************************************************/
+        /***********************************************************************************/
 
         public InjectedMethod(string assemblyName, string businessTypeName, string fullName, MethodSource sourceType)
         {

@@ -367,7 +367,7 @@ namespace Drill4Net.Injector.Core
                         //throw new System.Exception($"Wrong business indexes for [{method}]");
                     }
 
-                    // tests TODO: unit tests
+                    //TODO: unit tests
                     if (asmCtx.Options.Probes.SkipIfElseType)
                     {
                         for (var i = 0; i < cnt - 1; i++)
@@ -433,9 +433,8 @@ namespace Drill4Net.Injector.Core
                     var callee = point.PointType is CrossPointType.Virtual ?
                         point.PointUid :
                         meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
-                    if (callee == null)
-                    { } //bad... remove the point from data?
-                    if (callee != null) //meth call the callee
+
+                    if (callee != null)  //method call the callee
                     {
                         var calleeCtx = methCtxs.FirstOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
@@ -445,8 +444,12 @@ namespace Drill4Net.Injector.Core
                             CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes);
                             delta -= localBizInd; //correct for local using
                         }
-                        if(calleeCtx == null)
+                        if (calleeCtx == null) //???
                         { }
+                    }
+                    else
+                    {
+                        //bad? remove the point from data?
                     }
                 }
             }
