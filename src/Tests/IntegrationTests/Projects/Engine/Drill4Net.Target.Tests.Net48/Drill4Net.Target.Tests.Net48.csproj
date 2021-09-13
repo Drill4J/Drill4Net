@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props')" />
-  <Import Project="..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props" Condition="Exists('..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props')" />
+  <Import Project="..\..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props')" />
+  <Import Project="..\..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props" Condition="Exists('..\..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -22,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Net48\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Net48\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Net48\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Net48\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,18 +38,18 @@
   <ItemGroup>
     <Reference Include="Drill4Net.Target.Common, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.dll</HintPath>
     </Reference>
     <Reference Include="Drill4Net.Target.Common.Another, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.Another.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.Another.dll</HintPath>
     </Reference>
     <Reference Include="Drill4Net.Target.Common.VB, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.VB.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.VB.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.13.2.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\NUnit.3.13.2\lib\net45\nunit.framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\packages\NUnit.3.13.2\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,7 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Target.Tests.Common\Drill4Net.Target.Tests.Common.csproj">
-      <Project>{049043dd-4f2b-465b-9be4-3f5a623d8ab4}</Project>
+      <Project>{3d84e6b3-f423-4c5b-9fdd-a76103b68125}</Project>
       <Name>Drill4Net.Target.Tests.Common</Name>
     </ProjectReference>
   </ItemGroup>
@@ -78,7 +78,7 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props'))" />
-    <Error Condition="!Exists('..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props'))" />
+    <Error Condition="!Exists('..\..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\..\packages\NUnit.3.13.2\build\NUnit.props'))" />
+    <Error Condition="!Exists('..\..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props'))" />
   </Target>
 </Project>

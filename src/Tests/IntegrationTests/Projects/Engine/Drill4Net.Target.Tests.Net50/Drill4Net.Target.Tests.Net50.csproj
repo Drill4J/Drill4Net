@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Net50</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Net50</OutputPath>
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Net50</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Net50</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,13 +28,13 @@
 
   <ItemGroup>
     <Reference Include="Drill4Net.Target.Common">
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\Drill4Net.Target.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\Drill4Net.Target.Common.dll</HintPath>
     </Reference>
     <Reference Include="Drill4Net.Target.Common.Another">
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\Drill4Net.Target.Common.Another.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\Drill4Net.Target.Common.Another.dll</HintPath>
     </Reference>
     <Reference Include="Drill4Net.Target.Common.VB">
-      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\Drill4Net.Target.Common.VB.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net50.App\net5.0\Drill4Net.Target.Common.VB.dll</HintPath>
     </Reference>
   </ItemGroup>
 

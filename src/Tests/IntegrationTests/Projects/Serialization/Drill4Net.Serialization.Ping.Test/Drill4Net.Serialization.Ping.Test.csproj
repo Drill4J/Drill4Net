@@ -9,17 +9,17 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Serialization.Ping.Test</OutputPath>
-    <DocumentationFile>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Serialization.Ping.Test\Drill4Net.Serialization.Ping.Test.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Serialization.Ping.Test</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Serialization.Ping.Test\Drill4Net.Serialization.Ping.Test.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\build\bin\Release\Tests\Drill4Net.Serialization.Ping.Test</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Serialization.Ping.Test</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
-    <ProjectReference Include="..\..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
   </ItemGroup>
 
   <ItemGroup>

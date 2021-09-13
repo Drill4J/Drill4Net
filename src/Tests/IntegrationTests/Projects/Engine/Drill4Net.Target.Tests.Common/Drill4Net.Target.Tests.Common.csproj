@@ -10,13 +10,13 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE</DefineConstants>
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Common</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Common</OutputPath>
     <DocumentationFile></DocumentationFile>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Common</OutputPath>
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Common</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Targets\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
-    <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj" />
+    <ProjectReference Include="..\..\..\..\Targets\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
+    <ProjectReference Include="..\..\..\Agent\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
