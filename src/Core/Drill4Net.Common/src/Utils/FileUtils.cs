@@ -62,9 +62,9 @@ namespace Drill4Net.Common
             return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
         }
 
-        public static string GetEmergencyDir()
+        internal static string GetEmergencyDir()
         {
-            return Path.Combine(GetEntryDir(), LOG_FOLDER_EMERGENCY);
+            return Path.Combine(EntryDir, LOG_FOLDER_EMERGENCY);
         }
 
         public static bool IsSameDirectories(string dir1, string dir2)
