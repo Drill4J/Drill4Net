@@ -12,11 +12,11 @@ namespace Drill4Net.Serialization.Pong.Test
     /***************************************************************************************************************************
 
     To run service in Docker container follow the following steps:
-    1. Open in Terminal solution directory.
-    2. Run command: docker build -f src\Tests\Serialization\Serialization.Pong.Test\Dockerfile -t deserializer_ser.
-        Now you can see deserializer_ser image in docker.
+    1. Open in Terminal solution directory
+    2. Run command: docker build -f src\Tests\IntegrationTests\Projects\Serialization\Drill4Net.Serialization.Pong.Test\Dockerfile -t deserializer_ser . (dot is a part of command)
+        Now you can see deserializer_ser image in docker
     3. Run command: docker run --name cont1 deserializer_serv
-        Now you can see running container in Docker.
+        Now you can see running container in Docker
     4. When service has complited serialization the file can be copied to host after stopping  the container. Run command:
         docker cp cont1:/app/data/injected_rewritten.tree <host_dir> (write desired dir)
         (docker cp <container_name>:<container_dir> <host_dir>)
