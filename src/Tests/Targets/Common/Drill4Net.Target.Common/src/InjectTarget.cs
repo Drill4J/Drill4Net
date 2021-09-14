@@ -278,8 +278,11 @@ namespace Drill4Net.Target.Common
             Parallel_Foreach(false);
             Parallel_Foreach(true);
 
-            Parallel_Foreach_Never100(false);
-            Parallel_Foreach_Never100(true);
+            Parallel_Foreach_Demo_Never100(false);
+            Parallel_Foreach_Demo_Never100(true);
+
+            Parallel_Foreach_Demo_100(false);
+            Parallel_Foreach_Demo_100(true);
 
             Parallel_Task_New(false);
             Parallel_Task_New(true);
@@ -1086,8 +1089,9 @@ namespace Drill4Net.Target.Common
 
         //it isn't needed for the tests but demonstrate IL code with
         //non-calling instruction's block due "(cond || (!cond " source
-        //text ("Branch_14/13" is missing) - against the Parallel_Foreach() method
-        public void Parallel_Foreach_Never100(bool cond)
+        //text ("Branch_14/13" never called) - against the Parallel_Foreach()
+        //method
+        public void Parallel_Foreach_Demo_Never100(bool cond)
         {
             var data = GetDataForParallel(5);
             int sum = 0;
@@ -1096,7 +1100,20 @@ namespace Drill4Net.Target.Common
                 if (cond || (!cond && a % 2 == 0))
                     Interlocked.Add(ref sum, a);
             });
-            Console.WriteLine($"{nameof(Parallel_Foreach_Never100)}: {sum}");
+            Console.WriteLine($"{nameof(Parallel_Foreach_Demo_Never100)}: {sum}");
+        }
+
+        //it isn't needed for the tests
+        public void Parallel_Foreach_Demo_100(bool cond)
+        {
+            var data = GetDataForParallel(5);
+            int sum = 0;
+            Parallel.ForEach(data, a =>
+            {
+                if (cond | (!cond && a % 2 == 0))
+                    Interlocked.Add(ref sum, a);
+            });
+            Console.WriteLine($"{nameof(Parallel_Foreach_Demo_Never100)}: {sum}");
         }
 
         private IEnumerable<int> GetDataForParallel(int cnt = 5)
