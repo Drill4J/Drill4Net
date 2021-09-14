@@ -84,8 +84,8 @@ namespace Drill4Net.Agent.Standard
         {
             //TODO: cloning from some Template object?
             var reg = new CoverageRegistrator(session);
-            var testName = session?.TestName ?? Guid.NewGuid().ToString();
-            if(session != null)
+            var testName = session?.TestName ?? Guid.NewGuid().ToString(); //in fact, an empty session.TestName is bad
+            if (session != null)
                 session.TestName = testName;
             var bizTypes = injTypes
                 .Where(a => !a.IsCompilerGenerated)
@@ -96,12 +96,17 @@ namespace Drill4Net.Agent.Standard
                 var bizMethods = GetOrderedBusinessMethods(type);
                 if (bizMethods?.Any() != true)
                     continue;
-                //
-                var execData = new ExecClassData(testName, type.FullName);
+                
+                //calculating
+                var typeName = type.FullName;
+                var execData = new ExecClassData(testName, typeName);
                 var cnt = BindMethods(reg, execData, bizMethods);
+
+                //checking
                 var size = bizMethods.Sum(a => a.BusinessSize);
                 if (cnt != size)
-                { }
+                    throw new Exception($"Error in data: actual and calculated on indexes sizes of type {typeName} are not matched");
+
                 execData.InitProbes(cnt);
             }
             return reg;
@@ -113,31 +118,30 @@ namespace Drill4Net.Agent.Standard
         /// <param name="reg"></param>
         /// <param name="execData"></param>
         /// <param name="methods"></param>
-        /// <param name="ind"></param>
-        /// <param name="cgMethods"></param>
+        /// <returns>Count of instructions</returns>
         internal int BindMethods(CoverageRegistrator reg, ExecClassData execData, IEnumerable<InjectedMethod> methods)
         {
-            var pos = 0;
+            var end = 0;
             foreach (var meth in methods) //don't parallel here!
             {
                 var prevInd = -1;
                 foreach (var (ind, uid) in meth.End2EndBusinessIndexes)
                 {
-                    var start = pos;
-                    pos += ind - prevInd - 1;
-                    reg.BindPoint(uid, execData, start, pos);
+                    var start = end;
+                    end += ind - prevInd - 1;
+                    reg.BindPoint(uid, execData, start, end);
                     prevInd = ind;
-                    pos++;
+                    end++;
                 }
             }
-            return pos;
+            return end;
         }
         #endregion
 
         internal IOrderedEnumerable<InjectedMethod> GetOrderedBusinessMethods(InjectedType injType)
         {
             var injMethods = injType?.GetMethods()?
-                .Where(a => !a.IsCompilerGenerated && a.End2EndBusinessIndexes.Any())
+                .Where(a => !a.IsCompilerGenerated && a.End2EndBusinessIndexes.Count > 0)
                 .OrderBy(a => a, new MethodNameComparer());
             return injMethods;
         }

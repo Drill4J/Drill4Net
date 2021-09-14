@@ -333,7 +333,7 @@ namespace Drill4Net.Injector.Core
         {
             var bizMethods = asmCtx.InjMethodByFullname.Values
                 .Where(a => !a.IsCompilerGenerated).ToArray();
-            if (!bizMethods.Any())
+            if (bizMethods.Length == 0)
                 return;
             foreach (var caller in bizMethods.Where(a => a.CalleeOrigIndexes.Count > 0))
             {

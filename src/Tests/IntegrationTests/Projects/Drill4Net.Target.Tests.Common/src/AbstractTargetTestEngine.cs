@@ -133,7 +133,7 @@ namespace Drill4Net.Target.Tests.Common
                 if (!inputs.SelectMany(a => a.Checks).Any(a => a.Contains("Throw")))
                     Assert.Fail(ex.Message);
             }
-#endregion
+            #endregion
             #region Assert
             var funcs = GetFunctions();
 
@@ -232,7 +232,7 @@ namespace Drill4Net.Target.Tests.Common
                 for (var j = 0; j < forDelete.Length; j++)
                     links.Remove(forDelete[j]);
             }
-#endregion
+            #endregion
         }
 
         #region Auxiliary funcs

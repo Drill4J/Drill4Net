@@ -164,9 +164,16 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         private void OnInitScopeData(InitActiveScope scope)
         {
-            Repository.CancelAllSessions(); //just in case
-            _scope = scope;
-            Sender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                Repository.CancelAllSessions(); //just in case
+                _scope = scope;
+                Sender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal("Scope init failed", ex);
+            }
         }
 
         /// <summary>
@@ -174,9 +181,16 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         private void OnRequestClassesData()
         {
-            lock (_entLocker)
+            try
             {
-                _entities = Repository.GetEntities();
+                lock (_entLocker)
+                {
+                    _entities = Repository.GetEntities();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal("Getting classes data failed", ex);
             }
         }
 
@@ -185,56 +199,98 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         private void OnTogglePlugin(string plugin)
         {
-            lock (_entLocker)
+            try
             {
-                if (_entities == null)
-                    return; //log??
+                lock (_entLocker)
+                {
+                    if (_entities == null)
+                        return; //log??
 
-                //1. Init message
-                Sender.SendInitMessage(_entities.Count);
+                    //1. Init message
+                    Sender.SendInitMessage(_entities.Count);
 
-                //2. Send injected classes info to admin side
-                Sender.SendClassesDataMessage(_entities);
-                _entities.Clear();
-                _entities = null;
+                    //2. Send injected classes info to admin side
+                    Sender.SendClassesDataMessage(_entities);
+                    _entities.Clear();
+                    _entities = null;
+                }
+
+                //3. Send "Initialized" message to admin side
+                Sender.SendInitializedMessage();
             }
-
-            //3. Send "Initialized" message to admin side
-            Sender.SendInitializedMessage();
+            catch (Exception ex)
+            {
+                _logger.Fatal($"Togle plugin {plugin} failed", ex);
+            }
         }
 
         #region Session
         private void OnStartSession(StartAgentSession info)
         {
-            Repository.StartSession(info);
-            var load = info.Payload;
-            Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                Repository.StartSession(info);
+                var load = info.Payload;
+                Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal($"Session start for [{info}] failed", ex);
+            }
         }
 
         private void OnFinishSession(StopAgentSession info)
         {
-            var uid = info.Payload.SessionId;
-            Repository.SessionStop(info);
-            Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uid = info.Payload.SessionId;
+                Repository.SessionStop(info);
+                Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Session finish for [{info}] failed", ex);
+            }
         }
 
         private void OnFinishAllSessions()
         {
-            var uids = Repository.StopAllSessions();
-            Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uids = Repository.StopAllSessions();
+                Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Finishing for all sessions is failed", ex);
+            }
         }
 
         private void OnCancelSession(CancelAgentSession info)
         {
-            var uid = info.Payload.SessionId;
-            Repository.CancelSession(info);
-            Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uid = info.Payload.SessionId;
+                Repository.CancelSession(info);
+                Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Session cancel for [{info}] failed", ex);
+            }
         }
 
         private void OnCancelAllSessions()
         {
-            var uids = Repository.CancelAllSessions();
-            Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uids = Repository.CancelAllSessions();
+                Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Cancelling for all sessions is failed", ex);
+            }
         }
         #endregion
         #endregion

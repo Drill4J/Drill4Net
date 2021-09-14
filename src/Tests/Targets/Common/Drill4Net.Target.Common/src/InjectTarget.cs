@@ -1052,7 +1052,7 @@ namespace Drill4Net.Target.Common
         public void Parallel_Linq(bool cond)
         {
             var data = GetDataForParallel(5);
-            int sum = data.AsParallel().Where(a => !cond || (cond && a % 2 == 0)).Sum();
+            int sum = data.AsParallel().Where(a => cond || a % 2 == 0).Sum();
             Console.WriteLine($"{nameof(Parallel_Linq)}: {sum}");
         }
 
@@ -1063,7 +1063,7 @@ namespace Drill4Net.Target.Common
 
             Parallel.For(0, data.Count(), a =>
             {
-                if (!cond || (cond && a % 2 == 0))
+                if (cond || a % 2 == 0)
                     Interlocked.Add(ref sum, a);
             });
             Console.WriteLine($"{nameof(Parallel_For)}: {sum}");
@@ -1075,7 +1075,7 @@ namespace Drill4Net.Target.Common
             int sum = 0;
             Parallel.ForEach(data, a =>
             {
-                if (!cond || (cond && a % 2 == 0))
+                if (cond || a % 2 == 0)
                     Interlocked.Add(ref sum, a);
             });
             Console.WriteLine($"{nameof(Parallel_Foreach)}: {sum}");

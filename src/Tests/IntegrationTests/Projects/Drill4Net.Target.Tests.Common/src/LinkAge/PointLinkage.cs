@@ -15,7 +15,7 @@ namespace Drill4Net.Target.Tests.Common
         public CrossPoint Point { get; }
 
         /// <summary>
-        /// Gets the cross-point probe's data.
+        /// Gets the cross-point probe's data (contains original index of the IL instruction).
         /// </summary>
         /// <value>
         /// The probe's data.
@@ -24,7 +24,7 @@ namespace Drill4Net.Target.Tests.Common
 
         /****************************************************************************/
 
-        public PointLinkage(InjectedAssembly assembly, InjectedType type, 
+        public PointLinkage(InjectedAssembly assembly, InjectedType type,
             InjectedMethod method,  CrossPoint point)
         {
             Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
