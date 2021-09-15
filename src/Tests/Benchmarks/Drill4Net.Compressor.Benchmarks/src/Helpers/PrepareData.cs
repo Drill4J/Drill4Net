@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Injector.Engine;
 using Drill4Net.Compressor.Benchmarks.Dto;
 
-
-namespace Drill4Net.Compressor.Benchmarks.src.Helpers
+namespace Drill4Net.Compressor.Benchmarks.Helpers
 {
     internal static class PrepareData
     {
@@ -27,6 +30,7 @@ namespace Drill4Net.Compressor.Benchmarks.src.Helpers
 
             return data;
         }
+
         internal static MediumData GenerateMediumData()
         {
             var data = new MediumData();
@@ -40,6 +44,8 @@ namespace Drill4Net.Compressor.Benchmarks.src.Helpers
             data.Price1=100.55M + rnd.Next(100, 500);
             data.Price2 = 100.55M + rnd.Next(100, 500);
             data.Price3 = 100.55M + rnd.Next(100, 500);
+            data.FeedBacks = new List<string>();
+            data.Tags = new HashSet<string>();
             for (var i=0; i<count; i++)
             {
                 data.FeedBacks.Add(GenerateString());
@@ -53,6 +59,7 @@ namespace Drill4Net.Compressor.Benchmarks.src.Helpers
 
             return data;
         }
+
         internal static ComplexData GenerateComplexData()
         {
             var data = new ComplexData();
@@ -66,6 +73,8 @@ namespace Drill4Net.Compressor.Benchmarks.src.Helpers
             data.Price1 = 100.55M + rnd.Next(100, 500);
             data.Price2 = 100.55M + rnd.Next(100, 500);
             data.Price3 = 100.55M + rnd.Next(100, 500);
+            data.FeedBacks = new List<string>();
+            data.Tags = new HashSet<string>();
             for (var i = 0; i < count; i++)
             {
                 data.FeedBacks.Add(GenerateString());
@@ -76,27 +85,37 @@ namespace Drill4Net.Compressor.Benchmarks.src.Helpers
             }
             data.Date = DateTime.Now.AddDays(rnd.Next(-100, 100));
             data.ObjectGuid = new Guid();
+            data.SimpleDataList = new List<SimpleData>();
+            data.MediumDataDict = new Dictionary<int, MediumData>();
             for (var i = 0; i < count; i++)
             {
                 data.SimpleDataList.Add(new SimpleData());
             }
             for (var i = 0; i < count; i++)
             {
-                data.MediumDataDict.Add(i,new MediumData());
+                data.MediumDataDict.Add(i, new MediumData());
             }
-            data.FileInfo = new FileInfo(GenerateString());
-            data.MethodInfo = data.FileInfo.GetType().GetMethod("ToString");
-            data.DirectoryInfo = new DirectoryInfo(FileUtils.ExecutingDir);
+            //data.FileInfo = new FileInfo(GenerateString());
+            data.MethodInfo = data.FeedBacks.GetType().GetMethod("ToString");
+            //data.DirectoryInfo = new DirectoryInfo(FileUtils.ExecutingDir);
 
             return data;
         }
-        internal static InjectedSolution GenerateInjectedSolution(string cfgPath)
-        {
 
+        internal static async Task<InjectedSolution> GenerateInjectedSolutionAsync(string cfgName)
+        {
+            var cfgPath = Path.Combine(FileUtils.ExecutingDir, cfgName);
+            IInjectorRepository rep = null;
+            rep = new InjectorRepository(cfgPath);
+            var injector = new InjectorEngine(rep);
+            var tree = await injector.Process();
+            return tree;
         }
+
         private static string GenerateString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            var t= new string(Enumerable.Range(1, rnd.Next(10, 20)).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
             return new string(Enumerable.Range(1, rnd.Next(10, 20)).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
 
         }

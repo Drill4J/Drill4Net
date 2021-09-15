@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Compressor.Benchmarks.Dto
 {
-    internal class MediumData:SimpleData
+    [Serializable]
+    internal class MediumData
     {
+        internal int Year { get; set; }
+        internal int NumberOfPages { get; set; }
+        internal double Rate1 { get; set; }
+        internal double Rate2 { get; set; }
+        internal double Rate3 { get; set; }
+        internal string Title { get; set; }
+        internal string Notes { get; set; }
         internal decimal Price1 { get; set; }
         internal decimal Price2 { get; set; }
         internal decimal Price3 { get; set; }
@@ -15,6 +20,5 @@ namespace Drill4Net.Compressor.Benchmarks.Dto
         internal Guid ObjectGuid { get; set; }
         internal DateTime Date { get; set; }
         internal HashSet<string> Tags { get; set; }
-
     }
 }

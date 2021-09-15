@@ -5,7 +5,7 @@ namespace Drill4Net.Compressor.Benchmarks.Compression
 {
     internal static class DeflateCompressor
     {
-        internal static byte[] CompressSimpleData(byte[] data, CompressionLevel compressionLevel)
+        internal static byte[] CompressData(byte[] data, CompressionLevel compressionLevel)
         {
 
             MemoryStream compressedData = new MemoryStream();
@@ -15,6 +15,5 @@ namespace Drill4Net.Compressor.Benchmarks.Compression
             }
             return compressedData.ToArray();           
         }
-
     }
 }
