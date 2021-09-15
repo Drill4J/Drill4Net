@@ -56,12 +56,15 @@ namespace Drill4Net.Injector.Strategies.Blocks
             if (prevOperand.OpCode.Code is Code.Br or Code.Br_S) //for/while
             {
                 var ldstrIf2 = Register(ctx, CrossPointType.Cycle);
-                var targetOp = (instr.Operand as Instruction).Previous; //no nop skipping
-                processor.InsertAfter(targetOp, call);
-                processor.InsertAfter(targetOp, ldstrIf2);
-                ctx.CorrectIndex(2);
+                var targetOp = (instr.Operand as Instruction)?.Previous; //no nop skipping
+                if (targetOp != null) //hm... formal checking
+                {
+                    processor.InsertAfter(targetOp, call);
+                    processor.InsertAfter(targetOp, ldstrIf2);
+                    ctx.CorrectIndex(2);
 
-                instr.Operand = ldstrIf2;
+                    instr.Operand = ldstrIf2;
+                }
 
                 var ldstrIf3 = Register(ctx, CrossPointType.CycleEnd);
                 var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);

@@ -11,7 +11,7 @@ namespace Drill4Net.Target.Tests.Common
     /// <summary>
     /// Common source data for tests
     /// </summary>
-    public class CommonSourceData
+    public static class CommonSourceData
     {
         public static InjectTarget Target { get; }
 
@@ -29,7 +29,7 @@ namespace Drill4Net.Target.Tests.Common
         private static readonly Eventer _eventer;
         #endregion
 
-        /***********************************************************************************/
+        /*************************************************************************************/
 
         static CommonSourceData()
         {
@@ -43,7 +43,7 @@ namespace Drill4Net.Target.Tests.Common
             _strEnumerator = new NotEmptyStringEnumerator(null);
         }
 
-        /***********************************************************************************/
+        /*************************************************************************************/
 
         /// <summary>
         /// Data source for input data of Target tests which affect only one method

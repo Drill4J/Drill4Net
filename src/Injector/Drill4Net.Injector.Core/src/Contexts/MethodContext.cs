@@ -192,9 +192,10 @@ namespace Drill4Net.Injector.Core
         /// Registers the processed instruction in <see cref="Processed"/>.
         /// </summary>
         /// <returns></returns>
-        public void RegisterProcessed()
+        public void RegisterProcessed(Instruction instr = null)
         {
-            var instr = CurInstruction;
+            if(instr == null)
+                instr = CurInstruction;
             if(!Processed.Contains(instr))
                 Processed.Add(instr);
         }
