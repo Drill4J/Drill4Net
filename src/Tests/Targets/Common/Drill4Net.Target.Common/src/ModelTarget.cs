@@ -55,7 +55,7 @@ namespace Drill4Net.Target.Common
     [SuppressMessage("ReSharper", "InvertIf")]
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
     #endregion
-    public class InjectTarget
+    public class ModelTarget
     {
         public async Task RunTests()
         {
@@ -1110,7 +1110,9 @@ namespace Drill4Net.Target.Common
             int sum = 0;
             Parallel.ForEach(data, a =>
             {
+#pragma warning disable RCS1233 // Use short-circuiting operator.
                 if (cond | (!cond && a % 2 == 0))
+#pragma warning restore RCS1233 // Use short-circuiting operator.
                     Interlocked.Add(ref sum, a);
             });
             Console.WriteLine($"{nameof(Parallel_Foreach_Demo_Never100)}: {sum}");

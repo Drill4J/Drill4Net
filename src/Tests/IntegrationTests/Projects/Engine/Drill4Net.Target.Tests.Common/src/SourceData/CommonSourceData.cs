@@ -13,7 +13,7 @@ namespace Drill4Net.Target.Tests.Common
     /// </summary>
     public static class CommonSourceData
     {
-        public static InjectTarget Target { get; }
+        public static ModelTarget Target { get; }
 
         #region CONSTs
         private const string CATEGORY_DYNAMIC = "Dynamic";
@@ -33,7 +33,7 @@ namespace Drill4Net.Target.Tests.Common
 
         static CommonSourceData()
         {
-            Target = new InjectTarget();
+            Target = new ModelTarget();
             _anotherTarget = new AnotherTarget();
             _vbTarget = new VBLibrary();
 

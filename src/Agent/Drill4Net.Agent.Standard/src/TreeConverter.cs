@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Standard
                 lock (res)
                     res.Add(ToAstEntity(type));
             }
-            return res.ToList();
+            return res.OrderBy(a => a.name).ToList();
         }
 
         /// <summary>
