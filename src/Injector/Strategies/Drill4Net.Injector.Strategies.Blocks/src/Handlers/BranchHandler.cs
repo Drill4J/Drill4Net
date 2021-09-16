@@ -44,9 +44,10 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 var anchor = instr.Operand as Instruction;
 
                 //empty block?
-                if (instr.OpCode.FlowControl == FlowControl.Branch && anchor?.OpCode.Code is Code.Br or Code.Br_S) //additional after-branch
+                if (instr.OpCode.FlowControl == FlowControl.Branch &&
+                    (anchor?.OpCode.Code is (Code.Br or Code.Br_S) || isPrevBr)) //additional after-branch
                 {
-                    origInd = ctx.OrigInstructions.IndexOf(anchor);
+                    origInd = ctx.OrigInstructions.IndexOf(isPrevBr ? instr : anchor);
                     var ldstr2 = Register(ctx, CrossPointType.Branch, origInd);
                     var call2 = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 
@@ -55,11 +56,20 @@ namespace Drill4Net.Injector.Strategies.Blocks
                     ctx.CorrectIndex(2);
 
                     //injection
-                    processor.InsertBefore(anchor, ldstr2);
-                    processor.InsertBefore(anchor, call2);
+                    if (isPrevBr)
+                    {
+                        processor.InsertBefore(instr, ldstr2);
+                        processor.InsertBefore(instr, call2);
+                        ReplaceJumps(instr, ldstr2, ctx);
+                    }
+                    else
+                    {
+                        processor.InsertBefore(anchor, ldstr2);
+                        processor.InsertBefore(anchor, call2);
 
-                    instr.Operand = ldstr2;
-                    ctx.RegisterProcessed(anchor);
+                        instr.Operand = ldstr2;
+                        ctx.RegisterProcessed(anchor);
+                    }
                 }
                 else // normal before-branch
                 {
