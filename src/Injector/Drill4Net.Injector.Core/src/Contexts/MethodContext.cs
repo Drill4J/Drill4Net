@@ -102,6 +102,10 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public HashSet<object> Anchors { get; }
 
+        public HashSet<object> Switches { get; }
+
+        public HashSet<object> Cycles { get; }
+
         /// <summary>
         /// Current instruction index from source IL code
         /// </summary>
@@ -157,7 +161,9 @@ namespace Drill4Net.Injector.Core
             CompilerInstructions = new HashSet<Instruction>();
             ReplacedJumps = new Dictionary<Instruction, Instruction>();
             Jumpers = new HashSet<Instruction>();
-            Anchors = new HashSet<object> ();
+            Anchors = new HashSet<object>();
+            Switches = new HashSet<object>();
+            Cycles = new HashSet<object>();
         }
 
         /***********************************************************************************************/

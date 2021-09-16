@@ -25,16 +25,28 @@ namespace Drill4Net.Injector.Strategies.Blocks
             //
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
-            var jumpers = ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a));
+            var jumpers = ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a) &&
+                                                              !ctx.Switches.Contains(a));
+
             foreach (var instr in jumpers)
             {
-                if (ctx.Processed.Contains(instr)) //it's needed here
+                var ind = instructions.IndexOf(instr);
+                var prev = SkipNops(ind, false, ctx);
+                var isPrevBr = prev.OpCode.Code is Code.Br or Code.Br_S;
+                if (isPrevBr && ctx.Processed.Contains(instr)) //for already processed here the empty blocks
                     continue;
 
+                var code = instr.OpCode.Code;
+                if (!IsRealCondition(ind, ctx))
+                    continue;
+
+                int origInd = -1;
                 var anchor = instr.Operand as Instruction;
-                if (anchor?.OpCode.Code is Code.Br or Code.Br_S) //additional after-branch
+
+                //empty block?
+                if (instr.OpCode.FlowControl == FlowControl.Branch && anchor?.OpCode.Code is Code.Br or Code.Br_S) //additional after-branch
                 {
-                    var origInd = ctx.OrigInstructions.IndexOf(anchor);
+                    origInd = ctx.OrigInstructions.IndexOf(anchor);
                     var ldstr2 = Register(ctx, CrossPointType.Branch, origInd);
                     var call2 = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 
@@ -49,17 +61,9 @@ namespace Drill4Net.Injector.Strategies.Blocks
                     instr.Operand = ldstr2;
                     ctx.RegisterProcessed(anchor);
                 }
-                else //normal before-branch
+                else // normal before-branch
                 {
-                    var ind = instructions.IndexOf(instr);
-
-                    //check for too short jump
-                    var prev = SkipNops(ind, false, ctx);
-                    var prevInd = instructions.IndexOf(prev);
-                    if (!IsRealCondition(prevInd, ctx))
-                        continue;
-
-                    var origInd = ctx.OrigInstructions.IndexOf(instr);
+                    origInd = ctx.OrigInstructions.IndexOf(instr);
                     var ldstr = Register(ctx, CrossPointType.Branch, origInd);
                     var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 

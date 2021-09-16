@@ -197,7 +197,10 @@ namespace Drill4Net.Target.Tests.Common
 
                 yield return GetCase(GetInfo(Target.Try_Finally), new object[] { false }, new List<string> { "Branch_10", "Else_10", "Branch_12" });
                 yield return GetCase(GetInfo(Target.Try_Finally), new object[] { true }, new List<string> { "Branch_10", "If_12", "Anchor_14" });
-                
+
+                yield return GetCase(GetInfo(Target.Try_Catch_Finally), new object[] { false }, new List<string> { "Throw_5", "Branch_9", "Else_9", "Branch_11" });
+                yield return GetCase(GetInfo(Target.Try_Catch_Finally), new object[] { true }, new List<string> { "Throw_5", "Branch_9", "If_11", "Anchor_13" });
+
                 yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { false }, new List<string> { "Branch_5", "Else_5", "Throw_8", "Branch_29" });
                 yield return GetCase(GetInfo(Target.Try_WithCondition), new object[] { true }, new List<string> { "Branch_5", "If_9", "Branch_20" });
                 #endregion

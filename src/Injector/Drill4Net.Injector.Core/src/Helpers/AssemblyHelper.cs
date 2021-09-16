@@ -86,11 +86,11 @@ namespace Drill4Net.Injector.Core
                 if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
                     continue;
 
-                methodCtx.Jumpers.Add(instr); //Code.Leave instructions are needed, too (for further correcting theirs jumps)
+                methodCtx.Jumpers.Add(instr); //Code.Leave instructions are needed, too (at least, for further correcting theirs jumps)
 
                 //need this jump for handle?
                 var curCode = instr.OpCode.Code;
-                if (curCode == Code.Leave || curCode == Code.Leave_S)
+                if (curCode == Code.Leave || curCode == Code.Leave_S) //jump target of Leaves isn't needed
                     continue;
                 var anchor = instr.Operand;
                 if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))

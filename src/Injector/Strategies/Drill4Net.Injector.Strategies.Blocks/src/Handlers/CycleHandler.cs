@@ -25,7 +25,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
 
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
-            var instr = instructions[ctx.CurIndex];
+            var instr = ctx.CurInstruction;
             var opCode = instr.OpCode;
             var code = opCode.Code;
             var proxyMethRef = ctx.AssemblyCtx.ProxyMethRef;
@@ -50,6 +50,8 @@ namespace Drill4Net.Injector.Strategies.Blocks
             }
             #endregion
 
+            ctx.Cycles.Add(instr.Next); //exactly here
+
             // Operators: while/for, do
             var ind = instructions.IndexOf(operand);
             var prevOperand = SkipNops(ind, false, ctx);
@@ -59,6 +61,8 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 var targetOp = (instr.Operand as Instruction)?.Previous; //no nop skipping
                 if (targetOp != null) //hm... formal checking
                 {
+                    ctx.Cycles.Add(targetOp.Next); //exactly here
+
                     processor.InsertAfter(targetOp, call);
                     processor.InsertAfter(targetOp, ldstrIf2);
                     ctx.CorrectIndex(2);
@@ -84,6 +88,8 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 ctx.CorrectIndex(2);
 
                 var jmpOperand = instr.Operand as Instruction;
+                ctx.Cycles.Add(jmpOperand.Next); //exactly here
+
                 crossType = isBrFalse ? CrossPointType.CycleEnd : CrossPointType.Cycle;
                 var ldstrIf2 = Register(ctx, crossType);
 
@@ -94,7 +100,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
 
                 instr.Operand = ldstrIf2;
             }
-            
+
             needBreak = true;
             return true;
         }

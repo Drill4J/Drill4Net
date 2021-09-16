@@ -237,19 +237,22 @@ namespace Drill4Net.Target.Common
             Try_Catch_VB(false);
             Try_Catch_VB(true);
 
-            Try_CatchWhen(false, false);
-            Try_CatchWhen(false, true);
-            Try_CatchWhen(true, false);
-            Try_CatchWhen(true, true);
-
-            Try_WithCondition(false);
-            Try_WithCondition(true);
-
             Try_Finally(false);
             Try_Finally(true);
 
             Try_Finally_VB(false);
             Try_Finally_VB(true);
+
+            Try_CatchWhen(false, false);
+            Try_CatchWhen(false, true);
+            Try_CatchWhen(true, false);
+            Try_CatchWhen(true, true);
+
+            Try_Catch_Finally(false);
+            Try_Catch_Finally(true);
+
+            Try_WithCondition(false);
+            Try_WithCondition(true);
             #endregion
             #region Async
 #if !NET461 && !NETSTANDARD2_0
@@ -887,7 +890,25 @@ namespace Drill4Net.Target.Common
             }
             Console.WriteLine($"{nameof(Try_Finally)}: {s}");
         }
-        
+
+        public void Try_Catch_Finally(bool cond)
+        {
+            var s = "none";
+            try
+            {
+                throw new Exception();
+            }
+            catch
+            {
+                s = cond ? "YES" : "NO";
+            }
+            finally
+            {
+                s += !cond ? " ?" : " !!!";
+            }
+            Console.WriteLine($"{nameof(Try_Catch_Finally)}: {s}");
+        }
+
         public void Try_WithCondition(bool cond)
         {
             string s = null;
@@ -899,7 +920,7 @@ namespace Drill4Net.Target.Common
             {
                 s = ex.Message;
             }
-            Console.WriteLine($"{nameof(Try_Finally)}: {s}");
+            Console.WriteLine($"{nameof(Try_WithCondition)}: {s}");
         }
         #endregion
         #region Dynamic
