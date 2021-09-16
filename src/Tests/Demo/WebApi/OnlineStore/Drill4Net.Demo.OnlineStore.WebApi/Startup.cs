@@ -48,8 +48,6 @@ namespace Drill4Net.Demo.OnlineStore.WebApi
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
