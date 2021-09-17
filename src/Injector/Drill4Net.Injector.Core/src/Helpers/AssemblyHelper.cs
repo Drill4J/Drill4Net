@@ -353,7 +353,7 @@ namespace Drill4Net.Injector.Core
                 {
                     var delta = 0;
                     List<(int Index, string Uid)> end2EndBizIndexes = new();
-                    CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta, ref end2EndBizIndexes);
+                    CorrectBusinessIndexesFor(methodCtx, allMethCtxs, ref delta, ref end2EndBizIndexes);
                     var method = methodCtx.Method;
                     method.End2EndBusinessIndexes = end2EndBizIndexes;
 
@@ -380,10 +380,10 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx,
+        internal static void CorrectBusinessIndexesFor(MethodContext ctx, IEnumerable<MethodContext> methCtxs,
             ref int delta, ref List<(int Index, string Uid)> end2EndBusinessIndexes)
         {
-            var meth = methodCtx.Method;
+            var meth = ctx.Method;
             var points = meth.Points.ToList(); //it's new list, not original one
 
             //find orphan CG callees without real call instructions (method sigs) in current method 
@@ -413,16 +413,16 @@ namespace Drill4Net.Injector.Core
             }
 
             // calc delta for the biz index
-            var lastIndex = methodCtx.OrigSize - 1;
+            var lastIndex = ctx.OrigSize - 1;
             var orderedPoints = points.OrderBy(a => a.OrigInd);
             foreach (var point in orderedPoints) //by ordered points
             {
                 var origInd = point.OrigInd;
-                var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); //only for the local code body
-                if (localBizInd > 0 && origInd < lastIndex)
-                {
-                    localBizInd--; //cross-points are setted before instruction which they relate
-                }
+                var localBizInd = ctx.GetLocalBusinessIndex(origInd); //only for the local code body
+                //if (localBizInd > 0 && origInd < lastIndex)
+                //{
+                //    localBizInd--; //cross-points are setted before instruction which they relate
+                //}
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
                 end2EndBusinessIndexes.Add((bizInd, point.PointUid));
@@ -441,7 +441,7 @@ namespace Drill4Net.Injector.Core
                         {
                             delta = bizInd; //shift for the callee taking into account the index of its call instruction in parent
                             //delta will be increased in the body of that CG method for NEXT instructions of the parent method
-                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes);
+                            CorrectBusinessIndexesFor(calleeCtx, methCtxs, ref delta, ref end2EndBusinessIndexes);
                             delta -= localBizInd; //correct for local using
                         }
                         if (calleeCtx == null) //???
@@ -454,7 +454,7 @@ namespace Drill4Net.Injector.Core
                 }
             }
             //
-           delta += methodCtx.BusinessInstructionList.Count - 1;
+           delta += ctx.BusinessInstructionList.Count - 1;
         }
         #endregion
 
