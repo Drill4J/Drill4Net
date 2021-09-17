@@ -31,10 +31,6 @@ namespace Drill4Net.Injector.Strategies.Blocks
             foreach (var instr in jumpers)
             {
                 var ind = instructions.IndexOf(instr);
-                var prev = MoveSkippingNops(ind, false, ctx);
-                var isPrevBr = prev.OpCode.Code is Code.Br or Code.Br_S;
-                //if (isPrevBr && ctx.Processed.Contains(instr)) //for already processed here the empty blocks
-                //    continue;
                 if (!IsRealCondition(ind, ctx))
                     continue;
 
@@ -44,9 +40,12 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 
                 //correction
-                var emtyBlock = instr.OpCode.FlowControl == FlowControl.Branch && isPrevBr;
+                var prev = MoveSkippingNops(ind, false, ctx);
+                var isPrevBr = prev.OpCode.Code is Code.Br or Code.Br_S;
+                var emtyBlock = instr.OpCode.FlowControl == FlowControl.Branch && isPrevBr; //br.s -> br.s
                 if (emtyBlock)
                     ReplaceJumps(instr, ldstr, ctx);
+
                 FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
                 ctx.CorrectIndex(2);
 

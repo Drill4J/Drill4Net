@@ -413,7 +413,7 @@ namespace Drill4Net.Injector.Core
             }
 
             // calc delta for the biz index
-            var lastIndex = methodCtx.OrigIndex - 1;
+            var lastIndex = methodCtx.OrigSize - 1;
             var orderedPoints = points.OrderBy(a => a.OrigInd);
             foreach (var point in orderedPoints) //by ordered points
             {
@@ -421,7 +421,7 @@ namespace Drill4Net.Injector.Core
                 var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); //only for the local code body
                 if (localBizInd > 0 && origInd < lastIndex)
                 {
-                    localBizInd--; //because currently cross-points are setted before instruction which they relate
+                    localBizInd--; //cross-points are setted before instruction which they relate
                 }
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
@@ -434,7 +434,7 @@ namespace Drill4Net.Injector.Core
                         point.PointUid :
                         meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
 
-                    if (callee != null)  //method call the callee
+                    if (callee != null) //method call the callee
                     {
                         var calleeCtx = methCtxs.SingleOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
