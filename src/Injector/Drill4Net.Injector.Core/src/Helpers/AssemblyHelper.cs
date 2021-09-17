@@ -348,7 +348,7 @@ namespace Drill4Net.Injector.Core
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 var allMethCtxs = typeCtx.MethodContexts.Values;
-                var bizMethCtxs = typeCtx.MethodContexts.Values.Where(a => !a.Method.IsCompilerGenerated);
+                var bizMethCtxs = allMethCtxs.Where(a => !a.Method.IsCompilerGenerated);
                 foreach (var methodCtx in bizMethCtxs)
                 {
                     var delta = 0;

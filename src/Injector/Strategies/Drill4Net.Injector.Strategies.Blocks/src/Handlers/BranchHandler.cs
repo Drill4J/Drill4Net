@@ -26,13 +26,35 @@ namespace Drill4Net.Injector.Strategies.Blocks
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
             var jumpers = ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a) &&
-                                                              !ctx.Switches.Contains(a));
+                                                              !ctx.Switches.Contains(a))
+                .OrderBy(a => a.Offset);
 
+            int lastProcInd = -1;
             foreach (var instr in jumpers)
             {
                 var ind = instructions.IndexOf(instr);
+
+                #region Check
                 if (!IsRealCondition(ind, ctx))
-                    continue;
+                {
+                    if (lastProcInd == -1)
+                        continue;
+
+                    //check whether it is necessary to create a new block because of the jump
+                    //to the code after the last processed instruction
+                    var anchorExists = false;
+                    for (var i = lastProcInd + 1; i < ind - 1; i++)
+                    {
+                        if (ctx.Anchors.Contains(instructions[i]))
+                        {
+                            anchorExists = true;
+                            break;
+                        }
+                    }
+                    if (!anchorExists)
+                        continue;
+                }
+                #endregion
 
                 //data
                 int origInd = ctx.OrigInstructions.IndexOf(instr);
@@ -52,6 +74,8 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 //injection
                 processor.InsertBefore(instr, ldstr);
                 processor.InsertBefore(instr, call);
+
+                lastProcInd = ind;
             }
         }
 
