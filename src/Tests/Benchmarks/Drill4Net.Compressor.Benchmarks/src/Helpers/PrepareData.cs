@@ -17,6 +17,10 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
         const int count = 100;
         /****************************************************/
 
+        /// <summary>
+        ///Generate Simple Data
+        /// <summary>
+        /// <return></return>
         internal static SimpleData GenerateSimpleData ()
         {
             var data = new SimpleData();
@@ -31,6 +35,10 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
             return data;
         }
 
+        /// <summary>
+        ///Generate Medium Data
+        /// <summary>
+        /// <return></return>
         internal static MediumData GenerateMediumData()
         {
             var data = new MediumData();
@@ -60,6 +68,10 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
             return data;
         }
 
+        /// <summary>
+        ///Generate Complex Data
+        /// <summary>
+        /// <return></return>
         internal static ComplexData GenerateComplexData()
         {
             var data = new ComplexData();
@@ -102,6 +114,10 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
             return data;
         }
 
+        /// <summary>
+        ///Generate InjectedSolution tree
+        /// <summary>
+        /// <return></return>
         internal static async Task<InjectedSolution> GenerateInjectedSolutionAsync(string cfgName)
         {
             var cfgPath = Path.Combine(FileUtils.ExecutingDir, cfgName);

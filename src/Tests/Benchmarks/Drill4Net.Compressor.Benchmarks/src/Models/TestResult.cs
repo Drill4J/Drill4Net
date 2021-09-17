@@ -1,7 +1,7 @@
 ﻿using System;
 using Drill4Net.Compressor.Benchmarks.Enums;
 
-namespace Drill4Net.Compressor.Benchmarks.src.Models
+namespace Drill4Net.Compressor.Benchmarks.Models
 {
     internal class TestResult
     {
