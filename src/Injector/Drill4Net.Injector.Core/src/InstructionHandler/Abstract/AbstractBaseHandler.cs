@@ -196,7 +196,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             //
             var op = instructions[ind];
-            var next = SkipNops(ind, true, ctx);
+            var next = MoveSkippingNops(ind, true, ctx);
             return op.Operand != next; //how far do it jump?
         }
 
@@ -223,12 +223,13 @@ namespace Drill4Net.Injector.Core
         }
 
         /// <summary>
-        /// Skip the NOP instructions
+        /// Get next instruction with skipping the NOP instructions 
+        /// (if they are not target for jumps)
         /// </summary>
         /// <param name="ind">Current index</param>
         /// <param name="forward">Direction: forward or backward</param>
         /// <returns></returns>
-        protected Instruction SkipNops(int ind, bool forward, MethodContext methodCtx)
+        protected Instruction MoveSkippingNops(int ind, bool forward, MethodContext methodCtx)
         {
             var instructions = methodCtx.Instructions;
             int start, inc;
@@ -347,7 +348,7 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         internal bool IsNextReturn(int ind, MethodContext ctx, Instruction lastOp)
         {
-            var ins = SkipNops(ind, true, ctx);
+            var ins = MoveSkippingNops(ind, true, ctx);
             if (ins.Operand is not Instruction op)
                 return false;
             if (op == lastOp && ins.Next == lastOp)

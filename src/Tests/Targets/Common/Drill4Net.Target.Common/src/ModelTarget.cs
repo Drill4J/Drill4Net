@@ -16,10 +16,10 @@ using Drill4Net.Target.Common.VB;
 //add this in project's csproj file: 
 //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-                                             /*                                             *
-                                              *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
-                                              *   It's needed AS it IS !!!                  *
-                                              *                                             */
+/*                                             *
+ *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
+ *   It's needed AS it IS !!!                  *
+ *                                             */
 
 namespace Drill4Net.Target.Common
 {
@@ -132,6 +132,7 @@ namespace Drill4Net.Target.Common
             Switch_When(1);
             Switch_When(2);
 
+            Switch_Property(-2);
             Switch_Property(-1);
             Switch_Property(0);
             Switch_Property(1);
@@ -158,7 +159,7 @@ namespace Drill4Net.Target.Common
             Switch_Logical(-5);
             Switch_Logical(5);
             Switch_Logical(10);
-//#endif
+            //#endif
             #endregion
             #region Elvis
             Elvis(false);
@@ -294,10 +295,10 @@ namespace Drill4Net.Target.Common
             Parallel_Thread_New(true);
             #endregion
             #region Disposable
-            try { Disposable_Using_Exception(false); } catch{}
-            try { Disposable_Using_Exception(true); } catch{}
+            try { Disposable_Using_Exception(false); } catch { }
+            try { Disposable_Using_Exception(true); } catch { }
 
-            try { Disposable_Using_Last_Exception(); } catch{}
+            try { Disposable_Using_Last_Exception(); } catch { }
 
             Disposable_Using_SyncRead(false);
             Disposable_Using_SyncRead(true);
@@ -320,7 +321,7 @@ namespace Drill4Net.Target.Common
 
             Goto_Statement(false);
             Goto_Statement(true);
-            
+
             Goto_Statement_Cycle_Backward();
 
             Goto_Statement_Cycle_Forward(false);
@@ -639,24 +640,23 @@ namespace Drill4Net.Target.Common
 
         public string Switch_Property(int cond)
         {
-            var p = new { Name = "unknown", IsAdmin = false, Language = "unknown" };
+            User p = null;
+            if (cond == -1)
+                p = new User("unknown", false, "unknown");
             if (cond > -1)
             {
-                p = cond == 0 ?
-                    new { Name = "John", IsAdmin = false, Language = "English" } :
-                    (cond == 1 ?
-                        new { Name = "Андрей", IsAdmin = false, Language = "Russian" } :
-                        new { Name = "Woldemar", IsAdmin = true, Language = "German" }
+                p = cond == 0 ? new User("John", false, "English") :
+                    (cond == 1 ? new User("Андрей", false, "Russian") : new User("Woldemar", true, "German")
                     );
             }
             //
             var s = p switch
             {
-                { Language: "English" } => $"Hello, {p.Name}!",
-                { Language: "German", IsAdmin: true } => "Hallo, Geheimagent!",
-                { Language: "Russian" } => $"Привет, {p.Name}!",
-                { } => "undefined",
-                null => "null"
+                { Language: "English" } => $"Hello, {p.Name}!", //0
+                { Language: "German", IsAdmin: true } => "Hallo, Geheimagent!", //1
+                { Language: "Russian" } => $"Привет, {p.Name}!", //2
+                { } => "undefined", //-1
+                null => "null" //-2
             };
             Console.WriteLine($"{nameof(Switch_Property)}: {p} -> {s}");
             return s;
@@ -778,7 +778,7 @@ namespace Drill4Net.Target.Common
             var res = cities.Where(c => all ? c != null : c == "London");
             Console.WriteLine($"{nameof(Linq_Fluent)}: {string.Join(",", res)}");
         }
-        
+
         public void Linq_Fluent_Double(bool all)
         {
             var cities = new List<string> { "Paris", "London", "Moscow" };
@@ -916,7 +916,7 @@ namespace Drill4Net.Target.Common
             {
                 s = cond ? "YES" : throw new Exception("Thrown exception");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 s = ex.Message;
             }
@@ -1183,9 +1183,9 @@ namespace Drill4Net.Target.Common
         public void Disposable_Using_Last_Exception()
         {
             Console.WriteLine(nameof(Disposable_Using_Last_Exception));
-        #pragma warning disable IDE0063 // Use simple 'using' statement
+#pragma warning disable IDE0063 // Use simple 'using' statement
             using (var ms = new MemoryStream(new byte[128]))
-        #pragma warning restore IDE0063 // Use simple 'using' statement
+#pragma warning restore IDE0063 // Use simple 'using' statement
             {
                 const int a = 3;
                 const int b = 5;
@@ -1197,9 +1197,9 @@ namespace Drill4Net.Target.Common
         public void Disposable_Using_Exception(bool cond)
         {
             Console.WriteLine($"{nameof(Disposable_Using_Exception)}: {cond}");
-            #pragma warning disable IDE0063 // Use simple 'using' statement
+#pragma warning disable IDE0063 // Use simple 'using' statement
             using (var ms = new MemoryStream())
-            #pragma warning restore IDE0063 // Use simple 'using' statement
+#pragma warning restore IDE0063 // Use simple 'using' statement
             {
                 if (cond)
                     throw new Exception($"The exception has been thrown");
@@ -1225,9 +1225,9 @@ namespace Drill4Net.Target.Common
             using (var ms = new MemoryStream(GetBytes(cnt)))
             {
                 if (cond)
-                    #pragma warning disable CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
+#pragma warning disable CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
                     await ms.ReadAsync(res, 0, (int)ms.Length);
-                    #pragma warning restore CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
+#pragma warning restore CA1835 // Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'
             }
             Console.WriteLine($"{nameof(Disposable_Using_AsyncRead)}: {cond}");
         }
@@ -1269,9 +1269,9 @@ namespace Drill4Net.Target.Common
         public void Anonymous_Func()
         {
             int z = 8;
-            #pragma warning disable IDE0039 // Use local function
+#pragma warning disable IDE0039 // Use local function
             Operation operation = delegate (int x, int y)
-            #pragma warning restore IDE0039 // Use local function
+#pragma warning restore IDE0039 // Use local function
             {
                 if (x > 1)
                     x /= 2;
@@ -1284,9 +1284,9 @@ namespace Drill4Net.Target.Common
         public void Anonymous_Func_Invoke()
         {
             int z = 8;
-            #pragma warning disable IDE0039 // Use local function
+#pragma warning disable IDE0039 // Use local function
             Operation operation = delegate (int x, int y)
-            #pragma warning restore IDE0039 // Use local function
+#pragma warning restore IDE0039 // Use local function
             {
                 if (x > 1)
                     x /= 2;
@@ -1378,7 +1378,7 @@ namespace Drill4Net.Target.Common
             if (cond)
                 goto label;
             s = "bbb";
-            label:
+        label:
             Console.WriteLine($"{nameof(Goto_Statement)}: {cond} -> {s}");
         }
 
@@ -1393,19 +1393,19 @@ namespace Drill4Net.Target.Common
                     goto label;
                 s += "b";
             }
-            label:
+        label:
             Console.WriteLine($"{nameof(Goto_Statement_Cycle_Forward)}: {cond} -> {s}");
         }
 
         public void Goto_Statement_Cycle_Backward()
         {
             var a = -1;
-    label:
+        label:
             a++;
             var s = a.ToString();
             while (true)
             {
-                if(a == 0)
+                if (a == 0)
                     goto label;
                 break;
             }
@@ -1423,12 +1423,12 @@ namespace Drill4Net.Target.Common
         {
             Console.WriteLine($"{nameof(Event)} started");
 
-            #pragma warning disable IDE0039 // Use local function
+#pragma warning disable IDE0039 // Use local function
             NotifyHandler p = delegate (string mes)
             {
                 Console.WriteLine($"{nameof(Event)} -> {mes}");
             };
-            #pragma warning restore IDE0039 // Use local function
+#pragma warning restore IDE0039 // Use local function
 
             var eventer = new Eventer();
             eventer.Notify += p;

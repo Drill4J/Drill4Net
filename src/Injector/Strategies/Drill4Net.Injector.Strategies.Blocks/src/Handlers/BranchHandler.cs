@@ -31,7 +31,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
             foreach (var instr in jumpers)
             {
                 var ind = instructions.IndexOf(instr);
-                var prev = SkipNops(ind, false, ctx);
+                var prev = MoveSkippingNops(ind, false, ctx);
                 var isPrevBr = prev.OpCode.Code is Code.Br or Code.Br_S;
                 if (isPrevBr && ctx.Processed.Contains(instr)) //for already processed here the empty blocks
                     continue;

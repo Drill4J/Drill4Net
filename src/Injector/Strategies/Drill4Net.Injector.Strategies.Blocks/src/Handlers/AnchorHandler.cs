@@ -41,7 +41,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
             {
                 var ind = ctx.Instructions.IndexOf(instr);
                 //TODO: instead such inefficient check better immediately to exclude the bad branches in ctx.Anchors
-                var prev = SkipNops(ind, false, ctx);
+                var prev = MoveSkippingNops(ind, false, ctx);
                 if (prev.OpCode.Code is Code.Throw)
                     continue;
                 var prevInd = ctx.Instructions.IndexOf(prev);

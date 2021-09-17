@@ -126,6 +126,7 @@ namespace Drill4Net.Target.Tests.Common
                 yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "English", "evening" }, new List<string> { "Branch_2", "Branch_7", "If_12", "Branch_16", "Else_16", "Branch_20", "If_33", "Branch_36", "Branch_47", "Branch_58" });
                 yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "German", "morning" }, new List<string> { "Branch_2", "Branch_7", "Else_7", "Branch_11", "If_21", "Branch_25", "If_36", "Branch_39", "Branch_47", "Branch_58" });
                 yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "German", "evening" }, new List<string> { "Branch_2", "Branch_7", "Else_7", "Branch_11", "If_21", "Branch_25", "Else_25", "Branch_29", "If_39", "Branch_42", "Branch_47", "Branch_58" });
+                yield return GetCase(GetInfo(Target.Switch_Tuple), new object[] { "Unknown", "default" }, new List<string> { "Branch_2", "Branch_7", "If_12", "Branch_16", "If_30", "Branch_33", "Branch_47", "Branch_58" });
 
                 yield return GetCase(GetInfo(Target.Switch_AsReturn), new object[] { -1 }, new List<string> { "Branch_9", "Branch_14", "Branch_18", "Branch_29", "Branch_33" });
                 yield return GetCase(GetInfo(Target.Switch_AsReturn), new object[] { 0 }, new List<string> { "Branch_9", "Branch_14", "Branch_21", "Branch_29", "Branch_33" });
@@ -134,8 +135,10 @@ namespace Drill4Net.Target.Tests.Common
 #endif
                 yield return GetCase(GetInfo(Target.Switch_When), new object[] { 0 }, new List<string> { "Branch_7", "Branch_10", "Branch_11", "Branch_20", "If_21", "Branch_26" });
                 yield return GetCase(GetInfo(Target.Switch_When), new object[] { 1 }, new List<string> { "Branch_7", "Branch_10", "Branch_11", "Branch_20", "Branch_21", "Branch_31", "Else_31", "Branch_34", "If_35", "Branch_40" });
+                yield return GetCase(GetInfo(Target.Switch_When), new object[] { 2 }, new List<string> { "Branch_7", "Branch_10", "If_11", "Branch_16" });
                 yield return GetCase(GetInfo(Target.Switch_When), new object[] { -1 }, new List<string> { "Branch_7", "Branch_10", "If_11", "Branch_16" });
 
+                yield return GetCase(GetInfo(Target.Switch_Property), new object[] { -2 }, new List<string> { "Branch_11", "Branch_35", "Branch_38", "If_38", "Branch_45", "Else_45", "Branch_49", "Else_49", "Branch_53", "Branch_54", "Branch_80", "Branch_85", "Branch_98" });
                 yield return GetCase(GetInfo(Target.Switch_Property), new object[] {-1 }, new List<string> { "Branch_11", "Branch_35", "Branch_38", "If_38", "Branch_45", "Else_45", "Branch_49", "Else_49", "Branch_53", "Branch_54", "Branch_80", "Branch_85", "Branch_98" });
                 yield return GetCase(GetInfo(Target.Switch_Property), new object[] { 0 }, new List<string> { "Branch_11", "If_11", "Branch_14", "Else_27", "Anchor_32", "Branch_35", "Branch_38", "If_38", "Branch_45", "If_60", "Branch_67", "Branch_85", "Branch_98" });
                 yield return GetCase(GetInfo(Target.Switch_Property), new object[] { 1 }, new List<string> { "Branch_11", "If_11", "Branch_14", "If_14", "Branch_17", "If_22", "Branch_27", "Branch_35", "Branch_38", "If_38", "Branch_45", "Else_45", "Branch_49", "Else_49", "Branch_53", "If_70", "Branch_77", "Branch_85", "Branch_98" });
