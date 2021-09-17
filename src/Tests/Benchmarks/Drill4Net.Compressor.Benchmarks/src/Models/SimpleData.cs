@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Drill4Net.Compressor.Benchmarks.Dto
+namespace Drill4Net.Compressor.Benchmarks.Models
 {
     [Serializable]
     internal class SimpleData
