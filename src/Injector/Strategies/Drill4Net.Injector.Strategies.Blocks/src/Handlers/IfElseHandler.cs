@@ -77,8 +77,17 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 ctx.CorrectIndex(2);
 
                 //injection
-                processor.InsertAfter(instr, call);
-                processor.InsertAfter(instr, ldstr);
+                if (code == Code.Switch)
+                {
+                    processor.InsertBefore(instr, ldstr);
+                    processor.InsertBefore(instr, call);
+                    ctx.Switches.Add(instr);
+                }
+                else
+                {
+                    processor.InsertAfter(instr, call);
+                    processor.InsertAfter(instr, ldstr);
+                }
 
                 processed = true;
                 needBreak = true;

@@ -46,7 +46,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
             AddHandler(new CallHandler(helper));
 
             //jump targets + inner calls of the compiler generated members
-            AddHandler(new AnchorHandler(helper, true)); //TODO: automatic check for CycleHandler's existing?
+            AddHandler(new AnchorHandler(helper));
         }
     }
 }

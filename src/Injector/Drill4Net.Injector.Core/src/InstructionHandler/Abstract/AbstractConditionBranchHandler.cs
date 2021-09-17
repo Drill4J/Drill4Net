@@ -70,7 +70,7 @@ namespace Drill4Net.Injector.Core
             if (isBrFalse && operand is {OpCode: {Code: Code.Endfinally}})
             {
                 var endFinInd = instructions.IndexOf(operand);
-                var prevInstr = SkipNops(endFinInd, false, ctx);
+                var prevInstr = MoveSkippingNops(endFinInd, false, ctx);
                 var operand2 = prevInstr.Operand as MemberReference;
                 if (operand2?.FullName?.Equals("System.Void System.Threading.Monitor::Exit(System.Object)") == true)
                     return false;

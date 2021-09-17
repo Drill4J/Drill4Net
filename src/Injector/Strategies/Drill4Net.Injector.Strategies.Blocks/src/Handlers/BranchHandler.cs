@@ -20,32 +20,62 @@ namespace Drill4Net.Injector.Strategies.Blocks
 
         protected override void PostprocessConcrete(MethodContext ctx)
         {
-            if (!ctx.BusinessInstructions.Any())
+            if (ctx.BusinessInstructions.Count == 0)
                 return;
             //
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
-            foreach (var instr in ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a)))
+            var jumpers = ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a) &&
+                                                              !ctx.Switches.Contains(a))
+                .OrderBy(a => a.Offset);
+
+            int lastProcInd = -1;
+            foreach (var instr in jumpers)
             {
                 var ind = instructions.IndexOf(instr);
 
-                //check for too short jump
-                var prev = SkipNops(ind, false, ctx);
-                var prevInd = instructions.IndexOf(prev);
-                if (!IsRealCondition(prevInd, ctx))
-                    continue;
+                #region Check
+                if (!IsRealCondition(ind, ctx))
+                {
+                    if (lastProcInd == -1)
+                        continue;
 
-                var origInd = ctx.OrigInstructions.IndexOf(instr);
+                    //check whether it is necessary to create a new block because of the jump
+                    //to the code after the last processed instruction
+                    var anchorExists = false;
+                    for (var i = lastProcInd + 1; i < ind - 1; i++)
+                    {
+                        if (ctx.Anchors.Contains(instructions[i]))
+                        {
+                            anchorExists = true;
+                            break;
+                        }
+                    }
+                    if (!anchorExists)
+                        continue;
+                }
+                #endregion
+
+                //data
+                int origInd = ctx.OrigInstructions.IndexOf(instr);
                 var ldstr = Register(ctx, CrossPointType.Branch, origInd);
                 var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 
                 //correction
+                var prev = MoveSkippingNops(ind, false, ctx);
+                var isPrevBr = prev.OpCode.Code is Code.Br or Code.Br_S;
+                var emtyBlock = instr.OpCode.FlowControl == FlowControl.Branch && isPrevBr; //br.s -> br.s
+                if (emtyBlock)
+                    ReplaceJumps(instr, ldstr, ctx);
+
                 FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
                 ctx.CorrectIndex(2);
 
                 //injection
                 processor.InsertBefore(instr, ldstr);
                 processor.InsertBefore(instr, call);
+
+                lastProcInd = ind;
             }
         }
 

@@ -135,21 +135,11 @@ namespace Drill4Net.Injector.Core
                                     }
                                 }
                                 else
-                                if (curInstr.OpCode.Code == Code.Callvirt)
-                                {
-                                    //var oper = curInstr.Operand?.ToString();
-                                    //if (oper != null)
-                                    //{
-                                    //    if (oper.Contains("::Invoke(") || oper.EndsWith("::Start()") || oper.Contains(".Task::Run(") ||
-                                    //        oper.Contains("::add_") || oper.EndsWith("::remove_")) //binding events
-                                    //    {
-                                    //        callInd = i;
-                                    //        break;
-                                    //    }
-                                    //}
-                                    callInd = i;
-                                    break;
-                                }
+                                    if (curInstr.OpCode.Code == Code.Callvirt)
+                                    {
+                                        callInd = i;
+                                        break;
+                                    }
                             }
                         }
                     }
@@ -160,7 +150,7 @@ namespace Drill4Net.Injector.Core
 
             // is compiler generated the external method?
             var extName = extOp.Name;
-            if (!extTypeFullName.Contains(">d__") && !extName.StartsWith("<") && !extFullname.Contains("|"))
+            if (!extTypeFullName.Contains(">d__") && !extName.StartsWith("<") && !extFullname.Contains('|'))
                 return;
 
             try
@@ -171,7 +161,7 @@ namespace Drill4Net.Injector.Core
                     (asmCtx.InjClasses.ContainsKey(extTypeName) ? asmCtx.InjClasses[extTypeName] : null);
 
                 //extType found, not local func, not '<>c'
-                if (!extFullname.Contains("|") && extType?.Name?.EndsWith("/<>c") == false)
+                if (!extFullname.Contains('|') && extType?.Name?.EndsWith("/<>c") == false)
                 {
                     var extRealMethodName = TryGetBusinessMethod(extFullname, extFullname, true, true);
                     InjectedType realCgType = null;

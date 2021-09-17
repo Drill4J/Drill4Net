@@ -29,7 +29,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Any sesion is exists?
         /// </summary>
-        public bool IsAnySession => _sessionToCtx.Any();
+        public bool IsAnySession => _sessionToCtx.Count > 0;
 
         private ConcurrentDictionary<string, string> _ctxToSession;
         private ConcurrentDictionary<string, string> _sessionToCtx;
@@ -95,7 +95,7 @@ namespace Drill4Net.Agent.Standard
             _injTypes = GetTypesByCallerVersion(tree);
 
             //timer for periodically sending coverage data to admin side
-            _sendTimer = new System.Timers.Timer(1500);
+            _sendTimer = new System.Timers.Timer(1200);
             _sendTimer.Elapsed += Timer_Elapsed;
         }
 
@@ -174,7 +174,7 @@ namespace Drill4Net.Agent.Standard
                             targetDir = dir;
                             break;
                         }
-                        injTypes = targetDir?.GetAllTypes(); 
+                        injTypes = targetDir?.GetAllTypes();
                     }
                 }
             }

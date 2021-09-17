@@ -237,7 +237,6 @@ namespace Drill4Net.Agent.Testing
         /// <param name="ctxId">The context of test identifier.</param>
         /// <param name="asmName">Name of the assembly of function.</param>
         /// <param name="funcSig">The function signature.</param>
-        /// <param name="withPointRemoving">if set to <c>true</c> the probe data after its retrieving will be deleted.</param>
         /// <returns></returns>
         public static List<string> GetPoints(string ctxId, string asmName, string funcSig)
         {
@@ -260,7 +259,7 @@ namespace Drill4Net.Agent.Testing
         /// Gets all cross-points ignoring execution context.
         /// </summary>
         /// <param name="fullSig">The full function signature with assembly name is formed as $"{asmName};{funcSig}.</param>
-        /// <returns></returns>
+        /// <returns>List of points</returns>
         public static List<string> GetPointsIgnoringContext(string fullSig)
         {
             var all = new List<string>();

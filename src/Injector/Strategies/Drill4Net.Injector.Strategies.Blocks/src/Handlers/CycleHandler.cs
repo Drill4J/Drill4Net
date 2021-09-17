@@ -25,7 +25,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
 
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
-            var instr = instructions[ctx.CurIndex];
+            var instr = ctx.CurInstruction;
             var opCode = instr.OpCode;
             var code = opCode.Code;
             var proxyMethRef = ctx.AssemblyCtx.ProxyMethRef;
@@ -50,18 +50,25 @@ namespace Drill4Net.Injector.Strategies.Blocks
             }
             #endregion
 
+            ctx.Cycles.Add(instr.Next); //exactly here
+
             // Operators: while/for, do
             var ind = instructions.IndexOf(operand);
-            var prevOperand = SkipNops(ind, false, ctx);
+            var prevOperand = MoveSkippingNops(ind, false, ctx);
             if (prevOperand.OpCode.Code is Code.Br or Code.Br_S) //for/while
             {
                 var ldstrIf2 = Register(ctx, CrossPointType.Cycle);
-                var targetOp = (instr.Operand as Instruction).Previous; //no nop skipping
-                processor.InsertAfter(targetOp, call);
-                processor.InsertAfter(targetOp, ldstrIf2);
-                ctx.CorrectIndex(2);
+                var targetOp = (instr.Operand as Instruction)?.Previous; //no nop skipping
+                if (targetOp != null) //hm... formal checking
+                {
+                    ctx.Cycles.Add(targetOp.Next); //exactly here
 
-                instr.Operand = ldstrIf2;
+                    processor.InsertAfter(targetOp, call);
+                    processor.InsertAfter(targetOp, ldstrIf2);
+                    ctx.CorrectIndex(2);
+
+                    instr.Operand = ldstrIf2;
+                }
 
                 var ldstrIf3 = Register(ctx, CrossPointType.CycleEnd);
                 var call1 = Instruction.Create(OpCodes.Call, proxyMethRef);
@@ -81,6 +88,8 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 ctx.CorrectIndex(2);
 
                 var jmpOperand = instr.Operand as Instruction;
+                ctx.Cycles.Add(jmpOperand.Next); //exactly here
+
                 crossType = isBrFalse ? CrossPointType.CycleEnd : CrossPointType.Cycle;
                 var ldstrIf2 = Register(ctx, crossType);
 
@@ -91,7 +100,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
 
                 instr.Operand = ldstrIf2;
             }
-            
+
             needBreak = true;
             return true;
         }
