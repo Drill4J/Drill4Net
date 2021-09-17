@@ -33,58 +33,26 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 var ind = instructions.IndexOf(instr);
                 var prev = MoveSkippingNops(ind, false, ctx);
                 var isPrevBr = prev.OpCode.Code is Code.Br or Code.Br_S;
-                if (isPrevBr && ctx.Processed.Contains(instr)) //for already processed here the empty blocks
-                    continue;
-
-                var code = instr.OpCode.Code;
+                //if (isPrevBr && ctx.Processed.Contains(instr)) //for already processed here the empty blocks
+                //    continue;
                 if (!IsRealCondition(ind, ctx))
                     continue;
 
-                int origInd = -1;
-                var anchor = instr.Operand as Instruction;
+                //data
+                int origInd = ctx.OrigInstructions.IndexOf(instr);
+                var ldstr = Register(ctx, CrossPointType.Branch, origInd);
+                var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
 
-                //empty block?
-                if (instr.OpCode.FlowControl == FlowControl.Branch &&
-                    (anchor?.OpCode.Code is (Code.Br or Code.Br_S) || isPrevBr)) //additional after-branch
-                {
-                    origInd = ctx.OrigInstructions.IndexOf(isPrevBr ? instr : anchor);
-                    var ldstr2 = Register(ctx, CrossPointType.Branch, origInd);
-                    var call2 = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
+                //correction
+                var emtyBlock = instr.OpCode.FlowControl == FlowControl.Branch && isPrevBr;
+                if (emtyBlock)
+                    ReplaceJumps(instr, ldstr, ctx);
+                FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
+                ctx.CorrectIndex(2);
 
-                    //correction
-                    FixFinallyEnd(anchor, ldstr2, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
-                    ctx.CorrectIndex(2);
-
-                    //injection
-                    if (isPrevBr)
-                    {
-                        processor.InsertBefore(instr, ldstr2);
-                        processor.InsertBefore(instr, call2);
-                        ReplaceJumps(instr, ldstr2, ctx);
-                    }
-                    else
-                    {
-                        processor.InsertBefore(anchor, ldstr2);
-                        processor.InsertBefore(anchor, call2);
-
-                        instr.Operand = ldstr2;
-                        ctx.RegisterProcessed(anchor);
-                    }
-                }
-                else // normal before-branch
-                {
-                    origInd = ctx.OrigInstructions.IndexOf(instr);
-                    var ldstr = Register(ctx, CrossPointType.Branch, origInd);
-                    var call = Instruction.Create(OpCodes.Call, ctx.AssemblyCtx.ProxyMethRef);
-
-                    //correction
-                    FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 
-                    ctx.CorrectIndex(2);
-
-                    //injection
-                    processor.InsertBefore(instr, ldstr);
-                    processor.InsertBefore(instr, call);
-                }
+                //injection
+                processor.InsertBefore(instr, ldstr);
+                processor.InsertBefore(instr, call);
             }
         }
 

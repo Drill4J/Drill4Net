@@ -645,8 +645,9 @@ namespace Drill4Net.Target.Common
                 p = new User("unknown", false, "unknown");
             if (cond > -1)
             {
-                p = cond == 0 ? new User("John", false, "English") :
-                    (cond == 1 ? new User("Андрей", false, "Russian") : new User("Woldemar", true, "German")
+                p = cond == 0 ?
+                    new User("John", false, "English") :
+                    (cond == 1 ? new User("Woldemar", true, "German") : new User("Андрей", false, "Russian")
                     );
             }
             //
@@ -658,7 +659,7 @@ namespace Drill4Net.Target.Common
                 { } => "undefined", //-1
                 null => "null" //-2
             };
-            Console.WriteLine($"{nameof(Switch_Property)}: {p} -> {s}");
+            Console.WriteLine($"{nameof(Switch_Property)}: {s}");
             return s;
         }
 
