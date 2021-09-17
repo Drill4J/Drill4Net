@@ -19,6 +19,7 @@
      <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Agent.Testing</OutputPath>
    </PropertyGroup>
    <ItemGroup>
+     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
      <PackageReference Include="NUnit" Version="3.13.2" />
    </ItemGroup>
    <ItemGroup>
