@@ -1,7 +1,7 @@
 ﻿using System;
 using K4os.Compression.LZ4;
 
-namespace Drill4Net.Compressor.Benchmarks.Compression
+namespace Drill4Net.Compressor.Benchmarks.Compressors
 {
     public static class LZ4Compressor
     {

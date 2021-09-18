@@ -1,10 +1,8 @@
-﻿using System;
-using Drill4Net.Compressor.Benchmarks.Enums;
-
-namespace Drill4Net.Compressor.Benchmarks.Models
+﻿namespace Drill4Net.Compressor.Benchmarks.Models
 {
     internal class TestResult
     {
+        internal ModelTypes DataType { get; set; }
         internal double MinTime { get; set; } = 0;
         internal double MaxTime { get; set; } = 0;
         internal double AvgTime { get; set; } = 0;
@@ -14,8 +12,7 @@ namespace Drill4Net.Compressor.Benchmarks.Models
         internal double MinMemory { get; set; } = 0;
         internal double MaxMemory { get; set; } = 0;
         internal double AvgMemory { get; set; } = 0;
-        internal string CompressorName { get; set; } = String.Empty;
-        internal string CompressLevel { get; set; } = String.Empty;
-        internal DataTypes DataType { get; set; }
+        internal string CompressorName { get; set; } = string.Empty;
+        internal string CompressLevel { get; set; } = string.Empty;
     }
 }

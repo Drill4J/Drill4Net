@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Drill4Net.Compressor.Benchmarks.Models
 {
     [Serializable]
-    internal class MediumData
+    internal class MediumModel
     {
         internal int Year { get; set; }
         internal int NumberOfPages { get; set; }
