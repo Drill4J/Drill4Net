@@ -5,22 +5,22 @@ using System.Collections.Generic;
 namespace Drill4Net.Compressor.Benchmarks.Models
 {
     [Serializable]
-    internal class ComplexData:MediumData
+    internal class ComplexModel: MediumModel
     {
-        internal List<SimpleData> SimpleDataList { get; set; }
-        internal Dictionary<int, MediumData> MediumDataDict { get; set; }
+        internal List<SimpleModel> SimpleModelList { get; set; }
+        internal Dictionary<int, MediumModel> MediumModelDict { get; set; }
         internal MethodInfo MethodInfo { get; set; }
-        internal ComplexData()
+        internal ComplexModel()
         {
-            SimpleDataList = new List<SimpleData>();
-            MediumDataDict = new Dictionary<int, MediumData>();
+            SimpleModelList = new List<SimpleModel>();
+            MediumModelDict = new Dictionary<int, MediumModel>();
             for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
             {
-                SimpleDataList.Add(new SimpleData());
+                SimpleModelList.Add(new SimpleModel());
             }
             for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
             {
-                MediumDataDict.Add(i, new MediumData());
+                MediumModelDict.Add(i, new MediumModel());
             }
             MethodInfo =FeedBacks.GetType().GetMethod("ToString");
         }

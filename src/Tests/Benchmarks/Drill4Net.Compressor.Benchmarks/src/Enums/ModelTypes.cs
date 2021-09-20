@@ -1,6 +1,6 @@
-﻿namespace Drill4Net.Compressor.Benchmarks.Enums
+﻿namespace Drill4Net.Compressor.Benchmarks
 {
-    enum DataTypes
+    enum ModelTypes
     {
         Simple=1,
         Medium=2,

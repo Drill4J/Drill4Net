@@ -64,8 +64,8 @@ namespace Drill4Net.Injector.Strategies.Blocks
                 //correction
                 var prev = MoveSkippingNops(ind, false, ctx);
                 var isPrevBr = prev.OpCode.Code is Code.Br or Code.Br_S;
-                var emtyBlock = instr.OpCode.FlowControl == FlowControl.Branch && isPrevBr; //br.s -> br.s
-                if (emtyBlock)
+                var emtyBlock = instr.OpCode.FlowControl == FlowControl.Branch && isPrevBr; //br.s direct to br.s
+                if (emtyBlock) //because we've shifted the anchor
                     ReplaceJumps(instr, ldstr, ctx);
 
                 FixFinallyEnd(instr, ldstr, ctx.ExceptionHandlers); //need fix statement boundaries for potential try/finally 

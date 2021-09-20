@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Drill4Net.Compressor.Benchmarks.Models
 {
     [Serializable]
-    internal class MediumData:SimpleData
+    internal class MediumModel:SimpleModel
     {
         internal double Rate3 { get; set; }
         internal decimal Price1 { get; set; }
@@ -17,7 +17,7 @@ namespace Drill4Net.Compressor.Benchmarks.Models
         internal HashSet<string> Tags { get; set; }
         internal Dictionary<int, DateTime> Years { get; set; }
 
-        internal MediumData()
+        internal MediumModel()
         {
             var rnd = new Random();
             Rate3 = rnd.NextDouble() * 99 + 1;

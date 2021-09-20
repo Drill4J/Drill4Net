@@ -19,8 +19,7 @@
             {
                 max = indicator;
             }
-            total = total + indicator;
+            total += indicator;
         }
-
     }
 }
