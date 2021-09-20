@@ -144,7 +144,6 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
         private static string GenerateString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            var t = new string(Enumerable.Range(1, rnd.Next(10, 20)).Select(_ => chars[rnd.Next(chars.Length)]).ToArray());
             return new string(Enumerable.Range(1, rnd.Next(10, 20)).Select(_ => chars[rnd.Next(chars.Length)]).ToArray());
         }
     }
