@@ -9,8 +9,20 @@ namespace Drill4Net.Compressor.Benchmarks.Models
     {
         internal List<SimpleData> SimpleDataList { get; set; }
         internal Dictionary<int, MediumData> MediumDataDict { get; set; }
-        //internal FileInfo FileInfo { get; set; }
-        //internal DirectoryInfo DirectoryInfo { get; set; }
         internal MethodInfo MethodInfo { get; set; }
+        internal ComplexData()
+        {
+            SimpleDataList = new List<SimpleData>();
+            MediumDataDict = new Dictionary<int, MediumData>();
+            for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
+            {
+                SimpleDataList.Add(new SimpleData());
+            }
+            for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
+            {
+                MediumDataDict.Add(i, new MediumData());
+            }
+            MethodInfo =FeedBacks.GetType().GetMethod("ToString");
+        }
     }
 }

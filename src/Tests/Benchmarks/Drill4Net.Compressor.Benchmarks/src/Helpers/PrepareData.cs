@@ -14,26 +14,8 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
     internal static class PrepareData
     {
         private static Random rnd = new Random();
-        const int count = 100;
         /****************************************************/
 
-        /// <summary>
-        ///Generate Simple Data
-        /// <summary>
-        /// <return></return>
-        internal static SimpleData GenerateSimpleData ()
-        {
-            var data = new SimpleData();
-            data.Year = rnd.Next(1900, 2000);
-            data.NumberOfPages= rnd.Next(100, 1000);
-            data.Rate1= rnd.NextDouble()*99 +1;
-            data.Rate2 = rnd.NextDouble() * 99 + 1;
-            data.Rate3 = rnd.NextDouble() * 99 + 1;
-            data.Title = GenerateString();
-            data.Notes = GenerateString();
-
-            return data;
-        }
 
         /// <summary>
         ///Generate Medium Data
@@ -128,7 +110,7 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
             return tree;
         }
 
-        private static string GenerateString()
+        internal static string GenerateString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
             var t= new string(Enumerable.Range(1, rnd.Next(10, 20)).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
