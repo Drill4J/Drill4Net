@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using ConsoleTables;
 using Drill4Net.Common;
 using Drill4Net.Compressor.Benchmarks.Models;
+using Conf=Drill4Net.Compressor.Benchmarks.CompressorConfig;
+using System.IO.Compression;
+using K4os.Compression.LZ4;
 
 namespace Drill4Net.Compressor.Benchmarks.Helpers
 {
@@ -21,9 +24,9 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
 
             //Tables with absolute result
             var resultsOrdered = testResults.OrderBy(c => c.CompressorName).ThenBy(l => l.CompressLevel).ThenBy(t => t.DataType).ToList();
-            var tableAbsTime = new ConsoleTable("Compressor", "Comression Level", "Data Type", "MinTime(msec)", "MaxTime(msec)", "AvgTime(msec)");
-            var tableAbsCompress = new ConsoleTable("Comression Level", "Compressor", "Data Type", "MinCompressionRate(%)", "MaxCompressionRate(%)", "AvgCompressionRate(%)");
-            var tableAbsMemory = new ConsoleTable("Comression Level", "Compressor", "Data Type", "MinMemoryUsage(MByte)", "MaxMemoryUsage(MByte)", "AvgMemoryUsage(MByte)");
+            var tableAbsTime = new ConsoleTable(Conf.COMPRESSOR, Conf.COMPRESSOR_LEVEL, Conf.DATA_TYPE, Conf.MIN_TIME, Conf.MAX_TIME, Conf.AVG_TIME);
+            var tableAbsCompress = new ConsoleTable(Conf.COMPRESSOR, Conf.COMPRESSOR_LEVEL, Conf.DATA_TYPE, Conf.MIN_COMR_RATE, Conf.MAX_COMR_RATE, Conf.AVG_COMR_RATE);
+            var tableAbsMemory = new ConsoleTable(Conf.COMPRESSOR, Conf.COMPRESSOR_LEVEL, Conf.DATA_TYPE, Conf.MIN_MEMORY_USAGE, Conf.MAX_MEMORY_USAGE, Conf.AVG_MEMORY_USAGE);
 
             foreach (var result in resultsOrdered)
             {
@@ -38,40 +41,40 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
                 BenchmarkLog.WriteBenchmarkToLog(logger, AssemblyGitInfo.GetSourceBranchName(), AssemblyGitInfo.GetCommit(), logMsg);
             }
 
-            Console.WriteLine($"{Environment.NewLine}***************************{Environment.NewLine}" +
-                $"Absolute results for Compression time{Environment.NewLine}***************************{Environment.NewLine}");
+            Console.WriteLine($"{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}" +
+                $"Absolute results for Compression time{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}");
             tableAbsTime.Write();
             
-            Console.WriteLine($"{Environment.NewLine}***************************{Environment.NewLine}" +
-                $"Absolute results for Compression Rate{Environment.NewLine}***************************{Environment.NewLine}");
+            Console.WriteLine($"{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}" +
+                $"Absolute results for Compression Rate{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}");
             tableAbsCompress.Write();
             
-            Console.WriteLine($"{Environment.NewLine}***************************{Environment.NewLine}" +
-                $"Absolute results for Compression Memory Usage{Environment.NewLine}***************************{Environment.NewLine}");
+            Console.WriteLine($"{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}" +
+                $"Absolute results for Compression Memory Usage{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}");
             tableAbsMemory.Write();
 
             //Tables with Relative result
-            Console.WriteLine($"{Environment.NewLine}**********************************************************{Environment.NewLine}" +
-               $"Relative results for Compressors (LZ4 in comparison with Deflate){Environment.NewLine}**********************************************************{Environment.NewLine}");
+            Console.WriteLine($"{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}" +
+               $"Relative results for Compressors (LZ4 in comparison with Deflate){Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}");
             
-            var tableRelative = new ConsoleTable("Comression Level LZ4", "To Comression Level Deflate", "Data Type", "AvgTime(%)", "AvgCompressionRate(%)", "AvgMemoryUsage(%)");
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L03_HC", "Optimal", ModelTypes.Medium);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L03_HC", "Optimal", ModelTypes.Complex);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L03_HC", "Optimal", ModelTypes.InjectedSolution);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L10_OPT", "Optimal", ModelTypes.Medium);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L10_OPT", "Optimal", ModelTypes.Complex);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L10_OPT", "Optimal", ModelTypes.InjectedSolution);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L09_HC", "Optimal", ModelTypes.Medium);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L09_HC", "Optimal", ModelTypes.Complex);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L09_HC", "Optimal", ModelTypes.InjectedSolution);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L00_FAST", "Fastest", ModelTypes.Medium);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L00_FAST", "Fastest", ModelTypes.Complex);
-            AddToRelativeTable(ref tableRelative, resultsOrdered, "L00_FAST", "Fastest", ModelTypes.InjectedSolution);
+            var tableRelative = new ConsoleTable("Comression Level LZ4", "To Comression Level Deflate", Conf.DATA_TYPE, "AvgTime(%)", "AvgCompressionRate(%)", "AvgMemoryUsage(%)");
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L03_HC.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.Medium);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L03_HC.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.Complex);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L03_HC.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.InjectedSolution);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L10_OPT.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.Medium);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L10_OPT.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.Complex);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L10_OPT.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.InjectedSolution);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L09_HC.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.Medium);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L09_HC.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.Complex);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L09_HC.ToString(), CompressionLevel.Optimal.ToString(), ModelTypes.InjectedSolution);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L00_FAST.ToString(), CompressionLevel.Fastest.ToString(), ModelTypes.Medium);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L00_FAST.ToString(), CompressionLevel.Fastest.ToString(), ModelTypes.Complex);
+            AddToRelativeTable(ref tableRelative, resultsOrdered, LZ4Level.L00_FAST.ToString(), CompressionLevel.Fastest.ToString(), ModelTypes.InjectedSolution);
             tableRelative.Write();
 
             //Tables with Range results
-            Console.WriteLine($"{Environment.NewLine}***************************{Environment.NewLine}" +
-               $"Range results{Environment.NewLine}***************************{Environment.NewLine}");
+            Console.WriteLine($"{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}" +
+               $"Range results{Environment.NewLine}{Conf.SEPARATOR}{Environment.NewLine}");
             var tableRange = CreateRangeTable(testResults);
             tableRange.Write();
         }
@@ -89,7 +92,11 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
                 table.AddRow(lz4ComprLevel, deflateComprLevel, dataType, time, rate, memory);
             }
         }
-
+        //private static void AddToRangeTable(ref ConsoleTable table, double avgTime, )
+        //{
+        //    table.AddRow(Conf.AVG_TIME, "LZ4", dataType, Math.Round(lz4MinTime.AvgTime), lz4MinTime.CompressLevel == lz4MaxTime.CompressLevel ? "All Tested" : lz4MinTime.CompressLevel,
+        //            Math.Round(lz4MaxTime.AvgTime), lz4MaxTime.CompressLevel == lz4MinTime.CompressLevel ? "All Tested" : lz4MaxTime.CompressLevel, Math.Round(lz4MaxTime.AvgTime - lz4MinTime.AvgTime));
+        //}
         private static ConsoleTable CreateRangeTable(List<TestResult> testResults)
         {
             var tableRange = new ConsoleTable("Indicator", "Compressor", "Data Type", "Min", "Min Level", "Max", "Max Level", "Range");
@@ -109,8 +116,7 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
                 var deflateMinRate = testResults.Where(rd => rd.DataType == dataType && rd.CompressorName == "Deflate").OrderBy(r => r.AvgCompressionRate).FirstOrDefault();
                 var deflateMaxMemory = testResults.Where(rd => rd.DataType == dataType && rd.CompressorName == "Deflate").OrderByDescending(r => r.AvgMemory).FirstOrDefault();
                 var deflateMinMemory = testResults.Where(rd => rd.DataType == dataType && rd.CompressorName == "Deflate").OrderBy(r => r.AvgMemory).FirstOrDefault();
-                var tableRangeLZ4 = new ConsoleTable("Indicator", "LZ4 Min", "LZ4 Min Level", "LZ4 Max", "LZ4 Max Level", "LZ4 Range");
-                
+                                
                 //LZ4 rows
                 tableRange.AddRow("AvgTime (msec)", "LZ4", dataType, Math.Round(lz4MinTime.AvgTime), lz4MinTime.CompressLevel == lz4MaxTime.CompressLevel ? "All Tested" : lz4MinTime.CompressLevel,
                     Math.Round(lz4MaxTime.AvgTime), lz4MaxTime.CompressLevel == lz4MinTime.CompressLevel ? "All Tested" : lz4MaxTime.CompressLevel, Math.Round(lz4MaxTime.AvgTime - lz4MinTime.AvgTime));

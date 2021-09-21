@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Compressor.Benchmarks
+namespace Drill4Net.Compressor.Benchmarks.src.Enums
 {
-    internal static class CompressorConstants
+    class CompressorTypes
     {
-        internal const int DATA_COUNT = 100;
-
     }
 }

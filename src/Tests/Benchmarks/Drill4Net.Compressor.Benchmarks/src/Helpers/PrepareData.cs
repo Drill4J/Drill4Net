@@ -13,9 +13,6 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
 {
     internal static class PrepareData
     {
-        internal static readonly Random rnd = new Random(DateTime.Now.Millisecond);
-        /****************************************************/
-
         /// <summary>
         ///Generate InjectedSolution tree
         /// <summary>
@@ -33,9 +30,10 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
         internal static string GenerateString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            var t= new string(Enumerable.Range(1, rnd.Next(10, 20)).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
-            return new string(Enumerable.Range(1, rnd.Next(10, 20)).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
-
+            var t= new string(Enumerable.Range(1, CompressorConfig.rnd.Next(10, 20)).
+                Select(c => chars[CompressorConfig.rnd.Next(chars.Length)]).ToArray());
+            return new string(Enumerable.Range(1, CompressorConfig.rnd.Next(10, 20)).
+                Select(c => chars[CompressorConfig.rnd.Next(chars.Length)]).ToArray());
         }
     }
 }

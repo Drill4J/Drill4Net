@@ -13,13 +13,12 @@ namespace Drill4Net.Compressor.Benchmarks.Models
         internal string Title { get; set; }
         internal string Notes { get; set; }
         
-        internal SimpleData()
+        internal SimpleModel()
         {
-            var rnd = new Random();
-            Year = rnd.Next(1900, 2000);
-            NumberOfPages = rnd.Next(100, 1000);
-            Rate1 = rnd.NextDouble() * 99 + 1;
-            Rate2 = rnd.NextDouble() * 99 + 1;         
+            Year = CompressorConfig.rnd.Next(1900, 2000);
+            NumberOfPages = CompressorConfig.rnd.Next(100, 1000);
+            Rate1 = CompressorConfig.rnd.NextDouble() * 99 + 1;
+            Rate2 = CompressorConfig.rnd.NextDouble() * 99 + 1;         
             Title = PrepareData.GenerateString();
             Notes = PrepareData.GenerateString();
         }

@@ -14,11 +14,11 @@ namespace Drill4Net.Compressor.Benchmarks.Models
         {
             SimpleModelList = new List<SimpleModel>();
             MediumModelDict = new Dictionary<int, MediumModel>();
-            for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
+            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
             {
                 SimpleModelList.Add(new SimpleModel());
             }
-            for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
+            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
             {
                 MediumModelDict.Add(i, new MediumModel());
             }

@@ -16,31 +16,37 @@ namespace Drill4Net.Compressor.Benchmarks.Models
         internal DateTime Date { get; set; }
         internal HashSet<string> Tags { get; set; }
         internal Dictionary<int, DateTime> Years { get; set; }
+        internal TimeSpan[] TimeSpans { get; set; }
 
         internal MediumModel()
         {
-            var rnd = new Random();
-            Rate3 = rnd.NextDouble() * 99 + 1;
-            Price1 = 1M / 3M + rnd.Next(100, 500);
-            Price2 = 79000000000000000000000000000.55M + rnd.Next(100, 500);
-            Price3 = -110000000000000000000000000.55M + rnd.Next(100, 500);
+            Rate3 = CompressorConfig.rnd.NextDouble() * 99 + 1;
+            Price1 = 1M / 3M + CompressorConfig.rnd.Next(100, 500);
+            Price2 = 79000000000000000000000000000.55M + CompressorConfig.rnd.Next(100, 500);
+            Price3 = -110000000000000000000000000.55M + CompressorConfig.rnd.Next(100, 500);
+            Date = DateTime.Now.AddDays(CompressorConfig.rnd.Next(-100, 100));
+            ObjectGuid = new Guid();
             FeedBacks = new List<string>();
             Tags = new HashSet<string>();
             Years = new Dictionary<int, DateTime>();
-            for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
+            TimeSpans = new TimeSpan[CompressorConfig.DATA_COUNT];
+            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
+            {
+                TimeSpans[i]=DateTime.Now- Date;
+            }
+            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
             {
                 FeedBacks.Add(PrepareData.GenerateString());
             }
-            for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
+            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
             {
                 Tags.Add(PrepareData.GenerateString());
             }
-            for (var i = 0; i < CompressorConstants.DATA_COUNT; i++)
+            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
             {
                 Years.Add(i, DateTime.Now);
             }
-            Date = DateTime.Now.AddDays(rnd.Next(-100, 100));
-            ObjectGuid = new Guid();
+
         }
 
     }
