@@ -1489,15 +1489,16 @@ namespace Drill4Net.Target.Common
             var enumerator = enumerable.GetEnumerator();
             while(enumerator.MoveNext())
                 s += enumerator.Current;
-            Console.WriteLine($"{nameof(Enumerator_Explicit)}: {s}");
-            
-            //rest anf invalid operation exception
+        
+            //reset and retrieving the invalid operation exception
             enumerator.Reset();
             try
             {
                 var cur = enumerator.Current;
             }
             catch { }
+
+            Console.WriteLine($"{nameof(Enumerator_Explicit)}: {s}");
         }
 
 #if NETFRAMEWORK
