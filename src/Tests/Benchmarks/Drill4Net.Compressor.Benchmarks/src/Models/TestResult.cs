@@ -12,7 +12,7 @@
         internal double MinMemory { get; set; } = 0;
         internal double MaxMemory { get; set; } = 0;
         internal double AvgMemory { get; set; } = 0;
-        internal string CompressorName { get; set; } = string.Empty;
+        internal CompressorTypes CompressorType { get; set; }
         internal string CompressLevel { get; set; } = string.Empty;
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Engine;
-using Drill4Net.Compressor.Benchmarks.Models;
 
 namespace Drill4Net.Compressor.Benchmarks.Helpers
 {

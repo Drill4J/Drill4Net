@@ -1,6 +1,6 @@
-﻿using Drill4Net.Compressor.Benchmarks.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Drill4Net.Compressor.Benchmarks.Helpers;
 
 namespace Drill4Net.Compressor.Benchmarks.Models
 {
@@ -46,8 +46,6 @@ namespace Drill4Net.Compressor.Benchmarks.Models
             {
                 Years.Add(i, DateTime.Now);
             }
-
         }
-
     }
 }
