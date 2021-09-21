@@ -28,11 +28,10 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        object IEnumerator.Current => throw new NotImplementedException();
+        object IEnumerator.Current => Current;
 
         public bool MoveNext()
         {
-            //"Else_22" / "If_16"
             if (_position >= _data.Length - 1)
                 return false;
             _position = GetPosition();

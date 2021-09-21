@@ -9,7 +9,7 @@ namespace Drill4Net.Agent.Standard.Tester
     public class TesterOptions
     {
         /// <summary>
-        /// Current directory where Target's assemblies is located, mandatory field.
+        /// Current directory where Target's assemblies are located, mandatory field.
         /// </summary>
         public string CurrentDirectory { get; set; }
 

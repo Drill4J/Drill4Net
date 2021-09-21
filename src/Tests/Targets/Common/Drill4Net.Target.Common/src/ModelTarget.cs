@@ -333,8 +333,15 @@ namespace Drill4Net.Target.Common
             LocalFunc(false);
             LocalFunc(true);
 
-            Enumerator_Implementation();
-            Event();
+            try
+            {
+                Enumerator_Implicit();
+                Enumerator_Explicit();
+            }
+            catch { }
+
+            Event(false);
+            Event(true);
 
 #if NETFRAMEWORK
             ContextBound(false);
@@ -1420,21 +1427,25 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(CallAnotherTarget)} -> {s}");
         }
 
-        public void Event()
+        public void Event(bool cond)
         {
             Console.WriteLine($"{nameof(Event)} started");
 
 #pragma warning disable IDE0039 // Use local function
-            NotifyHandler p = delegate (string mes)
+            NotifyHandler p = (string mes) =>
             {
                 Console.WriteLine($"{nameof(Event)} -> {mes}");
             };
 #pragma warning restore IDE0039 // Use local function
 
             var eventer = new Eventer();
-            eventer.Notify += p;
-            eventer.NotifyAbout("AAA");
-            eventer.Notify -= p;
+            if(cond)
+                eventer.Notify += p;
+
+            eventer.NotifyAbout("MESSAGE");
+
+            if (cond)
+                eventer.Notify -= p;
         }
 
         public void LocalFunc(bool cond)
@@ -1462,13 +1473,32 @@ namespace Drill4Net.Target.Common
         //    Console.WriteLine($"{nameof(Expression)}: {d}");
         //}
 
-        public void Enumerator_Implementation()
+        public void Enumerator_Implicit()
         {
             var enumerable = new StringEnumerable();
             var s = "";
             foreach (var a in enumerable)
                 s += a;
-            Console.WriteLine($"{nameof(Enumerator_Implementation)}: {s}");
+            Console.WriteLine($"{nameof(Enumerator_Implicit)}: {s}");
+        }
+
+        public void Enumerator_Explicit()
+        {
+            var enumerable = new StringEnumerable();
+            var s = "";
+            var enumerator = enumerable.GetEnumerator();
+            while(enumerator.MoveNext())
+                s += enumerator.Current;
+        
+            //reset and retrieving the invalid operation exception
+            enumerator.Reset();
+            try
+            {
+                var cur = enumerator.Current;
+            }
+            catch { }
+
+            Console.WriteLine($"{nameof(Enumerator_Explicit)}: {s}");
         }
 
 #if NETFRAMEWORK

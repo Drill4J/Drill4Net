@@ -27,10 +27,7 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
         internal static string GenerateString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            var t= new string(Enumerable.Range(1, CompressorConfig.rnd.Next(10, 20)).
-                Select(c => chars[CompressorConfig.rnd.Next(chars.Length)]).ToArray());
-            return new string(Enumerable.Range(1, CompressorConfig.rnd.Next(10, 20)).
-                Select(c => chars[CompressorConfig.rnd.Next(chars.Length)]).ToArray());
+            return new string(Enumerable.Range(1, CompressorConfig.rnd.Next(10, 20)).Select(_ => chars[CompressorConfig.rnd.Next(chars.Length)]).ToArray());
         }
     }
 }
