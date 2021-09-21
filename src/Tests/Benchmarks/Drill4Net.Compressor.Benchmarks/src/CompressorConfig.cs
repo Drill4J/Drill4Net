@@ -7,8 +7,8 @@ namespace Drill4Net.Compressor.Benchmarks
         internal static readonly Random rnd = new Random(DateTime.Now.Millisecond);
         internal const int DATA_COUNT = 100;
         internal const string CFG_NAME = "inj_Std.yml";
-        internal const int ITERATIONS = 100;
-        internal const int ITERATIONS_INJ = 10;
+        internal const int ITERATIONS = 1000;
+        internal const int ITERATIONS_INJ = 1000;
         internal const string BENCHMARK_LOG_PATH = @"logs\benchmarkLog.txt";
         internal const string LOG_PATH = @"logs\log.txt";
 
