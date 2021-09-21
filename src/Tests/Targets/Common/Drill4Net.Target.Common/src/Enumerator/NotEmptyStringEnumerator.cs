@@ -28,7 +28,7 @@ namespace Drill4Net.Target.Common
             }
         }
 
-        object IEnumerator.Current => throw new NotImplementedException();
+        object IEnumerator.Current => Current;
 
         public bool MoveNext()
         {

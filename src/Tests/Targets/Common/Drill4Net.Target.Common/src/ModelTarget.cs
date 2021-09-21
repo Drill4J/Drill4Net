@@ -333,8 +333,13 @@ namespace Drill4Net.Target.Common
             LocalFunc(false);
             LocalFunc(true);
 
-            Enumerator_Implementation();
-            
+            try
+            {
+                Enumerator_Implicit();
+                Enumerator_Explicit();
+            }
+            catch { }
+
             Event(false);
             Event(true);
 
@@ -1468,13 +1473,31 @@ namespace Drill4Net.Target.Common
         //    Console.WriteLine($"{nameof(Expression)}: {d}");
         //}
 
-        public void Enumerator_Implementation()
+        public void Enumerator_Implicit()
         {
             var enumerable = new StringEnumerable();
             var s = "";
             foreach (var a in enumerable)
                 s += a;
-            Console.WriteLine($"{nameof(Enumerator_Implementation)}: {s}");
+            Console.WriteLine($"{nameof(Enumerator_Implicit)}: {s}");
+        }
+
+        public void Enumerator_Explicit()
+        {
+            var enumerable = new StringEnumerable();
+            var s = "";
+            var enumerator = enumerable.GetEnumerator();
+            while(enumerator.MoveNext())
+                s += enumerator.Current;
+            Console.WriteLine($"{nameof(Enumerator_Explicit)}: {s}");
+            
+            //rest anf invalid operation exception
+            enumerator.Reset();
+            try
+            {
+                var cur = enumerator.Current;
+            }
+            catch { }
         }
 
 #if NETFRAMEWORK
