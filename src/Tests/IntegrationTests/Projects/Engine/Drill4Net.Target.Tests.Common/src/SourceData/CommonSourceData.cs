@@ -651,7 +651,12 @@ namespace Drill4Net.Target.Tests.Common
                     ).SetCategory(CATEGORY_MISC);
 
                 //Event
-                yield return GetCase(Array.Empty<object>(), true,
+                yield return GetCase(new object[] { false }, true,
+                    new TestInfo(GetInfo(Target.Event), new List<string> { "Branch_6", "Call_18", "Call_22", "Call_26" }),
+                    new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "Branch_4", "If_6", "Call_8" })
+                    ).SetCategory(CATEGORY_MISC);
+
+                yield return GetCase(new object[] { true }, true,
                     new TestInfo(GetInfo(Target.Event), new List<string> { "Branch_6", "Call_18", "Call_22", "Call_26" }),
                     new TestInfo(GetInfo(_eventer.NotifyAbout), new List<string> { "Branch_4", "If_6", "Call_8" })
                     ).SetCategory(CATEGORY_MISC);

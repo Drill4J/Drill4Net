@@ -334,7 +334,9 @@ namespace Drill4Net.Target.Common
             LocalFunc(true);
 
             Enumerator_Implementation();
-            Event();
+            
+            Event(false);
+            Event(true);
 
 #if NETFRAMEWORK
             ContextBound(false);
@@ -1420,21 +1422,25 @@ namespace Drill4Net.Target.Common
             Console.WriteLine($"{nameof(CallAnotherTarget)} -> {s}");
         }
 
-        public void Event()
+        public void Event(bool cond)
         {
             Console.WriteLine($"{nameof(Event)} started");
 
 #pragma warning disable IDE0039 // Use local function
-            NotifyHandler p = delegate (string mes)
+            NotifyHandler p = (string mes) =>
             {
                 Console.WriteLine($"{nameof(Event)} -> {mes}");
             };
 #pragma warning restore IDE0039 // Use local function
 
             var eventer = new Eventer();
-            eventer.Notify += p;
-            eventer.NotifyAbout("AAA");
-            eventer.Notify -= p;
+            if(cond)
+                eventer.Notify += p;
+
+            eventer.NotifyAbout("MESSAGE");
+
+            if (cond)
+                eventer.Notify -= p;
         }
 
         public void LocalFunc(bool cond)

@@ -32,7 +32,6 @@ namespace Drill4Net.Target.Common
 
         public bool MoveNext()
         {
-            //"Else_22" / "If_16"
             if (_position >= _data.Length - 1)
                 return false;
             _position = GetPosition();
