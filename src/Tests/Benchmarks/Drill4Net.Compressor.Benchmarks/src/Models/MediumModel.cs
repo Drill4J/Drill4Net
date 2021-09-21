@@ -5,7 +5,7 @@ using Drill4Net.Compressor.Benchmarks.Helpers;
 namespace Drill4Net.Compressor.Benchmarks.Models
 {
     [Serializable]
-    internal class MediumModel:SimpleModel
+    internal class MediumModel: SimpleModel
     {
         internal double Rate3 { get; set; }
         internal decimal Price1 { get; set; }
@@ -18,31 +18,37 @@ namespace Drill4Net.Compressor.Benchmarks.Models
         internal Dictionary<int, DateTime> Years { get; set; }
         internal TimeSpan[] TimeSpans { get; set; }
 
+        /*********************************************************/
+
         internal MediumModel()
         {
-            Rate3 = CompressorConfig.rnd.NextDouble() * 99 + 1;
-            Price1 = 1M / 3M + CompressorConfig.rnd.Next(100, 500);
-            Price2 = 79000000000000000000000000000.55M + CompressorConfig.rnd.Next(100, 500);
-            Price3 = -110000000000000000000000000.55M + CompressorConfig.rnd.Next(100, 500);
-            Date = DateTime.Now.AddDays(CompressorConfig.rnd.Next(-100, 100));
+            Rate3 = CompressorConfigurator.Rnd.NextDouble() * 99 + 1;
+            Price1 = 1M / 3M + CompressorConfigurator.Rnd.Next(100, 500);
+            Price2 = 79000000000000000000000000000.55M + CompressorConfigurator.Rnd.Next(100, 500);
+            Price3 = -110000000000000000000000000.55M + CompressorConfigurator.Rnd.Next(100, 500);
+            Date = DateTime.Now.AddDays(CompressorConfigurator.Rnd.Next(-100, 100));
             ObjectGuid = new Guid();
             FeedBacks = new List<string>();
             Tags = new HashSet<string>();
             Years = new Dictionary<int, DateTime>();
-            TimeSpans = new TimeSpan[CompressorConfig.DATA_COUNT];
-            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
+            TimeSpans = new TimeSpan[CompressorConfigurator.DATA_COUNT];
+
+            for (var i = 0; i < CompressorConfigurator.DATA_COUNT; i++)
             {
-                TimeSpans[i]=DateTime.Now- Date;
+                TimeSpans[i] = DateTime.Now - Date;
             }
-            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
+
+            for (var i = 0; i < CompressorConfigurator.DATA_COUNT; i++)
             {
                 FeedBacks.Add(PrepareData.GenerateString());
             }
-            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
+
+            for (var i = 0; i < CompressorConfigurator.DATA_COUNT; i++)
             {
                 Tags.Add(PrepareData.GenerateString());
             }
-            for (var i = 0; i < CompressorConfig.DATA_COUNT; i++)
+
+            for (var i = 0; i < CompressorConfigurator.DATA_COUNT; i++)
             {
                 Years.Add(i, DateTime.Now);
             }

@@ -21,11 +21,12 @@ namespace Drill4Net.Compressor.Benchmarks
 
         static async Task Main(string[] args)
         {
-            IBenchmarkLogger fileLogger = new BenchmarkFileLogger(Path.Combine(FileUtils.ExecutingDir, CompressorConfig.BENCHMARK_LOG_PATH));
+            IBenchmarkLogger fileLogger = new BenchmarkFileLogger(Path.Combine(FileUtils.ExecutingDir, CompressorConfigurator.BENCHMARK_LOG_PATH));
             var logBld = new LogBuilder();
-            var logger = logBld.CreateStandardLogger(Path.Combine(FileUtils.GetExecutionDir(), CompressorConfig.LOG_PATH));
+            var logger = logBld.CreateStandardLogger(Path.Combine(FileUtils.GetExecutionDir(), CompressorConfigurator.LOG_PATH));
             var tests = new Tests(logger);
-            var cfgPath = Path.Combine(FileUtils.ExecutingDir, CompressorConfig.CFG_NAME);
+            var cfgPath = Path.Combine(FileUtils.ExecutingDir, CompressorConfigurator.CFG_NAME);
+
             logger.LogInformation("Prepare test data");
             var simpleData = new SimpleModel();
             var simpleDataBytes = Serializer.ToArray(simpleData);
@@ -36,41 +37,41 @@ namespace Drill4Net.Compressor.Benchmarks
             var injectedData = await PrepareData.GenerateInjectedSolutionAsync(cfgPath);
             var injectedDataBytes = Serializer.ToArray<InjectedSolution>(injectedData);
             var testResults = new List<TestResult>();
-            logger.LogInformation( "Start tests");
 
+            logger.LogInformation( "Start tests");
             try
             {
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS, simpleDataBytes, CompressionLevel.Optimal, ModelTypes.Simple));
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS, simpleDataBytes, CompressionLevel.Fastest, ModelTypes.Simple));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS, simpleDataBytes, CompressionLevel.Optimal, ModelTypes.Simple));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS, simpleDataBytes, CompressionLevel.Fastest, ModelTypes.Simple));
 
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS, mediumDataBytes, CompressionLevel.Optimal, ModelTypes.Medium));
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS, mediumDataBytes, CompressionLevel.Fastest, ModelTypes.Medium));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS, mediumDataBytes, CompressionLevel.Optimal, ModelTypes.Medium));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS, mediumDataBytes, CompressionLevel.Fastest, ModelTypes.Medium));
 
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS, complexDataBytes, CompressionLevel.Optimal, ModelTypes.Complex));
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS, complexDataBytes, CompressionLevel.Fastest, ModelTypes.Complex));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS, complexDataBytes, CompressionLevel.Optimal, ModelTypes.Complex));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS, complexDataBytes, CompressionLevel.Fastest, ModelTypes.Complex));
 
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS_INJ, injectedDataBytes, CompressionLevel.Optimal, ModelTypes.InjectedSolution));
-                testResults.Add(tests.DeflateTest(CompressorConfig.ITERATIONS_INJ, injectedDataBytes, CompressionLevel.Fastest, ModelTypes.InjectedSolution));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS_INJ, injectedDataBytes, CompressionLevel.Optimal, ModelTypes.InjectedSolution));
+                testResults.Add(tests.DeflateTest(CompressorConfigurator.ITERATIONS_INJ, injectedDataBytes, CompressionLevel.Fastest, ModelTypes.InjectedSolution));
 
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, simpleDataBytes, LZ4Level.L03_HC, ModelTypes.Simple));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, simpleDataBytes, LZ4Level.L10_OPT, ModelTypes.Simple));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, simpleDataBytes, LZ4Level.L00_FAST, ModelTypes.Simple));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, simpleDataBytes, LZ4Level.L09_HC, ModelTypes.Simple));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, simpleDataBytes, LZ4Level.L03_HC, ModelTypes.Simple));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, simpleDataBytes, LZ4Level.L10_OPT, ModelTypes.Simple));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, simpleDataBytes, LZ4Level.L00_FAST, ModelTypes.Simple));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, simpleDataBytes, LZ4Level.L09_HC, ModelTypes.Simple));
 
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, mediumDataBytes, LZ4Level.L03_HC, ModelTypes.Medium));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, mediumDataBytes, LZ4Level.L10_OPT, ModelTypes.Medium));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, mediumDataBytes, LZ4Level.L00_FAST, ModelTypes.Medium));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, complexDataBytes, LZ4Level.L09_HC, ModelTypes.Medium));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, mediumDataBytes, LZ4Level.L03_HC, ModelTypes.Medium));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, mediumDataBytes, LZ4Level.L10_OPT, ModelTypes.Medium));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, mediumDataBytes, LZ4Level.L00_FAST, ModelTypes.Medium));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, complexDataBytes, LZ4Level.L09_HC, ModelTypes.Medium));
 
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, complexDataBytes, LZ4Level.L03_HC, ModelTypes.Complex));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, complexDataBytes, LZ4Level.L10_OPT, ModelTypes.Complex));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, complexDataBytes, LZ4Level.L00_FAST, ModelTypes.Complex));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS, complexDataBytes, LZ4Level.L09_HC, ModelTypes.Complex));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, complexDataBytes, LZ4Level.L03_HC, ModelTypes.Complex));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, complexDataBytes, LZ4Level.L10_OPT, ModelTypes.Complex));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, complexDataBytes, LZ4Level.L00_FAST, ModelTypes.Complex));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS, complexDataBytes, LZ4Level.L09_HC, ModelTypes.Complex));
 
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L03_HC, ModelTypes.InjectedSolution));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L10_OPT, ModelTypes.InjectedSolution));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L00_FAST, ModelTypes.InjectedSolution));
-                testResults.Add(tests.LZ4Test(CompressorConfig.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L09_HC, ModelTypes.InjectedSolution));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L03_HC, ModelTypes.InjectedSolution));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L10_OPT, ModelTypes.InjectedSolution));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L00_FAST, ModelTypes.InjectedSolution));
+                testResults.Add(tests.LZ4Test(CompressorConfigurator.ITERATIONS_INJ, injectedDataBytes, LZ4Level.L09_HC, ModelTypes.InjectedSolution));
 
                 ResultReporter.PrintAndLogResult(testResults, fileLogger);
             }

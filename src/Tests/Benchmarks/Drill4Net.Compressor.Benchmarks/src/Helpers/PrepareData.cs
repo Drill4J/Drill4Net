@@ -17,17 +17,19 @@ namespace Drill4Net.Compressor.Benchmarks.Helpers
         internal static async Task<InjectedSolution> GenerateInjectedSolutionAsync(string cfgName)
         {
             var cfgPath = Path.Combine(FileUtils.ExecutingDir, cfgName);
-            IInjectorRepository rep = null;
-            rep = new InjectorRepository(cfgPath);
+            IInjectorRepository rep = new InjectorRepository(cfgPath);
             var injector = new InjectorEngine(rep);
-            var tree = await injector.Process();
+            var tree = await injector.Process().ConfigureAwait(false);
             return tree;
         }
 
         internal static string GenerateString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            return new string(Enumerable.Range(1, CompressorConfig.rnd.Next(10, 20)).Select(_ => chars[CompressorConfig.rnd.Next(chars.Length)]).ToArray());
+            return new string(
+                Enumerable.Range(1, CompressorConfigurator.Rnd.Next(10, 20))
+                .Select(_ => chars[CompressorConfigurator.Rnd.Next(chars.Length)])
+                .ToArray());
         }
     }
 }

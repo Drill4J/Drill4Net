@@ -1,8 +1,8 @@
 ﻿namespace Drill4Net.Compressor.Benchmarks
 {
-    enum CompressorTypes
+    internal enum CompressorTypes
     {
-        LZ4=1,
-        Deflate=2
-    };
+        LZ4 = 1,
+        Deflate = 2
+    }
 }

@@ -15,10 +15,12 @@
             {
                 min = indicator;
             }
+
             if (max < indicator)
             {
                 max = indicator;
             }
+
             total += indicator;
         }
     }

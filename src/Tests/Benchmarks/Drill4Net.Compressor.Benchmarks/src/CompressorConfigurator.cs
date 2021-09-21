@@ -2,13 +2,13 @@
 
 namespace Drill4Net.Compressor.Benchmarks
 {
-    internal static class CompressorConfig
+    internal static class CompressorConfigurator
     {
-        internal static readonly Random rnd = new Random(DateTime.Now.Millisecond);
+        internal static readonly Random Rnd = new(DateTime.Now.Millisecond);
         internal const int DATA_COUNT = 100;
         internal const string CFG_NAME = "inj_Std.yml";
-        internal const int ITERATIONS = 1000;
-        internal const int ITERATIONS_INJ = 1000;
+        internal const int ITERATIONS = 250;
+        internal const int ITERATIONS_INJ = 250;
         internal const string BENCHMARK_LOG_PATH = @"logs\benchmarkLog.txt";
         internal const string LOG_PATH = @"logs\log.txt";
 
@@ -30,7 +30,7 @@ namespace Drill4Net.Compressor.Benchmarks
         internal const string AVG_MEMORY_USAGE = "AvgMemoryUsage(MByte)";
 
         internal const string ALL_TESTED = "All tested";
-        internal const string SEPARATOR = "***************************";
+        internal const string SEPARATOR = "****************************************************";
 
     }
 }

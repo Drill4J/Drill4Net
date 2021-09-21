@@ -16,13 +16,16 @@ namespace Drill4Net.Compressor.Benchmarks
     /// <summary>
     internal class Tests
     {
-        private LogManager _logger;
-        /********************************************/
+        private readonly LogManager _logger;
+
+        /***************************************************/
+
         internal Tests(LogManager logger)
         {
             _logger = logger;
         }
-        /********************************************/
+
+        /***************************************************/
 
         /// <summary>
         /// Test for Deflate Compressor
@@ -37,10 +40,12 @@ namespace Drill4Net.Compressor.Benchmarks
             double minTime, maxTime, avgTime, minCompressionRate, maxCompressionRate, avgCompressionRate, minMemory, maxMemory, avgMemory;
             minTime = maxTime = avgTime = minCompressionRate = maxCompressionRate = avgCompressionRate = minMemory = maxMemory = avgMemory = 0;
             _logger.LogInformation( $"Start Deflate Test for {dataType} data with compression level {compressionLevel}. {iterations} iterations");
+
             for (var i = 0; i < iterations;i++)
             {
                 double memory = 0;
                 byte[] compressed = null;
+
                 var watcher = Stopwatch.StartNew();
                 using (Process proc = Process.GetCurrentProcess())
                 {
@@ -48,6 +53,7 @@ namespace Drill4Net.Compressor.Benchmarks
                     memory = proc.PrivateMemorySize64 / (1024 * 1024.0);
                 }
                 watcher.Stop();
+
                 var duration = watcher.Elapsed.TotalMilliseconds;
                 double compressionRate = compressed.Length * 100 / data.Length;
                 DataChecker.CounterChecker(ref duration, ref minTime, ref maxTime, ref avgTime);
@@ -62,7 +68,8 @@ namespace Drill4Net.Compressor.Benchmarks
             avgTime = Math.Round(avgTime / iterations, 4);
             avgCompressionRate /= iterations;
             avgMemory /= iterations;
-            _logger.LogInformation( "Test is complited");
+            _logger.LogInformation( "Test is completed");
+
             return new TestResult()
             {
                 MinTime = minTime,
@@ -98,21 +105,22 @@ namespace Drill4Net.Compressor.Benchmarks
             {
                 double memory = 0;
                 byte[] compressed = null;
-                var watcher = Stopwatch.StartNew();
 
+                var watcher = Stopwatch.StartNew();
                 using (Process proc = Process.GetCurrentProcess())
                 {
                     compressed = LZ4Compressor.CompressData(data, compressionLevel);
                     memory = proc.PrivateMemorySize64 / (1024 * 1024);
                 }
-
                 watcher.Stop();
+
                 var duration = watcher.Elapsed.TotalMilliseconds;
                 double compressionRate = compressed.Length * 100 / data.Length;
 
                 DataChecker.CounterChecker(ref duration, ref minTime, ref maxTime, ref avgTime);
                 DataChecker.CounterChecker(ref compressionRate, ref minCompressionRate, ref maxCompressionRate, ref avgCompressionRate);
                 DataChecker.CounterChecker(ref memory, ref minMemory, ref maxMemory, ref avgMemory);
+
                 if ((i + 1) % (iterations/5) == 0)
                 {
                     _logger.LogInformation( $"{i + 1} iterations has been completed");
@@ -122,7 +130,8 @@ namespace Drill4Net.Compressor.Benchmarks
             avgTime /= iterations;
             avgCompressionRate /= iterations;
             avgMemory /= iterations;
-            _logger.LogInformation( "Test is complited");
+            _logger.LogInformation( "Test is completed");
+
             return new TestResult()
             {
                 MinTime = minTime,
