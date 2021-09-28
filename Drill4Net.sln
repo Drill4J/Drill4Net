@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31612.314
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.App", "src\Injector\Drill4Net.Injector.App\Drill4Net.Injector.App.csproj", "{96334265-0515-4C61-B6EF-A39A36A99CD2}"
 EndProject
@@ -191,21 +191,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Serialization.Pin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Serialization.Pong.Test", "src\Tests\IntegrationTests\Projects\Serialization\Drill4Net.Serialization.Pong.Test\Drill4Net.Serialization.Pong.Test.csproj", "{FE733970-25A1-48E4-B20A-32D6534E7BA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Common", "src\Tests\IntegrationTests\Projects\Engine\Drill4Net.Target.Tests.Common\Drill4Net.Target.Tests.Common.csproj", "{3D84E6B3-F423-4C5B-9FDD-A76103B68125}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Engine", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Engine\Drill4Net.Target.Tests.Engine.csproj", "{3D84E6B3-F423-4C5B-9FDD-A76103B68125}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Core22", "src\Tests\IntegrationTests\Projects\Engine\Drill4Net.Target.Tests.Core22\Drill4Net.Target.Tests.Core22.csproj", "{7C9796D0-5657-4FAA-827C-20626078E7EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Core22", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Core22\Drill4Net.Target.Tests.Core22.csproj", "{7C9796D0-5657-4FAA-827C-20626078E7EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Core31", "src\Tests\IntegrationTests\Projects\Engine\Drill4Net.Target.Tests.Core31\Drill4Net.Target.Tests.Core31.csproj", "{E8412637-AE3E-4520-B907-96CF51FD0420}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Core31", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Core31\Drill4Net.Target.Tests.Core31.csproj", "{E8412637-AE3E-4520-B907-96CF51FD0420}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net48", "src\Tests\IntegrationTests\Projects\Engine\Drill4Net.Target.Tests.Net48\Drill4Net.Target.Tests.Net48.csproj", "{47CDB144-0FE0-43CE-A650-9FC361A0FF88}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Net50", "src\Tests\IntegrationTests\Projects\Engine\Drill4Net.Target.Tests.Net50\Drill4Net.Target.Tests.Net50.csproj", "{4C985810-8693-494F-B121-371B6192DA4C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net461", "src\Tests\IntegrationTests\Projects\Engine\Drill4Net.Target.Tests.Net461\Drill4Net.Target.Tests.Net461.csproj", "{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Net50", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net50\Drill4Net.Target.Tests.Net50.csproj", "{4C985810-8693-494F-B121-371B6192DA4C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Compressor.Benchmarks", "src\Tests\Benchmarks\Drill4Net.Compressor.Benchmarks\Drill4Net.Compressor.Benchmarks.csproj", "{CF48FEA0-C6CC-4044-A186-12B772B4B6C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BanderLog", "BanderLog", "{6174881C-2EAE-4BC3-A252-F2D85521E47A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection.SpecFlow", "src\Injection\Drill4Net.Injection.SpecFlow\Drill4Net.Injection.SpecFlow.csproj", "{78B53C7D-6611-4191-91C4-94B659AE8FB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net461", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net461\Drill4Net.Target.Tests.Net461.csproj", "{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net48", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net48\Drill4Net.Target.Tests.Net48.csproj", "{528D6CA1-ECF1-4178-86A4-C86792D92101}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -545,30 +547,36 @@ Global
 		{E8412637-AE3E-4520-B907-96CF51FD0420}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{E8412637-AE3E-4520-B907-96CF51FD0420}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8412637-AE3E-4520-B907-96CF51FD0420}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47CDB144-0FE0-43CE-A650-9FC361A0FF88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47CDB144-0FE0-43CE-A650-9FC361A0FF88}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47CDB144-0FE0-43CE-A650-9FC361A0FF88}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
-		{47CDB144-0FE0-43CE-A650-9FC361A0FF88}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
-		{47CDB144-0FE0-43CE-A650-9FC361A0FF88}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47CDB144-0FE0-43CE-A650-9FC361A0FF88}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4C985810-8693-494F-B121-371B6192DA4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4C985810-8693-494F-B121-371B6192DA4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C985810-8693-494F-B121-371B6192DA4C}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
 		{4C985810-8693-494F-B121-371B6192DA4C}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{4C985810-8693-494F-B121-371B6192DA4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C985810-8693-494F-B121-371B6192DA4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
-		{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
-		{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF48FEA0-C6CC-4044-A186-12B772B4B6C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF48FEA0-C6CC-4044-A186-12B772B4B6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF48FEA0-C6CC-4044-A186-12B772B4B6C6}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
 		{CF48FEA0-C6CC-4044-A186-12B772B4B6C6}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{CF48FEA0-C6CC-4044-A186-12B772B4B6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF48FEA0-C6CC-4044-A186-12B772B4B6C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78B53C7D-6611-4191-91C4-94B659AE8FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78B53C7D-6611-4191-91C4-94B659AE8FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78B53C7D-6611-4191-91C4-94B659AE8FB9}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{78B53C7D-6611-4191-91C4-94B659AE8FB9}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{78B53C7D-6611-4191-91C4-94B659AE8FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78B53C7D-6611-4191-91C4-94B659AE8FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -658,11 +666,12 @@ Global
 		{3D84E6B3-F423-4C5B-9FDD-A76103B68125} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{7C9796D0-5657-4FAA-827C-20626078E7EA} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{E8412637-AE3E-4520-B907-96CF51FD0420} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
-		{47CDB144-0FE0-43CE-A650-9FC361A0FF88} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{4C985810-8693-494F-B121-371B6192DA4C} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
-		{5E9EC151-C1EF-4A26-A981-9E6DDB4270B5} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{CF48FEA0-C6CC-4044-A186-12B772B4B6C6} = {19C87884-82DF-4B2D-89AA-C23C58DB62D6}
 		{6174881C-2EAE-4BC3-A252-F2D85521E47A} = {19C87884-82DF-4B2D-89AA-C23C58DB62D6}
+		{78B53C7D-6611-4191-91C4-94B659AE8FB9} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
+		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
+		{528D6CA1-ECF1-4178-86A4-C86792D92101} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

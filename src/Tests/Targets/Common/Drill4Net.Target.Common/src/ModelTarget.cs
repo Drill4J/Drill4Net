@@ -10,16 +10,16 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Drill4Net.Target.Common.VB;
 
-[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Common")]
+[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Engine")]
 //[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
 
 //add this in project's csproj file: 
 //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-/*                                             *
- *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
- *   It's needed AS it IS !!!                  *
- *                                             */
+                                                /*                                             *
+                                                 *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
+                                                 *   It's needed AS it IS !!!                  *
+                                                 *                                             */
 
 namespace Drill4Net.Target.Common
 {
