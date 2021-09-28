@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Drill4Net.Common;
+using Drill4Net.Injection;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Injection.SpecFlow;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -22,6 +24,8 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         public CodeHandlerStrategy Strategy { get; }
 
+        public List<AbstractCodeInjector> Plugins { get; }
+
         private readonly Logger _logger;
 
         /**********************************************************************************/
@@ -34,9 +38,20 @@ namespace Drill4Net.Injector.Engine
         {
             Strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
             _logger = new TypedLogger<AssemblyInjector>(CoreConstants.SUBSYSTEM_INJECTOR);
+            Plugins = GetPlugins();
         }
 
         /**********************************************************************************/
+
+        private List<AbstractCodeInjector> GetPlugins()
+        {
+            var plugins = new List<AbstractCodeInjector>();
+
+            //TODO: loads them dynamically from disk by cfg
+
+            plugins.Add(new SpecFlowHookInjector());
+            return plugins;
+        }
 
         /// <summary>
         /// Inject the specified assembly
@@ -62,9 +77,15 @@ namespace Drill4Net.Injector.Engine
             //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);
             InjectProxyType(runCtx, asmCtx);
+            InjectByPlugins(runCtx, asmCtx);
 
             //need exactly after the injections
             AssemblyHelper.CorrectBusinessIndexes(asmCtx);
+        }
+
+        private void InjectByPlugins(RunContext runCtx, AssemblyContext asmCtx)
+        {
+            
         }
 
         /// <summary>

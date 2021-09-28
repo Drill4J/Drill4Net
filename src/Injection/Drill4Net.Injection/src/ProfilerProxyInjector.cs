@@ -10,7 +10,7 @@ namespace Drill4Net.Injection
     /// <summary>
     /// IL code generator for the injected Profiler's type
     /// </summary>
-    public class ProfilerProxyGenerator : AbstractCodeGenerator, IProfilerProxyGenerator
+    public class ProfilerProxyInjector : BaseCodeInjector, IProfilerProxyInjector
     {
         /* INFO *
             https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (buggy and with restrictions!)
@@ -41,9 +41,9 @@ namespace Drill4Net.Injection
         /// <param name="profilerNs"></param>
         /// <param name="profilerClass"></param>
         /// <param name="profilerFunc"></param>
-        public ProfilerProxyGenerator(string proxyClass, string proxyFunc,
-                              string profilerReadDir, string profilerAsmName,
-                              string profilerNs, string profilerClass, string profilerFunc)
+        public ProfilerProxyInjector(string proxyClass, string proxyFunc,
+                                      string profilerReadDir, string profilerAsmName,
+                                      string profilerNs, string profilerClass, string profilerFunc)
         {
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
             ProxyFunc = proxyFunc ?? throw new ArgumentNullException(nameof(proxyFunc));

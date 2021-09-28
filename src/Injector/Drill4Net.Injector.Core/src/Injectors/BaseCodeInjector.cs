@@ -4,29 +4,29 @@ using System.Linq;
 using System.Collections.Generic;
 using Mono.Cecil;
 
-namespace Drill4Net.Injection
+namespace Drill4Net.Injector.Core
 {
-    public abstract class AbstractCodeGenerator : IDisposable
+    public abstract class BaseCodeInjector : IDisposable
     {
         protected readonly Dictionary<bool, ModuleDefinition> _syslibs;
 
         /*****************************************************************************************/
 
-        protected AbstractCodeGenerator(Dictionary<bool, ModuleDefinition> syslibs = null)
+        protected BaseCodeInjector(Dictionary<bool, ModuleDefinition> syslibs = null)
         {
             _syslibs = syslibs ?? new Dictionary<bool, ModuleDefinition>();
         }
 
         /*****************************************************************************************/
 
-        internal MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
+        protected MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
             string ns, string typeName, string method, bool isStatic,
             Type parType, Type resType)
         {
             return ImportSysMethodReference(syslib, target, ns, typeName, method, isStatic, new Type[] { parType }, resType);
         }
 
-        internal MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
+        protected MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
             string ns, string typeName, string method, bool isStatic,
             Type[] parTypes, Type resType)
         {
@@ -48,12 +48,12 @@ namespace Drill4Net.Injection
             return target.ImportReference(methRef);
         }
 
-        internal TypeReference ImportSysTypeReference(ModuleDefinition syslib, ModuleDefinition target, Type type)
+        protected TypeReference ImportSysTypeReference(ModuleDefinition syslib, ModuleDefinition target, Type type)
         {
             return target.ImportReference(new TypeReference(type.Namespace, type.Name, syslib, syslib));
         }
 
-        internal ModuleDefinition GetSysModule(bool isNetFx)
+        protected ModuleDefinition GetSysModule(bool isNetFx)
         {
             if (_syslibs.ContainsKey(isNetFx))
                 return _syslibs[isNetFx];
@@ -62,7 +62,7 @@ namespace Drill4Net.Injection
             return module;
         }
 
-        internal string GetSysLibPath(bool isNetFx)
+        protected string GetSysLibPath(bool isNetFx)
         {
             //TODO: get real root dirs from Environment
             var root = isNetFx ?

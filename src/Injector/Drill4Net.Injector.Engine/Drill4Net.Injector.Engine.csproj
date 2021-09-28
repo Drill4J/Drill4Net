@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
+    <ProjectReference Include="..\..\Injection\Drill4Net.Injection.SpecFlow\Drill4Net.Injection.SpecFlow.csproj" />
     <ProjectReference Include="..\..\Injection\Drill4Net.Injection\Drill4Net.Injection.csproj" />
     <ProjectReference Include="..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
     <ProjectReference Include="..\Strategies\Drill4Net.Injector.Strategies.Blocks\Drill4Net.Injector.Strategies.Blocks.csproj" />

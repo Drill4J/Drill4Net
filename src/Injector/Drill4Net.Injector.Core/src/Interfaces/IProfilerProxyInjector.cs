@@ -6,7 +6,7 @@ namespace Drill4Net.Injector.Core
     /// <summary>
     /// IL code generator of the injected Profiler's type
     /// </summary>
-    public interface IProfilerProxyGenerator: IDisposable
+    public interface IProfilerProxyInjector: IDisposable
     {
         string ProfilerAsmName { get; }
         string ProfilerClass { get; }

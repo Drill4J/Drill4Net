@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core
 {
@@ -7,6 +8,13 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public interface IAssemblyInjector
     {
+        /// <summary>
+        /// Concrete strategy of instrumenting code injections into Target
+        /// </summary>
+        CodeHandlerStrategy Strategy { get; }
+
+        List<AbstractCodeInjector> Plugins { get; }
+
         /// <summary>
         /// Inject assembly by specified contexts
         /// </summary>
