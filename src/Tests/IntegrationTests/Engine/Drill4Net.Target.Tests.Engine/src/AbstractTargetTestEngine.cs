@@ -79,7 +79,7 @@ namespace Drill4Net.Target.Tests.Engine
             #region Assert
             var funcs = GetFunctions();
             _testsRep.WriteDebugInfo(mi.Name, args, funcs);
-            Assert.IsTrue(funcs.Count == 1);
+            Assert.IsTrue(funcs.Count == 1, $"Must be 1 function. Real: {funcs.Count}");
 
             var sig = SourceDataCore.GetFullSignature(mi);
             var source = SourceDataCore.GetSourceFromFullSig(target, sig);
@@ -151,7 +151,7 @@ namespace Drill4Net.Target.Tests.Engine
 
             if (!isBunch)
             {
-                Assert.IsTrue(funcs.Count == inputs.Length);
+                Assert.IsTrue(funcs.Count == inputs.Length, $"Must be {inputs.Length} function(s). Real: {funcs.Count}");
 
                 //by subfunctions in main calls
                 foreach (var data in inputs)

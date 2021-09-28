@@ -35,6 +35,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Drill4Net.Target.Common, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Drill4Net.Target.Common.Another, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.Another.dll</HintPath>
+    </Reference>
+    <Reference Include="Drill4Net.Target.Common.VB, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Net48.App\Drill4Net.Target.Common.VB.dll</HintPath>
+    </Reference>
     <Reference Include="DumpExtensions, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\DumpExtensions.2.0.0\lib\net45\DumpExtensions.dll</HintPath>
     </Reference>
