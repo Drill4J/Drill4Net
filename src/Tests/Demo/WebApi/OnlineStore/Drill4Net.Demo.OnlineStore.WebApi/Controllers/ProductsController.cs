@@ -59,51 +59,7 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             var products = _mapper.Map<List<ProductDto>>(_productService.GetAll());
             return products;
         }
-        // POST: api/products/
-        //[HttpPost]
-        //public HttpResponseMessage Post(ProductDto product)
-        //{
-        //    try
-        //    {
-        //        libraryDbContext.Newspapers.Add(new Newspaper(newspaper.PublicationPlace, newspaper.PublicationTitle, newspaper.Number,
-        //            newspaper.PublicationYear, newspaper.Date, newspaper.NumberOfCopies, newspaper.ISSN, newspaper.Title, newspaper.Notes,
-        //            newspaper.NumberOfPages, newspaper.Cost));
-        //        libraryDbContext.SaveChanges();
-        //        var response = Request.CreateResponse<NewspaperDto>(HttpStatusCode.Created, product);
-        //        string uri = Url.RouteUrl(null, new { id = newspaper.ISSN });
-        //        response.Headers.Location = new Uri(Request, Request., uri);
-        //        return response;
-        //    }
-        //    catch
-        //    {
-        //        throw new HttpResponseException(HttpStatusCode.BadRequest);
-        //    }
-        //    var products = _mapper.Map<List<ProductDto>>(DataContext.Products);
-        //    return products;
-        //}
-        //public HttpResponseMessage Put(string id, NewspaperDto newspaperData)
-        //{
-        //    try
-        //    {
-        //        var newspaper = libraryDbContext.Newspapers.FirstOrDefault(n => n.ISSN == id);
-        //        newspaper.Title = newspaperData.Title;
-        //        newspaper.Cost = newspaperData.Cost;
-        //        newspaper.Date = newspaperData.Date;
-        //        newspaper.Notes = newspaperData.Notes;
-        //        newspaper.Number = newspaperData.Number;
-        //        newspaper.NumberOfCopies = newspaperData.NumberOfCopies;
-        //        newspaper.NumberOfPages = newspaperData.NumberOfPages;
-        //        newspaper.PublicationPlace = newspaperData.PublicationPlace;
-        //        newspaper.PublicationTitle = newspaperData.PublicationTitle;
-        //        libraryDbContext.SaveChanges();
-        //        return new HttpResponseMessage(HttpStatusCode.NoContent);
-        //    }
-        //    catch
-        //    {
-        //        throw new HttpResponseException(HttpStatusCode.BadRequest);
 
-        //    }
-        //}
     }
 }
 
