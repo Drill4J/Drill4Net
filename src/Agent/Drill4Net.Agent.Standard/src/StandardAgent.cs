@@ -364,5 +364,10 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
+
+        public static void DoCommand(int command, string data)
+        {
+            _logger.Info($"Command: {command} -> {data}");
+        }
     }
 }

@@ -228,40 +228,9 @@ namespace Drill4Net.Injection
             data21 = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
             cmdMeth.Parameters.Add(data21);
 
-            //_methCmdInfo.Invoke(null, new object[] { command, data });
-            //Ldarg_022 = ilProc.Create(OpCodes.Nop);
-            //ilProc.Append(Ldarg_022);
-            //Ldfld23 = ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methCmdInfo);
-            //ilProc.Append(Ldfld23);
-
-            //methInvoke = ImportSysMethodReference(syslib, module, "System.Reflection", "MethodBase", "Invoke", false, new Type[] { typeof(object), typeof(object[]) }, typeof(object));
-            ////HACK: for proper creating of object[] (and under/for the NetFx, and under/for the NetCore)
-            //reflectRef = module.ImportReference(TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
-            //methInvoke.Parameters.Clear();
-            //foreach (var p in reflectRef.Parameters)
-            //    methInvoke.Parameters.Add(p);
-
-            //Callvirt24 = ilProc.Create(OpCodes.Callvirt, methInvoke);
-            //Ldnull25 = ilProc.Create(OpCodes.Ldnull);
-            //ilProc.Append(Ldnull25);
-            //Ldc_I426 = ilProc.Create(OpCodes.Ldc_I4, 1);
-            //ilProc.Append(Ldc_I426);
-            //Newarr27 = ilProc.Create(OpCodes.Newarr, module.TypeSystem.Object);
-            //ilProc.Append(Newarr27);
-            //Dup28 = ilProc.Create(OpCodes.Dup);
-            //ilProc.Append(Dup28);
-            //Ldc_I429 = ilProc.Create(OpCodes.Ldc_I4, 0);
-            //ilProc.Append(Ldc_I429);
-            // Ldarg_130 = ilProc.Create(OpCodes.Ldarg_0);
-            //ilProc.Append(Ldarg_130);
-            //Stelem_Ref31 = ilProc.Create(OpCodes.Stelem_Ref);
-            //ilProc.Append(Stelem_Ref31);
-            //ilProc.Append(Callvirt24);
-
             //_meth.Invoke(null, new object[]{ command, data });
             var Ldsfld_6 = ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methCmdInfo);
             ilProc.Append(Ldsfld_6);
-            var Callvirt_8 = ilProc.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]")));
             var Ldnull_9 = ilProc.Create(OpCodes.Ldnull);
             ilProc.Append(Ldnull_9);
             var Ldc_I4_10 = ilProc.Create(OpCodes.Ldc_I4, 2);
@@ -286,7 +255,7 @@ namespace Drill4Net.Injection
             ilProc.Append(Ldarg_1_19);
             var Stelem_Ref_20 = ilProc.Create(OpCodes.Stelem_Ref);
             ilProc.Append(Stelem_Ref_20);
-            ilProc.Append(Callvirt_8);
+            ilProc.Append(Callvirt24); //Callvirt_8
 
             Pop32 = ilProc.Create(OpCodes.Pop);
             ilProc.Append(Pop32);

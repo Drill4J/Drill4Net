@@ -12,6 +12,7 @@ namespace Drill4Net.Injection.SpecFlow
         public string SourceDir { get; }
         public string ProxyClass { get; }
 
+        private const string SPEC_NS = "TechTalk.SpecFlow";
         private ModuleDefinition _speclib;
 
         /*************************************************************************************************/
@@ -52,14 +53,14 @@ namespace Drill4Net.Injection.SpecFlow
             if (type == null)
                 return;
             //
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "Drill4NetFeatureStarting", 0, isNetFX);
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "Drill4NetFeatureFinishing", 1, isNetFX);
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "Drill4NetScenarioStarting", 2, isNetFX);
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "Drill4NetScenarioFinishing", 3, isNetFX);
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureFinishing", 1, isNetFX);
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioStarting", 2, isNetFX);
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioFinishing", 3, isNetFX);
         }
 
         private void InjectMethod(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
-                                  string funcName, int command, bool isNetFX)
+                                  string paramCtxType, string paramInfoType, string funcName, int command, bool isNetFX)
         {
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
             var cmdMethodName = "DoCommand";
@@ -75,7 +76,8 @@ namespace Drill4Net.Injection.SpecFlow
             var ilProc = funcDef.Body.GetILProcessor();
 
             //Parameters of 'public static void Drill4NetScenarioStarting(ScenarioContext scenarioContext)'
-            var par = new ParameterDefinition("scenarioContext", ParameterAttributes.None, module.TypeSystem.TypedReference);
+            var methParamRef = module.ImportReference(new TypeReference(SPEC_NS, paramCtxType, _speclib, _speclib));
+            var par = new ParameterDefinition("context", ParameterAttributes.None, methParamRef);
             funcDef.Parameters.Add(par);
 
             ilProc.Append(ilProc.Create(OpCodes.Nop));
@@ -83,14 +85,14 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Append(ilProc.Create(OpCodes.Ldarg_0));
 
             //get_ScenarioInfo
-            var typeRef1 = module.ImportReference(new TypeReference("TechTalk.SpecFlow", "ScenarioContext", _speclib, _speclib));
-            var resTypeRef1 = module.ImportReference(new TypeReference("TechTalk.SpecFlow", "ScenarioInfo", _speclib, _speclib));
-            var methInfo1 = new MethodReference("get_ScenarioInfo", resTypeRef1, typeRef1);
+            var typeRef1 = module.ImportReference(new TypeReference(SPEC_NS, paramCtxType, _speclib, _speclib));
+            var resTypeRef1 = module.ImportReference(new TypeReference(SPEC_NS, paramInfoType, _speclib, _speclib));
+            var methInfo1 = new MethodReference($"get_{paramInfoType}", resTypeRef1, typeRef1);
             methInfo1.HasThis = true;
             ilProc.Append(ilProc.Create(OpCodes.Callvirt, methInfo1));
 
             //get_Title
-            var typeRef2 = module.ImportReference(new TypeReference("TechTalk.SpecFlow", "ScenarioInfo", _speclib, _speclib));
+            var typeRef2 = module.ImportReference(new TypeReference(SPEC_NS, paramInfoType, _speclib, _speclib));
             var resTypeRef2 = module.TypeSystem.String;
             var methInfo2 = new MethodReference("get_Title", resTypeRef2, typeRef2);
             methInfo2.HasThis = true;
