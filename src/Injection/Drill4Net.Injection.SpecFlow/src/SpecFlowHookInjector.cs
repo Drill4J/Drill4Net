@@ -56,8 +56,6 @@ namespace Drill4Net.Injection.SpecFlow
             InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "Drill4NetFeatureFinishing", 1, isNetFX);
             InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "Drill4NetScenarioStarting", 2, isNetFX);
             InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "Drill4NetScenarioFinishing", 3, isNetFX);
-
-            var t = 1;
         }
 
         private void InjectMethod(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,

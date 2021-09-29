@@ -134,6 +134,11 @@ namespace Drill4Net.Agent.Transmitter
             return ProbeSender.SendProbe(data, ctx);
         }
 
+        public static void DoCommand(int command, string data)
+        {
+            
+        }
+
         #region Dispose
         public void Dispose()
         {
