@@ -60,7 +60,7 @@ namespace Drill4Net.Injector.Engine
         /// <returns></returns>
         public IAssemblyInjector GetInjector()
         {
-            return new AssemblyInjector(GetStrategy());
+            return new AssemblyInjector(Options, GetStrategy());
         }
 
         /// <summary>

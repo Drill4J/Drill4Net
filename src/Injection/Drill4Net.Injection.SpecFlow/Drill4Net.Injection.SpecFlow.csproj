@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SpecFlow" Version="3.9.22" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Injection\Drill4Net.Injection.csproj" />
   </ItemGroup>
 

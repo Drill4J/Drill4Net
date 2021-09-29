@@ -6,18 +6,20 @@ using Mono.Cecil;
 
 namespace Drill4Net.Injector.Core
 {
-    public abstract class BaseCodeInjector : IDisposable
+    public abstract class AbstractCodeInjector : IDisposable
     {
         protected readonly Dictionary<bool, ModuleDefinition> _syslibs;
 
         /*****************************************************************************************/
 
-        protected BaseCodeInjector(Dictionary<bool, ModuleDefinition> syslibs = null)
+        protected AbstractCodeInjector(Dictionary<bool, ModuleDefinition> syslibs = null)
         {
             _syslibs = syslibs ?? new Dictionary<bool, ModuleDefinition>();
         }
 
         /*****************************************************************************************/
+
+        public abstract void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false);
 
         protected MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
             string ns, string typeName, string method, bool isStatic,
@@ -31,21 +33,31 @@ namespace Drill4Net.Injector.Core
             Type[] parTypes, Type resType)
         {
             var methTypeRef = new TypeReference(ns, typeName, syslib, syslib);
-            var restTypeRef = new TypeReference(resType.Namespace, resType.Name, syslib, syslib);
-            var methRef = new MethodReference(method, restTypeRef, methTypeRef);
+            var resTypeRef = new TypeReference(resType.Namespace, resType.Name, syslib, syslib);
+            var methRef = new MethodReference(method, resTypeRef, methTypeRef);
             if (!isStatic)
                 methRef.HasThis = true;
 
             //parameters
             for (int i = 0; i < parTypes.Length; i++)
             {
-                var parType = parTypes[i];
-                var parTypeRef = new TypeReference(parType.Namespace, parType.Name, syslib, syslib);
-                var parDef = new ParameterDefinition($"par_{i}", ParameterAttributes.None, parTypeRef);
+                var parDef = CreateParameterDefinition($"par_{i}", parTypes[i], syslib);
                 methRef.Parameters.Add(parDef);
             }
 
             return target.ImportReference(methRef);
+        }
+
+        protected ParameterDefinition CreateParameterDefinition(string parName, Type parType, ModuleDefinition module)
+        {
+            var parTypeRef = new TypeReference(parType.Namespace, parType.Name, module, module);
+            return new ParameterDefinition(parName, ParameterAttributes.None, parTypeRef);
+        }
+
+        protected ParameterDefinition ImportParameterDefinition(string parName, Type parType, ModuleDefinition from, ModuleDefinition target)
+        {
+            var parTypeRef = target.ImportReference(new TypeReference(parType.Namespace, parType.Name, from, from));
+            return new ParameterDefinition(parName, ParameterAttributes.None, parTypeRef);
         }
 
         protected TypeReference ImportSysTypeReference(ModuleDefinition syslib, ModuleDefinition target, Type type)
@@ -83,7 +95,7 @@ namespace Drill4Net.Injector.Core
         }
 
         //TODO: full pattern!
-        public void Dispose()
+        public virtual void Dispose()
         {
             foreach (var lib in _syslibs.Values)
                 lib.Dispose();

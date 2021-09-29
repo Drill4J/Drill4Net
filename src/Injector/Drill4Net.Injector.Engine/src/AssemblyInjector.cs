@@ -24,7 +24,12 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         public CodeHandlerStrategy Strategy { get; }
 
+        /// <summary>
+        /// Plugins for additional injections into assemblies
+        /// </summary>
         public List<AbstractCodeInjector> Plugins { get; }
+
+        private InjectorOptions _opts;
 
         private readonly Logger _logger;
 
@@ -33,10 +38,12 @@ namespace Drill4Net.Injector.Engine
         /// <summary>
         /// Create the Injector which injects the instrumenting code called by Target for Agent
         /// </summary>
+        /// <param name="opts"></param>
         /// <param name="strategy"></param>
-        public AssemblyInjector(CodeHandlerStrategy strategy)
+        public AssemblyInjector(InjectorOptions opts, CodeHandlerStrategy strategy)
         {
             Strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+            _opts = opts ?? throw new ArgumentNullException(nameof(opts));
             _logger = new TypedLogger<AssemblyInjector>(CoreConstants.SUBSYSTEM_INJECTOR);
             Plugins = GetPlugins();
         }
@@ -47,9 +54,9 @@ namespace Drill4Net.Injector.Engine
         {
             var plugins = new List<AbstractCodeInjector>();
 
-            //TODO: loads them dynamically from disk by cfg
+            //TODO: loads them dynamically from the disk by cfg
 
-            plugins.Add(new SpecFlowHookInjector());
+            plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class));
             return plugins;
         }
 
@@ -77,15 +84,22 @@ namespace Drill4Net.Injector.Engine
             //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);
             InjectProxyType(runCtx, asmCtx);
-            InjectByPlugins(runCtx, asmCtx);
+            InjectByPlugins(asmCtx);
 
             //need exactly after the injections
             AssemblyHelper.CorrectBusinessIndexes(asmCtx);
         }
 
-        private void InjectByPlugins(RunContext runCtx, AssemblyContext asmCtx)
+        /// <summary>
+        /// Injecting some features by extending plugins
+        /// </summary>
+        /// <param name="asmCtx"></param>
+        private void InjectByPlugins(AssemblyContext asmCtx)
         {
-            
+            foreach (var plugin in Plugins)
+            {
+                plugin.InjectTo(asmCtx.Definition, asmCtx.ProxyNamespace, asmCtx.Version.Target == AssemblyVersionType.NetFramework);
+            }
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace Drill4Net.Injection
     /// <summary>
     /// IL code generator for the injected Profiler's type
     /// </summary>
-    public class ProfilerProxyInjector : BaseCodeInjector, IProfilerProxyInjector
+    public class ProfilerProxyInjector : AbstractCodeInjector, IProfilerProxyInjector
     {
         /* INFO *
             https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (buggy and with restrictions!)
@@ -42,8 +42,8 @@ namespace Drill4Net.Injection
         /// <param name="profilerClass"></param>
         /// <param name="profilerFunc"></param>
         public ProfilerProxyInjector(string proxyClass, string proxyFunc,
-                                      string profilerReadDir, string profilerAsmName,
-                                      string profilerNs, string profilerClass, string profilerFunc)
+                                     string profilerReadDir, string profilerAsmName,
+                                     string profilerNs, string profilerClass, string profilerFunc)
         {
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
             ProxyFunc = proxyFunc ?? throw new ArgumentNullException(nameof(proxyFunc));
@@ -63,7 +63,7 @@ namespace Drill4Net.Injection
         /// <param name="assembly">The injected assembly</param>
         /// <param name="proxyNs">The Proxy's namespace for current assembly</param>
         /// <param name="isNetFX">Is NetFramework or Net Core?</param>
-        public void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false)
+        public override void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false)
         {
             if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
@@ -76,8 +76,8 @@ namespace Drill4Net.Injection
             module.Types.Add(t1);
             t1.BaseType = module.TypeSystem.Object;
 
-            var fld_ProfilerProxy__methInfo = new FieldDefinition("_methInfo", FieldAttributes.Private | FieldAttributes.Static, ImportSysTypeReference(syslib, module, typeof(System.Reflection.MethodInfo)));
-            t1.Fields.Add(fld_ProfilerProxy__methInfo);
+            var fld_ProfilerProxy_methInfo = new FieldDefinition("_methInfo", FieldAttributes.Private | FieldAttributes.Static, ImportSysTypeReference(syslib, module, typeof(System.Reflection.MethodInfo)));
+            t1.Fields.Add(fld_ProfilerProxy_methInfo);
             #endregion
             #region Constructor : .cctor
             var ProfilerProxy_cctor_ = new MethodDefinition(".cctor", MethodAttributes.Static | MethodAttributes.Private | MethodAttributes.RTSpecialName | MethodAttributes.SpecialName | MethodAttributes.HideBySig, module.TypeSystem.Void);
@@ -134,7 +134,7 @@ namespace Drill4Net.Injection
             var Ldstr15 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, ProfilerFunc);
             il_ProfilerProxy_cctor_.Append(Ldstr15);
             il_ProfilerProxy_cctor_.Append(Callvirt14);
-            var Stsfld16 = il_ProfilerProxy_cctor_.Create(OpCodes.Stsfld, fld_ProfilerProxy__methInfo);
+            var Stsfld16 = il_ProfilerProxy_cctor_.Create(OpCodes.Stsfld, fld_ProfilerProxy_methInfo);
             il_ProfilerProxy_cctor_.Append(Stsfld16);
 
             var Ret17 = il_ProfilerProxy_cctor_.Create(OpCodes.Ret);
@@ -152,20 +152,20 @@ namespace Drill4Net.Injection
             il18.Append(Ret21);
             #endregion
             #region Method : Process
-            var ProfilerProxy_Process_string = new MethodDefinition(ProxyFunc, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
-            t1.Methods.Add(ProfilerProxy_Process_string);
-            ProfilerProxy_Process_string.Body.InitLocals = true;
-            var il_ProfilerProxy_Process_string = ProfilerProxy_Process_string.Body.GetILProcessor();
+            var processMeth = new MethodDefinition(ProxyFunc, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
+            t1.Methods.Add(processMeth);
+            processMeth.Body.InitLocals = true;
+            var ilProc = processMeth.Body.GetILProcessor();
 
             //Parameters of 'public void Process(string data)'
             var data21 = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
-            ProfilerProxy_Process_string.Parameters.Add(data21);
+            processMeth.Parameters.Add(data21);
 
             //_methInfo.Invoke(null, new object[] { data });
-            var Ldarg_022 = il_ProfilerProxy_Process_string.Create(OpCodes.Nop);
-            il_ProfilerProxy_Process_string.Append(Ldarg_022);
-            var Ldfld23 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldsfld, fld_ProfilerProxy__methInfo);
-            il_ProfilerProxy_Process_string.Append(Ldfld23);
+            var Ldarg_022 = ilProc.Create(OpCodes.Nop);
+            ilProc.Append(Ldarg_022);
+            var Ldfld23 = ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methInfo);
+            ilProc.Append(Ldfld23);
 
             var methInvoke = ImportSysMethodReference(syslib, module, "System.Reflection", "MethodBase", "Invoke", false, new Type[] { typeof(object), typeof(object[]) }, typeof(object));
             //HACK: for proper creating of object[] (and under/for the NetFx, and under/for the NetCore)
@@ -174,28 +174,28 @@ namespace Drill4Net.Injection
             foreach (var p in reflectRef.Parameters)
                 methInvoke.Parameters.Add(p);
 
-            var Callvirt24 = il_ProfilerProxy_Process_string.Create(OpCodes.Callvirt, methInvoke);
-            var Ldnull25 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldnull);
-            il_ProfilerProxy_Process_string.Append(Ldnull25);
-            var Ldc_I426 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 1);
-            il_ProfilerProxy_Process_string.Append(Ldc_I426);
-            var Newarr27 = il_ProfilerProxy_Process_string.Create(OpCodes.Newarr, module.TypeSystem.Object);
-            il_ProfilerProxy_Process_string.Append(Newarr27);
-            var Dup28 = il_ProfilerProxy_Process_string.Create(OpCodes.Dup);
-            il_ProfilerProxy_Process_string.Append(Dup28);
-            var Ldc_I429 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldc_I4, 0);
-            il_ProfilerProxy_Process_string.Append(Ldc_I429);
-            var Ldarg_130 = il_ProfilerProxy_Process_string.Create(OpCodes.Ldarg_0);
-            il_ProfilerProxy_Process_string.Append(Ldarg_130);
-            var Stelem_Ref31 = il_ProfilerProxy_Process_string.Create(OpCodes.Stelem_Ref);
-            il_ProfilerProxy_Process_string.Append(Stelem_Ref31);
-            il_ProfilerProxy_Process_string.Append(Callvirt24);
-            var Pop32 = il_ProfilerProxy_Process_string.Create(OpCodes.Pop);
-            il_ProfilerProxy_Process_string.Append(Pop32);
+            var Callvirt24 = ilProc.Create(OpCodes.Callvirt, methInvoke);
+            var Ldnull25 = ilProc.Create(OpCodes.Ldnull);
+            ilProc.Append(Ldnull25);
+            var Ldc_I426 = ilProc.Create(OpCodes.Ldc_I4, 1);
+            ilProc.Append(Ldc_I426);
+            var Newarr27 = ilProc.Create(OpCodes.Newarr, module.TypeSystem.Object);
+            ilProc.Append(Newarr27);
+            var Dup28 = ilProc.Create(OpCodes.Dup);
+            ilProc.Append(Dup28);
+            var Ldc_I429 = ilProc.Create(OpCodes.Ldc_I4, 0);
+            ilProc.Append(Ldc_I429);
+            var Ldarg_130 = ilProc.Create(OpCodes.Ldarg_0);
+            ilProc.Append(Ldarg_130);
+            var Stelem_Ref31 = ilProc.Create(OpCodes.Stelem_Ref);
+            ilProc.Append(Stelem_Ref31);
+            ilProc.Append(Callvirt24);
+            var Pop32 = ilProc.Create(OpCodes.Pop);
+            ilProc.Append(Pop32);
 
             //return
-            var Ret33 = il_ProfilerProxy_Process_string.Create(OpCodes.Ret);
-            il_ProfilerProxy_Process_string.Append(Ret33);
+            var Ret33 = ilProc.Create(OpCodes.Ret);
+            ilProc.Append(Ret33);
             #endregion
 
             //PrivateCoreLibFixer.FixReferences(assembly.MainModule); //it leads to fail in runtime
