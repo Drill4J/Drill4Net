@@ -51,16 +51,27 @@ namespace Drill4Net.Injection.SpecFlow
                 .FirstOrDefault(a => a.CustomAttributes.Any(b => b.AttributeType.FullName == "TechTalk.SpecFlow.BindingAttribute"));
             if (type == null)
                 return;
+            //
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "Drill4NetFeatureStarting", 0, isNetFX);
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "Drill4NetFeatureFinishing", 1, isNetFX);
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "Drill4NetScenarioStarting", 2, isNetFX);
+            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "Drill4NetScenarioFinishing", 3, isNetFX);
 
+            var t = 1;
+        }
+
+        private void InjectMethod(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
+                                  string funcName, int command, bool isNetFX)
+        {
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
             var cmdMethodName = "DoCommand";
 
             //Drill4NetScenarioStarting
-            var funcName = "Drill4NetScenarioStarting";
+            //var funcName = "Drill4NetScenarioStarting";
             var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
             type.Methods.Add(funcDef);
 
-            AddOrder0Attribute(module, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), funcDef);
+            AddOrder0Attribute(module, methAttrType, funcDef);
 
             funcDef.Body.InitLocals = true; //?
             var ilProc = funcDef.Body.GetILProcessor();
@@ -70,7 +81,7 @@ namespace Drill4Net.Injection.SpecFlow
             funcDef.Parameters.Add(par);
 
             ilProc.Append(ilProc.Create(OpCodes.Nop));
-            ilProc.Append(ilProc.Create(OpCodes.Ldc_I4_2));
+            ilProc.Append(ilProc.Create(OpCodes.Ldc_I4, command));
             ilProc.Append(ilProc.Create(OpCodes.Ldarg_0));
 
             //get_ScenarioInfo
@@ -101,7 +112,6 @@ namespace Drill4Net.Injection.SpecFlow
 
             ilProc.Append(ilProc.Create(OpCodes.Nop));
             ilProc.Append(ilProc.Create(OpCodes.Ret));
-            var t = 1;
         }
 
         internal void AddOrder0Attribute(ModuleDefinition module, Type attribType,
