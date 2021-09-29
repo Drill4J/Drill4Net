@@ -11,7 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Dal\Drill4Net.Demo.OnlineStore.Dal.csproj" />
+    <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Bll\Drill4Net.Demo.OnlineStore.Bll.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mapping\" />
   </ItemGroup>
 
 </Project>

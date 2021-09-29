@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
 {
-    public class CartsController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CartsController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+
     }
 }

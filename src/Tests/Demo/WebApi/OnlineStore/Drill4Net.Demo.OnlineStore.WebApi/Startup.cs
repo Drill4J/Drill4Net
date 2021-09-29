@@ -1,3 +1,6 @@
+using Drill4Net.Demo.OnlineStore.Dal;
+using Drill4Net.Demo.OnlineStore.Dal.Interfaces;
+using Drill4Net.Demo.OnlineStore.Dal.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,7 +29,8 @@ namespace Drill4Net.Demo.OnlineStore.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IServiceBase<Cart>,CartService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
