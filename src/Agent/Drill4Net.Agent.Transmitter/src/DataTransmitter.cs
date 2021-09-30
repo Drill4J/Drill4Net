@@ -137,6 +137,7 @@ namespace Drill4Net.Agent.Transmitter
         public static void DoCommand(int command, string data)
         {
             _logger.Info($"Command: {command} -> {data}");
+
         }
 
         #region Dispose

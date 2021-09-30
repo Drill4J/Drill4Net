@@ -88,7 +88,7 @@ namespace Drill4Net.Injector.Core
                 .ToArray();
             if (dirs.Length == 0)
                 throw new Exception("System lib's directory not found");
-            var path = Path.Combine(dirs[dirs.Length - 1], fileName);
+            var path = Path.Combine(dirs[^1], fileName);
             if (!File.Exists(path))
                 throw new Exception("System lib not found");
             return path;
