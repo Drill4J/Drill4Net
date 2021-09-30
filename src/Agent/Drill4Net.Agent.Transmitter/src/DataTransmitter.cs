@@ -21,6 +21,7 @@ namespace Drill4Net.Agent.Transmitter
 
         public ITargetInfoSender InfoSender { get; }
         public IProbeSender ProbeSender { get; }
+        public ICommandSender CommandSender { get; }
 
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
@@ -44,8 +45,8 @@ namespace Drill4Net.Agent.Transmitter
             ITargetSenderRepository rep = new TransmitterRepository();
             Log.Debug("Repository created.");
 
-            var extrasData = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
-            _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extrasData);
+            var extras = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
+            _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extras);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
@@ -70,6 +71,7 @@ namespace Drill4Net.Agent.Transmitter
             //TODO: factory
             InfoSender = new TargetInfoKafkaSender(rep); //sender the target info
             ProbeSender = new ProbeKafkaSender(rep); //sender the data of probes
+            CommandSender = new CommandKafkaSender(rep);
 
             var pingSender = new PingKafkaSender(rep);
             _pinger = new Pinger(rep, pingSender);
@@ -134,12 +136,18 @@ namespace Drill4Net.Agent.Transmitter
             return ProbeSender.SendProbe(data, ctx);
         }
 
-        public static void DoCommand(int command, string data)
+        #region Command
+        public void ExecCommand(int command, string data)
         {
             _logger.Info($"Command: {command} -> {data}");
-
+            CommandSender.SendCommand(command, data);
         }
 
+        public static void DoCommand(int command, string data)
+        {
+            Transmitter.ExecCommand(command, data);
+        }
+        #endregion
         #region Dispose
         public void Dispose()
         {

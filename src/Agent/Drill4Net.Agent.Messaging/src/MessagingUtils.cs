@@ -27,6 +27,11 @@ namespace Drill4Net.Agent.Messaging
             return targTopics;
         }
 
+        public static string GetCommandTopic(string sessionUid)
+        {
+            return $"{MessagingConstants.TOPIC_COMMAND_PREFIX}_{sessionUid}";
+        }
+
         public static string GetProbeTopic(string sessionUid)
         {
             return $"{MessagingConstants.TOPIC_PROBE_PREFIX}_{sessionUid}";

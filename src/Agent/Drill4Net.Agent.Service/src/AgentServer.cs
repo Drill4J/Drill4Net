@@ -269,7 +269,7 @@ namespace Drill4Net.Agent.Service
 
             ITargetSenderRepository trgRep = new TargetedSenderRepository(target, senderOpts);
             using ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
-            sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here exclusive topic for the Worker
+            sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here is exclusive topic for the Worker
         }
 
         private void TargetReceiver_ErrorOccured(IMessageReceiver source, bool isFatal, bool isLocal, string message)

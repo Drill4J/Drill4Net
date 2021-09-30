@@ -17,12 +17,14 @@
         public const string MESSAGE_TYPE_PING = "Ping";
         public const string MESSAGE_TYPE_PROBE = "Probe";
         public const string MESSAGE_TYPE_TARGET_INFO = "Target";
+        public const string MESSAGE_TYPE_COMMAND = "Command";
         #endregion
         #region Topics
         public const string TOPIC_PREFIX = "d4n";
         public static readonly string TOPIC_PING = $"{TOPIC_PREFIX}-ping";
         public static readonly string TOPIC_TARGET_INFO = $"{TOPIC_PREFIX}-server-target-info";
         public static readonly string TOPIC_PROBE_PREFIX = $"{TOPIC_PREFIX}-probes";
+        public static readonly string TOPIC_COMMAND_PREFIX = $"{TOPIC_PREFIX}-commands";
         #endregion
         #region Ping data
         public const string PING_SUBSYSTEM = "subsystem";
