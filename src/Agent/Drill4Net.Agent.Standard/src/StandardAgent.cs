@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Reflection;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
-using Drill4Net.Core.Repository;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -49,8 +48,9 @@ namespace Drill4Net.Agent.Standard
 
         static StandardAgent() //it's needed for invocation from Target
         {
-            var extrasData = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
-            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, extrasData);
+            var extras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
+            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, extras);
+            _logPrefix = nameof(StandardAgent);
 
             if (StandardAgentCCtorParameters.SkipCctor)
                 return;
@@ -364,17 +364,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
-        #region Command
-        /// <summary>
-        /// Do some command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <param name="data"></param>
-        public void ExecCommand(int command, string data)
-        {
-            Repository.ExecCommand(command, data);
-        }
-
+        #region Commands
         /// <summary>
         /// Do some command
         /// </summary>
@@ -385,6 +375,39 @@ namespace Drill4Net.Agent.Standard
             //DON'T refactor parameters to Command type, because
             //some injections wait exactly current parameters
             Agent.ExecCommand(command, data);
+        }
+
+        /// <summary>
+        /// Do some command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        public void ExecCommand(int command, string data)
+        {
+            _logger.Info($"Command: {command} -> {data}");
+            switch (command)
+            {
+                case 2: StartSession(data); break;
+                case 3: StopSession(data); break;
+            }
+        }
+
+        /// <summary>
+        /// Automatic command from Agent to Admin side to start the session (for autotests)
+        /// </summary>
+        /// <param name="name"></param>
+        internal void StartSession(string name)
+        {
+            Sender.SendStartSessionCommand(name);
+        }
+
+        /// <summary>
+        /// Automatic command from Agent to Admin side to stop the session (for autotests)
+        /// </summary>
+        /// <param name="name"></param>
+        internal void StopSession(string name)
+        {
+            Sender.SendStopSessionCommand(name);
         }
         #endregion
     }

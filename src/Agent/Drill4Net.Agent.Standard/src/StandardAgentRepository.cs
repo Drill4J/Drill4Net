@@ -75,7 +75,8 @@ namespace Drill4Net.Agent.Standard
         #region Init
         private void Init(InjectedSolution tree = null)
         {
-            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT);
+            _logger = new TypedLogger<StandardAgentRepository>(CoreConstants.SUBSYSTEM_AGENT);
+            _logger.Debug("Creating...");
 
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();
@@ -101,6 +102,8 @@ namespace Drill4Net.Agent.Standard
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(1200);
             _sendTimer.Elapsed += Timer_Elapsed;
+
+            _logger.Debug("Created.");
         }
 
         private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetData targetOpts)
@@ -114,7 +117,7 @@ namespace Drill4Net.Agent.Standard
         {
             string targVersion = targOpts.Version;
             if (string.IsNullOrWhiteSpace(targVersion))
-                targVersion = GetRealTargetVersion();
+                targVersion = GetExecutingAssemblyVersion();
             return new AgentPartConfig(targOpts.Name, targVersion, GetAgentVersion());
         }
 
@@ -123,7 +126,11 @@ namespace Drill4Net.Agent.Standard
             return FileUtils.GetProductVersion(typeof(StandardAgentRepository));
         }
 
-        internal string GetRealTargetVersion()
+        /// <summary>
+        /// In the Server/Worker distributed environment it is the Worker's version, not Target's one
+        /// </summary>
+        /// <returns></returns>
+        internal string GetExecutingAssemblyVersion()
         {
             var asm = Assembly.GetExecutingAssembly();
             return FileUtils.GetProductVersion(asm.Location);
@@ -433,40 +440,6 @@ namespace Drill4Net.Agent.Standard
         internal CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session)
         {
             return _converter.CreateCoverageRegistrator(session, _injTypes);
-        }
-        #endregion
-        #region Commands
-        /// <summary>
-        /// Do some command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <param name="data"></param>
-        public void ExecCommand(int command, string data)
-        {
-            _logger.Info($"Command: {command} -> {data}");
-            switch (command)
-            {
-                case 2: StartSession(data); break;
-                case 3: StopSession(data); break;
-            }
-        }
-
-        /// <summary>
-        /// Automatic command from Agent to Admin side to start the session (for autotests)
-        /// </summary>
-        /// <param name="name"></param>
-        internal void StartSession(string name)
-        {
-
-        }
-
-        /// <summary>
-        /// Automatic command from Agent to Admin side to stop the session (for autotests)
-        /// </summary>
-        /// <param name="name"></param>
-        internal void StopSession(string name)
-        {
-
         }
         #endregion
     }

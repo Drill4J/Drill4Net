@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Engine
     {
         /* INFO *
             http://ilgenerator.apphb.com/ - online C# -> IL
-            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (buggy and with restrictions!)
+            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (a bit buggy and with some restrictions)
                 on Github - https://github.com/adrianoc/cecilifier
             https://stackoverflow.com/questions/2508828/where-to-learn-about-vs-debugger-magic-names/2509524#2509524 - naming of CG-entites
             https://www.codeproject.com/Articles/671259/Reweaving-IL-code-with-Mono-Cecil
@@ -97,7 +97,7 @@ namespace Drill4Net.Injector.Engine
                 {
                     var x = Path.Combine(sourceDir, a.Value.BaseFolder);
                     if (x.EndsWith("\\"))
-                        x = x.Substring(0, x.Length - 1);
+                        x = x[0..^1];
                     if (x.Equals(dir, StringComparison.InvariantCultureIgnoreCase))
                         return true;
                     var z = Path.Combine(dir, a.Key);

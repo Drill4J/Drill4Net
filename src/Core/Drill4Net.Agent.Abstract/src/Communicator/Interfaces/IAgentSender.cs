@@ -40,5 +40,8 @@ namespace Drill4Net.Agent.Abstract
         void SendOutgoingTest(OutgoingMessage data);
         void SendOutgoingTest(string topic, OutgoingMessage data);
         void SendIncomingTest(string topic, IncomingMessage message);
+
+        void SendStartSessionCommand(string name);
+        void SendStopSessionCommand(string name);
     }
 }

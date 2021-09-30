@@ -116,6 +116,16 @@ namespace Drill4Net.Agent.Abstract
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new SessionChanged { sessionId = sessionUid, probeCount = probeCount });
         }
+
+        public virtual void SendStartSessionCommand(string name)
+        {
+
+        }
+
+        public virtual void SendStopSessionCommand(string name)
+        {
+
+        }
         #endregion
         #region Send API
         #region Send
