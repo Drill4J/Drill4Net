@@ -21,12 +21,21 @@ namespace Drill4Net.Injection.SpecFlow
         {
             SourceDir = sourceDir ?? throw new ArgumentNullException(nameof(sourceDir));
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
-            //
-            var specDir = Path.Combine(Common.FileUtils.GetExecutionDir(), "TechTalk.SpecFlow.dll");
-            _speclib = ModuleDefinition.ReadModule(specDir, new ReaderParameters());
+            LoadFramework(sourceDir);
         }
 
         /*************************************************************************************************/
+
+        private void LoadFramework(string sourceDir)
+        {
+            const string dllName = "TechTalk.SpecFlow.dll";
+            var specDir = Path.Combine(Common.FileUtils.GetExecutionDir(), dllName);
+            if (!File.Exists(specDir))
+                specDir = Path.Combine(sourceDir, dllName);
+            if (!File.Exists(specDir))
+                throw new FileNotFoundException("SpecFlow framework is not found");
+            _speclib = ModuleDefinition.ReadModule(specDir, new ReaderParameters());
+        }
 
         //.custom instance void [TechTalk.SpecFlow]TechTalk.SpecFlow.BeforeScenarioAttribute::.ctor(string[]) = (
         //    01 00 00 00 00 00 01 00 54 08 05 4f 72 64 65 72
