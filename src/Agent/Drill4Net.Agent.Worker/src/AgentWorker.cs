@@ -61,7 +61,7 @@ namespace Drill4Net.Agent.Worker
             IsStarted = true;
             _logger.Debug("Worker is starting");
 
-            Task.Run(() => _cmdReceiver.Start);
+            Task.Run(_cmdReceiver.Start);
             _targetReceiver.Start();
         }
 
@@ -87,7 +87,7 @@ namespace Drill4Net.Agent.Worker
 
         private void Receiver_CommandReceived(Command probe)
         {
-            _logger.Info(probe);
+            _logger.Info(probe.ToString());
         }
 
         private void Receiver_TargetInfoReceived(TargetInfo target)

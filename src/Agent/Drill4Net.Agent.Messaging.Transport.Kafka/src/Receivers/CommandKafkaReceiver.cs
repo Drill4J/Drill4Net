@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using Confluent.Kafka;
 using Drill4Net.BanderLog;
-using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
@@ -11,14 +10,17 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public event CommandReceivedHandler CommandReceived;
 
+        public string TargetSession { get; }
+
         private readonly Logger _logger;
         private CancellationTokenSource _cts;
 
         /****************************************************************************************/
 
-        public CommandKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep) : base(rep)
+        public CommandKafkaReceiver(AgentWorkerRepository rep) : base(rep)
         {
             _logger = new TypedLogger<CommandKafkaReceiver>(rep.Subsystem);
+            TargetSession = rep.TargetSession;
         }
 
         /****************************************************************************************/
@@ -47,15 +49,15 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             _cts = new();
             var opts = _rep.Options;
-            var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
-            _logger.Debug($"Command topics: {string.Join(",", probeTopics)}");
+            var topics = MessagingUtils.GetCommandTopic(TargetSession);
+            _logger.Debug($"Command topic: {topics}");
 
             try
             {
                 using var c = new ConsumerBuilder<Ignore, Command>(_cfg)
                     .SetValueDeserializer(new CommandDeserializer())
                     .Build();
-                c.Subscribe(probeTopics);
+                c.Subscribe(topics);
 
                 try
                 {

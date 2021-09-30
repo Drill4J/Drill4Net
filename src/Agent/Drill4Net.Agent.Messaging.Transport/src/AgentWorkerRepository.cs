@@ -1,6 +1,4 @@
-﻿using Drill4Net.Agent.Messaging.Transport;
-
-namespace Drill4Net.Agent.Worker
+﻿namespace Drill4Net.Agent.Messaging.Transport
 {
     public class AgentWorkerRepository : MessageReceiverRepository<MessageReceiverOptions>
     {
@@ -8,12 +6,14 @@ namespace Drill4Net.Agent.Worker
 
         /***************************************************************************************************/
 
-        public AgentWorkerRepository(string subsystem, string targetSession, string cfgPath = null) : base(subsystem, cfgPath)
+        public AgentWorkerRepository():base(null) { }
+
+        public AgentWorkerRepository(string subsystem, string targetSession, string cfgPath = null): base(subsystem, cfgPath)
         {
             Init(targetSession);
         }
 
-        public AgentWorkerRepository(string subsystem, string targetSession, MessageReceiverOptions opts) : base(subsystem, opts)
+        public AgentWorkerRepository(string subsystem, string targetSession, MessageReceiverOptions opts): base(subsystem, opts)
         {
             Init(targetSession);
         }
