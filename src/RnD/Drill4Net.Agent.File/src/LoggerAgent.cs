@@ -40,5 +40,11 @@ namespace Drill4Net.Agent.File
         {
             _queue.Enqueue(data);
         }
+
+        //this method must exists due to common injection's logic
+        //TODO: do something with it
+        public static void DoCommand(int command, string data)
+        {
+        }
     }
 }

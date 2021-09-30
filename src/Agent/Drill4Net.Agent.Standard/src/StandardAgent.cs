@@ -364,10 +364,26 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
+        #region Command
+        /// <summary>
+        /// Do some command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        public void ExecCommand(int command, string data)
+        {
+            Repository.ExecCommand(command, data);
+        }
 
+        /// <summary>
+        /// Do some command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
         public static void DoCommand(int command, string data)
         {
-            _logger.Info($"Command: {command} -> {data}");
+            Agent.ExecCommand(command, data);
         }
+        #endregion
     }
 }

@@ -325,5 +325,11 @@ namespace Drill4Net.Agent.Testing
         //    return _pointToMethods[pointUid].BusinessMethod;
         //}
         #endregion
+
+        //this method must exists due to common injection's logic
+        //TODO: do something with it
+        public static void DoCommand(int command, string data)
+        {
+        }
     }
 }

@@ -9,6 +9,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.Agent.Transport;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.BanderLog;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
@@ -41,6 +42,7 @@ namespace Drill4Net.Agent.Standard
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
 
+        private Logger _logger;
         private System.Timers.Timer _sendTimer;
         private object _sendLocker;
         private bool _inTimer;
@@ -73,6 +75,8 @@ namespace Drill4Net.Agent.Standard
         #region Init
         private void Init(InjectedSolution tree = null)
         {
+            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT);
+
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();
             _ctxToRegistrator = new ConcurrentDictionary<string, CoverageRegistrator>();
@@ -416,5 +420,16 @@ namespace Drill4Net.Agent.Standard
             return _converter.CreateCoverageRegistrator(session, _injTypes);
         }
         #endregion
+
+        /// <summary>
+        /// Do some command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        public void ExecCommand(int command, string data)
+        {
+            _logger.Info($"Command: {command} -> {data}");
+
+        }
     }
 }

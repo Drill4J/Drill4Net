@@ -22,7 +22,7 @@ namespace Drill4Net.Injection.SpecFlow
             SourceDir = sourceDir ?? throw new ArgumentNullException(nameof(sourceDir));
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
             //
-            var specDir = Path.Combine(SourceDir, "TechTalk.SpecFlow.dll");
+            var specDir = Path.Combine(Common.FileUtils.GetExecutionDir(), "TechTalk.SpecFlow.dll");
             _speclib = ModuleDefinition.ReadModule(specDir, new ReaderParameters());
         }
 
