@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using Confluent.Kafka;
 using Drill4Net.Common;
 
-namespace Drill4Net.Agent.Messaging.Kafka
+namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
     public class StringDictionaryDeserializer : IDeserializer<StringDictionary>
     {

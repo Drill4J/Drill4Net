@@ -5,6 +5,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -19,12 +20,14 @@ namespace Drill4Net.Agent.Worker
         private readonly AgentWorkerRepository _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
+        private readonly ICommandReceiver _cmdReceiver;
 
         private readonly Logger _logger;
 
         /********************************************************************************************/
 
-        public AgentWorker(AgentWorkerRepository rep, ITargetInfoReceiver targetReceiver, IProbeReceiver probeReceiver)
+        public AgentWorker(AgentWorkerRepository rep, ITargetInfoReceiver targetReceiver, 
+            IProbeReceiver probeReceiver, ICommandReceiver cmdReceiver)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
 
@@ -35,12 +38,16 @@ namespace Drill4Net.Agent.Worker
 
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
+            _cmdReceiver = cmdReceiver ?? throw new ArgumentNullException(nameof(cmdReceiver));
 
             _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
 
             _probeReceiver.ProbeReceived += Receiver_ProbeReceived;
             _probeReceiver.ErrorOccured += Receiver_ErrorOccured;
+
+            _cmdReceiver.CommandReceived += Receiver_CommandReceived;
+            _cmdReceiver.ErrorOccured += Receiver_ErrorOccured;
 
             _logger.Debug($"{nameof(TargetInfo)} is created");
         }
@@ -52,7 +59,9 @@ namespace Drill4Net.Agent.Worker
             if (IsStarted)
                 return;
             IsStarted = true;
-            _logger.Debug("Worker starts");
+            _logger.Debug("Worker is starting");
+
+            Task.Run(() => _cmdReceiver.Start);
             _targetReceiver.Start();
         }
 
@@ -61,7 +70,7 @@ namespace Drill4Net.Agent.Worker
             if (!IsStarted)
                 return;
             IsStarted = false;
-            _logger.Debug("Worker stops");
+            _logger.Debug("Worker stopping");
 
             _targetReceiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured -= Receiver_ErrorOccured;
@@ -70,6 +79,15 @@ namespace Drill4Net.Agent.Worker
             _probeReceiver.ProbeReceived -= Receiver_ProbeReceived;
             _probeReceiver.ErrorOccured -= Receiver_ErrorOccured;
             _probeReceiver.Stop();
+
+            _cmdReceiver.CommandReceived -= Receiver_CommandReceived;
+            _cmdReceiver.ErrorOccured -= Receiver_ErrorOccured;
+            _cmdReceiver.Stop();
+        }
+
+        private void Receiver_CommandReceived(Command probe)
+        {
+            _logger.Info(probe);
         }
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
@@ -83,11 +101,6 @@ namespace Drill4Net.Agent.Worker
             StandardAgent.Init(target.Options, target.Solution);
             _logger.Debug($"{nameof(StandardAgent)} is initialized");
 
-            //_logger.Warning("*** RETRIEVING OF PROBES IS COMMENTED FOR DEBUG ***");
-            //while (true)
-            //{
-            //    Thread.Sleep(10);
-            //}
             _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
             _probeReceiver.Start();
         }

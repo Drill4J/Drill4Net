@@ -181,6 +181,7 @@ namespace Drill4Net.Agent.Service
             Task.Run(() => CloseWorker(uid));
             Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
             Task.Run(() => DeleteTopic(worker.ProbeTopic));
+            Task.Run(() => DeleteTopic(worker.CommandTopic));
         }
 
         /// <summary>
@@ -230,11 +231,12 @@ namespace Drill4Net.Agent.Service
             //start the Worker
             var trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid.ToString());
             var probeTopic = MessagingUtils.GetProbeTopic(sessionUid.ToString());
+            var cmdTopic = MessagingUtils.GetCommandTopic(sessionUid.ToString());
             var pid = StartAgentWorkerProcess(target.SessionUid);
             _logger.Info($"Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
 
             //add local worker info
-            var worker = new WorkerInfo(target, trgTopic, probeTopic, pid);
+            var worker = new WorkerInfo(target, trgTopic, probeTopic, cmdTopic, pid);
             if (!_workers.TryAdd(target.SessionUid, worker))
                 return;
 

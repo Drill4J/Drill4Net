@@ -24,9 +24,14 @@ namespace Drill4Net.Agent.Worker
         {
             //TODO: factory!
             var rep = GetRepository();
+
+            //receivers
+            ICommandReceiver cmdReceiver = new CommandKafkaReceiver(rep);
             IProbeReceiver probeReceiver = new ProbeKafkaReceiver(rep);
             ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessageReceiverOptions>(rep);
-            var worker = new AgentWorker(rep, targetReceiver, probeReceiver);
+
+            //worker
+            var worker = new AgentWorker(rep, targetReceiver, probeReceiver, cmdReceiver);
             return worker;
         }
 
