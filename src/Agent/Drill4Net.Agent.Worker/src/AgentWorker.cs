@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -85,9 +85,10 @@ namespace Drill4Net.Agent.Worker
             _cmdReceiver.Stop();
         }
 
-        private void Receiver_CommandReceived(Command probe)
+        private void Receiver_CommandReceived(Command command)
         {
-            _logger.Info(probe.ToString());
+            _logger.Info(command.ToString());
+            StandardAgent.DoCommand(command.Type, command.Data);
         }
 
         private void Receiver_TargetInfoReceived(TargetInfo target)
@@ -101,7 +102,7 @@ namespace Drill4Net.Agent.Worker
             StandardAgent.Init(target.Options, target.Solution);
             _logger.Debug($"{nameof(StandardAgent)} is initialized");
 
-            _logger.Info($"{nameof(AgentWorker)} starts receiving probes...");
+            _logger.Info($"{nameof(AgentWorker)} starts receiving the probes...");
             _probeReceiver.Start();
         }
 

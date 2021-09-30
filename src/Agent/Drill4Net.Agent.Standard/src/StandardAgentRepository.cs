@@ -4,12 +4,12 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Common;
-using Drill4Net.Configuration;
-using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.Agent.Transport;
-using Drill4Net.Profiling.Tree;
 using Drill4Net.BanderLog;
+using Drill4Net.Configuration;
+using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Transport;
+using Drill4Net.Agent.Abstract.Transfer;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
@@ -199,12 +199,12 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Session
-        #region Start        
+        #region Started        
         /// <summary>
-        /// Session started on the admin side.
+        /// Session started on the Admin side.
         /// </summary>
         /// <param name="info">The information.</param>
-        public void StartSession(StartAgentSession info)
+        public void SessionStarted(StartAgentSession info)
         {
             var load = info.Payload;
             RemoveSession(load.SessionId);
@@ -228,7 +228,11 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Stop
-        public List<string> StopAllSessions()
+        /// <summary>
+        /// All sessions were stopped on the Admin side
+        /// </summary>
+        /// <returns></returns>
+        public List<string> AllSessionsStopped()
         {
             StopSendCycle();
             SendCoverages();
@@ -236,8 +240,11 @@ namespace Drill4Net.Agent.Standard
             ClearScopeData();
             return uids;
         }
-        
-        public void SessionStop(StopAgentSession info)
+
+        /// <summary>
+        /// The session was stopped on the Admin side
+        /// </summary>
+        public void SessionStopped(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
             
@@ -250,12 +257,20 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Cancel
-        public void CancelSession(CancelAgentSession info)
+        /// <summary>
+        /// The session was cancelled on the Admin side
+        /// </summary>
+        /// <param name="info"></param>
+        public void SessionCancelled(CancelAgentSession info)
         {
             RemoveSession(info.Payload.SessionId);
         }
 
-        public List<string> CancelAllSessions()
+        /// <summary>
+        /// All sessions were cancelled on the Admin side
+        /// </summary>
+        /// <param name="info"></param>
+        public List<string> AllSessionsCancelled()
         {
             StopSendCycle();
             var uids = _sessionToCtx.Keys.ToList();
@@ -273,7 +288,7 @@ namespace Drill4Net.Agent.Standard
             _ctxToRegistrator.TryRemove(ctxId, out var _);
             _sessionToObject.TryRemove(sessionUid, out var _);
         }
-        
+
         internal void ClearScopeData()
         {
             _ctxToSession.Clear();
@@ -420,7 +435,7 @@ namespace Drill4Net.Agent.Standard
             return _converter.CreateCoverageRegistrator(session, _injTypes);
         }
         #endregion
-
+        #region Commands
         /// <summary>
         /// Do some command
         /// </summary>
@@ -429,7 +444,30 @@ namespace Drill4Net.Agent.Standard
         public void ExecCommand(int command, string data)
         {
             _logger.Info($"Command: {command} -> {data}");
+            switch (command)
+            {
+                case 2: StartSession(data); break;
+                case 3: StopSession(data); break;
+            }
+        }
+
+        /// <summary>
+        /// Automatic command from Agent to Admin side to start the session (for autotests)
+        /// </summary>
+        /// <param name="name"></param>
+        internal void StartSession(string name)
+        {
 
         }
+
+        /// <summary>
+        /// Automatic command from Agent to Admin side to stop the session (for autotests)
+        /// </summary>
+        /// <param name="name"></param>
+        internal void StopSession(string name)
+        {
+
+        }
+        #endregion
     }
 }

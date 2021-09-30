@@ -166,7 +166,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                Repository.CancelAllSessions(); //just in case
+                Repository.AllSessionsCancelled(); //just in case
                 _scope = scope;
                 Sender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
             }
@@ -229,7 +229,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                Repository.StartSession(info);
+                Repository.SessionStarted(info);
                 var load = info.Payload;
                 Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
             }
@@ -244,7 +244,7 @@ namespace Drill4Net.Agent.Standard
             try
             {
                 var uid = info.Payload.SessionId;
-                Repository.SessionStop(info);
+                Repository.SessionStopped(info);
                 Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -257,7 +257,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                var uids = Repository.StopAllSessions();
+                var uids = Repository.AllSessionsStopped();
                 Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -271,7 +271,7 @@ namespace Drill4Net.Agent.Standard
             try
             {
                 var uid = info.Payload.SessionId;
-                Repository.CancelSession(info);
+                Repository.SessionCancelled(info);
                 Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -284,7 +284,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                var uids = Repository.CancelAllSessions();
+                var uids = Repository.AllSessionsCancelled();
                 Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -382,6 +382,8 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public static void DoCommand(int command, string data)
         {
+            //DON'T refactor parameters to Command type, because
+            //some injections wait exactly current parameters
             Agent.ExecCommand(command, data);
         }
         #endregion
