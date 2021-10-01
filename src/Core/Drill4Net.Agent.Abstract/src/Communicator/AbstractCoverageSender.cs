@@ -4,15 +4,15 @@ using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Abstract
 {
-    public abstract class AbstractSender : IAgentSender
+    public abstract class AbstractCoverageSender : IAgentCoverageSender
     {
         private readonly Logger _logger;
 
         /********************************************************************************/
 
-        protected AbstractSender(string subsystem)
+        protected AbstractCoverageSender(string subsystem)
         {
-            _logger = new TypedLogger<AbstractSender>(subsystem);
+            _logger = new TypedLogger<AbstractCoverageSender>(subsystem);
         }
 
         /********************************************************************************/
@@ -71,21 +71,21 @@ namespace Drill4Net.Agent.Abstract
             _logger.Debug($"Send SessionStarted message. {data}");
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, data);
         }
-        
+
         public virtual void SendSessionFinishedMessage(string sessionUid, long ts)
         {
             _logger.Debug($"Send SessionFinished message. Session={sessionUid}");
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new SessionFinished { sessionId = sessionUid, ts = ts });
         }
-        
+
         public virtual void SendAllSessionFinishedMessage(List<string> sessionUids, long ts)
         {
             _logger.Debug($"Send AllSessionFinished message. Sessions={string.Join(",", sessionUids)}");
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new SessionsFinished { ids = sessionUids, ts = ts });
         }
-        
+
         public virtual void SendSessionCancelledMessage(string uid, long ts)
         {
             _logger.Debug($"Send SessionCancelled message. Session={uid}");

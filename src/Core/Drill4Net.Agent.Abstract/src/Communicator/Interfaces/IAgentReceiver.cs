@@ -50,7 +50,7 @@ namespace Drill4Net.Agent.Abstract
     /// </summary>
     public delegate void CancelAllSessionsHandler();
     #endregion
-    
+
     public interface IAgentReceiver
     {
         /// <summary>

@@ -22,13 +22,13 @@ namespace Drill4Net.Agent.Abstract
         /// <value>
         /// The sender.
         /// </value>
-        public AbstractSender Sender { get; protected set; }
+        public AbstractCoverageSender Sender { get; protected set; }
         
         /******************************************************************************/
 
         protected AbstractCommunicator() { }
 
-        protected AbstractCommunicator(IAgentReceiver receiver, AbstractSender sender)
+        protected AbstractCommunicator(IAgentReceiver receiver, AbstractCoverageSender sender)
         {
             Receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             Sender = sender ?? throw new ArgumentNullException(nameof(sender));

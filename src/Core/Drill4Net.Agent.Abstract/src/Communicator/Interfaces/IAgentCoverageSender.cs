@@ -5,7 +5,7 @@ namespace Drill4Net.Agent.Abstract
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=881283184
 
-    public interface IAgentSender
+    public interface IAgentCoverageSender
     {
         void SendScopeInitialized(InitActiveScope scope, long ts);
         

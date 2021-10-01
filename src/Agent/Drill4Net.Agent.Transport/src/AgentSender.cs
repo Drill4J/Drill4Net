@@ -11,8 +11,8 @@ namespace Drill4Net.Agent.Transport
     /// <summary>
     /// Data Sender for the profiling Agent
     /// </summary>
-    /// <seealso cref="Drill4Net.Agent.Abstract.AbstractSender" />
-    public class AgentSender : AbstractSender
+    /// <seealso cref="Drill4Net.Agent.Abstract.AbstractCoverageSender" />
+    public class AgentSender : AbstractCoverageSender
     {
         private readonly Connector _connector;
         private readonly JsonSerializerSettings _deserOpts;

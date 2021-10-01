@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.Standard
         public static StandardAgent Agent { get; private set; }
 
         private IAgentReceiver Receiver => _comm.Receiver;
-        private IAgentSender Sender => _comm.Sender;
+        private IAgentCoverageSender Sender => _comm.Sender;
 
         /// <summary>
         /// Repository for Agent
