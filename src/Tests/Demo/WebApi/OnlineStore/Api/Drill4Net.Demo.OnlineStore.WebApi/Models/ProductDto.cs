@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.OnlineStore.Dal
+namespace Drill4Net.Demo.OnlineStore.WebApi.Models
 {
-    public class Product
+    public class ProductDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

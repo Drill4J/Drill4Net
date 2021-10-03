@@ -1,6 +1,7 @@
 using Drill4Net.Demo.OnlineStore.Dal;
 using Drill4Net.Demo.OnlineStore.Dal.Interfaces;
 using Drill4Net.Demo.OnlineStore.Dal.Services;
+using Drill4Net.Demo.OnlineStore.Models.Mapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,7 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.OnlineStore.WebApi
+namespace Drill4Net.Demo.OnlineStore.WebApi.Host
 {
     public class Startup
     {
@@ -29,9 +30,10 @@ namespace Drill4Net.Demo.OnlineStore.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IProductService, ProductService>();
-            services.AddTransient<IServiceBase<Cart>,CartService>();
+            services.AddTransient<IProductDataService, ProductService>();
+            services.AddTransient<IServiceDataBase<Cart>,CartService>();
             services.AddControllers();
+            services.AddAutoMapper(typeof(ProductDtoProfile).Assembly);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Drill4Net.Demo.OnlineStore.WebApi", Version = "v1" });

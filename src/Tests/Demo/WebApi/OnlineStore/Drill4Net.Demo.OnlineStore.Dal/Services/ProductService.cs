@@ -1,4 +1,5 @@
-﻿using Drill4Net.Demo.OnlineStore.Dal.Interfaces;
+﻿using Drill4Net.Demo.OnlineStore.Bll.Models;
+using Drill4Net.Demo.OnlineStore.Dal.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Dal.Services
 {
-    public class ProductService : IProductService
+    public class ProductService : IProductDataService
     {
         public void Create(Product item)
         {

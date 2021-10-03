@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.OnlineStore.WebApi
+namespace Drill4Net.Demo.OnlineStore.WebApi.Host
 {
     public class Program
     {
@@ -17,7 +17,7 @@ namespace Drill4Net.Demo.OnlineStore.WebApi
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+             Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.OnlineStore.Bll.Models
+namespace Drill4Net.Demo.OnlineStore.Dal.Models
 {
     public class Product
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
         public double Price { get; set; }
