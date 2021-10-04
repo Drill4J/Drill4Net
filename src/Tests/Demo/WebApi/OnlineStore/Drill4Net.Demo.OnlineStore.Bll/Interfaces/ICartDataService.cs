@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.OnlineStore.Dal.Interfaces
+namespace Drill4Net.Demo.OnlineStore.Bll.Interfaces
 {
-    public interface ICartService: IServiceDataBase<Cart>
+    public interface ICartDataService: IDataServiceBase<Cart>
     {
 
     }

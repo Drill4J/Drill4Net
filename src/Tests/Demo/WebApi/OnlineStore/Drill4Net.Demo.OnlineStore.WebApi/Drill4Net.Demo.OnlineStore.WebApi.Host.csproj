@@ -12,12 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Api\Drill4Net.Demo.OnlineStore.Controllers\Drill4Net.Demo.OnlineStore.WebApi.Controllers.csproj" />
     <ProjectReference Include="..\Api\Drill4Net.Demo.OnlineStore.Models\Drill4Net.Demo.OnlineStore.WebApi.Models.csproj" />
     <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Bll\Drill4Net.Demo.OnlineStore.Bll.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mapping\" />
+    <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Dal\Drill4Net.Demo.OnlineStore.Dal.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Drill4Net.Demo.OnlineStore.Bll.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Interfaces
     {
         public IEnumerable<Product> GetSortedProductsByPage();
         public IEnumerable<Product> GetFilteredProducts();
-        public void AddProduct(Product item);
+        public Product AddProduct(Product item);
         public void UpdateProduct(Product item);
         public void DeleteProduct(Guid product);
     }

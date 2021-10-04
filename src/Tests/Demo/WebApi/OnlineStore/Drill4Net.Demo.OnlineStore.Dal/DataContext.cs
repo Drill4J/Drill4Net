@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Drill4Net.Demo.OnlineStore.Dal.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Drill4Net.Demo.OnlineStore.Dal
@@ -7,6 +8,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal
     {
         internal static List <Product> Products { get; set; }
         internal static List <Cart> Carts { get; set; }
+        internal static List<Cart> CartItems { get; set; }
 
         static DataContext()
         {

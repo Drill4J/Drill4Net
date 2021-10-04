@@ -8,16 +8,11 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Models
     public class Cart
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public List<Product> Products { get; set; } = new List<Product>();
-        public double Total { 
+        public List<CartItem> Products { get; set; } = new List<CartItem>();
+        public decimal Total { 
             get 
             {
-                double total = 0;
-                foreach(var product in Products)
-                {
-                    total += product.Price * product.Stock;
-                }
-                return total;
+                return Products.Sum(p => p.TotalPrice);
             }
         }
     }

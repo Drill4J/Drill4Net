@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using AutoMapper;
-using Drill4Net.Demo.OnlineStore.Dal.Interfaces;
 using Drill4Net.Demo.OnlineStore.WebApi.Models;
+using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
+using System;
+using Drill4Net.Demo.OnlineStore.Bll.Models;
 
 namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
 {
@@ -13,11 +15,12 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
     {
         private readonly IMapper _mapper;
 
-        private readonly IProductService _productService;
+        private readonly IProductBusinessService _productService;
 
-        public ProductsController(IProductService productService)
+        public ProductsController(IProductBusinessService productService, IMapper mapper)
         {
             _productService = productService;
+            _mapper = mapper;
         }
 
         // GET: api/products/sorted
@@ -46,11 +49,19 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
         //}
 
         // GET: api/products
-        [HttpGet]
-        public IEnumerable<ProductDto> Get()
+        //[HttpGet]
+        //public IEnumerable<ProductDto> Get()
+        //{
+        //    //var products =
+        //    return new LinkedList<ProductDto>();
+        //}
+
+        [HttpPost]
+        public ActionResult<ProductDto> CreateProduct(NewProductDto productDto)
         {
-            var products = _mapper.Map<List<ProductDto>>(_productService.GetAll());
-            return products;
+
+            var newProduct = _productService.AddProduct(_mapper.Map<Product>(productDto));
+            return Created(new Uri($"/{newProduct.Id}", UriKind.Relative), _mapper.Map<ProductDto>(newProduct));
         }
 
     }
