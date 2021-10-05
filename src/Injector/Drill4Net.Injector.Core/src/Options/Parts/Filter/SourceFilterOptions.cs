@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core.src.Helpers;
 
 namespace Drill4Net.Injector.Core
 {
@@ -40,7 +41,9 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Includes?.Directories == null || !Includes.Directories.Any())
                 return true;
-            return Includes.IsDirectoryListed(path);
+            if (Includes.IsDirectoryListed(path))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(path, Includes.Directories);
         }
 
         public bool IsFolderNeed(string folder)
@@ -51,7 +54,9 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Includes?.Folders == null || !Includes.Folders.Any())
                 return true;
-            return Includes.IsFolderListed(folder);
+            if (Includes.IsFolderListed(folder))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(folder, Includes.Folders);
         }
 
         public bool IsFileNeedByPath(string filePath)
@@ -71,7 +76,10 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Includes?.Files == null || !Includes.Files.Any())
                 return true;
-            return Includes.IsFileListed(name);
+            if (Includes.IsFileListed(name))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(name, Includes.Files);
+
         }
 
         public bool IsNamespaceNeed(string ns)
@@ -86,6 +94,8 @@ namespace Drill4Net.Injector.Core
             {
                 if (ns.StartsWith(nsPart))
                     return true;
+                if (FilterHelper.IsMatchRegexFilterPattern(ns, nsPart))
+                        return true;
             }
             return false;
         }
@@ -96,7 +106,9 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Includes?.Classes == null || !Includes.Classes.Any())
                 return !_typeChecker.IsSystemType(fullName);
-            return Includes.IsClassListed(fullName);
+            if (Includes.IsClassListed(fullName))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(fullName, Includes.Classes);
         }
 
         public bool IsAttributeNeed(string name)
@@ -105,7 +117,9 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Includes?.Attributes == null || !Includes.Attributes.Any())
                 return true;
-            return Includes.IsAttributeListed(name);
+            if (Includes.IsAttributeListed(name))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(name, Includes.Attributes);
         }
     }
 }
