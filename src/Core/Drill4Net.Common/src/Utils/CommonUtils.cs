@@ -209,7 +209,14 @@ namespace Drill4Net.Common
         {
             if (string.IsNullOrWhiteSpace(s))
                 return false;
-            return Regex.IsMatch(s, pattern);
+            try
+            {
+                return Regex.IsMatch(s, pattern);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
