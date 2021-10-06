@@ -5,9 +5,9 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Mono.Cecil;
-using System.Text.RegularExpressions;
 
 namespace Drill4Net.Common
 {
