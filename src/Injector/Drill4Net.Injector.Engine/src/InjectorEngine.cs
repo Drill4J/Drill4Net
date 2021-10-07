@@ -3,11 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
+[assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Engine.UnitTests")]
 namespace Drill4Net.Injector.Engine
 {
     /// <summary>
@@ -208,6 +210,7 @@ namespace Drill4Net.Injector.Engine
 
             return true;
         }
+
 
         internal bool IsDirectoryNeedByMoniker(Dictionary<string, MonikerData> monikers, string root, string dir)
         {
