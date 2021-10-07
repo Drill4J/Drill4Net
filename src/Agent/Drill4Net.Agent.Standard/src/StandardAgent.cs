@@ -23,7 +23,9 @@ namespace Drill4Net.Agent.Standard
         public static StandardAgent Agent { get; private set; }
 
         private IAgentReceiver Receiver => _comm.Receiver;
-        private IAgentCoverageSender Sender => _comm.Sender;
+
+        //in fact, the Main sender. Others are additional ones - as plugins
+        private IAgentCoverageSender CoverageSender => _comm.Sender;
 
         /// <summary>
         /// Repository for Agent
@@ -168,7 +170,7 @@ namespace Drill4Net.Agent.Standard
             {
                 Repository.AllSessionsCancelled(); //just in case
                 _scope = scope;
-                Sender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
+                CoverageSender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
             {
@@ -207,16 +209,16 @@ namespace Drill4Net.Agent.Standard
                         return; //log??
 
                     //1. Init message
-                    Sender.SendInitMessage(_entities.Count);
+                    CoverageSender.SendInitMessage(_entities.Count);
 
                     //2. Send injected classes info to admin side
-                    Sender.SendClassesDataMessage(_entities);
+                    CoverageSender.SendClassesDataMessage(_entities);
                     _entities.Clear();
                     _entities = null;
                 }
 
                 //3. Send "Initialized" message to admin side
-                Sender.SendInitializedMessage();
+                CoverageSender.SendInitializedMessage();
             }
             catch (Exception ex)
             {
@@ -231,7 +233,7 @@ namespace Drill4Net.Agent.Standard
             {
                 Repository.SessionStarted(info);
                 var load = info.Payload;
-                Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
+                CoverageSender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
             {
@@ -245,7 +247,7 @@ namespace Drill4Net.Agent.Standard
             {
                 var uid = info.Payload.SessionId;
                 Repository.SessionStopped(info);
-                Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+                CoverageSender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
             {
@@ -258,7 +260,7 @@ namespace Drill4Net.Agent.Standard
             try
             {
                 var uids = Repository.AllSessionsStopped();
-                Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+                CoverageSender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
             {
@@ -272,7 +274,7 @@ namespace Drill4Net.Agent.Standard
             {
                 var uid = info.Payload.SessionId;
                 Repository.SessionCancelled(info);
-                Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+                CoverageSender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
             {
@@ -285,7 +287,7 @@ namespace Drill4Net.Agent.Standard
             try
             {
                 var uids = Repository.AllSessionsCancelled();
-                Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+                CoverageSender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
             {
@@ -398,7 +400,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="name"></param>
         internal void StartSession(string name)
         {
-            Sender.SendStartSessionCommand(name);
+            CoverageSender.SendStartSessionCommand(name);
         }
 
         /// <summary>
@@ -407,7 +409,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="name"></param>
         internal void StopSession(string name)
         {
-            Sender.SendStopSessionCommand(name);
+            CoverageSender.SendStopSessionCommand(name);
         }
         #endregion
     }

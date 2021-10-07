@@ -12,7 +12,7 @@ namespace Drill4Net.Agent.Testing.NetFxUtils
         /// Get NUnit test's context for current Run
         /// </summary>
         /// <returns></returns>
-        public static TestExecutionContext GetTestFromLogicalContext()
+        public static TestExecutionContext GetNUnitTestContext()
         {
             var ret = CallContext.LogicalGetData("NUnit.Framework.TestExecutionContext");
             return ret as TestExecutionContext;

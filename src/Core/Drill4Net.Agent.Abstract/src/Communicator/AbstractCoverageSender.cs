@@ -109,7 +109,7 @@ namespace Drill4Net.Agent.Abstract
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new CoverDataPart { data = data, sessionId = sessionUid });
         }
-        
+
         public virtual void SendSessionChangedMessage(string sessionUid, int probeCount)
         {
             //no logging here!

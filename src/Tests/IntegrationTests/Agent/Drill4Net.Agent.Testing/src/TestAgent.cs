@@ -142,14 +142,14 @@ namespace Drill4Net.Agent.Testing
         {
 #if NETFRAMEWORK
             //What if the NUnit or Tester Engine comes here?
-            var testCtx = LogicalContextManager.GetTestFromLogicalContext();
+            var testCtx = LogicalContextManager.GetNUnitTestContext();
             return GetContextId(testCtx);
 #else
             // the Tester Engine will be on NetCore version - and for NetFx's tests, and for NetCore ones 
             try
             {
                 //try load old CallContext type - for NetFx successfully
-                var testCtx = LogicalContextManager.GetTestFromLogicalContext();
+                var testCtx = LogicalContextManager.GetNUnitTestContext();
                 if (testCtx != null)
                     return GetContextId(testCtx);
             }
@@ -195,11 +195,11 @@ namespace Drill4Net.Agent.Testing
                             typeValMap = Type.GetType("System.Threading.AsyncLocalValueMap+OneElementAsyncLocalValueMap");
                             ctxFld = Array.Find(typeValMap
                                 .GetFields(BindingFlags.NonPublic | BindingFlags.Instance), a => a.Name == "_value1");
-                            //no context info about concrete test
+                            //no context info about concrete test          
                             var testCtx = ctxFld.GetValue(lstFldVal) as TestExecutionContext;
                             var testOutput = GetContextOutput(testCtx);
 
-                            return _execIdToTestId.ContainsKey(execId) ? _execIdToTestId[execId] : CONTEXT_UNKNOWN; 
+                            return _execIdToTestId.ContainsKey(execId) ? _execIdToTestId[execId] : CONTEXT_UNKNOWN;
                         }
                     }
                 }
