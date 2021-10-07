@@ -35,7 +35,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Directories = filters?.ToList();
+            options.Includes.Directories = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -54,7 +54,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Directories = filters?.ToList();
+            options.Includes.Directories = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -72,8 +72,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Excludes.Directories = filters.ToList();
-            options.Includes.Directories = filters.ToList();
+            options.Excludes.Directories = filters==null? null:filters.ToList();
+            options.Includes.Directories = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -96,7 +96,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
         var options = CreateSourceFilterOptions();
-            options.Includes.Folders = filters.ToList();
+            options.Includes.Folders = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -115,7 +115,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Folders = filters.ToList();
+            options.Includes.Folders = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -135,8 +135,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Folders = filters.ToList();
-            options.Excludes.Folders = filters.ToList();
+            options.Includes.Folders = filters==null? null:filters.ToList();
+            options.Excludes.Folders = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -156,7 +156,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Files = filters.ToList();
+            options.Includes.Files = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -173,7 +173,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Files = filters.ToList();
+            options.Includes.Files = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -190,8 +190,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Files = filters.ToList();
-            options.Excludes.Files = filters.ToList();
+            options.Includes.Files = filters==null? null:filters.ToList();
+            options.Excludes.Files = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -214,7 +214,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Namespaces = filters.ToList();
+            options.Includes.Namespaces = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -236,7 +236,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Namespaces = filters.ToList();
+            options.Includes.Namespaces = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -257,8 +257,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Namespaces = filters.ToList();
-            options.Excludes.Namespaces = filters.ToList();
+            options.Includes.Namespaces = filters==null? null:filters.ToList();
+            options.Excludes.Namespaces = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -279,7 +279,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Classes = filters.ToList();
+            options.Includes.Classes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -297,7 +297,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Classes = filters.ToList();
+            options.Includes.Classes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -315,8 +315,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Classes = filters.ToList();
-            options.Excludes.Classes = filters.ToList();
+            options.Includes.Classes = filters==null? null:filters.ToList();
+            options.Excludes.Classes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -337,7 +337,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Attributes = filters.ToList();
+            options.Includes.Attributes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
@@ -355,7 +355,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Attributes = filters.ToList();
+            options.Includes.Attributes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
@@ -373,8 +373,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         {
             // Arrange
             var options = CreateSourceFilterOptions();
-            options.Includes.Attributes = filters.ToList();
-            options.Excludes.Attributes = filters.ToList();
+            options.Includes.Attributes = filters==null? null:filters.ToList();
+            options.Excludes.Attributes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
