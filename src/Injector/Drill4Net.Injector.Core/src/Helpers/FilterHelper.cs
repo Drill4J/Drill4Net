@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Drill4Net.Common;
 
-namespace Drill4Net.Injector.Core.src.Helpers
+namespace Drill4Net.Injector.Core
 {
     /// <summary>
     /// Helper for working with regex patterns in filters
@@ -22,6 +22,7 @@ namespace Drill4Net.Injector.Core.src.Helpers
             }
             return false;
         }
+
         ///<summary>
         /// Get regex pattern from filter string.
         /// </summary>
@@ -31,10 +32,11 @@ namespace Drill4Net.Injector.Core.src.Helpers
         {
             if (!IsFilterWithRegex(filter))
             {
-                throw new ArgumentNullException(nameof(filter), $"Regex filter should start with {CoreConstants.REGEX_FILTER_PPREFIX} prefix."); ;
+                throw new ArgumentNullException(nameof(filter), $"Regex filter should start with {CoreConstants.REGEX_FILTER_PPREFIX} prefix.");
             }
-            return filter.Substring(CoreConstants.REGEX_FILTER_PPREFIX.Length);
+            return filter[CoreConstants.REGEX_FILTER_PPREFIX.Length..];
         }
+
         ///<summary>
         /// Check if string matches regex pattern.
         /// </summary>
@@ -43,13 +45,14 @@ namespace Drill4Net.Injector.Core.src.Helpers
         /// <returns></returns>
         public static bool IsMatchRegexFilterPattern(string s, string filter)
         {
-            if (FilterHelper.IsFilterWithRegex(filter))
+            if (IsFilterWithRegex(filter))
             {
-                var regexPattern = FilterHelper.GetRegexPatternForFilter(filter);
+                var regexPattern = GetRegexPatternForFilter(filter);
                 return CommonUtils.IsStringMachRegexPattern(s, regexPattern);
             }
             return false;
         }
+
         ///<summary>
         /// Check if string matches regex patterns.
         /// </summary>
@@ -60,7 +63,7 @@ namespace Drill4Net.Injector.Core.src.Helpers
         {
             foreach (var filter in filters)
             {
-                if (FilterHelper.IsMatchRegexFilterPattern(s, filter))
+                if (IsMatchRegexFilterPattern(s, filter))
                     return true;
             }
             return false;

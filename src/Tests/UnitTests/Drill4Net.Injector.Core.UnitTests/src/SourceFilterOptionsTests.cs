@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Xunit;
 using Drill4Net.Common;
 
@@ -14,7 +10,7 @@ namespace Drill4Net.Injector.Core.UnitTests
     /// </summary>
     public class SourceFilterOptionsTests
     {
-        private const string _reg= Drill4Net.Common.CoreConstants.REGEX_FILTER_PPREFIX;
+        private const string _reg = CoreConstants.REGEX_FILTER_PPREFIX;
 
         /*************************************************************************************/
 
@@ -24,15 +20,16 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { @"C:\bin\Debug\Test.File\" }, @"C:\bin\Debug\Test.File")]
         [InlineData(new string[] { @"D:\bin\\Debug\Test.File\", _reg+ @"\\bin\\((Debug\\)|(Release\\))" }, @"F:\bin\Release\Test.File")]
         [InlineData(new string[] { _reg + @"^C:.*", _reg + @"\\bin\\((Debug\\)|(Release\\))Test\.\w+\.\w+\\" }, @"F:\bin\Debug\Test.File.Helper")]
-        [InlineData(new string[] {_reg+ @"C:\\bin\\Release\\ver[147]\\" }, @"C:\bin\Release\ver4")]        
+        [InlineData(new string[] {_reg + @"C:\\bin\\Release\\ver[147]\\" }, @"C:\bin\Release\ver4")]        
         public void IsDirectoryNeedTrueIncludeFilter(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
+            var options = new SourceFilterOptions
+            {
+                Includes = new SourceFilterParams(),
+                Excludes = new SourceFilterParams()
+            };
             options.Includes.Directories = filters.ToList();
-
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -50,9 +47,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void IsDirectoryNeedFalseIncludeFilter(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
+            var options = new SourceFilterOptions
+            {
+                Includes = new SourceFilterParams(),
+                Excludes = new SourceFilterParams()
+            };
             options.Includes.Directories = filters.ToList();
 
             // Act
@@ -70,9 +69,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void IsDirectoryNeedFalseExcludeIncludeFilter(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
+            var options = new SourceFilterOptions
+            {
+                Includes = new SourceFilterParams(),
+                Excludes = new SourceFilterParams()
+            };
             options.Excludes.Directories = filters.ToList();
             options.Includes.Directories = filters.ToList();
 
@@ -84,7 +85,6 @@ namespace Drill4Net.Injector.Core.UnitTests
         }
 
         #endregion
-
         #region IsFolderNeed
         [Theory]
         [InlineData(new string[] {}, "Test")]
@@ -96,9 +96,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void IsFolderNeedTrueIncludeFilter(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
+            var options = new SourceFilterOptions
+            {
+                Includes = new SourceFilterParams(),
+                Excludes = new SourceFilterParams()
+            };
             options.Includes.Folders = filters.ToList();
 
             // Act
@@ -152,7 +154,6 @@ namespace Drill4Net.Injector.Core.UnitTests
             Assert.False(result);
         }
         #endregion
-
         #region IsFileNeed
         [Theory]
         [InlineData(new string[] {}, "Test.cs")]
@@ -213,7 +214,6 @@ namespace Drill4Net.Injector.Core.UnitTests
             Assert.False(result);
         }
         #endregion
-
         #region IsNamespaceNeed
         [Theory]
         [InlineData(new string[] {}, "Drill4Net")]
@@ -243,6 +243,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "Drill4Net" }, "")]
         [InlineData(new string[] { "Drill4Net" }, null)]
         [InlineData(new string[] { "Drill4Net" }, "Drill4J")]
+        [InlineData(new string[] { "Drill4Net" }, "EPAM.Drill4Net")] //in simple string we must use only the start of the namespace
         [InlineData(new string[] { _reg + @"^Common", _reg + @"Injector\.Strategies\." }, "Drill4Net.Injector.New.Strategies.Blocks")]
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill4Net.BanderLog.CommonTest")]
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill.Drill4Net.BanderLog.Tests")]
@@ -261,6 +262,7 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.False(result);
         }
+
         [Theory]
         [InlineData(new string[] { "Drill4Net" }, "Drill4Net")]
         [InlineData(new string[] { "Benchmark", "Drill4Net.Common" }, "Drill4Net.Common.Utils")]
@@ -285,7 +287,6 @@ namespace Drill4Net.Injector.Core.UnitTests
             Assert.False(result);
         }
         #endregion
-
         #region IsClassNeed
         [Theory]
         [InlineData(new string[] {}, "InjectorCoreConstants")]
@@ -349,7 +350,6 @@ namespace Drill4Net.Injector.Core.UnitTests
             Assert.False(result);
         }
         #endregion
-
         #region IsAttributeNeed
         [Theory]
         [InlineData(new string[] {}, "CustomAttribute")]

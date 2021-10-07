@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Drill4Net.Common;
-using Drill4Net.Injector.Core.src.Helpers;
 
 namespace Drill4Net.Injector.Core
 {
@@ -39,10 +38,10 @@ namespace Drill4Net.Injector.Core
         {
             if (Excludes?.IsDirectoryListed(path) == true)
                 return false;
-            if (Excludes?.Directories != null && 
+            if (Excludes?.Directories != null &&
                 FilterHelper.IsMatchRegexFilterPattern(path.EndsWith("\\") ? path : $"{path}\\", Excludes.Directories))
                 return false;
-            if (Includes?.Directories == null || !Includes.Directories.Any())
+            if (Includes?.Directories == null || Includes.Directories.Count == 0)
                 return true;
             if (Includes.IsDirectoryListed(path))
                 return true;
@@ -55,10 +54,10 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Excludes?.IsFolderListed(folder) == true)
                 return false;
-            if (Excludes?.Folders != null && 
+            if (Excludes?.Folders != null &&
                 FilterHelper.IsMatchRegexFilterPattern(folder, Excludes.Folders))
                 return false;
-            if (Includes?.Folders == null || !Includes.Folders.Any())
+            if (Includes?.Folders == null || Includes.Folders.Count == 0)
                 return true;
             if (Includes.IsFolderListed(folder))
                 return true;
@@ -71,6 +70,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (!IsNamespaceNeed(Path.GetFileNameWithoutExtension(filePath))) //TODO: FileName regex in IsFileNeed!
                 return false;
+            //
             if (!_typeChecker.CheckByAssemblyPath(filePath))
                 return false;
             return true;
@@ -83,12 +83,12 @@ namespace Drill4Net.Injector.Core
             if (Excludes?.Files != null &&
                 FilterHelper.IsMatchRegexFilterPattern(name, Excludes.Files))
                 return false;
-            if (Includes?.Files == null || !Includes.Files.Any())
+            //
+            if (Includes?.Files == null || Includes.Files.Count == 0)
                 return true;
             if (Includes.IsFileListed(name))
                 return true;
             return FilterHelper.IsMatchRegexFilterPattern(name, Includes.Files);
-
         }
 
         public bool IsNamespaceNeed(string ns)
@@ -97,7 +97,9 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Excludes?.IsNamespaceListedExactly(ns) == true)
                 return false;
+            //
             if (Excludes?.Namespaces != null)
+            {
                 foreach (var nsPart in Excludes.Namespaces)
                 {
                     if (ns.StartsWith(nsPart))
@@ -105,8 +107,11 @@ namespace Drill4Net.Injector.Core
                     if (FilterHelper.IsMatchRegexFilterPattern(ns, nsPart))
                         return false;
                 }
+            }
+            //
             if (Includes?.Namespaces == null || !Includes.Namespaces.Any())
                 return true;
+
             foreach (var nsPart in Includes.Namespaces)
             {
                 if (ns.StartsWith(nsPart))
@@ -124,7 +129,8 @@ namespace Drill4Net.Injector.Core
             if (Excludes?.Classes != null &&
                 FilterHelper.IsMatchRegexFilterPattern(fullName, Excludes.Classes))
                 return false;
-            if (Includes?.Classes == null || !Includes.Classes.Any())
+            //
+            if (Includes?.Classes == null || Includes.Classes.Count == 0)
                 return !_typeChecker.IsSystemType(fullName);
             if (Includes.IsClassListed(fullName))
                 return true;
@@ -138,7 +144,8 @@ namespace Drill4Net.Injector.Core
             if (Excludes?.Attributes != null &&
                FilterHelper.IsMatchRegexFilterPattern(name, Excludes.Attributes))
                 return false;
-                if (Includes?.Attributes == null || !Includes.Attributes.Any())
+            //
+            if (Includes?.Attributes == null || Includes.Attributes.Count == 0)
                 return true;
             if (Includes.IsAttributeListed(name))
                 return true;
