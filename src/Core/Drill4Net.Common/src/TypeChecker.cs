@@ -45,7 +45,7 @@ namespace Drill4Net.Common
 
         public bool IsSystemType(string typeFullName)
         {
-            var ns1 = CommonUtils.GetNamespace(typeFullName);
+            var ns1 = CommonUtils.GetRootNamespace(typeFullName);
             return _restrictNamespaces.Contains(ns1);
         }
 

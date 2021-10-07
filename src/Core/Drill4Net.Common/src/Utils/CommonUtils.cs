@@ -189,7 +189,7 @@ namespace Drill4Net.Common
            return tAr[0];
         }
 
-        public static string GetNamespace(string typeFullName)
+        public static string GetRootNamespace(string typeFullName)
         {
             if (string.IsNullOrWhiteSpace(typeFullName))
                 throw new ArgumentNullException(nameof(typeFullName));
@@ -198,6 +198,24 @@ namespace Drill4Net.Common
                 return null;
             var tAr = typeFullName.Split('.');
             return tAr[0];
+        }
+
+        public static (string ns, string type) GetNamespaceAndTypeName(string typeFullName)
+        {
+            string typeName;
+            string ns = null;
+            if (typeFullName.Contains("."))
+            {
+                var list = typeFullName.Split('.').ToList();
+                typeName = list[list.Count-1];
+                list.RemoveAt(list.Count - 1);
+                ns = string.Join(".", list);
+            }
+            else
+            {
+                typeName = typeFullName;
+            }
+            return (ns, typeName);
         }
 
         public static string GetPreciseTime()

@@ -80,7 +80,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
                     return true;
 
                 // check by filter
-                var ns = CommonUtils.GetNamespace(CommonUtils.GetTypeByMethod(callFullname));
+                var ns = CommonUtils.GetRootNamespace(CommonUtils.GetTypeByMethod(callFullname));
                 if (ns == null)
                     return true; //hmmm...
                 var flt = _probeHelper.Options.Source.Filter;

@@ -77,7 +77,7 @@ namespace Drill4Net.Injector.Engine
             AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
             AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
             AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
-            AssemblyHelper.CalcMethodHashcodes(asmCtx);
+            AssemblyHelper.CalcMethodHashСodes(asmCtx);
 
             //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);

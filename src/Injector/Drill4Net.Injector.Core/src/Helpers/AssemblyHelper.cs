@@ -98,7 +98,7 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        public static void CalcMethodHashcodes(AssemblyContext asmCtx)
+        public static void CalcMethodHashСodes(AssemblyContext asmCtx)
         {
             var methCtxs = asmCtx.TypeContexts.Values.SelectMany(a => a.MethodContexts.Values).ToDictionary(a => a.Method.FullName);
             var bizMethCtxs = methCtxs.Values.Where(a => !a.Method.IsCompilerGenerated).ToDictionary(a => a.Method.FullName);
