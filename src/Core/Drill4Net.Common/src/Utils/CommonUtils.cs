@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Mono.Cecil;
 
@@ -202,6 +203,20 @@ namespace Drill4Net.Common
         public static string GetPreciseTime()
         {
             return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
+        }
+
+        public static bool IsStringMachRegexPattern(string s, string pattern)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+                return false;
+            try
+            {
+                return Regex.IsMatch(s, pattern);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
