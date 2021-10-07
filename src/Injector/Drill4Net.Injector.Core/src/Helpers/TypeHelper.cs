@@ -30,7 +30,7 @@ namespace Drill4Net.Injector.Core
             foreach (var typeDef in allTypes)
             {
                 var attrs = typeDef.CustomAttributes.Select(a => a.AttributeType.Name);
-                if (IsTypeNeed(flt, typeDef.FullName, attrs))
+                if (!IsTypeNeed(flt, typeDef.FullName, attrs))
                     continue;
                 res.Add(typeDef);
             }
