@@ -2,7 +2,6 @@
 using System.Linq;
 using Xunit;
 using Drill4Net.Common;
-using System.Collections.Generic;
 using Drill4Net.TestDataHelper;
 
 namespace Drill4Net.Injector.Core.UnitTests
@@ -230,7 +229,7 @@ namespace Drill4Net.Injector.Core.UnitTests
                 null, null, null, null, null, null, null, null, null, null, null, null);
 
             // Act
-            var exception = Record.Exception(() => options.IsFileNeedByPath(s));
+            var exception = Record.Exception(() => options.IsFileNeed(s));
 
             // Assert
             Assert.Null(exception);
@@ -302,6 +301,20 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.False(result);
         }
+        [Theory]
+        [MemberData(nameof(NullTestsData.NamespaceData), MemberType = typeof(NullTestsData))]
+        public void Namespace_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
+        {
+            // Arrange
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
+                null, null, null, null, null, null, null, null, null, null, null, null);
+
+            // Act
+            var exception = Record.Exception(() => options.IsNamespaceNeed(s));
+
+            // Assert
+            Assert.Null(exception);
+        }
         #endregion
         #region IsClassNeed
         [Theory]
@@ -347,7 +360,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "InjectorCore", _reg + "InjectorConstants", _reg + "CoreConstants$" }, "InjectorCoreConstants")]
         [InlineData(new string[] { _reg + @"Injector\w+Constants" }, "InjectorCoreConstants")]
         [InlineData(new string[] { _reg + @"Injector\w+Constants$" }, "InjectorCommon5Constants")]
-        public void Class_Include_Exclude_True(string[] filters, string s)
+        public void Class_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
             var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
@@ -358,6 +371,20 @@ namespace Drill4Net.Injector.Core.UnitTests
 
             // Assert
             Assert.False(result);
+        }
+        [Theory]
+        [MemberData(nameof(NullTestsData.ClassData), MemberType = typeof(NullTestsData))]
+        public void Class_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
+        {
+            // Arrange
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
+                null, null, null, null, null, null, null, null, null, null, null, null);
+
+            // Act
+            var exception = Record.Exception(() => options.IsClassNeed(s));
+
+            // Assert
+            Assert.Null(exception);
         }
         #endregion
         #region IsAttributeNeed
@@ -415,6 +442,20 @@ namespace Drill4Net.Injector.Core.UnitTests
 
             // Assert
             Assert.False(result);
+        }
+        [Theory]
+        [MemberData(nameof(NullTestsData.AttributeData), MemberType = typeof(NullTestsData))]
+        public void Attribute_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
+        {
+            // Arrange
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
+                null, null, null, null, null, null, null, null, null, null, null, null);
+
+            // Act
+            var exception = Record.Exception(() => options.IsAttributeNeed(s));
+
+            // Assert
+            Assert.Null(exception);
         }
         #endregion
     }

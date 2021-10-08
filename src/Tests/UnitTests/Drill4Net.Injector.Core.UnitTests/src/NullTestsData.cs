@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Drill4Net.Injector.Core.UnitTests
 {
@@ -45,7 +41,7 @@ namespace Drill4Net.Injector.Core.UnitTests
                     {
                         new SourceFilterParams(),
                         new SourceFilterParams(),
-                        DIR
+                        null
                     }
                 };
             }
@@ -78,7 +74,7 @@ namespace Drill4Net.Injector.Core.UnitTests
                     {
                         new SourceFilterParams(),
                         new SourceFilterParams(),
-                        FOLDER
+                        null
                     }
                 };
             }
@@ -111,15 +107,110 @@ namespace Drill4Net.Injector.Core.UnitTests
                     {
                         new SourceFilterParams(),
                         new SourceFilterParams(),
-                        FILE
+                        null
                     }
                 };
             }
         }
-
-
-
-
+        public static IEnumerable<object[]> NamespaceData
+        {
+            get
+            {
+                return new List<object[]>()
+                {
+                    new object[]
+                    {
+                        null,
+                        null,
+                        NS
+                    },
+                    new object[]
+                    {
+                        null,
+                        new SourceFilterParams(),
+                        NS
+                    },
+                    new object[]
+                    {
+                        new SourceFilterParams(),
+                        null,
+                        NS
+                    },
+                    new object[]
+                    {
+                        new SourceFilterParams(),
+                        new SourceFilterParams(),
+                        null
+                    }
+                };
+            }
+        }
+        public static IEnumerable<object[]> ClassData
+        {
+            get
+            {
+                return new List<object[]>()
+                {
+                    new object[]
+                    {
+                        null,
+                        null,
+                        CLASS
+                    },
+                    new object[]
+                    {
+                        null,
+                        new SourceFilterParams(),
+                        CLASS
+                    },
+                    new object[]
+                    {
+                        new SourceFilterParams(),
+                        null,
+                        CLASS
+                    },
+                    new object[]
+                    {
+                        new SourceFilterParams(),
+                        new SourceFilterParams(),
+                        null
+                    }
+                };
+            }
+        }
+        public static IEnumerable<object[]> AttributeData
+        {
+            get
+            {
+                return new List<object[]>()
+                {
+                    new object[]
+                    {
+                        null,
+                        null,
+                        ATTRIBUTE
+                    },
+                    new object[]
+                    {
+                        null,
+                        new SourceFilterParams(),
+                        ATTRIBUTE
+                    },
+                    new object[]
+                    {
+                        new SourceFilterParams(),
+                        null,
+                        ATTRIBUTE
+                    },
+                    new object[]
+                    {
+                        new SourceFilterParams(),
+                        new SourceFilterParams(),
+                        null
+                    }
+                };
+            }
+        }
 
     }
 }
