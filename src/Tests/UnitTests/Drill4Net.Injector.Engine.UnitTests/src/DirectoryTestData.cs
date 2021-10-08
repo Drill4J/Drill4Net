@@ -9,6 +9,13 @@ namespace Drill4Net.Injector.Engine.UnitTests
 {
     public class DirectoryTestData
     {
+        const string DIR= @"C:\Sources\App\Drill4Net.Target.Net461.App\";
+        const string FOLDER = "Drill4Net.Target.Net461.App";
+        const string NS = "Drill4Net.Target.Net461.App";
+        const string FILE_PATH = @"C:\Sources\App\Drill4Net.Target.Net461.App\";
+
+
+
         private static OptionHelper _helper=new OptionHelper();
         private static List<string> _directoryFilter = new List<string>
         {
