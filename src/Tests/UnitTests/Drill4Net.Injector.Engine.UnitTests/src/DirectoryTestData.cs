@@ -9,16 +9,19 @@ namespace Drill4Net.Injector.Engine.UnitTests
 {
     public class DirectoryTestData
     {
-        private SourceFilterOptions CreateSourceFilterOptions(List<string> directoriesInclude, List<string> directoriesExclude, List<string> foldersInclude, List<string> foldersExclude)
+        private static OptionHelper _helper=new OptionHelper();
+        private static List<string> _directoryFilter = new List<string>
         {
-
-            var opt= new SourceFilterOptions
-            {
-                Includes = new SourceFilterParams(),
-                Excludes = new SourceFilterParams()
-            };
-            opt.Includes.Directories
-        }
+            ""
+        };
+        private static List<string> _folderFilter = new List<string>
+        {
+            ""
+        };
+        private static List<string> _nsFilter = new List<string>
+        {
+            ""
+        };
         public static IEnumerable<object[]> NeedProcessDirectoryTrue
         {
             get
@@ -27,6 +30,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 {
                     new object[]
                     {
+                        _helper.CreateSourceFilterOptions(null,null,)
                     },
                     new object[]
                     {
