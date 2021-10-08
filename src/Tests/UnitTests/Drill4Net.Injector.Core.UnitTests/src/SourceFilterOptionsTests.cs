@@ -13,23 +13,29 @@ namespace Drill4Net.Injector.Core.UnitTests
         private const string _reg = CoreConstants.REGEX_FILTER_PPREFIX;
 
         /*************************************************************************************/
+        private SourceFilterOptions CreateSourceFilterOptions()
+        {
+
+            return new SourceFilterOptions
+            {
+                Includes = new SourceFilterParams(),
+                Excludes = new SourceFilterParams()
+            };
+        }
 
         #region IsDirectoryNeed
         [Theory]
+        [InlineData(null, @"C:\bin\Debug\Test.File")]
         [InlineData(new string[] {}, @"C:\bin\Debug\Test.File")]
         [InlineData(new string[] { @"C:\bin\Debug\Test.File\" }, @"C:\bin\Debug\Test.File")]
         [InlineData(new string[] { @"D:\bin\\Debug\Test.File\", _reg+ @"\\bin\\((Debug\\)|(Release\\))" }, @"F:\bin\Release\Test.File")]
         [InlineData(new string[] { _reg + @"^C:.*", _reg + @"\\bin\\((Debug\\)|(Release\\))Test\.\w+\.\w+\\" }, @"F:\bin\Debug\Test.File.Helper")]
         [InlineData(new string[] {_reg + @"C:\\bin\\Release\\ver[147]\\" }, @"C:\bin\Release\ver4")]        
-        public void IsDirectoryNeedTrueIncludeFilter(string[] filters, string s)
+        public void Directory_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions
-            {
-                Includes = new SourceFilterParams(),
-                Excludes = new SourceFilterParams()
-            };
-            options.Includes.Directories = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Directories = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -44,15 +50,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { _reg + @"^C:.*", _reg + @"\\bin\\((Debug\\)|(Release\\))Test\.\w+\.\w+\\" }, @"F:\bin\Debug\Test.File")]
         [InlineData(new string[] { _reg + @"\\bin\\Release\\ver[147]\\" }, @"C:\bin\Release\ver10")]
         [InlineData(new string[] { _reg + @"^C:\\bin\\Release\\ver[147]\\$" }, @"C:\bin\Release\ver4\samples")]
-        public void IsDirectoryNeedFalseIncludeFilter(string[] filters, string s)
+        public void Directory_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions
-            {
-                Includes = new SourceFilterParams(),
-                Excludes = new SourceFilterParams()
-            };
-            options.Includes.Directories = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Directories = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -66,16 +68,12 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { @"D:\bin\\Debug\Test.File\", _reg + @"\\bin\\((Debug\\)|(Release\\))" }, @"F:\bin\Release\Test.File")]
         [InlineData(new string[] { _reg + @"^C:.*", _reg + @"\\bin\\((Debug\\)|(Release\\))Test\.\w+\.\w+\\" }, @"F:\bin\Debug\Test.File.Helper")]
         [InlineData(new string[] { _reg + @"C:\\bin\\Release\\ver[147]\\" }, @"C:\bin\Release\ver4")]
-        public void IsDirectoryNeedFalseExcludeIncludeFilter(string[] filters, string s)
+        public void Directory_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions
-            {
-                Includes = new SourceFilterParams(),
-                Excludes = new SourceFilterParams()
-            };
-            options.Excludes.Directories = filters.ToList();
-            options.Includes.Directories = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Excludes.Directories = filters==null? null:filters.ToList();
+            options.Includes.Directories = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -87,21 +85,18 @@ namespace Drill4Net.Injector.Core.UnitTests
         #endregion
         #region IsFolderNeed
         [Theory]
+        [InlineData(null, "Test")]
         [InlineData(new string[] {}, "Test")]
         [InlineData(new string[] { "Test" }, "Test")]
         [InlineData(new string[] { "Test1",_reg+"test1",_reg+"Tes[A-Za-z]{3}$" }, "MultyTester")]
         [InlineData(new string[] { _reg + @"^Test\.\w+\.\w+$" }, "Test.String.Parsing")]
         [InlineData(new string[] { _reg + @"^Test\.\w+\.\w+" }, "Test.String.Parsing.New")]
         [InlineData(new string[] {_reg+"est$" }, "Test")]
-        public void IsFolderNeedTrueIncludeFilter(string[] filters, string s)
+        public void Folder_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions
-            {
-                Includes = new SourceFilterParams(),
-                Excludes = new SourceFilterParams()
-            };
-            options.Includes.Folders = filters.ToList();
+        var options = CreateSourceFilterOptions();
+            options.Includes.Folders = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -116,13 +111,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { _reg + "^Tester2.*", _reg + "^Tes[A-Za-z]{3}[1-4]$" }, "Tester14")]
         [InlineData(new string[] { _reg + @"^Test\.\w+\.\w+$" }, "Test.String.Parsing.New")]
         [InlineData(new string[] {_reg+"est$" }, "Test1")]
-        public void IsFolderNeedFalseIncludeFilter(string[] filters, string s)
+        public void Folder_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Folders = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Folders = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -138,14 +131,12 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { _reg + @"^Test\.\w+\.\w+$" }, "Test.String.Parsing")]
         [InlineData(new string[] { _reg + @"^Test\.\w+\.\w+" }, "Test.String.Parsing.New")]
         [InlineData(new string[] { _reg + "est$" }, "Test")]
-        public void IsFolderNeedFalseExcludeIncludeFilter(string[] filters, string s)
+        public void Folder_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Folders = filters.ToList();
-            options.Excludes.Folders = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Folders = filters==null? null:filters.ToList();
+            options.Excludes.Folders = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -156,17 +147,16 @@ namespace Drill4Net.Injector.Core.UnitTests
         #endregion
         #region IsFileNeed
         [Theory]
+        [InlineData(null, "Test.cs")]
         [InlineData(new string[] {}, "Test.cs")]
         [InlineData(new string[] { "Test.cs" }, "Test.cs")]
         [InlineData(new string[] { "Test1.cs",_reg+@"test1\w+",_reg+ @"^Test\.([\w-]+\.)+cs$" }, "Test.String.New5.cs")]
         [InlineData(new string[] {_reg+@"\.cs$" }, "Test.String.cs")]
-        public void IsFileNeedTrueIncludeFilter(string[] filters, string s)
+        public void File_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Files = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Files = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -179,13 +169,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "Test.cs" }, "Test1.cs")]
         [InlineData(new string[] { "Test1.cs", _reg + @"test1\w+", _reg + @"^Test\.([\w-]+\.)+cs$" }, "SomeTest.String.New5.cs")]
         [InlineData(new string[] { _reg + @"\.cs$" }, "Test.String.ts")]
-        public void IsFileNeedFalseIncludeFilter(string[] filters, string s)
+        public void File_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Files = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Files = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -198,14 +186,12 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "Test.cs" }, "Test.cs")]
         [InlineData(new string[] { "Test1.cs", _reg + @"test1\w+", _reg + @"^Test\.([\w-]+\.)+cs$" }, "Test.String.New5.cs")]
         [InlineData(new string[] { _reg + @"\.cs$" }, "Test.String.cs")]
-        public void IsFileNeedFalseExcludeIncludeFilter(string[] filters, string s)
+        public void File_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Files = filters.ToList();
-            options.Excludes.Files = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Files = filters==null? null:filters.ToList();
+            options.Excludes.Files = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -224,13 +210,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill4Net.BanderLog.CommonTests")]
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill4Net.BanderLog.Tests")]
         [InlineData(new string[] { _reg + @"Constants$" }, "Drills4Net.CommonConstants")]
-        public void IsNamespaceNeedTrueIncludeFilter(string[] filters, string s)
+        public void Namespace_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Namespaces = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Namespaces = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -248,13 +232,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill4Net.BanderLog.CommonTest")]
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill.Drill4Net.BanderLog.Tests")]
         [InlineData(new string[] { _reg + @"Constants$" }, "Drills4Net.CommonConstantsUtil")]
-        public void IsNamespaceNeedFalseIncludeFilter(string[] filters, string s)
+        public void Namespace_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Namespaces = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Namespaces = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -271,14 +253,12 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill4Net.BanderLog.CommonTests")]
         [InlineData(new string[] { _reg + @"^Drill4Net\.([\w-]+\.)+[\w]*Tests$" }, "Drill4Net.BanderLog.Tests")]
         [InlineData(new string[] { _reg + @"Constants$" }, "Drills4Net.CommonConstants")]
-        public void IsNamespaceNeedFalseExcludeIncludeFilter(string[] filters, string s)
+        public void Namespace_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Namespaces = filters.ToList();
-            options.Excludes.Namespaces = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Namespaces = filters==null? null:filters.ToList();
+            options.Excludes.Namespaces = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -289,18 +269,17 @@ namespace Drill4Net.Injector.Core.UnitTests
         #endregion
         #region IsClassNeed
         [Theory]
+        [InlineData(null, "InjectorCoreConstants")]
         [InlineData(new string[] {}, "InjectorCoreConstants")]
         [InlineData(new string[] { "InjectorCoreConstants" }, "InjectorCoreConstants")]
         [InlineData(new string[] { "InjectorCore", _reg + "InjectorConstants", _reg + "CoreConstants$" }, "InjectorCoreConstants")]
         [InlineData(new string[] { _reg + @"Injector\w+Constants" }, "InjectorCoreConstants")]
         [InlineData(new string[] { _reg + @"Injector\w+Constants$" }, "InjectorCommon5Constants")]
-        public void IsClassNeedTrueIncludeFilter(string[] filters, string s)
+        public void Class_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Classes = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Classes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -314,13 +293,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "InjectorCore", _reg + "InjectorConstants", _reg + "CoreConstants$" }, "InjectorCommonConstants")]
         [InlineData(new string[] { _reg + @"Injector\w+Constants" }, "InjectorCoreConst")]
         [InlineData(new string[] { _reg + @"^Injector\w+Constants" }, "NewInjectorCommon5Constants")]
-        public void IsClassNeedFalseIncludeFilter(string[] filters, string s)
+        public void Class_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Classes = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Classes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -334,14 +311,12 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "InjectorCore", _reg + "InjectorConstants", _reg + "CoreConstants$" }, "InjectorCoreConstants")]
         [InlineData(new string[] { _reg + @"Injector\w+Constants" }, "InjectorCoreConstants")]
         [InlineData(new string[] { _reg + @"Injector\w+Constants$" }, "InjectorCommon5Constants")]
-        public void IsClassNeedFalseExcludeIncludeFilter(string[] filters, string s)
+        public void Class_Include_Exclude_True(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Classes = filters.ToList();
-            options.Excludes.Classes = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Classes = filters==null? null:filters.ToList();
+            options.Excludes.Classes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -352,18 +327,17 @@ namespace Drill4Net.Injector.Core.UnitTests
         #endregion
         #region IsAttributeNeed
         [Theory]
+        [InlineData(null, "CustomAttribute")]
         [InlineData(new string[] {}, "CustomAttribute")]
         [InlineData(new string[] { "CustomAttribute" }, "CustomAttribute")]
         [InlineData(new string[] { "CustomAttribute", _reg + "^Core", _reg + "Core" }, "CustomCoreAttribute")]
         [InlineData(new string[] { "CustomAttribute", _reg + "^Core" }, "CoreAttribute")]
         [InlineData(new string[] { _reg + @"Custom\w+Attribute$" }, "CustomCoreAttribute")]
-        public void IsAttributeNeedTrueIncludeFilter(string[] filters, string s)
+        public void Attribute_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Attributes = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Attributes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
@@ -377,13 +351,11 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "CustomAttribute", _reg + "^Core", _reg + "Core" }, "CustAttribute")]
         [InlineData(new string[] { "CustomAttribute", _reg + "^Core" }, "NewCoreAttribute")]
         [InlineData(new string[] { _reg + @"Custom\w+Attribute$" }, "CustomCoreAttributeNew")]
-        public void IsAttributeNeedFalseIncludeFilter(string[] filters, string s)
+        public void Attribute_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Attributes = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Attributes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
@@ -397,14 +369,12 @@ namespace Drill4Net.Injector.Core.UnitTests
         [InlineData(new string[] { "CustomAttribute", _reg + "^Core", _reg + "Core" }, "CustomCoreAttribute")]
         [InlineData(new string[] { "CustomAttribute", _reg + "^Core" }, "CoreAttribute")]
         [InlineData(new string[] { _reg + @"Custom\w+Attribute$" }, "CustomCoreAttribute")]
-        public void IsAttributeNeedFalseExcludeIncludeFilter(string[] filters, string s)
+        public void Attribute_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = new SourceFilterOptions();
-            options.Includes = new SourceFilterParams();
-            options.Excludes = new SourceFilterParams();
-            options.Includes.Attributes = filters.ToList();
-            options.Excludes.Attributes = filters.ToList();
+            var options = CreateSourceFilterOptions();
+            options.Includes.Attributes = filters==null? null:filters.ToList();
+            options.Excludes.Attributes = filters==null? null:filters.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
