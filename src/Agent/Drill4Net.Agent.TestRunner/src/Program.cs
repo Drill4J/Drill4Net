@@ -28,6 +28,10 @@ namespace Drill4Net.Agent.TestRunner
             {
                 Log.Fatal(ex);
             }
+            finally
+            {
+                _logger.GetManager().Shutdown();
+            }
 
             _logger?.Info("Finished");
         }

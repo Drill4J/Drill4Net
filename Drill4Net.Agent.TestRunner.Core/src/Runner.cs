@@ -29,20 +29,25 @@ namespace Drill4Net.Agent.TestRunner.Core
             {
                 List<BuildSummary> summary = await _rep.GetBuildSummaries();
                 _logger.Debug($"Builds: {summary.Count}");
-
+                //
                 var runType = RunningType.All;
+                TestToRunInfo test2Run = null;
                 if (summary.Count > 0)
                 {
                     summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
                     var last = summary[0];
-                    var test2Run = last.Summary.TestsToRun;
+                    test2Run = last?.Summary?.TestsToRun;
+                    if (test2Run == null)
+                        throw new Exception("No info about test2Run");
                     _logger.Debug($"Test to run: {test2Run.Count}");
 
                     runType = test2Run.Count == 0 ? RunningType.Nothing : RunningType.Certain;
                 }
                 _logger.Debug($"Running type: {runType}");
+                //
+                var tests = test2Run.ByType;
 
-
+                //
                 _logger.Debug("Finished");
             }
             catch (Exception ex)
