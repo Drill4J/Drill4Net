@@ -4,6 +4,8 @@ namespace Drill4Net.Agent.TestRunner.Core
 {
     //https://kb.epam.com/display/EPMDJ/Builds+summary+API
 
+    //DON'T change it by "just refactoring" because all that are DTOs for the Drill Admin's REST service
+
     /// <summary>
     /// Summary info about the build's coverage
     /// </summary>
