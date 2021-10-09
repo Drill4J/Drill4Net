@@ -1,9 +1,8 @@
 ﻿using System;
-using Drill4Net.Common;
-using Drill4Net.BanderLog;
-using RestSharp;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
@@ -25,16 +24,24 @@ namespace Drill4Net.Agent.TestRunner.Core
         public async Task Run()
         {
             _logger.Debug("Running...");
-            var url = _rep.GetUrl();
-            var client = new RestClient(url);
-            //client.Authenticator = new HttpBasicAuthenticator("username", "password");
-            List<BuildSummary> summary = null;
 
             try
             {
-                var request = new RestRequest(_rep.GetSummaryResource(), DataFormat.Json);
-                //var a = client.Get(request);
-                summary = await client.GetAsync<List<BuildSummary>>(request);
+                List<BuildSummary> summary = await _rep.GetBuildSummaries();
+                _logger.Debug($"Builds: {summary.Count}");
+
+                var runType = RunningType.All;
+                if (summary.Count > 0)
+                {
+                    summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
+                    var last = summary[0];
+                    var test2Run = last.Summary.TestsToRun;
+                    _logger.Debug($"Test to run: {test2Run.Count}");
+
+                    runType = test2Run.Count == 0 ? RunningType.Nothing : RunningType.Certain;
+                }
+                _logger.Debug($"Running type: {runType}");
+
 
                 _logger.Debug("Finished");
             }
@@ -43,5 +50,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 _logger.Fatal("Get summary", ex);
             }
         }
+
+        
     }
 }
