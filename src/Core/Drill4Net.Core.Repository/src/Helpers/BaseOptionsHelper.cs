@@ -1,16 +1,16 @@
 ﻿using System.IO;
 using YamlDotNet.Serialization;
 using Drill4Net.Common;
-using Drill4Net.Configuration;
 using Drill4Net.BanderLog;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Core.Repository
 {
     /// <summary>
     /// Base generic options Helper
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class BaseOptionsHelper<T> where T : AbstractOptions, new()
+    /// <typeparam name="TOpts"></typeparam>
+    public class BaseOptionsHelper<TOpts> where TOpts : AbstractOptions, new()
     {
         private readonly IDeserializer _deser;
         private readonly Logger _logger;
@@ -21,7 +21,7 @@ namespace Drill4Net.Core.Repository
 
         public BaseOptionsHelper(string subsystem)
         {
-            _logger = new TypedLogger<BaseOptionsHelper<T>>(subsystem);
+            _logger = new TypedLogger<BaseOptionsHelper<TOpts>>(subsystem);
 
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties() //TODO: from cfg only if permitted
@@ -56,13 +56,13 @@ namespace Drill4Net.Core.Repository
         /// <param name="path">The fike path.</param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException">$"Options file not found: [{path}]</exception>
-        public T ReadOptions(string path)
+        public TOpts ReadOptions(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Options file not found: [{path}]");
             _logger.Debug($"Reading config: [{path}]");
             var cfg = File.ReadAllText(path);
-            var opts = _deser.Deserialize<T>(cfg);
+            var opts = _deser.Deserialize<TOpts>(cfg);
             _logger.Debug("Config deserialized.");
             PostProcess(opts);
             _logger.Debug("Config prepared.");
@@ -74,6 +74,6 @@ namespace Drill4Net.Core.Repository
         /// override if needed in children
         /// </summary>
         /// <param name="opts"></param>
-        protected virtual void PostProcess(T opts) { }
+        protected virtual void PostProcess(TOpts opts) { }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.App", "src\Injector\Drill4Net.Injector.App\Drill4Net.Injector.App.csproj", "{96334265-0515-4C61-B6EF-A39A36A99CD2}"
 EndProject
@@ -208,6 +208,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net461", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net461\Drill4Net.Target.Tests.Net461.csproj", "{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net48", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net48\Drill4Net.Target.Tests.Net48.csproj", "{528D6CA1-ECF1-4178-86A4-C86792D92101}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.TestRunner", "src\Agent\Drill4Net.Agent.TestRunner\Drill4Net.Agent.TestRunner.csproj", "{5B238A88-E62B-4927-92F7-4FA837CFC3CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestRunner", "TestRunner", "{ED1C97E5-CC20-495C-B0ED-EC7881EDFF06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.TestRunner.Core", "Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj", "{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -577,6 +583,18 @@ Global
 		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B238A88-E62B-4927-92F7-4FA837CFC3CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B238A88-E62B-4927-92F7-4FA837CFC3CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B238A88-E62B-4927-92F7-4FA837CFC3CA}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{5B238A88-E62B-4927-92F7-4FA837CFC3CA}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{5B238A88-E62B-4927-92F7-4FA837CFC3CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B238A88-E62B-4927-92F7-4FA837CFC3CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -672,6 +690,9 @@ Global
 		{78B53C7D-6611-4191-91C4-94B659AE8FB9} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
 		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{528D6CA1-ECF1-4178-86A4-C86792D92101} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
+		{5B238A88-E62B-4927-92F7-4FA837CFC3CA} = {ED1C97E5-CC20-495C-B0ED-EC7881EDFF06}
+		{ED1C97E5-CC20-495C-B0ED-EC7881EDFF06} = {F5B1697D-C26A-4165-B810-6A4C8621F902}
+		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C} = {ED1C97E5-CC20-495C-B0ED-EC7881EDFF06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

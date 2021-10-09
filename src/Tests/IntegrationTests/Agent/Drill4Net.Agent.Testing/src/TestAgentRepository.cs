@@ -8,7 +8,7 @@ namespace Drill4Net.Agent.Testing
     /// <summary>
     /// Repository for the Tester subsystem
     /// </summary>
-    public class TestAgentRepository : ConfiguredRepository<TesterOptions, BaseOptionsHelper<TesterOptions>>
+    public class TestAgentRepository : TreeRepository<TesterOptions, BaseOptionsHelper<TesterOptions>>
     {
         /// <summary>
         /// Initializes a new instance of the repository for the Tester subsystem.

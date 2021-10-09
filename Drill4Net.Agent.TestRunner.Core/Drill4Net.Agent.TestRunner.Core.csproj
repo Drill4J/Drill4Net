@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.TestRunner.Core</OutputPath>
+		<DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Transport\Drill4Net.Agent.TestRunner.Core.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.TestRunner.Core</OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="RestSharp" Version="106.12.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\src\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
+	  <ProjectReference Include="..\src\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,56 +1,25 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Core.Repository
 {
-    /// <summary>
-    /// Abstract repository for the injection options, retrieving strategy, directories and files, etc
-    /// </summary>
-    /// <typeparam name="TOptions">Concrete options</typeparam>
-    /// <typeparam name="THelper">Helper for manipulating the concrete type of options</typeparam>
-    public abstract class ConfiguredRepository<TOptions, THelper> : AbstractRepository<TOptions>
-                    where TOptions : TargetOptions, new()
-                    where THelper : BaseOptionsHelper<TOptions>, new()
+    public abstract class TreeRepository<TOptions, THelper> : ConfiguredRepository<TOptions, THelper>
+            where TOptions : TargetOptions, new()
+            where THelper : BaseOptionsHelper<TOptions>, new()
     {
-        /// <summary>
-        /// Gets or sets the default config path. Assigned after reading the config file.
-        /// </summary>
-        /// <value>
-        /// The default config path.
-        /// </value>
-        public string DefaultCfgPath { get; internal set; }
-
-        protected THelper _optHelper;
-
-        /**********************************************************************************/
-
-        protected ConfiguredRepository(string[] args, string subsystem): this(GetArgumentConfigPath(args), subsystem)
+        protected TreeRepository(string[] args, string subsystem) : base(args, subsystem)
         {
         }
 
-        protected ConfiguredRepository(string cfgPath, string subsystem): base(subsystem)
+        protected TreeRepository(string cfgPath, string subsystem) : base(cfgPath, subsystem)
         {
-            _optHelper = new THelper();
-
-            //options
-            if (string.IsNullOrWhiteSpace(cfgPath))
-                cfgPath = _optHelper.GetActualConfigPath(CoreConstants.CONFIG_DEFAULT_NAME);
-            DefaultCfgPath = cfgPath;
-            Options = _optHelper.ReadOptions(cfgPath);
-
-            //logging
-            PrepareLogger();
         }
 
-        protected ConfiguredRepository(TOptions opts, string subsystem) : base(subsystem)
+        protected TreeRepository(TOptions opts, string subsystem) : base(opts, subsystem)
         {
-            _optHelper = new THelper();
-            Options = opts ?? throw new ArgumentNullException(nameof(opts));
-            PrepareLogger();
         }
 
         /**********************************************************************************/
@@ -76,7 +45,7 @@ namespace Drill4Net.Core.Repository
                 {
                     tree = Serializer.FromArray<InjectedSolution>(bytes2);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw new System.Exception($"Tree data did't serialized: [{path}].\n{ex}");
                 }
@@ -105,6 +74,5 @@ namespace Drill4Net.Core.Repository
             return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
         }
         #endregion
-
     }
 }
