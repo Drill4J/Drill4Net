@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// 'type' tests coverage info
     /// </summary>
     [Serializable]
-    public class TestInfo
+    public record TestInfo
     {
         /// <summary>
         /// User can specify test type before starting a test session. 

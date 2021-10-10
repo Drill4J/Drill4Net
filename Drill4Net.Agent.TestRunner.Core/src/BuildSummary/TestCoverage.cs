@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// 'type' tests coverage info
     /// </summary>
     [Serializable]
-    public class TestCoverage
+    public record TestCoverage
     {
         /// <summary>
         /// Tests coverage percentage

@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// 'type' tests info
     /// </summary>
     [Serializable]
-    public class TestSummary
+    public record TestSummary
     {
         /// <summary>
         /// 'type' tests coverage info

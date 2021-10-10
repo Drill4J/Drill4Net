@@ -10,7 +10,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// Summary info about the build's coverage
     /// </summary>
     [Serializable]
-    public class BuildSummary
+    public record BuildSummary
     {
         /// <summary>
         /// In JSON can be more than one Build version name

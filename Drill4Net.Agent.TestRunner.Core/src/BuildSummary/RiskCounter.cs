@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// Risks methods info
     /// </summary>
     [Serializable]
-    public class RiskCounter
+    public record RiskCounter
     {
         /// <summary>
         /// Number of uncovered new methods

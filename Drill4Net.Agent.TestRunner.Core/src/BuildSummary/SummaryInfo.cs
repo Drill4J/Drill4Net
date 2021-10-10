@@ -7,7 +7,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// All key metrics of the build
     /// </summary>
     [Serializable]
-    public class SummaryInfo
+    public record SummaryInfo
     {
         /// <summary>
         /// Total Build coverage percentage
@@ -15,7 +15,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         public double Coverage { get; set; }
 
         /// <summary>
-        /// Probes info for about its coverage
+        /// Probes info about coverage
         /// </summary>
         public long CoverageCount { get; set; }
 

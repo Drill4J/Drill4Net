@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// Probes info of 'type' tests
     /// </summary>
     [Serializable]
-    public class ProbeCounter
+    public record ProbeCounter
     {
         /// <summary>
         /// Number of covered methods by 'type' test 

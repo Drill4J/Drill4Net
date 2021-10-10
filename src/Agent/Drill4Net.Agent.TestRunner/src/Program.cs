@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.TestRunner.Core;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.TestRunner
 {
@@ -30,10 +30,9 @@ namespace Drill4Net.Agent.TestRunner
             }
             finally
             {
+                _logger?.Info("Finished");
                 _logger.GetManager().Shutdown();
             }
-
-            _logger?.Info("Finished");
         }
     }
 }

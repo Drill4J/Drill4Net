@@ -6,6 +6,8 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
+    //Swagger: http://localhost:8090/apidocs/index.html?url=./openapi.json
+
     public class Runner
     {
         private readonly TestRunnerRepository _rep;
@@ -23,36 +25,46 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public async Task Run()
         {
-            _logger.Debug("Running...");
+            _logger.Debug("Getting the build summaries...");
 
             try
             {
-                List<BuildSummary> summary = await _rep.GetBuildSummaries();
+                List<BuildSummary> summary = await _rep.GetBuildSummaries().ConfigureAwait(false);
                 _logger.Debug($"Builds: {summary.Count}");
                 //
                 var runType = RunningType.All;
                 TestToRunInfo test2Run = null;
-                if (summary.Count > 0)
+                if (summary.Count > 0) //some builds exists
                 {
                     summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
-                    var last = summary[0];
-                    test2Run = last?.Summary?.TestsToRun;
+                    var actual = summary[0];
+                    test2Run = actual?.Summary?.TestsToRun;
                     if (test2Run == null)
-                        throw new Exception("No info about test2Run");
-                    _logger.Debug($"Test to run: {test2Run.Count}");
+                        throw new Exception("No object of test2Run");
 
-                    runType = test2Run.Count == 0 ? RunningType.Nothing : RunningType.Certain;
+                    var testCnt = actual.Summary.Tests.Count;
+                    var test2runCnt = test2Run.Count;
+                    _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");
+                    //
+                    if(testCnt > 0)
+                    {
+                        //tests exists but no test to run (no difference between builds)
+                        runType = test2runCnt == 0 ?
+                            RunningType.Nothing :
+                            RunningType.Certain;
+                    }
                 }
                 _logger.Debug($"Running type: {runType}");
                 //
                 var tests = test2Run.ByType;
+                //we need test's names here for its runs by CLI ("dotnet test ...")
 
                 //
                 _logger.Debug("Finished");
             }
             catch (Exception ex)
             {
-                _logger.Fatal("Get summary", ex);
+                _logger.Fatal("Get builds' summary", ex);
             }
         }
 
