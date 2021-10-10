@@ -61,13 +61,9 @@ namespace Drill4Net.Agent.TestRunner.Core
                 if (ind != -1)
                     test = test.Substring(0, ind);
                 //
-                // DisplayName - only for xUnit - https://docs.microsoft.com/ru-ru/dotnet/core/tools/dotnet-test#filter-option-details
-                // TODO: for NUnit & MSTest. From config? Because one assembly can contain different types together.
-                // Or use different tags for the different types of tests... Need investigate
-                // Maybe use only FullyQualifiedName ?
-                // ~ means "contains". For one test name, ALL its cases will be executed
                 test = test.Replace(",", "%2C").Replace("\"","\\\"").Replace("!", "\\!"); //need escaping
-                args += $"DisplayName~{test}";
+                //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace
+                args += $"FullyQualifiedName~.{test}";
                 if (i < tests.Count - 1)
                     args += "|";
                 else

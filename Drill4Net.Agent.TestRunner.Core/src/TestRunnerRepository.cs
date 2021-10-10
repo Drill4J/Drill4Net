@@ -55,9 +55,9 @@ namespace Drill4Net.Agent.TestRunner.Core
             {
                 //FAKE tests - TODO: real getting from Drill Admin by WS !!!
                 //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
-                tests.Add("Publishers array");
-                tests.Add("Book state update fails");
-                tests.Add("Sort by deal dates(scenarioDescription: \"Asc sorting DealCreatedDate\", sortField: \"DealCreatedDate\", sortDirection: \"Ascending\", versionsReturned: \"5, 6, 4\", exampleTags: [])");
+                tests.Add("PublishersArray");
+                tests.Add("BookStateUpdateFails");
+                tests.Add("SortByDealDates");
             }
             return (runType, tests);
         }
