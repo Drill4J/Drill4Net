@@ -47,20 +47,27 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal string GetRunArguments(IList<string> tests)
         {
             // prefix "/C" - is for running in the CMD
-            var args = $"/C dotnet test \"{_rep.Options.FilePath}\"";
+            var args = $"/C dotnet test \"{_rep.Options.FilePath}\" --logger \"console;verbosity=detailed\"";
             if (tests?.Any() != true)
                 return args;
+            //
             args += " --filter \"";
             for (int i = 0; i < tests.Count; i++)
             {
                 string test = tests[i];
-                
-                // test case -> just test name. Guanito?
-                var ind = test.IndexOf("(");
-                if(ind != -1)
+
+                // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest break
+                var ind = test.IndexOf("("); //after ( the parameters of case followed 
+                if (ind != -1)
                     test = test.Substring(0, ind);
                 //
-                args += $"DisplayName~{test}"; // ~ means "contains". For one test name, ALL its cases will be executed
+                // DisplayName - only for xUnit - https://docs.microsoft.com/ru-ru/dotnet/core/tools/dotnet-test#filter-option-details
+                // TODO: for NUnit & MSTest. From config? Because one assembly can contain different types together.
+                // Or use different tags for the different types of tests... Need investigate
+                // Maybe use only FullyQualifiedName ?
+                // ~ means "contains". For one test name, ALL its cases will be executed
+                test = test.Replace(",", "%2C").Replace("\"","\\\"").Replace("!", "\\!"); //need escaping
+                args += $"DisplayName~{test}";
                 if (i < tests.Count - 1)
                     args += "|";
                 else
