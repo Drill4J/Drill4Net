@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 if (runType == RunningType.Nothing)
                     return;
                 var args = GetRunArguments(tests);
-                StartTests(args); //we need test's names here for its runs by CLI ("dotnet test ...")
+                StartTests(args); //we need for the test's names here - they runs by CLI ("dotnet test ...")
 
                 _logger.Debug("Finished");
             }
@@ -54,19 +54,20 @@ namespace Drill4Net.Agent.TestRunner.Core
             for (int i = 0; i < tests.Count; i++)
             {
                 string test = tests[i];
-                //
+                
+                // test case -> just test name. Guanito?
                 var ind = test.IndexOf("(");
                 if(ind != -1)
                     test = test.Substring(0, ind);
                 //
-                args += $"DisplayName~{test}";
+                args += $"DisplayName~{test}"; // ~ means "contains". For one test name, ALL its cases will be executed
                 if (i < tests.Count - 1)
                     args += "|";
                 else
                     args += "\"";
             }
             if (args.Length > 32767)
-                throw new Exception("Argument's length exceeds the maximum. We need improve algorythm (to do some separate runnings)");
+                throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
             return args;
         }
 

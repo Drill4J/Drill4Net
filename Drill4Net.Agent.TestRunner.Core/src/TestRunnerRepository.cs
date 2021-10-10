@@ -47,13 +47,14 @@ namespace Drill4Net.Agent.TestRunner.Core
             return summary;
         }
 
-        internal async Task<(RunningType, List<string>)> GetRunToTests()
+        internal async Task<(RunningType runType, List<string> tests)> GetRunToTests()
         {
             var tests = new List<string>();
             var runType = await GetRunningType();
             if (runType != RunningType.Nothing)
             {
-                //tests
+                //FAKE tests - TODO: real getting from Drill Admin by WS !!!
+                //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
                 tests.Add("Publishers array");
                 tests.Add("Book state update fails");
                 tests.Add("Sort by deal dates(scenarioDescription: \"Asc sorting DealCreatedDate\", sortField: \"DealCreatedDate\", sortDirection: \"Ascending\", versionsReturned: \"5, 6, 4\", exampleTags: [])");
