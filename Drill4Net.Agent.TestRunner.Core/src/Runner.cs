@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.BanderLog;
@@ -29,37 +30,12 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             try
             {
-                List<BuildSummary> summary = await _rep.GetBuildSummaries().ConfigureAwait(false);
-                _logger.Debug($"Builds: {summary.Count}");
-                //
-                var runType = RunningType.All;
-                TestToRunInfo test2Run = null;
-                if (summary.Count > 0) //some builds exists
-                {
-                    summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
-                    var actual = summary[0];
-                    test2Run = actual?.Summary?.TestsToRun;
-                    if (test2Run == null)
-                        throw new Exception("No object of test2Run");
+                var (runType, tests) = await _rep.GetRunToTests();
+                if (runType == RunningType.Nothing)
+                    return;
+                var args = GetRunArguments(tests);
+                StartTests(args); //we need test's names here for its runs by CLI ("dotnet test ...")
 
-                    var testCnt = actual.Summary.Tests.Count;
-                    var test2runCnt = test2Run.Count;
-                    _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");
-                    //
-                    if(testCnt > 0)
-                    {
-                        //tests exists but no test to run (no difference between builds)
-                        runType = test2runCnt == 0 ?
-                            RunningType.Nothing :
-                            RunningType.Certain;
-                    }
-                }
-                _logger.Debug($"Running type: {runType}");
-                //
-                var tests = test2Run.ByType;
-                //we need test's names here for its runs by CLI ("dotnet test ...")
-
-                //
                 _logger.Debug("Finished");
             }
             catch (Exception ex)
@@ -68,6 +44,45 @@ namespace Drill4Net.Agent.TestRunner.Core
             }
         }
 
-        
+        internal string GetRunArguments(IList<string> tests)
+        {
+            // prefix "/C" - is for running in the CMD
+            var args = $"/C dotnet test \"{_rep.Options.FilePath}\"";
+            if (tests?.Any() != true)
+                return args;
+            args += " --filter \"";
+            for (int i = 0; i < tests.Count; i++)
+            {
+                string test = tests[i];
+                //
+                var ind = test.IndexOf("(");
+                if(ind != -1)
+                    test = test.Substring(0, ind);
+                //
+                args += $"DisplayName~{test}";
+                if (i < tests.Count - 1)
+                    args += "|";
+                else
+                    args += "\"";
+            }
+            if (args.Length > 32767)
+                throw new Exception("Argument's length exceeds the maximum. We need improve algorythm (to do some separate runnings)");
+            return args;
+        }
+
+        internal void StartTests(string args)
+        {
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = "cmd.exe",
+                    Arguments = args,
+                    CreateNoWindow = false,
+                    UseShellExecute = true,
+                }
+            };
+            process.Start();
+        }
     }
 }

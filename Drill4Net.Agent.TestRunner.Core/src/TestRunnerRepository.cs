@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Drill4Net.Common;
-using Drill4Net.Core.Repository;
 using RestSharp;
+using Drill4Net.Common;
+using Drill4Net.BanderLog;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
     public class TestRunnerRepository : ConfiguredRepository<TestRunnerOptions, BaseOptionsHelper<TestRunnerOptions>>
     {
+        private readonly Logger _logger;
+
+        /********************************************************************************/
+
         public TestRunnerRepository(): base(string.Empty, CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER)
         {
+            _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
         }
 
         /********************************************************************************/
@@ -39,6 +45,52 @@ namespace Drill4Net.Agent.TestRunner.Core
             //var a = client.Get(request);
             var summary = await client.GetAsync<List<BuildSummary>>(request);
             return summary;
+        }
+
+        internal async Task<(RunningType, List<string>)> GetRunToTests()
+        {
+            var tests = new List<string>();
+            var runType = await GetRunningType();
+            if (runType != RunningType.Nothing)
+            {
+                //tests
+                tests.Add("Publishers array");
+                tests.Add("Book state update fails");
+                tests.Add("Sort by deal dates(scenarioDescription: \"Asc sorting DealCreatedDate\", sortField: \"DealCreatedDate\", sortDirection: \"Ascending\", versionsReturned: \"5, 6, 4\", exampleTags: [])");
+            }
+            return (runType, tests);
+        }
+
+        internal async virtual Task<RunningType> GetRunningType()
+        {
+            //TODO: add error handling
+            List<BuildSummary> summary = await GetBuildSummaries().ConfigureAwait(false);
+            _logger.Debug($"Builds: {summary.Count}");
+            //
+            var runType = RunningType.All;
+            TestToRunInfo test2Run = null;
+            if (summary.Count > 0) //some builds exists
+            {
+                summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
+                var actual = summary[0];
+                test2Run = actual?.Summary?.TestsToRun;
+                if (test2Run == null)
+                    throw new Exception("No object of test2Run");
+
+                var testCnt = actual.Summary.Tests.Count;
+                var test2runCnt = test2Run.Count;
+                _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");
+                //
+                if (testCnt > 0)
+                {
+                    //tests exists but no test to run (no difference between builds)
+                    runType = test2runCnt == 0 ?
+                        RunningType.Nothing :
+                        RunningType.Certain;
+                }
+            }
+            _logger.Debug($"Running type: {runType}");
+            return runType;
         }
     }
 }
