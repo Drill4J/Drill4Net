@@ -168,12 +168,6 @@ namespace Drill4Net.Injector.Core.UnitTests
                         new SourceFilterParams(),
                         null,
                         CLASS
-                    },
-                    new object[]
-                    {
-                        new SourceFilterParams(),
-                        new SourceFilterParams(),
-                        null
                     }
                 };
             }
