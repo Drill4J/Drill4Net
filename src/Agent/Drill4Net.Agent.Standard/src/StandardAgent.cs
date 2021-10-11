@@ -400,7 +400,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="name"></param>
         internal void StartSession(string name)
         {
-            CoverageSender.SendStartSessionCommand(name);
+            CoverageSender.SendStartSessionCommand(NormalizeSessionName(name));
         }
 
         /// <summary>
@@ -409,7 +409,27 @@ namespace Drill4Net.Agent.Standard
         /// <param name="name"></param>
         internal void StopSession(string name)
         {
-            CoverageSender.SendStopSessionCommand(name);
+            CoverageSender.SendStopSessionCommand(NormalizeSessionName(name));
+        }
+
+        internal static string NormalizeSessionName(string session)
+        {
+            if (string.IsNullOrWhiteSpace(session))
+                throw new ArgumentNullException(nameof(session));
+            if (!session.Contains(" "))
+                return session; //as is
+            var ar = session.Split(' ');
+            for (int i = 0; i < ar.Length; i++)
+            {
+                string word = ar[i];
+                if (string.IsNullOrWhiteSpace(word))
+                    continue;
+                char[] a = word.ToLower().ToCharArray();
+                a[0] = char.ToUpper(a[0]);
+                ar[i] = new string(a);
+            }
+            session = string.Join(null, ar).Replace(" ", null);
+            return session;
         }
         #endregion
     }

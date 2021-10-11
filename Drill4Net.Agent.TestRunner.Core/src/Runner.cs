@@ -30,11 +30,11 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             try
             {
-                var (runType, tests) = await _rep.GetRunToTests();
+                var (runType, tests) = await _rep.GetRunToTests().ConfigureAwait(false);
                 if (runType == RunningType.Nothing)
                     return;
                 var args = GetRunArguments(tests);
-                StartTests(args); //we need for the test's names here - they runs by CLI ("dotnet test ...")
+                RunTests(args); //we need for the test's names here - they runs by CLI ("dotnet test ...")
 
                 _logger.Debug("Finished");
             }
@@ -63,6 +63,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 //
                 test = test.Replace(",", "%2C").Replace("\"","\\\"").Replace("!", "\\!"); //need escaping
                 //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace
+                //TODO: = comparing with real namespaces
                 args += $"FullyQualifiedName~.{test}";
                 if (i < tests.Count - 1)
                     args += "|";
@@ -74,7 +75,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             return args;
         }
 
-        internal void StartTests(string args)
+        internal void RunTests(string args)
         {
             var process = new Process
             {

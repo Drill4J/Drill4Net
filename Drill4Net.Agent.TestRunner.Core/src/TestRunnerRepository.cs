@@ -50,7 +50,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal async Task<(RunningType runType, List<string> tests)> GetRunToTests()
         {
             var tests = new List<string>();
-            var runType = await GetRunningType();
+            var runType = await GetRunningType().ConfigureAwait(false);
             if (runType != RunningType.Nothing)
             {
                 //FAKE tests - TODO: real getting from Drill Admin by WS !!!
