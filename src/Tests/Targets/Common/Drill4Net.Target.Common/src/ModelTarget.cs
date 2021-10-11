@@ -1003,9 +1003,9 @@ namespace Drill4Net.Target.Common
             return new List<GenStr> { new GenStr("A"), new GenStr("B"), new GenStr("C"), };
         }
 
-        internal async Task<GenStr> ProcessElement(GenStr element, bool cond)
+        internal Task<GenStr> ProcessElement(GenStr element, bool cond)
         {
-            return await Task.Run(() =>
+            return Task.Run(() =>
             {
                 if (cond)
                     element.Prop += "/1";

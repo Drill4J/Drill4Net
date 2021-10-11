@@ -85,10 +85,9 @@ namespace Drill4Net.Injector.Engine
                 Description = opts.Description,
             };
 
-            //ctx of this Run
             using var runCtx = new RunContext(_rep, tree);
 
-            //folders: possible targets from cfg
+            //inner folders: possible targets from cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
@@ -102,7 +101,7 @@ namespace Drill4Net.Injector.Engine
                 await ProcessDirectory(runCtx);
             }
 
-            //files in root
+            //files in the root
             if (!runCtx.Tree.GetAllAssemblies().Any())
             {
                 runCtx.SourceDirectory = runCtx.RootDirectory;
@@ -113,7 +112,7 @@ namespace Drill4Net.Injector.Engine
             tree.RemoveEmpties();
             tree.FinishTime = DateTime.Now;
             var deployer = new TreeDeployer(runCtx.Repository);
-            deployer.Deploy(tree); //copying tree data to target root directories
+            deployer.Deploy(tree); //copying tree data to the target root's directories
 
             #region Debug
             // debug TODO: to tests
