@@ -14,7 +14,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
             var mockRepository = new Mock<IInjectorRepository>();
            return new InjectorEngine(mockRepository.Object);
         }
-
+#region Monirer
         [Theory]
         [MemberData(nameof(MonikerTestData.NeedByMonikerTrue), MemberType = typeof(MonikerTestData))]
         public void Directory_Moniker_True(Dictionary<string, MonikerData> monikers, string root, string dir)
@@ -34,11 +34,27 @@ namespace Drill4Net.Injector.Engine.UnitTests
 
         }
         [Theory]
+        [MemberData(nameof(MonikerTestData.NeedByMonikerNullCheck), MemberType = typeof(MonikerTestData))]
+        public void Directory_Moniker_Null(Dictionary<string, MonikerData> monikers, string root, string dir)
+        {
+            //Arrange
+            var injectorEngine = CreateInjectorEngine();
+
+            //Act
+            var exception = Record.Exception(() => injectorEngine.IsDirectoryNeedByMoniker(monikers, root, dir));
+
+            //Assert
+            Assert.Null(exception);
+
+        }
+#endregion
+        [Theory]
         [MemberData(nameof(DirectoryTestData.NeedProcessDirectoryTrue), MemberType = typeof(DirectoryTestData))]
         public void Process_Directory_True(SourceFilterOptions flt, string directory, bool isRoot)
         {
-
-            Assert.False(true);
+            var injectorEngine = CreateInjectorEngine();
+            var result = injectorEngine.IsNeedProcessDirectory(flt, directory, isRoot);
+            Assert.True(result);
 
         }
     }

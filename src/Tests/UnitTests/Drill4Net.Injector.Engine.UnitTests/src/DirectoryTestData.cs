@@ -1,4 +1,5 @@
 ﻿using Drill4Net.Injector.Core;
+using Drill4Net.TestDataHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,18 +17,18 @@ namespace Drill4Net.Injector.Engine.UnitTests
 
 
 
-        private static OptionHelper _helper=new OptionHelper();
+        private static SourceFilterOptionsHelper _helper = new SourceFilterOptionsHelper();
         private static List<string> _directoryFilter = new List<string>
         {
-            ""
+            DIR
         };
         private static List<string> _folderFilter = new List<string>
         {
-            ""
+            FOLDER
         };
         private static List<string> _nsFilter = new List<string>
         {
-            ""
+            NS
         };
         public static IEnumerable<object[]> NeedProcessDirectoryTrue
         {
@@ -35,12 +36,29 @@ namespace Drill4Net.Injector.Engine.UnitTests
             {
                 return new List<object[]>()
                 {
+                    //new object[]
+                    //{
+                    //    _helper.CreateSourceFilterOptions(null,null,)
+                    //},
                     new object[]
                     {
-                        _helper.CreateSourceFilterOptions(null,null,)
+                        null,
+                        DIR,
+                        false
+                    },
+                   new object[]
+                    {
+                        _helper.CreateSourceFilterOptions(null,null, null, null,null, null, null,null, 
+                        null, null, null, null, null, null),
+                        DIR,
+                        true
                     },
                     new object[]
                     {
+                        _helper.CreateSourceFilterOptions(new SourceFilterParams(),null, _directoryFilter, null,null,
+                        null, null,null, null, null, null, null, null, null),
+                        DIR,
+                        false
                     }
                 };
             }
