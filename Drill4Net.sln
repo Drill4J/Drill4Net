@@ -209,6 +209,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net48", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net48\Drill4Net.Target.Tests.Net48.csproj", "{528D6CA1-ECF1-4178-86A4-C86792D92101}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Helper", "Helper", "{68EF06CD-2F81-4505-A9D5-C6ABFBD044C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.TestDataHelper", "src\Tests\UnitTests\Drill4Net.TestDataHelper\Drill4Net.TestDataHelper.csproj", "{9F326BBB-C6E5-4595-83E4-65027D0F6839}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -577,6 +581,12 @@ Global
 		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{528D6CA1-ECF1-4178-86A4-C86792D92101}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F326BBB-C6E5-4595-83E4-65027D0F6839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F326BBB-C6E5-4595-83E4-65027D0F6839}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F326BBB-C6E5-4595-83E4-65027D0F6839}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{9F326BBB-C6E5-4595-83E4-65027D0F6839}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{9F326BBB-C6E5-4595-83E4-65027D0F6839}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F326BBB-C6E5-4595-83E4-65027D0F6839}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -672,6 +682,8 @@ Global
 		{78B53C7D-6611-4191-91C4-94B659AE8FB9} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
 		{75700430-5EE4-4368-ADE8-E1EDDDD46B2E} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{528D6CA1-ECF1-4178-86A4-C86792D92101} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
+		{68EF06CD-2F81-4505-A9D5-C6ABFBD044C9} = {6F63B967-D17C-4693-8228-D4F254C24F8B}
+		{9F326BBB-C6E5-4595-83E4-65027D0F6839} = {68EF06CD-2F81-4505-A9D5-C6ABFBD044C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
