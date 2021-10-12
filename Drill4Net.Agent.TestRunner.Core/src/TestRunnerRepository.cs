@@ -27,27 +27,18 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /********************************************************************************/
 
-        public async Task<List<BuildSummary>> GetBuildSummaries()
-        {
-            var request = new RestRequest(GetSummaryResource(), DataFormat.Json);
-            //var a = client.Get(request);
-            var summary = await _client.GetAsync<List<BuildSummary>>(request)
-                .ConfigureAwait(false);
-            return summary;
-        }
-
-        internal async Task<(RunningType runType, List<string> tests)> GetRunToTests()
+        public async Task<(RunningType runType, List<string> tests)> GetRunToTests()
         {
             var tests = new List<string>();
             var runType = await GetRunningType().ConfigureAwait(false);
-            if (runType != RunningType.Nothing)
+            if (runType == RunningType.Certain)
             {
                 ////FAKE tests - TODO: real getting from Drill Admin by WS !!!
                 //tests.Add("PublishersArray");
                 //tests.Add("BookStateUpdateFails");
                 //tests.Add("SortByDealDates");
 
-                var run = await GetTestToRun();
+                var run = await GetTestToRun().ConfigureAwait(false);
                 foreach (var type in run.ByType.Keys)
                 {
                     var testByType = run.ByType[type];
@@ -55,6 +46,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                     {
                         var name = t2r.Name;
                         var meta = t2r.Metadata;
+                        tests.Add(name);
                     }
                 }
                 
@@ -80,14 +72,14 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
         ""name"":""PublishersArray"",
         ""metadata"":{
-                 ""AssemblyPath"":""Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
+                 ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
                  ""QualifiedName"":""PublishersArray"",
                 }
         },
         {
         ""name"":""BookStateUpdateFails"",
         ""metadata"":{
-                ""AssemblyPath"":""Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
+                ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
                 ""QualifiedName"":""BookStateUpdateFails"",
                }
          }
@@ -101,7 +93,6 @@ namespace Drill4Net.Agent.TestRunner.Core
                 AllowTrailingCommas = true,
             };
             var run = System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
-
             return run;
         }
 
@@ -137,12 +128,22 @@ namespace Drill4Net.Agent.TestRunner.Core
             return runType;
         }
 
+        internal async virtual Task<List<BuildSummary>> GetBuildSummaries()
+        {
+            var request = new RestRequest(GetSummaryResource(), DataFormat.Json);
+            //var a = client.Get(request);
+            var summary = await _client.GetAsync<List<BuildSummary>>(request)
+                .ConfigureAwait(false);
+            return summary;
+        }
+
         public string GetUrl()
         {
+            //{url}/api/agents/{Id}/plugins/test2code/builds/summary
             var url = Options.Url;
             if (!url.StartsWith("http"))
                 url = "http://" + url; //TODO: check for https
-            return url; // $"{url}/api/agents/{Options.Target}/plugins/test2code/builds/summary";
+            return url;
         }
 
         public string GetSummaryResource()
