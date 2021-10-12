@@ -73,6 +73,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 };
             }
         }
+
         public static IEnumerable<object[]> NeedByMonikerFalse
         {
             get
@@ -93,6 +94,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 };
             }
         }
+
         public static IEnumerable<object[]> NeedByMonikerNullCheck
         {
             get
@@ -102,44 +104,8 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 new object[]
                 {
                     null,
-                    null,
-                    null
-                },
-                new object[]
-                {
-                    new Dictionary<string, MonikerData>
-                    {
-                        { NET61, null },
-                    },
                     ROOT,
                     DIR
-                },
-                new object[]
-                {
-                    new Dictionary<string, MonikerData>
-                    {
-                        { NET61, CreateMonirerData(BASE_FOLDER_NET61) },
-                    },
-                    null,
-                    DIR
-                },
-                new object[]
-                {
-                    new Dictionary<string, MonikerData>
-                    {
-                        { NET61, CreateMonirerData(BASE_FOLDER_NET61) },
-                    },
-                     ROOT,
-                    null
-                },
-                new object[]
-                {
-                    new Dictionary<string, MonikerData>
-                    {
-                       { NET61, CreateMonirerData(BASE_FOLDER_NET61) },
-                    },
-                    null,
-                    null
                 }
                 };
             }
