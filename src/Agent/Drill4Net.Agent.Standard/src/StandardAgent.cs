@@ -25,7 +25,7 @@ namespace Drill4Net.Agent.Standard
         private IAgentReceiver Receiver => _comm.Receiver;
 
         //in fact, the Main sender. Others are additional ones - as plugins
-        private IAgentCoverageSender CoverageSender => _comm.Sender;
+        private IAgentCoveragerSender CoverageSender => _comm.Sender;
 
         /// <summary>
         /// Repository for Agent
@@ -410,6 +410,11 @@ namespace Drill4Net.Agent.Standard
         internal void StopSession(string name)
         {
             CoverageSender.SendStopSessionCommand(NormalizeSessionName(name));
+        }
+
+        internal void SendTest2RunInfo(string test)
+        {
+            CoverageSender.SendTestRunCommand(test);
         }
 
         internal static string NormalizeSessionName(string session)

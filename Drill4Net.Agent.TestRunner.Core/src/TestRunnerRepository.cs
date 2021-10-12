@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             var runType = await GetRunningType().ConfigureAwait(false);
             if (runType == RunningType.Certain)
             {
-                ////FAKE tests - TODO: real getting from Drill Admin by WS !!!
+                ////FAKE tests
                 //tests.Add("PublishersArray");
                 //tests.Add("BookStateUpdateFails");
                 //tests.Add("SortByDealDates");
@@ -44,12 +44,12 @@ namespace Drill4Net.Agent.TestRunner.Core
                     var testByType = run.ByType[type];
                     foreach (var t2r in testByType)
                     {
+                        //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
                         var name = t2r.Name;
                         var meta = t2r.Metadata;
                         tests.Add(name);
                     }
                 }
-                
             }
             return (runType, tests);
         }

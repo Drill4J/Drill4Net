@@ -44,6 +44,12 @@ namespace Drill4Net.Agent.TestRunner.Core
             }
         }
 
+        /// <summary>
+        /// Get the arguments for running the test by VSTest CLI
+        /// </summary>
+        /// <param name="tests"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         internal string GetRunArguments(IList<string> tests)
         {
             // prefix "/C" - is for running in the CMD
@@ -75,6 +81,10 @@ namespace Drill4Net.Agent.TestRunner.Core
             return args;
         }
 
+        /// <summary>
+        /// Run the specified test in arguments by VSTest CLI
+        /// </summary>
+        /// <param name="args"></param>
         internal void RunTests(string args)
         {
             var process = new Process

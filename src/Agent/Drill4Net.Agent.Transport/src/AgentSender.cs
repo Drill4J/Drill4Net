@@ -11,8 +11,8 @@ namespace Drill4Net.Agent.Transport
     /// <summary>
     /// Data Sender for the profiling Agent
     /// </summary>
-    /// <seealso cref="Drill4Net.Agent.Abstract.AbstractCoverageSender" />
-    public class AgentSender : AbstractCoverageSender
+    /// <seealso cref="Drill4Net.Agent.Abstract.AbstractCoveragerSender" />
+    public class AgentSender : AbstractCoveragerSender
     {
         private readonly Connector _connector;
         private readonly JsonSerializerSettings _deserOpts;
@@ -34,14 +34,14 @@ namespace Drill4Net.Agent.Transport
             return JsonConvert.SerializeObject(data, _deserOpts);
         }
 
-        protected override void SendConcrete(string messageType, string topic, string message)
+        protected override void SendConcrete(string messageType, string route, string message)
         {
-            _connector.SendMessage(messageType, topic, message);
+            _connector.SendMessage(messageType, route, message);
         }
 
-        protected override void SendToPluginConcrete(string topic, string message)
+        protected override void SendToPluginConcrete(string pluginId, string message)
         {
-            _connector.SendPluginMessage(topic, message);
+            _connector.SendPluginMessage(pluginId, message);
         }
 
         #region Test

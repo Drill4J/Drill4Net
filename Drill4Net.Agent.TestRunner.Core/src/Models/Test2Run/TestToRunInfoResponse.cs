@@ -8,5 +8,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         public string Name { get; set; }
 
         public Dictionary<string, object> Metadata { get; set; }
+
+        /******************************************************************/
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

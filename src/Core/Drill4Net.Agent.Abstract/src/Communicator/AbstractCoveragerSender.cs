@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Abstract
 {
-    public abstract class AbstractCoverageSender : IAgentCoverageSender
+    public abstract class AbstractCoveragerSender : IAgentCoveragerSender
     {
         private readonly Logger _logger;
 
         /********************************************************************************/
 
-        protected AbstractCoverageSender(string subsystem)
+        protected AbstractCoveragerSender(string subsystem)
         {
-            _logger = new TypedLogger<AbstractCoverageSender>(subsystem);
+            _logger = new TypedLogger<AbstractCoveragerSender>(subsystem);
         }
 
         /********************************************************************************/
@@ -58,7 +59,7 @@ namespace Drill4Net.Agent.Abstract
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, new Initialized { msg = "Initialized" }); //can be any string
         }
         #endregion
-
+        #region Session (managed on Admin side)
         public virtual void SendSessionStartedMessage(string sessionUid, string testType, bool isRealTime, long ts)
         {
             var data = new SessionStarted
@@ -99,7 +100,8 @@ namespace Drill4Net.Agent.Abstract
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new SessionsCancelled { ids = uids, ts = ts });
         }
-
+        #endregion
+        #region Coverage
         /// <summary>
         /// Send coverage data to the admin part ("COVERAGE_DATA_PART")
         /// </summary>
@@ -116,33 +118,72 @@ namespace Drill4Net.Agent.Abstract
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new SessionChanged { sessionId = sessionUid, probeCount = probeCount });
         }
+        #endregion
+        #region Test2Run
+        #region Session (managed on Agent side)
+        private TestRun _testRun;
 
         public virtual void SendStartSessionCommand(string name)
         {
+            _testRun = new TestRun(name);
 
+            //start the session
+            //...
         }
 
         public virtual void SendStopSessionCommand(string name)
         {
+            // send _testRun ? ....
 
+            //stop the session
+            //...
+
+            _testRun = null;
         }
+        #endregion
+
+        /// <summary>
+        /// Send info about running tests to the admin side
+        /// </summary>
+        /// <param name="test"></param>
+        /// <param name="run"></param>
+        public virtual void SendTestRunCommand(string test)
+        {
+            // https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
+            //https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
+
+            var info = new Test2RunInfo
+            {
+                name = test,
+                startedAt = CommonUtils.GetCurrentUnixTimeMs(),
+                //finishedAt = ...
+                //result = ...
+                //metadata = ...
+            };
+            _testRun.tests.Add(info);
+            _testRun.finishedAt = CommonUtils.GetCurrentUnixTimeMs(); //guano - need after tests finished
+
+            //send it
+            //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+        }
+        #endregion
         #endregion
         #region Send API
         #region Send
-        public void Send(string topic, AbstractMessage message)
+        public void Send(string route, AbstractMessage message)
         {
-            SendConcrete(message.type, topic, Serialize(message));
+            SendConcrete(message.type, route, Serialize(message));
         }
         
-        protected abstract void SendConcrete(string messageType, string topic, string message);
+        protected abstract void SendConcrete(string messageType, string route, string message);
         #endregion
         #region SendToPlugin
-        public void SendToPlugin(string topic, AbstractMessage message)
+        public void SendToPlugin(string pluginId, AbstractMessage message)
         {
-            SendToPluginConcrete(topic, Serialize(message));
+            SendToPluginConcrete(pluginId, Serialize(message));
         }
 
-        protected abstract void SendToPluginConcrete(string topic, string message);
+        protected abstract void SendToPluginConcrete(string pluginId, string message);
         #endregion
 
         protected abstract string Serialize(object message);

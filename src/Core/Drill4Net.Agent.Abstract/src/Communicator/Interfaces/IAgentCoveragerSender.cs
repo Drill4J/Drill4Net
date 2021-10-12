@@ -5,7 +5,7 @@ namespace Drill4Net.Agent.Abstract
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=881283184
 
-    public interface IAgentCoverageSender
+    public interface IAgentCoveragerSender
     {
         void SendScopeInitialized(InitActiveScope scope, long ts);
         
@@ -43,5 +43,7 @@ namespace Drill4Net.Agent.Abstract
 
         void SendStartSessionCommand(string name);
         void SendStopSessionCommand(string name);
+
+        void SendTestRunCommand(string test);
     }
 }

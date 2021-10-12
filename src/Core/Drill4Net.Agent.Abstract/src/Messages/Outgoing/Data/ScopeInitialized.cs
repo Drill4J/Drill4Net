@@ -11,7 +11,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
         public string prevId { get; set; }
         public long ts { get; set; }
         
-        /*********************************************/
+        /*************************************************************************/
         
         public ScopeInitialized(string id, string name, string prevId, long ts):
             base(AgentConstants.MESSAGE_OUT_SCOPE_INITIALIZED)
