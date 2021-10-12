@@ -19,15 +19,6 @@ namespace Drill4Net.Injector.Engine.UnitTests
 
         /*****************************************************************************************/
 
-        private static SourceFilterOptions ExcludeFileFilterOptions(List<string> fileFilter)
-        {
-            var flt = _helper.CreateSourceFilterOptions();
-            flt.Excludes.Files =fileFilter;
-            return flt;
-        }
-
-        /*****************************************************************************************/
-
         public static IEnumerable<object[]> ProcessFileTrueData
         {
             get
@@ -55,7 +46,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 {
                     new object[]
                     {
-                        ExcludeFileFilterOptions(_fileFilter),
+                        _helper.ExcludeFileFilterOptions(_fileFilter),
                         FILE_PATH
                     }
                 };

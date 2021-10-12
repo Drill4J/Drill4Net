@@ -23,26 +23,6 @@ namespace Drill4Net.Injector.Engine.UnitTests
         {
             FOLDER
         };
-        private static List<string> _nsFilter = new List<string>
-        {
-            NS
-        };
-
-        /*****************************************************************************************/
-
-        private static SourceFilterOptions ExcludeDirectoryFilterOptions(List<string> directoryFilter)
-        {
-            var flt = _helper.CreateSourceFilterOptions();
-            flt.Excludes.Directories = directoryFilter;
-            return flt;
-        }
-
-        private static SourceFilterOptions ExcludeFolderFilterOptions(List<string> folderFilter)
-        {
-            var flt = _helper.CreateSourceFilterOptions();
-            flt.Excludes.Folders = folderFilter;
-            return flt;
-        }
 
         /*****************************************************************************************/
 
@@ -81,13 +61,13 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 {
                    new object[]
                     {
-                        ExcludeDirectoryFilterOptions(_directoryFilter),
+                        _helper.ExcludeDirectoryFilterOptions(_directoryFilter),
                         DIR,
                         false
                     },
                     new object[]
                     {
-                        ExcludeFolderFilterOptions(_folderFilter),
+                        _helper.ExcludeFolderFilterOptions(_folderFilter),
                         DIR,
                         false
                     }
