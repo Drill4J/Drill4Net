@@ -1,7 +1,4 @@
 ﻿using Drill4Net.Injector.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Drill4Net.TestDataHelper
 {

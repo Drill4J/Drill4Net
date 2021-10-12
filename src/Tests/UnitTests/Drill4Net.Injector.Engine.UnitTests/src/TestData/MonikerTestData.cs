@@ -1,16 +1,10 @@
-﻿using Drill4Net.Configuration;
-using Moq;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.Engine.UnitTests
 {
     public class MonikerTestData 
-        {
+    {
         const string NET61 = "net461";
         const string NET48 = "net48";
         const string NET50 = "net5.0";
@@ -25,9 +19,18 @@ namespace Drill4Net.Injector.Engine.UnitTests
         const string DIR = @"C:\Sources\App\Drill4Net.Target.Core22.App";
         const string DIR2 = @"C:\Sources\App\Drill4Net.Target.Net461.App";
 
-        /*******************************************************************************/
+        /*****************************************************************************************/
 
-        public static IEnumerable<object[]> NeedByMonikerTrue
+        private static MonikerData CreateMonirerData(string baseFolder)
+        {
+            var monikerData = new MonikerData();
+            monikerData.BaseFolder = baseFolder;
+            return monikerData;
+        }
+
+        /*****************************************************************************************/
+
+        public static IEnumerable<object[]> MonikerTrueData
         {
             get
             {
@@ -53,6 +56,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                         { NET48, CreateMonirerData(BASE_FOLDER_NET48) },
                         { NETCORE22, CreateMonirerData(BASE_FOLDER_CORE22) },
                         { NET50, CreateMonirerData(BASE_FOLDER_NET50) },
+                        { NETCORE31, CreateMonirerData(BASE_FOLDER_CORE31) }
                     },
                     ROOT,
                     DIR
@@ -73,8 +77,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 };
             }
         }
-
-        public static IEnumerable<object[]> NeedByMonikerFalse
+        public static IEnumerable<object[]> MonikerFalseData
         {
             get
             {
@@ -94,8 +97,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 };
             }
         }
-
-        public static IEnumerable<object[]> NeedByMonikerNullCheck
+        public static IEnumerable<object[]> MonikerNullData
         {
             get
             {
@@ -109,13 +111,6 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 }
                 };
             }
-        }
-
-        private static MonikerData CreateMonirerData( string baseFolder)
-        {
-            var monikerData = new MonikerData();
-            monikerData.BaseFolder = baseFolder;
-            return monikerData;
         }
     }
 }

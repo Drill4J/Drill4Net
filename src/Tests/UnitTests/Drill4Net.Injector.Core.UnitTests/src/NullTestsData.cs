@@ -46,6 +46,7 @@ namespace Drill4Net.Injector.Core.UnitTests
                 };
             }
         }
+
         public static IEnumerable<object[]> FolderData
         {
             get

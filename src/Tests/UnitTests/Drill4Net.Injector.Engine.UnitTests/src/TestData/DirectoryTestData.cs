@@ -1,10 +1,7 @@
-﻿using Drill4Net.Injector.Core;
-using Drill4Net.TestDataHelper;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drill4Net.Injector.Core;
+using Drill4Net.TestDataHelper;
 
 namespace Drill4Net.Injector.Engine.UnitTests
 {
@@ -14,6 +11,8 @@ namespace Drill4Net.Injector.Engine.UnitTests
         const string FOLDER = "Drill4Net.Target.Net461.App";
         const string NS = "Drill4Net.Target.Net461.App";
         const string FILE_PATH = @"C:\Sources\App\Drill4Net.Target.Net461.App\";
+
+        /*****************************************************************************************/
 
         private static SourceFilterOptionsHelper _helper = new SourceFilterOptionsHelper();
         private static List<string> _directoryFilter = new List<string>
@@ -29,6 +28,8 @@ namespace Drill4Net.Injector.Engine.UnitTests
             NS
         };
 
+        /*****************************************************************************************/
+
         private static SourceFilterOptions ExcludeDirectoryFilterOptions(List<string> directoryFilter)
         {
             var flt = _helper.CreateSourceFilterOptions();
@@ -42,7 +43,10 @@ namespace Drill4Net.Injector.Engine.UnitTests
             flt.Excludes.Folders = folderFilter;
             return flt;
         }
-        public static IEnumerable<object[]> NeedProcessDirectoryTrue
+
+        /*****************************************************************************************/
+
+        public static IEnumerable<object[]> ProcessDirectoryTrueData
         {
             get
             {
@@ -69,8 +73,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 };
             }
         }
-
-        public static IEnumerable<object[]> NeedProcessDirectoryFalse
+        public static IEnumerable<object[]> ProcessDirectoryFalseData
         {
             get
             {
@@ -91,7 +94,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
                 };
             }
         }
-        public static IEnumerable<object[]> NeedProcessDirectoryNull
+        public static IEnumerable<object[]> ProcessDirectoryNullData
         {
             get
             {
