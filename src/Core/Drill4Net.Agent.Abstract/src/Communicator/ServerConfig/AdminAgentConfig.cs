@@ -9,7 +9,7 @@ namespace Drill4Net.Agent.Abstract
     /// Config for admin side about Agent and instrumented application instances,
     /// applied during connect (header 'AgentConfig' for WebSocket handshake).
     /// </summary>
-    public class AgentPartConfig
+    public class AdminAgentConfig
     {
         /// <summary>
         /// Some ID or Name of instrumented App
@@ -55,7 +55,7 @@ namespace Drill4Net.Agent.Abstract
 
         /************************************************************************************/
 
-        public AgentPartConfig(string appId, string appVersion, string agentVersion)
+        public AdminAgentConfig(string appId, string appVersion, string agentVersion)
         {
             //App
             Id = appId;

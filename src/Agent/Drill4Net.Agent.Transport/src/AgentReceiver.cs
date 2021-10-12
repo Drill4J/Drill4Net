@@ -6,8 +6,8 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
 /* 
- * NOT USE $MS standard serializer from System.Text.Json!!! 
- * Because it will fail to resolve in some cases (project is NetStandard 2.0 now)
+ * DO NOT USE $MS standard serializer from System.Text.Json 
+ * because it will fail to resolve in some cases (project is NetStandard 2.0 now)
  */
 
 namespace Drill4Net.Agent.Transport
@@ -60,12 +60,13 @@ namespace Drill4Net.Agent.Transport
 
         #endregion
 
+        private readonly Connector _connector;
         private readonly JsonSerializerSettings _deserOpts; //JsonSerializerOptions
         private readonly Logger _logger;
 
-        /************************************************************************/
+        /*******************************************************************************/
 
-        public AgentReceiver(Connector receiver)
+        public AgentReceiver(Connector connector)
         {
             _logger = new TypedLogger<AgentReceiver>(CoreConstants.SUBSYSTEM_AGENT);
 
@@ -79,11 +80,11 @@ namespace Drill4Net.Agent.Transport
             {
             };
 
-            var connector = receiver ?? throw new ArgumentNullException(nameof(receiver));
-            connector.MessageReceived += MessageReceived;
+            _connector = connector ?? throw new ArgumentNullException(nameof(connector));
+            _connector.MessageReceived += MessageReceived;
         }
 
-        /************************************************************************/
+        /*******************************************************************************/
 
         /// <summary>
         /// Messages received from the Admin side.

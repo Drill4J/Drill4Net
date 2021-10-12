@@ -47,7 +47,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <summary>
         /// Recommended tests to run info
         /// </summary>
-        public TestToRunInfo TestsToRun { get; set; }
+        public TestToRunSummaryInfo TestsToRun { get; set; }
 
         /// <summary>
         /// Text: -Run recommended tests to cover modified methods(if there are tests to run)

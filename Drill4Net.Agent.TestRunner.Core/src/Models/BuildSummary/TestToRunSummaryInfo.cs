@@ -7,7 +7,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// Recommended tests to run info
     /// </summary>
     [Serializable]
-    public record TestToRunInfo
+    public record TestToRunSummaryInfo
     {
         /// <summary>
         /// Number of tests to run
