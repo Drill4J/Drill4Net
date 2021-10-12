@@ -6,7 +6,9 @@ using Mono.Cecil.Cil;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Core.UnitTests")]
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
