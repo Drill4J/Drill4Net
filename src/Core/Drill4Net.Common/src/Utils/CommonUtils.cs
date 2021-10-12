@@ -200,7 +200,7 @@ namespace Drill4Net.Common
             return tAr[0];
         }
 
-        public static (string ns, string type) GetNamespaceAndTypeName(string typeFullName)
+        public static (string ns, string type) DeconstructFullTypeName(string typeFullName)
         {
             string typeName;
             string ns = null;
