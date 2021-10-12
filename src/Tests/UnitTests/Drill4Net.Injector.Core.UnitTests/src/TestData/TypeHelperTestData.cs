@@ -1,9 +1,5 @@
-﻿using Drill4Net.TestDataHelper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Drill4Net.TestDataHelper;
 
 namespace Drill4Net.Injector.Core.UnitTests
 {
