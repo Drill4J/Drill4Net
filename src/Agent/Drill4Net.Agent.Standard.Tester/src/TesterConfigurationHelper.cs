@@ -1,10 +1,6 @@
-﻿using Drill4Net.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
@@ -18,6 +14,7 @@ namespace Drill4Net.Agent.Standard.Tester
             Console.Title = title;
             OutputInfoHelper.WriteMessage(title, ConsoleColor.Cyan);
         }
+
         private static string GetAppVersion()
         {
             var asm = Assembly.GetExecutingAssembly();

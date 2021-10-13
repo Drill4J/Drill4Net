@@ -1,21 +1,17 @@
 ﻿using Drill4Net.Profiling.Tree;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
     public class TreeInfo
     {
-        public InjectedSolution injSolution;
-        public InjectedDirectory injDirectory;
-        public string targetPath;
-        public Dictionary<string, InjectedMethod> methods;
-        public TesterOptions opts;
-        public List<InjectedMethod> methodSorted;
-        public Dictionary<int, InjectedMethod> methodByOrderNumber;
-        public List<CrossPoint> points;
+        public InjectedSolution InjSolution { get; set; }
+        public InjectedDirectory InjDirectory { get; set; }
+        public string TargetPath { get; set; }
+        public Dictionary<string, InjectedMethod> Methods { get; set; }
+        public TesterOptions Opts { get; set; }
+        public List<InjectedMethod> MethodSorted { get; set; }
+        public Dictionary<int, InjectedMethod> MethodByOrderNumber { get; set; }
+        public List<CrossPoint> Points { get; set; }
     }
 }

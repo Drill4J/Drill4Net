@@ -5,7 +5,7 @@ namespace Drill4Net.Agent.Standard.Tester
 {
     internal static class ParametersConverter
     {
-        private static object[] ConvertToRealParameters(List<string> parVals, string parTypes)
+        internal static object[] ConvertToRealParameters(List<string> parVals, string parTypes)
         {
             if (string.IsNullOrWhiteSpace(parTypes))
                 return null;
