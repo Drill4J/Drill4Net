@@ -9,9 +9,9 @@ namespace Drill4Net.Agent.Abstract.Transfer
     {
         public string sessionId { get; set; }
 
-        /***************************************************************************/
-
         public List<ExecClassData> data { get; set; }
+
+        /***************************************************************************/
 
         public CoverDataPart() : base(AgentConstants.MESSAGE_OUT_COVERAGE_DATA_PART)
         {

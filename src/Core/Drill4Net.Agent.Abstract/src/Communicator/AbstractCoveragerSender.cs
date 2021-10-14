@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Abstract
 {

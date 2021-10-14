@@ -387,7 +387,6 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public void ExecCommand(int command, string data)
         {
-            _logger.Info($"Command: {command} -> {data}");
             var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
             if (!comTypes.Contains(command))
             {
@@ -396,12 +395,13 @@ namespace Drill4Net.Agent.Standard
             }
             //
             var type = (AgentCommandType)command;
+            _logger.Info($"Command: {type} -> {data}");
             switch (type)
             {
                 case AgentCommandType.CLASS_TESTS_START: StartSession(data); break;
                 case AgentCommandType.CLASS_TESTS_STOP: StopSession(data); break;
 
-                //in fact, these are group of tests from one test method with many different cases now
+                //now, in fact, these are group of tests for one "test method" with many different cases
                 //case AgentCommandType.TEST_START:
                 //    break;
                 //case AgentCommandType.TEST_STOP:

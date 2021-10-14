@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
     public record ExecClassData
     {
         /// <summary>
-        /// Name of the test (session)
+        /// Name of the executed test in target (user system)
         /// </summary>
         public string testName { get; }
         
