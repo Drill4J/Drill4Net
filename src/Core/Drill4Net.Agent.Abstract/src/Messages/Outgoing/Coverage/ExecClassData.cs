@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
-    //It's DTO: let properties will be with a small letter
+    //It's DTO: due to Drill restrictions the properties must be with a small letter
 
     /// <summary>
     /// DTO: probes of instrumented assemblies for sending of collecting data to the Admin side
