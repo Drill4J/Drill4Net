@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features
+namespace Drill4Net.Target.Tests.Bdd.SpecFlow.BasicFeatures
 {
     using TechTalk.SpecFlow;
     using System;
@@ -40,7 +40,7 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "StringProcessor", "Simplest string processor", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "BasicFeatures", "StringProcessor", "Simplest string processor", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -83,11 +83,11 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features
         [Xunit.SkippableFactAttribute(DisplayName="Uppercase")]
         [Xunit.TraitAttribute("FeatureTitle", "StringProcessor")]
         [Xunit.TraitAttribute("Description", "Uppercase")]
-        [Xunit.TraitAttribute("Category", "tag1")]
+        [Xunit.TraitAttribute("Category", "uppercase")]
         public virtual void Uppercase()
         {
             string[] tagsOfScenario = new string[] {
-                    "tag1"};
+                    "uppercase"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Uppercase", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6

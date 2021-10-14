@@ -2,7 +2,7 @@
 
 Simplest string processor
 
-@tag1
+@uppercase
 Scenario: Uppercase
 	Given Input string is "abc"
 	When Uppercase it

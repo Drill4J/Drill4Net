@@ -22,6 +22,18 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.StepDefinitions
 
         /************************************************************************************/
 
+        //DON'T REMOVE THIS EVEN IF IT IS COMMENTED
+        [AfterScenario(Order = 0)]
+        public static void DebugScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
+        {
+            var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
+            var scenario = scenarioContext.ScenarioInfo.Title;
+            var testStatus = scenarioContext.ScenarioExecutionStatus;
+            var testError = scenarioContext.TestError;
+        }
+
+        /************************************************************************************/
+
         [Given("the first number is (.*)")]
         public void GivenTheFirstNumberIs(int number)
         {
