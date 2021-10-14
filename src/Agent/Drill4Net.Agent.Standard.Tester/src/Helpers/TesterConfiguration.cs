@@ -4,7 +4,10 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
-    internal static class TesterConfigurationHelper
+    /// <summary>
+    /// Functions for setting Tester app up
+    /// </summary>
+    internal static class TesterConfiguration
     {
         internal static void SetTitle()
         {

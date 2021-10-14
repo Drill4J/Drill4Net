@@ -8,15 +8,18 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
+    /// <summary>
+    /// Standart Agent for the Tester app
+    /// </summary>
     internal static class TesterStandartAgent
     {
-        internal static TreeInfo TreeInfo;
+        internal static TesterTreeInfo TreeInfo;
 
         /*************************************************************/
 
         static TesterStandartAgent()
         {
-            TreeInfo = new TreeInfo();
+            TreeInfo = new TesterTreeInfo();
         }
 
         /*************************************************************/

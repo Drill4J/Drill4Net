@@ -7,9 +7,12 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
+    /// <summary>
+    /// Functions for outputting data
+    /// </summary>
     internal static class OutputInfoHelper
     {
-        internal static bool PrintTreeInfo(TreeInfo treeInfo)
+        internal static bool PrintTreeInfo(TesterTreeInfo treeInfo)
         {
             WriteMessage($"\n  Tree data:", TesterConstants.COLOR_TEXT_HIGHLITED);
             WriteMessage($"  Name: {treeInfo.InjSolution.Name}", TesterConstants.COLOR_INFO);
@@ -99,7 +102,7 @@ namespace Drill4Net.Agent.Standard.Tester
             }
 
             //writing
-            var path = Path.Combine(opts.CSV ?? FileUtils.ExecutingDir, TesterConstants.CSV_NAME); //TODO: to const
+            var path = Path.Combine(opts.CSV ?? FileUtils.ExecutingDir, TesterConstants.CSV_NAME);
             try
             {
                 File.WriteAllLines(path, data);

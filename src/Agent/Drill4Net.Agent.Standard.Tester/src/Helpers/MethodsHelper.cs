@@ -6,6 +6,9 @@ using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
+    /// <summary>
+    /// Sorting and ordering methods
+    /// </summary>
     internal static class MethodsHelper
     {
         internal static List<InjectedMethod> GetSortedMethods(Dictionary<string, InjectedMethod> methods)

@@ -2,6 +2,9 @@
 
 namespace Drill4Net.Agent.Standard.Tester
 {
+    /// <summary>
+    /// Constants for the Tester app
+    /// </summary>
     internal static class TesterConstants
     {
         internal const string CONFIG_NAME = "app.yml";
@@ -11,5 +14,6 @@ namespace Drill4Net.Agent.Standard.Tester
         internal const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
         internal const ConsoleColor COLOR_TEXT = ConsoleColor.White;
         internal const ConsoleColor COLOR_TEXT_HIGHLITED = ConsoleColor.Yellow;
+        internal const ConsoleColor COLOR_TEXT_WARNING = ConsoleColor.DarkYellow;
     }
 }

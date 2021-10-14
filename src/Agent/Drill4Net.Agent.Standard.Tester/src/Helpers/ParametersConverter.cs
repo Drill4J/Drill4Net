@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
+    /// <summary>
+    /// Parameters Converter
+    /// </summary>
     internal static class ParametersConverter
     {
         internal static object[] ConvertToRealParameters(List<string> parVals, string parTypes)
@@ -39,7 +42,7 @@ namespace Drill4Net.Agent.Standard.Tester
                         case "System.Object":
                         case "System.String": obj = val; break;
                         default:
-                            OutputInfoHelper.WriteMessage($"Unknown type: [{type}] for data [{val}]", ConsoleColor.DarkYellow);
+                            OutputInfoHelper.WriteMessage($"Unknown type: [{type}] for data [{val}]", TesterConstants.COLOR_TEXT_WARNING);
                             break;
                     }
                 }

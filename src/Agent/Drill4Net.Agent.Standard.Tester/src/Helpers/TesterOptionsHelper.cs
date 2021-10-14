@@ -3,6 +3,9 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
+    /// <summary>
+    /// Get Tester options
+    /// </summary>
     internal static class TesterOptionsHelper
     {
         internal static TesterOptions GetOptions()

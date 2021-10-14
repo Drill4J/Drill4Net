@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.Standard.Tester
         {
             try
             {
-                TesterConfigurationHelper.SetTitle();
+                TesterConfiguration.SetTitle();
                 await TesterStandartAgent.Init();
                 OutputInfoHelper.PrintTreeInfo(TesterStandartAgent.TreeInfo);
                 OutputInfoHelper.PrintMenu();
