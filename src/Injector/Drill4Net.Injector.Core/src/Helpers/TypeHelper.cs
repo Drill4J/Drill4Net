@@ -6,7 +6,9 @@ using Mono.Cecil.Cil;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Core.UnitTests")]
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
@@ -39,7 +41,7 @@ namespace Drill4Net.Injector.Core
 
         internal static bool IsTypeNeed(SourceFilterOptions flt, string typeFullName, IEnumerable<string> attributes)
         {
-            (string ns, string typeName) = CommonUtils.GetNamespaceAndTypeName(typeFullName);
+            (string ns, string typeName) = CommonUtils.DeconstructFullTypeName(typeFullName);
 
             //The <Module> type is a placeholder for declaring classes and methods that do not conform to the CLI model.
             //Normally relevant only in mixed-mode assemblies that contain both code written in a managed language and

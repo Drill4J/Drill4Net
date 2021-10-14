@@ -2,7 +2,7 @@
 
 namespace Drill4Net.Injector.Core.UnitTests
 {
-    internal class NullTestsData
+    internal class FilterOptionsNullTestData
     {
         const string DIR = @"C:\bin\Debug\Test.File";
         const string FOLDER= "Test";
@@ -205,6 +205,5 @@ namespace Drill4Net.Injector.Core.UnitTests
                 };
             }
         }
-
     }
 }

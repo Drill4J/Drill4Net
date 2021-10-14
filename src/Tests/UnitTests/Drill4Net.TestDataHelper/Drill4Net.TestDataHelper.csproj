@@ -4,6 +4,15 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.TestDataHelper</OutputPath>
+    <DocumentationFile>..\..\..\..\build\bin\Debug\Tests\Drill4Net.TestDataHelper\Drill4Net.TestDataHelper.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Relese\Tests\Drill4Net.TestDataHelper</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
   </ItemGroup>

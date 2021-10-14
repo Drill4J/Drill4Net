@@ -16,7 +16,6 @@ namespace Drill4Net.Injector.Core.UnitTests
 
         /*************************************************************************************/
 
-
         #region IsDirectoryNeed
         [Theory]
         [InlineData(null, @"C:\bin\Debug\Test.File")]
@@ -77,7 +76,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(NullTestsData.DirectoryData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.DirectoryData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Directory_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
@@ -153,7 +152,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(NullTestsData.FolderData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.FolderData), MemberType = typeof(FilterOptionsNullTestData))]
 
         public void Folder_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
@@ -223,7 +222,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(NullTestsData.FileData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.FileData), MemberType = typeof(FilterOptionsNullTestData))]
         public void File_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
@@ -305,7 +304,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(NullTestsData.NamespaceData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.NamespaceData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Namespace_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
@@ -377,7 +376,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(NullTestsData.ClassData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.ClassData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Class_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
@@ -449,7 +448,7 @@ namespace Drill4Net.Injector.Core.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(NullTestsData.AttributeData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.AttributeData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Attribute_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
