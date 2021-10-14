@@ -209,11 +209,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net48", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net48\Drill4Net.Target.Tests.Net48.csproj", "{528D6CA1-ECF1-4178-86A4-C86792D92101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.TestRunner", "src\Agent\Drill4Net.Agent.TestRunner\Drill4Net.Agent.TestRunner.csproj", "{5B238A88-E62B-4927-92F7-4FA837CFC3CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.TestRunner", "src\Agent\Drill4Net.Agent.TestRunner\Drill4Net.Agent.TestRunner.csproj", "{5B238A88-E62B-4927-92F7-4FA837CFC3CA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestRunner", "TestRunner", "{ED1C97E5-CC20-495C-B0ED-EC7881EDFF06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.TestRunner.Core", "Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj", "{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.TestRunner.Core", "Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj", "{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{084428CE-AF7A-499F-B92F-924FE13E6F49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Transmitter.SpecFlow", "src\Agent\Drill4Net.Agent.Transmitter.SpecFlow\Drill4Net.Agent.Transmitter.SpecFlow.csproj", "{388CFFBC-EEC7-499C-921C-CC1DBB849281}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -595,6 +599,12 @@ Global
 		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{388CFFBC-EEC7-499C-921C-CC1DBB849281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{388CFFBC-EEC7-499C-921C-CC1DBB849281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{388CFFBC-EEC7-499C-921C-CC1DBB849281}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{388CFFBC-EEC7-499C-921C-CC1DBB849281}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{388CFFBC-EEC7-499C-921C-CC1DBB849281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{388CFFBC-EEC7-499C-921C-CC1DBB849281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -693,6 +703,8 @@ Global
 		{5B238A88-E62B-4927-92F7-4FA837CFC3CA} = {ED1C97E5-CC20-495C-B0ED-EC7881EDFF06}
 		{ED1C97E5-CC20-495C-B0ED-EC7881EDFF06} = {F5B1697D-C26A-4165-B810-6A4C8621F902}
 		{883A22EF-9B3E-43E2-8B1E-8FEE4B88C14C} = {ED1C97E5-CC20-495C-B0ED-EC7881EDFF06}
+		{084428CE-AF7A-499F-B92F-924FE13E6F49} = {FB5DB42A-0362-4A50-A484-A41EC41EE270}
+		{388CFFBC-EEC7-499C-921C-CC1DBB849281} = {084428CE-AF7A-499F-B92F-924FE13E6F49}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

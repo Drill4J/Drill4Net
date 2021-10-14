@@ -18,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Transmitter.SpecFlow\Drill4Net.Agent.Transmitter.SpecFlow.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
     <ProjectReference Include="..\Drill4Net.Injection\Drill4Net.Injection.csproj" />
   </ItemGroup>
 

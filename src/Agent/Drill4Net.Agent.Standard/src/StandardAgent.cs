@@ -8,6 +8,7 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using System.Linq;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -387,13 +388,35 @@ namespace Drill4Net.Agent.Standard
         public void ExecCommand(int command, string data)
         {
             _logger.Info($"Command: {command} -> {data}");
-            switch (command)
+            var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
+            if (!comTypes.Contains(command))
             {
-                case 2: StartSession(data); break;
-                case 3: StopSession(data); break;
+                _logger.Error($"Unknown command: {command} -> {data}");
+                return;
+            }
+            //
+            var type = (AgentCommandType)command;
+            switch (type)
+            {
+                case AgentCommandType.CLASS_TESTS_START: StartSession(data); break;
+                case AgentCommandType.CLASS_TESTS_STOP: StopSession(data); break;
+
+                //in fact, these are group of tests from one test method with many different cases now
+                //case AgentCommandType.TEST_START:
+                //    break;
+                //case AgentCommandType.TEST_STOP:
+                //    break;
+
+                case AgentCommandType.TEST_CASE_START:
+                    break;
+                case AgentCommandType.TEST_CASE_STOP:
+                    break;
+                default:
+                    break;
             }
         }
 
+        #region Manage sessions
         /// <summary>
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
@@ -420,7 +443,7 @@ namespace Drill4Net.Agent.Standard
         internal static string NormalizeSessionName(string session)
         {
             if (string.IsNullOrWhiteSpace(session))
-                throw new ArgumentNullException(nameof(session));
+                return Guid.NewGuid().ToString();
             if (!session.Contains(" "))
                 return session; //as is
             var ar = session.Split(' ');
@@ -436,6 +459,7 @@ namespace Drill4Net.Agent.Standard
             session = string.Join(null, ar).Replace(" ", null);
             return session;
         }
+        #endregion
         #endregion
     }
 }

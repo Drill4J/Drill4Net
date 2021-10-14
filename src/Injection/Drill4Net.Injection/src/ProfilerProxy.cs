@@ -8,6 +8,8 @@ namespace Drill4Net.Injection
     /// </summary>
     public class ProfilerProxy
     {
+        //eventually, similar fields and methods should be generated
+
         private static MethodInfo _methInfo; //not make it as readonly (cecilifier.me not understand it yet)
 
         /**************************************************************/
@@ -15,7 +17,7 @@ namespace Drill4Net.Injection
         static ProfilerProxy()
         {
             //hardcode or cfg?
-            var profPath = @"d:\Projects\EPM-D4J\Drill4Net\Drill4Net.Agent.RnD\bin\Debug\netstandard2.0\Drill4Net.Agent.RnD.dll";
+            var profPath = @"d:\Projects\EPM-D4J\Drill4Net\Drill4Net.Agent.RnD\bin\Debug\netstandard2.0\Drill4Net.Agent.RnD.dll"; //the EXAMPLE!
             var asm = Assembly.LoadFrom(profPath);
             var type = asm.GetType("Drill4Net.Agent.RnD.LoggerAgent");
             _methInfo = type.GetMethod("RegisterStatic");

@@ -2,6 +2,9 @@
 
 namespace Drill4Net.Agent.Messaging
 {
+    /// <summary>
+    /// Command for messaging system
+    /// </summary>
     [Serializable]
     public class Command
     {

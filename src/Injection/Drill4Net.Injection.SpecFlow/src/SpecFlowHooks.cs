@@ -1,76 +1,99 @@
-﻿using TechTalk.SpecFlow;
+﻿using System.Reflection;
+using TechTalk.SpecFlow;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Transmitter.SpecFlow;
 
 namespace Drill4Net.Injection.SpecFlow
 {
     /// <summary>
-    /// It's just for the primer of the methods needed for the injections
+    /// It's just for the primier of the methods needed for the injections
+    /// to the some target type, e.g. SpecFlowHooks
     /// </summary>
     [Binding]
     internal class SpecFlowHooks
     {
-        //groups (classes) of tests
-        [BeforeFeature(Order = 0)]
-        public static void Drill4NetFeatureStarting(FeatureContext featureContext)
+        //eventually, similar fields and methods should be generated
+
+        //private static MethodInfo _featureMethInfo;
+        private static MethodInfo _scenarioMethInfo;
+
+        /*******************************************************************************************/
+
+        static SpecFlowHooks()
         {
-            DemoTransmitter.DoCommand(0, featureContext.FeatureInfo.Title);
+            //the EXAMPLE!
+            //hardcode or cfg?
+            var profPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\Drill4Net.Agent.Transmitter.SpecFlow.dll";
+            var asm = Assembly.LoadFrom(profPath);
+            var type = asm.GetType("Drill4Net.Agent.Transmitter.SpecFlow.ContextHelper");
+            //_featureMethInfo = type.GetMethod("GetFeatureContext");
+            _scenarioMethInfo = type.GetMethod("GetScenarioContext");
         }
 
-        [AfterFeature(Order = 0)]
-        public static void Drill4NetFeatureFinishing(FeatureContext featureContext)
+        /*******************************************************************************************/
+
+        //hooks in any test class intercept all tests in other classes
+        //Need data: qualified name, display name, test group, result, assembly path
+
+        #region TESTS_RUN
+        [BeforeTestRun(Order = 0)]
+        public static void VanchoTestsStarting()
         {
-            DemoTransmitter.DoCommand(1, featureContext.FeatureInfo.Title);
+            DemoTransmitter.DoCommand((int)AgentCommandType.CLASS_TESTS_START, null);
         }
 
+        [AfterTestRun(Order = 0)]
+        public static void VanchoTestsFinished()
+        {
+            DemoTransmitter.DoCommand((int)AgentCommandType.CLASS_TESTS_STOP, null);
+        }
+        #endregion
+        //#region TEST
+        ////groups (classes) of tests
+        //[BeforeFeature(Order = 0)]
+        //public static void Drill4NetFeatureStarting(FeatureContext featureContext)
+        //{
+        //    var data = GetContextData(_featureMethInfo, featureContext);
+        //    DemoTransmitter.DoCommand((int)AgentCommandType.TEST_START, data);
+        //    //DemoTransmitter.DoCommand((int)AgentCommandType.TEST_START, ContextHelper.GetFeatureContext(featureContext));
+        //}
+
+        //[AfterFeature(Order = 0)]
+        //public static void Drill4NetFeatureFinished(FeatureContext featureContext)
+        //{
+        //    var data = GetContextData(_featureMethInfo, featureContext);
+        //    DemoTransmitter.DoCommand((int)AgentCommandType.TEST_STOP, data);
+        //    //DemoTransmitter.DoCommand((int)AgentCommandType.TEST_STOP, ContextHelper.GetFeatureContext(featureContext));
+        //}
+        //#endregion
+        #region TEST_CASE
         //separate tests as cases of each test
         [BeforeScenario(Order = 0)]
-        public static void Drill4NetScenarioStarting(ScenarioContext scenarioContext)
+        public static void Drill4NetScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext)
         {
-            // EXAMPLE HOW GET THE CASE TEST FULLNAME
-
-            //Request for never populated field
-            //Sort by deal dates(scenarioDescription: "Asc sorting DealCreatedDate", sortField: "DealCreatedDate", sortDirection: "Ascending", versionsReturned: "5,6,4", exampleTags: [])
-            var sc = scenarioContext.ScenarioInfo;
-            var title = sc.Title;
-            var args = sc.Arguments;
-            var tags = sc.Tags;
-            var isParams = args.Count > 0 || tags.Length > 0;
-            if (isParams)
-                title += "(";
-            //
-            if (args.Count > 0)
-            {
-                var argsS = string.Empty;
-                foreach (System.Collections.DictionaryEntry entry in args)
-                {
-                    //paramName
-                    var key = entry.Key.ToString().Replace(" ", null);
-                    char[] a = key.ToCharArray();
-                    a[0] = char.ToLower(a[0]);
-                    key = new string(a);
-
-                    argsS += $"{key}: \"{entry.Value}\", ";
-                }
-                title += argsS;
-            }
-            //
-            if (isParams)
-                title += "exampleTags: [";
-            if (tags.Length > 0)
-            {
-                foreach (var tag in tags)
-                    title += tag + ", ";
-                title = title[0..^2];
-            }
-            if (isParams)
-                title += "])";
-            //
-            DemoTransmitter.DoCommand(2, title);
+            var data = GetContextData(_scenarioMethInfo, featureContext, scenarioContext);
+            DemoTransmitter.DoCommand((int)AgentCommandType.TEST_CASE_START, data);
+            //DemoTransmitter.DoCommand((int)AgentCommandType.TEST_CASE_START, ContextHelper.GetScenarioContext(scenarioContext));
         }
 
         [AfterScenario(Order = 0)]
-        public static void Drill4NetScenarioFinishing(ScenarioContext scenarioContext)
+        public static void Drill4NetScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
         {
-            DemoTransmitter.DoCommand(3, scenarioContext.ScenarioInfo.Title);
+            var data = GetContextData(_scenarioMethInfo, featureContext, scenarioContext);
+            DemoTransmitter.DoCommand((int)AgentCommandType.TEST_CASE_STOP, data);
+            //DemoTransmitter.DoCommand((int)AgentCommandType.TEST_CASE_STOP, ContextHelper.GetScenarioContext(scenarioContext));
+        }
+        #endregion
+
+        public static string GetContextData(MethodInfo meth, FeatureContext featureCtx, ScenarioContext scenarioCtx)
+        {
+            return meth.Invoke(null,
+                new object[]
+                {
+                    featureCtx,
+                    scenarioCtx,
+                    Assembly.GetExecutingAssembly().Location,
+                }).ToString();
         }
     }
 }

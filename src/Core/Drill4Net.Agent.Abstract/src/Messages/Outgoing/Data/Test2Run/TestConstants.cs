@@ -13,6 +13,7 @@
         public const string TEST_RESULT = "Result";
         public const string TEST_GROUP = "Group";
         public const string TEST_NAME_DISPLAY = "DisplayName";
+        public const string TEST_CASE_NAME_DISPLAY = "DisplayCaseName";
         public const string TEST_NAME_QUALIFIED = "QualifiedName";
     }
 }
