@@ -12,7 +12,6 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.StepDefinitions
     public class LongerStepDefinitions
     {
         private readonly Longer _longer;
-        private int _timeout;
 
         /*******************************************************/
 
@@ -23,22 +22,16 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.StepDefinitions
 
         /*******************************************************/
 
-        [Given("the timeout is (.*)")]
-        public void GivenTimeout(int timeout)
+        [When("do long work for (.*)")]
+        public void WaitTimeout(int timeout)
         {
-            _timeout = timeout;
-        }
-
-        [When("do long work")]
-        public Task<int> WaitTimeout()
-        {
-            return Task.Run(() => Task.FromResult(_longer.DoLongWork(_timeout)));
+            _longer.DoLongWork(timeout);
         }
 
         [When("do default long work")]
-        public Task<int> DoDefaultAction()
+        public void DoDefaultAction()
         {
-            return Task.Run(() => Task.FromResult(_longer.DoLongWork()));
+            _longer.DoLongWork();
         }
     }
 }
