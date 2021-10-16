@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Tests.Bdd.SpecFlow.BasicFeatures
+namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features.Basics
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,7 +19,7 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.BasicFeatures
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class StringProcessorFeature : object, Xunit.IClassFixture<StringProcessorFeature.FixtureData>, System.IDisposable
+    public partial class LongerFeature : object, Xunit.IClassFixture<LongerFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -28,10 +28,10 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.BasicFeatures
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "StringProcessor.feature"
+#line 1 "Longer.feature"
 #line hidden
         
-        public StringProcessorFeature(StringProcessorFeature.FixtureData fixtureData, Drill4Net_Target_Tests_Bdd_SpecFlow_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public LongerFeature(LongerFeature.FixtureData fixtureData, Drill4Net_Target_Tests_Bdd_SpecFlow_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -40,7 +40,8 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.BasicFeatures
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "BasicFeatures", "StringProcessor", "Simplest string processor", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Basics", "Longer", "A premier for parallel long operation with certain timeout (must be in separate f" +
+                    "eature)", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -80,16 +81,16 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.BasicFeatures
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Uppercase")]
-        [Xunit.TraitAttribute("FeatureTitle", "StringProcessor")]
-        [Xunit.TraitAttribute("Description", "Uppercase")]
-        [Xunit.TraitAttribute("Category", "uppercase")]
-        public virtual void Uppercase()
+        [Xunit.SkippableFactAttribute(DisplayName="Wait 5000")]
+        [Xunit.TraitAttribute("FeatureTitle", "Longer")]
+        [Xunit.TraitAttribute("Description", "Wait 5000")]
+        [Xunit.TraitAttribute("Category", "timeout_5000")]
+        public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
-                    "uppercase"};
+                    "timeout_5000"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Uppercase", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -111,13 +112,13 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 7
- testRunner.Given("Input string is \"abc\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the timeout is 5000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 8
- testRunner.When("Uppercase it", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("do long work", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 9
- testRunner.Then("the string result should be \"ABC\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the int result should be 0", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -130,12 +131,12 @@ this.ScenarioInitialize(scenarioInfo);
             
             public FixtureData()
             {
-                StringProcessorFeature.FeatureSetup();
+                LongerFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                StringProcessorFeature.FeatureTearDown();
+                LongerFeature.FeatureTearDown();
             }
         }
     }

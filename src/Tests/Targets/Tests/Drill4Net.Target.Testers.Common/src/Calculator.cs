@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Drill4Net.Target.Testers.Common
+﻿namespace Drill4Net.Target.Testers.Common
 {
     public class Calculator
     {

@@ -1,4 +1,3 @@
-using System;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Testers.Common;
