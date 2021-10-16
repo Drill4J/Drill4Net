@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features.Basics
+namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features.Long
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,7 +19,7 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features.Basics
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class LongerDefaultFeature : object, Xunit.IClassFixture<LongerDefaultFeature.FixtureData>, System.IDisposable
+    public partial class LongerFeature : object, Xunit.IClassFixture<LongerFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -28,10 +28,10 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features.Basics
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "LongerDefault.feature"
+#line 1 "Longer.feature"
 #line hidden
         
-        public LongerDefaultFeature(LongerDefaultFeature.FixtureData fixtureData, Drill4Net_Target_Tests_Bdd_SpecFlow_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public LongerFeature(LongerFeature.FixtureData fixtureData, Drill4Net_Target_Tests_Bdd_SpecFlow_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -40,7 +40,7 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features.Basics
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Basics", "LongerDefault", "A premier for parallel long operation with default timeout (must be in separate f" +
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Long", "Longer", "A premier for parallel long operation with certain timeout (must be in separate f" +
                     "eature)", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
@@ -81,16 +81,16 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.Features.Basics
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Wait 5000 default")]
-        [Xunit.TraitAttribute("FeatureTitle", "LongerDefault")]
-        [Xunit.TraitAttribute("Description", "Wait 5000 default")]
-        [Xunit.TraitAttribute("Category", "default_5000")]
-        public virtual void Wait5000Default()
+        [Xunit.SkippableFactAttribute(DisplayName="Wait 5000")]
+        [Xunit.TraitAttribute("FeatureTitle", "Longer")]
+        [Xunit.TraitAttribute("Description", "Wait 5000")]
+        [Xunit.TraitAttribute("Category", "timeout_5000")]
+        public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
-                    "default_5000"};
+                    "timeout_5000"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000 default", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -112,7 +112,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 7
- testRunner.When("do default long work", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("do long work for 5000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
  testRunner.Then("just void", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -128,12 +128,12 @@ this.ScenarioInitialize(scenarioInfo);
             
             public FixtureData()
             {
-                LongerDefaultFeature.FeatureSetup();
+                LongerFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                LongerDefaultFeature.FeatureTearDown();
+                LongerFeature.FeatureTearDown();
             }
         }
     }

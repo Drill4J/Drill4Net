@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;net48</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Drivers\" />
-    <Folder Include="Features\LongOperations\" />
     <Folder Include="Support\" />
   </ItemGroup>
 
