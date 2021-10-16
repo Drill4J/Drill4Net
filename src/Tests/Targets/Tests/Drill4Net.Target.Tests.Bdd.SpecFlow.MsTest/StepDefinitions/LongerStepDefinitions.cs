@@ -1,16 +1,13 @@
-using Xunit;
+using System;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using System.Threading;
 using System.Reflection;
-using System;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using Drill4Net.Target.Testers.Common;
 
-//https://xunit.net/docs/running-tests-in-parallel
-[assembly: CollectionBehavior(DisableTestParallelization = false, MaxParallelThreads = 8)] //Default: false
-
-namespace Drill4Net.Target.Tests.Bdd.SpecFlow.StepDefinitions
+namespace Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest.StepDefinitions
 {
     [Binding]
     public class LongerStepDefinitions
@@ -37,7 +34,9 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.StepDefinitions
 
             //https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Threading/ExecutionContext.cs
             var ec = Thread.CurrentThread.ExecutionContext;
-
+#if NETFRAMEWORK
+            System.Runtime.Remoting.Messaging.CallContext.LogicalSetData("MyData", 1);
+#endif
             //var ec = ExecutionContext.Capture();
             var sc = SynchronizationContext.Current;
             //var newSc = new SynchronizationContext();
@@ -52,6 +51,12 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.StepDefinitions
             var scenario = scenarioContext.ScenarioInfo.Title;
             var testStatus = scenarioContext.ScenarioExecutionStatus;
             var testError = scenarioContext.TestError;
+
+#if NETFRAMEWORK
+            //will be empty (because, infortunately, it is another context)
+            var data = System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("MyData");
+            Debug.WriteLine($"*** Data of context: [{data}]");
+#endif
 
             var ec = Thread.CurrentThread.ExecutionContext;
 

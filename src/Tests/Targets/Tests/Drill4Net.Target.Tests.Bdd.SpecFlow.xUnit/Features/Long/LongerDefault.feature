@@ -1,6 +1,6 @@
 ﻿Feature: LongerDefault
 
-A premier for parallel long operation with default timeout (must be in separate feature)
+A example for parallel long operation with default timeout (must be in separate feature)
 
 @default_5000
 Scenario: Wait 5000 default

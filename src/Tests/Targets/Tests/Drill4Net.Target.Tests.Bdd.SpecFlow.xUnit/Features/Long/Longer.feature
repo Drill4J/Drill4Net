@@ -1,6 +1,6 @@
 ﻿Feature: Longer
 
-A premier for parallel long operation with certain timeout (must be in separate feature)
+A example for parallel long operation with certain timeout (must be in separate feature)
 
 @timeout_5000
 Scenario: Wait 5000
