@@ -1,23 +1,9 @@
-using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
-using Drill4Net.Demo.OnlineStore.Bll.Services;
-using Drill4Net.Demo.OnlineStore.Dal;
-using Drill4Net.Demo.OnlineStore.Dal.Mapping;
-using Drill4Net.Demo.OnlineStore.Dal.Services;
-using Drill4Net.Demo.OnlineStore.WebApi.Controllers;
-using Drill4Net.Demo.OnlineStore.WebApi.Mapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.WebApi.Host
 {
@@ -34,14 +20,9 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Host
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddTransient<IProductDataReadService, ProductDataReadService>();
-            services.AddTransient<IProductDataWriteService, ProductDataWriteService>();
-            services.AddTransient<ICartDataReadService, CartDataReadService>();
-            services.AddTransient<ICartDataWriteService, CartDataWriteService>();
-            services.AddTransient<ICartDataReadService,CartDataReadService>();
-            services.AddTransient<IProductBusinessService, ProductService>();
+            services = Bootstrapper.AddTransitentServices(services);
             services.AddControllers();
-            services.AddAutoMapper(typeof(ApiDtoProfile).Assembly, typeof(DalProfile).Assembly);
+            services = Bootstrapper.AddAutoMapperService(services);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Drill4Net.Demo.OnlineStore.WebApi", Version = "v1" });
