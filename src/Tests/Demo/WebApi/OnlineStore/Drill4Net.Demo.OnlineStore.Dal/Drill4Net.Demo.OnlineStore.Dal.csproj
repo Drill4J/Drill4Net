@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dal\Drill4Net.Demo.OnlineStore.Dal.Models\Drill4Net.Demo.OnlineStore.Dal.Models.csproj" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Bll\Drill4Net.Demo.OnlineStore.Bll.csproj" />
   </ItemGroup>
 

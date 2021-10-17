@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Bll.Interfaces
 {
-    public interface IProductDataService: IDataServiceBase<Product>
+    public interface ICartDataReadService: IDataReadServiceBase<Cart>
     {
-        IEnumerable<Product> GetAll();
-        void Delete(Guid id);
+
     }
 }

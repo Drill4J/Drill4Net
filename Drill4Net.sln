@@ -205,9 +205,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OnlineStore", "OnlineStore", "{96CD8524-95EB-4D61-9A20-A3D175F80C3E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.OnlineStore.WebApi.Host", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.WebApi\Drill4Net.Demo.OnlineStore.WebApi.Host.csproj", "{59084217-8DBE-4FC4-A4D9-D0D222EC0B5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.OnlineStore.WebApi", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.WebApi\Drill4Net.Demo.OnlineStore.WebApi.csproj", "{59084217-8DBE-4FC4-A4D9-D0D222EC0B5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.OnlineStore.Bll", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.Bll\Drill4Net.Demo.OnlineStore.Bll.csproj", "{C1C38E8F-1AB0-412F-9BC1-2E86CA8FC958}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.OnlineStore.Bll", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.Bll\Drill4Net.Demo.OnlineStore.Bll.csproj", "{C1C38E8F-1AB0-412F-9BC1-2E86CA8FC958}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.OnlineStore.Dal", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.Dal\Drill4Net.Demo.OnlineStore.Dal.csproj", "{D06BAB39-39CD-4A24-9EB4-629E5712C005}"
 EndProject
@@ -217,11 +217,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dal", "Dal", "{70A1A787-457
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{0DF99DDD-78EB-4C55-A79B-0F1608155BF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.OnlineStore.WebApi.Models", "src\Tests\Demo\WebApi\OnlineStore\Api\Drill4Net.Demo.OnlineStore.Models\Drill4Net.Demo.OnlineStore.WebApi.Models.csproj", "{A2D938F6-75AF-49E3-B795-A41D49BEE4DD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.OnlineStore.Dal.Models", "src\Tests\Demo\WebApi\OnlineStore\Dal\Drill4Net.Demo.OnlineStore.Dal.Models\Drill4Net.Demo.OnlineStore.Dal.Models.csproj", "{7DAF0364-DEE3-4B83-9678-B8DCACD4F44E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.OnlineStore.WebApi.Controllers", "src\Tests\Demo\WebApi\OnlineStore\Api\Drill4Net.Demo.OnlineStore.Controllers\Drill4Net.Demo.OnlineStore.WebApi.Controllers.csproj", "{E138A590-4220-4E34-8E69-5DDCE99A3627}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.OnlineStore.Bll.Contracts", "Drill4Net.Demo.OnlineStore.Bll.Contracts\Drill4Net.Demo.OnlineStore.Bll.Contracts.csproj", "{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -477,18 +473,10 @@ Global
 		{D06BAB39-39CD-4A24-9EB4-629E5712C005}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D06BAB39-39CD-4A24-9EB4-629E5712C005}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D06BAB39-39CD-4A24-9EB4-629E5712C005}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2D938F6-75AF-49E3-B795-A41D49BEE4DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2D938F6-75AF-49E3-B795-A41D49BEE4DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2D938F6-75AF-49E3-B795-A41D49BEE4DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2D938F6-75AF-49E3-B795-A41D49BEE4DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7DAF0364-DEE3-4B83-9678-B8DCACD4F44E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DAF0364-DEE3-4B83-9678-B8DCACD4F44E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DAF0364-DEE3-4B83-9678-B8DCACD4F44E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DAF0364-DEE3-4B83-9678-B8DCACD4F44E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E138A590-4220-4E34-8E69-5DDCE99A3627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E138A590-4220-4E34-8E69-5DDCE99A3627}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E138A590-4220-4E34-8E69-5DDCE99A3627}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E138A590-4220-4E34-8E69-5DDCE99A3627}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -588,9 +576,7 @@ Global
 		{5C85A822-15A9-4182-AA59-017A8D0F676F} = {96CD8524-95EB-4D61-9A20-A3D175F80C3E}
 		{70A1A787-457F-413D-8E98-247ED4496C57} = {96CD8524-95EB-4D61-9A20-A3D175F80C3E}
 		{0DF99DDD-78EB-4C55-A79B-0F1608155BF4} = {96CD8524-95EB-4D61-9A20-A3D175F80C3E}
-		{A2D938F6-75AF-49E3-B795-A41D49BEE4DD} = {0DF99DDD-78EB-4C55-A79B-0F1608155BF4}
-		{7DAF0364-DEE3-4B83-9678-B8DCACD4F44E} = {70A1A787-457F-413D-8E98-247ED4496C57}
-		{E138A590-4220-4E34-8E69-5DDCE99A3627} = {0DF99DDD-78EB-4C55-A79B-0F1608155BF4}
+		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768} = {5C85A822-15A9-4182-AA59-017A8D0F676F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

@@ -1,10 +1,10 @@
 using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
 using Drill4Net.Demo.OnlineStore.Bll.Services;
 using Drill4Net.Demo.OnlineStore.Dal;
-using Drill4Net.Demo.OnlineStore.Dal.Models.Mapping;
+using Drill4Net.Demo.OnlineStore.Dal.Mapping;
 using Drill4Net.Demo.OnlineStore.Dal.Services;
 using Drill4Net.Demo.OnlineStore.WebApi.Controllers;
-using Drill4Net.Demo.OnlineStore.WebApi.Models.Mapping;
+using Drill4Net.Demo.OnlineStore.WebApi.Mapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,11 +33,15 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Host
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IProductDataService, ProductDataService>();
-            services.AddTransient<ICartDataService,CartDataService>();
+
+            services.AddTransient<IProductDataReadService, ProductDataReadService>();
+            services.AddTransient<IProductDataWriteService, ProductDataWriteService>();
+            services.AddTransient<ICartDataReadService, CartDataReadService>();
+            services.AddTransient<ICartDataWriteService, CartDataWriteService>();
+            services.AddTransient<ICartDataReadService,CartDataReadService>();
             services.AddTransient<IProductBusinessService, ProductService>();
-            services.AddControllers().AddApplicationPart(typeof(ProductsController).Assembly); ;
-            services.AddAutoMapper(typeof(ProductDtoProfile).Assembly, typeof(ProductProfile).Assembly);
+            services.AddControllers();
+            services.AddAutoMapper(typeof(ApiDtoProfile).Assembly, typeof(DalProfile).Assembly);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Drill4Net.Demo.OnlineStore.WebApi", Version = "v1" });

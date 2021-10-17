@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Bll.Interfaces
 {
-    public interface ICartDataService: IDataServiceBase<Cart>
+    public interface ICartDataWriteService: IDataWriteServiceBase<Cart>
     {
 
     }

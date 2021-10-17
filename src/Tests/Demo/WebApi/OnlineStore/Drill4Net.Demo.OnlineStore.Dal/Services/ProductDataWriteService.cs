@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
 using Drill4Net.Demo.OnlineStore.Bll.Models;
+using Drill4Net.Demo.OnlineStore.Dal.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,37 +10,26 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Dal.Services
 {
-    public class ProductDataService : IProductDataService
+    public class ProductDataWriteService : IProductDataWriteService
     {
         private readonly IMapper _mapper;
-        public ProductDataService(IMapper mapper)
+        public ProductDataWriteService(IMapper mapper)
         {
             _mapper = mapper;
         }
         public Product Create(Product item)
         {
-            //item.Id = Guid.NewGuid();
             var dalItem = _mapper.Map<Dal.Models.Product>(item);
             DataContext.Products.Add(dalItem);
             return item;
         }
         public void Delete(Guid id)
         {
-            var product = GetDalItem(id);
+            var product = ProductDataHelper.GetProduct(id);
             if (product != null)
             {
                 DataContext.Products.Remove(product);
             }
-        }
-        public Product Get(Guid id)
-        {
-            var dalItem= GetDalItem(id);
-            return _mapper.Map<Bll.Models.Product>(dalItem);
-        }
-        private Models.Product GetDalItem(Guid id)
-        {
-
-            return DataContext.Products.FirstOrDefault(x => x.Id == id);
         }
         public IEnumerable<Product> GetAll()
         {
@@ -47,7 +37,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
         }
         public void Update(Product item)
         {
-            var product = GetDalItem( item.Id);
+            var product = ProductDataHelper.GetProduct( item.Id);
             if (product != null)
             {
                 product.Name = item.Name;

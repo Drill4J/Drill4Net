@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Bll.Interfaces
 {
-    public interface IProductBusinessService
+    public interface IProductDataReadService: IDataReadServiceBase<Product>
     {
+        IEnumerable<Product> GetAll();
         public IEnumerable<Product> GetSortedProductsByPage();
         public IEnumerable<Product> GetFilteredProducts();
-        public Product AddProduct(Product item);
-        public void UpdateProduct(Product item);
-        public void DeleteProduct(Guid product);
     }
 }

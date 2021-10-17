@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.OnlineStore.WebApi.Models.Mapping
+namespace Drill4Net.Demo.OnlineStore.WebApi.Mapping
 {
     public class ProductDtoProfile: Profile
     {

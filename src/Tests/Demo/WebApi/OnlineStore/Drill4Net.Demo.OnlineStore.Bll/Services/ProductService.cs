@@ -10,34 +10,22 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Services
 {
     public class ProductService : IProductBusinessService
     {
-        private readonly IProductDataService _productDataService;
-        public ProductService (IProductDataService productDataService)
+        private readonly IProductDataWriteService _productDataServiceWrite;
+        public ProductService (IProductDataWriteService productDataServiceWrite)
         {
-            _productDataService = productDataService;
+            _productDataServiceWrite = productDataServiceWrite;
         }
-        public Product AddProduct(Product item)
+        public Product AddProduct(Product product)
         {
-           return _productDataService.Create(item);
+           return _productDataServiceWrite.Create(product);
         }
-
         public void DeleteProduct(Guid product)
         {
-            throw new NotImplementedException();
+            _productDataServiceWrite.Delete(product);
         }
-
-        public IEnumerable<Product> GetFilteredProducts()
+        public void UpdateProduct(Product product)
         {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Product> GetSortedProductsByPage()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateProduct(Product item)
-        {
-            throw new NotImplementedException();
+            _productDataServiceWrite.Update(product);
         }
     }
 }
