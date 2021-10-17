@@ -25,38 +25,12 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/products/sorted
-        //[HttpGet]
-        //[Route("Sorted")]
-        //public IEnumerable<ProductDto> Get(int page, int pageItemsNumber, string sortField)
-        //{
-        //    var config = new MapperConfiguration(cfg => cfg.CreateMap<ProductDto, Product>());
-        //    var mapper = new Mapper(config);
-        //    var products = _mapper.Map<List<ProductDto>>(DataContext.Products.Skip((page - 1) * pageItemsNumber).Take(pageItemsNumber));
-        //    switch (sortField)
-        //    {
-        //        case "name":
-        //            products = products.OrderBy(p => p.Name).ToList();
-        //            break;
-        //        case "price":
-        //            products = products.OrderBy(p => p.Price).ToList();
-        //            break;
-        //        case "stock":
-        //            products = products.OrderBy(p => p.Stock).ToList();
-        //            break;
-        //        default:
-        //            goto case "name";
-        //    }
-        //    return products;
-        //}
-
-        // GET: api/products
-        //[HttpGet]
-        //public IEnumerable<ProductDto> Get()
-        //{
-        //    //var products =
-        //    return new LinkedList<ProductDto>();
-        //}
+       [HttpGet]
+        public IEnumerable<ProductDto> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
+        {
+            var products = _productDalService.GetSortedProductsByPage(page, pageItemsNumber, sortField);
+            return _mapper.Map <IEnumerable<ProductDto>>(products);
+        }
 
         [HttpPost]
         public ActionResult<ProductDto> CreateProduct(NewProductDto productDto)
@@ -65,7 +39,22 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             var newProduct = _productBllService.AddProduct(_mapper.Map<Product>(productDto));
             return Created(new Uri($"/{newProduct.Id}", UriKind.Relative), _mapper.Map<ProductDto>(newProduct));
         }
-
+        [HttpDelete("{id}")]
+        public ActionResult DeleteProduct(Guid productDtoGuid)
+        {
+            _productBllService.DeleteProduct(productDtoGuid);
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public ActionResult UpdateProduct(Guid productDtoGuid, ProductDto productDto)
+        {
+            if (productDtoGuid != productDto.Id)
+            {
+                return BadRequest();
+            }
+            _productBllService.UpdateProduct(_mapper.Map<Product>(productDto));
+            return NoContent();
+        }
     }
 }
 

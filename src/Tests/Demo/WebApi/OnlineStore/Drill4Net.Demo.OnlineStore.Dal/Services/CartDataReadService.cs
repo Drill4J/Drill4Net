@@ -22,7 +22,5 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
             var dalItem= CartDataHelper.GetCart(id);
             return _mapper.Map<Bll.Models.Cart>(dalItem);
         }
-
-
     }
 }

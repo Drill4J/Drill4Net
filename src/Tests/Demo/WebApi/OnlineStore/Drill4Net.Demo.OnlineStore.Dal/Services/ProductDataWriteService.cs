@@ -31,10 +31,6 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
                 DataContext.Products.Remove(product);
             }
         }
-        public IEnumerable<Product> GetAll()
-        {
-             return _mapper.Map<IEnumerable<Bll.Models.Product>>(DataContext.Products);
-        }
         public void Update(Product item)
         {
             var product = ProductDataHelper.GetProduct( item.Id);
@@ -43,7 +39,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
                 product.Name = item.Name;
                 product.Category = item.Category;
                 product.Price = item.Price;
-                product.Stock = product.Stock;
+                product.Stock = item.Stock;
             }
         }
     }
