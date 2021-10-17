@@ -3,16 +3,25 @@ using TechTalk.SpecFlow;
 using Drill4Net.Target.Testers.Common;
 using Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.Logging;
 
-                        /********************************************************************************************************
-                        * 
-                        * In xUnit 2.4.x the TestContest is not exists
-                        * In xUnit 3.x the TestContext is exists (commit on 23 July, 2021) but this version in alpha state now
-                        * So, all tests for xUnit 2.4.x must be run in serial, not parallel mode
-                        * 
-                        ********************************************************************************************************/
+            //http://gasparnagy.com/2016/02/running-specflow-scenarios-in-parallel-with-xunit-v2/
+
+            /***************************************************************************************
+            * 
+            * In xUnit 2.4.x the TestContest is not exists
+            * In xUnit 3.x the TestContext is exists (commit on 23 July, 2021) but this version 
+            * in alpha state in late 2021
+            * So, all tests for xUnit 2.4.x must be run in serial, not parallel mode
+            * Run from console with misc modes: https://xunit.net/docs/running-tests-in-parallel &
+            * https://xunit.net/docs/getting-started/netfx/cmdline, e.g.
+            * c:\Users\Ivan_Bezrodnyi\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.exe Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.dll -parallel none
+            * 
+            ****************************************************************************************/
+
+//https://docs.specflow.org/projects/specflow/en/latest/Execution/Parallel-Execution.html
 
 //https://xunit.net/docs/running-tests-in-parallel
-[assembly: CollectionBehavior(DisableTestParallelization = false, MaxParallelThreads = 8)] //Default: false
+[assembly: CollectionBehavior(DisableTestParallelization = false, //Default: false
+                              MaxParallelThreads = 8)]
 
 namespace Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.StepDefinitions
 {
@@ -61,6 +70,7 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.StepDefinitions
             var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
             var scenario = scenarioContext.ScenarioInfo.Title;
             var key = $"{feature}^{scenario}";
+            scenarioContext["TestCase"] = key;
         }
 
         [AfterScenario(Order = 0)]
@@ -70,6 +80,8 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.StepDefinitions
             var scenario = scenarioContext.ScenarioInfo.Title;
             var testStatus = scenarioContext.ScenarioExecutionStatus;
             var testError = scenarioContext.TestError;
+
+            var key = scenarioContext["TestCase"];
         }
 
         /************************************************************************************/

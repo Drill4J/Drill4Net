@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Drill4Net.Target.Testers.Common;
 
+//https://docs.specflow.org/projects/specflow/en/latest/Execution/Parallel-Execution.html
 //https://stackoverflow.com/questions/3917060/how-to-run-unit-tests-mstest-in-parallel
 [assembly: Parallelize(Workers = 4, Scope = ExecutionScope.ClassLevel)]
 //[DoNotParallelize] - to some test
