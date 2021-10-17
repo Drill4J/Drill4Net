@@ -7,7 +7,7 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.Logging
     //https://stackoverflow.com/questions/54867744/c-sharp-xunit-test-listeners/54973118#54973118
 
     /// <summary>
-    /// Reporter for the xUnit actions for ghe additional LOGGING (not context)
+    /// Reporter for the xUnit actions for additional LOGGING (it is not context itself)
     /// </summary>
     internal class TestRunnerReporter : IRunnerReporter
     {
