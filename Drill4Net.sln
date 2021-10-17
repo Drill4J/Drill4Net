@@ -122,8 +122,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Core.Uni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Engine.UnitTests", "src\Tests\UnitTests\Drill4Net.Injector.Engine.UnitTests\Drill4Net.Injector.Engine.UnitTests.csproj", "{3BC9ADDE-EC6E-436A-BC8E-BB18615DCE0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Testing.NetFxUtils", "src\Tests\IntegrationTests\Agent\Drill4Net.Agent.Testing.NetFxUtils\Drill4Net.Agent.Testing.NetFxUtils.csproj", "{589E6C99-00BD-4062-8192-C015D93387F2}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Adoption_cfg", "!!_Adoption_cfg", "{62F8FA14-B664-46E8-BDF1-88A1E77B959C}"
 	ProjectSection(SolutionItems) = preProject
 		IHS_std.yml = IHS_std.yml
@@ -231,7 +229,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{0218CDD6-0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BDD", "BDD", "{9DCDE997-DFFD-47D4-B299-BB4FAC81AFF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest", "src\Tests\Targets\Tests\Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest\Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest.csproj", "{309484C1-6E73-41A6-B118-DD6A9621D558}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest", "src\Tests\Targets\Tests\Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest\Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest.csproj", "{309484C1-6E73-41A6-B118-DD6A9621D558}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -422,12 +420,6 @@ Global
 		{3BC9ADDE-EC6E-436A-BC8E-BB18615DCE0D}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{3BC9ADDE-EC6E-436A-BC8E-BB18615DCE0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BC9ADDE-EC6E-436A-BC8E-BB18615DCE0D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{589E6C99-00BD-4062-8192-C015D93387F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{589E6C99-00BD-4062-8192-C015D93387F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{589E6C99-00BD-4062-8192-C015D93387F2}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
-		{589E6C99-00BD-4062-8192-C015D93387F2}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
-		{589E6C99-00BD-4062-8192-C015D93387F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{589E6C99-00BD-4062-8192-C015D93387F2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3FB0F998-6ED8-49CD-AE52-71E27A54B9DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3FB0F998-6ED8-49CD-AE52-71E27A54B9DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FB0F998-6ED8-49CD-AE52-71E27A54B9DA}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
@@ -691,7 +683,6 @@ Global
 		{6F63B967-D17C-4693-8228-D4F254C24F8B} = {C2C77100-B789-417D-A387-E2C4A668C15C}
 		{9ECB5BE5-4C16-4C94-9647-BF953EF86C94} = {6F63B967-D17C-4693-8228-D4F254C24F8B}
 		{3BC9ADDE-EC6E-436A-BC8E-BB18615DCE0D} = {6F63B967-D17C-4693-8228-D4F254C24F8B}
-		{589E6C99-00BD-4062-8192-C015D93387F2} = {2D8768BC-205A-4BE5-8A42-66FAADF2CF7E}
 		{3FB0F998-6ED8-49CD-AE52-71E27A54B9DA} = {289A2582-651C-49A4-B4D3-55EA7A9B9B01}
 		{E0883971-0670-4E44-B9CA-218A72A33BF0} = {FB5DB42A-0362-4A50-A484-A41EC41EE270}
 		{5A5AB43E-890A-48AA-B426-8913AE372ADE} = {F5B1697D-C26A-4165-B810-6A4C8621F902}
