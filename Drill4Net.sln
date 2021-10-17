@@ -217,7 +217,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dal", "Dal", "{70A1A787-457
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{0DF99DDD-78EB-4C55-A79B-0F1608155BF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.OnlineStore.Bll.Contracts", "Drill4Net.Demo.OnlineStore.Bll.Contracts\Drill4Net.Demo.OnlineStore.Bll.Contracts.csproj", "{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.OnlineStore.Bll.Contracts", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.Bll.Contracts\Drill4Net.Demo.OnlineStore.Bll.Contracts.csproj", "{751B77C9-2301-45C2-806D-6FA2343CB5ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -473,10 +473,10 @@ Global
 		{D06BAB39-39CD-4A24-9EB4-629E5712C005}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D06BAB39-39CD-4A24-9EB4-629E5712C005}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D06BAB39-39CD-4A24-9EB4-629E5712C005}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{751B77C9-2301-45C2-806D-6FA2343CB5ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{751B77C9-2301-45C2-806D-6FA2343CB5ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{751B77C9-2301-45C2-806D-6FA2343CB5ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{751B77C9-2301-45C2-806D-6FA2343CB5ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -576,7 +576,7 @@ Global
 		{5C85A822-15A9-4182-AA59-017A8D0F676F} = {96CD8524-95EB-4D61-9A20-A3D175F80C3E}
 		{70A1A787-457F-413D-8E98-247ED4496C57} = {96CD8524-95EB-4D61-9A20-A3D175F80C3E}
 		{0DF99DDD-78EB-4C55-A79B-0F1608155BF4} = {96CD8524-95EB-4D61-9A20-A3D175F80C3E}
-		{16B0E6CA-CDAA-4CD7-BAFF-30664F786768} = {5C85A822-15A9-4182-AA59-017A8D0F676F}
+		{751B77C9-2301-45C2-806D-6FA2343CB5ED} = {5C85A822-15A9-4182-AA59-017A8D0F676F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

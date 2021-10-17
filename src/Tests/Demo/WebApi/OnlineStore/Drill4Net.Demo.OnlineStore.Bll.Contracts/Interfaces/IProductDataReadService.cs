@@ -9,8 +9,8 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Interfaces
 {
     public interface IProductDataReadService: IDataReadServiceBase<Product>
     {
-        IEnumerable<Product> GetAll();
-        public IEnumerable<Product> GetSortedProductsByPage();
-        public IEnumerable<Product> GetFilteredProducts();
+        public IEnumerable<Product> GetAll();
+        public IEnumerable<Product> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField);
+        public IEnumerable<Product> GetFilteredProducts(string category, string namePart);
     }
 }
