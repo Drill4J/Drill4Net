@@ -1,14 +1,15 @@
-using System;
 using Xunit;
-using FluentAssertions;
 using TechTalk.SpecFlow;
-using System.Threading;
-using System.Reflection;
-using System.Diagnostics;
-using System.Runtime.Serialization;
-using Xunit.Abstractions;
 using Drill4Net.Target.Testers.Common;
 using Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.Logging;
+
+                        /********************************************************************************************************
+                        * 
+                        * In xUnit 2.4.x the TestContest is not exists
+                        * In xUnit 3.x the TestContext is exists (commit on 23 July, 2021) but this version in alpha state now
+                        * So, all tests for xUnit 2.4.x must be run in serial, not parallel mode
+                        * 
+                        ********************************************************************************************************/
 
 //https://xunit.net/docs/running-tests-in-parallel
 [assembly: CollectionBehavior(DisableTestParallelization = false, MaxParallelThreads = 8)] //Default: false
@@ -21,9 +22,10 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.StepDefinitions
         private readonly Longer _longer;
 
         /// <summary>
-        /// Additional logging reporter (it is not context isself). Need for DI registering
+        /// Additional logging reporter for investigating mostly (it is not context isself). 
+        /// Need for DI registering
         /// </summary>
-        private readonly TestRunnerReporter _rep = new TestRunnerReporter();
+        private readonly TestRunnerReporter _rep = new();
 
         /************************************************************************************/
 
