@@ -5,7 +5,12 @@ using System.Threading;
 using System.Reflection;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Drill4Net.Target.Testers.Common;
+
+//https://stackoverflow.com/questions/3917060/how-to-run-unit-tests-mstest-in-parallel
+[assembly: Parallelize(Workers = 4, Scope = ExecutionScope.ClassLevel)]
+//[DoNotParallelize] - to some test
 
 namespace Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest.StepDefinitions
 {
@@ -26,18 +31,17 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest.StepDefinitions
         //DON'T REMOVE THIS EVEN IF IT IS COMMENTED
 
         [BeforeScenario(Order = 0)]
-        public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext)
+        public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext, TestContext testCtx)
         {
             var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
             var scenario = scenarioContext.ScenarioInfo.Title;
             var key = $"{feature}^{scenario}";
 
+#if NETFRAMEWORK
+            System.Runtime.Remoting.Messaging.CallContext.LogicalSetData("TestCase", key);
+#endif
             //https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Threading/ExecutionContext.cs
             var ec = Thread.CurrentThread.ExecutionContext;
-#if NETFRAMEWORK
-            System.Runtime.Remoting.Messaging.CallContext.LogicalSetData("MyData", 1);
-#endif
-            //var ec = ExecutionContext.Capture();
             var sc = SynchronizationContext.Current;
             //var newSc = new SynchronizationContext();
 
@@ -54,7 +58,7 @@ namespace Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest.StepDefinitions
 
 #if NETFRAMEWORK
             //will be empty (because, infortunately, it is another context)
-            var data = System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("MyData");
+            var data = System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("TestCase");
             Debug.WriteLine($"*** Data of context: [{data}]");
 #endif
 
