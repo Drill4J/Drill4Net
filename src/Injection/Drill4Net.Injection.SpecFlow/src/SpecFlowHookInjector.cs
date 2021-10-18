@@ -4,6 +4,8 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
+using Drill4Net.Agent.Abstract;
+using Cecilifier.Runtime;
 
 namespace Drill4Net.Injection.SpecFlow
 {
@@ -21,12 +23,12 @@ namespace Drill4Net.Injection.SpecFlow
         {
             SourceDir = sourceDir ?? throw new ArgumentNullException(nameof(sourceDir));
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
-            LoadFramework(sourceDir);
+            LoadTestFramework(sourceDir);
         }
 
         /*************************************************************************************************/
 
-        private void LoadFramework(string sourceDir)
+        private void LoadTestFramework(string sourceDir)
         {
             const string dllName = "TechTalk.SpecFlow.dll";
             var specDir = Path.Combine(Common.FileUtils.GetExecutionDir(), dllName);
@@ -53,23 +55,86 @@ namespace Drill4Net.Injection.SpecFlow
 
         public override void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false)
         {
-            var attr = assembly.CustomAttributes.Where(a => a.AttributeType.Name == "TechTalk.SpecFlow.xUnit.SpecFlowPlugin.AssemblyFixtureAttribute");
-            if (attr == null)
-                return;
-            var module = assembly.MainModule;
-            var type = module.Types //need just first type
-                .FirstOrDefault(a => a.CustomAttributes.Any(b => b.AttributeType.FullName == "TechTalk.SpecFlow.BindingAttribute"));
+            var type = GetClassTypeWithBindingAttribute(assembly);
             if (type == null)
                 return;
             //
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureFinishing", 1, isNetFX);
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioStarting", 2, isNetFX);
-            InjectMethod(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioFinishing", 3, isNetFX);
+            var module = assembly.MainModule;
+            //InjectInitMethod(module, type, ...);
+            InjectContextDataInvoker(module, type, isNetFX);
+            //
+            //InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
+            //InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureFinished", 1, isNetFX);
+            InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioStarting", (int)AgentCommandType.TEST_CASE_START, isNetFX);
+            InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioFinished", (int)AgentCommandType.TEST_CASE_STOP, isNetFX);
         }
 
-        private void InjectMethod(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
-                                  string paramCtxType, string paramInfoType, string funcName, int command, bool isNetFX)
+        private TypeDefinition GetClassTypeWithBindingAttribute(AssemblyDefinition assembly)
+        {
+            var attr = assembly.CustomAttributes.Where(a => a.AttributeType.Name == "TechTalk.SpecFlow.xUnit.SpecFlowPlugin.AssemblyFixtureAttribute");
+            if (attr == null)
+                return null;
+            var type = assembly.MainModule.Types //need just first type
+                .FirstOrDefault(a => a.CustomAttributes.Any(b => b.AttributeType.FullName == "TechTalk.SpecFlow.BindingAttribute"));
+            return type;
+        }
+
+        private void InjectInitMethod(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
+                string paramCtxType, string paramInfoType, bool isNetFX)
+        {
+            
+        }
+
+        private void InjectContextDataInvoker(ModuleDefinition module, TypeDefinition classType, bool isNetFX)
+        {
+            var assembly = module.Assembly;
+
+           //Method : GetContextData
+           var m_GetContextData_2 = new MethodDefinition("GetContextData", MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, assembly.MainModule.TypeSystem.Void);
+            m_GetContextData_2.ReturnType = assembly.MainModule.TypeSystem.String;
+            classType.Methods.Add(m_GetContextData_2);
+            m_GetContextData_2.Body.InitLocals = true;
+            var il_GetContextData_3 = m_GetContextData_2.Body.GetILProcessor();
+
+            //Parameters of 'public static string GetContextData(MethodInfo meth, object featureCtx, object scenarioCtx)'
+            var p_meth_4 = new ParameterDefinition("meth", ParameterAttributes.None, assembly.MainModule.ImportReference(typeof(System.Reflection.MethodInfo)));
+            m_GetContextData_2.Parameters.Add(p_meth_4);
+            var p_featureCtx_5 = new ParameterDefinition("featureCtx", ParameterAttributes.None, assembly.MainModule.TypeSystem.Object);
+            m_GetContextData_2.Parameters.Add(p_featureCtx_5);
+            var p_scenarioCtx_6 = new ParameterDefinition("scenarioCtx", ParameterAttributes.None, assembly.MainModule.TypeSystem.Object);
+            m_GetContextData_2.Parameters.Add(p_scenarioCtx_6);
+
+            //return meth.Invoke(null,
+                //new object[]
+                //{
+                //featureCtx,
+                //scenarioCtx,
+                //Assembly.GetExecutingAssembly().Location,
+            //}).ToString();
+            il_GetContextData_3.Emit(OpCodes.Ldarg_0);
+            il_GetContextData_3.Emit(OpCodes.Ldnull);
+            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 3);
+            il_GetContextData_3.Emit(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object);
+            il_GetContextData_3.Emit(OpCodes.Dup);
+            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 0);
+            il_GetContextData_3.Emit(OpCodes.Ldarg_1);
+            il_GetContextData_3.Emit(OpCodes.Stelem_Ref);
+            il_GetContextData_3.Emit(OpCodes.Dup);
+            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 1);
+            il_GetContextData_3.Emit(OpCodes.Ldarg_2);
+            il_GetContextData_3.Emit(OpCodes.Stelem_Ref);
+            il_GetContextData_3.Emit(OpCodes.Dup);
+            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 2);
+            il_GetContextData_3.Emit(OpCodes.Call, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "GetExecutingAssembly", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "")));
+            il_GetContextData_3.Emit(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "get_Location", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "")));
+            il_GetContextData_3.Emit(OpCodes.Stelem_Ref);
+            il_GetContextData_3.Emit(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]")));
+            il_GetContextData_3.Emit(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Object", "ToString", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "")));
+            il_GetContextData_3.Emit(OpCodes.Ret);
+        }
+
+        private void InjectHook(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
+                                string paramCtxType, string paramInfoType, string funcName, int command, bool isNetFX)
         {
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
             var cmdMethodName = "DoCommand";

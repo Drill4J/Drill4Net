@@ -19,21 +19,21 @@ namespace Drill4Net.Injection.SpecFlow
 
         /*******************************************************************************************/
 
-        static SpecFlowHooks()
+        //hooks in any test class intercept all tests in other classes
+        //Need data: qualified name, display name, test group, result, assembly path
+
+        //let it will be replaced in method rather in cctor
+        [BeforeTestRun(Order = -1)]
+        public static void VanchoTestsInit()
         {
             //the EXAMPLE!
             //hardcode or cfg?
-            var profPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\Drill4Net.Agent.Transmitter.SpecFlow.dll";
-            var asm = Assembly.LoadFrom(profPath);
+            var plugPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\Drill4Net.Agent.Transmitter.SpecFlow.dll";
+            var asm = Assembly.LoadFrom(plugPath);
             var type = asm.GetType("Drill4Net.Agent.Transmitter.SpecFlow.ContextHelper");
             //_featureMethInfo = type.GetMethod("GetFeatureContext");
             _scenarioMethInfo = type.GetMethod("GetScenarioContext");
         }
-
-        /*******************************************************************************************/
-
-        //hooks in any test class intercept all tests in other classes
-        //Need data: qualified name, display name, test group, result, assembly path
 
         #region TESTS_RUN
         [BeforeTestRun(Order = 0)]
@@ -85,7 +85,7 @@ namespace Drill4Net.Injection.SpecFlow
         }
         #endregion
 
-        public static string GetContextData(MethodInfo meth, FeatureContext featureCtx, ScenarioContext scenarioCtx)
+        private static string GetContextData(MethodInfo meth, FeatureContext featureCtx, ScenarioContext scenarioCtx)
         {
             return meth.Invoke(null,
                 new object[]
