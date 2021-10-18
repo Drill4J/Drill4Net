@@ -26,7 +26,7 @@ namespace Drill4Net.Injector.Engine
         /// <summary>
         /// Plugins for additional injections into assemblies
         /// </summary>
-        public List<AbstractCodeInjector> Plugins { get; }
+        public List<IInjectorPlugin> Plugins { get; }
 
         private readonly InjectorOptions _opts;
         private readonly Logger _logger;
@@ -48,15 +48,29 @@ namespace Drill4Net.Injector.Engine
 
         /**********************************************************************************/
 
-        private List<AbstractCodeInjector> GetPlugins()
+        #region Plugins
+        private List<IInjectorPlugin> GetPlugins()
         {
-            var plugins = new List<AbstractCodeInjector>();
+            var plugins = new List<IInjectorPlugin>();
 
             //TODO: loads them dynamically from the disk by cfg
 
-            plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class));
+            var plugPath = GetPluginPath(SpecFlowHookInjector.PluginName, _opts.Plugins);
+            plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath));
+
             return plugins;
         }
+
+        internal string GetPluginPath(string name, Dictionary<string, PluginOptions> cfgPlugins)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            if (!cfgPlugins.ContainsKey(name))
+                return null; //maybe it is normal for some plugin
+            //
+            return FileUtils.GetFullPath(cfgPlugins[name].Path);
+        }
+        #endregion
 
         /// <summary>
         /// Inject the specified assembly

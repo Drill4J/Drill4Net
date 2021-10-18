@@ -40,6 +40,9 @@ Probes: # types of cross-cutting points
     EventRemove: false
     SkipEnterType: true
     SkipIfElseType: true
+Plugins:
+    'SpecFlow':
+        Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
 Logs:
     - Type: console
       Level: debug

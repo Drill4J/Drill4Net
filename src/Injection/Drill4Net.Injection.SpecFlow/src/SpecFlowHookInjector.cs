@@ -5,24 +5,38 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
-using Cecilifier.Runtime;
 
 namespace Drill4Net.Injection.SpecFlow
 {
-    public class SpecFlowHookInjector : AbstractCodeInjector
+    public class SpecFlowHookInjector : AbstractCodeInjector, IInjectorPlugin
     {
+        public string Name => PluginName;
+
         public string SourceDir { get; }
         public string ProxyClass { get; }
+        public string HelperReadDir { get; }
+        public string HelperClass { get; }
+        public string HelperNs { get; }
+        public string HelperAsmName { get; }
+
+        public const string PluginName = "SpecFlow";
 
         private const string SPEC_NS = "TechTalk.SpecFlow";
         private ModuleDefinition _speclib;
 
         /*************************************************************************************************/
 
-        public SpecFlowHookInjector(string sourceDir, string proxyClass): base(null)
+        public SpecFlowHookInjector(string sourceDir, string proxyClass, string helperDir) : base(null)
         {
             SourceDir = sourceDir ?? throw new ArgumentNullException(nameof(sourceDir));
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
+            HelperReadDir = helperDir ?? throw new ArgumentNullException(nameof(helperDir));
+
+            // these are real constants, aren't the cfg params
+            HelperClass = "ContextHelper";
+            HelperNs = "Drill4Net.Agent.Transmitter.SpecFlow";
+            HelperAsmName = "Drill4Net.Agent.Transmitter.SpecFlow.dll";
+
             LoadTestFramework(sourceDir);
         }
 
@@ -59,14 +73,13 @@ namespace Drill4Net.Injection.SpecFlow
             if (type == null)
                 return;
             //
-            var module = assembly.MainModule;
-            //InjectInitMethod(module, type, ...);
-            InjectContextDataInvoker(module, type, isNetFX);
+            InjectInitMethod(type, typeof(TechTalk.SpecFlow.BeforeTestRunAttribute), isNetFX); //BeforeTestRunAttribute
+            InjectContextDataInvoker(type, isNetFX);
             //
             //InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
             //InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureFinished", 1, isNetFX);
-            InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioStarting", (int)AgentCommandType.TEST_CASE_START, isNetFX);
-            InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioFinished", (int)AgentCommandType.TEST_CASE_STOP, isNetFX);
+            InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioStarting", (int)AgentCommandType.TEST_CASE_START, isNetFX);
+            InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioFinished", (int)AgentCommandType.TEST_CASE_STOP, isNetFX);
         }
 
         private TypeDefinition GetClassTypeWithBindingAttribute(AssemblyDefinition assembly)
@@ -79,14 +92,85 @@ namespace Drill4Net.Injection.SpecFlow
             return type;
         }
 
-        private void InjectInitMethod(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
-                string paramCtxType, string paramInfoType, bool isNetFX)
+        private void InjectInitMethod(TypeDefinition type, Type methAttrType, bool isNetFX)
         {
-            
+            var module = type.Module;
+            var syslib = GetSysModule(isNetFX); //inner caching & disposing
+
+            //field _scenarioMethInfo
+            var fld_ProfilerProxy_methInfo = new FieldDefinition("_scenarioMethInfo", FieldAttributes.Private | FieldAttributes.Static, ImportSysTypeReference(syslib, module, typeof(System.Reflection.MethodInfo)));
+            type.Fields.Add(fld_ProfilerProxy_methInfo);
+
+            //method
+            var funcName = "Drill4NetTestsInit";
+            var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
+            type.Methods.Add(funcDef);
+
+            AddMethodAttribute(module, methAttrType, funcDef, false);
+
+            funcDef.Body.InitLocals = true;
+            var il_meth = funcDef.Body.GetILProcessor();
+            //
+            //var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Agent.Test\bin\Debug\netstandard2.0\Agent.Test.dll";
+            var lv_profPath1 = new VariableDefinition(module.TypeSystem.String);
+            funcDef.Body.Variables.Add(lv_profPath1);
+            var Ldstr2 = il_meth.Create(OpCodes.Ldstr, $"{HelperReadDir}{HelperAsmName}");
+            il_meth.Append(Ldstr2);
+            var Stloc3 = il_meth.Create(OpCodes.Stloc, lv_profPath1);
+            il_meth.Append(Stloc3);
+
+            //var asm = Assembly.LoadFrom(profPath);
+            var lv_asm4 = new VariableDefinition(ImportSysTypeReference(syslib, module, typeof(System.Reflection.Assembly)));
+            funcDef.Body.Variables.Add(lv_asm4);
+
+            var methLoadFrom = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "LoadFrom", true, typeof(string), typeof(System.Reflection.Assembly));
+            //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "LoadFrom", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.String"));
+
+            var Call5 = il_meth.Create(OpCodes.Call, methLoadFrom);
+            var Ldloc6 = il_meth.Create(OpCodes.Ldloc, lv_profPath1);
+            il_meth.Append(Ldloc6);
+            il_meth.Append(Call5);
+            var Stloc7 = il_meth.Create(OpCodes.Stloc, lv_asm4);
+            il_meth.Append(Stloc7);
+
+            //var type = asm.GetType("Agent.Tests.LoggerAgent");
+            var lv_type8 = new VariableDefinition(ImportSysTypeReference(syslib, module, typeof(Type)));
+            funcDef.Body.Variables.Add(lv_type8);
+            var Ldloc9 = il_meth.Create(OpCodes.Ldloc, lv_asm4);
+            il_meth.Append(Ldloc9);
+
+            var methGetType = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "GetType", false, typeof(string), typeof(Type));
+            //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "GetType", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
+
+            var Callvirt10 = il_meth.Create(OpCodes.Callvirt, methGetType);
+            var Ldstr11 = il_meth.Create(OpCodes.Ldstr, $"{HelperNs}.{HelperClass}");
+            il_meth.Append(Ldstr11);
+            il_meth.Append(Callvirt10);
+            var Stloc12 = il_meth.Create(OpCodes.Stloc, lv_type8);
+            il_meth.Append(Stloc12);
+
+            #region _methRegInfo = type.GetMethod("GetScenarioContext");
+            var Ldloc13 = il_meth.Create(OpCodes.Ldloc, lv_type8);
+            il_meth.Append(Ldloc13);
+
+            var methGetMethodRef = ImportSysMethodReference(syslib, module, "System", "Type", "GetMethod", false, typeof(string), typeof(System.Reflection.MethodInfo));
+            //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
+
+            var Callvirt14 = il_meth.Create(OpCodes.Callvirt, methGetMethodRef);
+            var Ldstr15 = il_meth.Create(OpCodes.Ldstr, "GetScenarioContext");
+            il_meth.Append(Ldstr15);
+            il_meth.Append(Callvirt14);
+            var Stsfld16 = il_meth.Create(OpCodes.Stsfld, fld_ProfilerProxy_methInfo);
+            il_meth.Append(Stsfld16);
+            #endregion
+
+            var Ret17 = il_meth.Create(OpCodes.Ret);
+            il_meth.Append(Ret17);
         }
 
-        private void InjectContextDataInvoker(ModuleDefinition module, TypeDefinition classType, bool isNetFX)
+        private void InjectContextDataInvoker(TypeDefinition classType, bool isNetFX)
         {
+            var module = classType.Module;
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
             var assembly = module.Assembly;
 
@@ -146,20 +230,20 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Emit(OpCodes.Ret);
         }
 
-        private void InjectHook(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
+        private void InjectHook(TypeDefinition type, string proxyNs, Type methAttrType,
                                 string paramCtxType, string paramInfoType, string funcName, int command, bool isNetFX)
         {
+            var module = type.Module;
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
             var cmdMethodName = "DoCommand";
 
-            //Drill4NetScenarioStarting
             //var funcName = "Drill4NetScenarioStarting";
             var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
             type.Methods.Add(funcDef);
 
-            AddOrder0Attribute(module, methAttrType, funcDef);
+            AddMethodAttribute(module, methAttrType, funcDef);
 
-            funcDef.Body.InitLocals = true; //?
+            funcDef.Body.InitLocals = true;
             var ilProc = funcDef.Body.GetILProcessor();
 
             //Parameters of 'public static void Drill4NetScenarioStarting(ScenarioContext scenarioContext)'
@@ -201,17 +285,22 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Append(ilProc.Create(OpCodes.Ret));
         }
 
-        internal void AddOrder0Attribute(ModuleDefinition module, Type attribType,
-                ICustomAttributeProvider targetMember) // Can be a PropertyDefinition, MethodDefinition or other member definitions
+        internal void AddMethodAttribute(ModuleDefinition module, Type attribType,
+                ICustomAttributeProvider targetMember, // Can be a PropertyDefinition, MethodDefinition or other member definitions
+                bool needZeroOrder = true)
         {
             // ctor
             var constructor = attribType.GetConstructors()[0];
             var constructorRef = module.ImportReference(constructor);
             var attrib = new CustomAttribute(constructorRef);
+
             // The argument
-            var arg = new CustomAttributeArgument(module.ImportReference(typeof(int)), 0);
-            attrib.ConstructorArguments.Add(arg);
-            attrib.Properties.Add(new CustomAttributeNamedArgument("Order", arg));
+            if (needZeroOrder)
+            {
+                var arg = new CustomAttributeArgument(module.ImportReference(typeof(int)), 0);
+                attrib.ConstructorArguments.Add(arg);
+                attrib.Properties.Add(new CustomAttributeNamedArgument("Order", arg));
+            }
             targetMember.CustomAttributes.Add(attrib);
         }
 
