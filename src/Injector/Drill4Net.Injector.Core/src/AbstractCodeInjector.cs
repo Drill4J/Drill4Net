@@ -22,15 +22,13 @@ namespace Drill4Net.Injector.Core
         public abstract void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false);
 
         protected MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
-            string ns, string typeName, string method, bool isStatic,
-            Type parType, Type resType)
+            string ns, string typeName, string method, bool isStatic, Type paramType, Type resType)
         {
-            return ImportSysMethodReference(syslib, target, ns, typeName, method, isStatic, new Type[] { parType }, resType);
+            return ImportSysMethodReference(syslib, target, ns, typeName, method, isStatic, new Type[] { paramType }, resType);
         }
 
         protected MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
-            string ns, string typeName, string method, bool isStatic,
-            Type[] parTypes, Type resType)
+            string ns, string typeName, string method, bool isStatic, Type[] paramTypes, Type resType)
         {
             var methTypeRef = new TypeReference(ns, typeName, syslib, syslib);
             var resTypeRef = new TypeReference(resType.Namespace, resType.Name, syslib, syslib);
@@ -39,9 +37,12 @@ namespace Drill4Net.Injector.Core
                 methRef.HasThis = true;
 
             //parameters
-            for (int i = 0; i < parTypes.Length; i++)
+            for (var i = 0; i < paramTypes.Length; i++)
             {
-                var parDef = CreateParameterDefinition($"par_{i}", parTypes[i], syslib);
+                var type = paramTypes[i];
+                if (type == null || type == typeof(void))
+                    continue;
+                var parDef = CreateParameterDefinition($"par_{i}", type, syslib);
                 methRef.Parameters.Add(parDef);
             }
 
@@ -63,6 +64,27 @@ namespace Drill4Net.Injector.Core
         protected TypeReference ImportSysTypeReference(ModuleDefinition syslib, ModuleDefinition target, Type type)
         {
             return target.ImportReference(new TypeReference(type.Namespace, type.Name, syslib, syslib));
+        }
+
+        /// <summary>
+        /// Get method reference to the system late binding call, e.g. _methInfo.Invoke(null, ...)
+        /// </summary>
+        /// <param name="syslib">System base lib getting by GetSysModule() call</param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        protected MethodReference GetLateBindingInvoker(ModuleDefinition syslib, ModuleDefinition target)
+        {
+            var methInvoke = ImportSysMethodReference(syslib, target, "System.Reflection", "MethodBase", "Invoke", false,
+                new Type[] { typeof(object), typeof(object[]) }, typeof(object));
+
+            //HACK: for proper creating of object[] (and under/for the NetFx, and under/for the NetCore)
+            var reflectRef = target.ImportReference(Cecilifier.Runtime.TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke", 
+                System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
+            methInvoke.Parameters.Clear();
+            foreach (var p in reflectRef.Parameters)
+                methInvoke.Parameters.Add(p);
+
+            return methInvoke;
         }
 
         protected ModuleDefinition GetSysModule(bool isNetFx)

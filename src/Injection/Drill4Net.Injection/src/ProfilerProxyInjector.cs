@@ -185,12 +185,7 @@ namespace Drill4Net.Injection
             var Ldfld23 = ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methRegInfo);
             ilProc.Append(Ldfld23);
 
-            var methInvoke = ImportSysMethodReference(syslib, module, "System.Reflection", "MethodBase", "Invoke", false, new Type[] { typeof(object), typeof(object[]) }, typeof(object));
-            //HACK: for proper creating of object[] (and under/for the NetFx, and under/for the NetCore)
-            var reflectRef = module.ImportReference(TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
-            methInvoke.Parameters.Clear();
-            foreach (var p in reflectRef.Parameters)
-                methInvoke.Parameters.Add(p);
+            var methInvoke = GetLateBindingInvoker(syslib, module);
 
             var Callvirt24 = ilProc.Create(OpCodes.Callvirt, methInvoke);
             var Ldnull25 = ilProc.Create(OpCodes.Ldnull);

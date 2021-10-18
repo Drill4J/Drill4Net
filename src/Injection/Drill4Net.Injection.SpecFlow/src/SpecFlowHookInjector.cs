@@ -87,6 +87,7 @@ namespace Drill4Net.Injection.SpecFlow
 
         private void InjectContextDataInvoker(ModuleDefinition module, TypeDefinition classType, bool isNetFX)
         {
+            var syslib = GetSysModule(isNetFX); //inner caching & disposing
             var assembly = module.Assembly;
 
            //Method : GetContextData
@@ -94,7 +95,7 @@ namespace Drill4Net.Injection.SpecFlow
             m_GetContextData_2.ReturnType = assembly.MainModule.TypeSystem.String;
             classType.Methods.Add(m_GetContextData_2);
             m_GetContextData_2.Body.InitLocals = true;
-            var il_GetContextData_3 = m_GetContextData_2.Body.GetILProcessor();
+            var ilProc = m_GetContextData_2.Body.GetILProcessor();
 
             //Parameters of 'public static string GetContextData(MethodInfo meth, object featureCtx, object scenarioCtx)'
             var p_meth_4 = new ParameterDefinition("meth", ParameterAttributes.None, assembly.MainModule.ImportReference(typeof(System.Reflection.MethodInfo)));
@@ -111,26 +112,41 @@ namespace Drill4Net.Injection.SpecFlow
                 //scenarioCtx,
                 //Assembly.GetExecutingAssembly().Location,
             //}).ToString();
-            il_GetContextData_3.Emit(OpCodes.Ldarg_0);
-            il_GetContextData_3.Emit(OpCodes.Ldnull);
-            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 3);
-            il_GetContextData_3.Emit(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object);
-            il_GetContextData_3.Emit(OpCodes.Dup);
-            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 0);
-            il_GetContextData_3.Emit(OpCodes.Ldarg_1);
-            il_GetContextData_3.Emit(OpCodes.Stelem_Ref);
-            il_GetContextData_3.Emit(OpCodes.Dup);
-            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 1);
-            il_GetContextData_3.Emit(OpCodes.Ldarg_2);
-            il_GetContextData_3.Emit(OpCodes.Stelem_Ref);
-            il_GetContextData_3.Emit(OpCodes.Dup);
-            il_GetContextData_3.Emit(OpCodes.Ldc_I4, 2);
-            il_GetContextData_3.Emit(OpCodes.Call, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "GetExecutingAssembly", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "")));
-            il_GetContextData_3.Emit(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "get_Location", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "")));
-            il_GetContextData_3.Emit(OpCodes.Stelem_Ref);
-            il_GetContextData_3.Emit(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]")));
-            il_GetContextData_3.Emit(OpCodes.Callvirt, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Object", "ToString", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "")));
-            il_GetContextData_3.Emit(OpCodes.Ret);
+            ilProc.Emit(OpCodes.Ldarg_0);
+            ilProc.Emit(OpCodes.Ldnull);
+            ilProc.Emit(OpCodes.Ldc_I4, 3);
+            ilProc.Emit(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object);
+            ilProc.Emit(OpCodes.Dup);
+            ilProc.Emit(OpCodes.Ldc_I4, 0);
+            ilProc.Emit(OpCodes.Ldarg_1);
+            ilProc.Emit(OpCodes.Stelem_Ref);
+            ilProc.Emit(OpCodes.Dup);
+            ilProc.Emit(OpCodes.Ldc_I4, 1);
+            ilProc.Emit(OpCodes.Ldarg_2);
+            ilProc.Emit(OpCodes.Stelem_Ref);
+            ilProc.Emit(OpCodes.Dup);
+            ilProc.Emit(OpCodes.Ldc_I4, 2);
+
+            //var m_execAsmMeth = assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "GetExecutingAssembly", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, ""));
+            var m_execAsmMeth = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "GetExecutingAssembly", true,
+                typeof(void), typeof(System.Reflection.Assembly));
+            ilProc.Emit(OpCodes.Call, m_execAsmMeth);
+
+            //var m_locationMeth = assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "get_Location", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, ""));
+            var m_locationMeth = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "get_Location", false,
+                typeof(void), typeof(string));
+            ilProc.Emit(OpCodes.Callvirt, m_locationMeth);
+            ilProc.Emit(OpCodes.Stelem_Ref);
+
+            //meth.Invoke(null, ...)
+            var methInvoke = GetLateBindingInvoker(syslib, module);
+            ilProc.Emit(OpCodes.Callvirt, methInvoke);
+
+            //var m_toStringMeth = assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Object", "ToString", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, ""));
+            var m_toStringMeth = ImportSysMethodReference(syslib, module, "System", "Object", "ToString", false,
+                typeof(void), typeof(string));
+            ilProc.Emit(OpCodes.Callvirt, m_toStringMeth);
+            ilProc.Emit(OpCodes.Ret);
         }
 
         private void InjectHook(ModuleDefinition module, TypeDefinition type, string proxyNs, Type methAttrType,
