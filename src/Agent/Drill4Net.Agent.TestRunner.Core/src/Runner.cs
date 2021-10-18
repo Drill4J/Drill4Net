@@ -53,7 +53,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal string GetRunArguments(IList<string> tests)
         {
             // prefix "/C" - is for running in the CMD
-            var args = $"/C dotnet test \"{_rep.Options.FilePath}\" --logger \"console;verbosity=detailed\"";
+            var args = $"/C dotnet test \"{_rep.Options.FilePath}\" {GetLoggerParameters()} {GetParallelRunParameters()}";
             if (tests?.Any() != true)
                 return args;
             //
@@ -79,6 +79,18 @@ namespace Drill4Net.Agent.TestRunner.Core
             if (args.Length > 32767)
                 throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
             return args;
+        }
+
+        internal string GetParallelRunParameters()
+        {
+            //TODO: depending on the type of test framework:
+            // xUnit still disable, others aren't
+            return "-- RunConfiguration.DisableParallelization=true";
+        }
+
+        internal string GetLoggerParameters()
+        {
+            return "--logger \"console;verbosity=detailed\"";
         }
 
         /// <summary>
