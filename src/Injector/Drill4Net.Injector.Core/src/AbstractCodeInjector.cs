@@ -21,6 +21,13 @@ namespace Drill4Net.Injector.Core
 
         public abstract void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false);
 
+        #region ImportSysMethodReference
+        protected MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
+            string ns, string typeName, string method, bool isStatic, Type resType)
+        {
+            return ImportSysMethodReference(syslib, target, ns, typeName, method, isStatic, (Type[])null, resType);
+        }
+
         protected MethodReference ImportSysMethodReference(ModuleDefinition syslib, ModuleDefinition target,
             string ns, string typeName, string method, bool isStatic, Type paramType, Type resType)
         {
@@ -37,17 +44,21 @@ namespace Drill4Net.Injector.Core
                 methRef.HasThis = true;
 
             //parameters
-            for (var i = 0; i < paramTypes.Length; i++)
+            if (paramTypes != null)
             {
-                var type = paramTypes[i];
-                if (type == null || type == typeof(void))
-                    continue;
-                var parDef = CreateParameterDefinition($"par_{i}", type, syslib);
-                methRef.Parameters.Add(parDef);
+                for (var i = 0; i < paramTypes.Length; i++)
+                {
+                    var type = paramTypes[i];
+                    if (type == null || type == typeof(void))
+                        continue;
+                    var parDef = CreateParameterDefinition($"par_{i}", type, syslib);
+                    methRef.Parameters.Add(parDef);
+                }
             }
 
             return target.ImportReference(methRef);
         }
+        #endregion
 
         protected ParameterDefinition CreateParameterDefinition(string parName, Type parType, ModuleDefinition module)
         {

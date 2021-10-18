@@ -128,13 +128,11 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Emit(OpCodes.Ldc_I4, 2);
 
             //var m_execAsmMeth = assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "GetExecutingAssembly", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, ""));
-            var m_execAsmMeth = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "GetExecutingAssembly", true,
-                typeof(void), typeof(System.Reflection.Assembly));
+            var m_execAsmMeth = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "GetExecutingAssembly", true, typeof(System.Reflection.Assembly));
             ilProc.Emit(OpCodes.Call, m_execAsmMeth);
 
             //var m_locationMeth = assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Reflection.Assembly", "get_Location", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, ""));
-            var m_locationMeth = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "get_Location", false,
-                typeof(void), typeof(string));
+            var m_locationMeth = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "get_Location", false, typeof(string));
             ilProc.Emit(OpCodes.Callvirt, m_locationMeth);
             ilProc.Emit(OpCodes.Stelem_Ref);
 
@@ -143,8 +141,7 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Emit(OpCodes.Callvirt, methInvoke);
 
             //var m_toStringMeth = assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Object", "ToString", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, ""));
-            var m_toStringMeth = ImportSysMethodReference(syslib, module, "System", "Object", "ToString", false,
-                typeof(void), typeof(string));
+            var m_toStringMeth = ImportSysMethodReference(syslib, module, "System", "Object", "ToString", false, typeof(string));
             ilProc.Emit(OpCodes.Callvirt, m_toStringMeth);
             ilProc.Emit(OpCodes.Ret);
         }
