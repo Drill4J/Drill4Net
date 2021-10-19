@@ -1,7 +1,7 @@
 ﻿Description: BDD SpecFlow + xUnit tests for debug to the file
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: bdd-xUnit-file #optional injection name
+    Name: bdd-specflow-xUnit-file #optional injection name
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit\
     Filter: # mask for search files, namespaces, classes...

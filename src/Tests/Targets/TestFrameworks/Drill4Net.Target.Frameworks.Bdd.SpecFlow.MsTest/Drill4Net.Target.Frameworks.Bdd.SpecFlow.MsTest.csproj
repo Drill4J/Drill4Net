@@ -29,4 +29,13 @@
     <ProjectReference Include="..\Drill4Net.Target.Frameworks.Common\Drill4Net.Target.Frameworks.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TEST_Bdd_SpecFlow_mstest.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="_redirect.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -9,6 +9,8 @@ using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using System.Linq;
+using Newtonsoft.Json;
+using System.Web;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -396,6 +398,8 @@ namespace Drill4Net.Agent.Standard
             //
             var type = (AgentCommandType)command;
             _logger.Info($"Command: {type} -> {data}");
+            TestCaseContext testCase = null;
+
             switch (type)
             {
                 case AgentCommandType.CLASS_TESTS_START: StartSession(data); break;
@@ -408,22 +412,29 @@ namespace Drill4Net.Agent.Standard
                 //    break;
 
                 case AgentCommandType.TEST_CASE_START:
+                    //testCase = GetTestCaseContext(data);
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
+                    //testCase = GetTestCaseContext(data);
                     break;
                 default:
                     break;
             }
         }
 
+        internal TestCaseContext GetTestCaseContext(string str)
+        {
+            return JsonConvert.DeserializeObject<TestCaseContext>(str); 
+        }
+
         #region Manage sessions
         /// <summary>
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
-        /// <param name="name"></param>
-        internal void StartSession(string name)
+        /// <param name="metadata">Some info about session. It can be empty</param>
+        internal void StartSession(string metadata)
         {
-            CoverageSender.SendStartSessionCommand(NormalizeSessionName(name));
+            CoverageSender.SendStartSessionCommand(GetSessionName(metadata));
         }
 
         /// <summary>
@@ -432,34 +443,47 @@ namespace Drill4Net.Agent.Standard
         /// <param name="name"></param>
         internal void StopSession(string name)
         {
-            CoverageSender.SendStopSessionCommand(NormalizeSessionName(name));
+            CoverageSender.SendStopSessionCommand(GetSessionName(name));
         }
+
+        internal string GetSessionName(string data)
+        {
+            var guidName = Guid.NewGuid().ToString();
+            if (string.IsNullOrWhiteSpace(data))
+                return guidName;
+            if (data.Length > 32)
+                data = data.Substring(0, 32);
+            return NormalizeSessionName(data);
+        }
+
+        internal string NormalizeSessionName(string session)
+        {
+            if (string.IsNullOrWhiteSpace(session))
+                return Guid.NewGuid().ToString();
+            //
+            if (session.Contains(" "))
+            {
+                var ar = session.Split(' ');
+                for (int i = 0; i < ar.Length; i++)
+                {
+                    string word = ar[i];
+                    if (string.IsNullOrWhiteSpace(word))
+                        continue;
+                    char[] a = word.ToLower().ToCharArray();
+                    a[0] = char.ToUpper(a[0]);
+                    ar[i] = new string(a);
+                }
+                session = string.Join(null, ar).Replace(" ", null);
+            }
+            session = HttpUtility.HtmlEncode(session);
+            return session;
+        }
+        #endregion
 
         internal void SendTest2RunInfo(string test)
         {
             CoverageSender.SendTestRunCommand(test);
         }
-
-        internal static string NormalizeSessionName(string session)
-        {
-            if (string.IsNullOrWhiteSpace(session))
-                return Guid.NewGuid().ToString();
-            if (!session.Contains(" "))
-                return session; //as is
-            var ar = session.Split(' ');
-            for (int i = 0; i < ar.Length; i++)
-            {
-                string word = ar[i];
-                if (string.IsNullOrWhiteSpace(word))
-                    continue;
-                char[] a = word.ToLower().ToCharArray();
-                a[0] = char.ToUpper(a[0]);
-                ar[i] = new string(a);
-            }
-            session = string.Join(null, ar).Replace(" ", null);
-            return session;
-        }
-        #endregion
         #endregion
     }
 }
