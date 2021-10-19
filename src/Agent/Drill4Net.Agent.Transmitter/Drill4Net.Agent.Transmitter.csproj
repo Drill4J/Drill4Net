@@ -28,6 +28,27 @@
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Kafka\Drill4Net.Agent.Messaging.Kafka.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <None Include="..\..\..\libs\kafka-native\librdkafka.dll" Link="librdkafka.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\libs\kafka-native\librdkafkacpp.dll" Link="librdkafkacpp.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\libs\kafka-native\libzstd.dll" Link="libzstd.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\libs\kafka-native\msvcp120.dll" Link="msvcp120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\libs\kafka-native\msvcr120.dll" Link="msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\libs\kafka-native\zlib.dll" Link="zlib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="svc.yml">
