@@ -16,7 +16,6 @@ namespace Drill4Net.Injector.Core.UnitTests
 
         /*************************************************************************************/
 
-
         #region IsDirectoryNeed
         [Theory]
         [InlineData(null, @"C:\bin\Debug\Test.File")]
@@ -28,9 +27,9 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Directory_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                filters?.ToList(),null,null,null,null,null, null, null, null, null, null, null);
-      
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Directories = filters?.ToList();
+                  
             // Act
             var result = options.IsDirectoryNeed(s);
 
@@ -47,8 +46,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Directory_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                filters?.ToList(), null, null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Directories = filters?.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -65,8 +64,9 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Directory_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                filters?.ToList(), null, null, null, null, null, filters?.ToList(), null,null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Directories = filters?.ToList();
+            options.Excludes.Directories = filters?.ToList();
 
             // Act
             var result = options.IsDirectoryNeed(s);
@@ -74,14 +74,13 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.False(result);
         }
-        [Theory]
-        [MemberData(nameof(NullTestsData.DirectoryData), MemberType = typeof(NullTestsData))]
 
+        [Theory]
+        [MemberData(nameof(FilterOptionsNullTestData.DirectoryData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Directory_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
-                null, null, null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude);
 
             // Act
             var exception = Record.Exception(() => options.IsDirectoryNeed(s));
@@ -89,7 +88,6 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.Null(exception);
         }
-
         #endregion
         #region IsFolderNeed
         [Theory]
@@ -103,8 +101,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Folder_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, filters?.ToList(), null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Folders= filters?.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -122,8 +120,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Folder_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, filters?.ToList(), null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Folders = filters?.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -142,8 +140,9 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Folder_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, filters?.ToList(), null, null, null, null, null, filters?.ToList(), null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Folders = filters?.ToList();
+            options.Excludes.Folders = filters?.ToList();
 
             // Act
             var result = options.IsFolderNeed(s);
@@ -151,14 +150,14 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.False(result);
         }
+
         [Theory]
-        [MemberData(nameof(NullTestsData.FolderData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.FolderData), MemberType = typeof(FilterOptionsNullTestData))]
 
         public void Folder_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
-                null, null, null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude);
 
             // Act
             var exception = Record.Exception(() => options.IsFolderNeed(s));
@@ -177,8 +176,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void File_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, filters?.ToList(), null, null, null,null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Files = filters?.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -194,8 +193,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void File_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, filters?.ToList(), null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Files = filters?.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -211,8 +210,9 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void File_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, filters?.ToList(), null, null, null, null, null, filters?.ToList(), null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Files = filters?.ToList();
+            options.Excludes.Files = filters?.ToList();
 
             // Act
             var result = options.IsFileNeed(s);
@@ -220,13 +220,13 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.False(result);
         }
+
         [Theory]
-        [MemberData(nameof(NullTestsData.FileData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.FileData), MemberType = typeof(FilterOptionsNullTestData))]
         public void File_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
-                null, null, null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude);
 
             // Act
             var exception = Record.Exception(() => options.IsFileNeed(s));
@@ -249,8 +249,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Namespace_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, filters?.ToList(), null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Namespaces = filters?.ToList();
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -271,8 +271,9 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Namespace_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, filters?.ToList(), null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Namespaces = filters?.ToList();
+
 
             // Act
             var result = options.IsNamespaceNeed(s);
@@ -292,22 +293,22 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Namespace_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, filters?.ToList(), null, null, null, null, null, filters?.ToList(), null, null);
-
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Namespaces = filters?.ToList();
+            options.Excludes.Namespaces = filters?.ToList();
             // Act
             var result = options.IsNamespaceNeed(s);
 
             // Assert
             Assert.False(result);
         }
+
         [Theory]
-        [MemberData(nameof(NullTestsData.NamespaceData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.NamespaceData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Namespace_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
-                null, null, null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude);
 
             // Act
             var exception = Record.Exception(() => options.IsNamespaceNeed(s));
@@ -327,8 +328,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Class_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, null, filters?.ToList(), null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Classes = filters?.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -345,8 +346,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Class_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, null, filters?.ToList(), null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Classes = filters?.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -363,8 +364,9 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Class_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, null, filters?.ToList(), null, null, null, null, null, filters?.ToList(), null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Classes = filters?.ToList();
+            options.Excludes.Classes = filters?.ToList();
 
             // Act
             var result = options.IsClassNeed(s);
@@ -372,13 +374,13 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.False(result);
         }
+
         [Theory]
-        [MemberData(nameof(NullTestsData.ClassData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.ClassData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Class_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
-                null, null, null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude);
 
             // Act
             var exception = Record.Exception(() => options.IsClassNeed(s));
@@ -398,8 +400,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Attribute_Include_True(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, null,null, filters?.ToList(), null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Attributes = filters?.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
@@ -416,8 +418,8 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Attribute_Include_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, null, null, filters?.ToList(), null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Attributes = filters?.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
@@ -434,8 +436,9 @@ namespace Drill4Net.Injector.Core.UnitTests
         public void Attribute_Include_Exclude_False(string[] filters, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(new SourceFilterParams(),new SourceFilterParams(),
-                null, null, null, null, null, filters?.ToList(), null, null, null, null, null, filters?.ToList());
+            var options = _dataHelper.CreateSourceFilterOptions();
+            options.Includes.Attributes = filters?.ToList();
+            options.Excludes.Attributes = filters?.ToList();
 
             // Act
             var result = options.IsAttributeNeed(s);
@@ -443,13 +446,13 @@ namespace Drill4Net.Injector.Core.UnitTests
             // Assert
             Assert.False(result);
         }
+
         [Theory]
-        [MemberData(nameof(NullTestsData.AttributeData), MemberType = typeof(NullTestsData))]
+        [MemberData(nameof(FilterOptionsNullTestData.AttributeData), MemberType = typeof(FilterOptionsNullTestData))]
         public void Attribute_Include_Exclude_Null(SourceFilterParams include, SourceFilterParams exclude, string s)
         {
             // Arrange
-            var options = _dataHelper.CreateSourceFilterOptions(include, exclude,
-                null, null, null, null, null, null, null, null, null, null, null, null);
+            var options = _dataHelper.CreateSourceFilterOptions(include, exclude);
 
             // Act
             var exception = Record.Exception(() => options.IsAttributeNeed(s));

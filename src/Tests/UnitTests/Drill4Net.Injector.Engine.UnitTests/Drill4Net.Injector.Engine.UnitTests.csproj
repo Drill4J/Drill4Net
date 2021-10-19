@@ -6,9 +6,19 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Injector.Engine.UnitTests</OutputPath>
+    <DocumentationFile>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Injector.Engine.UnitTests\Drill4Net.Injector.Engine.UnitTests.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Release\Tests\Drill4Net.Injector.Engine.UnitTests</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,6 +28,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+    <ProjectReference Include="..\..\..\Injector\Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj" />
+    <ProjectReference Include="..\Drill4Net.TestDataHelper\Drill4Net.TestDataHelper.csproj" />
   </ItemGroup>
 
 </Project>

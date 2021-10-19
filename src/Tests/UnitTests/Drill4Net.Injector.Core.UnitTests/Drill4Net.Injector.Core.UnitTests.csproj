@@ -6,6 +6,16 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Injector.Core.UnitTests</OutputPath>
+    <DocumentationFile>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Injector.Core.UnitTests\Drill4Net.Injector.Core.UnitTests.xml</DocumentationFile>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Release\Tests\Drill4Net.Injector.Core.UnitTests</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
