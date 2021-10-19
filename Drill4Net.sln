@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.App", "src\Injector\Drill4Net.Injector.App\Drill4Net.Injector.App.csproj", "{96334265-0515-4C61-B6EF-A39A36A99CD2}"
 EndProject
@@ -46,7 +46,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Testing.Deb
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RnD", "RnD", "{77625A58-589A-4E69-B835-64A01A197D09}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50.App", "src\Tests\Targets\Net50\Drill4Net.Target.Net50.App\Drill4Net.Target.Net50.App.csproj", "{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net50.App", "src\Tests\Targets\NetCore\Net50\Drill4Net.Target.Net50.App\Drill4Net.Target.Net50.App.csproj", "{2D2BB2ED-E1DF-492F-8173-6E44DA4E893A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B21E08BB-F547-47C7-A9E1-30AE2DC0CB65}"
 	ProjectSection(SolutionItems) = preProject
@@ -54,9 +54,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Core31.App", "src\Tests\Targets\Core31\Drill4Net.Target.Core31.App\Drill4Net.Target.Core31.App.csproj", "{EA971CF5-1B2D-4EE5-B5D1-DD208258D939}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Core31.App", "src\Tests\Targets\NetCore\Core31\Drill4Net.Target.Core31.App\Drill4Net.Target.Core31.App.csproj", "{EA971CF5-1B2D-4EE5-B5D1-DD208258D939}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Core22.App", "src\Tests\Targets\Core22\Drill4Net.Target.Core22.App\Drill4Net.Target.Core22.App.csproj", "{BC7A4F53-E3FA-41F3-B9A6-28AB240BFF7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Core22.App", "src\Tests\Targets\NetCore\Core22\Drill4Net.Target.Core22.App\Drill4Net.Target.Core22.App.csproj", "{BC7A4F53-E3FA-41F3-B9A6-28AB240BFF7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Net461.App", "src\Tests\Targets\NetFramework\Drill4Net.Target.Net461.App\Drill4Net.Target.Net461.App.csproj", "{1B1D2534-D211-475F-8CF5-C619CF1554A8}"
 EndProject
@@ -215,17 +215,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.TestDataHelper", "src\Tests\UnitTests\Drill4Net.TestDataHelper\Drill4Net.TestDataHelper.csproj", "{48943230-DF15-484D-ACF5-93766893D43D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3219B97E-61DF-44FC-A994-9B893DA29E20}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frameworks", "Frameworks", "{3219B97E-61DF-44FC-A994-9B893DA29E20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Testers.Common", "src\Tests\Targets\Tests\Drill4Net.Target.Testers.Common\Drill4Net.Target.Testers.Common.csproj", "{674122D2-DFEC-43A8-8937-E84FDA0DD5CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Frameworks.Common", "src\Tests\Targets\TestFrameworks\Drill4Net.Target.Frameworks.Common\Drill4Net.Target.Frameworks.Common.csproj", "{674122D2-DFEC-43A8-8937-E84FDA0DD5CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest", "src\Tests\Targets\Tests\Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest\Drill4Net.Target.Tests.Bdd.SpecFlow.MsTest.csproj", "{FD6EDFB7-81FC-4413-86E0-354D9B4A16A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest", "src\Tests\Targets\TestFrameworks\Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest\Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest.csproj", "{FD6EDFB7-81FC-4413-86E0-354D9B4A16A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit", "src\Tests\Targets\Tests\Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit\Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit.csproj", "{3330BB08-7E76-4D64-B7AA-561C99890BE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit", "src\Tests\Targets\TestFrameworks\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.csproj", "{3330BB08-7E76-4D64-B7AA-561C99890BE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestRunner", "TestRunner", "{21ED3A4F-4091-40D8-83DD-720078A3B0A3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.TestRunner.Core", "src\Agent\Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj", "{765F7192-8557-4FED-A9D2-4051C810D89C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{F2B5DE11-AECD-4B21-B178-86CF5F30762E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SpecFlow", "SpecFlow", "{02D7D9ED-3F9C-473C-8583-821D8B35E5A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -715,7 +719,7 @@ Global
 		{53787CA4-6A0F-4A7D-9A68-93F390E4FBEF} = {AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}
 		{FA09E203-57D0-465D-AE28-58403EC55FB7} = {9951D0FB-A3A2-44C0-B0B6-13206B81E35A}
 		{FE733970-25A1-48E4-B20A-32D6534E7BA5} = {9951D0FB-A3A2-44C0-B0B6-13206B81E35A}
-		{3D84E6B3-F423-4C5B-9FDD-A76103B68125} = {3219B97E-61DF-44FC-A994-9B893DA29E20}
+		{3D84E6B3-F423-4C5B-9FDD-A76103B68125} = {F2B5DE11-AECD-4B21-B178-86CF5F30762E}
 		{7C9796D0-5657-4FAA-827C-20626078E7EA} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{E8412637-AE3E-4520-B907-96CF51FD0420} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{4C985810-8693-494F-B121-371B6192DA4C} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
@@ -730,11 +734,13 @@ Global
 		{A7231FFA-33FF-42A3-A5FC-479ECBEB5594} = {023DAB8F-8554-4DF4-B7F6-65F118089B31}
 		{48943230-DF15-484D-ACF5-93766893D43D} = {6F63B967-D17C-4693-8228-D4F254C24F8B}
 		{3219B97E-61DF-44FC-A994-9B893DA29E20} = {50B3CF2D-D22F-4393-97BF-67C14B2E1756}
-		{674122D2-DFEC-43A8-8937-E84FDA0DD5CB} = {3219B97E-61DF-44FC-A994-9B893DA29E20}
-		{FD6EDFB7-81FC-4413-86E0-354D9B4A16A3} = {3219B97E-61DF-44FC-A994-9B893DA29E20}
-		{3330BB08-7E76-4D64-B7AA-561C99890BE5} = {3219B97E-61DF-44FC-A994-9B893DA29E20}
+		{674122D2-DFEC-43A8-8937-E84FDA0DD5CB} = {02D7D9ED-3F9C-473C-8583-821D8B35E5A1}
+		{FD6EDFB7-81FC-4413-86E0-354D9B4A16A3} = {02D7D9ED-3F9C-473C-8583-821D8B35E5A1}
+		{3330BB08-7E76-4D64-B7AA-561C99890BE5} = {02D7D9ED-3F9C-473C-8583-821D8B35E5A1}
 		{21ED3A4F-4091-40D8-83DD-720078A3B0A3} = {F5B1697D-C26A-4165-B810-6A4C8621F902}
 		{765F7192-8557-4FED-A9D2-4051C810D89C} = {21ED3A4F-4091-40D8-83DD-720078A3B0A3}
+		{F2B5DE11-AECD-4B21-B178-86CF5F30762E} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
+		{02D7D9ED-3F9C-473C-8583-821D8B35E5A1} = {3219B97E-61DF-44FC-A994-9B893DA29E20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
