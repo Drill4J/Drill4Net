@@ -392,12 +392,12 @@ namespace Drill4Net.Agent.Standard
             var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
             if (!comTypes.Contains(command))
             {
-                _logger.Error($"Unknown command: {command} -> {data}");
+                _logger.Error($"Unknown command: {command} -> [{data}]");
                 return;
             }
             //
             var type = (AgentCommandType)command;
-            _logger.Debug($"Command: {type} -> {data}");
+            _logger.Debug($"Command: {type} -> [{data}]");
             //TestCaseContext testCase = null;
 
             switch (type)
@@ -435,7 +435,7 @@ namespace Drill4Net.Agent.Standard
         internal void StartSession(string metadata)
         {
             var session = GetSessionName(metadata);
-            _logger.Info($"Starting session: {session}");
+            _logger.Info($"Starting session: [{session}]");
             CoverageSender.SendStartSessionCommand(session);
         }
 
@@ -446,7 +446,7 @@ namespace Drill4Net.Agent.Standard
         internal void StopSession(string metadata)
         {
             var session = GetSessionName(metadata);
-            _logger.Info($"Stopping session: {session}");
+            _logger.Info($"Stopping session: [{session}]");
             CoverageSender.SendStopSessionCommand(session);
         }
 
