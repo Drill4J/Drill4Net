@@ -76,6 +76,7 @@ namespace Drill4Net.Injection.SpecFlow
                 return;
             //
             InjectInitMethod(type, typeof(TechTalk.SpecFlow.BeforeTestRunAttribute), proxyNs, isNetFX);
+            InjectTestsFinished(type, proxyNs);
             InjectContextDataInvoker(type, isNetFX);
             //
             //InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
@@ -166,7 +167,7 @@ namespace Drill4Net.Injection.SpecFlow
             il_meth.Append(Stsfld16);
             #endregion
 
-            //Method : DoCommand
+            //Method : DoCommand for TESTS_START
             var m_DoCommand = GetDoCommandMethod(proxyNs, module);
             il_meth.Emit(OpCodes.Ldc_I4, (int)AgentCommandType.ASSEMBLY_TESTS_START);
             il_meth.Emit(OpCodes.Ldnull);
@@ -174,6 +175,27 @@ namespace Drill4Net.Injection.SpecFlow
 
             var Ret17 = il_meth.Create(OpCodes.Ret);
             il_meth.Append(Ret17);
+        }
+
+        private void InjectTestsFinished(TypeDefinition type, string proxyNs)
+        {
+            var module = type.Module;
+
+            var funcName = "Drill4NetTestsFinished";
+            var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
+            type.Methods.Add(funcDef);
+
+            AddMethodAttribute(module, typeof(TechTalk.SpecFlow.AfterTestRunAttribute), funcDef, false);
+
+            funcDef.Body.InitLocals = true;
+            var ilProc = funcDef.Body.GetILProcessor();
+
+            var m_DoCommand = GetDoCommandMethod(proxyNs, module);
+            ilProc.Emit(OpCodes.Ldc_I4, (int)AgentCommandType.ASSEMBLY_TESTS_STOP);
+            ilProc.Emit(OpCodes.Ldnull);
+            ilProc.Emit(OpCodes.Call, m_DoCommand);
+
+            ilProc.Append(ilProc.Create(OpCodes.Ret));
         }
 
         private void InjectContextDataInvoker(TypeDefinition classType, bool isNetFX)
