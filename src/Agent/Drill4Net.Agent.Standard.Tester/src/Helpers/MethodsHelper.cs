@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Drill4Net.Profiling.Tree;
 
-
-
 namespace Drill4Net.Agent.Standard.Tester
 {
     /// <summary>
