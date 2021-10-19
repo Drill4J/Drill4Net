@@ -20,13 +20,13 @@
 	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit</OutputPath>
+    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit</OutputPath>
     <DocumentationFile></DocumentationFile>
     <WarningLevel>5</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Bdd.SpecFlow.xUnit</OutputPath>
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit</OutputPath>
   </PropertyGroup>
 
 </Project>
