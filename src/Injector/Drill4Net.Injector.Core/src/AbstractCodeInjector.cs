@@ -8,6 +8,7 @@ namespace Drill4Net.Injector.Core
 {
     public abstract class AbstractCodeInjector : IDisposable
     {
+        public const string METHOD_COMMAND_NAME = "DoCommand";
         protected readonly Dictionary<bool, ModuleDefinition> _syslibs;
 
         /*****************************************************************************************/

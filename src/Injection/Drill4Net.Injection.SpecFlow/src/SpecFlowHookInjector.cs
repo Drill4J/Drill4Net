@@ -21,6 +21,8 @@ namespace Drill4Net.Injection.SpecFlow
 
         public const string PluginName = "SpecFlow";
 
+        private const string _getContextDataMethod = "GetContextData";
+        private const string _scenarioField = "_scenarioMethInfo";
         private const string SPEC_NS = "TechTalk.SpecFlow";
         private ModuleDefinition _speclib;
 
@@ -73,13 +75,13 @@ namespace Drill4Net.Injection.SpecFlow
             if (type == null)
                 return;
             //
-            InjectInitMethod(type, typeof(TechTalk.SpecFlow.BeforeTestRunAttribute), isNetFX); //BeforeTestRunAttribute
+            InjectInitMethod(type, typeof(TechTalk.SpecFlow.BeforeTestRunAttribute), isNetFX);
             InjectContextDataInvoker(type, isNetFX);
             //
-            //InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
-            //InjectHook(module, type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureFinished", 1, isNetFX);
-            InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioStarting", (int)AgentCommandType.TEST_CASE_START, isNetFX);
-            InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "ScenarioContext", "ScenarioInfo", "Drill4NetScenarioFinished", (int)AgentCommandType.TEST_CASE_STOP, isNetFX);
+            //InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
+            //InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.AfterFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureFinished", 1, isNetFX);
+            InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.BeforeScenarioAttribute), "Drill4NetScenarioStarting", (int)AgentCommandType.TEST_CASE_START, isNetFX);
+            InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.AfterScenarioAttribute), "Drill4NetScenarioFinished", (int)AgentCommandType.TEST_CASE_STOP, isNetFX);
         }
 
         private TypeDefinition GetClassTypeWithBindingAttribute(AssemblyDefinition assembly)
@@ -98,7 +100,7 @@ namespace Drill4Net.Injection.SpecFlow
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
 
             //field _scenarioMethInfo
-            var fld_ProfilerProxy_methInfo = new FieldDefinition("_scenarioMethInfo", FieldAttributes.Private | FieldAttributes.Static, ImportSysTypeReference(syslib, module, typeof(System.Reflection.MethodInfo)));
+            var fld_ProfilerProxy_methInfo = new FieldDefinition(_scenarioField, FieldAttributes.Private | FieldAttributes.Static, ImportSysTypeReference(syslib, module, typeof(System.Reflection.MethodInfo)));
             type.Fields.Add(fld_ProfilerProxy_methInfo);
 
             //method
@@ -175,18 +177,18 @@ namespace Drill4Net.Injection.SpecFlow
             var assembly = module.Assembly;
 
            //Method : GetContextData
-           var m_GetContextData_2 = new MethodDefinition("GetContextData", MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, assembly.MainModule.TypeSystem.Void);
-            m_GetContextData_2.ReturnType = assembly.MainModule.TypeSystem.String;
+           var m_GetContextData_2 = new MethodDefinition(_getContextDataMethod, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, assembly.MainModule.TypeSystem.Void);
+            m_GetContextData_2.ReturnType = module.TypeSystem.String;
             classType.Methods.Add(m_GetContextData_2);
             m_GetContextData_2.Body.InitLocals = true;
             var ilProc = m_GetContextData_2.Body.GetILProcessor();
 
             //Parameters of 'public static string GetContextData(MethodInfo meth, object featureCtx, object scenarioCtx)'
-            var p_meth_4 = new ParameterDefinition("meth", ParameterAttributes.None, assembly.MainModule.ImportReference(typeof(System.Reflection.MethodInfo)));
+            var p_meth_4 = new ParameterDefinition("meth", ParameterAttributes.None, module.ImportReference(typeof(System.Reflection.MethodInfo)));
             m_GetContextData_2.Parameters.Add(p_meth_4);
-            var p_featureCtx_5 = new ParameterDefinition("featureCtx", ParameterAttributes.None, assembly.MainModule.TypeSystem.Object);
+            var p_featureCtx_5 = new ParameterDefinition("featureCtx", ParameterAttributes.None, module.TypeSystem.Object);
             m_GetContextData_2.Parameters.Add(p_featureCtx_5);
-            var p_scenarioCtx_6 = new ParameterDefinition("scenarioCtx", ParameterAttributes.None, assembly.MainModule.TypeSystem.Object);
+            var p_scenarioCtx_6 = new ParameterDefinition("scenarioCtx", ParameterAttributes.None, module.TypeSystem.Object);
             m_GetContextData_2.Parameters.Add(p_scenarioCtx_6);
 
             //return meth.Invoke(null,
@@ -199,7 +201,7 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Emit(OpCodes.Ldarg_0);
             ilProc.Emit(OpCodes.Ldnull);
             ilProc.Emit(OpCodes.Ldc_I4, 3);
-            ilProc.Emit(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object);
+            ilProc.Emit(OpCodes.Newarr, module.TypeSystem.Object);
             ilProc.Emit(OpCodes.Dup);
             ilProc.Emit(OpCodes.Ldc_I4, 0);
             ilProc.Emit(OpCodes.Ldarg_1);
@@ -230,12 +232,10 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Emit(OpCodes.Ret);
         }
 
-        private void InjectHook(TypeDefinition type, string proxyNs, Type methAttrType,
-                                string paramCtxType, string paramInfoType, string funcName, int command, bool isNetFX)
+        private void InjectHook(TypeDefinition type, string proxyNs, Type methAttrType, string funcName, int command, bool isNetFX)
         {
             var module = type.Module;
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
-            var cmdMethodName = "DoCommand";
 
             //var funcName = "Drill4NetScenarioStarting";
             var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
@@ -246,42 +246,37 @@ namespace Drill4Net.Injection.SpecFlow
             funcDef.Body.InitLocals = true;
             var ilProc = funcDef.Body.GetILProcessor();
 
-            //Parameters of 'public static void Drill4NetScenarioStarting(ScenarioContext scenarioContext)'
-            var methParamRef = module.ImportReference(new TypeReference(SPEC_NS, paramCtxType, _speclib, _speclib));
-            var par = new ParameterDefinition("context", ParameterAttributes.None, methParamRef);
-            funcDef.Parameters.Add(par);
+            //Parameters of 'public static void Drill4NetScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext)'
+            var methParamRef1 = module.ImportReference(new TypeReference(SPEC_NS, "FeatureContext", _speclib, _speclib));
+            var par1 = new ParameterDefinition("featureCtx", ParameterAttributes.None, methParamRef1);
+            funcDef.Parameters.Add(par1);
 
-            ilProc.Append(ilProc.Create(OpCodes.Nop));
-            ilProc.Append(ilProc.Create(OpCodes.Ldc_I4, command));
-            ilProc.Append(ilProc.Create(OpCodes.Ldarg_0));
+            var methParamRef2 = module.ImportReference(new TypeReference(SPEC_NS, "ScenarioContext", _speclib, _speclib));
+            var par2 = new ParameterDefinition("scenarioCtx", ParameterAttributes.None, methParamRef2);
+            funcDef.Parameters.Add(par2);
 
-            //get_ScenarioInfo
-            var typeRef1 = module.ImportReference(new TypeReference(SPEC_NS, paramCtxType, _speclib, _speclib));
-            var resTypeRef1 = module.ImportReference(new TypeReference(SPEC_NS, paramInfoType, _speclib, _speclib));
-            var methInfo1 = new MethodReference($"get_{paramInfoType}", resTypeRef1, typeRef1);
-            methInfo1.HasThis = true;
-            ilProc.Append(ilProc.Create(OpCodes.Callvirt, methInfo1));
+            //var data = GetContextData(_scenarioMethInfo, featureContext, scenarioContext);
+            var lv_data_6 = new VariableDefinition(module.TypeSystem.String);
+            funcDef.Body.Variables.Add(lv_data_6);
 
-            //get_Title
-            var typeRef2 = module.ImportReference(new TypeReference(SPEC_NS, paramInfoType, _speclib, _speclib));
-            var resTypeRef2 = module.TypeSystem.String;
-            var methInfo2 = new MethodReference("get_Title", resTypeRef2, typeRef2);
-            methInfo2.HasThis = true;
-            ilProc.Append(ilProc.Create(OpCodes.Callvirt, methInfo2));
+            //Method : GetContextData
+            var m_GetContextData_7 = type.Methods.Single(a => a.Name == _getContextDataMethod);
+            m_GetContextData_7.ReturnType = module.TypeSystem.String;
+            var fld_scenarioMethInfo_1 = type.Fields.Single(a => a.Name == _scenarioField);
+            ilProc.Emit(OpCodes.Ldsfld, fld_scenarioMethInfo_1);
+            ilProc.Emit(OpCodes.Ldarg_0);
+            ilProc.Emit(OpCodes.Ldarg_1);
+            ilProc.Emit(OpCodes.Call, m_GetContextData_7);
+            ilProc.Emit(OpCodes.Stloc, lv_data_6);
 
-            //Invoke
-            var typeRef3 = new TypeReference(proxyNs, ProxyClass, module, module); //located in the same assembly
-            var methInfo3 = new MethodReference(cmdMethodName, module.TypeSystem.Void, typeRef3);
-            //par1
-            var parDef1 = ImportParameterDefinition("command", typeof(int), syslib, module);
-            methInfo3.Parameters.Add(parDef1);
-            //par2
-            var parDef2 = ImportParameterDefinition("data", typeof(string), syslib, module);
-            methInfo3.Parameters.Add(parDef2);
+            //Method : DoCommand
+            var proxyDef = module.Types.Single(a => a.Namespace == proxyNs); //must exist yet
+            var m_DoCommand_8 = proxyDef.Methods.Single(a => a.Name == METHOD_COMMAND_NAME);
+            m_DoCommand_8.ReturnType = module.TypeSystem.Void;
+            ilProc.Emit(OpCodes.Ldc_I4, command);
+            ilProc.Emit(OpCodes.Ldloc, lv_data_6);
+            ilProc.Emit(OpCodes.Call, m_DoCommand_8);
 
-            ilProc.Append(ilProc.Create(OpCodes.Call, methInfo3));
-
-            ilProc.Append(ilProc.Create(OpCodes.Nop));
             ilProc.Append(ilProc.Create(OpCodes.Ret));
         }
 

@@ -23,7 +23,7 @@ namespace Drill4Net.Injection.SpecFlow
         //Need data: qualified name, display name, test group, result, assembly path
 
         //let it will be replaced in method rather in cctor
-        [BeforeTestRun(Order = -1)]
+        [BeforeTestRun]
         public static void VanchoTestsInit()
         {
             //the EXAMPLE!

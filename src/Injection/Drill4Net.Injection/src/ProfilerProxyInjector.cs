@@ -148,7 +148,7 @@ namespace Drill4Net.Injection
             //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
 
             //var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, methGetMethodRef);
-            var Ldstr152 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, "DoCommand");
+            var Ldstr152 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, METHOD_COMMAND_NAME);
             il_ProfilerProxy_cctor.Append(Ldstr152);
             il_ProfilerProxy_cctor.Append(Callvirt14);
             var Stsfld162 = il_ProfilerProxy_cctor.Create(OpCodes.Stsfld, fld_ProfilerProxy_methCmdInfo);
