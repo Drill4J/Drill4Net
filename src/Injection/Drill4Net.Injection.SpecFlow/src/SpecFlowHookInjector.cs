@@ -75,7 +75,7 @@ namespace Drill4Net.Injection.SpecFlow
             if (type == null)
                 return;
             //
-            InjectInitMethod(type, typeof(TechTalk.SpecFlow.BeforeTestRunAttribute), isNetFX);
+            InjectInitMethod(type, typeof(TechTalk.SpecFlow.BeforeTestRunAttribute), proxyNs, isNetFX);
             InjectContextDataInvoker(type, isNetFX);
             //
             //InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
@@ -94,7 +94,7 @@ namespace Drill4Net.Injection.SpecFlow
             return type;
         }
 
-        private void InjectInitMethod(TypeDefinition type, Type methAttrType, bool isNetFX)
+        private void InjectInitMethod(TypeDefinition type, Type methAttrType, string proxyNs, bool isNetFX)
         {
             var module = type.Module;
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
@@ -165,6 +165,12 @@ namespace Drill4Net.Injection.SpecFlow
             var Stsfld16 = il_meth.Create(OpCodes.Stsfld, fld_ProfilerProxy_methInfo);
             il_meth.Append(Stsfld16);
             #endregion
+
+            //Method : DoCommand
+            var m_DoCommand = GetDoCommandMethod(proxyNs, module);
+            il_meth.Emit(OpCodes.Ldc_I4, (int)AgentCommandType.ASSEMBLY_TESTS_START);
+            il_meth.Emit(OpCodes.Ldnull);
+            il_meth.Emit(OpCodes.Call, m_DoCommand);
 
             var Ret17 = il_meth.Create(OpCodes.Ret);
             il_meth.Append(Ret17);
@@ -270,14 +276,20 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Emit(OpCodes.Stloc, lv_data_6);
 
             //Method : DoCommand
-            var proxyDef = module.Types.Single(a => a.Namespace == proxyNs); //must exist yet
-            var m_DoCommand_8 = proxyDef.Methods.Single(a => a.Name == METHOD_COMMAND_NAME);
-            m_DoCommand_8.ReturnType = module.TypeSystem.Void;
+            var m_DoCommand = GetDoCommandMethod(proxyNs, module);
+            //m_DoCommand.ReturnType = module.TypeSystem.Void;
             ilProc.Emit(OpCodes.Ldc_I4, command);
             ilProc.Emit(OpCodes.Ldloc, lv_data_6);
-            ilProc.Emit(OpCodes.Call, m_DoCommand_8);
+            ilProc.Emit(OpCodes.Call, m_DoCommand);
 
             ilProc.Append(ilProc.Create(OpCodes.Ret));
+        }
+
+        internal MethodDefinition GetDoCommandMethod(string proxyNs, ModuleDefinition module)
+        {
+            var proxyDef = module.Types.Single(a => a.Namespace == proxyNs); //must exist yet
+            var m_DoCommand_8 = proxyDef.Methods.Single(a => a.Name == METHOD_COMMAND_NAME);
+            return m_DoCommand_8;
         }
 
         internal void AddMethodAttribute(ModuleDefinition module, Type attribType,

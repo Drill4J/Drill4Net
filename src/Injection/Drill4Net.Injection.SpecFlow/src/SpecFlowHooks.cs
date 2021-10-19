@@ -37,13 +37,13 @@ namespace Drill4Net.Injection.SpecFlow
             //_featureMethInfo = type.GetMethod("GetFeatureContext");
             _scenarioMethInfo = type.GetMethod("GetScenarioContext");
             //
-            DemoTransmitter.DoCommand((int)AgentCommandType.CLASS_TESTS_START, null);
+            DemoTransmitter.DoCommand((int)AgentCommandType.ASSEMBLY_TESTS_START, null);
         }
 
         [AfterTestRun]
         public static void VanchoTestsFinished()
         {
-            DemoTransmitter.DoCommand((int)AgentCommandType.CLASS_TESTS_STOP, null);
+            DemoTransmitter.DoCommand((int)AgentCommandType.ASSEMBLY_TESTS_STOP, null);
         }
 
         //#region TEST

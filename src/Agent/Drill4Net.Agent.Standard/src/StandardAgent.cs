@@ -402,8 +402,8 @@ namespace Drill4Net.Agent.Standard
 
             switch (type)
             {
-                case AgentCommandType.CLASS_TESTS_START: StartSession(data); break;
-                case AgentCommandType.CLASS_TESTS_STOP: StopSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_START: StartSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopSession(data); break;
 
                 //now, in fact, these are group of tests for one "test method" with many different cases
                 //case AgentCommandType.TEST_START:

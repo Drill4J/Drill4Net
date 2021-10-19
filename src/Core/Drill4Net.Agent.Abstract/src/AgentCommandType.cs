@@ -6,8 +6,8 @@ namespace Drill4Net.Agent.Abstract
     /// </summary>
     public enum AgentCommandType
     {
-        CLASS_TESTS_START = 0,
-        CLASS_TESTS_STOP = 1,
+        ASSEMBLY_TESTS_START = 0,
+        ASSEMBLY_TESTS_STOP = 1,
 
         TEST_START = 2,
         TEST_STOP = 3,
