@@ -45,6 +45,7 @@ namespace Drill4Net.Agent.File
         //TODO: do something with it
         public static void DoCommand(int command, string data)
         {
+            _queue.Enqueue($"************ COMMAND: {command} -> {data}");
         }
     }
 }
