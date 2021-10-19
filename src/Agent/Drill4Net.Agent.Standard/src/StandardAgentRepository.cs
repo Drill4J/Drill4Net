@@ -110,15 +110,15 @@ namespace Drill4Net.Agent.Standard
         {
             if (adminOpts == null)
                 throw new ArgumentNullException(nameof(adminOpts));
-            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAgentPartConfig(targetOpts));
+            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAdminAgentConfig(targetOpts));
         }
 
-        internal AgentPartConfig GetAgentPartConfig(TargetData targOpts)
+        internal AdminAgentConfig GetAdminAgentConfig(TargetData targOpts)
         {
             string targVersion = targOpts.Version;
             if (string.IsNullOrWhiteSpace(targVersion))
-                targVersion = GetExecutingAssemblyVersion();
-            return new AgentPartConfig(targOpts.Name, targVersion, GetAgentVersion());
+                targVersion = GetExecutingAssemblyVersion(); //Guanito: a little inproperly (in Worker we get its version)
+            return new AdminAgentConfig(targOpts.Name, targVersion, GetAgentVersion());
         }
 
         internal string GetAgentVersion()

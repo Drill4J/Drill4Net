@@ -8,6 +8,7 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using System.Linq;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -25,7 +26,7 @@ namespace Drill4Net.Agent.Standard
         private IAgentReceiver Receiver => _comm.Receiver;
 
         //in fact, the Main sender. Others are additional ones - as plugins
-        private IAgentCoverageSender CoverageSender => _comm.Sender;
+        private IAgentCoveragerSender CoverageSender => _comm.Sender;
 
         /// <summary>
         /// Repository for Agent
@@ -386,21 +387,43 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public void ExecCommand(int command, string data)
         {
-            _logger.Info($"Command: {command} -> {data}");
-            switch (command)
+            var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
+            if (!comTypes.Contains(command))
             {
-                case 2: StartSession(data); break;
-                case 3: StopSession(data); break;
+                _logger.Error($"Unknown command: {command} -> {data}");
+                return;
+            }
+            //
+            var type = (AgentCommandType)command;
+            _logger.Info($"Command: {type} -> {data}");
+            switch (type)
+            {
+                case AgentCommandType.CLASS_TESTS_START: StartSession(data); break;
+                case AgentCommandType.CLASS_TESTS_STOP: StopSession(data); break;
+
+                //now, in fact, these are group of tests for one "test method" with many different cases
+                //case AgentCommandType.TEST_START:
+                //    break;
+                //case AgentCommandType.TEST_STOP:
+                //    break;
+
+                case AgentCommandType.TEST_CASE_START:
+                    break;
+                case AgentCommandType.TEST_CASE_STOP:
+                    break;
+                default:
+                    break;
             }
         }
 
+        #region Manage sessions
         /// <summary>
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
         /// <param name="name"></param>
         internal void StartSession(string name)
         {
-            CoverageSender.SendStartSessionCommand(name);
+            CoverageSender.SendStartSessionCommand(NormalizeSessionName(name));
         }
 
         /// <summary>
@@ -409,8 +432,34 @@ namespace Drill4Net.Agent.Standard
         /// <param name="name"></param>
         internal void StopSession(string name)
         {
-            CoverageSender.SendStopSessionCommand(name);
+            CoverageSender.SendStopSessionCommand(NormalizeSessionName(name));
         }
+
+        internal void SendTest2RunInfo(string test)
+        {
+            CoverageSender.SendTestRunCommand(test);
+        }
+
+        internal static string NormalizeSessionName(string session)
+        {
+            if (string.IsNullOrWhiteSpace(session))
+                return Guid.NewGuid().ToString();
+            if (!session.Contains(" "))
+                return session; //as is
+            var ar = session.Split(' ');
+            for (int i = 0; i < ar.Length; i++)
+            {
+                string word = ar[i];
+                if (string.IsNullOrWhiteSpace(word))
+                    continue;
+                char[] a = word.ToLower().ToCharArray();
+                a[0] = char.ToUpper(a[0]);
+                ar[i] = new string(a);
+            }
+            session = string.Join(null, ar).Replace(" ", null);
+            return session;
+        }
+        #endregion
         #endregion
     }
 }

@@ -66,8 +66,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                         try
                         {
                             var cr = c.Consume(_cts.Token);
-                            var probe = cr.Message.Value;
-                            CommandReceived?.Invoke(probe);
+                            var command = cr.Message.Value;
+                            CommandReceived?.Invoke(command);
                         }
                         catch (ConsumeException e)
                         {

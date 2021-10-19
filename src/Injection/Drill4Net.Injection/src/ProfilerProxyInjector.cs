@@ -21,7 +21,7 @@ namespace Drill4Net.Injection
         public string ProxyClass { get; }
         public string ProxyFunc { get; }
         #endregion
-        #region Real
+        #region Real profiler (transmitter or agent)
         public string ProfilerReadDir { get; }
         public string ProfilerAsmName { get; }
         public string ProfilerNs { get; }
@@ -83,80 +83,80 @@ namespace Drill4Net.Injection
             t1.Fields.Add(fld_ProfilerProxy_methCmdInfo);
             #endregion
             #region Constructor : .cctor
-            var ProfilerProxy_cctor_ = new MethodDefinition(".cctor", MethodAttributes.Static | MethodAttributes.Private | MethodAttributes.RTSpecialName | MethodAttributes.SpecialName | MethodAttributes.HideBySig, module.TypeSystem.Void);
-            t1.Methods.Add(ProfilerProxy_cctor_);
-            ProfilerProxy_cctor_.Body.InitLocals = true;
-            var il_ProfilerProxy_cctor_ = ProfilerProxy_cctor_.Body.GetILProcessor();
+            var profilerProxy_cctor = new MethodDefinition(".cctor", MethodAttributes.Static | MethodAttributes.Private | MethodAttributes.RTSpecialName | MethodAttributes.SpecialName | MethodAttributes.HideBySig, module.TypeSystem.Void);
+            t1.Methods.Add(profilerProxy_cctor);
+            profilerProxy_cctor.Body.InitLocals = true;
+            var il_ProfilerProxy_cctor = profilerProxy_cctor.Body.GetILProcessor();
 
             //var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Agent.Test\bin\Debug\netstandard2.0\Agent.Test.dll";
             var lv_profPath1 = new VariableDefinition(module.TypeSystem.String);
-            ProfilerProxy_cctor_.Body.Variables.Add(lv_profPath1);
-            var Ldstr2 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, $"{ProfilerReadDir}{ProfilerAsmName}");
-            il_ProfilerProxy_cctor_.Append(Ldstr2);
-            var Stloc3 = il_ProfilerProxy_cctor_.Create(OpCodes.Stloc, lv_profPath1);
-            il_ProfilerProxy_cctor_.Append(Stloc3);
+            profilerProxy_cctor.Body.Variables.Add(lv_profPath1);
+            var Ldstr2 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, $"{ProfilerReadDir}{ProfilerAsmName}");
+            il_ProfilerProxy_cctor.Append(Ldstr2);
+            var Stloc3 = il_ProfilerProxy_cctor.Create(OpCodes.Stloc, lv_profPath1);
+            il_ProfilerProxy_cctor.Append(Stloc3);
 
             //var asm = Assembly.LoadFrom(profPath);
             var lv_asm4 = new VariableDefinition(ImportSysTypeReference(syslib, module, typeof(System.Reflection.Assembly)));
-            ProfilerProxy_cctor_.Body.Variables.Add(lv_asm4);
+            profilerProxy_cctor.Body.Variables.Add(lv_asm4);
 
             var methLoadFrom = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "LoadFrom", true, typeof(string), typeof(System.Reflection.Assembly));
             //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "LoadFrom", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.String"));
 
-            var Call5 = il_ProfilerProxy_cctor_.Create(OpCodes.Call, methLoadFrom);
-            var Ldloc6 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_profPath1);
-            il_ProfilerProxy_cctor_.Append(Ldloc6);
-            il_ProfilerProxy_cctor_.Append(Call5);
-            var Stloc7 = il_ProfilerProxy_cctor_.Create(OpCodes.Stloc, lv_asm4);
-            il_ProfilerProxy_cctor_.Append(Stloc7);
+            var Call5 = il_ProfilerProxy_cctor.Create(OpCodes.Call, methLoadFrom);
+            var Ldloc6 = il_ProfilerProxy_cctor.Create(OpCodes.Ldloc, lv_profPath1);
+            il_ProfilerProxy_cctor.Append(Ldloc6);
+            il_ProfilerProxy_cctor.Append(Call5);
+            var Stloc7 = il_ProfilerProxy_cctor.Create(OpCodes.Stloc, lv_asm4);
+            il_ProfilerProxy_cctor.Append(Stloc7);
 
             //var type = asm.GetType("Agent.Tests.LoggerAgent");
             var lv_type8 = new VariableDefinition(ImportSysTypeReference(syslib, module, typeof(Type)));
-            ProfilerProxy_cctor_.Body.Variables.Add(lv_type8);
-            var Ldloc9 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_asm4);
-            il_ProfilerProxy_cctor_.Append(Ldloc9);
+            profilerProxy_cctor.Body.Variables.Add(lv_type8);
+            var Ldloc9 = il_ProfilerProxy_cctor.Create(OpCodes.Ldloc, lv_asm4);
+            il_ProfilerProxy_cctor.Append(Ldloc9);
 
             var methGetType = ImportSysMethodReference(syslib, module, "System.Reflection", "Assembly", "GetType", false, typeof(string), typeof(Type));
             //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "GetType", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
 
-            var Callvirt10 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, methGetType);
-            var Ldstr11 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, $"{ProfilerNs}.{ProfilerClass}");
-            il_ProfilerProxy_cctor_.Append(Ldstr11);
-            il_ProfilerProxy_cctor_.Append(Callvirt10);
-            var Stloc12 = il_ProfilerProxy_cctor_.Create(OpCodes.Stloc, lv_type8);
-            il_ProfilerProxy_cctor_.Append(Stloc12);
+            var Callvirt10 = il_ProfilerProxy_cctor.Create(OpCodes.Callvirt, methGetType);
+            var Ldstr11 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, $"{ProfilerNs}.{ProfilerClass}");
+            il_ProfilerProxy_cctor.Append(Ldstr11);
+            il_ProfilerProxy_cctor.Append(Callvirt10);
+            var Stloc12 = il_ProfilerProxy_cctor.Create(OpCodes.Stloc, lv_type8);
+            il_ProfilerProxy_cctor.Append(Stloc12);
 
             #region _methRegInfo = type.GetMethod("Transmit");
-            var Ldloc13 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_type8);
-            il_ProfilerProxy_cctor_.Append(Ldloc13);
+            var Ldloc13 = il_ProfilerProxy_cctor.Create(OpCodes.Ldloc, lv_type8);
+            il_ProfilerProxy_cctor.Append(Ldloc13);
 
             var methGetMethodRef = ImportSysMethodReference(syslib, module, "System", "Type", "GetMethod", false, typeof(string), typeof(System.Reflection.MethodInfo));
             //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
 
-            var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, methGetMethodRef);
-            var Ldstr15 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, ProfilerFunc);
-            il_ProfilerProxy_cctor_.Append(Ldstr15);
-            il_ProfilerProxy_cctor_.Append(Callvirt14);
-            var Stsfld16 = il_ProfilerProxy_cctor_.Create(OpCodes.Stsfld, fld_ProfilerProxy_methRegInfo);
-            il_ProfilerProxy_cctor_.Append(Stsfld16);
+            var Callvirt14 = il_ProfilerProxy_cctor.Create(OpCodes.Callvirt, methGetMethodRef);
+            var Ldstr15 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, ProfilerFunc);
+            il_ProfilerProxy_cctor.Append(Ldstr15);
+            il_ProfilerProxy_cctor.Append(Callvirt14);
+            var Stsfld16 = il_ProfilerProxy_cctor.Create(OpCodes.Stsfld, fld_ProfilerProxy_methRegInfo);
+            il_ProfilerProxy_cctor.Append(Stsfld16);
             #endregion
             #region _methRegInfo = type.GetMethod("DoCommand");
             //var Ldloc13 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldloc, lv_type8);
-            il_ProfilerProxy_cctor_.Append(Ldloc13);
+            il_ProfilerProxy_cctor.Append(Ldloc13);
 
             //var methGetMethodRef = ImportSysMethodReference(syslib, module, "System", "Type", "GetMethod", false, typeof(string), typeof(System.Reflection.MethodInfo));
             //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Type", "GetMethod", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
 
             //var Callvirt14 = il_ProfilerProxy_cctor_.Create(OpCodes.Callvirt, methGetMethodRef);
-            var Ldstr152 = il_ProfilerProxy_cctor_.Create(OpCodes.Ldstr, "DoCommand");
-            il_ProfilerProxy_cctor_.Append(Ldstr152);
-            il_ProfilerProxy_cctor_.Append(Callvirt14);
-            var Stsfld162 = il_ProfilerProxy_cctor_.Create(OpCodes.Stsfld, fld_ProfilerProxy_methCmdInfo);
-            il_ProfilerProxy_cctor_.Append(Stsfld162);
+            var Ldstr152 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, METHOD_COMMAND_NAME);
+            il_ProfilerProxy_cctor.Append(Ldstr152);
+            il_ProfilerProxy_cctor.Append(Callvirt14);
+            var Stsfld162 = il_ProfilerProxy_cctor.Create(OpCodes.Stsfld, fld_ProfilerProxy_methCmdInfo);
+            il_ProfilerProxy_cctor.Append(Stsfld162);
             #endregion
 
-            var Ret17 = il_ProfilerProxy_cctor_.Create(OpCodes.Ret);
-            il_ProfilerProxy_cctor_.Append(Ret17);
+            var Ret17 = il_ProfilerProxy_cctor.Create(OpCodes.Ret);
+            il_ProfilerProxy_cctor.Append(Ret17);
             #endregion
             #region Constructor: .ctor
             var ProfilerProxy_ctor_ = new MethodDefinition(".ctor", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.RTSpecialName | MethodAttributes.SpecialName, module.TypeSystem.Void);
@@ -173,53 +173,48 @@ namespace Drill4Net.Injection
             var regMeth = new MethodDefinition(ProxyFunc, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
             t1.Methods.Add(regMeth);
             regMeth.Body.InitLocals = true;
-            var ilProc = regMeth.Body.GetILProcessor();
+            var regMeth_ilProc = regMeth.Body.GetILProcessor();
 
             //Parameters of 'public void Register(string data)'
             var data21 = new ParameterDefinition("data", ParameterAttributes.None, module.TypeSystem.String);
             regMeth.Parameters.Add(data21);
 
             //_methInfo.Invoke(null, new object[] { data });
-            var Ldarg_022 = ilProc.Create(OpCodes.Nop);
-            ilProc.Append(Ldarg_022);
-            var Ldfld23 = ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methRegInfo);
-            ilProc.Append(Ldfld23);
+            var Ldarg_022 = regMeth_ilProc.Create(OpCodes.Nop);
+            regMeth_ilProc.Append(Ldarg_022);
+            var Ldfld23 = regMeth_ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methRegInfo);
+            regMeth_ilProc.Append(Ldfld23);
 
-            var methInvoke = ImportSysMethodReference(syslib, module, "System.Reflection", "MethodBase", "Invoke", false, new Type[] { typeof(object), typeof(object[]) }, typeof(object));
-            //HACK: for proper creating of object[] (and under/for the NetFx, and under/for the NetCore)
-            var reflectRef = module.ImportReference(TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
-            methInvoke.Parameters.Clear();
-            foreach (var p in reflectRef.Parameters)
-                methInvoke.Parameters.Add(p);
+            var methInvoke = GetLateBindingInvoker(syslib, module);
 
-            var Callvirt24 = ilProc.Create(OpCodes.Callvirt, methInvoke);
-            var Ldnull25 = ilProc.Create(OpCodes.Ldnull);
-            ilProc.Append(Ldnull25);
-            var Ldc_I426 = ilProc.Create(OpCodes.Ldc_I4, 1);
-            ilProc.Append(Ldc_I426);
-            var Newarr27 = ilProc.Create(OpCodes.Newarr, module.TypeSystem.Object);
-            ilProc.Append(Newarr27);
-            var Dup28 = ilProc.Create(OpCodes.Dup);
-            ilProc.Append(Dup28);
-            var Ldc_I429 = ilProc.Create(OpCodes.Ldc_I4, 0);
-            ilProc.Append(Ldc_I429);
-            var Ldarg_130 = ilProc.Create(OpCodes.Ldarg_0);
-            ilProc.Append(Ldarg_130);
-            var Stelem_Ref31 = ilProc.Create(OpCodes.Stelem_Ref);
-            ilProc.Append(Stelem_Ref31);
-            ilProc.Append(Callvirt24);
-            var Pop32 = ilProc.Create(OpCodes.Pop);
-            ilProc.Append(Pop32);
+            var Callvirt24 = regMeth_ilProc.Create(OpCodes.Callvirt, methInvoke);
+            var Ldnull25 = regMeth_ilProc.Create(OpCodes.Ldnull);
+            regMeth_ilProc.Append(Ldnull25);
+            var Ldc_I426 = regMeth_ilProc.Create(OpCodes.Ldc_I4, 1);
+            regMeth_ilProc.Append(Ldc_I426);
+            var Newarr27 = regMeth_ilProc.Create(OpCodes.Newarr, module.TypeSystem.Object);
+            regMeth_ilProc.Append(Newarr27);
+            var Dup28 = regMeth_ilProc.Create(OpCodes.Dup);
+            regMeth_ilProc.Append(Dup28);
+            var Ldc_I429 = regMeth_ilProc.Create(OpCodes.Ldc_I4, 0);
+            regMeth_ilProc.Append(Ldc_I429);
+            var Ldarg_130 = regMeth_ilProc.Create(OpCodes.Ldarg_0);
+            regMeth_ilProc.Append(Ldarg_130);
+            var Stelem_Ref31 = regMeth_ilProc.Create(OpCodes.Stelem_Ref);
+            regMeth_ilProc.Append(Stelem_Ref31);
+            regMeth_ilProc.Append(Callvirt24);
+            var Pop32 = regMeth_ilProc.Create(OpCodes.Pop);
+            regMeth_ilProc.Append(Pop32);
 
             //return
-            var Ret33 = ilProc.Create(OpCodes.Ret);
-            ilProc.Append(Ret33);
+            var Ret33 = regMeth_ilProc.Create(OpCodes.Ret);
+            regMeth_ilProc.Append(Ret33);
             #endregion
             #region Method : DoCommand
             var cmdMeth = new MethodDefinition("DoCommand", MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
             t1.Methods.Add(cmdMeth);
             cmdMeth.Body.InitLocals = true;
-            ilProc = cmdMeth.Body.GetILProcessor();
+            regMeth_ilProc = cmdMeth.Body.GetILProcessor();
 
             //Parameters of 'public void DoCommand(int command, string data)'
             data21 = new ParameterDefinition("command", ParameterAttributes.None, module.TypeSystem.Int32);
@@ -229,40 +224,40 @@ namespace Drill4Net.Injection
             cmdMeth.Parameters.Add(data21);
 
             //_meth.Invoke(null, new object[]{ command, data });
-            var Ldsfld_6 = ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methCmdInfo);
-            ilProc.Append(Ldsfld_6);
-            var Ldnull_9 = ilProc.Create(OpCodes.Ldnull);
-            ilProc.Append(Ldnull_9);
-            var Ldc_I4_10 = ilProc.Create(OpCodes.Ldc_I4, 2);
-            ilProc.Append(Ldc_I4_10);
-            var Newarr_11 = ilProc.Create(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object);
-            ilProc.Append(Newarr_11);
-            var Dup_12 = ilProc.Create(OpCodes.Dup);
-            ilProc.Append(Dup_12);
-            var Ldc_I4_13 = ilProc.Create(OpCodes.Ldc_I4, 0);
-            ilProc.Append(Ldc_I4_13);
-            var Ldarg_0_14 = ilProc.Create(OpCodes.Ldarg_0);
-            ilProc.Append(Ldarg_0_14);
-            var Box_15 = ilProc.Create(OpCodes.Box, assembly.MainModule.TypeSystem.Int32);
-            ilProc.Append(Box_15);
-            var Stelem_Ref_16 = ilProc.Create(OpCodes.Stelem_Ref);
-            ilProc.Append(Stelem_Ref_16);
-            var Dup_17 = ilProc.Create(OpCodes.Dup);
-            ilProc.Append(Dup_17);
-            var Ldc_I4_18 = ilProc.Create(OpCodes.Ldc_I4, 1);
-            ilProc.Append(Ldc_I4_18);
-            var Ldarg_1_19 = ilProc.Create(OpCodes.Ldarg_1);
-            ilProc.Append(Ldarg_1_19);
-            var Stelem_Ref_20 = ilProc.Create(OpCodes.Stelem_Ref);
-            ilProc.Append(Stelem_Ref_20);
-            ilProc.Append(Callvirt24); //Callvirt_8
+            var Ldsfld_6 = regMeth_ilProc.Create(OpCodes.Ldsfld, fld_ProfilerProxy_methCmdInfo);
+            regMeth_ilProc.Append(Ldsfld_6);
+            var Ldnull_9 = regMeth_ilProc.Create(OpCodes.Ldnull);
+            regMeth_ilProc.Append(Ldnull_9);
+            var Ldc_I4_10 = regMeth_ilProc.Create(OpCodes.Ldc_I4, 2);
+            regMeth_ilProc.Append(Ldc_I4_10);
+            var Newarr_11 = regMeth_ilProc.Create(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object);
+            regMeth_ilProc.Append(Newarr_11);
+            var Dup_12 = regMeth_ilProc.Create(OpCodes.Dup);
+            regMeth_ilProc.Append(Dup_12);
+            var Ldc_I4_13 = regMeth_ilProc.Create(OpCodes.Ldc_I4, 0);
+            regMeth_ilProc.Append(Ldc_I4_13);
+            var Ldarg_0_14 = regMeth_ilProc.Create(OpCodes.Ldarg_0);
+            regMeth_ilProc.Append(Ldarg_0_14);
+            var Box_15 = regMeth_ilProc.Create(OpCodes.Box, assembly.MainModule.TypeSystem.Int32);
+            regMeth_ilProc.Append(Box_15);
+            var Stelem_Ref_16 = regMeth_ilProc.Create(OpCodes.Stelem_Ref);
+            regMeth_ilProc.Append(Stelem_Ref_16);
+            var Dup_17 = regMeth_ilProc.Create(OpCodes.Dup);
+            regMeth_ilProc.Append(Dup_17);
+            var Ldc_I4_18 = regMeth_ilProc.Create(OpCodes.Ldc_I4, 1);
+            regMeth_ilProc.Append(Ldc_I4_18);
+            var Ldarg_1_19 = regMeth_ilProc.Create(OpCodes.Ldarg_1);
+            regMeth_ilProc.Append(Ldarg_1_19);
+            var Stelem_Ref_20 = regMeth_ilProc.Create(OpCodes.Stelem_Ref);
+            regMeth_ilProc.Append(Stelem_Ref_20);
+            regMeth_ilProc.Append(Callvirt24); //Callvirt_8
 
-            Pop32 = ilProc.Create(OpCodes.Pop);
-            ilProc.Append(Pop32);
+            Pop32 = regMeth_ilProc.Create(OpCodes.Pop);
+            regMeth_ilProc.Append(Pop32);
 
             //return
-            Ret33 = ilProc.Create(OpCodes.Ret);
-            ilProc.Append(Ret33);
+            Ret33 = regMeth_ilProc.Create(OpCodes.Ret);
+            regMeth_ilProc.Append(Ret33);
             #endregion
 
             //PrivateCoreLibFixer.FixReferences(assembly.MainModule); //it leads to fail in runtime

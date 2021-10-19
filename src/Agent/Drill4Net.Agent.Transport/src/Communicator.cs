@@ -17,7 +17,7 @@ namespace Drill4Net.Agent.Transport
         /// <value>
         /// The agent configuration.
         /// </value>
-        public AgentPartConfig AgentConfig { get; }
+        public AdminAgentConfig AgentConfig { get; }
 
         /// <summary>
         /// Gets the URL of the Drill Admin side.
@@ -30,9 +30,9 @@ namespace Drill4Net.Agent.Transport
         private readonly Connector _connector;
         private readonly Logger _logger;
 
-        /********************************************************************/
+        /*****************************************************************************/
 
-        public Communicator(string subsystem, string url, AgentPartConfig agentCfg)
+        public Communicator(string subsystem, string url, AdminAgentConfig agentCfg)
         {
             Url = url ?? throw new ArgumentNullException(nameof(url));
             AgentConfig = agentCfg ?? throw new ArgumentNullException(nameof(agentCfg));
@@ -43,7 +43,7 @@ namespace Drill4Net.Agent.Transport
             Sender = new AgentSender(_connector);
         }
 
-        /********************************************************************/
+        /*****************************************************************************/
 
         public override void Connect()
         {

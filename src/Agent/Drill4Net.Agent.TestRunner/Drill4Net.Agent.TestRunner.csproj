@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+	<LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.TestRunner</OutputPath>
+		<DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Transport\Drill4Net.Agent.TestRunner.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.TestRunner</OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
+	  <ProjectReference Include="..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
+	  <ProjectReference Include="..\Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="IHS.yml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="_redirect.yml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

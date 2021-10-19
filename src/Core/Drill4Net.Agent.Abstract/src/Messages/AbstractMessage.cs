@@ -6,6 +6,9 @@ namespace Drill4Net.Agent.Abstract.Transfer
     [Serializable]
     public abstract record AbstractMessage
     {
+        /// <summary>
+        /// Type of the messge (in fact, the its topic)
+        /// </summary>
         public string type { get; set; }
 
         /***********************************************************/

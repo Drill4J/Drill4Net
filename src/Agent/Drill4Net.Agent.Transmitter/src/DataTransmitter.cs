@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
+
+[assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
 namespace Drill4Net.Agent.Transmitter
 {
@@ -28,7 +30,12 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         public string EmergencyLogDir { get; }
 
+        /// <summary>
+        /// In fact, this is a limiter to reduce the flow of sending probes 
+        /// to the administrator's side
+        /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
+
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
@@ -114,6 +121,7 @@ namespace Drill4Net.Agent.Transmitter
             InfoSender.SendTargetInfo(info);
         }
 
+        #region Transmit probe
         /// <summary>
         /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
         /// </summary>
@@ -127,15 +135,28 @@ namespace Drill4Net.Agent.Transmitter
         }
 
         /// <summary>
+        /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
+        /// </summary>
+        /// <param name="data">The cross-point data.</param>
+        /// <param name="ctx">context of the probe</param>
+        public static void TransmitWithContext(string data, string ctx)
+        {
+            if (!_probes.TryAdd(data, true))
+                return;
+            Transmitter.SendProbe(data, ctx);
+        }
+
+        /// <summary>
         /// Sends the specified probe to the middleware.
+        /// It is internal method for the debug purposes.
         /// </summary>
         /// <param name="data">The cross-point data.</param>
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
-        public int SendProbe(string data, string ctx)
+        internal int SendProbe(string data, string ctx)
         {
             return ProbeSender.SendProbe(data, ctx);
         }
-
+        #endregion
         #region Command
         public void ExecCommand(int command, string data)
         {

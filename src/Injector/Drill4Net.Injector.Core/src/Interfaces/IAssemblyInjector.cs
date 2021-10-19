@@ -13,7 +13,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         CodeHandlerStrategy Strategy { get; }
 
-        List<AbstractCodeInjector> Plugins { get; }
+        List<IInjectorPlugin> Plugins { get; }
 
         /// <summary>
         /// Inject assembly by specified contexts
