@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using TechTalk.SpecFlow;
 using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Transmitter.SpecFlow;
+//using Drill4Net.Agent.Transmitter.SpecFlow;
 
 namespace Drill4Net.Injection.SpecFlow
 {
@@ -10,6 +10,7 @@ namespace Drill4Net.Injection.SpecFlow
     /// to the some target type, e.g. SpecFlowHooks
     /// </summary>
     [Binding]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RCS1102:Make class static.", Justification = "<Pending>")]
     internal class SpecFlowHooks
     {
         //eventually, similar fields and methods should be generated
@@ -22,6 +23,8 @@ namespace Drill4Net.Injection.SpecFlow
         //hooks in any test class intercept all tests in other classes
         //Need data: qualified name, display name, test group, result, assembly path
 
+        //we need to start a single session at the start of the Runner run and close it after all tests are completed
+
         //let it will be replaced in method rather in cctor
         [BeforeTestRun]
         public static void VanchoTestsInit()
@@ -33,21 +36,16 @@ namespace Drill4Net.Injection.SpecFlow
             var type = asm.GetType("Drill4Net.Agent.Transmitter.SpecFlow.ContextHelper");
             //_featureMethInfo = type.GetMethod("GetFeatureContext");
             _scenarioMethInfo = type.GetMethod("GetScenarioContext");
-        }
-
-        #region TESTS_RUN
-        [BeforeTestRun(Order = 0)]
-        public static void VanchoTestsStarting()
-        {
+            //
             DemoTransmitter.DoCommand((int)AgentCommandType.CLASS_TESTS_START, null);
         }
 
-        [AfterTestRun(Order = 0)]
+        [AfterTestRun]
         public static void VanchoTestsFinished()
         {
             DemoTransmitter.DoCommand((int)AgentCommandType.CLASS_TESTS_STOP, null);
         }
-        #endregion
+
         //#region TEST
         ////groups (classes) of tests
         //[BeforeFeature(Order = 0)]

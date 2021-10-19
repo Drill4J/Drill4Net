@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Web;
+using System.Linq;
 using System.Threading;
 using System.Reflection;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
-using System.Linq;
-using Newtonsoft.Json;
-using System.Web;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -397,8 +397,8 @@ namespace Drill4Net.Agent.Standard
             }
             //
             var type = (AgentCommandType)command;
-            _logger.Info($"Command: {type} -> {data}");
-            TestCaseContext testCase = null;
+            _logger.Debug($"Command: {type} -> {data}");
+            //TestCaseContext testCase = null;
 
             switch (type)
             {
@@ -424,7 +424,7 @@ namespace Drill4Net.Agent.Standard
 
         internal TestCaseContext GetTestCaseContext(string str)
         {
-            return JsonConvert.DeserializeObject<TestCaseContext>(str); 
+            return JsonConvert.DeserializeObject<TestCaseContext>(str);
         }
 
         #region Manage sessions
@@ -434,26 +434,30 @@ namespace Drill4Net.Agent.Standard
         /// <param name="metadata">Some info about session. It can be empty</param>
         internal void StartSession(string metadata)
         {
-            CoverageSender.SendStartSessionCommand(GetSessionName(metadata));
+            var session = GetSessionName(metadata);
+            _logger.Info($"Starting session: {session}");
+            CoverageSender.SendStartSessionCommand(session);
         }
 
         /// <summary>
         /// Automatic command from Agent to Admin side to stop the session (for autotests)
         /// </summary>
-        /// <param name="name"></param>
-        internal void StopSession(string name)
+        /// <param name="metadata"></param>
+        internal void StopSession(string metadata)
         {
-            CoverageSender.SendStopSessionCommand(GetSessionName(name));
+            var session = GetSessionName(metadata);
+            _logger.Info($"Stopping session: {session}");
+            CoverageSender.SendStopSessionCommand(session);
         }
 
-        internal string GetSessionName(string data)
+        internal string GetSessionName(string metadata)
         {
             var guidName = Guid.NewGuid().ToString();
-            if (string.IsNullOrWhiteSpace(data))
+            if (string.IsNullOrWhiteSpace(metadata))
                 return guidName;
-            if (data.Length > 32)
-                data = data.Substring(0, 32);
-            return NormalizeSessionName(data);
+            if (metadata.Length > 32)
+                metadata = metadata.Substring(0, 32);
+            return NormalizeSessionName(metadata);
         }
 
         internal string NormalizeSessionName(string session)
