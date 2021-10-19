@@ -23,6 +23,13 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
         //    return data;
         //}
 
+        /// <summary>
+        /// Get the data about feature and scenario contexts during the test case executing
+        /// </summary>
+        /// <param name="featureCtx"></param>
+        /// <param name="scenarioCtx"></param>
+        /// <param name="asmPath"></param>
+        /// <returns></returns>
         public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath)
         {
             var info = scenarioCtx.ScenarioInfo;
@@ -40,7 +47,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             return data;
         }
 
-        ////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         private static string GetTestResult(ScenarioContext ctx)
         {

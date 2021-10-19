@@ -190,7 +190,7 @@ namespace Drill4Net.Injector.Engine
                     Directory.CreateDirectory(asmCtx.DestinationDir);
 
                 //processing
-                await runCtx.Inject(asmCtx);
+                await runCtx.Inject(asmCtx).ConfigureAwait(false);
 
                 _logger.Debug($"Injected: [{filePath}]");
 
@@ -209,7 +209,6 @@ namespace Drill4Net.Injector.Engine
 
             return true;
         }
-
 
         internal bool IsDirectoryNeedByMoniker(Dictionary<string, MonikerData> monikers, string root, string dir)
         {
