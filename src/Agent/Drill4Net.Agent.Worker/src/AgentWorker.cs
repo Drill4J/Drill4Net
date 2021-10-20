@@ -26,7 +26,7 @@ namespace Drill4Net.Agent.Worker
 
         /********************************************************************************************/
 
-        public AgentWorker(AgentWorkerRepository rep, ITargetInfoReceiver targetReceiver, 
+        public AgentWorker(AgentWorkerRepository rep, ITargetInfoReceiver targetReceiver,
             IProbeReceiver probeReceiver, ICommandReceiver cmdReceiver)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));

@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
   </ItemGroup>
 

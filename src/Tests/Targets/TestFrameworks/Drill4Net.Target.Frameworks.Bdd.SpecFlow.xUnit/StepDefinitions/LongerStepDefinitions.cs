@@ -55,12 +55,12 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.StepDefinitions
 
         //DON'T REMOVE THIS EVEN IF IT IS COMMENTED
 
-        //[BeforeTestRun(Order = -1)]
-        //public static void VanchoTestsInit()
+        //[BeforeTestRun]
+        //public static void VanchoTestsTestsStarted()
         //{ }
 
-        //[BeforeTestRun(Order = 0)]
-        //public static void VanchoTestsTestsStarted()
+        //[AfterTestRun]
+        //public static void VanchoTestsFinished()
         //{ }
 
         ////[BeforeTestRun(Order = 0)]
