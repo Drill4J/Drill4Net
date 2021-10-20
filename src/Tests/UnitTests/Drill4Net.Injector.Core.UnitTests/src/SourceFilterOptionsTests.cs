@@ -11,7 +11,7 @@ namespace Drill4Net.Injector.Core.UnitTests
     /// </summary>
     public class SourceFilterOptionsTests
     {
-        private const string _reg = CoreConstants.REGEX_FILTER_PPREFIX;
+        private const string _reg = CoreConstants.REGEX_FILTER_PREFIX;
         private SourceFilterOptionsHelper _dataHelper = new SourceFilterOptionsHelper();
 
         /*************************************************************************************/

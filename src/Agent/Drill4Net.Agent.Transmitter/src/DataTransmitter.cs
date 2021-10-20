@@ -47,15 +47,17 @@ namespace Drill4Net.Agent.Transmitter
         static DataTransmitter()
         {
             AbstractRepository.PrepareEmergencyLogger();
-            Log.Debug($"Enter to {nameof(DataTransmitter)} .cctor");
+            Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
             ITargetSenderRepository rep = new TransmitterRepository();
-            Log.Debug("Repository created.");
+            Log.Debug($"{nameof(TransmitterRepository)} created.");
 
             var extras = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
             _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extras);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
+
+            _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
             _logger.Debug("Initialized.");
@@ -63,7 +65,7 @@ namespace Drill4Net.Agent.Transmitter
 
         public DataTransmitter(ITargetSenderRepository rep)
         {
-            _logger.Debug($"Creating object of {nameof(DataTransmitter)}...");
+            _logger.Debug($"Creating of the {nameof(DataTransmitter)}'s singleton...");
 
             //TODO: find out - on IHS adoption it falls
             //AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
@@ -83,7 +85,7 @@ namespace Drill4Net.Agent.Transmitter
             var pingSender = new PingKafkaSender(rep);
             _pinger = new Pinger(rep, pingSender);
 
-            _logger.Debug($"Object of {nameof(DataTransmitter)} is created");
+            _logger.Debug($"Singleton of {nameof(DataTransmitter)} is created");
         }
 
         ~DataTransmitter()
@@ -93,7 +95,7 @@ namespace Drill4Net.Agent.Transmitter
 
         /************************************************************************************/
 
-        #region Init
+        #region Resolving
         //TODO: find out - on IHS adoption it falls
         //private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         //{

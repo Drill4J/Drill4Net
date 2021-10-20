@@ -42,7 +42,6 @@ namespace Drill4Net.Agent.Transmitter
             SenderOptions = optHelper.ReadOptions(path);
             TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();
-            //PrepareLogger();
         }
 
         /*********************************************************************************************/

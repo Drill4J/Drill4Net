@@ -56,10 +56,11 @@
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
+
         /// <summary>
         /// Prefix for regex filter in config
         /// </summary>
-        public const string REGEX_FILTER_PPREFIX = "reg:";
+        public const string REGEX_FILTER_PREFIX = "reg:";
         #endregion
     }
 }

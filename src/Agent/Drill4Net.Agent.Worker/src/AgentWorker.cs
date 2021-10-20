@@ -92,7 +92,7 @@ namespace Drill4Net.Agent.Worker
 
             if (!_isAgentInitialized)
             {
-                _logger.Warning($"Command [{command.Type}] is received, but Agent is not initialized");
+                _logger.Warning($"Command [{command.Type}] is received, but the Agent is not initialized");
                 return;
             }
 

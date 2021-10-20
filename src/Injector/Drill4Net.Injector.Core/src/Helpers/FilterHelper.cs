@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         public static bool IsFilterWithRegex(string filter)
         {
-            if (filter.StartsWith(CoreConstants.REGEX_FILTER_PPREFIX))
+            if (filter.StartsWith(CoreConstants.REGEX_FILTER_PREFIX))
             {
                 return true;
             }
@@ -32,9 +32,9 @@ namespace Drill4Net.Injector.Core
         {
             if (!IsFilterWithRegex(filter))
             {
-                throw new ArgumentNullException(nameof(filter), $"Regex filter should start with {CoreConstants.REGEX_FILTER_PPREFIX} prefix.");
+                throw new ArgumentNullException(nameof(filter), $"Regex filter should start with {CoreConstants.REGEX_FILTER_PREFIX} prefix.");
             }
-            return filter[CoreConstants.REGEX_FILTER_PPREFIX.Length..];
+            return filter[CoreConstants.REGEX_FILTER_PREFIX.Length..];
         }
 
         ///<summary>
