@@ -15,6 +15,10 @@ using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Service
 {
+    /// <summary>
+    /// Agent server which processes target info and its probes' data
+    /// by special agent workers.
+    /// </summary>
     public class AgentServer : IMessageReceiver, IDisposable
     {
         public event ErrorOccuredDelegate ErrorOccured;
@@ -29,7 +33,7 @@ namespace Drill4Net.Agent.Service
         private readonly ConcurrentDictionary<Guid, StringDictionary> _pings;
         private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
 
-        private const long _oldPingTickDelta = 50000000; //3 sec
+        private const long _oldPingTickDelta = 5 * 10_000_000; //5 sec
 
         private readonly AbstractTransportAdmin _admin;
         private readonly Logger _logger;
@@ -43,6 +47,14 @@ namespace Drill4Net.Agent.Service
 
         /*****************************************************************************************************/
 
+        /// <summary>
+        /// Create the Agent server which processes target info and its probes' data
+        /// by special agent workers.
+        /// </summary>
+        /// <param name="rep"></param>
+        /// <param name="targetReceiver"></param>
+        /// <param name="pingReceiver"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public AgentServer(AbstractAgentServerRepository rep, ITargetInfoReceiver targetReceiver,
             IPingReceiver pingReceiver)
         {

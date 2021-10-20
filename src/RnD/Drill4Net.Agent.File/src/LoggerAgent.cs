@@ -10,7 +10,7 @@ namespace Drill4Net.Agent.File
     //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     /// <summary>
-    /// Profiler for researches. Now just writes log to the file.
+    /// Profiler for researches. Now it just writes log to the file.
     /// </summary>
     public static class LoggerAgent
     {
@@ -19,7 +19,7 @@ namespace Drill4Net.Agent.File
         /*****************************************************************************/
 
         static LoggerAgent()
-        { 
+        {
             var filepath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "crosspoints.txt");
             _fileSink = new FileSink(filepath);
         }
@@ -36,7 +36,7 @@ namespace Drill4Net.Agent.File
         //TODO: do something with it
         public static void DoCommand(int command, string data)
         {
-            _fileSink.Log(LogLevel.Information, $"************ COMMAND: {command} -> {data}");
+            _fileSink.Log(LogLevel.Information, $"************ COMMAND: [{command}] -> {data}");
             _fileSink.Flush();
         }
     }

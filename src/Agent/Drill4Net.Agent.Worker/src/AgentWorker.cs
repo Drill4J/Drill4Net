@@ -17,6 +17,7 @@ namespace Drill4Net.Agent.Worker
 
         public bool IsStarted { get; private set; }
 
+        private bool _isAgentInitialized;
         private readonly AgentWorkerRepository _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
@@ -88,6 +89,14 @@ namespace Drill4Net.Agent.Worker
         private void Receiver_CommandReceived(Command command)
         {
             _logger.Info(command.ToString());
+
+            if (!_isAgentInitialized)
+            {
+                _logger.Warning($"Command [{command.Type}] is received, but Agent is not initialized");
+                return;
+            }
+
+            //TODO: non-Agent commands, so to call it only for the Agent's commands
             StandardAgent.DoCommand(command.Type, command.Data);
         }
 
@@ -98,12 +107,20 @@ namespace Drill4Net.Agent.Worker
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
-            StandardAgentCCtorParameters.SkipCctor = true;
-            StandardAgent.Init(target.Options, target.Solution);
-            _logger.Debug($"{nameof(StandardAgent)} is initialized");
+            InitAgent(target);
 
             _logger.Info($"{nameof(AgentWorker)} starts receiving the probes...");
             _probeReceiver.Start();
+        }
+
+        private void InitAgent(TargetInfo target)
+        {
+            if (_isAgentInitialized)
+                return;
+            StandardAgentCCtorParameters.SkipCctor = true;
+            StandardAgent.Init(target.Options, target.Solution);
+            _isAgentInitialized = true;
+            _logger.Debug($"{nameof(StandardAgent)} is initialized");
         }
 
         private void Receiver_ProbeReceived(Probe probe)

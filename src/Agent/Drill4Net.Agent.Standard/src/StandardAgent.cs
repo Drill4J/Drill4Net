@@ -25,10 +25,10 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public static StandardAgent Agent { get; private set; }
 
-        private IAgentReceiver Receiver => _comm.Receiver;
+        private IAgentReceiver Receiver => _comm?.Receiver;
 
         //in fact, the Main sender. Others are additional ones - as plugins
-        private IAgentCoveragerSender CoverageSender => _comm.Sender;
+        private IAgentCoveragerSender CoverageSender => _comm?.Sender;
 
         /// <summary>
         /// Repository for Agent
@@ -392,12 +392,12 @@ namespace Drill4Net.Agent.Standard
             var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
             if (!comTypes.Contains(command))
             {
-                _logger.Error($"Unknown command: {command} -> [{data}]");
+                _logger.Error($"Unknown command: [{command}] -> [{data}]");
                 return;
             }
             //
             var type = (AgentCommandType)command;
-            _logger.Debug($"Command: {type} -> [{data}]");
+            _logger.Debug($"Command: [{type}] -> [{data}]");
             //TestCaseContext testCase = null;
 
             switch (type)

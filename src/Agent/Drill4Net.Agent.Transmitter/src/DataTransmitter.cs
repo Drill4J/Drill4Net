@@ -160,7 +160,7 @@ namespace Drill4Net.Agent.Transmitter
         #region Command
         public void ExecCommand(int command, string data)
         {
-            _logger.Info($"Command: {command} -> {data}");
+            _logger.Info($"Command: [{command}] -> {data}");
             CommandSender.SendCommand(command, data);
         }
 
