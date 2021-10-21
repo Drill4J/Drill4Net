@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Drill4Net.Common;
+﻿using System;
+using System.Collections.Generic;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -121,50 +121,85 @@ namespace Drill4Net.Agent.Abstract
         #endregion
         #region Test2Run
         #region Session (managed on Agent side)
-        private TestRun _testRun;
-
         public virtual void SendStartSessionCommand(string name)
         {
-            _testRun = new TestRun(name);
-
             //start the session
             //...
         }
 
         public virtual void SendStopSessionCommand(string name)
         {
-            // send _testRun ? ....
-
             //stop the session
             //...
-
-            _testRun = null;
         }
         #endregion
 
         /// <summary>
-        /// Send info about running tests to the admin side
+        /// Send info about started test to the admin side
         /// </summary>
-        /// <param name="test"></param>
-        /// <param name="run"></param>
-        public virtual void SendTestRunCommand(string test)
+        /// <param name="testCtx"></param>
+        public virtual void SendTestRunStart(TestCaseContext testCtx)
         {
             // https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
-            //https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
+            // https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
 
+            var test = GetTestCaseName(testCtx);
+            var metaData = GetTestCaseMetadata(testCtx);
             var info = new Test2RunInfo
             {
                 name = test,
-                startedAt = CommonUtils.GetCurrentUnixTimeMs(),
-                //finishedAt = ...
-                //result = ...
-                //metadata = ...
+                startedAt = testCtx.StartTime,
+                metadata = metaData,
+            };
+            //
+            var _testRun = new TestRun
+            {
+                startedAt = testCtx.StartTime
             };
             _testRun.tests.Add(info);
-            _testRun.finishedAt = CommonUtils.GetCurrentUnixTimeMs(); //guano - need after tests finished
 
             //send it
             //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+        }
+
+        /// <summary>
+        /// Send info about finished test to the admin side
+        /// </summary>
+        /// <param name="testCtx"></param>
+        public virtual void SendTestRunFinish(TestCaseContext testCtx)
+        {
+            var test = GetTestCaseName(testCtx);
+            var metaData = GetTestCaseMetadata(testCtx);
+            var info = new Test2RunInfo
+            {
+                name = test,
+                startedAt = testCtx.StartTime,
+                finishedAt = testCtx.FinishTime,
+                result = testCtx.Result,
+                metadata = metaData,
+            };
+            //
+            var testRun = new TestRun
+            {
+                startedAt = testCtx.StartTime,
+                finishedAt = testCtx.FinishTime
+            };
+            testRun.tests.Add(info);
+
+            //send it
+            //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+        }
+
+        internal string GetTestCaseName(TestCaseContext testCtx)
+        {
+            if(testCtx == null)
+                throw new ArgumentNullException(nameof(testCtx));
+            return testCtx.QualifiedName ?? testCtx.CaseName ?? testCtx.DisplayName;
+        }
+
+        internal Dictionary<string, object> GetTestCaseMetadata(TestCaseContext testCtx)
+        {
+            return new Dictionary<string, object> { { AgentConstants.KEY_TESTCASE_CONTEXT, testCtx } };
         }
         #endregion
         #endregion
@@ -187,17 +222,17 @@ namespace Drill4Net.Agent.Abstract
         #endregion
 
         protected abstract string Serialize(object message);
-        
-        #region Test sendings
-        public virtual void SendOutgoingTest(OutgoingMessage data)
+
+        #region Debug sendings
+        public virtual void DebugSendOutgoingTest(OutgoingMessage data)
         {
         }
         
-        public virtual void SendOutgoingTest(string topic, OutgoingMessage data)
+        public virtual void DebugSendOutgoingTest(string topic, OutgoingMessage data)
         {
         }
         
-        public virtual void SendIncomingTest(string topic, IncomingMessage message)
+        public virtual void DebugSendIncomingTest(string topic, IncomingMessage message)
         {
         }
         #endregion

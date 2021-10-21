@@ -266,7 +266,7 @@ namespace Drill4Net.Common
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
-        public static DateTime ConvertUnixTime(long ts)
+        public static DateTime ConvertFromUnixTime(long ts)
         {
             var offset = DateTimeOffset.FromUnixTimeMilliseconds(ts);
             return offset.DateTime;

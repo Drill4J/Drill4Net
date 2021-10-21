@@ -44,18 +44,18 @@ namespace Drill4Net.Agent.Transport
             _connector.SendPluginMessage(pluginId, message);
         }
 
-        #region Test
-        public override void SendOutgoingTest(OutgoingMessage data)
+        #region Debug
+        public override void DebugSendOutgoingTest(OutgoingMessage data)
         {
 
         }
         
-        public override void SendOutgoingTest(string topic, OutgoingMessage data)
+        public override void DebugSendOutgoingTest(string topic, OutgoingMessage data)
         {
 
         }
 
-        public override void SendIncomingTest(string topic, IncomingMessage message)
+        public override void DebugSendIncomingTest(string topic, IncomingMessage message)
         {
             
         }

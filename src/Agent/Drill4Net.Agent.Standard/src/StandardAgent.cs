@@ -66,6 +66,8 @@ namespace Drill4Net.Agent.Standard
                 _logger.Fatal("Creation is failed");
                 throw new Exception($"{_logPrefix}: creation is failed");
             }
+            //recreate the logger with external context
+            _logger = new TypedLogger<StandardAgent>($"{Agent.Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", extras);
         }
 
         private StandardAgent(): this(null, null) { }
@@ -398,7 +400,7 @@ namespace Drill4Net.Agent.Standard
             //
             var type = (AgentCommandType)command;
             _logger.Debug($"Command: [{type}] -> [{data}]");
-            //TestCaseContext testCase = null;
+            TestCaseContext testCaseCtx = null;
 
             switch (type)
             {
@@ -412,10 +414,12 @@ namespace Drill4Net.Agent.Standard
                 //    break;
 
                 case AgentCommandType.TEST_CASE_START:
-                    //testCase = GetTestCaseContext(data);
+                    testCaseCtx = GetTestCaseContext(data);
+                    SendTest2RunInfo(testCaseCtx);
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
-                    //testCase = GetTestCaseContext(data);
+                    testCaseCtx = GetTestCaseContext(data);
+                    //....
                     break;
                 default:
                     break;
@@ -427,7 +431,7 @@ namespace Drill4Net.Agent.Standard
             return JsonConvert.DeserializeObject<TestCaseContext>(str);
         }
 
-        #region Manage sessions
+        #region Manage sessions on Agent side
         /// <summary>
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
@@ -435,7 +439,7 @@ namespace Drill4Net.Agent.Standard
         internal void StartSession(string metadata)
         {
             var session = GetSessionName(metadata);
-            _logger.Info($"Starting session: [{session}]");
+            _logger.Info($"Starting admin side session: [{session}]");
             CoverageSender.SendStartSessionCommand(session);
         }
 
@@ -446,7 +450,7 @@ namespace Drill4Net.Agent.Standard
         internal void StopSession(string metadata)
         {
             var session = GetSessionName(metadata);
-            _logger.Info($"Stopping session: [{session}]");
+            _logger.Info($"Stopping admin side session: [{session}]");
             CoverageSender.SendStopSessionCommand(session);
         }
 
@@ -484,9 +488,9 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        internal void SendTest2RunInfo(string test)
+        internal void SendTest2RunInfo(TestCaseContext testCtx)
         {
-            CoverageSender.SendTestRunCommand(test);
+            CoverageSender.SendTestRunStart(testCtx);
         }
         #endregion
     }

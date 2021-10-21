@@ -37,13 +37,13 @@ namespace Drill4Net.Agent.Abstract
         void Send(string topic, AbstractMessage message);
         
         //for local tests
-        void SendOutgoingTest(OutgoingMessage data);
-        void SendOutgoingTest(string topic, OutgoingMessage data);
-        void SendIncomingTest(string topic, IncomingMessage message);
+        void DebugSendOutgoingTest(OutgoingMessage data);
+        void DebugSendOutgoingTest(string topic, OutgoingMessage data);
+        void DebugSendIncomingTest(string topic, IncomingMessage message);
 
         void SendStartSessionCommand(string name);
         void SendStopSessionCommand(string name);
 
-        void SendTestRunCommand(string test);
+        void SendTestRunStart(TestCaseContext testCtx);
     }
 }

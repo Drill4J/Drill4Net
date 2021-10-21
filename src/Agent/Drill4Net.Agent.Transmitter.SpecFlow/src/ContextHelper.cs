@@ -49,9 +49,9 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private static string GetTestResult(ScenarioContext ctx)
+        private static TestResult GetTestResult(ScenarioContext ctx)
         {
-            var res = ctx.ScenarioExecutionStatus switch
+            return ctx.ScenarioExecutionStatus switch
             {
                 ScenarioExecutionStatus.OK => TestResult.PASSED,
                 //ScenarioExecutionStatus.StepDefinitionPending => throw new System.NotImplementedException(),
@@ -61,7 +61,6 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
                 ScenarioExecutionStatus.Skipped => TestResult.SKIPPED,
                 _ => TestResult.UNKNOWN,
             };
-            return res.ToString();
         }
 
         private static string GetTestGroup(FeatureInfo info)
