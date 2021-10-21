@@ -400,8 +400,8 @@ namespace Drill4Net.Agent.Standard
             //
             var type = (AgentCommandType)command;
             _logger.Debug($"Command: [{type}] -> [{data}]");
-            TestCaseContext testCaseCtx = null;
 
+            TestCaseContext testCaseCtx;
             switch (type)
             {
                 case AgentCommandType.ASSEMBLY_TESTS_START: StartSession(data); break;
@@ -415,11 +415,11 @@ namespace Drill4Net.Agent.Standard
 
                 case AgentCommandType.TEST_CASE_START:
                     testCaseCtx = GetTestCaseContext(data);
-                    SendTest2RunInfo(testCaseCtx);
+                    SendTest2RunInfoStart(testCaseCtx);
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
                     testCaseCtx = GetTestCaseContext(data);
-                    //....
+                    SendTest2RunInfoFinish(testCaseCtx);
                     break;
                 default:
                     break;
@@ -488,9 +488,14 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        internal void SendTest2RunInfo(TestCaseContext testCtx)
+        internal void SendTest2RunInfoStart(TestCaseContext testCtx)
         {
             CoverageSender.SendTestCaseStart(testCtx);
+        }
+
+        internal void SendTest2RunInfoFinish(TestCaseContext testCtx)
+        {
+            CoverageSender.SendTestCaseFinish(testCtx);
         }
         #endregion
     }
