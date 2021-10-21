@@ -51,7 +51,6 @@ namespace Drill4Net.BanderLog
 
         /// <summary>
         /// Creates the standard factory.
-        /// Next: ILogger logger = loggerFactory.CreateLogger<Startup>();
         /// </summary>
         /// <param name="filepath">The filepath.</param>
         /// <returns></returns>

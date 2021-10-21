@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Drill4Net.Agent.Abstract
+﻿namespace Drill4Net.Agent.Abstract
 {
     /// <summary>
     /// Context of test case
@@ -23,7 +21,7 @@ namespace Drill4Net.Agent.Abstract
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Full "signture" of test case, e.g. for BDD tests:
+        /// Full "signature" of test case, e.g. for BDD tests:
         /// 'Sort by deal dates(scenarioDescription: "Asc sorting DealCreatedDate", sortField: "DealCreatedDate", sortDirection: "Ascending", versionsReturned: "5,6,4", exampleTags: [])'
         /// </summary>
         public string CaseName { get; set; }

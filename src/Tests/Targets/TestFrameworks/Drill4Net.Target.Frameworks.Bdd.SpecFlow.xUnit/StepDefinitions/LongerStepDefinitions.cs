@@ -63,38 +63,38 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.StepDefinitions
         //public static void VanchoTestsFinished()
         //{ }
 
-        ////[BeforeTestRun(Order = 0)]
-        ////private static void BeforeTestStarting(ITestRunnerManager testRunnerManager, ITestRunner testRunner)
-        ////{
-        ////    //All parameters are resolved from the test thread container automatically.
-        ////    //Since the global container is the base container of the test thread container, globally registered services can be also injected.
-
-        ////    //ITestRunManager from global container
-        ////    var location = testRunnerManager.TestAssembly.Location;
-
-        ////    //ITestRunner from test thread container
-        ////    var threadId = testRunner.ThreadId;
-        ////}
-
-        //[BeforeScenario(Order = 0)]
-        //public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext)
+        //[BeforeTestRun(Order = 0)]
+        //private static void BeforeTestStarting(ITestRunnerManager testRunnerManager, ITestRunner testRunner)
         //{
-        //    var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
-        //    var scenario = scenarioContext.ScenarioInfo.Title;
-        //    var key = $"{feature}^{scenario}";
-        //    scenarioContext["TestCase"] = key;
+        //    //All parameters are resolved from the test thread container automatically.
+        //    //Since the global container is the base container of the test thread container, globally registered services can be also injected.
+
+        //    //ITestRunManager from global container
+        //    var location = testRunnerManager.TestAssembly.Location;
+
+        //    //ITestRunner from test thread container
+        //    var threadId = testRunner.ThreadId;
         //}
 
-        //[AfterScenario(Order = 0)]
-        //public static void DebugScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
-        //{
-        //    var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
-        //    var scenario = scenarioContext.ScenarioInfo.Title;
-        //    var testStatus = scenarioContext.ScenarioExecutionStatus;
-        //    var testError = scenarioContext.TestError;
+        [BeforeScenario(Order = 0)]
+        public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext)
+        {
+            var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
+            var scenario = scenarioContext.ScenarioInfo.Title;
+            var key = $"{feature}^{scenario}";
+            scenarioContext["TestCase"] = key;
+        }
 
-        //    var key = scenarioContext["TestCase"];
-        //}
+        [AfterScenario(Order = 0)]
+        public static void DebugScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
+        {
+            var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
+            var scenario = scenarioContext.ScenarioInfo.Title;
+            var testStatus = scenarioContext.ScenarioExecutionStatus;
+            var testError = scenarioContext.TestError;
+
+            var key = scenarioContext["TestCase"];
+        }
         #endregion
 
         /************************************************************************************/

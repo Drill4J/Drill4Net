@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -7,6 +8,7 @@ namespace Drill4Net.Agent.Abstract
 {
     public abstract class AbstractCoveragerSender : IAgentCoveragerSender
     {
+        private readonly ConcurrentDictionary<string, Test2RunInfo> _testCaseCtxs;
         private readonly Logger _logger;
 
         /********************************************************************************/
@@ -14,6 +16,7 @@ namespace Drill4Net.Agent.Abstract
         protected AbstractCoveragerSender(string subsystem)
         {
             _logger = new TypedLogger<AbstractCoveragerSender>(subsystem);
+            _testCaseCtxs = new ConcurrentDictionary<string, Test2RunInfo>();
         }
 
         /********************************************************************************/
@@ -144,6 +147,8 @@ namespace Drill4Net.Agent.Abstract
             // https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
 
             var info = PrepareTest2RunInfo(testCtx);
+            _testCaseCtxs.TryAdd(info.name, info);
+
             var testRun = new TestRun
             {
                 startedAt = testCtx.StartTime
@@ -160,14 +165,16 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="testCtx"></param>
         public virtual void SendTestCaseFinish(TestCaseContext testCtx)
         {
-            var info = PrepareTest2RunInfo(testCtx);
+            string test = GetTestCaseName(testCtx);
+            if (!_testCaseCtxs.TryGetValue(test, out Test2RunInfo info)) //it is bad
+                info = PrepareTest2RunInfo(testCtx);
             info.finishedAt = testCtx.FinishTime;
             info.result = testCtx.Result;
             //
             var testRun = new TestRun
             {
-                startedAt = testCtx.StartTime,
-                finishedAt = testCtx.FinishTime
+                startedAt = info.startedAt,
+                finishedAt = info.finishedAt
             };
             testRun.tests.Add(info);
 
@@ -179,13 +186,12 @@ namespace Drill4Net.Agent.Abstract
         {
             var test = GetTestCaseName(testCtx);
             var metaData = GetTestCaseMetadata(testCtx);
-            var info = new Test2RunInfo
+            return new Test2RunInfo
             {
                 name = test,
                 startedAt = testCtx.StartTime,
                 metadata = metaData,
             };
-            return info;
         }
 
         internal string GetTestCaseName(TestCaseContext testCtx)
