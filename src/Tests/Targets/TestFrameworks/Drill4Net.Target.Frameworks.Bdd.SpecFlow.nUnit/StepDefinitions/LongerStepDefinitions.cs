@@ -1,5 +1,3 @@
-using System;
-using FluentAssertions;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Frameworks.Common;
 using NUnit.Framework;

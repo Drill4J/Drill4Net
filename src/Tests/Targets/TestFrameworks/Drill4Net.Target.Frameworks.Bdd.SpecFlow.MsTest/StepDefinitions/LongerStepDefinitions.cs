@@ -1,5 +1,3 @@
-using System;
-using FluentAssertions;
 using TechTalk.SpecFlow;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Drill4Net.Target.Frameworks.Common;
