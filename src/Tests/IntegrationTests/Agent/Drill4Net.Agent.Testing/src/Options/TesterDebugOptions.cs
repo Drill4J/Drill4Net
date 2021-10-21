@@ -1,5 +1,5 @@
-﻿using Drill4Net.Configuration;
-using System;
+﻿using System;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.Testing
 {

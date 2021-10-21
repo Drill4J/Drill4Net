@@ -68,7 +68,7 @@ namespace Drill4Net.Target.Tests.Engine
 
                 //debug - TODO: own helper based on BaseOptionsHelper for TestAgentRepository (override PostProcess method)
                 var debug = Options.Debug;
-                if (!debug.Disabled)
+                if (debug?.Disabled != true)
                 {
                     _debugProbesDir = Path.Combine(callDir, DEBUG_PROBES_FOLDER_DEFAULT);
                     if (Directory.Exists(_debugProbesDir))

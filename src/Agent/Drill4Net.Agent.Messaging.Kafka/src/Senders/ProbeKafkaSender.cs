@@ -40,7 +40,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
         {
             //topics
             _probeTopics = _rep.SenderOptions.Topics ?? new List<string>(); //additional probe topics from cfg
-            var baseProbeTopic = MessagingUtils.GetProbeTopic(_rep.TargetSession.ToString()); //the base one
+            var baseProbeTopic = MessagingUtils.GetProbeTopic(_rep.TargetSession); //the base one
             _probeTopics.Add(baseProbeTopic);
 
             //producer

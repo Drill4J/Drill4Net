@@ -43,14 +43,14 @@ namespace Drill4Net.Agent.Messaging.Kafka
             SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_COMPRESSED_SIZE, len);
             if (len <= _packetMaxSize)
             {
-                SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKETS, 1);
-                SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET, 0);
+                SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET_CNT, 1);
+                SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET_IND, 0);
                 return SendPacket(data, topic);
             }
             else
             {
                 var packetCnt = len / _packetMaxSize + 1;
-                SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKETS, packetCnt);
+                SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET_CNT, packetCnt);
 
                 for (var i = 0; i < packetCnt; i++)
                 {
@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
                     var packet = new byte[size];
                     Array.Copy(data, start, packet, 0, size);
 
-                    SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET, i);
+                    SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET_IND, i);
                     SendPacket(packet, topic);
                 }
                 _infoProducer.Flush();
@@ -89,6 +89,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         protected override void ConcreteDisposing()
         {
+            _infoProducer.Flush();
             _infoProducer?.Dispose();
         }
     }

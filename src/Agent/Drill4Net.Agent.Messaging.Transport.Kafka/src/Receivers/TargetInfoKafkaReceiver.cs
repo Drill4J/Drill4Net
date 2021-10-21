@@ -73,6 +73,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                         {
                             var cr = c.Consume(_cts.Token);
                             var mess = cr.Message;
+                            _logger.Trace($"Get message: size={mess.Value.Length}");
+
                             var headers = mess.Headers;
                             var packet = mess.Value;
                             try
@@ -82,11 +84,11 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                                     throw new Exception("No Uid in packet header");
                                 var uid = Serializer.FromArray<Guid>(uidAr);
 
-                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKETS, out byte[] packetsCntAr))
+                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKET_CNT, out byte[] packetsCntAr))
                                     throw new Exception("No packets count in packet header");
                                 var packetsCnt = Serializer.FromArray<int>(packetsCntAr);
 
-                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKET, out byte[] packetIndAr))
+                                if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_PACKET_IND, out byte[] packetIndAr))
                                     throw new Exception("No packet's index in packet header");
                                 var packetInd = Serializer.FromArray<int>(packetIndAr);
                                 #endregion
@@ -107,6 +109,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                                 //end?
                                 if (packetInd == packetsCnt - 1)
                                 {
+                                    _logger.Trace($"Last paсket is received: num={packetsCnt}");
+
                                     // merging packets
                                     if (!headers.TryGetLastBytes(MessagingConstants.HEADER_MESSAGE_COMPRESSED_SIZE, out byte[] messSizeAr))
                                         throw new Exception("No compressed message size in packet header");

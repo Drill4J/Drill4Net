@@ -9,5 +9,7 @@
         /// The agent worker path.
         /// </value>
         public string WorkerPath { get; set; }
+        
+        public AgentServerDebugOptions Debug { get; set; }
     }
 }

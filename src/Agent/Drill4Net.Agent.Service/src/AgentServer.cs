@@ -38,6 +38,9 @@ namespace Drill4Net.Agent.Service
         private readonly AbstractTransportAdmin _admin;
         private readonly Logger _logger;
 
+        private AgentServerDebugOptions _debugOpts;
+        private bool _isDebug;
+
         private Timer _timeoutTimer;
         private bool _inPingCheck;
         private readonly string _cfgPath;
@@ -65,6 +68,9 @@ namespace Drill4Net.Agent.Service
             _pings = new ConcurrentDictionary<Guid, StringDictionary>();
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _admin = _rep.GetTransportAdmin();
+
+            _debugOpts = _rep?.Options?.Debug;
+            _isDebug = _debugOpts?.Disabled == false;
 
             _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.ExecutingDir);
             _workerDir = Path.GetDirectoryName(_processName);
@@ -236,23 +242,34 @@ namespace Drill4Net.Agent.Service
         /// <param name="target">The target info.</param>
         internal void RunAgentWorker(TargetInfo target)
         {
+            //Target session
             var sessionUid = target.SessionUid;
             if (_workers.ContainsKey(sessionUid))
                 return;
 
-            //start the Worker
-            var trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid.ToString());
-            var probeTopic = MessagingUtils.GetProbeTopic(sessionUid.ToString());
-            var cmdTopic = MessagingUtils.GetCommandTopic(sessionUid.ToString());
-            var pid = StartAgentWorkerProcess(target.SessionUid);
-            _logger.Info($"Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
+            //topics
+            string trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid);
+            var probeTopic = MessagingUtils.GetProbeTopic(sessionUid);
+            var cmdTopic = MessagingUtils.GetCommandTopic(sessionUid);
 
-            //add local worker info
-            var worker = new WorkerInfo(target, trgTopic, probeTopic, cmdTopic, pid);
-            if (!_workers.TryAdd(target.SessionUid, worker))
-                return;
+            int pid = -1;
+            var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
+            if (needStartWorker)
+            {
+                pid = StartAgentWorkerProcess(target.SessionUid);
+                _logger.Info($"Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
 
-            //send to worker the info
+                //add local worker info
+                var worker = new WorkerInfo(target, trgTopic, probeTopic, cmdTopic, pid);
+                if (!_workers.TryAdd(target.SessionUid, worker))
+                    return;
+            }
+            else
+            {
+                _logger.Info("Worker was not started due to Agent Server's debug options");
+            }
+
+            //send to worker the target's info
             SendTargetInfoToAgentWorker(trgTopic, target);
             _logger.Debug($"Target info was sent to the topic={trgTopic} for the Worker with pid={pid}");
         }
@@ -282,7 +299,7 @@ namespace Drill4Net.Agent.Service
             senderOpts.Topics.Add(topic);
 
             ITargetSenderRepository trgRep = new TargetedSenderRepository(target, senderOpts);
-            using ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
+            /*using*/ ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
             sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here is exclusive topic for the Worker
         }
 

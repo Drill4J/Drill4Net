@@ -60,7 +60,7 @@ namespace Drill4Net.Agent.Worker
             if (IsStarted)
                 return;
             IsStarted = true;
-            _logger.Debug("Worker is starting");
+            _logger.Info("Worker is starting");
 
             _targetReceiver.Start();
         }
@@ -70,7 +70,7 @@ namespace Drill4Net.Agent.Worker
             if (!IsStarted)
                 return;
             IsStarted = false;
-            _logger.Debug("Worker stopping");
+            _logger.Info("Worker stopping");
 
             _targetReceiver.TargetInfoReceived -= Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured -= Receiver_ErrorOccured;
