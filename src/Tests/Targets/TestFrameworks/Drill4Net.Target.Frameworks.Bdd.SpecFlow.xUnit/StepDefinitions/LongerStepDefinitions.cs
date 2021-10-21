@@ -1,7 +1,6 @@
 using Xunit;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Frameworks.Common;
-using Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Logging;
 
             //http://gasparnagy.com/2016/02/running-specflow-scenarios-in-parallel-with-xunit-v2/
             //https://github.com/Microsoft/vstest-docs/blob/master/docs/configure.md

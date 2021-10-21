@@ -1,14 +1,16 @@
 using TechTalk.SpecFlow;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Drill4Net.Target.Frameworks.Common;
+using NUnit.Framework;
 
 //https://docs.specflow.org/projects/specflow/en/latest/Execution/Parallel-Execution.html
-//https://stackoverflow.com/questions/3917060/how-to-run-unit-tests-mstest-in-parallel
-//https://docs.microsoft.com/ru-ru/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file?view=vs-2019
-[assembly: Parallelize(Workers = 4, Scope = ExecutionScope.ClassLevel)]
-//[DoNotParallelize] - to some test
+//https://docs.nunit.org/articles/nunit/writing-tests/attributes/parallelizable.html
+//https://docs.nunit.org/articles/nunit/writing-tests/attributes/levelofparallelism.html
 
-namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest.StepDefinitions
+[assembly: Parallelizable(ParallelScope.Fixtures)]
+[assembly: LevelOfParallelism(4)]
+
+
+namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.StepDefinitions
 {
     [Binding]
     public class LongerStepDefinitions
