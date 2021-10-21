@@ -5,7 +5,7 @@ Servers: # list of servers
    - 'localhost:9094'
    - 'localhost:9095'
 Topics: # additional topics for the probes
-#    #- probes
+    #- probes
 Logs:
     - Type: console
       Level: debug

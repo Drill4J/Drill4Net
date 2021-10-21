@@ -55,7 +55,7 @@ namespace Drill4Net.Injector.Core
                     typeCtx.MethodContexts.Add(methodFullName, methodCtx);
                 }
             }
-            if (!asmCtx.TypeContexts.Any())
+            if (asmCtx.TypeContexts.Count == 0)
                 return false;
 
             PrepareProxyCalls(asmCtx, opts);

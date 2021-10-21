@@ -8,7 +8,7 @@ namespace Drill4Net.Agent.Messaging
         public List<string> Servers { get; set; }
         public List<string> Topics { get; set; }
 
-        /************************************************/
+        /******************************************************/
 
         public BaseMessageOptions()
         {

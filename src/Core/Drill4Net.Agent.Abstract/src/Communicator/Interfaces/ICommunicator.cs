@@ -3,7 +3,7 @@
     public interface ICommunicator
     {
         IAgentReceiver Receiver { get; }
-        AbstractSender Sender { get; }
+        AbstractCoveragerSender Sender { get; }
 
         void Connect();
     }

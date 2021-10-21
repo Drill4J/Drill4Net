@@ -9,6 +9,7 @@
         public const string SUBSYSTEM_INJECTOR = "Injector";
         public const string SUBSYSTEM_TESTER = "Tester";
         public const string SUBSYSTEM_TEST_SERVER = "TestServer";
+        public const string SUBSYSTEM_AGENT_TEST_RUNNER = "AgentTestRunner";
         public const string SUBSYSTEM_AGENT = "Agent";
         public const string SUBSYSTEM_TRANSMITTER = "Transmitter";
         public const string SUBSYSTEM_AGENT_SERVER = "AgentServer";
@@ -55,6 +56,11 @@
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
+
+        /// <summary>
+        /// Prefix for regex filter in config
+        /// </summary>
+        public const string REGEX_FILTER_PREFIX = "reg:";
         #endregion
     }
 }

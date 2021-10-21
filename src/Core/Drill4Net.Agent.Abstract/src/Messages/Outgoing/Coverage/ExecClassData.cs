@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract.Transfer
 {
-    //It's DTO: let properties will be with a small letter
+    //It's DTO: due to Drill restrictions the properties must be with a small letter
 
     /// <summary>
     /// DTO: probes of instrumented assemblies for sending of collecting data to the Admin side
@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Abstract.Transfer
     public record ExecClassData
     {
         /// <summary>
-        /// Name of the test (session)
+        /// Name of the executed test in target (user system)
         /// </summary>
         public string testName { get; }
         

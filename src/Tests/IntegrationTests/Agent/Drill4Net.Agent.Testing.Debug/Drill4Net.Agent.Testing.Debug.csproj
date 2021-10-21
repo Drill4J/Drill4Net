@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Drill4Net.Agent.Testing\Drill4Net.Agent.Testing.csproj" />
   </ItemGroup>
 

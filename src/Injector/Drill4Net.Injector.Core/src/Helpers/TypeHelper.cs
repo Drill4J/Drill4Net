@@ -6,7 +6,9 @@ using Mono.Cecil.Cil;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Core.UnitTests")]
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
@@ -22,49 +24,54 @@ namespace Drill4Net.Injector.Core
         /// Get filtered types of assembly by specified options
         /// </summary>
         /// <param name="allTypes"></param>
-        /// <param name="opts"></param>
+        /// <param name="flt"></param>
         /// <returns></returns>
-        internal static IEnumerable<TypeDefinition> FilterTypes(IEnumerable<TypeDefinition> allTypes, SourceFilterOptions opts)
+        internal static IEnumerable<TypeDefinition> FilterTypes(IEnumerable<TypeDefinition> allTypes, SourceFilterOptions flt)
         {
             var res = new List<TypeDefinition>();
             foreach (var typeDef in allTypes)
             {
-                //The <Module> type is a placeholder for declaring classes and methods that do not conform to the CLI model.
-                //Normally relevant only in mixed-mode assemblies that contain both code written in a managed language and
-                //unmanaged code, such as C or C++. It is empty for pure managed builds. These languages support free functions
-                //and global variables. The CLR does not directly support this, methods and variables must always be members of
-                //the type. So the metadata generator uses a simple trick, it creates a fake type that will become the home for
-                //such functions and variables. The name of this fake type is <Module>. It always has internal accessibility to
-                //hide the participants.There is only one of these types, its RID is always 1. The CLR source code calls it a
-                //"global class".
-                var typeName = typeDef.Name;
-                if (typeName == "<Module>")
+                var attrs = typeDef.CustomAttributes.Select(a => a.AttributeType.Name);
+                if (!IsTypeNeed(flt, typeDef.FullName, attrs))
                     continue;
-                //
-                var typeFullName = typeDef.FullName;
-                if (_typeChecker.IsSystemType(typeFullName)) //system's types not needed any way
-                    continue;
-                if (!opts.IsClassNeed(typeFullName))
-                    continue;
-                if (!opts.IsNamespaceNeed(typeDef.Namespace))
-                    continue;
-
-                //attributes
-                var not = false;
-                foreach (var attr in typeDef.CustomAttributes)
-                {
-                    if (!opts.IsNamespaceNeed(typeDef.Namespace))
-                    {
-                        not = true;
-                        break;
-                    }
-                }
-                if (not)
-                    continue;
-                //
                 res.Add(typeDef);
             }
             return res;
+        }
+
+        internal static bool IsTypeNeed(SourceFilterOptions flt, string typeFullName, IEnumerable<string> attributes)
+        {
+            (string ns, string typeName) = CommonUtils.DeconstructFullTypeName(typeFullName);
+
+            //The <Module> type is a placeholder for declaring classes and methods that do not conform to the CLI model.
+            //Normally relevant only in mixed-mode assemblies that contain both code written in a managed language and
+            //unmanaged code, such as C or C++. It is empty for pure managed builds. These languages support free functions
+            //and global variables. The CLR does not directly support this, methods and variables must always be members of
+            //the type. So the metadata generator uses a simple trick, it creates a fake type that will become the home for
+            //such functions and variables. The name of this fake type is <Module>. It always has internal accessibility to
+            //hide the participants.There is only one of these types, its RID is always 1. The CLR source code calls it a
+            //"global class".
+            if (typeName == "<Module>")
+                return false;
+            //
+            if (_typeChecker.IsSystemType(typeFullName)) //system's types not needed any way
+                return false;
+            if (!flt.IsClassNeed(typeFullName))
+                return false;
+            if (!flt.IsNamespaceNeed(ns))
+                return false;
+
+            //attributes
+            var not = false;
+            foreach (var attr in attributes)
+            {
+                if (!flt.IsAttributeNeed(attr))
+                {
+                    not = true;
+                    break;
+                }
+            }
+            return !not;
         }
 
         /// <summary>

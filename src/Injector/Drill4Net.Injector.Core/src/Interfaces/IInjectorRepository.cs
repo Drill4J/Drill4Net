@@ -34,7 +34,7 @@ namespace Drill4Net.Injector.Core
         /// Get the IL code generator of the injecting Proxy Type
         /// </summary>
         /// <returns></returns>
-        IProfilerProxyGenerator GetProxyGenerator();
+        IProfilerProxyInjector GetProxyGenerator();
 
         /// <summary>
         /// Validation for options from loaded config

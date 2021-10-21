@@ -86,11 +86,11 @@ namespace Drill4Net.Injector.Core
                 if (flow is not (FlowControl.Branch or FlowControl.Cond_Branch))
                     continue;
 
-                methodCtx.Jumpers.Add(instr); //Code.Leave instructions are needed, too (for further correcting theirs jumps)
+                methodCtx.Jumpers.Add(instr); //Code.Leave instructions are needed, too (at least, for further correcting theirs jumps)
 
                 //need this jump for handle?
                 var curCode = instr.OpCode.Code;
-                if (curCode == Code.Leave || curCode == Code.Leave_S)
+                if (curCode == Code.Leave || curCode == Code.Leave_S) //jump target of Leaves isn't needed
                     continue;
                 var anchor = instr.Operand;
                 if (instr.Next != anchor && !methodCtx.Anchors.Contains(anchor))
@@ -98,7 +98,7 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        public static void CalcMethodHashcodes(AssemblyContext asmCtx)
+        public static void CalcMethodHashСodes(AssemblyContext asmCtx)
         {
             var methCtxs = asmCtx.TypeContexts.Values.SelectMany(a => a.MethodContexts.Values).ToDictionary(a => a.Method.FullName);
             var bizMethCtxs = methCtxs.Values.Where(a => !a.Method.IsCompilerGenerated).ToDictionary(a => a.Method.FullName);
@@ -333,7 +333,7 @@ namespace Drill4Net.Injector.Core
         {
             var bizMethods = asmCtx.InjMethodByFullname.Values
                 .Where(a => !a.IsCompilerGenerated).ToArray();
-            if (!bizMethods.Any())
+            if (bizMethods.Length == 0)
                 return;
             foreach (var caller in bizMethods.Where(a => a.CalleeOrigIndexes.Count > 0))
             {
@@ -348,12 +348,12 @@ namespace Drill4Net.Injector.Core
             foreach (var typeCtx in asmCtx.TypeContexts.Values)
             {
                 var allMethCtxs = typeCtx.MethodContexts.Values;
-                var bizMethCtxs = typeCtx.MethodContexts.Values.Where(a => !a.Method.IsCompilerGenerated);
+                var bizMethCtxs = allMethCtxs.Where(a => !a.Method.IsCompilerGenerated);
                 foreach (var methodCtx in bizMethCtxs)
                 {
                     var delta = 0;
                     List<(int Index, string Uid)> end2EndBizIndexes = new();
-                    CorrectBusinessIndexesForMethodCtx(allMethCtxs, methodCtx, ref delta, ref end2EndBizIndexes);
+                    CorrectBusinessIndexesFor(methodCtx, allMethCtxs, ref delta, ref end2EndBizIndexes);
                     var method = methodCtx.Method;
                     method.End2EndBusinessIndexes = end2EndBizIndexes;
 
@@ -380,10 +380,10 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        internal static void CorrectBusinessIndexesForMethodCtx(IEnumerable<MethodContext> methCtxs, MethodContext methodCtx,
+        internal static void CorrectBusinessIndexesFor(MethodContext ctx, IEnumerable<MethodContext> methCtxs,
             ref int delta, ref List<(int Index, string Uid)> end2EndBusinessIndexes)
         {
-            var meth = methodCtx.Method;
+            var meth = ctx.Method;
             var points = meth.Points.ToList(); //it's new list, not original one
 
             //find orphan CG callees without real call instructions (method sigs) in current method 
@@ -413,16 +413,16 @@ namespace Drill4Net.Injector.Core
             }
 
             // calc delta for the biz index
-            var lastIndex = methodCtx.OrigIndex - 1;
+            var lastIndex = ctx.OrigSize - 1;
             var orderedPoints = points.OrderBy(a => a.OrigInd);
             foreach (var point in orderedPoints) //by ordered points
             {
                 var origInd = point.OrigInd;
-                var localBizInd = methodCtx.GetLocalBusinessIndex(origInd); //only for the local code body
-                if (localBizInd > 0 && origInd < lastIndex)
-                {
-                    localBizInd--; //because currently cross-points are setted before instruction which they relate
-                }
+                var localBizInd = ctx.GetLocalBusinessIndex(origInd); //only for the local code body
+                //if (localBizInd > 0 && origInd < lastIndex)
+                //{
+                //    localBizInd--; //cross-points are setted before instruction which they relate
+                //}
                 var bizInd = localBizInd + delta; //biz index for the calling point itself DON'T include the body of its callee
 
                 end2EndBusinessIndexes.Add((bizInd, point.PointUid));
@@ -434,14 +434,14 @@ namespace Drill4Net.Injector.Core
                         point.PointUid :
                         meth.CalleeOrigIndexes.FirstOrDefault(a => a.Value == origInd).Key;
 
-                    if (callee != null)  //method call the callee
+                    if (callee != null) //method call the callee
                     {
                         var calleeCtx = methCtxs.SingleOrDefault(a => a.Method.FullName == callee);
                         if (calleeCtx?.Method.IsCompilerGenerated == true) //...and we need to include this callee to biz index of its caller
                         {
                             delta = bizInd; //shift for the callee taking into account the index of its call instruction in parent
                             //delta will be increased in the body of that CG method for NEXT instructions of the parent method
-                            CorrectBusinessIndexesForMethodCtx(methCtxs, calleeCtx, ref delta, ref end2EndBusinessIndexes);
+                            CorrectBusinessIndexesFor(calleeCtx, methCtxs, ref delta, ref end2EndBusinessIndexes);
                             delta -= localBizInd; //correct for local using
                         }
                         if (calleeCtx == null) //???
@@ -454,7 +454,7 @@ namespace Drill4Net.Injector.Core
                 }
             }
             //
-           delta += methodCtx.BusinessInstructionList.Count - 1;
+           delta += ctx.BusinessInstructionList.Count - 1;
         }
         #endregion
 

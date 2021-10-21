@@ -1,5 +1,6 @@
 ﻿using System;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
@@ -10,12 +11,14 @@ namespace Drill4Net.Agent.Worker
     public class WorkerCreator
     {
         private readonly string[] _args;
+        private readonly Logger _logger;
 
         /**************************************************************************/
 
         public WorkerCreator(string[] appArgs)
         {
             _args = appArgs ?? throw new ArgumentNullException(nameof(appArgs));
+            _logger = new TypedLogger<WorkerCreator>(CoreConstants.SUBSYSTEM_AGENT_WORKER);
         }
 
         /**************************************************************************/
@@ -24,9 +27,14 @@ namespace Drill4Net.Agent.Worker
         {
             //TODO: factory!
             var rep = GetRepository();
+
+            //receivers
+            ICommandReceiver cmdReceiver = new CommandKafkaReceiver(rep);
             IProbeReceiver probeReceiver = new ProbeKafkaReceiver(rep);
             ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessageReceiverOptions>(rep);
-            var worker = new AgentWorker(rep, targetReceiver, probeReceiver);
+
+            //worker
+            var worker = new AgentWorker(rep, targetReceiver, probeReceiver, cmdReceiver);
             return worker;
         }
 
@@ -54,9 +62,12 @@ namespace Drill4Net.Agent.Worker
         internal virtual MessageReceiverOptions GetBaseOptions(string[] args)
         {
             var cfgPathArg = AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
+            _logger.Debug($"Config path from argumants: [{cfgPathArg}]");
+
             var opts = AgentWorkerRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
+            _logger.Debug($"Communicator options: [{opts}]");
             return opts;
         }
     }

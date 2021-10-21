@@ -19,9 +19,11 @@
 
   <ItemGroup>
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
   </ItemGroup>
 

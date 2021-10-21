@@ -19,7 +19,7 @@ namespace Drill4Net.Injector.Engine
     /// Injector Engine's repository (provides injection strategy, target assemblies, 
     /// injector for them, the reading/writing of resulting tree data, etc)
     /// </summary>
-    public class InjectorRepository : ConfiguredRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
+    public class InjectorRepository : TreeRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
     {
         private Logger _logger;
         private const string _subsystem = CoreConstants.SUBSYSTEM_INJECTOR;
@@ -60,7 +60,7 @@ namespace Drill4Net.Injector.Engine
         /// <returns></returns>
         public IAssemblyInjector GetInjector()
         {
-            return new AssemblyInjector(GetStrategy());
+            return new AssemblyInjector(Options, GetStrategy());
         }
 
         /// <summary>
@@ -76,11 +76,11 @@ namespace Drill4Net.Injector.Engine
         /// Get the IL code generator of the injecting Proxy Type
         /// </summary>
         /// <returns></returns>
-        public IProfilerProxyGenerator GetProxyGenerator()
+        public IProfilerProxyInjector GetProxyGenerator()
         {
             var profilerOpts = Options.Profiler;
             var profDir = profilerOpts.Directory;
-            var proxyGenerator = new ProfilerProxyGenerator(Options.Proxy.Class, Options.Proxy.Method, //proxy to profiler
+            var proxyGenerator = new ProfilerProxyInjector(Options.Proxy.Class, Options.Proxy.Method, //proxy to profiler
                                                             profDir, profilerOpts.AssemblyName, //real profiler
                                                             profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
             return proxyGenerator;

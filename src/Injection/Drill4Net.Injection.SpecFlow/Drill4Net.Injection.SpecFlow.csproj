@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Injection.SpecFlow</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Injection.SpecFlow\Drill4Net.Injection.SpecFlow.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Injection.SpecFlow</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpecFlow" Version="3.9.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Transmitter.SpecFlow\Drill4Net.Agent.Transmitter.SpecFlow.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+    <ProjectReference Include="..\Drill4Net.Injection\Drill4Net.Injection.csproj" />
+  </ItemGroup>
+
+</Project>

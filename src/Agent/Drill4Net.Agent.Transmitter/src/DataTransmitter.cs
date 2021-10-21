@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
+using System.Threading;
+
+[assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
 namespace Drill4Net.Agent.Transmitter
 {
@@ -21,13 +24,19 @@ namespace Drill4Net.Agent.Transmitter
 
         public ITargetInfoSender InfoSender { get; }
         public IProbeSender ProbeSender { get; }
+        public ICommandSender CommandSender { get; }
 
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
         public string EmergencyLogDir { get; }
 
+        /// <summary>
+        /// In fact, this is a limiter to reduce the flow of sending probes 
+        /// to the administrator's side
+        /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
+
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
@@ -39,23 +48,26 @@ namespace Drill4Net.Agent.Transmitter
         static DataTransmitter()
         {
             AbstractRepository.PrepareEmergencyLogger();
-            Log.Debug($"Enter to {nameof(DataTransmitter)} .cctor");
+            Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
             ITargetSenderRepository rep = new TransmitterRepository();
-            Log.Debug("Repository created.");
+            Log.Debug($"{nameof(TransmitterRepository)} created.");
 
-            var extrasData = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
-            _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extrasData);
+            var extras = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
+            _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extras);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
+
+            _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
+            Thread.Sleep(10000); //here we need "sync waiting" for the Agent Worker init
             _logger.Debug("Initialized.");
         }
 
         public DataTransmitter(ITargetSenderRepository rep)
         {
-            _logger.Debug($"Creating object of {nameof(DataTransmitter)}...");
+            _logger.Debug($"{nameof(DataTransmitter)} singleton is creating...");
 
             //TODO: find out - on IHS adoption it falls
             //AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
@@ -70,11 +82,12 @@ namespace Drill4Net.Agent.Transmitter
             //TODO: factory
             InfoSender = new TargetInfoKafkaSender(rep); //sender the target info
             ProbeSender = new ProbeKafkaSender(rep); //sender the data of probes
+            CommandSender = new CommandKafkaSender(rep);
 
             var pingSender = new PingKafkaSender(rep);
             _pinger = new Pinger(rep, pingSender);
 
-            _logger.Debug($"Object of {nameof(DataTransmitter)} is created");
+            _logger.Debug($"{nameof(DataTransmitter)} singleton is created");
         }
 
         ~DataTransmitter()
@@ -84,7 +97,7 @@ namespace Drill4Net.Agent.Transmitter
 
         /************************************************************************************/
 
-        #region Init
+        #region Resolving
         //TODO: find out - on IHS adoption it falls
         //private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
         //{
@@ -109,9 +122,11 @@ namespace Drill4Net.Agent.Transmitter
 
         internal void SendTargetInfo(byte[] info)
         {
+            _logger.Info("Sending Target's info");
             InfoSender.SendTargetInfo(info);
         }
 
+        #region Transmit probe
         /// <summary>
         /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
         /// </summary>
@@ -125,15 +140,40 @@ namespace Drill4Net.Agent.Transmitter
         }
 
         /// <summary>
+        /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
+        /// </summary>
+        /// <param name="data">The cross-point data.</param>
+        /// <param name="ctx">context of the probe</param>
+        public static void TransmitWithContext(string data, string ctx)
+        {
+            if (!_probes.TryAdd(data, true))
+                return;
+            Transmitter.SendProbe(data, ctx);
+        }
+
+        /// <summary>
         /// Sends the specified probe to the middleware.
+        /// It is internal method for the debug purposes.
         /// </summary>
         /// <param name="data">The cross-point data.</param>
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
-        public int SendProbe(string data, string ctx)
+        internal int SendProbe(string data, string ctx)
         {
             return ProbeSender.SendProbe(data, ctx);
         }
+        #endregion
+        #region Command
+        public void ExecCommand(int command, string data)
+        {
+            _logger.Info($"Command: [{command}] -> {data}");
+            CommandSender.SendCommand(command, data);
+        }
 
+        public static void DoCommand(int command, string data)
+        {
+            Transmitter.ExecCommand(command, data);
+        }
+        #endregion
         #region Dispose
         public void Dispose()
         {

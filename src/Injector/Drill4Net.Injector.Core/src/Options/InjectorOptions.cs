@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.Core
@@ -38,6 +39,8 @@ namespace Drill4Net.Injector.Core
         /// Options for the injecting process (types of methods, cross-points, etc)
         /// </summary>
         public ProbeData Probes { get; set; }
+
+        public Dictionary<string, PluginOptions> Plugins { get; set; }
 
         /// <summary>
         /// Parameters for the target object versions to be processed

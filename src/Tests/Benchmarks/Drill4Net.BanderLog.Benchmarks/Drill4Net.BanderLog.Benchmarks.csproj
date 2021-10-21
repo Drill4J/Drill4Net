@@ -6,6 +6,7 @@
     <StartupObject></StartupObject>
     <ApplicationIcon />
     <Configurations>Debug;Release;Release_Benchmark</Configurations>
+	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -23,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
     <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="DumpExtensions" Version="2.0.0" />
     <PackageReference Include="NLog" Version="4.7.11" />

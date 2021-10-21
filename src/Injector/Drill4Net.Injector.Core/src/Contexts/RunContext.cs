@@ -77,7 +77,7 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// IL code generator of the injected Profiler's type
         /// </summary>
-        public IProfilerProxyGenerator ProxyGenerator { get; }
+        public IProfilerProxyInjector ProxyGenerator { get; }
 
         /***************************************************************************************/
 

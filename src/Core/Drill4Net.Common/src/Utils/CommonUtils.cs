@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Mono.Cecil;
 
@@ -188,7 +189,7 @@ namespace Drill4Net.Common
            return tAr[0];
         }
 
-        public static string GetNamespace(string typeFullName)
+        public static string GetRootNamespace(string typeFullName)
         {
             if (string.IsNullOrWhiteSpace(typeFullName))
                 throw new ArgumentNullException(nameof(typeFullName));
@@ -199,9 +200,41 @@ namespace Drill4Net.Common
             return tAr[0];
         }
 
+        public static (string ns, string type) DeconstructFullTypeName(string typeFullName)
+        {
+            string typeName;
+            string ns = null;
+            if (typeFullName.Contains("."))
+            {
+                var list = typeFullName.Split('.').ToList();
+                typeName = list[list.Count-1];
+                list.RemoveAt(list.Count - 1);
+                ns = string.Join(".", list);
+            }
+            else
+            {
+                typeName = typeFullName;
+            }
+            return (ns, typeName);
+        }
+
         public static string GetPreciseTime()
         {
             return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
+        }
+
+        public static bool IsStringMachRegexPattern(string s, string pattern)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+                return false;
+            try
+            {
+                return Regex.IsMatch(s, pattern);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -233,7 +266,7 @@ namespace Drill4Net.Common
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
-        public static DateTime ConvertUnixTime(long ts)
+        public static DateTime ConvertFromUnixTime(long ts)
         {
             var offset = DateTimeOffset.FromUnixTimeMilliseconds(ts);
             return offset.DateTime;

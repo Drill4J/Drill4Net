@@ -1,9 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Injector.Core.UnitTests</OutputPath>
+    <DocumentationFile>..\..\..\..\build\bin\Debug\Tests\Drill4Net.Injector.Core.UnitTests\Drill4Net.Injector.Core.UnitTests.xml</DocumentationFile>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Release\Tests\Drill4Net.Injector.Core.UnitTests</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +32,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+    <ProjectReference Include="..\Drill4Net.TestDataHelper\Drill4Net.TestDataHelper.csproj" />
   </ItemGroup>
 
 </Project>

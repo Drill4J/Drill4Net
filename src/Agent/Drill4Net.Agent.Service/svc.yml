@@ -7,7 +7,10 @@ Servers: # list of servers
 GroupId: dodnet-agent
 #Topics: # additional topics for the probes
 #    #- probes
-WorkerPath: ..\..\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe 
+WorkerPath: ..\..\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe
+#Debug:
+#    Disabled: false
+#    DontStartWorker: true
 Logs:
     - Type: console
       Level: debug

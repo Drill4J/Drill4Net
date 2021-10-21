@@ -1,7 +1,7 @@
 ﻿namespace Drill4Net.Agent.Abstract
 {
     //https://kb.epam.com/pages/viewpage.action?pageId=986565061
-    
+
     /// <summary>
     /// Constants for Agent subsystem
     /// </summary>
@@ -10,6 +10,7 @@
         public const string TEST_NAME_DEFAULT = "Default";
         public const string TEST_MANUAL = "MANUAL";
         public const string ADMIN_PLUGIN_NAME = "test2code";
+        public static readonly string KEY_TESTCASE_CONTEXT = "TestCase_Context";
 
         #region Topics
         /// <summary>
@@ -70,5 +71,6 @@
         public const string MESSAGE_OUT_SESSION_FINISHED = "SESSION_FINISHED";
         public const string MESSAGE_OUT_SESSION_ALL_FINISHED = "SESSIONS_FINISHED";
         #endregion
+
     }
 }

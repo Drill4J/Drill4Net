@@ -4,11 +4,12 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
-using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.Agent.Transport;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Transport;
+using Drill4Net.Agent.Abstract.Transfer;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
@@ -29,7 +30,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Any sesion is exists?
         /// </summary>
-        public bool IsAnySession => _sessionToCtx.Any();
+        public bool IsAnySession => _sessionToCtx.Count > 0;
 
         private ConcurrentDictionary<string, string> _ctxToSession;
         private ConcurrentDictionary<string, string> _sessionToCtx;
@@ -41,6 +42,7 @@ namespace Drill4Net.Agent.Standard
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
 
+        private Logger _logger;
         private System.Timers.Timer _sendTimer;
         private object _sendLocker;
         private bool _inTimer;
@@ -73,6 +75,9 @@ namespace Drill4Net.Agent.Standard
         #region Init
         private void Init(InjectedSolution tree = null)
         {
+            _logger = new TypedLogger<StandardAgentRepository>(CoreConstants.SUBSYSTEM_AGENT);
+            _logger.Debug("Creating...");
+
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();
             _ctxToRegistrator = new ConcurrentDictionary<string, CoverageRegistrator>();
@@ -95,23 +100,25 @@ namespace Drill4Net.Agent.Standard
             _injTypes = GetTypesByCallerVersion(tree);
 
             //timer for periodically sending coverage data to admin side
-            _sendTimer = new System.Timers.Timer(1500);
+            _sendTimer = new System.Timers.Timer(1200);
             _sendTimer.Elapsed += Timer_Elapsed;
+
+            _logger.Debug("Created.");
         }
 
         private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetData targetOpts)
         {
             if (adminOpts == null)
                 throw new ArgumentNullException(nameof(adminOpts));
-            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAgentPartConfig(targetOpts));
+            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAdminAgentConfig(targetOpts));
         }
 
-        internal AgentPartConfig GetAgentPartConfig(TargetData targOpts)
+        internal AdminAgentConfig GetAdminAgentConfig(TargetData targOpts)
         {
             string targVersion = targOpts.Version;
             if (string.IsNullOrWhiteSpace(targVersion))
-                targVersion = GetRealTargetVersion();
-            return new AgentPartConfig(targOpts.Name, targVersion, GetAgentVersion());
+                targVersion = GetExecutingAssemblyVersion(); //Guanito: a little inproperly (in Worker we get its version)
+            return new AdminAgentConfig(targOpts.Name, targVersion, GetAgentVersion());
         }
 
         internal string GetAgentVersion()
@@ -119,7 +126,11 @@ namespace Drill4Net.Agent.Standard
             return FileUtils.GetProductVersion(typeof(StandardAgentRepository));
         }
 
-        internal string GetRealTargetVersion()
+        /// <summary>
+        /// In the Server/Worker distributed environment it is the Worker's version, not Target's one
+        /// </summary>
+        /// <returns></returns>
+        internal string GetExecutingAssemblyVersion()
         {
             var asm = Assembly.GetExecutingAssembly();
             return FileUtils.GetProductVersion(asm.Location);
@@ -174,7 +185,7 @@ namespace Drill4Net.Agent.Standard
                             targetDir = dir;
                             break;
                         }
-                        injTypes = targetDir?.GetAllTypes(); 
+                        injTypes = targetDir?.GetAllTypes();
                     }
                 }
             }
@@ -195,12 +206,12 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Session
-        #region Start        
+        #region Started        
         /// <summary>
-        /// Session started on the admin side.
+        /// Session started on the Admin side.
         /// </summary>
         /// <param name="info">The information.</param>
-        public void StartSession(StartAgentSession info)
+        public void SessionStarted(StartAgentSession info)
         {
             var load = info.Payload;
             RemoveSession(load.SessionId);
@@ -224,7 +235,11 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Stop
-        public List<string> StopAllSessions()
+        /// <summary>
+        /// All sessions were stopped on the Admin side
+        /// </summary>
+        /// <returns></returns>
+        public List<string> AllSessionsStopped()
         {
             StopSendCycle();
             SendCoverages();
@@ -232,8 +247,11 @@ namespace Drill4Net.Agent.Standard
             ClearScopeData();
             return uids;
         }
-        
-        public void SessionStop(StopAgentSession info)
+
+        /// <summary>
+        /// The session was stopped on the Admin side
+        /// </summary>
+        public void SessionStopped(StopAgentSession info)
         {
             var uid = info.Payload.SessionId;
             
@@ -246,12 +264,20 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #region Cancel
-        public void CancelSession(CancelAgentSession info)
+        /// <summary>
+        /// The session was cancelled on the Admin side
+        /// </summary>
+        /// <param name="info"></param>
+        public void SessionCancelled(CancelAgentSession info)
         {
             RemoveSession(info.Payload.SessionId);
         }
 
-        public List<string> CancelAllSessions()
+        /// <summary>
+        /// All sessions were cancelled on the Admin side
+        /// </summary>
+        /// <param name="info"></param>
+        public List<string> AllSessionsCancelled()
         {
             StopSendCycle();
             var uids = _sessionToCtx.Keys.ToList();
@@ -269,7 +295,7 @@ namespace Drill4Net.Agent.Standard
             _ctxToRegistrator.TryRemove(ctxId, out var _);
             _sessionToObject.TryRemove(sessionUid, out var _);
         }
-        
+
         internal void ClearScopeData()
         {
             _ctxToSession.Clear();

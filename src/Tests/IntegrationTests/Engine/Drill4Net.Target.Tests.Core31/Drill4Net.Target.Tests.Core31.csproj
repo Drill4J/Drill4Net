@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <OutputType>Library</OutputType>
+	 <NoWarn>NU1701;NETSDK1138</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Tests.Core31</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Tests.Core31</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Target.Tests.Engine\Drill4Net.Target.Tests.Engine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Drill4Net.Target.Common">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Core31.App\netcoreapp3.1\Drill4Net.Target.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Drill4Net.Target.Common.Another">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Core31.App\netcoreapp3.1\Drill4Net.Target.Common.Another.dll</HintPath>
+    </Reference>
+    <Reference Include="Drill4Net.Target.Common.VB">
+      <HintPath>..\..\..\..\..\build\bin\Debug\Tests\TargetApps.Injected.Tests\Drill4Net.Target.Core31.App\netcoreapp3.1\Drill4Net.Target.Common.VB.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

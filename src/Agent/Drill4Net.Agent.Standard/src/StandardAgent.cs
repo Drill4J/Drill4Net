@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Web;
+using System.Linq;
 using System.Threading;
 using System.Reflection;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
-using Drill4Net.Core.Repository;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -23,8 +25,10 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public static StandardAgent Agent { get; private set; }
 
-        private IAgentReceiver Receiver => _comm.Receiver;
-        private IAgentSender Sender => _comm.Sender;
+        private IAgentReceiver Receiver => _comm?.Receiver;
+
+        //in fact, the Main sender. Others are additional ones - as plugins
+        private IAgentCoveragerSender CoverageSender => _comm?.Sender;
 
         /// <summary>
         /// Repository for Agent
@@ -49,8 +53,9 @@ namespace Drill4Net.Agent.Standard
 
         static StandardAgent() //it's needed for invocation from Target
         {
-            var extrasData = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
-            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, extrasData);
+            var extras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
+            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, extras);
+            _logPrefix = nameof(StandardAgent);
 
             if (StandardAgentCCtorParameters.SkipCctor)
                 return;
@@ -61,6 +66,8 @@ namespace Drill4Net.Agent.Standard
                 _logger.Fatal("Creation is failed");
                 throw new Exception($"{_logPrefix}: creation is failed");
             }
+            //recreate the logger with external context
+            _logger = new TypedLogger<StandardAgent>($"{Agent.Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", extras);
         }
 
         private StandardAgent(): this(null, null) { }
@@ -164,9 +171,16 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         private void OnInitScopeData(InitActiveScope scope)
         {
-            Repository.CancelAllSessions(); //just in case
-            _scope = scope;
-            Sender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                Repository.AllSessionsCancelled(); //just in case
+                _scope = scope;
+                CoverageSender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal("Scope init failed", ex);
+            }
         }
 
         /// <summary>
@@ -174,9 +188,16 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         private void OnRequestClassesData()
         {
-            lock (_entLocker)
+            try
             {
-                _entities = Repository.GetEntities();
+                lock (_entLocker)
+                {
+                    _entities = Repository.GetEntities();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal("Getting classes data failed", ex);
             }
         }
 
@@ -185,56 +206,98 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         private void OnTogglePlugin(string plugin)
         {
-            lock (_entLocker)
+            try
             {
-                if (_entities == null)
-                    return; //log??
+                lock (_entLocker)
+                {
+                    if (_entities == null)
+                        return; //log??
 
-                //1. Init message
-                Sender.SendInitMessage(_entities.Count);
+                    //1. Init message
+                    CoverageSender.SendInitMessage(_entities.Count);
 
-                //2. Send injected classes info to admin side
-                Sender.SendClassesDataMessage(_entities);
-                _entities.Clear();
-                _entities = null;
+                    //2. Send injected classes info to admin side
+                    CoverageSender.SendClassesDataMessage(_entities);
+                    _entities.Clear();
+                    _entities = null;
+                }
+
+                //3. Send "Initialized" message to admin side
+                CoverageSender.SendInitializedMessage();
             }
-
-            //3. Send "Initialized" message to admin side
-            Sender.SendInitializedMessage();
+            catch (Exception ex)
+            {
+                _logger.Fatal($"Togle plugin {plugin} failed", ex);
+            }
         }
 
         #region Session
         private void OnStartSession(StartAgentSession info)
         {
-            Repository.StartSession(info);
-            var load = info.Payload;
-            Sender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                Repository.SessionStarted(info);
+                var load = info.Payload;
+                CoverageSender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal($"Session start for [{info}] failed", ex);
+            }
         }
 
         private void OnFinishSession(StopAgentSession info)
         {
-            var uid = info.Payload.SessionId;
-            Repository.SessionStop(info);
-            Sender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uid = info.Payload.SessionId;
+                Repository.SessionStopped(info);
+                CoverageSender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Session finish for [{info}] failed", ex);
+            }
         }
 
         private void OnFinishAllSessions()
         {
-            var uids = Repository.StopAllSessions();
-            Sender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uids = Repository.AllSessionsStopped();
+                CoverageSender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Finishing for all sessions is failed", ex);
+            }
         }
 
         private void OnCancelSession(CancelAgentSession info)
         {
-            var uid = info.Payload.SessionId;
-            Repository.CancelSession(info);
-            Sender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uid = info.Payload.SessionId;
+                Repository.SessionCancelled(info);
+                CoverageSender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Session cancel for [{info}] failed", ex);
+            }
         }
 
         private void OnCancelAllSessions()
         {
-            var uids = Repository.CancelAllSessions();
-            Sender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            try
+            {
+                var uids = Repository.AllSessionsCancelled();
+                CoverageSender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Cancelling for all sessions is failed", ex);
+            }
         }
         #endregion
         #endregion
@@ -307,6 +370,133 @@ namespace Drill4Net.Agent.Standard
             }
         }
         #endregion
+        #endregion
+        #region Commands
+        /// <summary>
+        /// Do some command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        public static void DoCommand(int command, string data)
+        {
+            //DON'T refactor parameters to Command type, because
+            //some injections wait exactly current parameters
+            Agent.ExecCommand(command, data);
+        }
+
+        /// <summary>
+        /// Do some command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        public void ExecCommand(int command, string data)
+        {
+            var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
+            if (!comTypes.Contains(command))
+            {
+                _logger.Error($"Unknown command: [{command}] -> [{data}]");
+                return;
+            }
+            //
+            var type = (AgentCommandType)command;
+            _logger.Debug($"Command: [{type}] -> [{data}]");
+
+            TestCaseContext testCaseCtx;
+            switch (type)
+            {
+                case AgentCommandType.ASSEMBLY_TESTS_START: StartSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopSession(data); break;
+
+                //now, in fact, these are group of tests for one "test method" with many different cases
+                //case AgentCommandType.TEST_START:
+                //    break;
+                //case AgentCommandType.TEST_STOP:
+                //    break;
+
+                case AgentCommandType.TEST_CASE_START:
+                    testCaseCtx = GetTestCaseContext(data);
+                    SendTest2RunInfoStart(testCaseCtx);
+                    break;
+                case AgentCommandType.TEST_CASE_STOP:
+                    testCaseCtx = GetTestCaseContext(data);
+                    SendTest2RunInfoFinish(testCaseCtx);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        internal TestCaseContext GetTestCaseContext(string str)
+        {
+            return JsonConvert.DeserializeObject<TestCaseContext>(str);
+        }
+
+        #region Manage sessions on Agent side
+        /// <summary>
+        /// Automatic command from Agent to Admin side to start the session (for autotests)
+        /// </summary>
+        /// <param name="metadata">Some info about session. It can be empty</param>
+        internal void StartSession(string metadata)
+        {
+            var session = GetSessionName(metadata);
+            _logger.Info($"Starting admin side session: [{session}]");
+            CoverageSender.SendStartSessionCommand(session);
+        }
+
+        /// <summary>
+        /// Automatic command from Agent to Admin side to stop the session (for autotests)
+        /// </summary>
+        /// <param name="metadata"></param>
+        internal void StopSession(string metadata)
+        {
+            var session = GetSessionName(metadata);
+            _logger.Info($"Stopping admin side session: [{session}]");
+            CoverageSender.SendStopSessionCommand(session);
+        }
+
+        internal string GetSessionName(string metadata)
+        {
+            var guidName = Guid.NewGuid().ToString();
+            if (string.IsNullOrWhiteSpace(metadata))
+                return guidName;
+            if (metadata.Length > 32)
+                metadata = metadata.Substring(0, 32);
+            return NormalizeSessionName(metadata);
+        }
+
+        internal string NormalizeSessionName(string session)
+        {
+            if (string.IsNullOrWhiteSpace(session))
+                return Guid.NewGuid().ToString();
+            //
+            if (session.Contains(" "))
+            {
+                var ar = session.Split(' ');
+                for (int i = 0; i < ar.Length; i++)
+                {
+                    string word = ar[i];
+                    if (string.IsNullOrWhiteSpace(word))
+                        continue;
+                    char[] a = word.ToLower().ToCharArray();
+                    a[0] = char.ToUpper(a[0]);
+                    ar[i] = new string(a);
+                }
+                session = string.Join(null, ar).Replace(" ", null);
+            }
+            session = HttpUtility.HtmlEncode(session);
+            return session;
+        }
+        #endregion
+
+        internal void SendTest2RunInfoStart(TestCaseContext testCtx)
+        {
+            CoverageSender.SendTestCaseStart(testCtx);
+        }
+
+        internal void SendTest2RunInfoFinish(TestCaseContext testCtx)
+        {
+            CoverageSender.SendTestCaseFinish(testCtx);
+        }
         #endregion
     }
 }

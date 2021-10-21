@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net5.0;net48</TargetFrameworks>
+    <TargetFrameworks>net5.0</TargetFrameworks>
 	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	<LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
   </ItemGroup>
 
@@ -42,6 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="inj_Bdd_xUnit_Kafka.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="inj_blazor_ss.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -69,13 +73,16 @@
     <None Update="inj_Std.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="inj_Bdd_xUnit_File.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="_redirect.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)src\Tests\IntegrationTests\Projects\Engine\Drill4Net.Target.Tests.Common\post_build_cfg.yml" />
+    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; -silent -cfg_path=$(SolutionDir)src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Engine\post_build_cfg.yml" />
   </Target>
 
 </Project>

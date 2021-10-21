@@ -16,4 +16,8 @@
     <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.Target</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
+  </ItemGroup>
+
 </Project>

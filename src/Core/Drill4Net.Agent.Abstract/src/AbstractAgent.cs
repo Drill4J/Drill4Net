@@ -11,7 +11,6 @@ namespace Drill4Net.Agent.Abstract
         /// Register the cross-pont's probe data.
         /// </summary>
         /// <param name="data">The data.</param>
-        /// <param name="ctx"></param>
         public abstract void Register(string data);
 
         public abstract void RegisterWithContext(string data, string ctx);
@@ -26,7 +25,7 @@ namespace Drill4Net.Agent.Abstract
         }
 
         /// <summary>
-        /// Async register the cross-pont's probe data.
+        /// Async register the cross-point's probe data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <param name="ctx"></param>

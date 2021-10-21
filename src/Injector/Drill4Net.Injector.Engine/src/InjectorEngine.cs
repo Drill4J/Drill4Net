@@ -2,10 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Drill4Net.BanderLog;
+using Drill4Net.Configuration;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 
+[assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Engine.UnitTests")]
 namespace Drill4Net.Injector.Engine
 {
     /// <summary>
@@ -18,7 +22,7 @@ namespace Drill4Net.Injector.Engine
     {
         /* INFO *
             http://ilgenerator.apphb.com/ - online C# -> IL
-            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (buggy and with restrictions!)
+            https://cecilifier.me/ - online translator C# to Mono.Cecil's instruction on C# (a bit buggy and with some restrictions)
                 on Github - https://github.com/adrianoc/cecilifier
             https://stackoverflow.com/questions/2508828/where-to-learn-about-vs-debugger-magic-names/2509524#2509524 - naming of CG-entites
             https://www.codeproject.com/Articles/671259/Reweaving-IL-code-with-Mono-Cecil
@@ -81,39 +85,25 @@ namespace Drill4Net.Injector.Engine
                 Description = opts.Description,
             };
 
-            //ctx of this Run
             using var runCtx = new RunContext(_rep, tree);
 
-            //folders: possible targets from cfg
+            //inner folders: possible targets from cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
                 //filter by cfg
-                if (!opts.Source.Filter.IsDirectoryNeed(dir))
+                //if (!opts.Source.Filter.IsDirectoryNeed(dir))
+                //continue;
+
+                if (!IsDirectoryNeedByMoniker(monikers, sourceDir, dir))
                     continue;
-
-                //filter by target moniker (typed version)
-                var need = monikers == null || monikers.Count == 0 || monikers.Any(a =>
-                {
-                    var x = Path.Combine(sourceDir, a.Value.BaseFolder);
-                    if (x.EndsWith("\\"))
-                        x = x.Substring(0, x.Length - 1);
-                    if (x.Equals(dir, StringComparison.InvariantCultureIgnoreCase))
-                        return true;
-                    var z = Path.Combine(dir, a.Key);
-                    return x.Equals(z, StringComparison.InvariantCultureIgnoreCase);
-                });
-
-                if (need)
-                {
-                    runCtx.SourceDirectory = dir;
-                    await ProcessDirectory(runCtx);
-                }
+                runCtx.SourceDirectory = dir;
+                await ProcessDirectory(runCtx);
             }
 
+            //files in the root
             if (!runCtx.Tree.GetAllAssemblies().Any())
             {
-                //files in root
                 runCtx.SourceDirectory = runCtx.RootDirectory;
                 await ProcessDirectory(runCtx);
             }
@@ -122,7 +112,7 @@ namespace Drill4Net.Injector.Engine
             tree.RemoveEmpties();
             tree.FinishTime = DateTime.Now;
             var deployer = new TreeDeployer(runCtx.Repository);
-            deployer.Deploy(tree); //copying tree data to target root directories
+            deployer.Deploy(tree); //copying tree data to the target root's directories
 
             #region Debug
             // debug TODO: to tests
@@ -150,11 +140,7 @@ namespace Drill4Net.Injector.Engine
         {
             var opts = runCtx.Options;
             var directory = runCtx.SourceDirectory;
-            if (!opts.Source.Filter.IsDirectoryNeed(directory))
-                return false;
-            var folder = new DirectoryInfo(directory).Name;
-            var isRoot = runCtx.SourceDirectory == runCtx.RootDirectory;
-            if (!isRoot && !opts.Source.Filter.IsFolderNeed(folder))
+            if(!IsNeedProcessDirectory(opts.Source.Filter, directory, directory == runCtx.RootDirectory))
                 return false;
             _logger.Info($"Processing dir [{directory}]");
 
@@ -188,7 +174,7 @@ namespace Drill4Net.Injector.Engine
             var filePath = runCtx.SourceFile;
 
             //filter
-            if (!opts.Source.Filter.IsFileNeedByPath(Path.GetFileName(filePath)))
+            if(!IsNeedProcessFile(opts.Source.Filter, filePath))
                 return false;
             #endregion
 
@@ -204,9 +190,9 @@ namespace Drill4Net.Injector.Engine
                     Directory.CreateDirectory(asmCtx.DestinationDir);
 
                 //processing
-                await runCtx.Inject(asmCtx);
+                await runCtx.Inject(asmCtx).ConfigureAwait(false);
 
-                _logger.Debug($"Injected: [{runCtx.SourceFile}]");
+                _logger.Debug($"Injected: [{filePath}]");
 
                 //writing modified assembly and symbols to new file
                 var writer = new AssemblyWriter();
@@ -222,6 +208,37 @@ namespace Drill4Net.Injector.Engine
             }
 
             return true;
+        }
+
+        internal bool IsDirectoryNeedByMoniker(Dictionary<string, MonikerData> monikers, string root, string dir)
+        {
+            //filter by target moniker (typed version)
+            var need = monikers == null || monikers.Count == 0 || monikers.Any(a =>
+            {
+                var x = Path.Combine(root, a.Value.BaseFolder);
+                if (x.EndsWith("\\"))
+                    x = x[0..^1];
+                if (x.Equals(dir, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+                var z = Path.Combine(dir, a.Key);
+                return x.Equals(z, StringComparison.InvariantCultureIgnoreCase);
+            });
+            return need;
+        }
+
+        internal bool IsNeedProcessDirectory(SourceFilterOptions flt, string directory, bool isRoot)
+        {
+            if (isRoot || flt == null)
+                return true;
+            if (!flt.IsDirectoryNeed(directory))
+                return false;
+            var folder = new DirectoryInfo(directory).Name;
+            return flt.IsFolderNeed(folder);
+        }
+
+        internal bool IsNeedProcessFile(SourceFilterOptions flt, string filePath)
+        {
+            return flt?.IsFileNeedByPath(Path.GetFileName(filePath)) != false;
         }
     }
 }

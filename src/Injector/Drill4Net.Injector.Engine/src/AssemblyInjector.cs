@@ -9,6 +9,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Injection.SpecFlow;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -22,6 +23,12 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         public CodeHandlerStrategy Strategy { get; }
 
+        /// <summary>
+        /// Plugins for additional injections into assemblies
+        /// </summary>
+        public List<IInjectorPlugin> Plugins { get; }
+
+        private readonly InjectorOptions _opts;
         private readonly Logger _logger;
 
         /**********************************************************************************/
@@ -29,14 +36,41 @@ namespace Drill4Net.Injector.Engine
         /// <summary>
         /// Create the Injector which injects the instrumenting code called by Target for Agent
         /// </summary>
+        /// <param name="opts"></param>
         /// <param name="strategy"></param>
-        public AssemblyInjector(CodeHandlerStrategy strategy)
+        public AssemblyInjector(InjectorOptions opts, CodeHandlerStrategy strategy)
         {
             Strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+            _opts = opts ?? throw new ArgumentNullException(nameof(opts));
             _logger = new TypedLogger<AssemblyInjector>(CoreConstants.SUBSYSTEM_INJECTOR);
+            Plugins = GetPlugins();
         }
 
         /**********************************************************************************/
+
+        #region Plugins
+        private List<IInjectorPlugin> GetPlugins()
+        {
+            var plugins = new List<IInjectorPlugin>();
+
+            //TODO: loads them dynamically from the disk by cfg
+
+            var plugPath = GetPluginPath(SpecFlowHookInjector.PluginName, _opts.Plugins);
+            plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath));
+
+            return plugins;
+        }
+
+        internal string GetPluginPath(string name, Dictionary<string, PluginOptions> cfgPlugins)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            if (!cfgPlugins.ContainsKey(name))
+                return null; //maybe it is normal for some plugin
+            //
+            return FileUtils.GetFullPath(cfgPlugins[name].Path);
+        }
+        #endregion
 
         /// <summary>
         /// Inject the specified assembly
@@ -57,14 +91,27 @@ namespace Drill4Net.Injector.Engine
             AssemblyHelper.MapBusinessMethodFirstPass(asmCtx);
             AssemblyHelper.MapBusinessMethodSecondPass(asmCtx);
             AssemblyHelper.CalcBusinessPartCodeSizes(asmCtx);
-            AssemblyHelper.CalcMethodHashcodes(asmCtx);
+            AssemblyHelper.CalcMethodHashСodes(asmCtx);
 
             //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);
             InjectProxyType(runCtx, asmCtx);
+            InjectByPlugins(asmCtx);
 
             //need exactly after the injections
             AssemblyHelper.CorrectBusinessIndexes(asmCtx);
+        }
+
+        /// <summary>
+        /// Injecting some features by extending plugins
+        /// </summary>
+        /// <param name="asmCtx"></param>
+        private void InjectByPlugins(AssemblyContext asmCtx)
+        {
+            foreach (var plugin in Plugins)
+            {
+                plugin.InjectTo(asmCtx.Definition, asmCtx.ProxyNamespace, asmCtx.Version.Target == AssemblyVersionType.NetFramework);
+            }
         }
 
         /// <summary>

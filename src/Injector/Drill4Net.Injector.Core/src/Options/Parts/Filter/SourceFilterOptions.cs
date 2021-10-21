@@ -38,9 +38,14 @@ namespace Drill4Net.Injector.Core
         {
             if (Excludes?.IsDirectoryListed(path) == true)
                 return false;
-            if (Includes?.Directories == null || !Includes.Directories.Any())
+            if (Excludes?.Directories != null &&
+                FilterHelper.IsMatchRegexFilterPattern(path.EndsWith("\\") ? path : $"{path}\\", Excludes.Directories))
+                return false;
+            if (Includes?.Directories == null || Includes.Directories.Count == 0)
                 return true;
-            return Includes.IsDirectoryListed(path);
+            if (Includes.IsDirectoryListed(path))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(path.EndsWith("\\")? path:$"{path}\\", Includes.Directories);
         }
 
         public bool IsFolderNeed(string folder)
@@ -49,9 +54,14 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Excludes?.IsFolderListed(folder) == true)
                 return false;
-            if (Includes?.Folders == null || !Includes.Folders.Any())
+            if (Excludes?.Folders != null &&
+                FilterHelper.IsMatchRegexFilterPattern(folder, Excludes.Folders))
+                return false;
+            if (Includes?.Folders == null || Includes.Folders.Count == 0)
                 return true;
-            return Includes.IsFolderListed(folder);
+            if (Includes.IsFolderListed(folder))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(folder, Includes.Folders);
         }
 
         public bool IsFileNeedByPath(string filePath)
@@ -60,6 +70,7 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (!IsNamespaceNeed(Path.GetFileNameWithoutExtension(filePath))) //TODO: FileName regex in IsFileNeed!
                 return false;
+            //
             if (!_typeChecker.CheckByAssemblyPath(filePath))
                 return false;
             return true;
@@ -69,9 +80,15 @@ namespace Drill4Net.Injector.Core
         {
             if (Excludes?.IsFileListed(name) == true)
                 return false;
-            if (Includes?.Files == null || !Includes.Files.Any())
+            if (Excludes?.Files != null &&
+                FilterHelper.IsMatchRegexFilterPattern(name, Excludes.Files))
+                return false;
+            //
+            if (Includes?.Files == null || Includes.Files.Count == 0)
                 return true;
-            return Includes.IsFileListed(name);
+            if (Includes.IsFileListed(name))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(name, Includes.Files);
         }
 
         public bool IsNamespaceNeed(string ns)
@@ -80,12 +97,27 @@ namespace Drill4Net.Injector.Core
                 return false;
             if (Excludes?.IsNamespaceListedExactly(ns) == true)
                 return false;
+            //
+            if (Excludes?.Namespaces != null)
+            {
+                foreach (var nsPart in Excludes.Namespaces)
+                {
+                    if (ns.StartsWith(nsPart))
+                        return false;
+                    if (FilterHelper.IsMatchRegexFilterPattern(ns, nsPart))
+                        return false;
+                }
+            }
+            //
             if (Includes?.Namespaces == null || !Includes.Namespaces.Any())
                 return true;
+
             foreach (var nsPart in Includes.Namespaces)
             {
                 if (ns.StartsWith(nsPart))
                     return true;
+                if (FilterHelper.IsMatchRegexFilterPattern(ns, nsPart))
+                        return true;
             }
             return false;
         }
@@ -94,18 +126,30 @@ namespace Drill4Net.Injector.Core
         {
             if (Excludes?.IsClassListed(fullName) == true)
                 return false;
-            if (Includes?.Classes == null || !Includes.Classes.Any())
+            if (Excludes?.Classes != null &&
+                FilterHelper.IsMatchRegexFilterPattern(fullName, Excludes.Classes))
+                return false;
+            //
+            if (Includes?.Classes == null || Includes.Classes.Count == 0)
                 return !_typeChecker.IsSystemType(fullName);
-            return Includes.IsClassListed(fullName);
+            if (Includes.IsClassListed(fullName))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(fullName, Includes.Classes);
         }
 
         public bool IsAttributeNeed(string name)
         {
             if (Excludes?.IsAttributeListed(name) == true)
                 return false;
-            if (Includes?.Attributes == null || !Includes.Attributes.Any())
+            if (Excludes?.Attributes != null &&
+               FilterHelper.IsMatchRegexFilterPattern(name, Excludes.Attributes))
+                return false;
+            //
+            if (Includes?.Attributes == null || Includes.Attributes.Count == 0)
                 return true;
-            return Includes.IsAttributeListed(name);
+            if (Includes.IsAttributeListed(name))
+                return true;
+            return FilterHelper.IsMatchRegexFilterPattern(name, Includes.Attributes);
         }
     }
 }

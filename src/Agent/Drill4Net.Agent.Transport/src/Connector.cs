@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Transport
 
         /***********************************************************************************/
 
-        public void Connect(string url, AgentPartConfig agentCfg)
+        public void Connect(string url, AdminAgentConfig agentCfg)
         {
             _received = ReceivedMessageHandler;
 
@@ -54,9 +54,9 @@ namespace Drill4Net.Agent.Transport
             MessageReceived?.Invoke(topic, message);
         }
 
-        public void SendMessage(string messageType, string topic, string message)
+        public void SendMessage(string messageType, string route, string message)
         {
-            sendMessage(messageType, topic, message);
+            sendMessage(messageType, route, message);
         }
 
         public void SendPluginMessage(string pluginId, string message)
