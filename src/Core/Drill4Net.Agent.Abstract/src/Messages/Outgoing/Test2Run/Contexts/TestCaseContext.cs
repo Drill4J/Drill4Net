@@ -36,5 +36,12 @@
         /// Tests's execution result
         /// </summary>
         public TestResult Result { get; set; }
+
+        /********************************************************************/
+
+        public string GetKey()
+        {
+            return DisplayName ?? QualifiedName ?? CaseName;
+        }
     }
 }

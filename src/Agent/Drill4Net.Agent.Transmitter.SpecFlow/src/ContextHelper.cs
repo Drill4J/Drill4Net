@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
+using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
+using System.Collections.Concurrent;
 
 namespace Drill4Net.Agent.Transmitter.SpecFlow
 {
@@ -10,6 +12,10 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
     /// </summary>
     public static class ContextHelper
     {
+        private static readonly ConcurrentDictionary<string, long> _testCaseStartTimes = new();
+
+        /**********************************************************************************************/
+
         //public static string GetFeatureContext(FeatureContext ctx, string asmPath)
         //{
         //    FeatureInfo info = ctx.FeatureInfo;
@@ -31,7 +37,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
         /// <param name="asmPath"></param>
         /// <param name="isFinished"></param>
         /// <returns></returns>
-        public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath, bool isFinished)
+        public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath)
         {
             var info = scenarioCtx.ScenarioInfo;
             var caseCtx = new TestCaseContext
@@ -41,10 +47,26 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
                 QualifiedName = GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
                 DisplayName = info.Title,
                 CaseName = GetTestCase(scenarioCtx.ScenarioInfo),
-                Result = isFinished ? GetTestResult(scenarioCtx) : TestResult.STARTED,
-                IsFinished = isFinished,
                 Tags = info.Tags.ToList(),
             };
+
+            //need to get the start time of the test case
+            //if value is exist, this call is the finishing of the test case
+            var key = caseCtx.GetKey();
+            var isFinished = _testCaseStartTimes.TryGetValue(key, out var startTime);
+            if (isFinished)
+            {
+                caseCtx.IsFinished = true;
+                caseCtx.StartTime = startTime;
+                caseCtx.FinishTime = CommonUtils.GetCurrentUnixTimeMs();
+                caseCtx.Result = GetTestResult(scenarioCtx);
+            }
+            else //starting
+            {
+                caseCtx.Result = TestResult.STARTED;
+                caseCtx.StartTime = CommonUtils.GetCurrentUnixTimeMs();
+                _testCaseStartTimes.TryAdd(key, caseCtx.StartTime);
+            }
             var data = JsonConvert.SerializeObject(caseCtx);
             return data;
         }

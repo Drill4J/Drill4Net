@@ -170,7 +170,7 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="testCtx"></param>
         public virtual void SendTestCaseFinish(TestCaseContext testCtx)
         {
-            string test = GetTestCaseName(testCtx);
+            string test = testCtx.GetKey();
             if (!_testCaseCtxs.TryGetValue(test, out Test2RunInfo info)) //it is bad
                 info = PrepareTest2RunInfo(testCtx);
             info.finishedAt = testCtx.FinishTime;
@@ -190,7 +190,7 @@ namespace Drill4Net.Agent.Abstract
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
-            var test = GetTestCaseName(testCtx);
+            var test = testCtx.GetKey();
             var metaData = GetTestCaseMetadata(testCtx);
             return new Test2RunInfo
             {
@@ -198,13 +198,6 @@ namespace Drill4Net.Agent.Abstract
                 startedAt = testCtx.StartTime,
                 metadata = metaData,
             };
-        }
-
-        internal string GetTestCaseName(TestCaseContext testCtx)
-        {
-            if(testCtx == null)
-                throw new ArgumentNullException(nameof(testCtx));
-            return testCtx.QualifiedName ?? testCtx.CaseName ?? testCtx.DisplayName;
         }
 
         internal Dictionary<string, object> GetTestCaseMetadata(TestCaseContext testCtx)
