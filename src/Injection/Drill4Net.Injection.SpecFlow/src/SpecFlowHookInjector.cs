@@ -76,7 +76,7 @@ namespace Drill4Net.Injection.SpecFlow
                 return;
             //
             InjectInitMethod(type, typeof(TechTalk.SpecFlow.BeforeTestRunAttribute), proxyNs, isNetFX);
-            InjectTestsFinished(type, proxyNs, isNetFX);
+            InjectTestsFinished(type, proxyNs);
             InjectContextDataInvoker(type, isNetFX);
             //
             //InjectHook(type, proxyNs, typeof(TechTalk.SpecFlow.BeforeFeatureAttribute), "FeatureContext", "FeatureInfo", "Drill4NetFeatureStarting", 0, isNetFX);
@@ -105,7 +105,7 @@ namespace Drill4Net.Injection.SpecFlow
             type.Fields.Add(fld_ProfilerProxy_methInfo);
 
             //method
-            var funcName = "Drill4NetTestsInit";
+            const string funcName = "Drill4NetTestsInit";
             var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
             type.Methods.Add(funcDef);
 
@@ -177,12 +177,11 @@ namespace Drill4Net.Injection.SpecFlow
             il_meth.Append(Ret17);
         }
 
-        private void InjectTestsFinished(TypeDefinition type, string proxyNs, bool isNetFX)
+        private void InjectTestsFinished(TypeDefinition type, string proxyNs)
         {
             var module = type.Module;
-            var syslib = GetSysModule(isNetFX); //inner caching & disposing
 
-            var funcName = "Drill4NetTestsFinished";
+            const string funcName = "Drill4NetTestsFinished";
             var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
             type.Methods.Add(funcDef);
 
@@ -196,12 +195,6 @@ namespace Drill4Net.Injection.SpecFlow
             ilProc.Emit(OpCodes.Ldnull);
             ilProc.Emit(OpCodes.Call, m_DoCommand);
 
-            ////System.Threading.Thread.Sleep(3000); 
-            //ilProc.Emit(OpCodes.Ldc_I4, 3000);
-            ////m_execAsmMeth = module.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Threading.Thread", "Sleep", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.Int32"))
-            //var m_execAsmMeth = ImportSysMethodReference(syslib, module, "System.Threading", "Thread", "Sleep", true, typeof(int), typeof(void));
-            //ilProc.Emit(OpCodes.Call, m_execAsmMeth);
-
             ilProc.Append(ilProc.Create(OpCodes.Ret));
         }
 
@@ -209,7 +202,6 @@ namespace Drill4Net.Injection.SpecFlow
         {
             var module = classType.Module;
             var syslib = GetSysModule(isNetFX); //inner caching & disposing
-            var assembly = module.Assembly;
 
             //Method : GetContextData
             var m_GetContextData_2 = new MethodDefinition(_getContextDataMethod, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);

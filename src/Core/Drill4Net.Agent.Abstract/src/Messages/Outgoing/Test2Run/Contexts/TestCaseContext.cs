@@ -30,6 +30,8 @@
 
         public long FinishTime { get; set; }
 
+        public bool IsFinished { get; set; }
+
         /// <summary>
         /// Tests's execution result
         /// </summary>

@@ -2,6 +2,7 @@
 {
     public enum TestResult
     {
+        STARTED = -1,
         PASSED = 0,
         FAILED = 1,
         SKIPPED = 2,

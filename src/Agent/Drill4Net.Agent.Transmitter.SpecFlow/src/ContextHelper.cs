@@ -29,8 +29,9 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
         /// <param name="featureCtx"></param>
         /// <param name="scenarioCtx"></param>
         /// <param name="asmPath"></param>
+        /// <param name="isFinished"></param>
         /// <returns></returns>
-        public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath)
+        public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath, bool isFinished)
         {
             var info = scenarioCtx.ScenarioInfo;
             var caseCtx = new TestCaseContext
@@ -40,7 +41,8 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
                 QualifiedName = GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
                 DisplayName = info.Title,
                 CaseName = GetTestCase(scenarioCtx.ScenarioInfo),
-                Result = GetTestResult(scenarioCtx),
+                Result = isFinished ? GetTestResult(scenarioCtx) : TestResult.STARTED,
+                IsFinished = isFinished,
                 Tags = info.Tags.ToList(),
             };
             var data = JsonConvert.SerializeObject(caseCtx);
