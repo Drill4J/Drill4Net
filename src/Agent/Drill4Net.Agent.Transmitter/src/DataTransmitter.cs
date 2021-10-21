@@ -7,6 +7,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
+using System.Threading;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -60,12 +61,13 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
+            Thread.Sleep(10000); //here we need "sync waiting" for the Agent Worker init
             _logger.Debug("Initialized.");
         }
 
         public DataTransmitter(ITargetSenderRepository rep)
         {
-            _logger.Debug($"Creating of the {nameof(DataTransmitter)}'s singleton...");
+            _logger.Debug($"{nameof(DataTransmitter)} singleton is creating...");
 
             //TODO: find out - on IHS adoption it falls
             //AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
@@ -85,7 +87,7 @@ namespace Drill4Net.Agent.Transmitter
             var pingSender = new PingKafkaSender(rep);
             _pinger = new Pinger(rep, pingSender);
 
-            _logger.Debug($"Singleton of {nameof(DataTransmitter)} is created");
+            _logger.Debug($"{nameof(DataTransmitter)} singleton is created");
         }
 
         ~DataTransmitter()
@@ -120,6 +122,7 @@ namespace Drill4Net.Agent.Transmitter
 
         internal void SendTargetInfo(byte[] info)
         {
+            _logger.Info("Sending Target's info");
             InfoSender.SendTargetInfo(info);
         }
 

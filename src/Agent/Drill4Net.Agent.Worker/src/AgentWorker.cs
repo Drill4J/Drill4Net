@@ -50,7 +50,7 @@ namespace Drill4Net.Agent.Worker
             _cmdReceiver.CommandReceived += Receiver_CommandReceived;
             _cmdReceiver.ErrorOccured += Receiver_ErrorOccured;
 
-            _logger.Debug($"{nameof(TargetInfo)} is created");
+            _logger.Debug($"{nameof(AgentWorker)} is created");
         }
 
         /********************************************************************************************/
@@ -62,7 +62,6 @@ namespace Drill4Net.Agent.Worker
             IsStarted = true;
             _logger.Debug("Worker is starting");
 
-            Task.Run(_cmdReceiver.Start);
             _targetReceiver.Start();
         }
 
@@ -108,6 +107,9 @@ namespace Drill4Net.Agent.Worker
             _targetReceiver.Stop();
 
             InitAgent(target);
+
+            _logger.Info($"{nameof(AgentWorker)} starts receiving the commands...");
+            Task.Run(_cmdReceiver.Start);
 
             _logger.Info($"{nameof(AgentWorker)} starts receiving the probes...");
             _probeReceiver.Start();

@@ -45,7 +45,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
             {
                 SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKETS, 1);
                 SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET, 0);
-                return SendPacket(data);
+                return SendPacket(data, topic);
             }
             else
             {

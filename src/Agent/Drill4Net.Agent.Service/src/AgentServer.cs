@@ -254,7 +254,7 @@ namespace Drill4Net.Agent.Service
 
             //send to worker the info
             SendTargetInfoToAgentWorker(trgTopic, target);
-            _logger.Debug($"Target info was sent to the Worker with pid={pid} and topic={trgTopic}");
+            _logger.Debug($"Target info was sent to the topic={trgTopic} for the Worker with pid={pid}");
         }
 
         internal int StartAgentWorkerProcess(Guid targetSession)
