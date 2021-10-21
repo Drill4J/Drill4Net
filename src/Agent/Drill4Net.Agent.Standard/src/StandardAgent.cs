@@ -490,7 +490,7 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendTest2RunInfo(TestCaseContext testCtx)
         {
-            CoverageSender.SendTestRunStart(testCtx);
+            CoverageSender.SendTestCaseStart(testCtx);
         }
         #endregion
     }

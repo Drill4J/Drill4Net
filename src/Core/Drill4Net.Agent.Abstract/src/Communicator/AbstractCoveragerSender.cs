@@ -133,30 +133,22 @@ namespace Drill4Net.Agent.Abstract
             //...
         }
         #endregion
-
+        #region Test case data
         /// <summary>
         /// Send info about started test to the admin side
         /// </summary>
         /// <param name="testCtx"></param>
-        public virtual void SendTestRunStart(TestCaseContext testCtx)
+        public virtual void SendTestCaseStart(TestCaseContext testCtx)
         {
             // https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
             // https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
 
-            var test = GetTestCaseName(testCtx);
-            var metaData = GetTestCaseMetadata(testCtx);
-            var info = new Test2RunInfo
-            {
-                name = test,
-                startedAt = testCtx.StartTime,
-                metadata = metaData,
-            };
-            //
-            var _testRun = new TestRun
+            var info = PrepareTest2RunInfo(testCtx);
+            var testRun = new TestRun
             {
                 startedAt = testCtx.StartTime
             };
-            _testRun.tests.Add(info);
+            testRun.tests.Add(info);
 
             //send it
             //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
@@ -166,18 +158,11 @@ namespace Drill4Net.Agent.Abstract
         /// Send info about finished test to the admin side
         /// </summary>
         /// <param name="testCtx"></param>
-        public virtual void SendTestRunFinish(TestCaseContext testCtx)
+        public virtual void SendTestCaseFinish(TestCaseContext testCtx)
         {
-            var test = GetTestCaseName(testCtx);
-            var metaData = GetTestCaseMetadata(testCtx);
-            var info = new Test2RunInfo
-            {
-                name = test,
-                startedAt = testCtx.StartTime,
-                finishedAt = testCtx.FinishTime,
-                result = testCtx.Result,
-                metadata = metaData,
-            };
+            var info = PrepareTest2RunInfo(testCtx);
+            info.finishedAt = testCtx.FinishTime;
+            info.result = testCtx.Result;
             //
             var testRun = new TestRun
             {
@@ -188,6 +173,19 @@ namespace Drill4Net.Agent.Abstract
 
             //send it
             //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+        }
+
+        internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
+        {
+            var test = GetTestCaseName(testCtx);
+            var metaData = GetTestCaseMetadata(testCtx);
+            var info = new Test2RunInfo
+            {
+                name = test,
+                startedAt = testCtx.StartTime,
+                metadata = metaData,
+            };
+            return info;
         }
 
         internal string GetTestCaseName(TestCaseContext testCtx)
@@ -201,6 +199,7 @@ namespace Drill4Net.Agent.Abstract
         {
             return new Dictionary<string, object> { { AgentConstants.KEY_TESTCASE_CONTEXT, testCtx } };
         }
+        #endregion
         #endregion
         #endregion
         #region Send API

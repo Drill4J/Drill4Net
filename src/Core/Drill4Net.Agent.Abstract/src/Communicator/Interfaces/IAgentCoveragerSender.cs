@@ -44,6 +44,6 @@ namespace Drill4Net.Agent.Abstract
         void SendStartSessionCommand(string name);
         void SendStopSessionCommand(string name);
 
-        void SendTestRunStart(TestCaseContext testCtx);
+        void SendTestCaseStart(TestCaseContext testCtx);
     }
 }
