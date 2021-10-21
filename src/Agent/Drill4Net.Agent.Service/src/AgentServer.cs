@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.Service
         private readonly ConcurrentDictionary<Guid, StringDictionary> _pings;
         private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
 
-        private const long _oldPingTickDelta = 5 * 10_000_000; //5 sec
+        private const long _oldPingTickDelta = 7 * 10_000_000; //n sec
 
         private readonly AbstractTransportAdmin _admin;
         private readonly Logger _logger;

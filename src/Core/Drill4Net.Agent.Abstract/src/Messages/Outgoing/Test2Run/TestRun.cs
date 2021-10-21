@@ -1,7 +1,6 @@
 ﻿using System;
-using Drill4Net.Common;
-using Drill4Net.Agent.Abstract.Transfer;
 using System.Collections.Generic;
+using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -23,15 +22,14 @@ namespace Drill4Net.Agent.Abstract
         public TestRun(string name = null) : base(TestConstants.TEST_TOPIC_TESTS_ADD)
         {
             this.name = name;
-            startedAt = CommonUtils.GetCurrentUnixTimeMs();
-            finishedAt = startedAt;
+            tests = new List<Test2RunInfo>();
         }
 
         /****************************************************************/
 
         public override string ToString()
         {
-            return name;
+            return $"{name}: {tests.Count}";
         }
     }
 }

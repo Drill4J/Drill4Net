@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Transmitter
     {
         public static DataTransmitter Transmitter { get; }
 
-        public ITargetInfoSender InfoSender { get; }
+        public ITargetInfoSender TargetSender { get; }
         public IProbeSender ProbeSender { get; }
         public ICommandSender CommandSender { get; }
 
@@ -80,8 +80,8 @@ namespace Drill4Net.Agent.Transmitter
             _probes = new ConcurrentDictionary<string, bool>();
 
             //TODO: factory
-            InfoSender = new TargetInfoKafkaSender(rep); //sender the target info
-            ProbeSender = new ProbeKafkaSender(rep); //sender the data of probes
+            TargetSender = new TargetInfoKafkaSender(rep);
+            ProbeSender = new ProbeKafkaSender(rep);
             CommandSender = new CommandKafkaSender(rep);
 
             var pingSender = new PingKafkaSender(rep);
@@ -123,7 +123,7 @@ namespace Drill4Net.Agent.Transmitter
         internal void SendTargetInfo(byte[] info)
         {
             _logger.Info("Sending Target's info");
-            InfoSender.SendTargetInfo(info);
+            TargetSender.SendTargetInfo(info);
         }
 
         #region Transmit probe
@@ -193,7 +193,7 @@ namespace Drill4Net.Agent.Transmitter
                     // Dispose managed resources.
                     _pinger?.Dispose();
                     ProbeSender?.Dispose();
-                    InfoSender?.Dispose();
+                    TargetSender?.Dispose();
                 }
 
                 // Call the appropriate methods to clean up
