@@ -8,6 +8,7 @@ namespace Drill4Net.Agent.Abstract
 {
     public abstract class AbstractCoveragerSender : IAgentCoveragerSender
     {
+        private Test2RunInfo _firstTest2RunInfo;
         private readonly ConcurrentDictionary<string, Test2RunInfo> _testCaseCtxs;
         private readonly Logger _logger;
 
@@ -132,6 +133,8 @@ namespace Drill4Net.Agent.Abstract
 
         public virtual void SendStopSessionCommand(string name)
         {
+            _firstTest2RunInfo = null;
+
             //stop the session
             //...
         }
@@ -148,10 +151,12 @@ namespace Drill4Net.Agent.Abstract
 
             var info = PrepareTest2RunInfo(testCtx);
             _testCaseCtxs.TryAdd(info.name, info);
+            if (_firstTest2RunInfo == null)
+                _firstTest2RunInfo = info;
 
             var testRun = new TestRun
             {
-                startedAt = testCtx.StartTime
+                startedAt = _firstTest2RunInfo.startedAt
             };
             testRun.tests.Add(info);
 
@@ -173,7 +178,8 @@ namespace Drill4Net.Agent.Abstract
             //
             var testRun = new TestRun
             {
-                startedAt = info.startedAt,
+                //but _firstTest2RunInfo == null is abnormal
+                startedAt = _firstTest2RunInfo == null ? info.startedAt : _firstTest2RunInfo.startedAt,
                 finishedAt = info.finishedAt
             };
             testRun.tests.Add(info);
