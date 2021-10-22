@@ -171,7 +171,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Info($"Command: [{command}] -> {data}");
             ProbeSender.Flush(); //we have to guarantee the delivery of the previous probes
             CommandSender.SendCommand(command, data);
-
+            Log.Flush();
         }
 
         public static void DoCommand(int command, string data)

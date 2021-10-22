@@ -379,9 +379,10 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public static void DoCommand(int command, string data)
         {
-            //DON'T refactor parameters to Command type, because
+            //DON'T refactor parameters to the Command type, because
             //some injections wait exactly current parameters
             Agent.ExecCommand(command, data);
+            Log.Flush();
         }
 
         /// <summary>
