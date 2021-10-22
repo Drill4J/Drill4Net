@@ -1,6 +1,8 @@
+using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Frameworks.Common;
-using NUnit.Framework;
+
+  //Project mustn't have in its name "NUnit" part, only "nUnit" - with small letter "n"
 
 //https://docs.specflow.org/projects/specflow/en/latest/Execution/Parallel-Execution.html
 //https://docs.nunit.org/articles/nunit/writing-tests/attributes/parallelizable.html
@@ -8,7 +10,6 @@ using NUnit.Framework;
 
 [assembly: Parallelizable(ParallelScope.Fixtures)]
 [assembly: LevelOfParallelism(4)]
-
 
 namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.StepDefinitions
 {

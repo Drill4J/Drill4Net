@@ -276,12 +276,15 @@ namespace Drill4Net.Agent.Service
 
         internal int StartAgentWorkerProcess(Guid targetSession)
         {
+            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession}";
+            _logger.Debug($"Agent Worker's argument: [{args}]");
+
             var process = new Process
             {
                 StartInfo =
                 {
                     FileName = _processName,
-                    Arguments = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession}",
+                    Arguments = args,
                     WorkingDirectory = _workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
@@ -299,7 +302,7 @@ namespace Drill4Net.Agent.Service
             senderOpts.Topics.Add(topic);
 
             ITargetSenderRepository trgRep = new TargetedSenderRepository(target, senderOpts);
-            /*using*/ ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
+            using ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
             sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here is exclusive topic for the Worker
         }
 

@@ -23,36 +23,36 @@ namespace Drill4Net.Agent.Messaging
         }
 
         #region GetTargetWorkerTopic
-        public static string GetTargetWorkerTopic(string sessionUid)
-        {
-            return $"{MessagingConstants.TOPIC_TARGET_INFO}_{sessionUid}";
-        }
-
         public static string GetTargetWorkerTopic(Guid sessionUid)
         {
             return GetTargetWorkerTopic(sessionUid.ToString());
         }
+
+        public static string GetTargetWorkerTopic(string sessionUid)
+        {
+            return $"{MessagingConstants.TOPIC_TARGET_INFO}_{sessionUid}";
+        }
         #endregion
         #region GetCommandTopic
-        public static string GetCommandTopic(string sessionUid)
-        {
-            return $"{MessagingConstants.TOPIC_COMMAND_PREFIX}_{sessionUid}";
-        }
-
         public static string GetCommandTopic(Guid sessionUid)
         {
             return GetCommandTopic(sessionUid.ToString());
         }
+
+        public static string GetCommandTopic(string sessionUid)
+        {
+            return $"{MessagingConstants.TOPIC_COMMAND_PREFIX}_{sessionUid}";
+        }
         #endregion
         #region GetProbeTopic
-        public static string GetProbeTopic(string sessionUid)
-        {
-            return $"{MessagingConstants.TOPIC_PROBE_PREFIX}_{sessionUid}";
-        }
-
         public static string GetProbeTopic(Guid sessionUid)
         {
             return GetProbeTopic(sessionUid.ToString());
+        }
+
+        public static string GetProbeTopic(string sessionUid)
+        {
+            return $"{MessagingConstants.TOPIC_PROBE_PREFIX}_{sessionUid}";
         }
         #endregion
 
