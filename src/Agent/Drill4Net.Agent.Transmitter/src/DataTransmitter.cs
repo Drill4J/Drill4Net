@@ -61,7 +61,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
-            const int delay = 10;
+            const int delay = 12;
             _logger.Debug($"Waiting for {delay} seconds...");
             Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
 
@@ -169,7 +169,9 @@ namespace Drill4Net.Agent.Transmitter
         public void ExecCommand(int command, string data)
         {
             _logger.Info($"Command: [{command}] -> {data}");
+            ProbeSender.Flush(); //we have to guarantee the delivery of the previous probes
             CommandSender.SendCommand(command, data);
+
         }
 
         public static void DoCommand(int command, string data)

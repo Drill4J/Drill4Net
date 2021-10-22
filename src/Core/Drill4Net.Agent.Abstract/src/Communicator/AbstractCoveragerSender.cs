@@ -127,16 +127,24 @@ namespace Drill4Net.Agent.Abstract
         #region Session (managed on Agent side)
         public virtual void SendStartSessionCommand(string name)
         {
+            ClearSessionData();
+
             //start the session
             //...
         }
 
         public virtual void SendStopSessionCommand(string name)
         {
-            _firstTest2RunInfo = null;
-
             //stop the session
             //...
+
+            ClearSessionData();
+        }
+
+        private void ClearSessionData()
+        {
+            _firstTest2RunInfo = null;
+            _testCaseCtxs.Clear();
         }
         #endregion
         #region Test case data

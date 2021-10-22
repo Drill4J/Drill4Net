@@ -21,6 +21,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
             var com = new Command { Type = type, Data = data };
             var mess = new Message<Null, Command> { Value = com, Headers = _headers };
             _producer.Produce(topic, mess, HandleProbeData);
+            _producer.Flush(); //we must guarantee the delivery
         }
 
         private void HandleProbeData(DeliveryReport<Null, Command> report)

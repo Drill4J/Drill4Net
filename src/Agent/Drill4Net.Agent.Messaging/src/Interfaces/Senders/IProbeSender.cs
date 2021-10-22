@@ -8,5 +8,6 @@
         /// <param name="data">The cross-point data.</param>
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
         int SendProbe(string data, string ctx);
+        void Flush();
     }
 }

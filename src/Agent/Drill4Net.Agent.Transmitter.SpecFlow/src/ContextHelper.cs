@@ -60,6 +60,9 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
                 caseCtx.StartTime = startTime;
                 caseCtx.FinishTime = CommonUtils.GetCurrentUnixTimeMs();
                 caseCtx.Result = GetTestResult(scenarioCtx);
+
+                //need to remove due to potential repeat the test
+                _testCaseStartTimes.TryRemove(key, out startTime);
             }
             else //starting
             {

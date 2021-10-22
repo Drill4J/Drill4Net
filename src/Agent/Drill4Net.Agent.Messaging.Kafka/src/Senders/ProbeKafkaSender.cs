@@ -54,9 +54,14 @@ namespace Drill4Net.Agent.Messaging.Kafka
             return MessagingConstants.MESSAGE_TYPE_PROBE;
         }
 
-        protected override void ConcreteDisposing()
+        public void Flush()
         {
             _probeProducer?.Flush(TimeSpan.FromSeconds(10));
+        }
+
+        protected override void ConcreteDisposing()
+        {
+            Flush();
             _probeProducer?.Dispose();
         }
     }
