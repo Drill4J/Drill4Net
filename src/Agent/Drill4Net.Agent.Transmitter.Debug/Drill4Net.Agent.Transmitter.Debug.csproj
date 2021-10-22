@@ -31,7 +31,7 @@
     <None Update="IHS.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="std.yml">
+    <None Update="model_target.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="_redirect.yml">

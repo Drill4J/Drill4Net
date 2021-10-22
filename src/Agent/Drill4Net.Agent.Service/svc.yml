@@ -1,6 +1,6 @@
 ﻿Description: Agent Server for controlling workers processing the probes for Drill Admin side by messaging
 Type: agent-service # type as hint
-Servers: # list of servers
+Servers: # list of Kafka servers
    - 'localhost:9093'
    - 'localhost:9094'
    - 'localhost:9095'

@@ -61,7 +61,10 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
-            Thread.Sleep(10000); //here we need "sync waiting" for the Agent Worker init
+            const int delay = 10;
+            _logger.Debug($"Waiting for {delay} seconds...");
+            Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
+
             _logger.Debug("Initialized.");
         }
 
