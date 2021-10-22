@@ -93,15 +93,15 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest.Features
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Wait 5000 default")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Wait default")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "LongerDefault")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("default_5000")]
-        public virtual void Wait5000Default()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("default_wait")]
+        public virtual void WaitDefault()
         {
             string[] tagsOfScenario = new string[] {
-                    "default_5000"};
+                    "default_wait"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000 default", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait default", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
