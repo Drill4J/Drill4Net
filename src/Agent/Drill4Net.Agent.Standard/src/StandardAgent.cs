@@ -87,7 +87,7 @@ namespace Drill4Net.Agent.Standard
 
                 _logger.Debug($"{_logPrefix} is initializing...");
 
-                //TEST assembly resolving!!!
+                #region TEST assembly resolving
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
                 //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
 
@@ -99,6 +99,7 @@ namespace Drill4Net.Agent.Standard
                 //var asm = _resolver.Resolve(ver, reqPath);
 
                 //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
+                #endregion
 
                 Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
                 _comm = Repository.Communicator;

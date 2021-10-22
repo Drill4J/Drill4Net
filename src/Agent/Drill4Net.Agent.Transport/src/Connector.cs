@@ -24,6 +24,8 @@ namespace Drill4Net.Agent.Transport
         static extern void initialize_agent(string agentId, string adminAddress, string buildVersion, string agentVersion,
                                             string groupId, string instanceId, ReceivedMessageHandler received);
 
+        //it is used on our agent to send messages that are not related to the plugin:
+        //this is setting up a loglevel, sending packages, etc. You hardly need it yet
         [DllImport("agent_connector")]
         static extern int sendMessage(string messageType, string destination, string content);
 
@@ -54,6 +56,13 @@ namespace Drill4Net.Agent.Transport
             MessageReceived?.Invoke(topic, message);
         }
 
+        /// <summary>
+        /// It is used on our agent to send messages that are not related to the plugin: 
+        /// this is setting up a loglevel, sending packages, etc. You hardly need it yet
+        /// </summary>
+        /// <param name="messageType"></param>
+        /// <param name="route"></param>
+        /// <param name="message"></param>
         public void SendMessage(string messageType, string route, string message)
         {
             sendMessage(messageType, route, message);

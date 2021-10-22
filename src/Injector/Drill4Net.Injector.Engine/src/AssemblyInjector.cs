@@ -65,7 +65,7 @@ namespace Drill4Net.Injector.Engine
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
-            if (!cfgPlugins.ContainsKey(name))
+            if (cfgPlugins == null || !cfgPlugins.ContainsKey(name))
                 return null; //maybe it is normal for some plugin
             //
             return FileUtils.GetFullPath(cfgPlugins[name].Path);

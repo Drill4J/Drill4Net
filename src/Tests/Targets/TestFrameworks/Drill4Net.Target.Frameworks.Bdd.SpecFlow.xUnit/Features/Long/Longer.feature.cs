@@ -84,11 +84,11 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
         [Xunit.SkippableFactAttribute(DisplayName="Wait 5000")]
         [Xunit.TraitAttribute("FeatureTitle", "Longer")]
         [Xunit.TraitAttribute("Description", "Wait 5000")]
-        [Xunit.TraitAttribute("Category", "timeout_5000")]
+        [Xunit.TraitAttribute("Category", "wait_5000")]
         public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
-                    "timeout_5000"};
+                    "wait_5000"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
