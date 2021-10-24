@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Drill4Net.Demo.OnlineStore.Bll.Models
+namespace Drill4Net.Demo.OnlineStore.Bll.Contracts.Models
 {
     public class Cart
     {
@@ -12,7 +12,7 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Models
         public decimal Total { 
             get 
             {
-                return Products.Sum(p => p.TotalPrice);
+                return Products.Sum(p => p!=null?p.TotalPrice:0);
             }
         }
     }

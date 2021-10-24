@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces
 {
-    public interface ICartDataWriteService: IDataWriteServiceBase<Cart>
+    public interface ICartBusinessService
     {
-        public void AddToCart(Guid cartId, CartItem item);
-        public void ChangeItemAmount(Guid cartId, Guid productId, int amount);
+        public Cart CreateCart(Cart cart);
+        public void AddToCart(Guid cartId, CartItem cartItem);
         public void RemoveFromCart(Guid cartId, Guid productId);
+        public void ChangeCartItemAmount(Guid cartId, Guid productId, int amount);
     }
 }

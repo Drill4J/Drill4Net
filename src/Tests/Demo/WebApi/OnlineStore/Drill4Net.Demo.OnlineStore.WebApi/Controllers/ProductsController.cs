@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using AutoMapper;
 using Drill4Net.Demo.OnlineStore.WebApi.Models;
-using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
 using System;
-using Drill4Net.Demo.OnlineStore.Bll.Models;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 
 namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class ProductsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -35,7 +35,6 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
         [HttpPost]
         public ActionResult<ProductDto> CreateProduct(NewProductDto productDto)
         {
-
             var newProduct = _productBllService.AddProduct(_mapper.Map<Product>(productDto));
             return Created(new Uri($"/{newProduct.Id}", UriKind.Relative), _mapper.Map<ProductDto>(newProduct));
         }

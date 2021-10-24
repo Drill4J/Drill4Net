@@ -1,4 +1,4 @@
-﻿using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
+﻿using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
 using Drill4Net.Demo.OnlineStore.Bll.Services;
 using Drill4Net.Demo.OnlineStore.Dal.Mapping;
 using Drill4Net.Demo.OnlineStore.Dal.Services;
@@ -18,6 +18,7 @@ namespace Drill4Net.Demo.OnlineStore.WebApi
             services.AddTransient<ICartDataWriteService, CartDataWriteService>();
             services.AddTransient<ICartDataReadService, CartDataReadService>();
             services.AddTransient<IProductBusinessService, ProductService>();
+            services.AddTransient<ICartBusinessService, CartService>();
             return services;
         }
         public static IServiceCollection AddAutoMapperService(IServiceCollection services)

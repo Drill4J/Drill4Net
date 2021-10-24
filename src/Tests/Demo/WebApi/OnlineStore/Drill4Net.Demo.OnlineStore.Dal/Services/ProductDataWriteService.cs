@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
-using Drill4Net.Demo.OnlineStore.Bll.Models;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 using Drill4Net.Demo.OnlineStore.Dal.Helpers;
 using System;
 using System.Collections.Generic;

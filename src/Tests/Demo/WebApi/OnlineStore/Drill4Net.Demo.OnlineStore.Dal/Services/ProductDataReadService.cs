@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Drill4Net.Demo.OnlineStore.Bll.Interfaces;
-using Drill4Net.Demo.OnlineStore.Bll.Models;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 using Drill4Net.Demo.OnlineStore.Dal.Helpers;
 using System;
 using System.Collections.Generic;
@@ -15,16 +15,6 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
         {
             _mapper = mapper;
         }
-        public Product Get(Guid id)
-        {
-            var dalItem= ProductDataHelper.GetProduct(id);
-            return _mapper.Map<Bll.Models.Product>(dalItem);
-        }
-        public IEnumerable<Product> GetAll()
-        {
-             return _mapper.Map<IEnumerable<Bll.Models.Product>>(DataContext.Products);
-        }
-
         public IEnumerable<Product> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
         {
             var products = DataContext.Products.Skip((page - 1) * pageItemsNumber).Take(pageItemsNumber);
@@ -42,7 +32,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
                 default:
                     goto case "name";
             }
-            return _mapper.Map<IEnumerable<Bll.Models.Product>>(products);
+            return _mapper.Map<IEnumerable<Bll.Contracts.Models.Product>>(products);
 
         }
 
