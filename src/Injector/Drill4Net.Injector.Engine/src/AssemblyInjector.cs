@@ -56,7 +56,8 @@ namespace Drill4Net.Injector.Engine
             //TODO: loads them dynamically from the disk by cfg
 
             var plugPath = GetPluginPath(SpecFlowHookInjector.PluginName, _opts.Plugins);
-            plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath));
+            if(!string.IsNullOrWhiteSpace(plugPath))
+                plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath));
 
             return plugins;
         }
