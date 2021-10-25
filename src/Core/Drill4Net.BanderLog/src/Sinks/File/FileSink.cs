@@ -9,7 +9,8 @@ namespace Drill4Net.BanderLog.Sinks.File
 {
     public class FileSink : AbstractTextSink
     {
-        private readonly string _filepath;
+        public string Filepath { get; }
+
         private readonly ChannelsQueue<string> _queue;
         private  StreamWriter _writer;
         private readonly Timer _flushTimer;
@@ -21,7 +22,7 @@ namespace Drill4Net.BanderLog.Sinks.File
         public FileSink(string filepath)
         {
             _locker = new object();
-            _filepath = filepath ?? throw new ArgumentNullException(nameof(filepath));
+            Filepath = filepath ?? throw new ArgumentNullException(nameof(filepath));
             _queue = new ChannelsQueue<string>(WriteLine);
             _flushTimer = new Timer(TimeFlushing, null, FileSinkConstants.FLUSH_PERIOD / 2, FileSinkConstants.FLUSH_PERIOD);
         }
@@ -67,7 +68,7 @@ namespace Drill4Net.BanderLog.Sinks.File
                 try
                 {
                     if (_writer == null)
-                        _writer = InitializeWriter(_filepath);
+                        _writer = InitializeWriter(Filepath);
                     _writer.WriteLine(str);
                 }
                 catch { } //TODO: emergency log
@@ -130,12 +131,12 @@ namespace Drill4Net.BanderLog.Sinks.File
 
         public override int GetKey()
         {
-            return _filepath.GetHashCode();
+            return Filepath.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"File: {_filepath}";
+            return $"File: {Filepath}";
         }
     }
 }

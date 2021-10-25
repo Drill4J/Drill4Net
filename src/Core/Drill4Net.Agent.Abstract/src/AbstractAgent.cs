@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -32,6 +34,11 @@ namespace Drill4Net.Agent.Abstract
         public Task RegisterWithContextAsync(string data, string ctx)
         {
             return Task.Run(() => RegisterWithContext(data, ctx));
+        }
+
+        public static string GetDefaultConnectorLogFilePath()
+        {
+            return Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.GetCallingDir()), AgentConstants.CONNECTOR_LOG_FILE_NAME);
         }
     }
 }

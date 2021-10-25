@@ -1,5 +1,7 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.IO;
+using Microsoft.Extensions.Logging;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -43,15 +45,8 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public string AgentType { get; set; }
 
-        /// <summary>
-        /// ??? Must be, as a rule, true
-        /// </summary>
-        public bool NeedSync { get; set; }
-
-        /// <summary>
-        /// Namespaces for instrumenting (not used in DotNet?)
-        /// </summary>
-        public string PackagesPrefixes { get; set; }
+        public LogLevel ConnectorLogLevel { get; set; }
+        public string ConnectorLogFilePath { get; set; }
 
         /************************************************************************************/
 
@@ -61,13 +56,15 @@ namespace Drill4Net.Agent.Abstract
             Id = appId;
             InstanceId = Guid.NewGuid().ToString();
             BuildVersion = string.IsNullOrWhiteSpace(appVersion) ? "0.0.0" : appVersion;
-            PackagesPrefixes = JsonConvert.SerializeObject(new BusinessNamespacer());
 
             //Agent
             AgentType = "DOTNET";
-            NeedSync = true;
             ServiceGroupId = "";
             AgentVersion = agentVersion;
+
+            //Connector
+            ConnectorLogLevel = LogLevel.Error;
+            ConnectorLogFilePath = AbstractAgent.GetDefaultConnectorLogFilePath();
         }
     }
 }

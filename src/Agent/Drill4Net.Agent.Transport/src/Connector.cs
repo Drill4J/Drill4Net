@@ -1,6 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.Agent.Transport
 {
@@ -34,6 +36,12 @@ namespace Drill4Net.Agent.Transport
         [DllImport("agent_connector")]
         static extern int addTests(string pluginId, string testsRun);
 
+        [DllImport("agent_connector")]
+        static extern void startSession(string pluginId, string sessionId, bool isRealtime, bool isGlobal);
+
+        [DllImport("agent_connector")]
+        static extern void stopSession(string pluginId, string sessionId);
+
         private ReceivedMessageHandler _received; //it's needed to prevent GC collecting
 
         /***********************************************************************************/
@@ -50,17 +58,26 @@ namespace Drill4Net.Agent.Transport
                 agentVersion = agentCfg.AgentVersion,
                 instanceId = agentCfg.InstanceId,
                 groupId = agentCfg.ServiceGroupId,
-                logLevel = 
+                logLevel = ConvertToConnectorLogLevel(agentCfg.ConnectorLogLevel).ToString(),
+                logFile = agentCfg.ConnectorLogFilePath,
             };
+            var cfgStr = JsonConvert.SerializeObject(agentConnOpts);
 
-            initialize_agent(
-                agentCfg.Id,
-                url, //"localhost:8090",
-                agentCfg.BuildVersion,
-                agentCfg.AgentVersion,
-                agentCfg.ServiceGroupId,
-                agentCfg.InstanceId,
-                _received);
+            initialize_agent(cfgStr, _received);
+        }
+
+        private ConnectorLogLevel ConvertToConnectorLogLevel(LogLevel level)
+        {
+            return level switch
+            {
+                LogLevel.Debug => ConnectorLogLevel.DEBUG,
+                LogLevel.Information => ConnectorLogLevel.INFO,
+                LogLevel.Warning => ConnectorLogLevel.WARN,
+                LogLevel.Error => ConnectorLogLevel.ERROR,
+                LogLevel.Critical => ConnectorLogLevel.ERROR,
+                LogLevel.None => ConnectorLogLevel.ERROR,
+                _ => ConnectorLogLevel.TRACE,
+            };
         }
 
         [AllowReversePInvokeCalls]
@@ -89,6 +106,28 @@ namespace Drill4Net.Agent.Transport
         public void SendPluginMessage(string pluginId, string message)
         {
             sendPluginMessage(pluginId, message); //currently pluginId is the only one = "test2code"
+        }
+
+        /// <summary>
+        /// Start the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="isRealtime"></param>
+        /// <param name="isGlobal"></param>
+        public void StartSession(string pluginId, string sessionId, bool isRealtime, bool isGlobal)
+        {
+            startSession(pluginId, sessionId, isRealtime, isGlobal);
+        }
+
+        /// <summary>
+        /// Stop the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        public void StopSession(string pluginId, string sessionId)
+        {
+            stopSession(pluginId, sessionId);
         }
 
         /// <summary>

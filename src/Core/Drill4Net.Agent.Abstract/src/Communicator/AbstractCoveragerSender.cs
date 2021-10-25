@@ -124,20 +124,23 @@ namespace Drill4Net.Agent.Abstract
         }
         #endregion
         #region Test2Run
+
+        //https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
+        //https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
+
         #region Session (managed on Agent side)
-        public virtual void SendStartSessionCommand(string name)
+        public virtual void SendStartSessionCommand(string sessionId)
         {
             ClearSessionData();
-
-            //start the session
-            //...
+            StartSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME,
+                sessionId,
+                isRealtime: true, //?
+                isGlobal: false);
         }
 
-        public virtual void SendStopSessionCommand(string name)
+        public virtual void SendStopSessionCommand(string sessionUid)
         {
-            //stop the session
-            //...
-
+            StopSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME, sessionUid);
             ClearSessionData();
         }
 
@@ -154,9 +157,6 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="testCtx"></param>
         public virtual void SendTestCaseStart(TestCaseContext testCtx)
         {
-            // https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
-            // https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
-
             var info = PrepareTest2RunInfo(testCtx);
             _testCaseCtxs.TryAdd(info.name, info);
             if (_firstTest2RunInfo == null)
@@ -169,7 +169,7 @@ namespace Drill4Net.Agent.Abstract
             testRun.tests.Add(info);
 
             //send it
-            //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+            RegisterTestsRun(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(testRun));
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Drill4Net.Agent.Abstract
             testRun.tests.Add(info);
 
             //send it
-            //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+            RegisterTestsRun(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(testRun));
         }
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
@@ -231,6 +231,15 @@ namespace Drill4Net.Agent.Abstract
         }
 
         protected abstract void SendToPluginConcrete(string pluginId, string message);
+
+        /// <summary>
+        /// Register info about running tests.
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="tests2Run"></param>
+        public abstract void RegisterTestsRun(string pluginId, string tests2Run);
+        protected abstract void StartSessionConcrete(string pluginId, string sessionId, bool isRealtime, bool isGlobal);
+        protected abstract void StopSessionConcrete(string pluginId, string sessionId);
         #endregion
 
         protected abstract string Serialize(object message);

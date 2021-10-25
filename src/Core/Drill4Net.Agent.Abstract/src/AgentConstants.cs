@@ -10,7 +10,9 @@
         public const string TEST_NAME_DEFAULT = "Default";
         public const string TEST_MANUAL = "MANUAL";
         public const string ADMIN_PLUGIN_NAME = "test2code";
-        public static readonly string KEY_TESTCASE_CONTEXT = "TestCase_Context";
+        public const string KEY_TESTCASE_CONTEXT = "TestCase_Context";
+
+        public const string CONNECTOR_LOG_FILE_NAME = "connector.log";
 
         #region Topics
         /// <summary>
