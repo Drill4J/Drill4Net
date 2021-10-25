@@ -1,8 +1,11 @@
-﻿namespace Drill4Net.Agent.Abstract
+﻿using System;
+
+namespace Drill4Net.Agent.Abstract
 {
     /// <summary>
     /// The parameters for the connector auxiliary subsystem (native Drill library), it can be missed
     /// </summary>
+    [Serializable]
     public class ConnectorAuxOptions
     {
         /// <summary>
