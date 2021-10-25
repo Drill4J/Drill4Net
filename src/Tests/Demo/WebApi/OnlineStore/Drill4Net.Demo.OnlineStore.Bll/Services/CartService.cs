@@ -16,9 +16,9 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Services
         {
             _cartDataServiceWrite = cartDataServiceWrite;
         }
-        public void AddToCart(Guid cartId, CartItem cartItem)
+        public void AddToCart(Guid cartId, Guid productId, int amount)
         {
-            _cartDataServiceWrite.AddToCart(cartId, cartItem);
+            _cartDataServiceWrite.AddToCart(cartId, productId, amount);
         }
 
         public void ChangeCartItemAmount(Guid cartId, Guid productId, int amount)

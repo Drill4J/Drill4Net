@@ -19,7 +19,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal
                     {
                         Id = Guid.NewGuid(),
                         Name = "Product1",
-                        Category = "SeaFood",
+                        Category = "Drinks",
                         Price = 10.50M,
                         Stock=5
                     } ,
@@ -34,7 +34,23 @@ namespace Drill4Net.Demo.OnlineStore.Dal
                 new Product
                     {
                         Id = Guid.NewGuid(),
+                        Name = "Product37",
+                        Category = "Drinks",
+                        Price = 18.10M,
+                        Stock=2
+                    },
+                new Product
+                    {
+                        Id = Guid.NewGuid(),
                         Name = "Product2",
+                        Category = "SeaFood",
+                        Price = 9.14M,
+                        Stock=8
+                    },
+                new Product
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Product32",
                         Category = "SeaFood",
                         Price = 7.60M,
                         Stock=12

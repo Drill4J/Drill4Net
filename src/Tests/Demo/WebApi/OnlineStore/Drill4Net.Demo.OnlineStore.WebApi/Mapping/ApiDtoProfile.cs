@@ -12,12 +12,13 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Mapping
             CreateMap<CartDto, Cart>().ReverseMap();
             CreateMap<NewCartDto, Cart>().ReverseMap();
             CreateMap<CartItemDto, CartItem>().ReverseMap();
-            CreateMap<ProductDto, CartItem>()
+            CreateMap<ProductInfoDto, CartItem>()
                 .ForMember("ProductId", opt => opt.MapFrom(p => p.Id))
                 .ForMember("ProductName", opt => opt.MapFrom(p => p.Name))
                 .ForMember("ProductPrice", opt => opt.MapFrom(p => p.Price));
             CreateMap<ProductDto, Product>().ReverseMap();
-            CreateMap<NewProductDto, Product>().ReverseMap();
+            CreateMap<Product, ProductInfoDto>();
+            CreateMap<NewProductDto, Product>();
         }
     }
 }

@@ -24,19 +24,30 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
             return item;
         }
 
-        public void AddToCart(Guid cartId, CartItem item)
+        public void AddToCart(Guid cartId, Guid productId, int amount)
         {
             var cart = CartDataHelper.GetCart(cartId);
             if (cart != null)
             {
-                var cartItem = CartDataHelper.GetCartItem(cartId, item.ProductId);
+                var cartItem = CartDataHelper.GetCartItem(cartId, productId);
                 if (cartItem != null)
                 {
-                    ChangeItemAmount(cartId, item.ProductId, item.ProductQuantity+cartItem.ProductQuantity);
+                    ChangeItemAmount(cartId, productId, amount+cartItem.ProductQuantity);
                 }
                 else
                 {
-                    cart.Products.Add(_mapper.Map<Dal.Models.CartItem>(item));
+                    var product = ProductDataHelper.GetProduct(productId);
+                    if (product!=null)
+                    {
+                        cart.Products.Add(new Models.CartItem 
+                        { 
+                            ProductId=productId,
+                            ProductName=product.Name,
+                            ProductPrice=product.Price,
+                            ProductQuantity=amount
+                        });
+                    }
+                    
                 }
             }
         }

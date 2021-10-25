@@ -18,7 +18,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
         public IEnumerable<Product> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
         {
             var products = DataContext.Products.Skip((page - 1) * pageItemsNumber).Take(pageItemsNumber);
-            switch (sortField.ToLower())
+            switch (sortField?.ToLower())
             {
                 case "name":
                     products = products.OrderBy(p => p.Name).ToList();
@@ -38,7 +38,9 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
 
         public IEnumerable<Product> GetFilteredProducts(string category , string namePart)
         {
-            throw new NotImplementedException();
+            var products = DataContext.Products.Where(p => (String.IsNullOrEmpty(category) || p.Category.ToLower() == category.ToLower()) &&
+                (String.IsNullOrEmpty(namePart)||p.Name.ToLower().Contains(namePart.ToLower())));
+            return _mapper.Map<IEnumerable<Bll.Contracts.Models.Product>>(products);
         }
 
     }

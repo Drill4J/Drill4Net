@@ -33,17 +33,16 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ProductDto> CreateCart(NewCartDto cartDto)
+        public ActionResult<CartDto> CreateCart(NewCartDto cartDto)
         {
             var newCart = _cartBllService.CreateCart(_mapper.Map<Cart>(cartDto));
             return Created(new Uri($"/{newCart.Id}", UriKind.Relative), _mapper.Map<CartDto>(newCart));
         }
 
         [HttpPut("{id}")]
-        public ActionResult AddToCart(Guid cartId, ProductDto product)
+        public ActionResult AddToCart(Guid cartId, Guid productId, int amount)
         {
-            var cartItem = _mapper.Map<CartItem>(product);
-            _cartBllService.AddToCart(cartId, cartItem);
+            _cartBllService.AddToCart(cartId, productId, amount);
             return NoContent();
         }
 

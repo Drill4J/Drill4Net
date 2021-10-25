@@ -26,10 +26,17 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
         }
 
        [HttpGet]
-        public IEnumerable<ProductDto> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
+        public IEnumerable<ProductInfoDto> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
         {
             var products = _productDalService.GetSortedProductsByPage(page, pageItemsNumber, sortField);
-            return _mapper.Map <IEnumerable<ProductDto>>(products);
+            return _mapper.Map <IEnumerable<ProductInfoDto>>(products);
+        }
+
+        [HttpGet]
+        public IEnumerable<ProductInfoDto> GetFilteredProducts(string category, string namePart)
+        {
+            var products = _productDalService.GetFilteredProducts(category, namePart);
+            return _mapper.Map<IEnumerable<ProductInfoDto>>(products);
         }
 
         [HttpPost]
