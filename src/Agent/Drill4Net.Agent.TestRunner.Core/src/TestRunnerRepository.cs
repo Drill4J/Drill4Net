@@ -41,7 +41,10 @@ namespace Drill4Net.Agent.TestRunner.Core
                 //tests.Add("BookStateUpdateFails");
                 //tests.Add("SortByDealDates");
 
-                var run = await GetTestToRun().ConfigureAwait(false);
+                var run = await
+                    //GetTestToRun()
+                    GetFakeTestToRun()  // TEST !!!!!!!!!
+                    .ConfigureAwait(false);
                 foreach (var type in run.ByType.Keys)
                 {
                     var testByType = run.ByType[type];
@@ -57,45 +60,48 @@ namespace Drill4Net.Agent.TestRunner.Core
             return (runType, tests);
         }
 
-        internal async virtual Task<TestToRunResponse> GetTestToRun()
+        internal async virtual Task<TestToRunResponse> GetFakeTestToRun()
         {
-            ////https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
-            //var request = new RestRequest(GetTest2RunResource(), DataFormat.Json);
-            ////var a = client.Get(request);
-            //var run = await _client.GetAsync<TestToRunResponse>(request)
-            //     .ConfigureAwait(false);
-            //return run;
-
             //FAKE TEST !!!
             //these tests we have to run
             var forRun = @"
-{
-    ""byType"":{
-    ""AUTO"":[
-        {
-        ""name"":""PublishersArray"",
-        ""metadata"":{
-                 ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
-                 ""QualifiedName"":""PublishersArray"",
-                }
-        },
-        {
-        ""name"":""BookStateUpdateFails"",
-        ""metadata"":{
-                ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
-                ""QualifiedName"":""BookStateUpdateFails"",
-               }
-         }
-    ]
-    },
-    ""totalCount"":2
-}";
+            {
+                ""byType"":{
+                ""AUTO"":[
+                    {
+                    ""name"":""PublishersArray"",
+                    ""metadata"":{
+                             ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
+                             ""QualifiedName"":""PublishersArray"",
+                            }
+                    },
+                    {
+                    ""name"":""BookStateUpdateFails"",
+                    ""metadata"":{
+                            ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
+                            ""QualifiedName"":""BookStateUpdateFails"",
+                           }
+                     }
+                ]
+                },
+                ""totalCount"":2
+            }";
             var opts = new System.Text.Json.JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true,
                 AllowTrailingCommas = true,
             };
             var run = System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
+            return run;
+        }
+
+        internal async virtual Task<TestToRunResponse> GetTestToRun()
+        {
+            //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
+            var request = new RestRequest(GetTest2RunResource(), DataFormat.Json);
+            //var a = client.Get(request);
+            var run = await _client.GetAsync<TestToRunResponse>(request)
+                 .ConfigureAwait(false);
             return run;
         }
 
