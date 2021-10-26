@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract.Transfer;
+using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -187,7 +188,6 @@ namespace Drill4Net.Agent.Abstract
             if (!_testCaseCtxs.TryGetValue(test, out Test2RunInfo info)) //it is bad
                 info = PrepareTest2RunInfo(testCtx);
             info.finishedAt = testCtx.FinishTime;
-            info.result = testCtx.Result;
             //
             var message = new TestRunMessage(_test2RunSessionId);
             var testRun = new TestRun
@@ -207,17 +207,12 @@ namespace Drill4Net.Agent.Abstract
         {
             var test = testCtx.GetKey();
             var metaData = GetTestCaseMetadata(testCtx);
-            return new Test2RunInfo
-            {
-                name = test,
-                startedAt = testCtx.StartTime,
-                metadata = metaData,
-            };
+            return new Test2RunInfo(test, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
         }
 
-        internal Dictionary<string, object> GetTestCaseMetadata(TestCaseContext testCtx)
+        internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx)
         {
-            return new Dictionary<string, object> { { AgentConstants.KEY_TESTCASE_CONTEXT, testCtx } };
+            return new Dictionary<string, string> { { AgentConstants.KEY_TESTCASE_CONTEXT, JsonConvert.SerializeObject(testCtx) } };
         }
         #endregion
         #endregion

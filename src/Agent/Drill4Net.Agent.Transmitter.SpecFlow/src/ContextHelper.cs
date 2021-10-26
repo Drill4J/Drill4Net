@@ -66,7 +66,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             }
             else //starting
             {
-                caseCtx.Result = TestResult.STARTED;
+                caseCtx.Result = nameof(TestResult.UNKNOWN);
                 caseCtx.StartTime = CommonUtils.GetCurrentUnixTimeMs();
                 _testCaseStartTimes.TryAdd(key, caseCtx.StartTime);
             }
@@ -76,9 +76,9 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        private static TestResult GetTestResult(ScenarioContext ctx)
+        private static string GetTestResult(ScenarioContext ctx)
         {
-            return ctx.ScenarioExecutionStatus switch
+            var res = ctx.ScenarioExecutionStatus switch
             {
                 ScenarioExecutionStatus.OK => TestResult.PASSED,
                 //ScenarioExecutionStatus.StepDefinitionPending => throw new System.NotImplementedException(),
@@ -88,6 +88,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
                 ScenarioExecutionStatus.Skipped => TestResult.SKIPPED,
                 _ => TestResult.UNKNOWN,
             };
+            return res.ToString();
         }
 
         private static string GetTestGroup(FeatureInfo info)
