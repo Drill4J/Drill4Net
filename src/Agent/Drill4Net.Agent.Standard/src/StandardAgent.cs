@@ -370,7 +370,7 @@ namespace Drill4Net.Agent.Standard
                 //var probe = ar[3];         
 
                 var res = Repository.RegisterCoverage(probeUid, ctx);
-                if (!res) //for tests
+                if (!res) //for debug
                 { }
             }
             catch (Exception ex)

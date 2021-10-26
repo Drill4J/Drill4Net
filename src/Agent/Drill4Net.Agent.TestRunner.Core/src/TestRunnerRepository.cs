@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RestSharp;
+using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
-using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
@@ -36,11 +36,6 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             if (runType == RunningType.Certain)
             {
-                ////FAKE tests
-                //tests.Add("PublishersArray");
-                //tests.Add("BookStateUpdateFails");
-                //tests.Add("SortByDealDates");
-
                 var run = await
                     //GetTestToRun()
                     GetFakeTestToRun()  // TEST !!!!!!!!!
@@ -64,7 +59,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             //FAKE TEST !!!
             //these tests we have to run
-            var forRun = @"
+            const string forRun = @"
             {
                 ""byType"":{
                 ""AUTO"":[
@@ -91,8 +86,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 PropertyNameCaseInsensitive = true,
                 AllowTrailingCommas = true,
             };
-            var run = System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
-            return run;
+            return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
         }
 
         internal async virtual Task<TestToRunResponse> GetTestToRun()
@@ -109,11 +103,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             //TODO: add error handling
             List<BuildSummary> summary = GetBuildSummaries();
-            _logger.Debug($"Builds: {summary.Count}");
+            var count = summary == null ? 0 : summary.Count;
+            _logger.Debug($"Builds: {count}");
             //
             var runType = RunningType.All;
             TestToRunSummaryInfo test2Run = null;
-            if (summary.Count > 0) //some builds exists
+            if (count > 0) //some builds exists
             {
                 summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
                 var actual = summary[0];
@@ -143,6 +138,8 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             var request = new RestRequest(GetSummaryResource(), Method.GET, DataFormat.Json);
             var a = _client.Get(request);
+            if (a.StatusCode != System.Net.HttpStatusCode.OK)
+                return null;
             var summary = JsonConvert.DeserializeObject<List<BuildSummary>>(a.Content);
             //var summary = await _client.GetAsync<List<BuildSummary>>(request) //it is failed on empty member (Summary)
             //    .ConfigureAwait(false);

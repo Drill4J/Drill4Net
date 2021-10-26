@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     {
         public string Name { get; set; }
 
-        public Dictionary<string, object> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; } //<string, object>
 
         /******************************************************************/
 
