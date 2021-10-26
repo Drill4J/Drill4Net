@@ -12,7 +12,6 @@ namespace Drill4Net.Agent.Transmitter
     /// Repository for the transmitting of retrieved data from the Proxy class
     /// in Target's memory to the real Agent in another (micro)service
     /// </summary>
-    /// <seealso cref="Drill4Net.Common.AbstractRepository;Drill4Net.Agent.Transmitter.TransmitterOptions;"/>
     public class TransmitterRepository : TreeRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, ITargetSenderRepository
     {
         public MessageSenderOptions SenderOptions { get; set; }

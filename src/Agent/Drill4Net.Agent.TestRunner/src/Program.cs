@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.TestRunner
                 var rep = new TestRunnerRepository();
                 _logger = new TypedLogger<Program>(rep.Subsystem);
                 var runner = new Runner(rep);
-                await runner.Run();
+                await runner.Run().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

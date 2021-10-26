@@ -8,7 +8,10 @@
     public static class AgentConstants
     {
         public const string TEST_NAME_DEFAULT = "Default";
+
+        public const string TEST_AUTO = "AUTO";
         public const string TEST_MANUAL = "MANUAL";
+
         public const string ADMIN_PLUGIN_NAME = "test2code";
         public const string KEY_TESTCASE_CONTEXT = "TestCase_Context";
 

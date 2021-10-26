@@ -71,7 +71,7 @@ namespace Drill4Net.Agent.Transport
         /// </summary>
         /// <param name="pluginId"></param>
         /// <param name="tests2Run"></param>
-        public override void RegisterTestsRun(string pluginId, string tests2Run)
+        public override void RegisterTestsRunConcrete(string pluginId, string tests2Run)
         {
             _connector.AddTestsRun(pluginId, tests2Run);
         }

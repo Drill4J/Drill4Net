@@ -8,6 +8,7 @@ namespace Drill4Net.Agent.Abstract
 {
     public abstract class AbstractCoveragerSender : IAgentCoveragerSender
     {
+        private string _test2RunSessionId;
         private Test2RunInfo _firstTest2RunInfo;
         private readonly ConcurrentDictionary<string, Test2RunInfo> _testCaseCtxs;
         private readonly Logger _logger;
@@ -34,7 +35,7 @@ namespace Drill4Net.Agent.Abstract
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new ScopeInitialized(load.Id, load.Name, load.PrevId, ts));
         }
-        
+
         /// <summary>
         /// "Agent is starting init process" message ("INIT")
         /// </summary>
@@ -136,6 +137,7 @@ namespace Drill4Net.Agent.Abstract
                 sessionId,
                 isRealtime: true, //?
                 isGlobal: false);
+            _test2RunSessionId = sessionId;
         }
 
         public virtual void SendStopSessionCommand(string sessionUid)
@@ -147,6 +149,7 @@ namespace Drill4Net.Agent.Abstract
         private void ClearSessionData()
         {
             _firstTest2RunInfo = null;
+            _test2RunSessionId = null;
             _testCaseCtxs.Clear();
         }
         #endregion
@@ -162,14 +165,16 @@ namespace Drill4Net.Agent.Abstract
             if (_firstTest2RunInfo == null)
                 _firstTest2RunInfo = info;
 
+            var message = new TestRunMessage(_test2RunSessionId);
             var testRun = new TestRun
             {
                 startedAt = _firstTest2RunInfo.startedAt
             };
             testRun.tests.Add(info);
+            message.payload.testRun = testRun;
 
             //send it
-            RegisterTestsRun(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(testRun));
+            RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
         /// <summary>
@@ -184,6 +189,7 @@ namespace Drill4Net.Agent.Abstract
             info.finishedAt = testCtx.FinishTime;
             info.result = testCtx.Result;
             //
+            var message = new TestRunMessage(_test2RunSessionId);
             var testRun = new TestRun
             {
                 //but _firstTest2RunInfo == null is abnormal
@@ -191,9 +197,10 @@ namespace Drill4Net.Agent.Abstract
                 finishedAt = info.finishedAt
             };
             testRun.tests.Add(info);
+            message.payload.testRun = testRun;
 
             //send it
-            RegisterTestsRun(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(testRun));
+            RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
@@ -237,7 +244,7 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         /// <param name="pluginId"></param>
         /// <param name="tests2Run"></param>
-        public abstract void RegisterTestsRun(string pluginId, string tests2Run);
+        public abstract void RegisterTestsRunConcrete(string pluginId, string tests2Run);
         protected abstract void StartSessionConcrete(string pluginId, string sessionId, bool isRealtime, bool isGlobal);
         protected abstract void StopSessionConcrete(string pluginId, string sessionId);
         #endregion

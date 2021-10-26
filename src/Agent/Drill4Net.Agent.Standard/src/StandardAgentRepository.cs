@@ -266,11 +266,10 @@ namespace Drill4Net.Agent.Standard
         /// Session started on the Admin side.
         /// </summary>
         /// <param name="info">The information.</param>
-        public void SessionStarted(StartAgentSession info)
+        public void SessionStarted(StartSessionPayload info)
         {
-            var load = info.Payload;
-            RemoveSession(load.SessionId);
-            AddSession(load);
+            RemoveSession(info.SessionId);
+            AddSession(info);
             StartSendCycle();
         }
 
@@ -306,10 +305,8 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// The session was stopped on the Admin side
         /// </summary>
-        public void SessionStopped(StopAgentSession info)
+        public void SessionStopped(string uid)
         {
-            var uid = info.Payload.SessionId;
-            
             //send remaining data
             SendCoverages();
 

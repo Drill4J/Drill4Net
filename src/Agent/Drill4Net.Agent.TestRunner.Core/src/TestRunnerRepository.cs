@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using RestSharp;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
+using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
@@ -30,7 +31,9 @@ namespace Drill4Net.Agent.TestRunner.Core
         public async Task<(RunningType runType, List<string> tests)> GetRunToTests()
         {
             var tests = new List<string>();
-            var runType = await GetRunningType().ConfigureAwait(false);
+            var runType = GetRunningType();
+            _logger.Debug($"Running type: {runType}");
+
             if (runType == RunningType.Certain)
             {
                 ////FAKE tests
@@ -96,10 +99,10 @@ namespace Drill4Net.Agent.TestRunner.Core
             return run;
         }
 
-        internal async virtual Task<RunningType> GetRunningType()
+        internal virtual RunningType GetRunningType()
         {
             //TODO: add error handling
-            List<BuildSummary> summary = await GetBuildSummaries().ConfigureAwait(false);
+            List<BuildSummary> summary = GetBuildSummaries();
             _logger.Debug($"Builds: {summary.Count}");
             //
             var runType = RunningType.All;
@@ -110,7 +113,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 var actual = summary[0];
                 test2Run = actual?.Summary?.TestsToRun;
                 if (test2Run == null)
-                    throw new Exception("No object of test2Run");
+                    return RunningType.All;
 
                 var testCnt = actual.Summary.Tests.Count;
                 var test2runCnt = test2Run.Count;
@@ -128,12 +131,15 @@ namespace Drill4Net.Agent.TestRunner.Core
             return runType;
         }
 
-        internal async virtual Task<List<BuildSummary>> GetBuildSummaries()
+        internal virtual List<BuildSummary> GetBuildSummaries()
         {
-            var request = new RestRequest(GetSummaryResource(), DataFormat.Json);
-            //var a = client.Get(request);
-            var summary = await _client.GetAsync<List<BuildSummary>>(request)
-                .ConfigureAwait(false);
+            //http://localhost:8090/api/agents/IHS-bdd/plugins/test2code/builds/summary
+
+            var request = new RestRequest(GetSummaryResource(), Method.GET, DataFormat.Json);
+            var a = _client.Get(request);
+            var summary = JsonConvert.DeserializeObject<List<BuildSummary>>(a.Content);
+            //var summary = await _client.GetAsync<List<BuildSummary>>(request) //it is failed on empty member (Summary)
+            //    .ConfigureAwait(false);
             return summary;
         }
 
