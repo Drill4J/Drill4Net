@@ -60,6 +60,7 @@
         public const string MESSAGE_IN_STOP_ALL = "STOP_ALL";
         public const string MESSAGE_IN_CANCEL_SESSION = "CANCEL";
         public const string MESSAGE_IN_CANCEL_ALL = "CANCEL_ALL";
+        public const string MESSAGE_IN_ADD_SESSION_TESTS = "ADD_SESSION_TESTS";
         #endregion
         #region Messages outgoing
         public const string MESSAGE_OUT_INIT = "INIT";
