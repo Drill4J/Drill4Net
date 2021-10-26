@@ -228,7 +228,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                _logger.Fatal($"Togle plugin {plugin} failed", ex);
+                _logger.Fatal($"Toggle plugin {plugin} is failed", ex);
             }
         }
 
@@ -237,28 +237,36 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                Repository.SessionStarted(info);
-                var load = info.Payload;
-                CoverageSender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
+                RegisterStartedSession(info.Payload);
             }
             catch (Exception ex)
             {
-                _logger.Fatal($"Session start for [{info}] failed", ex);
+                _logger.Fatal($"Session start for [{info}] is failed", ex);
             }
+        }
+
+        private void RegisterStartedSession(StartSessionPayload load)
+        {
+            Repository.SessionStarted(load);
+            CoverageSender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         private void OnFinishSession(StopAgentSession info)
         {
             try
             {
-                var uid = info.Payload.SessionId;
-                Repository.SessionStopped(info);
-                CoverageSender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
+                RegisterFinishedSession(info.Payload.SessionId);
             }
             catch (Exception ex)
             {
-                _logger.Error($"Session finish for [{info}] failed", ex);
+                _logger.Error($"Session finish for [{info}] is failed", ex);
             }
+        }
+
+        private void RegisterFinishedSession(string uid)
+        {
+            Repository.SessionStopped(uid);
+            CoverageSender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
         private void OnFinishAllSessions()
@@ -270,7 +278,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                _logger.Error("Finishing for all sessions is failed", ex);
+                _logger.Error("Finishing for all sessions is is failed", ex);
             }
         }
 
@@ -284,7 +292,7 @@ namespace Drill4Net.Agent.Standard
             }
             catch (Exception ex)
             {
-                _logger.Error($"Session cancel for [{info}] failed", ex);
+                _logger.Error($"Session cancel for [{info}] is failed", ex);
             }
         }
 
@@ -409,11 +417,13 @@ namespace Drill4Net.Agent.Standard
                 case AgentCommandType.ASSEMBLY_TESTS_START: StartSession(data); break;
                 case AgentCommandType.ASSEMBLY_TESTS_STOP: StopSession(data); break;
 
+                #region BDD features, test groups...
                 //now, in fact, these are group of tests for one "test method" with many different cases
                 //case AgentCommandType.TEST_START:
                 //    break;
                 //case AgentCommandType.TEST_STOP:
                 //    break;
+                #endregion
 
                 case AgentCommandType.TEST_CASE_START:
                     testCaseCtx = GetTestCaseContext(data);
@@ -442,7 +452,18 @@ namespace Drill4Net.Agent.Standard
         {
             var session = GetSessionName(metadata);
             _logger.Info($"Starting admin side session: [{session}]");
-            CoverageSender.SendStartSessionCommand(session);
+
+            var data = new StartSessionPayload
+            {
+                SessionId = session,
+                TestName = null, //hmmmm....
+                TestType = AgentConstants.TEST_AUTO,
+                IsGlobal = false,
+                IsRealtime = true
+            };
+            RegisterStartedSession(data);
+
+            CoverageSender.SendStartSessionCommand(session); //actually starting the session
         }
 
         /// <summary>
@@ -453,14 +474,15 @@ namespace Drill4Net.Agent.Standard
         {
             var session = GetSessionName(metadata);
             _logger.Info($"Stopping admin side session: [{session}]");
-            CoverageSender.SendStopSessionCommand(session);
+            RegisterFinishedSession(session); //name as uid yet
+            CoverageSender.SendStopSessionCommand(session); //actually stopping the session
         }
 
         internal string GetSessionName(string metadata)
         {
-            var guidName = Guid.NewGuid().ToString();
+            //in fact, metadata is just test run's name, and actually may be empty
             if (string.IsNullOrWhiteSpace(metadata))
-                return guidName;
+                return Guid.NewGuid().ToString();
             if (metadata.Length > 32)
                 metadata = metadata.Substring(0, 32);
             return NormalizeSessionName(metadata);

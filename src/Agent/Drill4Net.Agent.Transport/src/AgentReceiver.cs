@@ -142,6 +142,8 @@ namespace Drill4Net.Agent.Transport
                             case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
                                 CancelAllSessions?.Invoke();
                                 break;
+                            case AgentConstants.MESSAGE_IN_ADD_SESSION_TESTS: //in fact
+                                break;
                             default:
                                 _logger.Error($"Unknown message type for {nameof(AgentConstants.TOPIC_PLUGIN_ACTION)}: [{baseInfo.type}]\nMessage:\n{message}");
                                 break;

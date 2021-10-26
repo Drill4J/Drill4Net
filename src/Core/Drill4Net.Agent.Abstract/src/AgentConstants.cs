@@ -8,9 +8,14 @@
     public static class AgentConstants
     {
         public const string TEST_NAME_DEFAULT = "Default";
+
+        public const string TEST_AUTO = "AUTO";
         public const string TEST_MANUAL = "MANUAL";
+
         public const string ADMIN_PLUGIN_NAME = "test2code";
-        public static readonly string KEY_TESTCASE_CONTEXT = "TestCase_Context";
+        public const string KEY_TESTCASE_CONTEXT = "TestCase_Context";
+
+        public const string CONNECTOR_LOG_FILE_NAME = "connector.log";
 
         #region Topics
         /// <summary>
@@ -55,6 +60,7 @@
         public const string MESSAGE_IN_STOP_ALL = "STOP_ALL";
         public const string MESSAGE_IN_CANCEL_SESSION = "CANCEL";
         public const string MESSAGE_IN_CANCEL_ALL = "CANCEL_ALL";
+        public const string MESSAGE_IN_ADD_SESSION_TESTS = "ADD_SESSION_TESTS";
         #endregion
         #region Messages outgoing
         public const string MESSAGE_OUT_INIT = "INIT";

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract.Transfer;
+using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Abstract
 {
     public abstract class AbstractCoveragerSender : IAgentCoveragerSender
     {
+        private string _test2RunSessionId;
         private Test2RunInfo _firstTest2RunInfo;
         private readonly ConcurrentDictionary<string, Test2RunInfo> _testCaseCtxs;
         private readonly Logger _logger;
@@ -34,7 +36,7 @@ namespace Drill4Net.Agent.Abstract
             SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME,
                 new ScopeInitialized(load.Id, load.Name, load.PrevId, ts));
         }
-        
+
         /// <summary>
         /// "Agent is starting init process" message ("INIT")
         /// </summary>
@@ -124,26 +126,31 @@ namespace Drill4Net.Agent.Abstract
         }
         #endregion
         #region Test2Run
+
+        //https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
+        //https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
+
         #region Session (managed on Agent side)
-        public virtual void SendStartSessionCommand(string name)
+        public virtual void SendStartSessionCommand(string sessionId)
         {
             ClearSessionData();
-
-            //start the session
-            //...
+            StartSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME,
+                sessionId,
+                isRealtime: true, //?
+                isGlobal: false);
+            _test2RunSessionId = sessionId;
         }
 
-        public virtual void SendStopSessionCommand(string name)
+        public virtual void SendStopSessionCommand(string sessionUid)
         {
-            //stop the session
-            //...
-
+            StopSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME, sessionUid);
             ClearSessionData();
         }
 
         private void ClearSessionData()
         {
             _firstTest2RunInfo = null;
+            _test2RunSessionId = null;
             _testCaseCtxs.Clear();
         }
         #endregion
@@ -154,22 +161,21 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="testCtx"></param>
         public virtual void SendTestCaseStart(TestCaseContext testCtx)
         {
-            // https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
-            // https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
-
             var info = PrepareTest2RunInfo(testCtx);
             _testCaseCtxs.TryAdd(info.name, info);
             if (_firstTest2RunInfo == null)
                 _firstTest2RunInfo = info;
 
+            var message = new TestRunMessage(_test2RunSessionId);
             var testRun = new TestRun
             {
                 startedAt = _firstTest2RunInfo.startedAt
             };
             testRun.tests.Add(info);
+            message.payload.testRun = testRun;
 
             //send it
-            //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+            RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
         /// <summary>
@@ -182,8 +188,8 @@ namespace Drill4Net.Agent.Abstract
             if (!_testCaseCtxs.TryGetValue(test, out Test2RunInfo info)) //it is bad
                 info = PrepareTest2RunInfo(testCtx);
             info.finishedAt = testCtx.FinishTime;
-            info.result = testCtx.Result;
             //
+            var message = new TestRunMessage(_test2RunSessionId);
             var testRun = new TestRun
             {
                 //but _firstTest2RunInfo == null is abnormal
@@ -191,26 +197,22 @@ namespace Drill4Net.Agent.Abstract
                 finishedAt = info.finishedAt
             };
             testRun.tests.Add(info);
+            message.payload.testRun = testRun;
 
             //send it
-            //SendToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, _testRun);
+            RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
             var test = testCtx.GetKey();
             var metaData = GetTestCaseMetadata(testCtx);
-            return new Test2RunInfo
-            {
-                name = test,
-                startedAt = testCtx.StartTime,
-                metadata = metaData,
-            };
+            return new Test2RunInfo(test, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
         }
 
-        internal Dictionary<string, object> GetTestCaseMetadata(TestCaseContext testCtx)
+        internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx)
         {
-            return new Dictionary<string, object> { { AgentConstants.KEY_TESTCASE_CONTEXT, testCtx } };
+            return new Dictionary<string, string> { { AgentConstants.KEY_TESTCASE_CONTEXT, JsonConvert.SerializeObject(testCtx) } };
         }
         #endregion
         #endregion
@@ -231,6 +233,15 @@ namespace Drill4Net.Agent.Abstract
         }
 
         protected abstract void SendToPluginConcrete(string pluginId, string message);
+
+        /// <summary>
+        /// Register info about running tests.
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="tests2Run"></param>
+        public abstract void RegisterTestsRunConcrete(string pluginId, string tests2Run);
+        protected abstract void StartSessionConcrete(string pluginId, string sessionId, bool isRealtime, bool isGlobal);
+        protected abstract void StopSessionConcrete(string pluginId, string sessionId);
         #endregion
 
         protected abstract string Serialize(object message);

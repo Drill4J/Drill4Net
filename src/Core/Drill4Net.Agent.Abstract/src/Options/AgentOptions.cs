@@ -13,5 +13,10 @@ namespace Drill4Net.Agent.Abstract
         /// Options for the communicating between Agent part of instrumented App and the admin side
         /// </summary>
         public DrillServerOptions Admin { get; set; }
+
+        /// <summary>
+        /// Auxiliary options for connector subsystem (Drill native librarry for websocket communications)
+        /// </summary>
+        public ConnectorAuxOptions Connector{ get; set; }
     }
 }

@@ -44,6 +44,38 @@ namespace Drill4Net.Agent.Transport
             _connector.SendPluginMessage(pluginId, message);
         }
 
+        /// <summary>
+        /// Start the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="isRealtime"></param>
+        /// <param name="isGlobal"></param>
+        protected override void StartSessionConcrete(string pluginId, string sessionId, bool isRealtime, bool isGlobal)
+        {
+            _connector.StartSession(pluginId, sessionId, isRealtime, isGlobal);
+        }
+
+        /// <summary>
+        /// Stop the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        protected override void StopSessionConcrete(string pluginId, string sessionId)
+        {
+            _connector.StopSession(pluginId, sessionId);
+        }
+
+        /// <summary>
+        /// Register info about running tests.
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="tests2Run"></param>
+        public override void RegisterTestsRunConcrete(string pluginId, string tests2Run)
+        {
+            _connector.AddTestsRun(pluginId, tests2Run);
+        }
+
         #region Debug
         public override void DebugSendOutgoingTest(OutgoingMessage data)
         {

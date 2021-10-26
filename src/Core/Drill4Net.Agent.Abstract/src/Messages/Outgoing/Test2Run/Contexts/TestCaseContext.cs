@@ -35,7 +35,7 @@
         /// <summary>
         /// Tests's execution result
         /// </summary>
-        public TestResult Result { get; set; }
+        public string Result { get; set; }
 
         /********************************************************************/
 

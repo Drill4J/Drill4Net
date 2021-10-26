@@ -10,6 +10,8 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.BanderLog.Sinks.File;
+using System.IO;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
@@ -97,7 +99,7 @@ namespace Drill4Net.Agent.Standard
             _converter = new TreeConverter();
             _sendLocker = new object();
 
-            Communicator = GetCommunicator(Options.Admin, Options.Target);
+            Communicator = GetCommunicator(Options.Admin, Options.Target, Options.Connector); //TODO: connector's log options
 
             //target classes' tree
             if(tree == null)
@@ -111,19 +113,72 @@ namespace Drill4Net.Agent.Standard
             _logger.Debug("Created.");
         }
 
-        private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetData targetOpts)
+        private AbstractCommunicator GetCommunicator(DrillServerOptions adminOpts, TargetData targetOpts, ConnectorAuxOptions connOpts)
         {
             if (adminOpts == null)
                 throw new ArgumentNullException(nameof(adminOpts));
-            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAdminAgentConfig(targetOpts));
+            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAdminAgentConfig(targetOpts, connOpts));
         }
 
-        internal AdminAgentConfig GetAdminAgentConfig(TargetData targOpts)
+        internal AdminAgentConfig GetAdminAgentConfig(TargetData targOpts, ConnectorAuxOptions connOpts)
         {
             string targVersion = targOpts.Version;
             if (string.IsNullOrWhiteSpace(targVersion))
                 targVersion = GetExecutingAssemblyVersion(); //Guanito: a little inproperly (in Worker we get its version)
-            return new AdminAgentConfig(targOpts.Name, targVersion, GetAgentVersion());
+
+            // aux connector parameters
+            (var logFile, Microsoft.Extensions.Logging.LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
+
+            return new AdminAgentConfig(targOpts.Name, targVersion, GetAgentVersion())
+            {
+                ConnectorLogFilePath = logFile,
+                ConnectorLogLevel = logLevel
+            };
+        }
+
+        internal (string logFile, Microsoft.Extensions.Logging.LogLevel logLevel) GetConnectorLogParameters(ConnectorAuxOptions connOpts, Logger logger)
+        {
+            var logDir = connOpts?.LogDir;
+            var logFile = connOpts?.LogFile;
+            var logLevel = Microsoft.Extensions.Logging.LogLevel.Debug; //TODO: get real level from ...somewhere
+
+            //Guanito: just first file sink is bad idea...
+            //the last because the firast may be just emergency logger
+            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink; 
+
+            //dir
+            if (string.IsNullOrWhiteSpace(logDir))
+            {
+                if (fileSink == null)
+                {
+                    logDir = FileUtils.GetEntryDir();
+                }
+                else
+                {
+                    logDir = Path.GetDirectoryName(fileSink.Filepath);
+                }
+            }
+            else
+            {
+                logDir = FileUtils.GetFullPath(logDir);
+            }
+
+            //file path
+            if (string.IsNullOrWhiteSpace(logFile)) //no file path
+                logFile = AgentConstants.CONNECTOR_LOG_FILE_NAME;
+
+            //is it file path?
+            if (logFile.Contains(":") || logFile.Contains("..") || logFile.Contains("/") || logFile.Contains("\\"))
+            {
+                logFile = FileUtils.GetFullPath(logFile); //maybe it is relative path
+            }
+            else //it is just file name
+            {
+                logFile = Path.Combine(logDir, logFile);
+            }
+            _logger.Debug($"Connector's logging: [{logLevel}] to [{logFile}]");
+
+            return (logFile, logLevel);
         }
 
         internal string GetAgentVersion()
@@ -216,11 +271,10 @@ namespace Drill4Net.Agent.Standard
         /// Session started on the Admin side.
         /// </summary>
         /// <param name="info">The information.</param>
-        public void SessionStarted(StartAgentSession info)
+        public void SessionStarted(StartSessionPayload info)
         {
-            var load = info.Payload;
-            RemoveSession(load.SessionId);
-            AddSession(load);
+            RemoveSession(info.SessionId);
+            AddSession(info);
             StartSendCycle();
         }
 
@@ -256,10 +310,8 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// The session was stopped on the Admin side
         /// </summary>
-        public void SessionStopped(StopAgentSession info)
+        public void SessionStopped(string uid)
         {
-            var uid = info.Payload.SessionId;
-            
             //send remaining data
             SendCoverages();
 

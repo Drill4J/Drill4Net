@@ -43,9 +43,7 @@ namespace Drill4Net.Injector.App
                     .ConfigureAwait(false);
 #if DEBUG
                 watcher.Stop();
-#endif
-                _logger.Info("Injection is done.");
-#if DEBUG
+
                 Console.WriteLine("");
                 var duration = watcher.ElapsedMilliseconds;
                 _logger.Info($"Duration of target injection: {duration} ms.");

@@ -1,10 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.Agent.Transport
 {
-    //https://drill4j.jfrog.io/ui/native/drill/com/epam/drill/dotnet/agent_connector-mingwX64-release/0.5.1
+    //https://drill4j.jfrog.io/ui/native/drill/com/epam/drill/dotnet/agent_connector-mingwX64-release/0.5.2
 
     //Delegates are marshalled directly. The only thing you need to take care of is the “calling convention”.
     //The default calling convention is WinApi (which equals to StdCall on Windows).
@@ -21,8 +23,7 @@ namespace Drill4Net.Agent.Transport
         static extern int agent_connector_symbols();
 
         [DllImport("agent_connector")]
-        static extern void initialize_agent(string agentId, string adminAddress, string buildVersion, string agentVersion,
-                                            string groupId, string instanceId, ReceivedMessageHandler received);
+        static extern void initialize_agent(string args, ReceivedMessageHandler received);
 
         //it is used on our agent to send messages that are not related to the plugin:
         //this is setting up a loglevel, sending packages, etc. You hardly need it yet
@@ -32,6 +33,15 @@ namespace Drill4Net.Agent.Transport
         [DllImport("agent_connector")]
         static extern int sendPluginMessage(string pluginId, string content);
 
+        [DllImport("agent_connector")]
+        static extern int addTests(string pluginId, string testsRun);
+
+        [DllImport("agent_connector")]
+        static extern void startSession(string pluginId, string sessionId, bool isRealtime, bool isGlobal);
+
+        [DllImport("agent_connector")]
+        static extern void stopSession(string pluginId, string sessionId);
+
         private ReceivedMessageHandler _received; //it's needed to prevent GC collecting
 
         /***********************************************************************************/
@@ -40,14 +50,34 @@ namespace Drill4Net.Agent.Transport
         {
             _received = ReceivedMessageHandler;
 
-            initialize_agent(
-                agentCfg.Id,
-                url, //"localhost:8090",
-                agentCfg.BuildVersion,
-                agentCfg.AgentVersion,
-                agentCfg.ServiceGroupId,
-                agentCfg.InstanceId,
-                _received);
+            var agentConnOpts = new AgentArgumentDto
+            {
+                agentId = agentCfg.Id,
+                adminAddress = url,
+                buildVersion = agentCfg.BuildVersion,
+                agentVersion = agentCfg.AgentVersion,
+                instanceId = agentCfg.InstanceId,
+                groupId = agentCfg.ServiceGroupId,
+                logLevel = ConvertToConnectorLogLevel(agentCfg.ConnectorLogLevel).ToString(),
+                logFile = agentCfg.ConnectorLogFilePath,
+            };
+            var cfgStr = JsonConvert.SerializeObject(agentConnOpts);
+
+            initialize_agent(cfgStr, _received);
+        }
+
+        private ConnectorLogLevel ConvertToConnectorLogLevel(LogLevel level)
+        {
+            return level switch
+            {
+                LogLevel.Debug => ConnectorLogLevel.DEBUG,
+                LogLevel.Information => ConnectorLogLevel.INFO,
+                LogLevel.Warning => ConnectorLogLevel.WARN,
+                LogLevel.Error => ConnectorLogLevel.ERROR,
+                LogLevel.Critical => ConnectorLogLevel.ERROR,
+                LogLevel.None => ConnectorLogLevel.ERROR,
+                _ => ConnectorLogLevel.TRACE,
+            };
         }
 
         [AllowReversePInvokeCalls]
@@ -68,9 +98,46 @@ namespace Drill4Net.Agent.Transport
             sendMessage(messageType, route, message);
         }
 
+        /// <summary>
+        /// Send message to certain plugin
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="message"></param>
         public void SendPluginMessage(string pluginId, string message)
         {
             sendPluginMessage(pluginId, message); //currently pluginId is the only one = "test2code"
+        }
+
+        /// <summary>
+        /// Start the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="isRealtime"></param>
+        /// <param name="isGlobal"></param>
+        public void StartSession(string pluginId, string sessionId, bool isRealtime, bool isGlobal)
+        {
+            startSession(pluginId, sessionId, isRealtime, isGlobal);
+        }
+
+        /// <summary>
+        /// Stop the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        public void StopSession(string pluginId, string sessionId)
+        {
+            stopSession(pluginId, sessionId);
+        }
+
+        /// <summary>
+        /// Add info about running tests.
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="tests2Run"></param>
+        public void AddTestsRun(string pluginId, string tests2Run)
+        {
+            addTests(pluginId, tests2Run);
         }
     }
 }
