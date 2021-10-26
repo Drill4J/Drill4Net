@@ -10,6 +10,11 @@ using Drill4Net.Agent.Messaging.Transport.Kafka;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
+[assembly: AssemblyFileVersion(
+    ThisAssembly.Git.SemVer.Major + "." + 
+    ThisAssembly.Git.SemVer.Minor + "." + 
+    ThisAssembly.Git.SemVer.Patch)]
+
 [assembly: AssemblyInformationalVersion(
       ThisAssembly.Git.SemVer.Major + "." +
       ThisAssembly.Git.SemVer.Minor + "." +
