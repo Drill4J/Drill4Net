@@ -18,6 +18,7 @@ Source: # what and how processing
           - "*"
         Files:
           #- Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
+          - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir

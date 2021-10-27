@@ -127,7 +127,7 @@ namespace Drill4Net.Agent.Standard
             }
             finally
             {
-                _initEvent.Set();
+                ReleaseProbeProcessing();
             }
         }
 
@@ -380,7 +380,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
-        #region Commands
+        #region Commands: test2Run, etc
         /// <summary>
         /// Do some command
         /// </summary>
@@ -518,18 +518,34 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendTest2RunInfoStart(TestCaseContext testCtx)
         {
+            BlockProbeProcessing();
+
             //TODO: flag about serial or parallel tests (and in this case to get real test context!)
-            if(_curAutoSession != null)
+            if (_curAutoSession != null)
                 _curAutoSession.TestName = testCtx.QualifiedName; //a temporary solution for serial tests!
             Repository.RecreateSession(_curAutoSession); //because we need recreate the Coverager at all - guanito
 
             CoverageSender.SendTestCaseStart(testCtx);
+
+            ReleaseProbeProcessing();
         }
 
         internal void SendTest2RunInfoFinish(TestCaseContext testCtx)
         {
+            BlockProbeProcessing();
             CoverageSender.SendTestCaseFinish(testCtx);
+            ReleaseProbeProcessing();
         }
         #endregion
+
+        private void BlockProbeProcessing()
+        {
+            _initEvent.Reset();
+        }
+
+        private void ReleaseProbeProcessing()
+        {
+            _initEvent.Set();
+        }
     }
 }
