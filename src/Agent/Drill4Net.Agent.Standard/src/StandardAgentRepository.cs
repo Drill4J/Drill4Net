@@ -3,15 +3,15 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
+using Drill4Net.Agent.Standard.Utils;
 using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.BanderLog.Sinks.File;
-using System.IO;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
@@ -60,7 +60,7 @@ namespace Drill4Net.Agent.Standard
         /// Create repository for Standard Agent by options specified by the file path
         /// </summary>
         /// <param name="cfgPath"></param>
-        public StandardAgentRepository(string cfgPath = null): base(cfgPath)
+        public StandardAgentRepository(string cfgPath = null) : base(cfgPath)
         {
             Init(null);
         }
@@ -127,58 +127,15 @@ namespace Drill4Net.Agent.Standard
                 targVersion = GetExecutingAssemblyVersion(); //Guanito: a little inproperly (in Worker we get its version)
 
             // aux connector parameters
-            (var logFile, Microsoft.Extensions.Logging.LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
+            var connLogParams = new ConnectorLogHelper();
+            (var logFile, LogLevel logLevel) = connLogParams.GetConnectorLogParameters(connOpts, _logger);
+            _logger.Debug($"Connector's logging: [{logLevel}] to [{logFile}]");
 
             return new AdminAgentConfig(targOpts.Name, targVersion, GetAgentVersion())
             {
                 ConnectorLogFilePath = logFile,
                 ConnectorLogLevel = logLevel
             };
-        }
-
-        internal (string logFile, Microsoft.Extensions.Logging.LogLevel logLevel) GetConnectorLogParameters(ConnectorAuxOptions connOpts, Logger logger)
-        {
-            var logDir = connOpts?.LogDir;
-            var logFile = connOpts?.LogFile;
-            var logLevel = Microsoft.Extensions.Logging.LogLevel.Debug; //TODO: get real level from ...somewhere
-
-            //Guanito: just first file sink is bad idea...
-            //the last because the firast may be just emergency logger
-            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink; 
-
-            //dir
-            if (string.IsNullOrWhiteSpace(logDir))
-            {
-                if (fileSink == null)
-                {
-                    logDir = FileUtils.GetEntryDir();
-                }
-                else
-                {
-                    logDir = Path.GetDirectoryName(fileSink.Filepath);
-                }
-            }
-            else
-            {
-                logDir = FileUtils.GetFullPath(logDir);
-            }
-
-            //file path
-            if (string.IsNullOrWhiteSpace(logFile)) //no file path
-                logFile = AgentConstants.CONNECTOR_LOG_FILE_NAME;
-
-            //is it file path?
-            if (logFile.Contains(":") || logFile.Contains("..") || logFile.Contains("/") || logFile.Contains("\\"))
-            {
-                logFile = FileUtils.GetFullPath(logFile); //maybe it is relative path
-            }
-            else //it is just file name
-            {
-                logFile = Path.Combine(logDir, logFile);
-            }
-            _logger.Debug($"Connector's logging: [{logLevel}] to [{logFile}]");
-
-            return (logFile, logLevel);
         }
 
         internal string GetAgentVersion()

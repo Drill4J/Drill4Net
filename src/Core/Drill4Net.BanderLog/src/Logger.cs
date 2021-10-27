@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.BanderLog
 {
@@ -16,7 +16,7 @@ namespace Drill4Net.BanderLog
 
         /**********************************************************************************************/
 
-        public Logger(string category = null, string subsystem = null) : this(category, subsystem, null)
+        public Logger(string category = null, string subsystem = null) : this(category, subsystem,  null)
         {
         }
 
@@ -42,7 +42,7 @@ namespace Drill4Net.BanderLog
 
         /**********************************************************************************************/
 
-        public LogManager GetManager() => BanderLog.Log.Manager;
+        public virtual ILogManager GetManager() => BanderLog.Log.Manager;
 
         #region Specific
         public void Trace<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")

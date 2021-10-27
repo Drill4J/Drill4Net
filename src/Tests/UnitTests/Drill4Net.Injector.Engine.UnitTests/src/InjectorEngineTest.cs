@@ -11,6 +11,8 @@ namespace Drill4Net.Injector.Engine.UnitTests
     /// </summary>
     public class InjectorEngineTest
     {
+        /*****************************************************************************************/
+
         private InjectorEngine CreateInjectorEngine()
         {
             var mockRepository = new Mock<IInjectorRepository>();
@@ -19,7 +21,7 @@ namespace Drill4Net.Injector.Engine.UnitTests
 
         /*****************************************************************************************/
 
-    #region Monirer
+    #region Moniker
         [Theory]
         [MemberData(nameof(MonikerTestData.MonikerTrueData), MemberType = typeof(MonikerTestData))]
         public void Directory_Moniker_True(Dictionary<string, MonikerData> monikers, string root, string dir)
