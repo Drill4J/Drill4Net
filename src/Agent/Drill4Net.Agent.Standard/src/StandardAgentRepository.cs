@@ -275,7 +275,25 @@ namespace Drill4Net.Agent.Standard
         /// Session started on the Admin side.
         /// </summary>
         /// <param name="info">The information.</param>
-        public void SessionStarted(StartSessionPayload info)
+        public void RegisterSessionStarted(StartSessionPayload info)
+        {
+            //it is just "echo" from Admin service about session starting -
+            //but AUTO start was initialized from Agent side and should not be recreated
+            if (info.TestType == AgentConstants.TEST_AUTO)
+            {
+                if (_sessionToCtx.TryGetValue(info.SessionId, out var _))
+                    return;
+            }
+
+            //...all another types of sessions must be reinitialized
+            RecreateSession(info);
+        }
+
+        /// <summary>
+        /// Recreate the session
+        /// </summary>
+        /// <param name="info"></param>
+        public void RecreateSession(StartSessionPayload info)
         {
             RemoveSession(info.SessionId);
             AddSession(info);
@@ -380,8 +398,8 @@ namespace Drill4Net.Agent.Standard
             if (_globalRegistrator != null)
                 isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid); //always register
 
-            //user session
-            var reg = GetUserRegistrator(ctx);
+            //local session
+            var reg = GetLocalRegistrator(ctx);
             if (reg != null)
                 return reg.RegisterCoverage(pointUid);
             else
@@ -463,26 +481,27 @@ namespace Drill4Net.Agent.Standard
 
         /// <summary>
         /// Get the coverage registrator by current context if exists and otherwise create it
+        /// for local type of session (user's MANUAL or autotest's AUTO)
         /// </summary>
         /// <returns></returns>
-        public CoverageRegistrator GetUserRegistrator(string ctx = null)
+        public CoverageRegistrator GetLocalRegistrator(string ctx = null)
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
-            ctx = Contexter.GetContextId();
+            ctx = Contexter.GetContextId(); //GUANO: IT IS WRONG !!!!
             //Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
 
             CoverageRegistrator reg;
             if (_ctxToRegistrator.ContainsKey(ctx))
             {
                 _ctxToRegistrator.TryGetValue(ctx, out reg);
-                if(reg is {Session: null})
-                    reg.Session = GetManualUserSession();
+                if (reg is { Session: null })
+                    reg.Session = TryGetLocalSession();
             }
             else
             {
                 //TODO: do it properly! Need right binding ctx to session!
-                var session = GetManualUserSession();
+                var session = TryGetLocalSession();
                 if (session == null)
                     return null;
                 reg = CreateCoverageRegistrator(session);
@@ -491,7 +510,30 @@ namespace Drill4Net.Agent.Standard
             return reg;
         }
 
-        private StartSessionPayload GetManualUserSession()
+        /// <summary>
+        /// Try get the local session (user's MANUAL or autotest's AUTO)
+        /// </summary>
+        /// <returns>The session</returns>
+        private StartSessionPayload TryGetLocalSession()
+        {
+            return TryGetManualSession() ?? TryGetAutoSession(); //GUANO
+        }
+
+        /// <summary>
+        /// Get the auto-session (test2run executing)
+        /// </summary>
+        /// <returns></returns>
+        private StartSessionPayload TryGetAutoSession()
+        {
+            return _sessionToObject.Values
+                .FirstOrDefault(a => a.TestType == AgentConstants.TEST_AUTO);
+        }
+
+        /// <summary>
+        /// Get the first manual user session
+        /// </summary>
+        /// <returns></returns>
+        private StartSessionPayload TryGetManualSession()
         {
             return _sessionToObject.Values
                 .FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL &&

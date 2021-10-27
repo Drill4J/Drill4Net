@@ -247,7 +247,7 @@ namespace Drill4Net.Agent.Standard
 
         private void RegisterStartedSession(StartSessionPayload load)
         {
-            Repository.SessionStarted(load);
+            Repository.RegisterSessionStarted(load);
             CoverageSender.SendSessionStartedMessage(load.SessionId, load.TestType, load.IsRealtime, CommonUtils.GetCurrentUnixTimeMs());
         }
 
@@ -444,6 +444,8 @@ namespace Drill4Net.Agent.Standard
         }
 
         #region Manage sessions on Agent side
+        private StartSessionPayload _curAutoSession;
+
         /// <summary>
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
@@ -453,15 +455,15 @@ namespace Drill4Net.Agent.Standard
             var session = GetSessionName(metadata);
             _logger.Info($"Starting admin side session: [{session}]");
 
-            var data = new StartSessionPayload
+            _curAutoSession = new StartSessionPayload
             {
                 SessionId = session,
-                TestName = null, //hmmmm....
+                TestName = null,
                 TestType = AgentConstants.TEST_AUTO,
                 IsGlobal = false,
                 IsRealtime = true
             };
-            RegisterStartedSession(data);
+            RegisterStartedSession(_curAutoSession);
 
             CoverageSender.SendStartSessionCommand(session); //actually starting the session
         }
@@ -476,15 +478,17 @@ namespace Drill4Net.Agent.Standard
             _logger.Info($"Stopping admin side session: [{session}]");
             RegisterFinishedSession(session); //name as uid yet
             CoverageSender.SendStopSessionCommand(session); //actually stopping the session
+            _curAutoSession = null;
         }
 
         internal string GetSessionName(string metadata)
         {
-            //in fact, metadata is just test run's name, and actually may be empty
+            //in fact, this metadata is just test run's name, and actually may be empty
             if (string.IsNullOrWhiteSpace(metadata))
                 return Guid.NewGuid().ToString();
-            if (metadata.Length > 32)
-                metadata = metadata.Substring(0, 32);
+            const int limLength = 64;
+            if (metadata.Length > limLength)
+                metadata = metadata.Substring(0, limLength);
             return NormalizeSessionName(metadata);
         }
 
@@ -514,6 +518,11 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendTest2RunInfoStart(TestCaseContext testCtx)
         {
+            //TODO: flag about serial or parallel tests (and in this case to get real test context!)
+            if(_curAutoSession != null)
+                _curAutoSession.TestName = testCtx.QualifiedName; //a temporary solution for serial tests!
+            Repository.RecreateSession(_curAutoSession); //because we need recreate the Coverager at all - guanito
+
             CoverageSender.SendTestCaseStart(testCtx);
         }
 

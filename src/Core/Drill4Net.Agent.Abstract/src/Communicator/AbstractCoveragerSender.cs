@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using Newtonsoft.Json;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract.Transfer;
-using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Abstract
 {
