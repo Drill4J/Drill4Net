@@ -10,7 +10,7 @@ namespace Drill4Net.Agent.Abstract
     public abstract class AbstractCoveragerSender : IAgentCoveragerSender
     {
         private string _test2RunSessionId;
-        private Test2RunInfo _firstTest2RunInfo;
+        private long _startTestTime;
         private readonly ConcurrentDictionary<string, Test2RunInfo> _testCaseCtxs;
         private readonly Logger _logger;
 
@@ -129,6 +129,7 @@ namespace Drill4Net.Agent.Abstract
 
         //https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
         //https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
+        //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
 
         #region Session (managed on Agent side)
         public virtual void SendStartSessionCommand(string sessionId)
@@ -149,7 +150,7 @@ namespace Drill4Net.Agent.Abstract
 
         private void ClearSessionData()
         {
-            _firstTest2RunInfo = null;
+            _startTestTime = 0;
             _test2RunSessionId = null;
             _testCaseCtxs.Clear();
         }
@@ -163,18 +164,8 @@ namespace Drill4Net.Agent.Abstract
         {
             var info = PrepareTest2RunInfo(testCtx);
             _testCaseCtxs.TryAdd(info.name, info);
-            if (_firstTest2RunInfo == null)
-                _firstTest2RunInfo = info;
-
-            var testRun = new TestRun
-            {
-                startedAt = _firstTest2RunInfo.startedAt
-            };
-            testRun.tests.Add(info);
-
-            //send it
-            var message = new TestRunMessage(_test2RunSessionId, testRun);
-            RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
+            if (_startTestTime == 0)
+                _startTestTime = info.startedAt;
         }
 
         /// <summary>
@@ -184,14 +175,14 @@ namespace Drill4Net.Agent.Abstract
         public virtual void SendTestCaseFinish(TestCaseContext testCtx)
         {
             string test = testCtx.GetKey();
-            if (!_testCaseCtxs.TryGetValue(test, out Test2RunInfo info)) //it is bad
+            if (!_testCaseCtxs.TryRemove(test, out Test2RunInfo info)) //it is bad
                 info = PrepareTest2RunInfo(testCtx);
+            info.result = testCtx.Result ?? nameof(TestResult.UNKNOWN);
             info.finishedAt = testCtx.FinishTime;
-
+            //
             var testRun = new TestRun
             {
-                //but _firstTest2RunInfo == null is abnormal
-                startedAt = _firstTest2RunInfo == null ? info.startedAt : _firstTest2RunInfo.startedAt,
+                startedAt = _startTestTime == 0 ? info.startedAt : _startTestTime,
                 finishedAt = info.finishedAt
             };
             testRun.tests.Add(info);
@@ -203,11 +194,11 @@ namespace Drill4Net.Agent.Abstract
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
-            var testKey = testCtx.GetKey();
-            _logger.Debug($"Test name for Admin service: [{testKey}]");
+            var test = testCtx.GetKey();
+            _logger.Debug($"Test name for Admin service: [{test}]");
 
-            var metaData = GetTestCaseMetadata(testCtx, testKey);
-            return new Test2RunInfo(testKey, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
+            var metaData = GetTestCaseMetadata(testCtx, test);
+            return new Test2RunInfo(test, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
         }
 
         internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx, string testNameForAdmin)
