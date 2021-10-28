@@ -204,8 +204,7 @@ namespace Drill4Net.Agent.Abstract
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
             var testKey = testCtx.GetKey();
-            _logger.Debug($"Test name for Admin service: [{System.Web.HttpUtility.UrlDecode(testKey)}]");
-            _logger.Debug($"Test key for Admin service: [{testKey}]");
+            _logger.Debug($"Test name for Admin service: [{testKey}]");
 
             var metaData = GetTestCaseMetadata(testCtx, testKey);
             return new Test2RunInfo(testKey, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);

@@ -55,7 +55,9 @@ namespace Drill4Net.Agent.TestRunner.Core
             return (runType, tests);
         }
 
+        #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         internal async virtual Task<TestToRunResponse> GetFakeTestToRun()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             //FAKE TEST !!!
             //these tests we have to run

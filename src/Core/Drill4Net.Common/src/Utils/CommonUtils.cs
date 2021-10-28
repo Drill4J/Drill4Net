@@ -107,10 +107,14 @@ namespace Drill4Net.Common
 
         public static void LogFirstChanceException(string emergencyLogDir, string context, Exception e)
         {
-            if (!Directory.Exists(emergencyLogDir))
-                Directory.CreateDirectory(emergencyLogDir);
-            File.WriteAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
-                new List<string> { $"{GetPreciseTime()}|{context}:\n{e}" });
+            try
+            {
+                if (!Directory.Exists(emergencyLogDir))
+                    Directory.CreateDirectory(emergencyLogDir);
+                File.WriteAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
+                    new List<string> { $"{GetPreciseTime()}|{context}:\n{e}" });
+            }
+            catch { }
         }
 
         public static Assembly TryResolveAssembly(string dir, string context, ResolveEventArgs args, AssemblyResolver resolver, ILogger log)

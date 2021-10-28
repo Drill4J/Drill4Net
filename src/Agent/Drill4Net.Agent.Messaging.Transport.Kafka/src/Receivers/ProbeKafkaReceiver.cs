@@ -88,7 +88,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 }
                 catch (Exception ex)
                 {
-                    _logger.Fatal("Error for init retrieving of probes", ex);
+                    _logger.Error("Error for init retrieving of probes", ex);
                     Thread.Sleep(2000); //yes, I think sync call is better, because the problem more likely is remote
                 }
             }

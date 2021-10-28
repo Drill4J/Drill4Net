@@ -520,23 +520,30 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
+        private int _testCaseCnt;
         internal void SendTest2RunInfoStart(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
 
             //TODO: flag about serial or parallel tests (and in this case to get real test context!)
             if (_curAutoSession != null)
-                _curAutoSession.TestName = testCtx.QualifiedName; //a temporary solution for serial tests!
-            Repository.RecreateSessionData(_curAutoSession); //because we need recreate the Coverager at all - guanito
+            {
+                _curAutoSession.TestName = testCtx.GetKey(); //a temporary solution for serial tests!
+                Repository.RecreateSessionData(_curAutoSession); //because we need recreate the Coverager at all in the current session - guanito
+            }
 
             CoverageSender.SendTestCaseStart(testCtx);
-
             ReleaseProbeProcessing();
+
+            _testCaseCnt++;
+            _logger.Debug($"Test cases count: {_testCaseCnt}");
         }
 
         internal void SendTest2RunInfoFinish(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
+            if (_curAutoSession != null)
+                Repository.SendCoverage(_curAutoSession.SessionId);
             CoverageSender.SendTestCaseFinish(testCtx);
             ReleaseProbeProcessing();
         }

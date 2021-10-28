@@ -399,7 +399,7 @@ namespace Drill4Net.Agent.Standard
                 isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid); //always register
 
             //local session
-            var reg = GetLocalRegistrator(ctx);
+            var reg = GetOrCreateLocalRegistrator(ctx);
             if (reg != null)
                 return reg.RegisterCoverage(pointUid);
             else
@@ -436,6 +436,11 @@ namespace Drill4Net.Agent.Standard
                     SendCoverageData(reg);
                 }
             }
+        }
+
+        internal void SendCoverage(string sessionUid)
+        {
+            SendCoverageData(GetRegistrator(sessionUid));
         }
 
         private void SendCoverageData(CoverageRegistrator reg)
@@ -479,12 +484,21 @@ namespace Drill4Net.Agent.Standard
                 _sendTimer.Enabled = false;
         }
 
+        internal CoverageRegistrator GetRegistrator(string sessionUid)
+        {
+            if (!_sessionToCtx.TryGetValue(sessionUid, out var ctxId))
+                return null;
+            if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
+                return null;
+            return reg;
+        }
+
         /// <summary>
         /// Get the coverage registrator by current context if exists and otherwise create it
         /// for local type of session (user's MANUAL or autotest's AUTO)
         /// </summary>
         /// <returns></returns>
-        public CoverageRegistrator GetLocalRegistrator(string ctx = null)
+        public CoverageRegistrator GetOrCreateLocalRegistrator(string ctx = null)
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
