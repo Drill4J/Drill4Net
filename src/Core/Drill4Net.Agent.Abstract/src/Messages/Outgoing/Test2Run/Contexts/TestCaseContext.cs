@@ -41,7 +41,7 @@
 
         public string GetKey()
         {
-            return DisplayName ?? QualifiedName ?? CaseName;
+            return System.Web.HttpUtility.UrlEncode(CaseName ?? QualifiedName ?? DisplayName); //different test cases are different tests
         }
     }
 }

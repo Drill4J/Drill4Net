@@ -166,15 +166,15 @@ namespace Drill4Net.Agent.Abstract
             if (_firstTest2RunInfo == null)
                 _firstTest2RunInfo = info;
 
-            var message = new TestRunMessage(_test2RunSessionId);
             var testRun = new TestRun
             {
                 startedAt = _firstTest2RunInfo.startedAt
             };
             testRun.tests.Add(info);
-            message.payload.testRun = testRun;
 
             //send it
+            var message = new TestRunMessage(_test2RunSessionId);
+            message.payload.testRun = testRun;
             RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
@@ -188,8 +188,7 @@ namespace Drill4Net.Agent.Abstract
             if (!_testCaseCtxs.TryGetValue(test, out Test2RunInfo info)) //it is bad
                 info = PrepareTest2RunInfo(testCtx);
             info.finishedAt = testCtx.FinishTime;
-            //
-            var message = new TestRunMessage(_test2RunSessionId);
+
             var testRun = new TestRun
             {
                 //but _firstTest2RunInfo == null is abnormal
@@ -197,9 +196,10 @@ namespace Drill4Net.Agent.Abstract
                 finishedAt = info.finishedAt
             };
             testRun.tests.Add(info);
-            message.payload.testRun = testRun;
 
             //send it
+            var message = new TestRunMessage(_test2RunSessionId);
+            message.payload.testRun = testRun;
             RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 

@@ -453,7 +453,7 @@ namespace Drill4Net.Agent.Standard
         internal void StartSession(string metadata)
         {
             var session = GetSessionName(metadata);
-            _logger.Info($"Starting admin side session: [{session}]");
+            _logger.Info($"Admin side session is starting: [{session}]");
 
             _curAutoSession = new StartSessionPayload
             {
@@ -466,6 +466,7 @@ namespace Drill4Net.Agent.Standard
             RegisterStartedSession(_curAutoSession);
 
             CoverageSender.SendStartSessionCommand(session); //actually starting the session
+            _logger.Info($"Admin side session is started: [{session}]");
         }
 
         /// <summary>
@@ -475,10 +476,13 @@ namespace Drill4Net.Agent.Standard
         internal void StopSession(string metadata)
         {
             var session = GetSessionName(metadata);
-            _logger.Info($"Stopping admin side session: [{session}]");
+            _logger.Info($"Admin side session is stopping: [{session}]");
+
             RegisterFinishedSession(session); //name as uid yet
             CoverageSender.SendStopSessionCommand(session); //actually stopping the session
             _curAutoSession = null;
+
+            _logger.Info($"Admin side session is stopped: [{session}]");
         }
 
         internal string GetSessionName(string metadata)
@@ -511,7 +515,7 @@ namespace Drill4Net.Agent.Standard
                 }
                 session = string.Join(null, ar).Replace(" ", null);
             }
-            session = HttpUtility.HtmlEncode(session);
+            session = HttpUtility.UrlEncode(session);
             return session;
         }
         #endregion
@@ -523,7 +527,7 @@ namespace Drill4Net.Agent.Standard
             //TODO: flag about serial or parallel tests (and in this case to get real test context!)
             if (_curAutoSession != null)
                 _curAutoSession.TestName = testCtx.QualifiedName; //a temporary solution for serial tests!
-            Repository.RecreateSession(_curAutoSession); //because we need recreate the Coverager at all - guanito
+            Repository.RecreateSessionData(_curAutoSession); //because we need recreate the Coverager at all - guanito
 
             CoverageSender.SendTestCaseStart(testCtx);
 

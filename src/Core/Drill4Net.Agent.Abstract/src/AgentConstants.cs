@@ -13,7 +13,7 @@
         public const string TEST_MANUAL = "MANUAL";
 
         public const string ADMIN_PLUGIN_NAME = "test2code";
-        public const string KEY_TESTCASE_CONTEXT = "TestCase_Context";
+        public const string KEY_TESTCASE_CONTEXT = "TestCaseContext";
 
         public const string CONNECTOR_LOG_FILE_NAME = "connector.log";
 
@@ -55,7 +55,7 @@
         #endregion
         #region Message incoming
         public const string MESSAGE_IN_START_SESSION = "START_AGENT_SESSION";
-        public const string MESSAGE_IN_INIT_ACTIVE_SCOPE = "INIT_ACTIVE_SCOPE"; 
+        public const string MESSAGE_IN_INIT_ACTIVE_SCOPE = "INIT_ACTIVE_SCOPE";
         public const string MESSAGE_IN_STOP_SESSION = "STOP";
         public const string MESSAGE_IN_STOP_ALL = "STOP_ALL";
         public const string MESSAGE_IN_CANCEL_SESSION = "CANCEL";

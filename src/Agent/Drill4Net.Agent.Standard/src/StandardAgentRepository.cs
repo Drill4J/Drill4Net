@@ -286,14 +286,14 @@ namespace Drill4Net.Agent.Standard
             }
 
             //...all another types of sessions must be reinitialized
-            RecreateSession(info);
+            RecreateSessionData(info);
         }
 
         /// <summary>
         /// Recreate the session
         /// </summary>
         /// <param name="info"></param>
-        public void RecreateSession(StartSessionPayload info)
+        public void RecreateSessionData(StartSessionPayload info)
         {
             RemoveSession(info.SessionId);
             AddSession(info);

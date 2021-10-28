@@ -37,8 +37,8 @@ namespace Drill4Net.Agent.TestRunner.Core
             if (runType == RunningType.Certain)
             {
                 var run = await
-                    //GetTestToRun()
-                    GetFakeTestToRun()  // TEST !!!!!!!!!
+                    GetTestToRun()
+                    //GetFakeTestToRun()  // TEST !!!!!!!!!
                     .ConfigureAwait(false);
                 foreach (var type in run.ByType.Keys)
                 {
