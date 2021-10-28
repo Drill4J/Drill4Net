@@ -173,8 +173,7 @@ namespace Drill4Net.Agent.Abstract
             testRun.tests.Add(info);
 
             //send it
-            var message = new TestRunMessage(_test2RunSessionId);
-            message.payload.testRun = testRun;
+            var message = new TestRunMessage(_test2RunSessionId, testRun);
             RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
@@ -198,21 +197,27 @@ namespace Drill4Net.Agent.Abstract
             testRun.tests.Add(info);
 
             //send it
-            var message = new TestRunMessage(_test2RunSessionId);
-            message.payload.testRun = testRun;
+            var message = new TestRunMessage(_test2RunSessionId, testRun);
             RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
-            var test = testCtx.GetKey();
-            var metaData = GetTestCaseMetadata(testCtx);
-            return new Test2RunInfo(test, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
+            var testKey = testCtx.GetKey();
+            _logger.Debug($"Test name for Admin service: [{System.Web.HttpUtility.UrlDecode(testKey)}]");
+            _logger.Debug($"Test key for Admin service: [{testKey}]");
+
+            var metaData = GetTestCaseMetadata(testCtx, testKey);
+            return new Test2RunInfo(testKey, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
         }
 
-        internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx)
+        internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx, string testNameForAdmin)
         {
-            return new Dictionary<string, string> { { AgentConstants.KEY_TESTCASE_CONTEXT, JsonConvert.SerializeObject(testCtx) } };
+            return new Dictionary<string, string>
+            {
+                { AgentConstants.KEY_TESTCASE_TESTNAME_FOR_ADMIN, testNameForAdmin },
+                { AgentConstants.KEY_TESTCASE_CONTEXT, JsonConvert.SerializeObject(testCtx) },
+            };
         }
         #endregion
         #endregion

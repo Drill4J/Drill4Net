@@ -11,9 +11,9 @@ namespace Drill4Net.Agent.Abstract
 
         /****************************************************************/
 
-        public TestRunMessage(string sessionId) : base(TestConstants.TEST_TOPIC_TESTS_ADD)
+        public TestRunMessage(string sessionId, TestRun run) : base(TestConstants.TEST_TOPIC_TESTS_ADD)
         {
-            payload = new TestRunPayload(sessionId);
+            payload = new TestRunPayload(sessionId, run);
         }
 
         /****************************************************************/

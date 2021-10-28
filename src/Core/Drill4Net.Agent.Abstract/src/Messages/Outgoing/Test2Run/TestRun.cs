@@ -1,10 +1,11 @@
-﻿using Drill4Net.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Abstract
 {
     [Serializable]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class TestRun
     {
         public long startedAt { get; set; }

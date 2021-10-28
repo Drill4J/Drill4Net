@@ -17,7 +17,7 @@ Source: # what and how processing
       Excludes:
         Directories:
         Folders:
-          - "*"
+          - "*" # "*" means "all"
         Files:
           - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
 Destination: # where copying injected assemblies

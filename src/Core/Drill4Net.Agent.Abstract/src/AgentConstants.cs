@@ -13,7 +13,9 @@
         public const string TEST_MANUAL = "MANUAL";
 
         public const string ADMIN_PLUGIN_NAME = "test2code";
+
         public const string KEY_TESTCASE_CONTEXT = "TestCaseContext";
+        public const string KEY_TESTCASE_TESTNAME_FOR_ADMIN = "TestNameForAdmin";
 
         public const string CONNECTOR_LOG_FILE_NAME = "connector.log";
 

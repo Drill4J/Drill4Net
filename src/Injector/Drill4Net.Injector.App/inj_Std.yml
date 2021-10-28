@@ -26,7 +26,7 @@ Proxy: # the injecting for transfer data to profiler
   Static: true
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\ # for developers in VS
+  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\
   #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
   AssemblyName: Drill4Net.Agent.Standard.dll
   Namespace: Drill4Net.Agent.Standard

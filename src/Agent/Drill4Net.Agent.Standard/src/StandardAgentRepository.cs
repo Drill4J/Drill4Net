@@ -488,7 +488,8 @@ namespace Drill4Net.Agent.Standard
         {
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
-            ctx = Contexter.GetContextId(); //GUANO: IT IS WRONG !!!!
+            //if(string.IsNullOrWhiteSpace(ctx))
+                ctx = Contexter.GetContextId(); //GUANO: IT IS WRONG (especially for distributed architecture) !!!!
             //Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
 
             CoverageRegistrator reg;

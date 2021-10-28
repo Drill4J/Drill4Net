@@ -15,7 +15,7 @@ Source: # what and how processing
       Excludes:
         Directories:
         Folders:
-          - "*"
+          - "*" # "*" means "all"
         Files:
           #- Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
           - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
@@ -28,7 +28,7 @@ Proxy: # the injecting for transfer data to profiler
   Static: true
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\ # for developers in VS
+  Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\
   #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
   AssemblyName: Drill4Net.Agent.Transmitter.dll
   Namespace: Drill4Net.Agent.Transmitter

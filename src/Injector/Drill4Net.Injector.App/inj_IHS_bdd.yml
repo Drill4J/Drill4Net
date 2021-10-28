@@ -15,7 +15,7 @@ Source: # what and how processing
       Excludes:
         Directories:
         Folders:
-          - "*"
+          - "*" # "*" means "all"
         Files:
           #- Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
           - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
