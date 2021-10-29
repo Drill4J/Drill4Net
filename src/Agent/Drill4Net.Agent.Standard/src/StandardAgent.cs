@@ -427,11 +427,11 @@ namespace Drill4Net.Agent.Standard
 
                 case AgentCommandType.TEST_CASE_START:
                     testCaseCtx = GetTestCaseContext(data);
-                    SendTest2RunInfoStart(testCaseCtx);
+                    RegisterTest2RunInfoStart(testCaseCtx);
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
                     testCaseCtx = GetTestCaseContext(data);
-                    SendTest2RunInfoFinish(testCaseCtx);
+                    RegisterTest2RunInfoFinish(testCaseCtx);
                     break;
                 default:
                     break;
@@ -520,8 +520,8 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        private int _testCaseCnt;
-        internal void SendTest2RunInfoStart(TestCaseContext testCtx)
+
+        internal void RegisterTest2RunInfoStart(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
 
@@ -532,19 +532,16 @@ namespace Drill4Net.Agent.Standard
                 Repository.RecreateSessionData(_curAutoSession); //because we need recreate the Coverager at all in the current session - guanito
             }
 
-            CoverageSender.SendTestCaseStart(testCtx);
+            CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
-
-            _testCaseCnt++;
-            _logger.Debug($"Test cases count: {_testCaseCnt}");
         }
 
-        internal void SendTest2RunInfoFinish(TestCaseContext testCtx)
+        internal void RegisterTest2RunInfoFinish(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
             if (_curAutoSession != null)
                 Repository.SendCoverage(_curAutoSession.SessionId);
-            CoverageSender.SendTestCaseFinish(testCtx);
+            CoverageSender.RegisterTestCaseFinish(testCtx);
             ReleaseProbeProcessing();
         }
         #endregion

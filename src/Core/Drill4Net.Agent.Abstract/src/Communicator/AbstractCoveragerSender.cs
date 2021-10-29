@@ -156,30 +156,37 @@ namespace Drill4Net.Agent.Abstract
         }
         #endregion
         #region Test case data
+        private int _testCaseCnt;
+
         /// <summary>
         /// Send info about started test to the admin side
         /// </summary>
         /// <param name="testCtx"></param>
-        public virtual void SendTestCaseStart(TestCaseContext testCtx)
+        public virtual void RegisterTestCaseStart(TestCaseContext testCtx)
         {
             var info = PrepareTest2RunInfo(testCtx);
             _testCaseCtxs.TryAdd(info.name, info);
             if (_startTestTime == 0)
                 _startTestTime = info.startedAt;
+
+            _logger.Debug($"Test cases count: {++_testCaseCnt}");
         }
 
         /// <summary>
         /// Send info about finished test to the admin side
         /// </summary>
         /// <param name="testCtx"></param>
-        public virtual void SendTestCaseFinish(TestCaseContext testCtx)
+        public virtual void RegisterTestCaseFinish(TestCaseContext testCtx)
         {
+            //executed test case
             string test = testCtx.GetKey();
             if (!_testCaseCtxs.TryRemove(test, out Test2RunInfo info)) //it is bad
                 info = PrepareTest2RunInfo(testCtx);
             info.result = testCtx.Result ?? nameof(TestResult.UNKNOWN);
             info.finishedAt = testCtx.FinishTime;
-            //
+            _logger.Debug($"Test name for Admin service: [{info.name}]");
+            
+            //test run
             var testRun = new TestRun
             {
                 startedAt = _startTestTime == 0 ? info.startedAt : _startTestTime,
@@ -190,13 +197,27 @@ namespace Drill4Net.Agent.Abstract
             //send it
             var message = new TestRunMessage(_test2RunSessionId, testRun);
             RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
+
+            ////TEST!!!
+            //var testCtx2 = new TestCaseContext()
+            //{
+            //    CaseName = $"TestCase_{_testCaseCnt}",
+            //    IsFinished = true,
+            //    Result = "FAILED",
+            //    StartTime = info.startedAt,
+            //    FinishTime = info.finishedAt,
+            //    AssemblyPath = @"c:\\test.dll"
+            //};
+            //var info2 = PrepareTest2RunInfo(testCtx2);
+            //testRun.tests.Clear();
+            //testRun.tests.Add(info2);
+            //message = new TestRunMessage(_test2RunSessionId, testRun);
+            //RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
             var test = testCtx.GetKey();
-            _logger.Debug($"Test name for Admin service: [{test}]");
-
             var metaData = GetTestCaseMetadata(testCtx, test);
             return new Test2RunInfo(test, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
         }
