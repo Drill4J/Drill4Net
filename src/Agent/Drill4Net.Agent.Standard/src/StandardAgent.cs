@@ -482,6 +482,8 @@ namespace Drill4Net.Agent.Standard
             CoverageSender.SendStopSessionCommand(session); //actually stopping the session
             _curAutoSession = null;
 
+            ReleaseProbeProcessing(); //excess probes aren't need
+
             _logger.Info($"Admin side session is stopped: [{session}]");
         }
 
@@ -542,7 +544,6 @@ namespace Drill4Net.Agent.Standard
             if (_curAutoSession != null)
                 Repository.SendCoverage(_curAutoSession.SessionId);
             CoverageSender.RegisterTestCaseFinish(testCtx);
-            ReleaseProbeProcessing();
         }
         #endregion
 

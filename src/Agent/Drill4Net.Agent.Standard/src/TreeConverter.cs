@@ -84,7 +84,7 @@ namespace Drill4Net.Agent.Standard
         {
             //TODO: cloning from some Template object?
             var reg = new CoverageRegistrator(session);
-            var testName = session?.TestName ?? Guid.NewGuid().ToString();
+            var testName = session?.TestName ?? $"OutOfTest_{Guid.NewGuid()}";
             if (session != null)
                 session.TestName = testName;
             var bizTypes = injTypes
