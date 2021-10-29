@@ -8,6 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Drill4Net.Demo.Blazor.WasmApp.WebAssembly
 {
+    // Uses Directory.Build.props because need default path for obj folder
+    // Otherwise build fails with error 
+    // This is a known (opened) issue https://github.com/dotnet/aspnetcore/issues/25959
+
     /// <summary>
     /// 
     /// </summary>
