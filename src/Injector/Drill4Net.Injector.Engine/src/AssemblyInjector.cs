@@ -55,6 +55,7 @@ namespace Drill4Net.Injector.Engine
 
             //TODO: loads them dynamically from the disk by cfg
 
+            //standard plugins
             var plugPath = GetPluginPath(SpecFlowHookInjector.PluginName, _opts.Plugins);
             if(!string.IsNullOrWhiteSpace(plugPath))
                 plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath));
@@ -66,8 +67,8 @@ namespace Drill4Net.Injector.Engine
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
-            if (cfgPlugins == null || !cfgPlugins.ContainsKey(name))
-                return null; //maybe it is normal for some plugin
+            if (cfgPlugins?.ContainsKey(name) != true)
+                return null; //maybe it is normal for some plugins
             //
             return FileUtils.GetFullPath(cfgPlugins[name].Path);
         }
@@ -80,7 +81,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="asmCtx">Context of current assembly</param>
         public async Task Inject(RunContext runCtx, AssemblyContext asmCtx)
         {
-            if (!await AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx))
+            if (!await AssemblyHelper.PrepareInjectedAssembly(runCtx, asmCtx).ConfigureAwait(false))
                 return; //it's normal (in the most case it's means the assembly is shared and already is injected)
 
             if (!ContextHelper.PrepareContextData(runCtx, asmCtx))

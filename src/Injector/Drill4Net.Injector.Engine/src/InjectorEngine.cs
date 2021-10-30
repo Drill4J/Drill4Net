@@ -91,10 +91,6 @@ namespace Drill4Net.Injector.Engine
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
-                //filter by cfg
-                //if (!opts.Source.Filter.IsDirectoryNeed(dir))
-                //continue;
-
                 if (!IsDirectoryNeedByMoniker(monikers, sourceDir, dir))
                     continue;
                 runCtx.SourceDirectory = dir;
@@ -105,7 +101,7 @@ namespace Drill4Net.Injector.Engine
             if (!runCtx.Tree.GetAllAssemblies().Any())
             {
                 runCtx.SourceDirectory = runCtx.RootDirectory;
-                await ProcessDirectory(runCtx);
+                await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
 
             //the tree's deploying
@@ -201,7 +197,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                _logger.Error("Error: {Ex}", ex);
+                _logger.Error(ex, $"Processing of file failed: {runCtx.SourceFile}");
                 if (opts.Debug?.IgnoreErrors != true)
                     throw;
                 return false;

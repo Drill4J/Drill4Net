@@ -522,7 +522,6 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-
         internal void RegisterTest2RunInfoStart(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
