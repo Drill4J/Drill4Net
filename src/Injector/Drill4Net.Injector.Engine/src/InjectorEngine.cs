@@ -68,47 +68,9 @@ namespace Drill4Net.Injector.Engine
             _logger.Debug("Process is starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
 
-            var sourceDir = opts.Source.Directory;
-            var destDir = opts.Destination.Directory;
-
-            //copying of all needed data in needed targets
-            var monikers = opts.Versions?.Targets;
-            _logger.Debug("The source is copying...");
-            _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the filter
-            _logger.Info("The source is copied");
-
-            //tree
-            var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
-            {
-                StartTime = DateTime.Now,
-                DestinationPath = destDir,
-                Description = opts.Description,
-            };
-
-            using var runCtx = new RunContext(_rep, tree);
-
-            //inner folders: possible targets from cfg
-            var dirs = Directory.GetDirectories(sourceDir, "*");
-            foreach (var dir in dirs)
-            {
-                if (!IsDirectoryNeedByMoniker(monikers, sourceDir, dir))
-                    continue;
-                runCtx.SourceDirectory = dir;
-                await ProcessDirectory(runCtx);
-            }
-
-            //files in the root
-            if (!runCtx.Tree.GetAllAssemblies().Any())
-            {
-                runCtx.SourceDirectory = runCtx.RootDirectory;
-                await ProcessDirectory(runCtx).ConfigureAwait(false);
-            }
-
-            //the tree's deploying
-            tree.RemoveEmpties();
-            tree.FinishTime = DateTime.Now;
-            var deployer = new TreeDeployer(runCtx.Repository);
-            deployer.Deploy(tree); //copying tree data to the target root's directories
+            CopySource(opts);
+            var tree = await InjectSource(opts).ConfigureAwait(false);
+            DeployInjectedTree(tree);
 
             #region Debug
             // debug TODO: to tests
@@ -125,6 +87,64 @@ namespace Drill4Net.Injector.Engine
             //var points = tree.GetAllPoints().ToList();
             #endregion
             return tree;
+        }
+
+        /// <summary>
+        /// Copying of all needed data in needed targets
+        /// </summary>
+        /// <param name="opts"></param>
+        internal void CopySource(InjectorOptions opts)
+        {
+            var sourceDir = opts.Source.Directory;
+            var destDir = opts.Destination.Directory;
+
+            var monikers = opts.Versions?.Targets;
+            _logger.Debug("The source is copying...");
+            _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the monikers
+            _logger.Info("The source is copied");
+        }
+
+        internal async Task<InjectedSolution> InjectSource(InjectorOptions opts)
+        {
+            var sourceDir = opts.Source.Directory;
+            var destDir = opts.Destination.Directory;
+            var monikers = opts.Versions?.Targets;
+
+            var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
+            {
+                StartTime = DateTime.Now,
+                DestinationPath = destDir,
+                Description = opts.Description,
+            };
+
+            using var runCtx = new RunContext(_rep, tree);
+
+            //inner folders: possible targets from cfg
+            var dirs = Directory.GetDirectories(sourceDir, "*");
+            foreach (var dir in dirs)
+            {
+                if (!IsDirectoryNeedByMoniker(monikers, sourceDir, dir))
+                    continue;
+                runCtx.SourceDirectory = dir;
+                await ProcessDirectory(runCtx).ConfigureAwait(false);
+            }
+
+            //possible files in the root directly
+            if (!runCtx.Tree.GetAllAssemblies().Any()) //get only the needed assemblies
+            {
+                runCtx.SourceDirectory = runCtx.RootDirectory;
+                await ProcessDirectory(runCtx).ConfigureAwait(false);
+            }
+
+            return tree;
+        }
+
+        internal void DeployInjectedTree(InjectedSolution tree)
+        {
+            tree.RemoveEmpties();
+            tree.FinishTime = DateTime.Now;
+            var deployer = new TreeDeployer(_rep);
+            deployer.Deploy(tree); //copying tree data to the target root's directories
         }
 
         /// <summary>
@@ -153,7 +173,7 @@ namespace Drill4Net.Injector.Engine
             foreach (var dir in dirs)
             {
                 runCtx.SourceDirectory = dir;
-                await ProcessDirectory(runCtx);
+                await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
             return true;
         }
