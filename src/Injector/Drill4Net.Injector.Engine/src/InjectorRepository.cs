@@ -12,6 +12,7 @@ using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Injector.Strategies.Blocks;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -93,7 +94,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="destPath">destintation directory</param>
         /// <param name="monikers">Dictionary of framework versions monikers from <see cref="VersionOptions.Targets"/>.
         /// Key is moniker (for example, net5.0)</param>
-        public virtual void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
+        public async virtual Task CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {
             if (Directory.Exists(destPath))
             {
@@ -108,7 +109,8 @@ namespace Drill4Net.Injector.Engine
 
             if (monikers == null)
             {
-                FileUtils.DirectoryCopy(sourcePath, destPath);
+                await FileUtils.DirectoryCopy(sourcePath, destPath)
+                    .ConfigureAwait(false);
             }
             else
             {
@@ -117,7 +119,8 @@ namespace Drill4Net.Injector.Engine
                     var data = monikers[moniker];
                     var sourcePath2 = Path.Combine(sourcePath, data.BaseFolder);
                     var destPath2 = Path.Combine(destPath, data.BaseFolder);
-                    FileUtils.DirectoryCopy(sourcePath2, destPath2);
+                    await FileUtils.DirectoryCopy(sourcePath2, destPath2)
+                        .ConfigureAwait(false);
                 }
             }
         }

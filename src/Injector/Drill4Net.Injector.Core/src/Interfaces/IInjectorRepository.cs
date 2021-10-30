@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
@@ -49,7 +50,7 @@ namespace Drill4Net.Injector.Core
         /// <param name="destPath">destintation directory</param>
         /// <param name="monikers">Dictionary of framework versions monikers from <see cref="VersionData.Targets"/>.
         /// Key is moniker (for example, net5.0)</param>
-        void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers);
+        Task CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers);
 
         /// <summary>
         /// Get assemblies (.dll and .exe) from the specified directory

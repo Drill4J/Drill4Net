@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Common
 {
@@ -91,7 +92,7 @@ namespace Drill4Net.Common
             return path;
         }
 
-        public static void DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)
+        public async static Task DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)
         {
             var dir = new DirectoryInfo(sourceDir);
             if (!dir.Exists)
@@ -100,11 +101,10 @@ namespace Drill4Net.Common
             var dirs = dir.GetDirectories();
             Directory.CreateDirectory(destDir);
 
-            var files = dir.GetFiles();
-            foreach (FileInfo file in files)
+            foreach (FileInfo file in dir.GetFiles())
             {
                 string tempPath = Path.Combine(destDir, file.Name);
-                file.CopyTo(tempPath, false);
+                _ = Task.Run(() => file.CopyTo(tempPath, false));
             }
 
             if (copySubDirs)
@@ -112,7 +112,8 @@ namespace Drill4Net.Common
                 foreach (DirectoryInfo subdir in dirs)
                 {
                     string tempPath = Path.Combine(destDir, subdir.Name);
-                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
+                    await DirectoryCopy(subdir.FullName, tempPath, copySubDirs)
+                        .ConfigureAwait(false);
                 }
             }
         }

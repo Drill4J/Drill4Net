@@ -68,8 +68,10 @@ namespace Drill4Net.Injector.Engine
             _logger.Debug("Process is starting...");
             InjectorOptionsHelper.ValidateOptions(opts);
 
-            CopySource(opts);
-            var tree = await InjectSource(opts).ConfigureAwait(false);
+            await CopySource(opts)
+                .ConfigureAwait(false);
+            var tree = await InjectSource(opts)
+                .ConfigureAwait(false);
             DeployInjectedTree(tree);
 
             #region Debug
@@ -93,14 +95,15 @@ namespace Drill4Net.Injector.Engine
         /// Copying of all needed data in needed targets
         /// </summary>
         /// <param name="opts"></param>
-        internal void CopySource(InjectorOptions opts)
+        internal async Task CopySource(InjectorOptions opts)
         {
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
-
             var monikers = opts.Versions?.Targets;
+
             _logger.Debug("The source is copying...");
-            _rep.CopySource(sourceDir, destDir, monikers); //TODO: copy dirs only according to the monikers
+            await _rep.CopySource(sourceDir, destDir, monikers) //TODO: copy dirs only according to the monikers
+                .ConfigureAwait(false);
             _logger.Info("The source is copied");
         }
 
