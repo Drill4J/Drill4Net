@@ -68,6 +68,13 @@ namespace Drill4Net.Common
             return Path.Combine(EntryDir, LOG_FOLDER_EMERGENCY);
         }
 
+        public static bool IsPossibleFilePath(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return false;
+            return str.Contains(":") || str.Contains("..") || str.Contains("/") || str.Contains("\\");
+        }
+
         public static bool IsSameDirectories(string dir1, string dir2)
         {
             if (!dir1.EndsWith("\\"))

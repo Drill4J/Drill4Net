@@ -134,7 +134,7 @@ namespace Drill4Net.Agent.Abstract
         #region Session (managed on Agent side)
         public virtual void SendStartSessionCommand(string sessionId)
         {
-            ClearSessionData();
+            ClearAutoSessionData();
             StartSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME,
                 sessionId,
                 isRealtime: true, //?
@@ -145,10 +145,10 @@ namespace Drill4Net.Agent.Abstract
         public virtual void SendStopSessionCommand(string sessionUid)
         {
             StopSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME, sessionUid);
-            ClearSessionData();
+            ClearAutoSessionData();
         }
 
-        private void ClearSessionData()
+        private void ClearAutoSessionData()
         {
             _startTestTime = 0;
             _test2RunSessionId = null;

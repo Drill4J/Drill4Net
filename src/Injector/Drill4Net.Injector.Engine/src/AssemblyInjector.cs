@@ -56,21 +56,22 @@ namespace Drill4Net.Injector.Engine
             //TODO: loads them dynamically from the disk by cfg
 
             //standard plugins
-            var plugPath = GetPluginPath(SpecFlowHookInjector.PluginName, _opts.Plugins);
-            if(!string.IsNullOrWhiteSpace(plugPath))
-                plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath));
+            var plugCfg = GetPluginOptions(SpecFlowHookInjector.PluginName, _opts.Plugins);
+            var plugPath = FileUtils.GetFullPath(plugCfg.Path);
+            if (!string.IsNullOrWhiteSpace(plugPath))
+                plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath, plugCfg.Config));
 
             return plugins;
         }
 
-        internal string GetPluginPath(string name, Dictionary<string, PluginOptions> cfgPlugins)
+        internal PluginOptions GetPluginOptions(string name, Dictionary<string, PluginOptions> cfgPlugins)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
             if (cfgPlugins?.ContainsKey(name) != true)
                 return null; //maybe it is normal for some plugins
             //
-            return FileUtils.GetFullPath(cfgPlugins[name].Path);
+            return cfgPlugins[name];
         }
         #endregion
 

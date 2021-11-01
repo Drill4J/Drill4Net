@@ -5,10 +5,12 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Common;
+using YamlDotNet.Serialization;
 
 namespace Drill4Net.Injection.SpecFlow
 {
-    public class SpecFlowHookInjector : AbstractCodeInjector, IInjectorPlugin
+    public class SpecFlowHookInjector : AbstractCodeInjector<SpecFlowPluginOptions>, IInjectorPlugin
     {
         public string Name => PluginName;
 
@@ -24,11 +26,13 @@ namespace Drill4Net.Injection.SpecFlow
         private const string _getContextDataMethod = "GetContextData";
         private const string _scenarioField = "_scenarioMethInfo";
         private const string SPEC_NS = "TechTalk.SpecFlow";
+
+        private readonly IDeserializer _deser;
         private ModuleDefinition _speclib;
 
         /*************************************************************************************************/
 
-        public SpecFlowHookInjector(string sourceDir, string proxyClass, string helperDir) : base(null)
+        public SpecFlowHookInjector(string sourceDir, string proxyClass, string helperDir, string plugConfigPath)
         {
             SourceDir = sourceDir ?? throw new ArgumentNullException(nameof(sourceDir));
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
@@ -39,10 +43,24 @@ namespace Drill4Net.Injection.SpecFlow
             HelperNs = "Drill4Net.Agent.Transmitter.SpecFlow";
             HelperAsmName = "Drill4Net.Agent.Transmitter.SpecFlow.dll";
 
+            _deser = new DeserializerBuilder()
+                .IgnoreUnmatchedProperties()
+                .Build();
+            Options = GetOptions(plugConfigPath);
+
             LoadTestFramework(sourceDir);
         }
 
         /*************************************************************************************************/
+
+        public SpecFlowPluginOptions GetOptions(string plugConfigPath)
+        {
+            var configPath = GetInnerConfigFullPath(plugConfigPath);
+            if (!File.Exists(configPath))
+                throw new FileNotFoundException($"File for plugin's options not found: [{configPath}]. Path from Injector parameters was: [{plugConfigPath}]");
+            var cfgStr = File.ReadAllText(configPath);
+            return _deser.Deserialize<SpecFlowPluginOptions>(cfgStr);
+        }
 
         private void LoadTestFramework(string sourceDir)
         {

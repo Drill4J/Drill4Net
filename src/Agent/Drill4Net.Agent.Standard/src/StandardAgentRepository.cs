@@ -172,7 +172,7 @@ namespace Drill4Net.Agent.Standard
                 logFile = AgentConstants.CONNECTOR_LOG_FILE_NAME;
 
             //is it file path?
-            if (logFile.Contains(":") || logFile.Contains("..") || logFile.Contains("/") || logFile.Contains("\\"))
+            if (FileUtils.IsPossibleFilePath(logFile))
             {
                 logFile = FileUtils.GetFullPath(logFile); //maybe it is relative path
             }

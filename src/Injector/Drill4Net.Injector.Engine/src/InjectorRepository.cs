@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
@@ -12,7 +13,6 @@ using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Injector.Strategies.Blocks;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Injector.Engine
 {

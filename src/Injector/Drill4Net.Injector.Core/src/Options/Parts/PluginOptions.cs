@@ -8,6 +8,15 @@ namespace Drill4Net.Injector.Core
     [Serializable]
     public class PluginOptions
     {
+        /// <summary>
+        /// Path to the plugin assemblies
+        /// </summary>
         public string Path { get; set; }
+
+        /// <summary>
+        /// Inner plugin specific config: name (for Injector's root directory)
+        /// or path (relative or absolute)
+        /// </summary>
+        public string Config { get; set; }
     }
 }
