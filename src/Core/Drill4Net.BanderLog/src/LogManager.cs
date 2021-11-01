@@ -7,7 +7,7 @@ using Drill4Net.BanderLog.Sinks;
 
 namespace Drill4Net.BanderLog
 {
-    public class LogManager : AbstractSink
+    public class LogManager : AbstractSink, ILogManager
     {
         public Dictionary<int, ILogger> _sinks;
 

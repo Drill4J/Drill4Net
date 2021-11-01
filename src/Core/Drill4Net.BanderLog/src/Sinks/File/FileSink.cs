@@ -7,12 +7,12 @@ using Drill4Net.Common;
 
 namespace Drill4Net.BanderLog.Sinks.File
 {
-    public class FileSink : AbstractTextSink
+    public class FileSink : AbstractTextSink, IFileSink
     {
         public string Filepath { get; }
 
         private readonly ChannelsQueue<string> _queue;
-        private  StreamWriter _writer;
+        private StreamWriter _writer;
         private readonly Timer _flushTimer;
         internal static TimeSpan _flushTimeout = new TimeSpan(0, 0, FileSinkConstants.FLUSH_TIMEOUT);
         private readonly object _locker;
@@ -99,7 +99,7 @@ namespace Drill4Net.BanderLog.Sinks.File
         /// </summary>
         public override void Flush()
         {
-            var task = Task.Run(async() =>
+            var task = Task.Run(async () =>
             {
                 while (_queue.ItemCount > 0)
                     await Task.Delay(10).ConfigureAwait(false);
