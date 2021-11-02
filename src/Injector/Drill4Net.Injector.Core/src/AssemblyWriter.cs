@@ -14,7 +14,7 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         public string SaveAssembly(RunContext runCtx, AssemblyContext asmCtx)
         {
-            if (runCtx.AssemblyPaths.ContainsKey(asmCtx.Key))
+            if (runCtx.AssemblyPaths.ContainsKey(asmCtx.NameKey))
                 return null;
             //
             var origFilePath = asmCtx.SourceFile;
@@ -44,7 +44,7 @@ namespace Drill4Net.Injector.Core
                 throw;
             }
 
-            runCtx.AssemblyPaths.Add(asmCtx.Key, modifiedPath);
+            runCtx.AssemblyPaths.Add(asmCtx.NameKey, modifiedPath);
             return modifiedPath;
         }
 

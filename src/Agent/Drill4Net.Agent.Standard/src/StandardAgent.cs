@@ -310,7 +310,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
-        #region Register
+        #region Register probes
         #region Static register
         /// <summary>
         ///  Registers the probe data from the injected Target app

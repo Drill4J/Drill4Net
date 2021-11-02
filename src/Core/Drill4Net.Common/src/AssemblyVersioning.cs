@@ -28,6 +28,11 @@ namespace Drill4Net.Common
         /// </summary>
         public bool IsStrongName { get; set; }
 
+        /// <summary>
+        /// Is it NetFramework or Net Core?
+        /// </summary>
+        public bool IsNetFramework => Target == AssemblyVersionType.NetFramework;
+
         /*************************************************************************/
 
         public AssemblyVersioning()

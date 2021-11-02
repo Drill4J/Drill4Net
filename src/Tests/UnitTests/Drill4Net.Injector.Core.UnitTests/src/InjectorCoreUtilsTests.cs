@@ -1,34 +1,24 @@
 using System.Collections.Generic;
-using Moq;
 using Xunit;
 using Drill4Net.Configuration;
 using Drill4Net.Injector.Core;
 
-namespace Drill4Net.Injector.Engine.UnitTests
+namespace Drill4Net.Injector.Core.UnitTests
 {
     /// <summary>
-    /// Tests for InjectorEngine methods.
+    /// Tests for InjectorCoreUtils methods.
     /// </summary>
-    public class InjectorEngineTest
+    public class InjectorCoreUtilsTests
     {
-        private InjectorEngine CreateInjectorEngine()
-        {
-            var mockRepository = new Mock<IInjectorRepository>();
-           return new InjectorEngine(mockRepository.Object);
-        }
-
-        /*****************************************************************************************/
-
         #region Moniker
         [Theory]
         [MemberData(nameof(MonikerTestData.MonikerTrueData), MemberType = typeof(MonikerTestData))]
         public void Directory_Moniker_True(Dictionary<string, MonikerData> monikers, string root, string dir)
         {
             //Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var result = injectorEngine.IsDirectoryNeedByMoniker(monikers, root, dir);
+            var result = InjectorCoreUtils.IsDirectoryNeedByMoniker(monikers, root, dir);
 
             //Assert
             Assert.True(result);
@@ -39,10 +29,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Directory_Moniker_False(Dictionary<string, MonikerData> monikers, string root, string dir)
         {
             //Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var result = injectorEngine.IsDirectoryNeedByMoniker(monikers, root, dir);
+            var result = InjectorCoreUtils.IsDirectoryNeedByMoniker(monikers, root, dir);
 
             //Assert
             Assert.False(result);
@@ -53,10 +42,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Directory_Moniker_Null(Dictionary<string, MonikerData> monikers, string root, string dir)
         {
             //Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var exception = Record.Exception(() => injectorEngine.IsDirectoryNeedByMoniker(monikers, root, dir));
+            var exception = Record.Exception(() => InjectorCoreUtils.IsDirectoryNeedByMoniker(monikers, root, dir));
 
             //Assert
             Assert.Null(exception);
@@ -68,10 +56,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Process_Directory_True(SourceFilterOptions flt, string directory, bool isRoot)
         {
             // Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var result = injectorEngine.IsNeedProcessDirectory(flt, directory, isRoot);
+            var result = InjectorCoreUtils.IsNeedProcessDirectory(flt, directory, isRoot);
 
             //Assert
             Assert.True(result);
@@ -82,10 +69,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Process_Directory_False(SourceFilterOptions flt, string directory, bool isRoot)
         {
             // Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var result = injectorEngine.IsNeedProcessDirectory(flt, directory, isRoot);
+            var result = InjectorCoreUtils.IsNeedProcessDirectory(flt, directory, isRoot);
 
             //Assert
             Assert.False(result);
@@ -96,10 +82,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Process_Directory_Null(SourceFilterOptions flt, string directory, bool isRoot)
         {
             //Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var exception = Record.Exception(() => injectorEngine.IsNeedProcessDirectory(flt, directory, isRoot));
+            var exception = Record.Exception(() => InjectorCoreUtils.IsNeedProcessDirectory(flt, directory, isRoot));
 
             //Assert
             Assert.Null(exception);
@@ -111,10 +96,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Process_File_True(SourceFilterOptions flt, string filePath)
         {
             // Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var result = injectorEngine.IsNeedProcessFile(flt, filePath);
+            var result = InjectorCoreUtils.IsNeedProcessFile(flt, filePath);
 
             //Assert
             Assert.True(result);
@@ -125,10 +109,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Process_File_False(SourceFilterOptions flt, string filePath)
         {
             // Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var result = injectorEngine.IsNeedProcessFile(flt, filePath);
+            var result = InjectorCoreUtils.IsNeedProcessFile(flt, filePath);
 
             //Assert
             Assert.False(result);
@@ -139,10 +122,9 @@ namespace Drill4Net.Injector.Engine.UnitTests
         public void Process_File_Null(SourceFilterOptions flt, string filePath)
         {
             //Arrange
-            var injectorEngine = CreateInjectorEngine();
 
             //Act
-            var exception = Record.Exception(() => injectorEngine.IsNeedProcessFile(flt,filePath));
+            var exception = Record.Exception(() => InjectorCoreUtils.IsNeedProcessFile(flt,filePath));
 
             //Assert
             Assert.Null(exception);

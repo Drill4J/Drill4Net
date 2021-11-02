@@ -1,4 +1,4 @@
-﻿using Mono.Cecil;
+﻿using System.Threading.Tasks;
 
 namespace Drill4Net.Injector.Core
 {
@@ -8,7 +8,6 @@ namespace Drill4Net.Injector.Core
         /// Unique name of the plugin
         /// </summary>
         string Name { get; }
-
-        void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false);
+        Task Process(RunContext runCtx);
     }
 }

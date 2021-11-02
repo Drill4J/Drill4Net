@@ -9,7 +9,6 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Injection.SpecFlow;
 
 namespace Drill4Net.Injector.Engine
 {
@@ -22,11 +21,6 @@ namespace Drill4Net.Injector.Engine
         /// Concrete strategy of instrumenting code injections into Target
         /// </summary>
         public CodeHandlerStrategy Strategy { get; }
-
-        /// <summary>
-        /// Plugins for additional injections into assemblies
-        /// </summary>
-        public List<IInjectorPlugin> Plugins { get; }
 
         private readonly InjectorOptions _opts;
         private readonly Logger _logger;
@@ -43,37 +37,9 @@ namespace Drill4Net.Injector.Engine
             Strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
             _opts = opts ?? throw new ArgumentNullException(nameof(opts));
             _logger = new TypedLogger<AssemblyInjector>(CoreConstants.SUBSYSTEM_INJECTOR);
-            Plugins = GetPlugins();
         }
 
         /**********************************************************************************/
-
-        #region Plugins
-        private List<IInjectorPlugin> GetPlugins()
-        {
-            var plugins = new List<IInjectorPlugin>();
-
-            //TODO: loads them dynamically from the disk by cfg
-
-            //standard plugins
-            var plugCfg = GetPluginOptions(SpecFlowHookInjector.PluginName, _opts.Plugins);
-            var plugPath = FileUtils.GetFullPath(plugCfg.Path);
-            if (!string.IsNullOrWhiteSpace(plugPath))
-                plugins.Add(new SpecFlowHookInjector(_opts.Source.Directory, _opts.Proxy.Class, plugPath, plugCfg.Config));
-
-            return plugins;
-        }
-
-        internal PluginOptions GetPluginOptions(string name, Dictionary<string, PluginOptions> cfgPlugins)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
-            if (cfgPlugins?.ContainsKey(name) != true)
-                return null; //maybe it is normal for some plugins
-            //
-            return cfgPlugins[name];
-        }
-        #endregion
 
         /// <summary>
         /// Inject the specified assembly
@@ -99,22 +65,9 @@ namespace Drill4Net.Injector.Engine
             //the injecting
             InjectProxyCalls(asmCtx, runCtx.Tree);
             InjectProxyType(runCtx, asmCtx);
-            InjectByPlugins(asmCtx);
 
             //need exactly after the injections
             AssemblyHelper.CorrectBusinessIndexes(asmCtx);
-        }
-
-        /// <summary>
-        /// Injecting some features by extending plugins
-        /// </summary>
-        /// <param name="asmCtx"></param>
-        private void InjectByPlugins(AssemblyContext asmCtx)
-        {
-            foreach (var plugin in Plugins)
-            {
-                plugin.InjectTo(asmCtx.Definition, asmCtx.ProxyNamespace, asmCtx.Version.Target == AssemblyVersionType.NetFramework);
-            }
         }
 
         /// <summary>
@@ -244,8 +197,8 @@ namespace Drill4Net.Injector.Engine
         {
             //here we generate proxy class which will be calling of real profiler by cached Reflection
             //directory of profiler dependencies - for injected target on it's side
-            var isNetFx = asmCtx.Version.Target == AssemblyVersionType.NetFramework;
-            runCtx.ProxyGenerator.InjectTo(asmCtx.Definition, asmCtx.ProxyNamespace, isNetFx);
+            var isNetFx = asmCtx.Version.IsNetFramework;
+            runCtx.ProxyGenerator.InjectTo(asmCtx.Definition, asmCtx.ProxyNamespace, asmCtx.Version.IsNetFramework);
 
             // ensure we referencing only ref assemblies
             if (isNetFx)

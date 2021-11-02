@@ -34,13 +34,13 @@ namespace Drill4Net.Injector.Core
             }
 
             //assembly (exactly from whole tree, not just current treeDir - for shared dll)
-            var asmPath = runCtx.SourceFile;
+            var asmPath = runCtx.CurrentSourceFile;
             var treeAsm = tree.GetAssembly(asmPath, true) ??
                           new InjectedAssembly(asmCtx.Version, asmCtx.Module.Name, asmFullName, asmPath);
             treeDir.Add(treeAsm);
             asmCtx.InjAssembly = treeAsm;
 
-            var key = asmCtx.Key;
+            var key = asmCtx.NameKey;
             var keys = runCtx.AssemblyPaths;
             if (keys.ContainsKey(key)) //the assembly is shared and already is injected
             {

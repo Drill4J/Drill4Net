@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Drill4Net.Configuration;
 
-namespace Drill4Net.Injector.Engine.UnitTests
+namespace Drill4Net.Injector.Core.UnitTests
 {
     public class MonikerTestData 
     {

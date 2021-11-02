@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Drill4Net.BanderLog;
-using Drill4Net.Configuration;
+using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Injection.SpecFlow;
 
 [assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Engine.UnitTests")]
 namespace Drill4Net.Injector.Engine
@@ -32,6 +33,11 @@ namespace Drill4Net.Injector.Engine
             Mono.Cecil maintainer: jbevain@gmail.com
         */
 
+        /// <summary>
+        /// Plugins for additional injections into assemblies
+        /// </summary>
+        public List<IInjectorPlugin> Plugins { get; }
+
         private readonly Logger _logger;
         private readonly IInjectorRepository _rep;
 
@@ -44,9 +50,66 @@ namespace Drill4Net.Injector.Engine
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _logger = new TypedLogger<InjectorEngine>(rep.Subsystem);
+            Plugins = GetPlugins(rep.Options);
         }
 
         /*****************************************************************/
+
+        #region Plugins
+        private List<IInjectorPlugin> GetPlugins(InjectorOptions opts)
+        {
+            var plugins = new List<IInjectorPlugin>();
+
+            //TODO: loads them dynamically from the disk by cfg
+
+            // standard plugins //
+
+            //now we work with already injected Destination, not Source
+            var dir = opts.Destination.Directory;
+            var proxyClass = opts.Proxy.Class;
+            //...and use generated Proxy namespace
+
+            //SpecFlow
+            var plugCfg = GetPluginOptions(SpecFlowHookInjector.PluginName, opts.Plugins);
+            if (!string.IsNullOrWhiteSpace(plugCfg?.Path))
+                plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
+
+            return plugins;
+        }
+
+        internal PluginOptions GetPluginOptions(string name, Dictionary<string, PluginOptions> cfgPlugins)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            if (cfgPlugins?.ContainsKey(name) != true)
+                return null; //maybe it is normal for some plugins
+            //
+            var opts = cfgPlugins[name];
+
+            //some opt's preproc
+            opts.Path = FileUtils.GetFullPath(opts.Path);
+
+            return opts;
+        }
+
+        /// <summary>
+        /// Injecting some features by extending plugins
+        /// </summary>
+        /// <param name="runCtx"></param>
+        private void ProcessByPlugins(RunContext runCtx)
+        {
+            if (Plugins.Count == 0)
+                return;
+            //
+            Console.WriteLine("");
+            _logger.Info("Processing by plugins...");
+            foreach (var plugin in Plugins)
+            {
+                _logger.Info($"Processing by [{plugin.Name}]");
+                plugin?.Process(runCtx);
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Inject the target accordingly by the current config from repository
@@ -70,9 +133,16 @@ namespace Drill4Net.Injector.Engine
 
             await CopySource(opts)
                 .ConfigureAwait(false);
-            var tree = await InjectSource(opts)
+
+            using var runCtx = CreateRunContext(opts);
+
+            await InjectSource(runCtx)
                 .ConfigureAwait(false);
+
+            var tree = runCtx.Tree;
             DeployInjectedTree(tree);
+
+            ProcessByPlugins(runCtx);
 
             #region Debug
             // debug TODO: to tests
@@ -107,11 +177,10 @@ namespace Drill4Net.Injector.Engine
             _logger.Info("The source is copied");
         }
 
-        internal async Task<InjectedSolution> InjectSource(InjectorOptions opts)
+        internal RunContext CreateRunContext(InjectorOptions opts)
         {
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
-            var monikers = opts.Versions?.Targets;
 
             var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
             {
@@ -120,26 +189,34 @@ namespace Drill4Net.Injector.Engine
                 Description = opts.Description,
             };
 
-            using var runCtx = new RunContext(_rep, tree);
+            return new RunContext(_rep, tree);
+        }
+
+        internal async Task InjectSource(RunContext runCtx)
+        {
+            var sourceDir = runCtx.CurrentSourceDirectory ?? runCtx.RootDirectory;
+            var monikers = runCtx.Options.Versions?.Targets;
+            var isMonikersRoot = monikers?.Count > 0 && sourceDir == runCtx.RootDirectory;
 
             //inner folders: possible targets from cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
-                if (!IsDirectoryNeedByMoniker(monikers, sourceDir, dir))
+                if (!InjectorCoreUtils.IsDirectoryNeedByMoniker(monikers, sourceDir, dir))
                     continue;
-                runCtx.SourceDirectory = dir;
+                //
+                if(isMonikersRoot)
+                    runCtx.MonikerDirectories.Add(dir);
+                runCtx.CurrentSourceDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
 
             //possible files in the root directly
             if (!runCtx.Tree.GetAllAssemblies().Any()) //get only the needed assemblies
             {
-                runCtx.SourceDirectory = runCtx.RootDirectory;
+                runCtx.CurrentSourceDirectory = runCtx.RootDirectory;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
-
-            return tree;
         }
 
         internal void DeployInjectedTree(InjectedSolution tree)
@@ -158,8 +235,8 @@ namespace Drill4Net.Injector.Engine
         internal async Task<bool> ProcessDirectory(RunContext runCtx)
         {
             var opts = runCtx.Options;
-            var directory = runCtx.SourceDirectory;
-            if(!IsNeedProcessDirectory(opts.Source.Filter, directory, directory == runCtx.RootDirectory))
+            var directory = runCtx.CurrentSourceDirectory;
+            if(!InjectorCoreUtils.IsNeedProcessDirectory(opts.Source.Filter, directory, directory == runCtx.RootDirectory))
                 return false;
             _logger.Info($"Processing dir [{directory}]");
 
@@ -167,7 +244,7 @@ namespace Drill4Net.Injector.Engine
             var files = _rep.GetAssemblies(directory);
             foreach (var file in files)
             {
-                runCtx.SourceFile = file;
+                runCtx.CurrentSourceFile = file;
                 await ProcessFile(runCtx).ConfigureAwait(false);
             }
 
@@ -175,7 +252,7 @@ namespace Drill4Net.Injector.Engine
             var dirs = Directory.GetDirectories(directory, "*");
             foreach (var dir in dirs)
             {
-                runCtx.SourceDirectory = dir;
+                runCtx.CurrentSourceDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
             return true;
@@ -190,10 +267,10 @@ namespace Drill4Net.Injector.Engine
         {
             #region Checks
             var opts = runCtx.Options;
-            var filePath = runCtx.SourceFile;
+            var filePath = runCtx.CurrentSourceFile;
 
             //filter
-            if(!IsNeedProcessFile(opts.Source.Filter, filePath))
+            if(!InjectorCoreUtils.IsNeedProcessFile(opts.Source.Filter, filePath))
                 return false;
             #endregion
 
@@ -220,44 +297,13 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Processing of file failed: {runCtx.SourceFile}");
+                _logger.Error(ex, $"Processing of file failed: {runCtx.CurrentSourceFile}");
                 if (opts.Debug?.IgnoreErrors != true)
                     throw;
                 return false;
             }
 
             return true;
-        }
-
-        internal bool IsDirectoryNeedByMoniker(Dictionary<string, MonikerData> monikers, string root, string dir)
-        {
-            //filter by target moniker (typed version)
-            var need = monikers == null || monikers.Count == 0 || monikers.Any(a =>
-            {
-                var x = Path.Combine(root, a.Value.BaseFolder);
-                if (x.EndsWith("\\"))
-                    x = x[0..^1];
-                if (x.Equals(dir, StringComparison.InvariantCultureIgnoreCase))
-                    return true;
-                var z = Path.Combine(dir, a.Key);
-                return x.Equals(z, StringComparison.InvariantCultureIgnoreCase);
-            });
-            return need;
-        }
-
-        internal bool IsNeedProcessDirectory(SourceFilterOptions flt, string directory, bool isRoot)
-        {
-            if (isRoot || flt == null)
-                return true;
-            if (!flt.IsDirectoryNeed(directory))
-                return false;
-            var folder = new DirectoryInfo(directory).Name;
-            return flt.IsFolderNeed(folder);
-        }
-
-        internal bool IsNeedProcessFile(SourceFilterOptions flt, string filePath)
-        {
-            return flt?.IsFileNeedByPath(Path.GetFileName(filePath)) != false;
         }
     }
 }
