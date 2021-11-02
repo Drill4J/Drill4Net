@@ -12,14 +12,25 @@ namespace Drill4Net.Injector.Core
         /// <param name="runCtx"></param>
         /// <param name="asmCtx"></param>
         /// <returns></returns>
-        public string SaveAssembly(RunContext runCtx, AssemblyContext asmCtx)
+        public string SaveAssembly(RunContext runCtx, AssemblyContext asmCtx, string modifiedPath = null)
         {
             if (runCtx.AssemblyPaths.ContainsKey(asmCtx.NameKey))
                 return null;
             //
-            var origFilePath = asmCtx.SourceFile;
-            var destDir = asmCtx.DestinationDir;
-            var modifiedPath = GetDestFileName(origFilePath, destDir);
+            string origFilePath;
+            string destDir;
+            if (string.IsNullOrWhiteSpace(modifiedPath))
+            {
+                origFilePath = asmCtx.SourceFile;
+                destDir = asmCtx.DestinationDir;
+                modifiedPath = GetDestFileName(origFilePath, destDir);
+            }
+            else
+            {
+                origFilePath = modifiedPath;
+                destDir = Path.GetDirectoryName(modifiedPath);
+            }
+            //
             var writeParams = new WriterParameters();
             if (asmCtx.IsNeedPdb)
             {

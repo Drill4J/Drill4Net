@@ -149,8 +149,12 @@ namespace Drill4Net.Injection.SpecFlow
 
                 //writing modified assembly and symbols to new file
                 var writer = new AssemblyWriter();
-                var modifiedPath = writer.SaveAssembly(runCtx, asmCtx);
-                _logger.Info($"Writed: [{modifiedPath}]");
+                var tempFile = Path.GetTempFileName(); //we need use temp file
+                var modifiedPath = writer.SaveAssembly(runCtx, asmCtx, tempFile);
+                asmCtx.Dispose();
+                File.Copy(tempFile, filePath, true);
+                File.Delete(tempFile);
+                _logger.Info($"Writed: [{filePath}]");
             }
             catch (Exception ex)
             {
