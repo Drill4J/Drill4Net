@@ -136,8 +136,9 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="data">The cross-point data.</param>
         public static void Transmit(string data)
         {
-            if (!_probes.TryAdd(data, true))
-                return;
+            //unfortunately, caching is wrong techique here - maybe later...
+            //if (!_probes.TryAdd(data, true))
+                //return;
             var ctx = Contexter.GetContextId();
             Transmitter.SendProbe(data, ctx);
         }
@@ -149,8 +150,9 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
-            if (!_probes.TryAdd(data, true))
-                return;
+            //unfortunately, caching is wrong techique here
+            //if (!_probes.TryAdd(data, true))
+               //return;
             Transmitter.SendProbe(data, ctx);
         }
 

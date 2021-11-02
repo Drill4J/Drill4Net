@@ -144,7 +144,6 @@ namespace Drill4Net.Injection.SpecFlow
                     proxyNs = ProxyHelper.CreateProxyNamespace();
 
                 InjectTo(asmCtx.Definition, proxyNs, asmCtx.Version.IsNetFramework);
-
                 _logger.Debug($"Processed by plugin: [{filePath}]");
 
                 //writing modified assembly and symbols to new file
