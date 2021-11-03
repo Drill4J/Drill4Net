@@ -40,6 +40,7 @@ namespace Drill4Net.Agent.Transmitter
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
+        private static IContexter _contexter;
         private static readonly Logger _logger;
         private bool _disposed;
 
@@ -60,6 +61,8 @@ namespace Drill4Net.Agent.Transmitter
 
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
+
+            _contexter = new SimpleContexter(); //TODO: inject misc contexter !!!!
 
             const int delay = 12;
             _logger.Debug($"Waiting for {delay} seconds...");
@@ -139,8 +142,8 @@ namespace Drill4Net.Agent.Transmitter
             //unfortunately, caching is wrong techique here - maybe later...
             //if (!_probes.TryAdd(data, true))
                 //return;
-            var ctx = Contexter.GetContextId();
-            Transmitter.SendProbe(data, ctx);
+            var ctx = _contexter.GetContextId();
+            TransmitWithContext(data, ctx);
         }
 
         /// <summary>

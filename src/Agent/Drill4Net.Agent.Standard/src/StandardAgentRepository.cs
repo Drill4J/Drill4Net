@@ -53,6 +53,7 @@ namespace Drill4Net.Agent.Standard
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
 
+        private IContexter _contexter;
         private Logger _logger;
         private System.Timers.Timer _sendTimer;
         private object _sendLocker;
@@ -109,6 +110,8 @@ namespace Drill4Net.Agent.Standard
             if(tree == null)
                 tree = ReadInjectedTree();
             _injTypes = GetTypesByCallerVersion(tree);
+
+            _contexter = new SimpleContexter(); //TODO: inject misc contexter !!!!
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(1200);
@@ -302,7 +305,7 @@ namespace Drill4Net.Agent.Standard
 
         internal void AddSession(StartSessionPayload session)
         {
-            var ctxId = Contexter.GetContextId(); //GUANO: it's WRONG!!! HOW DO I GET THE REAL CONTEXT FROM A TARGET?!!
+            var ctxId = _contexter.GetContextId(); //GUANO: it's WRONG!!! HOW DO I GET THE REAL CONTEXT FROM A TARGET?!!
             if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
 
@@ -503,7 +506,7 @@ namespace Drill4Net.Agent.Standard
             //This defines the logical execution path of function callers regardless
             //of whether threads are created in async/await or Parallel.For
             //if(string.IsNullOrWhiteSpace(ctx))
-                ctx = Contexter.GetContextId(); //GUANO: IT IS WRONG (especially for distributed architecture) !!!!
+                ctx = _contexter.GetContextId(); //GUANO: IT IS WRONG (especially for distributed architecture) !!!!
             //Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
 
             CoverageRegistrator reg;

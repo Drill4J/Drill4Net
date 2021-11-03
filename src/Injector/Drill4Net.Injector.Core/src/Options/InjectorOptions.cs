@@ -40,7 +40,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public ProbeData Probes { get; set; }
 
-        public Dictionary<string, PluginOptions> Plugins { get; set; }
+        public Dictionary<string, PluginLoaderOptions> Plugins { get; set; }
 
         /// <summary>
         /// Parameters for the target object versions to be processed

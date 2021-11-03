@@ -23,17 +23,17 @@ Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
 Proxy: # the injecting for transfer data to profiler
-  Class: ProfilerProxy
-  Method: Register
-  Static: true
+    Class: ProfilerProxy
+    Method: Register
+    Static: true
 Profiler: # data collector/processor in separate assembly
-  Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\
-  AssemblyName: Drill4Net.Agent.Standard.dll
-  Namespace: Drill4Net.Agent.Standard
-  Class: StandardAgent
-  Method: RegisterStatic
-  Static: true
+    Name: Standard agent # name exactly for agent subsystem
+    Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\
+    AssemblyName: Drill4Net.Agent.Standard.dll
+    Namespace: Drill4Net.Agent.Standard
+    Class: StandardAgent
+    Method: RegisterStatic
+    Static: true
 Probes: # types of cross-cutting points
     Ctor: true
     Private: true
@@ -43,7 +43,7 @@ Probes: # types of cross-cutting points
     EventRemove: false
     SkipEnterType: true
     SkipIfElseType: true
-Plugins: # injected reference of plugin for runtime transmitting data to the Admin service
+Plugins: # injected references to plugins for runtime transmitting data data to the Admin service
    'SpecFlow':
        Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
        Config: plug_IHS_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)

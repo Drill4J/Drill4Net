@@ -77,7 +77,7 @@ namespace Drill4Net.Injector.Engine
             return plugins;
         }
 
-        internal PluginOptions GetPluginOptions(string name, Dictionary<string, PluginOptions> cfgPlugins)
+        internal PluginLoaderOptions GetPluginOptions(string name, Dictionary<string, PluginLoaderOptions> cfgPlugins)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));

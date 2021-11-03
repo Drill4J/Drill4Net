@@ -31,22 +31,22 @@ namespace Drill4Net.Injection.SpecFlow
         private const string SPEC_NS = "TechTalk.SpecFlow";
 
         private IProfilerProxyInjector _proxyGenerator;
-        private readonly PluginOptions _parentOpts;
+        private readonly PluginLoaderOptions _loaderOpts;
         private readonly IDeserializer _deser;
         private ModuleDefinition _speclib;
         private readonly Logger _logger;
 
         /*************************************************************************************************/
 
-        public SpecFlowHookInjector(string sourceDir, string proxyClass, PluginOptions opts)
+        public SpecFlowHookInjector(string sourceDir, string proxyClass, PluginLoaderOptions loaderCfg)
         {
             _logger = new TypedLogger<SpecFlowHookInjector>(CoreConstants.SUBSYSTEM_INJECTOR_PLUGIN);
 
             SourceDir = sourceDir ?? throw new ArgumentNullException(nameof(sourceDir));
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
-            _parentOpts = opts ?? throw new ArgumentNullException(nameof(opts));
+            _loaderOpts = loaderCfg ?? throw new ArgumentNullException(nameof(loaderCfg));
 
-            HelperReadDir = opts.Path;
+            HelperReadDir = loaderCfg.Path;
 
             // these are real constants, aren't the cfg params
             HelperClass = "ContextHelper";
@@ -56,13 +56,23 @@ namespace Drill4Net.Injection.SpecFlow
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
                 .Build();
-            Options = GetOptions(opts.Config);
+            Options = GetOptions(loaderCfg.Config);
 
             LoadTestFramework(sourceDir);
         }
 
         /*************************************************************************************************/
 
+        public SpecFlowPluginOptions GetOptions(string plugConfigPath)
+        {
+            var configPath = GetInnerConfigFullPath(plugConfigPath);
+            if (!File.Exists(configPath))
+                throw new FileNotFoundException($"File for plugin's options not found: [{configPath}]. Path from Injector parameters was: [{plugConfigPath}]");
+            var cfgStr = File.ReadAllText(configPath);
+            return _deser.Deserialize<SpecFlowPluginOptions>(cfgStr);
+        }
+
+        #region Traverse the assemblies
         public async Task Process(RunContext runCtx)
         {
             if(runCtx == null)
@@ -176,16 +186,8 @@ namespace Drill4Net.Injection.SpecFlow
             return Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly)
                 .Where(a => a.EndsWith(".dll"));
         }
-
-        public SpecFlowPluginOptions GetOptions(string plugConfigPath)
-        {
-            var configPath = GetInnerConfigFullPath(plugConfigPath);
-            if (!File.Exists(configPath))
-                throw new FileNotFoundException($"File for plugin's options not found: [{configPath}]. Path from Injector parameters was: [{plugConfigPath}]");
-            var cfgStr = File.ReadAllText(configPath);
-            return _deser.Deserialize<SpecFlowPluginOptions>(cfgStr);
-        }
-
+        #endregion
+        #region Injection
         private void LoadTestFramework(string sourceDir)
         {
             const string dllName = "TechTalk.SpecFlow.dll";
@@ -486,6 +488,7 @@ namespace Drill4Net.Injection.SpecFlow
             }
             targetMember.CustomAttributes.Add(attrib);
         }
+        #endregion
 
         //TODO: full pattern!
         public override void Dispose()

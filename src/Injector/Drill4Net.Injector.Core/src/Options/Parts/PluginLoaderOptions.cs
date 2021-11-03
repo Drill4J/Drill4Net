@@ -6,7 +6,7 @@ namespace Drill4Net.Injector.Core
     /// Options for the injecting info about specific runtime plugins
     /// </summary>
     [Serializable]
-    public class PluginOptions
+    public class PluginLoaderOptions
     {
         /// <summary>
         /// Path to the plugin assemblies
