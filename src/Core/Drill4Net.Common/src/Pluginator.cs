@@ -17,7 +17,7 @@ namespace Drill4Net.Common
         public List<Type> GetByInterface(string dir, Type plugBaseType, SourceFilterOptions filter = null)
         {
             if (string.IsNullOrWhiteSpace(dir))
-                throw new ArgumentNullException(nameof(dir));
+                return new List<Type>();
             if (!Directory.Exists(dir))
                 throw new Exception($"Directory does not exists: [{dir}]");
             //

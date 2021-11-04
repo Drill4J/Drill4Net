@@ -27,7 +27,7 @@ namespace Drill4Net.Agent.Standard
 
         private IAgentReceiver Receiver => _comm?.Receiver;
 
-        //in fact, the Main sender. Others are additional ones - as plugins
+        //in fact, it is the Main sender. Others are additional ones - as plugins
         private IAgentCoveragerSender CoverageSender => _comm?.Sender;
 
         /// <summary>
@@ -42,6 +42,7 @@ namespace Drill4Net.Agent.Standard
 
         private readonly ICommunicator _comm;
         private static readonly ManualResetEvent _initEvent = new(false);
+        private static ContextDispatcher _ctxDisp;
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static readonly Logger _logger;
@@ -103,6 +104,7 @@ namespace Drill4Net.Agent.Standard
 
                 Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
                 _comm = Repository.Communicator;
+                _ctxDisp = new ContextDispatcher(Repository.Options.PluginDir);
 
                 //events from admin side
                 Receiver.InitScopeData += OnInitScopeData;
@@ -339,7 +341,8 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            RegisterWithContext(data, null);
+            var ctx = _ctxDisp.GetContextId();
+            RegisterWithContext(data, ctx);
         }
 
         /// <summary>
@@ -401,6 +404,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public void ExecCommand(int command, string data)
         {
+            #region CommandType
             var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
             if (!comTypes.Contains(command))
             {
@@ -410,6 +414,7 @@ namespace Drill4Net.Agent.Standard
             //
             var type = (AgentCommandType)command;
             _logger.Debug($"Command: [{type}] -> [{data}]");
+            #endregion
 
             TestCaseContext testCaseCtx;
             switch (type)

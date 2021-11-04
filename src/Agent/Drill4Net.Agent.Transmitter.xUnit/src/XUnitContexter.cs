@@ -10,6 +10,10 @@ namespace Drill4Net.Agent.Transmitter.xUnit
 
     public class XUnitContexter : AbstractContexter
     {
+        private string _curCtx;
+
+        /**********************************************************************/
+
         public XUnitContexter() : base(nameof(XUnitContexter))
         {
         }
@@ -18,50 +22,31 @@ namespace Drill4Net.Agent.Transmitter.xUnit
 
         public override string GetContextId()
         {
-            return null;
+            return _curCtx;
         }
 
-        public override void RegisterCommand(int command, string data)
+        public override bool RegisterCommand(int command, string data)
         {
             //TODO: accounting the test workflow changing
 
             var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
             if (!comTypes.Contains(command))
-            {
-                //_logger.Error($"Unknown command: [{command}] -> [{data}]");
-                return;
-            }
+                return false;
             //
             var type = (AgentCommandType)command;
-            //_logger.Debug($"Command: [{type}] -> [{data}]");
-
-            TestCaseContext testCaseCtx;
             switch (type)
             {
-                case AgentCommandType.ASSEMBLY_TESTS_START: StartTests(data); break;
-                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopTests(data); break;
-
                 case AgentCommandType.TEST_CASE_START:
-                    testCaseCtx = GetTestCaseContext(data);
-                    //RegisterTest2RunInfoStart(testCaseCtx);
+                    var testCaseCtx = GetTestCaseContext(data);
+                    _curCtx = testCaseCtx.CaseName;
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
-                    testCaseCtx = GetTestCaseContext(data);
-                    //RegisterTest2RunInfoFinish(testCaseCtx);
+                    _curCtx = null;
                     break;
                 default:
                     break;
             }
-        }
-
-        private void StopTests(string data)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void StartTests(string data)
-        {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

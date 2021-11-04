@@ -19,7 +19,7 @@ namespace Drill4Net.Agent.Abstract
         /******************************************************************************/
 
         public abstract string GetContextId();
-        public abstract void RegisterCommand(int command, string data);
+        public abstract bool RegisterCommand(int command, string data);
 
         protected TestCaseContext GetTestCaseContext(string str)
         {

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -9,6 +10,7 @@ namespace Drill4Net.Agent.Abstract
     {
         private readonly SimpleContexter _stdContexter;
         private readonly List<AbstractContexter> _contexters;
+        private static readonly Logger _logger;
 
         /**********************************************************************************/
 
@@ -27,8 +29,8 @@ namespace Drill4Net.Agent.Abstract
                 },
             };
             var ctxTypes = pluginator.GetByInterface(dir, typeof(AbstractContexter), filter);
-             _stdContexter = new SimpleContexter();
 
+            _stdContexter = new SimpleContexter();
             _contexters = new List<AbstractContexter>();
             foreach (var contexter in ctxTypes)
             {
@@ -39,16 +41,28 @@ namespace Drill4Net.Agent.Abstract
 
         /**********************************************************************************/
 
-        public override void RegisterCommand(int command, string data)
+        public override bool RegisterCommand(int command, string data)
         {
-
+            _logger.Debug($"Command: [{command}] -> [{data}]");
             foreach (var ctxr in _contexters)
-                ctxr.RegisterCommand(command, data);
+            {
+                if(!ctxr.RegisterCommand(command, data))
+                    _logger.Error($"Unknown command: [{command}] -> [{data}]");
+
+            }
+            return true;
         }
 
         public override string GetContextId()
         {
-            return "NOT_IMPLEMENTED";
+            //TODO: dynamic prioritizing !!!
+            foreach (var ctxr in _contexters)
+            {
+                var ctx = ctxr.GetContextId();
+                if (ctx != null)
+                    return ctx;
+            }
+            return _stdContexter.GetContextId();
         }
     }
 }

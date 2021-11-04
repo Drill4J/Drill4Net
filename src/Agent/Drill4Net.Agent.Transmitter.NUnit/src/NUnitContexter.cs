@@ -15,9 +15,9 @@ namespace Drill4Net.Agent.Transmitter.NUnit
             return null; //TODO real !!!!
         }
 
-        public override void RegisterCommand(int command, string data)
+        public override bool RegisterCommand(int command, string data)
         {
-            //nothing
+            return true;
         }
     }
 }
