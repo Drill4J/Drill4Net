@@ -1,12 +1,23 @@
-﻿using Drill4Net.Common;
+﻿using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transmitter.NUnit
 {
-    public class NUnitContexter : IContexter
+    public class NUnitContexter : AbstractContexter
     {
-        public string GetContextId()
+        public NUnitContexter() : base(nameof(NUnitContexter))
+        {
+        }
+
+        /******************************************************************/
+
+        public override string GetContextId()
         {
             return null; //TODO real !!!!
+        }
+
+        public override void RegisterCommand(int command, string data)
+        {
+            //nothing
         }
     }
 }

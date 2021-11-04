@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Drill4Net.Injector.Core;
+using Drill4Net.Common;
 
 namespace Drill4Net.TestDataHelper
 {

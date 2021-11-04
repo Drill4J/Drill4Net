@@ -9,6 +9,7 @@ using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using System.Linq;
+using Drill4Net.Agent.Abstract;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -38,11 +39,10 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
 
-        private static Pluginator _pluginator;
+        private static readonly ContextDispatcher _ctxDisp;
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
-        private static IContexter _contexter;
         private static readonly Logger _logger;
         private bool _disposed;
 
@@ -64,10 +64,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
-            _pluginator = new Pluginator();
-            var plugins = _pluginator.GetByInterface(rep.Options.PluginDir, typeof(IContexter)); //there are runtime types
-
-            _contexter = new SimpleContexter(); //TODO: inject misc contexters (list?) !!!!
+            _ctxDisp = new ContextDispatcher(rep.Options.PluginDir);
 
             const int delay = 12;
             _logger.Debug($"Waiting for {delay} seconds...");
@@ -147,7 +144,7 @@ namespace Drill4Net.Agent.Transmitter
             //unfortunately, caching is wrong techique here - maybe later...
             //if (!_probes.TryAdd(data, true))
                 //return;
-            var ctx = _contexter.GetContextId();
+            var ctx = _ctxDisp.GetContextId();
             TransmitWithContext(data, ctx);
         }
 

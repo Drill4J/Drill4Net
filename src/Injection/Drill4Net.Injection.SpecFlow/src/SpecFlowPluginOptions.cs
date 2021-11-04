@@ -1,5 +1,5 @@
-﻿using Drill4Net.Configuration;
-using Drill4Net.Injector.Core;
+﻿using Drill4Net.Common;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Injection.SpecFlow
 {

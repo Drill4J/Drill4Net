@@ -53,7 +53,7 @@ namespace Drill4Net.Agent.Standard
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
 
-        private IContexter _contexter;
+        private AbstractContexter _contexter;
         private Logger _logger;
         private System.Timers.Timer _sendTimer;
         private object _sendLocker;

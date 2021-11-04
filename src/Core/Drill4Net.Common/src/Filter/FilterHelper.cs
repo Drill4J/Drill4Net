@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Drill4Net.Common;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Helper for working with regex patterns in filters
@@ -16,11 +15,7 @@ namespace Drill4Net.Injector.Core
         /// <returns></returns>
         public static bool IsFilterWithRegex(string filter)
         {
-            if (filter.StartsWith(CoreConstants.REGEX_FILTER_PREFIX))
-            {
-                return true;
-            }
-            return false;
+            return filter.StartsWith(CoreConstants.REGEX_FILTER_PREFIX);
         }
 
         ///<summary>
@@ -34,7 +29,7 @@ namespace Drill4Net.Injector.Core
             {
                 throw new ArgumentNullException(nameof(filter), $"Regex filter should start with {CoreConstants.REGEX_FILTER_PREFIX} prefix.");
             }
-            return filter[CoreConstants.REGEX_FILTER_PREFIX.Length..];
+            return filter.Substring(CoreConstants.REGEX_FILTER_PREFIX.Length);
         }
 
         ///<summary>

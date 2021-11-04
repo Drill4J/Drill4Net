@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Xunit;
+using Drill4Net.Common;
 using Drill4Net.Configuration;
-using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Injector.Core.UnitTests
 {

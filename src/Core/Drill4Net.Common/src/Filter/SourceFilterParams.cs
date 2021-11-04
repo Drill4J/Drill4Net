@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Drill4Net.Injector.Core
+namespace Drill4Net.Common
 {
     /// <summary>
     /// Parameters of Filter for the Source Target
@@ -16,7 +16,7 @@ namespace Drill4Net.Injector.Core
         public List<string> Classes { get; set; }
         public List<string> Attributes { get; set; }
 
-        /******************************************************/
+        /**********************************************************/
 
         public bool IsDirectoryListed(string path)
         {
