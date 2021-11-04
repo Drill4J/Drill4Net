@@ -77,7 +77,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
         #region Producer
         protected abstract void CreateProducers();
 
-        private ProducerConfig CreateBaseProducerConfig(MessageSenderOptions opts)
+        private ProducerConfig CreateBaseProducerConfig(BaseMessageOptions opts)
         {
             return new ProducerConfig
             {

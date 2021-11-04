@@ -297,7 +297,7 @@ namespace Drill4Net.Agent.Service
         internal void SendTargetInfoToAgentWorker(string topic, TargetInfo target)
         {
             //send to worker the Target info by the exclusive topic     
-            var senderOpts = new MessageSenderOptions();
+            var senderOpts = new BaseMessageOptions();
             senderOpts.Servers.AddRange(_rep.Options.Servers); //for sending we use the same server options
             senderOpts.Topics.Add(topic);
 

@@ -1,18 +1,21 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using YamlDotNet.Serialization;
+using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
-using Drill4Net.Common;
-using System.Threading.Tasks;
-using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injection.SpecFlow
 {
+    /// <summary>
+    /// Injector for SpecFlow BDD framework's specific (workflow hooks, etc)
+    /// </summary>
     public class SpecFlowHookInjector : AbstractCodeInjector<SpecFlowPluginOptions>, IInjectorPlugin
     {
         public string Name => PluginName;
@@ -49,7 +52,7 @@ namespace Drill4Net.Injection.SpecFlow
             HelperReadDir = loaderCfg.Path;
 
             // these are real constants, aren't the cfg params
-            HelperClass = "ContextHelper";
+            HelperClass = "SpecFlowTestContexter";
             HelperNs = "Drill4Net.Agent.Transmitter.SpecFlow";
             HelperAsmName = "Drill4Net.Agent.Transmitter.SpecFlow.dll";
 

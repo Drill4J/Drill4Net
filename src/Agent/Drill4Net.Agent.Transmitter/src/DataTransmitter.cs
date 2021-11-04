@@ -8,6 +8,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
+using System.Linq;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -37,6 +38,7 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
 
+        private static Pluginator _pluginator;
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
@@ -51,7 +53,7 @@ namespace Drill4Net.Agent.Transmitter
             AbstractRepository.PrepareEmergencyLogger();
             Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
-            ITargetSenderRepository rep = new TransmitterRepository();
+            var rep = new TransmitterRepository();
             Log.Debug($"{nameof(TransmitterRepository)} created.");
 
             var extras = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
@@ -62,7 +64,10 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
-            _contexter = new SimpleContexter(); //TODO: inject misc contexter !!!!
+            _pluginator = new Pluginator();
+            var plugins = _pluginator.GetByInterface(rep.Options.PluginDir, typeof(IContexter)); //there are runtime types
+
+            _contexter = new SimpleContexter(); //TODO: inject misc contexters (list?) !!!!
 
             const int delay = 12;
             _logger.Debug($"Waiting for {delay} seconds...");

@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Transmitter
     /// </summary>
     public class TransmitterRepository : TreeRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, ITargetSenderRepository
     {
-        public MessageSenderOptions SenderOptions { get; set; }
+        public BaseMessageOptions SenderOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the testing target which transmitter will be loaded into.
@@ -36,14 +36,19 @@ namespace Drill4Net.Agent.Transmitter
 
         public TransmitterRepository() : base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
-            var optHelper = new BaseOptionsHelper<MessageSenderOptions>();
-            var path = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
-            SenderOptions = optHelper.ReadOptions(path);
+            SenderOptions = GetSenderOptions();
             TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();
         }
 
         /*********************************************************************************************/
+
+        private BaseMessageOptions GetSenderOptions()
+        {
+            var optHelper = new BaseOptionsHelper<BaseMessageOptions>();
+            var path = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
+           return optHelper.ReadOptions(path);
+        }
 
         private Guid GetSession()
         {
@@ -63,8 +68,7 @@ namespace Drill4Net.Agent.Transmitter
                 Solution = tree,
             };
 
-            var bytes = Serializer.ToArray<TargetInfo>(targetInfo);
-            return bytes;
+            return Serializer.ToArray<TargetInfo>(targetInfo);
         }
 
         /// <summary>

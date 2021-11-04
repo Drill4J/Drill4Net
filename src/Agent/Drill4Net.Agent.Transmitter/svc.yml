@@ -7,12 +7,12 @@ Servers: # list of Kafka servers
 Topics: # additional topics for the probes
     #- probes
 Logs:
-    - Type: console
-      Level: debug
-    # local log
-    - Type: file
-      Level: trace
-    # common place
-    - Type: file
-      Path: ..\..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
-      Level: trace
+  - Type: console
+    Level: debug
+  # local log
+  - Type: file
+    Level: trace
+  # common place
+  - Type: file
+    Path: ..\..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+    Level: trace
