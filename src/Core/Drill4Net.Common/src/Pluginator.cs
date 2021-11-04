@@ -2,23 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Common
 {
     public class Pluginator
     {
+        private readonly TypeChecker _typeChecker = new();
 
-        /*********************************************************************/
-
-        public Pluginator()
-        {
-
-        }
-
-        /*********************************************************************/
+        /***********************************************************************/
 
         public List<object> GetByInterface(string dir, Type intrfc) //TODO: + using Filter
         {
@@ -64,10 +58,12 @@ namespace Drill4Net.Common
             try
             {
                 var assembly = Assembly.LoadFrom(asmPath);
-                var types = assembly.GetTypes();
+                var types = assembly.GetTypes().Where(a => a.IsPublic);
                 var list = new List<Type>();
                 Parallel.ForEach(types, (type) =>
                 {
+                    if (_typeChecker.IsSystemType(type.FullName))
+                        return;
                     var intr = Array.Find(type.GetInterfaces(), a => a.Name == intrfc.Name);
                     if (intr != null)
                         list.Add(type);
