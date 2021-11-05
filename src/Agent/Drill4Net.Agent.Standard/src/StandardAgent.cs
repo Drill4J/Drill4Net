@@ -552,7 +552,6 @@ namespace Drill4Net.Agent.Standard
         {
             BlockProbeProcessing();
 
-            //TODO: flag about serial or parallel tests (and in this case to get real test context!)
             if (_curAutoSession != null)
                 Repository.RecreateSessionData(_curAutoSession, testCtx.CaseName); //because we need recreate the Coverager at all in the current session - guanito
 
