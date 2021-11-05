@@ -1,7 +1,9 @@
-﻿using Drill4Net.Configuration;
+﻿using System;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.Abstract
 {
+    [Serializable]
     public class AgentDebugOptions : IDebugOptions
     {
         public bool Disabled { get; set; }

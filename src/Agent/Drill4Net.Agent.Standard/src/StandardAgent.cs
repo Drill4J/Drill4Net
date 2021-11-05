@@ -91,18 +91,6 @@ namespace Drill4Net.Agent.Standard
 
                 _logger.Debug($"{_logPrefix} is initializing...");
 
-                //debug
-                var debug = Repository.Options.Debug;
-                _writeProbesToFile = debug?.Disabled == false && debug.WriteProbes;
-                if (_writeProbesToFile)
-                {
-                    var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
-                    _logger.Debug($"Probes writing to [{probeLogfile}]");
-                    if (File.Exists(probeLogfile))
-                        File.Delete(probeLogfile);
-                    _probeLogger = new FileSink(probeLogfile);
-                }
-
                 #region TEST assembly resolving
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
                 //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
@@ -119,6 +107,18 @@ namespace Drill4Net.Agent.Standard
 
                 Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
                 _comm = Repository.Communicator;
+
+                //debug
+                var debug = Repository.Options.Debug;
+                _writeProbesToFile = debug?.Disabled == false && debug.WriteProbes;
+                if (_writeProbesToFile)
+                {
+                    var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
+                    _logger.Debug($"Probes writing to [{probeLogfile}]");
+                    if (File.Exists(probeLogfile))
+                        File.Delete(probeLogfile);
+                    _probeLogger = new FileSink(probeLogfile);
+                }
 
                 //events from admin side
                 Receiver.InitScopeData += OnInitScopeData;
@@ -357,8 +357,8 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            var ctx = Repository?.GetContextId(); //it is only for local Agent injected directly in Target's sys process
-            RegisterWithContext(data, ctx);
+            //var ctx = Repository?.GetContextId(); //it is only for local Agent injected directly in Target's sys process
+            RegisterWithContext(data, null);
         }
 
         /// <summary>
