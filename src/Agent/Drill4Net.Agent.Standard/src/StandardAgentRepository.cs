@@ -569,5 +569,15 @@ namespace Drill4Net.Agent.Standard
             return _converter.CreateCoverageRegistrator(context, session, _injTypes);
         }
         #endregion
+
+        /// <summary>
+        /// Register specified command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        public void RegisterCommand(int command, string data)
+        {
+            _ctxDisp.RegisterCommand(command, data);
+        }
     }
 }

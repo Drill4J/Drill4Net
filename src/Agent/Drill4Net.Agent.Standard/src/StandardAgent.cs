@@ -436,6 +436,8 @@ namespace Drill4Net.Agent.Standard
             _logger.Debug($"Command: [{type}] -> [{data}]");
             #endregion
 
+            Repository.RegisterCommand(command, data);
+
             TestCaseContext testCaseCtx;
             switch (type)
             {

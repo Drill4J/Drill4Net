@@ -193,17 +193,18 @@ namespace Drill4Net.Agent.Transmitter
         }
         #endregion
         #region Command
-        public void ExecCommand(int command, string data)
-        {
-            _logger.Info($"Command: [{command}] -> {data}");
-            ProbeSender.Flush(); //we have to guarantee the delivery of the previous probes
-            CommandSender.SendCommand(command, data);
-            Log.Flush();
-        }
-
         public static void DoCommand(int command, string data)
         {
             Transmitter.ExecCommand(command, data);
+        }
+
+        public void ExecCommand(int command, string data)
+        {
+            _logger.Info($"Command: [{command}] -> {data}");
+            _ctxDisp.RegisterCommand(command, data);
+            ProbeSender.Flush(); //we have to guarantee the delivery of the previous probes
+            CommandSender.SendCommand(command, data);
+            Log.Flush();
         }
         #endregion
         #region Dispose
