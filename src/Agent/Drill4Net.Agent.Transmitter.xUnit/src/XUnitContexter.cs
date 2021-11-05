@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transmitter.xUnit

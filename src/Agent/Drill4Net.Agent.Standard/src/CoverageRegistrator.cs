@@ -154,5 +154,14 @@ namespace Drill4Net.Agent.Standard
             AffectedTypes.Clear();
             AffectedProbeCount = 0;
         }
+
+        /// <summary>
+        /// String representation of object for the debug purposes
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"Context=[{Context}]; Session=[{Session?.SessionId}]; TestName=[{Session?.TestName}]; Type={Session? .TestType}";
+        }
     }
 }

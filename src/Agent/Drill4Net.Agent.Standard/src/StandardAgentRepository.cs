@@ -487,15 +487,6 @@ namespace Drill4Net.Agent.Standard
                 _sendTimer.Enabled = false;
         }
 
-        /// <summary>
-        /// Get context only for local Agent injected directly in Target's sys process
-        /// </summary>
-        /// <returns></returns>
-        internal string GetContextId()
-        {
-            return _ctxDisp.GetContextId();
-        }
-
         internal CoverageRegistrator GetRegistrator(string sessionUid)
         {
             if (!_sessionToCtx.TryGetValue(sessionUid, out var ctxId))
@@ -566,7 +557,9 @@ namespace Drill4Net.Agent.Standard
 
         internal CoverageRegistrator CreateCoverageRegistrator(string context, StartSessionPayload session)
         {
-            return _converter.CreateCoverageRegistrator(context, session, _injTypes);
+            var reg = _converter.CreateCoverageRegistrator(context, session, _injTypes);
+            _logger.Debug($"{nameof(CoverageRegistrator)} is created: {reg}");
+            return reg;
         }
         #endregion
 
@@ -578,6 +571,15 @@ namespace Drill4Net.Agent.Standard
         public void RegisterCommand(int command, string data)
         {
             _ctxDisp.RegisterCommand(command, data);
+        }
+
+        /// <summary>
+        /// Get context only for local Agent injected directly in Target's sys process
+        /// </summary>
+        /// <returns></returns>
+        internal string GetContextId()
+        {
+            return _ctxDisp.GetContextId();
         }
     }
 }

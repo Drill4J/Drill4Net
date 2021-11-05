@@ -109,8 +109,7 @@ namespace Drill4Net.Agent.Standard
                 _comm = Repository.Communicator;
 
                 //debug
-                var debug = Repository.Options.Debug;
-                _writeProbesToFile = debug?.Disabled == false && debug.WriteProbes;
+                _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
                 if (_writeProbesToFile)
                 {
                     var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");

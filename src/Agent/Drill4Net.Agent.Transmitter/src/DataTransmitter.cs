@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
-using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.BanderLog.Sinks.File;
@@ -75,8 +74,7 @@ namespace Drill4Net.Agent.Transmitter
             Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
 
             //debug
-            var debug = rep.Options.Debug;
-            _writeProbesToFile = debug?.Disabled == false && debug.WriteProbes;
+            _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
             if (_writeProbesToFile)
             {
                 var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
@@ -89,9 +87,10 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Initialized.");
         }
 
-        public DataTransmitter(TransmitterRepository rep)
+        private DataTransmitter(TransmitterRepository rep)
         {
             _logger.Debug($"{nameof(DataTransmitter)} singleton is creating...");
+            Repository = rep ?? throw new ArgumentNullException(nameof(rep));
 
             //TODO: find out - on IHS adoption it falls
             //AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
@@ -184,7 +183,7 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
         internal int SendProbe(string data, string ctx)
         {
-            if(string.IsNullOrWhiteSpace(ctx))
+            if (string.IsNullOrWhiteSpace(ctx))
                 ctx = Repository.GetContextId();
 
             if (_writeProbesToFile)
