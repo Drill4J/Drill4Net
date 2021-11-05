@@ -32,6 +32,8 @@ namespace Drill4Net.Agent.Transmitter
         /// </value>
         public Guid TargetSession { get; }
 
+        private readonly ContextDispatcher _ctxDisp;
+
         /*********************************************************************************************/
 
         public TransmitterRepository() : base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
@@ -39,6 +41,7 @@ namespace Drill4Net.Agent.Transmitter
             SenderOptions = GetSenderOptions();
             TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();
+            _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem);
         }
 
         /*********************************************************************************************/
@@ -79,6 +82,16 @@ namespace Drill4Net.Agent.Transmitter
         {
             var entryType = Assembly.GetEntryAssembly().EntryPoint.DeclaringType.FullName;
             return $"{entryType.Replace(".", "-")} (generated)";
+        }
+
+        public string GetContextId()
+        {
+            return _ctxDisp.GetContextId();
+        }
+
+        public void RegisterCommand(int command, string data)
+        {
+            _ctxDisp.RegisterCommand(command, data);
         }
     }
 }

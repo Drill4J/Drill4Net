@@ -35,13 +35,14 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         public string EmergencyLogDir { get; }
 
+        public TransmitterRepository Repository { get; }
+
         /// <summary>
         /// In fact, this is a limiter to reduce the flow of sending probes 
         /// to the administrator's side
         /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
 
-        private static readonly ContextDispatcher _ctxDisp;
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
@@ -69,8 +70,6 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
-            _ctxDisp = new ContextDispatcher(rep.Options.PluginDir, rep.Subsystem);
-
             const int delay = 12;
             _logger.Debug($"Waiting for {delay} seconds...");
             Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
@@ -90,7 +89,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Initialized.");
         }
 
-        public DataTransmitter(ITargetSenderRepository rep)
+        public DataTransmitter(TransmitterRepository rep)
         {
             _logger.Debug($"{nameof(DataTransmitter)} singleton is creating...");
 
@@ -161,8 +160,7 @@ namespace Drill4Net.Agent.Transmitter
             //unfortunately, caching is wrong techique here - maybe later...
             //if (!_probes.TryAdd(data, true))
                 //return;
-            var ctx = _ctxDisp.GetContextId();
-            TransmitWithContext(data, ctx);
+            TransmitWithContext(data, null);
         }
 
         /// <summary>
@@ -186,6 +184,9 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
         internal int SendProbe(string data, string ctx)
         {
+            if(string.IsNullOrWhiteSpace(ctx))
+                ctx = Repository.GetContextId();
+
             if (_writeProbesToFile)
                 _probeLogger.Log(LogLevel.Trace, $"{ctx} -> [{data}]");
 
@@ -201,7 +202,7 @@ namespace Drill4Net.Agent.Transmitter
         public void ExecCommand(int command, string data)
         {
             _logger.Info($"Command: [{command}] -> {data}");
-            _ctxDisp.RegisterCommand(command, data);
+            Repository.RegisterCommand(command, data);
             ProbeSender.Flush(); //we have to guarantee the delivery of the previous probes
             CommandSender.SendCommand(command, data);
             Log.Flush();
