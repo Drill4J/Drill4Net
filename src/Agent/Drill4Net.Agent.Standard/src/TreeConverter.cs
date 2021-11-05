@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.Common;
+using Drill4Net.BanderLog;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -13,6 +16,17 @@ namespace Drill4Net.Agent.Standard
     /// </summary>
     public class TreeConverter
     {
+        private readonly Logger _logger;
+
+        /***********************************************************************************/
+
+        public TreeConverter()
+        {
+            _logger = new TypedLogger<TreeConverter>(CoreConstants.SUBSYSTEM_AGENT);
+        }
+
+        /***********************************************************************************/
+
         #region AstEntities
         /// <summary>
         /// Convert list of <see cref="InjectedType"/> to the list of <see cref="AstEntity"/>
@@ -85,7 +99,13 @@ namespace Drill4Net.Agent.Standard
         {
             //TODO: cloning from some Template object !!!
             var reg = new CoverageRegistrator(context, session);
-            var testName = session?.TestName ?? $"OutOfTest_{Guid.NewGuid()}";
+            string testName = null;
+            if (session.TestType == AgentConstants.TEST_MANUAL)
+                testName = session?.TestName;
+            if(string.IsNullOrWhiteSpace(testName))
+                testName = context ?? $"UnknownContext_{Guid.NewGuid()}";
+            _logger.Debug($"TestName=[{testName}]; context=[{context}]");
+
             if (session != null)
                 session.TestName = testName;
             var bizTypes = injTypes

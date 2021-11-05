@@ -554,10 +554,7 @@ namespace Drill4Net.Agent.Standard
 
             //TODO: flag about serial or parallel tests (and in this case to get real test context!)
             if (_curAutoSession != null)
-            {
-                _curAutoSession.TestName = testCtx.GetKey(); //a temporary solution for serial tests!
-                Repository.RecreateSessionData(_curAutoSession); //because we need recreate the Coverager at all in the current session - guanito
-            }
+                Repository.RecreateSessionData(_curAutoSession, testCtx.CaseName); //because we need recreate the Coverager at all in the current session - guanito
 
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();

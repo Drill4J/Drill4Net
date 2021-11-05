@@ -289,23 +289,23 @@ namespace Drill4Net.Agent.Standard
             }
 
             //...all another types of sessions must be reinitialized
-            RecreateSessionData(info);
+            RecreateSessionData(info, null);
         }
 
         /// <summary>
         /// Recreate the session
         /// </summary>
         /// <param name="info"></param>
-        public void RecreateSessionData(StartSessionPayload info)
+        public void RecreateSessionData(StartSessionPayload info, string context)
         {
-            RemoveSession(info.SessionId);
-            AddSession(info);
+            RemoveSessionData(info.SessionId);
+            AddSessionData(info, context);
             StartSendCycle();
         }
 
-        internal void AddSession(StartSessionPayload session)
+        internal void AddSessionData(StartSessionPayload session, string context)
         {
-            var ctxId = session.TestName ?? _ctxDisp.GetContextId(); //GUANO: it's WRONG!!! HOW DO I GET THE REAL CONTEXT FROM A TARGET?!!
+            var ctxId = session.TestName ?? context ?? _ctxDisp.GetContextId();
             if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
 
@@ -341,7 +341,7 @@ namespace Drill4Net.Agent.Standard
             SendCoverages();
 
             //removing session/data
-            RemoveSession(uid);
+            RemoveSessionData(uid);
             StopSendCycleIfNeeded();
         }
         #endregion
@@ -352,7 +352,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="info"></param>
         public void SessionCancelled(CancelAgentSession info)
         {
-            RemoveSession(info.Payload.SessionId);
+            RemoveSessionData(info.Payload.SessionId);
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        internal void RemoveSession(string sessionUid)
+        internal void RemoveSessionData(string sessionUid)
         {
             if (!_sessionToCtx.TryRemove(sessionUid, out var ctxId))
                 return;
