@@ -341,7 +341,8 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            RegisterWithContext(data, null);
+            var ctx = Repository?.GetContextId(); //it is only for local Agent injected directly in Target's sys process
+            RegisterWithContext(data, ctx);
         }
 
         /// <summary>

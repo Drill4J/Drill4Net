@@ -27,14 +27,10 @@ namespace Drill4Net.Agent.Transmitter.xUnit
 
         public override bool RegisterCommand(int command, string data)
         {
-            //TODO: accounting the test workflow changing
-
-            var comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
-            if (!comTypes.Contains(command))
+            if (!_comTypes.Contains(command))
                 return false;
             //
-            var type = (AgentCommandType)command;
-            switch (type)
+            switch ((AgentCommandType)command)
             {
                 case AgentCommandType.TEST_CASE_START:
                     var testCaseCtx = GetTestCaseContext(data);
@@ -43,8 +39,7 @@ namespace Drill4Net.Agent.Transmitter.xUnit
                 case AgentCommandType.TEST_CASE_STOP:
                     _curCtx = null;
                     break;
-                default:
-                    break;
+                //another options we don't process
             }
             return true;
         }

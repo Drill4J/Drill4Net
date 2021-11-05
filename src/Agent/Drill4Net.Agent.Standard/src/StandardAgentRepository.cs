@@ -512,9 +512,6 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public CoverageRegistrator GetOrCreateLocalRegistrator(string ctx)
         {
-            if (string.IsNullOrWhiteSpace(ctx))
-                ctx = GetContextId(); //it is only for local Agent injected directly in Target's sys process
-
             CoverageRegistrator reg;
             if (_ctxToRegistrator.ContainsKey(ctx))
             {

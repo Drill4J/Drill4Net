@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Abstract
@@ -7,6 +9,8 @@ namespace Drill4Net.Agent.Abstract
     {
         public string Name { get; }
 
+        protected List<int> _comTypes;
+
         /******************************************************************************/
 
         protected AbstractContexter(string name)
@@ -14,6 +18,7 @@ namespace Drill4Net.Agent.Abstract
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException("Name of plugin cannot be empty");
             Name = name;
+            _comTypes = Enum.GetValues(typeof(AgentCommandType)).Cast<int>().ToList();
         }
 
         /******************************************************************************/
