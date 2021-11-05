@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Web;
 using System.Linq;
 using System.Threading;
@@ -11,6 +12,7 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.BanderLog.Sinks.File;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -45,6 +47,8 @@ namespace Drill4Net.Agent.Standard
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static readonly Logger _logger;
+        private static FileSink _probeLogger;
+        private bool _writeProbesToFile;
         private readonly AssemblyResolver _resolver;
         private static readonly object _entLocker = new();
         private static readonly string _logPrefix;
@@ -86,6 +90,18 @@ namespace Drill4Net.Agent.Standard
                 AbstractRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
 
                 _logger.Debug($"{_logPrefix} is initializing...");
+
+                //debug
+                var debug = Repository.Options.Debug;
+                _writeProbesToFile = debug?.Disabled == false && debug.WriteProbes;
+                if (_writeProbesToFile)
+                {
+                    var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
+                    _logger.Debug($"Probes writing to [{probeLogfile}]");
+                    if (File.Exists(probeLogfile))
+                        File.Delete(probeLogfile);
+                    _probeLogger = new FileSink(probeLogfile);
+                }
 
                 #region TEST assembly resolving
                 //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
@@ -372,6 +388,9 @@ namespace Drill4Net.Agent.Standard
                 //var asmName = ar[1];
                 //var funcName = ar[2];
                 //var probe = ar[3];         
+
+                if (_writeProbesToFile)
+                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"{ctx} -> {probeUid}");
 
                 var res = Repository.RegisterCoverage(probeUid, ctx);
                 if (!res) //for debug

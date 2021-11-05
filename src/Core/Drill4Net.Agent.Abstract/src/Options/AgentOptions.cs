@@ -23,5 +23,7 @@ namespace Drill4Net.Agent.Abstract
         /// Auxiliary options for connector subsystem (Drill native librarry for websocket communications)
         /// </summary>
         public ConnectorAuxOptions Connector { get; set; }
+
+        public AgentDebugOptions Debug { get; set; }
     }
 }
