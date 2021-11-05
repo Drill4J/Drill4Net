@@ -13,12 +13,14 @@ namespace Drill4Net.Agent.Abstract
     {
         private readonly SimpleContexter _stdContexter;
         private readonly List<AbstractContexter> _contexters;
-        private static readonly Logger _logger;
+        private readonly Logger _logger;
 
         /**********************************************************************************/
 
-        public ContextDispatcher(string dir): base(nameof(ContextDispatcher))
+        public ContextDispatcher(string dir, string subsystem): base(nameof(ContextDispatcher))
         {
+            _logger = new TypedLogger<ContextDispatcher>(subsystem);
+
             var pluginator = new Pluginator();
             var filter = new SourceFilterOptions
             {
@@ -33,13 +35,16 @@ namespace Drill4Net.Agent.Abstract
             };
             var ctxTypes = pluginator.GetByInterface(dir, typeof(AbstractContexter), filter);
 
-            _stdContexter = new SimpleContexter();
             _contexters = new List<AbstractContexter>();
             foreach (var contexter in ctxTypes)
             {
-                var obj = Activator.CreateInstance(contexter) as AbstractContexter;
-                _contexters.Add(obj);
+                var plug = Activator.CreateInstance(contexter) as AbstractContexter;
+                _contexters.Add(plug);
+                _logger.Info($"Plugin added: [{plug.Name}]");
             }
+
+            _stdContexter = new SimpleContexter();
+            _logger.Info($"Plugin added (standard): [{_stdContexter.Name}]");
         }
 
         /**********************************************************************************/
@@ -61,6 +66,7 @@ namespace Drill4Net.Agent.Abstract
             foreach (var ctxr in _contexters)
             {
                 var ctx = ctxr.GetContextId();
+                //_logger.Trace($"Contexter: [{ctxr.Name}] -> [{ctx}]");
                 if (ctx != null)
                     return ctx;
             }

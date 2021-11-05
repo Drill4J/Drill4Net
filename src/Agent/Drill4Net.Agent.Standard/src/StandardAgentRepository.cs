@@ -90,7 +90,7 @@ namespace Drill4Net.Agent.Standard
             _logger = new TypedLogger<StandardAgentRepository>(CoreConstants.SUBSYSTEM_AGENT);
             _logger.Debug("Creating...");
 
-            _ctxDisp = new ContextDispatcher(Options.PluginDir);
+            _ctxDisp = new ContextDispatcher(Options.PluginDir, CoreConstants.SUBSYSTEM_AGENT);
 
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();

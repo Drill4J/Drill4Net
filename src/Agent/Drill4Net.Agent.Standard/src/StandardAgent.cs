@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.Standard
         private static InitActiveScope _scope;
         private static readonly Logger _logger;
         private static FileSink _probeLogger;
-        private bool _writeProbesToFile;
+        private readonly bool _writeProbesToFile;
         private readonly AssemblyResolver _resolver;
         private static readonly object _entLocker = new();
         private static readonly string _logPrefix;
@@ -357,8 +357,8 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            //var ctx = Repository?.GetContextId(); //it is only for local Agent injected directly in Target's sys process
-            RegisterWithContext(data, null);
+            var ctx = Repository?.GetContextId(); //it is only for local Agent injected directly in Target's sys process
+            RegisterWithContext(data, ctx);
         }
 
         /// <summary>

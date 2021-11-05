@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -9,6 +11,7 @@ using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
+using Drill4Net.BanderLog.Sinks.File;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -43,6 +46,9 @@ namespace Drill4Net.Agent.Transmitter
         private readonly AssemblyResolver _resolver;
 
         private static readonly Logger _logger;
+        private static readonly FileSink _probeLogger;
+        private static readonly bool _writeProbesToFile;
+
         private bool _disposed;
 
         /***********************************************************************************/
@@ -63,11 +69,23 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
-            _ctxDisp = new ContextDispatcher(rep.Options.PluginDir);
+            _ctxDisp = new ContextDispatcher(rep.Options.PluginDir, rep.Subsystem);
 
             const int delay = 12;
             _logger.Debug($"Waiting for {delay} seconds...");
             Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
+
+            //debug
+            var debug = rep.Options.Debug;
+            _writeProbesToFile = debug?.Disabled == false && debug.WriteProbes;
+            if (_writeProbesToFile)
+            {
+                var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
+                _logger.Debug($"Probes writing to [{probeLogfile}]");
+                if (File.Exists(probeLogfile))
+                    File.Delete(probeLogfile);
+                _probeLogger = new FileSink(probeLogfile);
+            }
 
             _logger.Debug("Initialized.");
         }
@@ -168,6 +186,9 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
         internal int SendProbe(string data, string ctx)
         {
+            if (_writeProbesToFile)
+                _probeLogger.Log(LogLevel.Trace, $"{ctx} -> [{data}]");
+
             return ProbeSender.SendProbe(data, ctx);
         }
         #endregion
