@@ -6,6 +6,9 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Abstract
 {
+    /// <summary>
+    /// Manager for retrieving current context of probes using contexter plugins.
+    /// </summary>
     public class ContextDispatcher : AbstractContexter
     {
         private readonly SimpleContexter _stdContexter;
@@ -48,7 +51,6 @@ namespace Drill4Net.Agent.Abstract
             {
                 if(!ctxr.RegisterCommand(command, data))
                     _logger.Error($"Unknown command: [{command}] -> [{data}]");
-
             }
             return true;
         }
@@ -62,6 +64,8 @@ namespace Drill4Net.Agent.Abstract
                 if (ctx != null)
                     return ctx;
             }
+            //nobody from specific plugins know how to retrieve the current context...
+            //we will use the standard contexter
             return _stdContexter.GetContextId();
         }
     }

@@ -126,7 +126,6 @@ namespace Drill4Net.Agent.Abstract
         }
         #endregion
         #region Test2Run
-
         //https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
         //https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
         //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints

@@ -42,7 +42,6 @@ namespace Drill4Net.Agent.Standard
 
         private readonly ICommunicator _comm;
         private static readonly ManualResetEvent _initEvent = new(false);
-        private static ContextDispatcher _ctxDisp;
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static readonly Logger _logger;
@@ -104,7 +103,6 @@ namespace Drill4Net.Agent.Standard
 
                 Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
                 _comm = Repository.Communicator;
-                _ctxDisp = new ContextDispatcher(Repository.Options.PluginDir);
 
                 //events from admin side
                 Receiver.InitScopeData += OnInitScopeData;
@@ -337,16 +335,18 @@ namespace Drill4Net.Agent.Standard
         #region Object's register
         /// <summary>
         /// Registering probe's data from injected Target app
+        /// directly in its sys process. The context of probe is retrieved here
+        /// (in this sys process).
         /// </summary>
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            var ctx = _ctxDisp.GetContextId();
-            RegisterWithContext(data, ctx);
+            RegisterWithContext(data, null);
         }
 
         /// <summary>
         /// Registering probe's data from injected Target app
+        /// with known its context
         /// </summary>
         /// <param name="data"></param>
         /// <param name="ctx"></param>

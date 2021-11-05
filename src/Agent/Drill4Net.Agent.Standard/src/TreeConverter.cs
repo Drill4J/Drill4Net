@@ -77,13 +77,14 @@ namespace Drill4Net.Agent.Standard
         /// Create <see cref="CoverageRegistrator"/> for session <see cref="StartSessionPayload"/> 
         /// and bind it to list of <see cref="InjectedType"/>
         /// </summary>
+        /// <param name="context"></param>
         /// <param name="session"></param>
         /// <param name="injTypes"></param>
         /// <returns></returns>
-        public CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
+        public CoverageRegistrator CreateCoverageRegistrator(string context, StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
-            //TODO: cloning from some Template object?
-            var reg = new CoverageRegistrator(session);
+            //TODO: cloning from some Template object !!!
+            var reg = new CoverageRegistrator(context, session);
             var testName = session?.TestName ?? $"OutOfTest_{Guid.NewGuid()}";
             if (session != null)
                 session.TestName = testName;

@@ -49,11 +49,11 @@ namespace Drill4Net.Agent.Standard
         private ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
         private ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
+        private static ContextDispatcher _ctxDisp;
         private CoverageRegistrator _globalRegistrator;
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
 
-        private AbstractContexter _contexter;
         private Logger _logger;
         private System.Timers.Timer _sendTimer;
         private object _sendLocker;
@@ -90,6 +90,8 @@ namespace Drill4Net.Agent.Standard
             _logger = new TypedLogger<StandardAgentRepository>(CoreConstants.SUBSYSTEM_AGENT);
             _logger.Debug("Creating...");
 
+            _ctxDisp = new ContextDispatcher(Options.PluginDir);
+
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();
             _ctxToRegistrator = new ConcurrentDictionary<string, CoverageRegistrator>();
@@ -110,8 +112,6 @@ namespace Drill4Net.Agent.Standard
             if(tree == null)
                 tree = ReadInjectedTree();
             _injTypes = GetTypesByCallerVersion(tree);
-
-            _contexter = new SimpleContexter(); //TODO: inject misc contexter !!!!
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(1200);
@@ -305,7 +305,7 @@ namespace Drill4Net.Agent.Standard
 
         internal void AddSession(StartSessionPayload session)
         {
-            var ctxId = _contexter.GetContextId(); //GUANO: it's WRONG!!! HOW DO I GET THE REAL CONTEXT FROM A TARGET?!!
+            var ctxId = session.TestName ?? _ctxDisp.GetContextId(); //GUANO: it's WRONG!!! HOW DO I GET THE REAL CONTEXT FROM A TARGET?!!
             if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
 
@@ -315,7 +315,7 @@ namespace Drill4Net.Agent.Standard
             _sessionToCtx.TryAdd(sessionUid, ctxId);
 
             if (session.IsGlobal)
-                _globalRegistrator = CreateCoverageRegistrator(session);
+               _globalRegistrator = CreateCoverageRegistrator(ctxId, session);
         }
         #endregion
         #region Stop
@@ -394,7 +394,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="pointUid"></param>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public bool RegisterCoverage(string pointUid, string ctx = null)
+        public bool RegisterCoverage(string pointUid, string ctx)
         {
             //global session
             var isGlobalReg = false;
@@ -487,6 +487,15 @@ namespace Drill4Net.Agent.Standard
                 _sendTimer.Enabled = false;
         }
 
+        /// <summary>
+        /// Get context only for local Agent injected directly in Target's sys process
+        /// </summary>
+        /// <returns></returns>
+        internal string GetContextId()
+        {
+            return _ctxDisp.GetContextId();
+        }
+
         internal CoverageRegistrator GetRegistrator(string sessionUid)
         {
             if (!_sessionToCtx.TryGetValue(sessionUid, out var ctxId))
@@ -501,13 +510,10 @@ namespace Drill4Net.Agent.Standard
         /// for local type of session (user's MANUAL or autotest's AUTO)
         /// </summary>
         /// <returns></returns>
-        public CoverageRegistrator GetOrCreateLocalRegistrator(string ctx = null)
+        public CoverageRegistrator GetOrCreateLocalRegistrator(string ctx)
         {
-            //This defines the logical execution path of function callers regardless
-            //of whether threads are created in async/await or Parallel.For
-            //if(string.IsNullOrWhiteSpace(ctx))
-                ctx = _contexter.GetContextId(); //GUANO: IT IS WRONG (especially for distributed architecture) !!!!
-            //Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
+            if (string.IsNullOrWhiteSpace(ctx))
+                ctx = GetContextId(); //it is only for local Agent injected directly in Target's sys process
 
             CoverageRegistrator reg;
             if (_ctxToRegistrator.ContainsKey(ctx))
@@ -522,7 +528,7 @@ namespace Drill4Net.Agent.Standard
                 var session = TryGetLocalSession();
                 if (session == null)
                     return null;
-                reg = CreateCoverageRegistrator(session);
+                reg = CreateCoverageRegistrator(ctx, session);
                 _ctxToRegistrator.TryAdd(ctx, reg);
             }
             return reg;
@@ -558,9 +564,9 @@ namespace Drill4Net.Agent.Standard
                                     (_globalRegistrator == null || _globalRegistrator.Session != a));
         }
 
-        internal CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session)
+        internal CoverageRegistrator CreateCoverageRegistrator(string context, StartSessionPayload session)
         {
-            return _converter.CreateCoverageRegistrator(session, _injTypes);
+            return _converter.CreateCoverageRegistrator(context, session, _injTypes);
         }
         #endregion
     }

@@ -8,6 +8,9 @@ using System.Collections.Concurrent;
 
 namespace Drill4Net.Common
 {
+    /// <summary>
+    /// Search contexter plugins by filter for late binding
+    /// </summary>
     public class Pluginator
     {
         private readonly TypeChecker _typeChecker = new();
