@@ -10,14 +10,14 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public event CommandReceivedHandler CommandReceived;
 
-        public string TargetSession { get; }
+        public Guid TargetSession { get; }
 
         private readonly Logger _logger;
         private CancellationTokenSource _cts;
 
         /****************************************************************************************/
 
-        public CommandKafkaReceiver(AgentWorkerRepository rep) : base(rep)
+        public CommandKafkaReceiver(TargetedReceiverRepository rep) : base(rep)
         {
             _logger = new TypedLogger<CommandKafkaReceiver>(rep.Subsystem);
             TargetSession = rep.TargetSession;

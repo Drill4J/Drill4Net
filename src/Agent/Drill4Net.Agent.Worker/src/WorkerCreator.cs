@@ -38,7 +38,7 @@ namespace Drill4Net.Agent.Worker
             return worker;
         }
 
-        internal virtual AgentWorkerRepository GetRepository()
+        internal virtual TargetedReceiverRepository GetRepository()
         {
             var opts = GetBaseOptions(_args);
             var targetSession = GetTargetSession(_args);
@@ -51,7 +51,7 @@ namespace Drill4Net.Agent.Worker
             if (!string.IsNullOrWhiteSpace(probeTopic))
                 opts.Topics.Add(probeTopic);
 
-            return new AgentWorkerRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, opts);
+            return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, opts);
         }
 
         private string GetTargetSession(string[] args)
@@ -64,7 +64,7 @@ namespace Drill4Net.Agent.Worker
             var cfgPathArg = AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
             _logger.Debug($"Config path from argumants: [{cfgPathArg}]");
 
-            var opts = AgentWorkerRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);
+            var opts = TargetedReceiverRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
             _logger.Debug($"Communicator options: [{opts}]");

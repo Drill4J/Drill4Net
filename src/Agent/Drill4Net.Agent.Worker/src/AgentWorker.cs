@@ -6,6 +6,8 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
+using Drill4Net.Agent.Messaging.Kafka;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -18,16 +20,17 @@ namespace Drill4Net.Agent.Worker
         public bool IsStarted { get; private set; }
 
         private bool _isAgentInitialized;
-        private readonly AgentWorkerRepository _rep;
+        private readonly TargetedReceiverRepository _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
         private readonly ICommandReceiver _cmdReceiver;
+        public ICommandSender _cmdSender;
 
         private readonly Logger _logger;
 
         /********************************************************************************************/
 
-        public AgentWorker(AgentWorkerRepository rep, ITargetInfoReceiver targetReceiver,
+        public AgentWorker(TargetedReceiverRepository rep, ITargetInfoReceiver targetReceiver,
             IProbeReceiver probeReceiver, ICommandReceiver cmdReceiver)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
@@ -106,6 +109,9 @@ namespace Drill4Net.Agent.Worker
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
+            IMessageSenderRepository targRep = new TargetedSenderRepository(_rep.Subsystem, _rep.TargetSession, target.TargetName, _rep.Options);
+            _cmdSender = new CommandKafkaSender(targRep);
+
             InitAgent(target);
 
             _logger.Info($"{nameof(AgentWorker)} starts receiving the commands...");
@@ -120,9 +126,17 @@ namespace Drill4Net.Agent.Worker
             if (_isAgentInitialized)
                 return;
             StandardAgentCCtorParameters.SkipCctor = true;
-            StandardAgent.Init(target.Options, target.Solution);
+            StandardAgent.Init(target.Options, target.Solution, AgentInitialized);
             _isAgentInitialized = true;
             _logger.Debug($"{nameof(StandardAgent)} is initialized");
+        }
+
+        private void AgentInitialized()
+        {
+            _logger.Info("Agent is initialized. It sending the command to Transmitter to continue executing...");
+
+            //Send message "Can start to execute the probes" to the Target
+            _cmdSender.SendCommand((int)AgentCommandType.TRANSMITTER_CAN_CONTINUE, null);
         }
 
         private void Receiver_ProbeReceived(Probe probe)

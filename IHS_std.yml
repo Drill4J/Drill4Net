@@ -12,5 +12,5 @@ Connector: #parameters for the connector auxiliary subsystem (native Drill libra
   LogFile: connector.log #it can be presented as full file path (in this case LogDir will be ignored), it can be empty
   LogLevel: debug
 Debug:
-    Disabled: true
-    WriteProbes: true # write trace probe data to the file probes.log in Log directory
+  Disabled: true
+  WriteProbes: true # write trace probe data to the file probes.log in Log directory

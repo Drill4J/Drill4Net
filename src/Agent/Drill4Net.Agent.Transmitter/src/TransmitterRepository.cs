@@ -32,12 +32,15 @@ namespace Drill4Net.Agent.Transmitter
         /// </value>
         public Guid TargetSession { get; }
 
+        public string ConfigPath { get; }
+
         private readonly ContextDispatcher _ctxDisp;
 
         /*********************************************************************************************/
 
         public TransmitterRepository() : base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
+            ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
             SenderOptions = GetSenderOptions();
             TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();
@@ -49,8 +52,7 @@ namespace Drill4Net.Agent.Transmitter
         private BaseMessageOptions GetSenderOptions()
         {
             var optHelper = new BaseOptionsHelper<BaseMessageOptions>();
-            var path = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
-           return optHelper.ReadOptions(path);
+            return optHelper.ReadOptions(ConfigPath);
         }
 
         private Guid GetSession()
@@ -89,7 +91,7 @@ namespace Drill4Net.Agent.Transmitter
             return _ctxDisp.GetContextId();
         }
 
-        public void RegisterCommand(int command, string data)
+        public void RegisterCommandByPlugins(int command, string data)
         {
             _ctxDisp.RegisterCommand(command, data);
         }

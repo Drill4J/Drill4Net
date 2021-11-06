@@ -9,8 +9,11 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
-using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.Agent.Messaging.Kafka;
+using Drill4Net.Agent.Messaging.Transport;
+using Drill4Net.Agent.Messaging.Transport.Kafka;
+using Drill4Net.Agent.Abstract;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -35,6 +38,9 @@ namespace Drill4Net.Agent.Transmitter
         public string EmergencyLogDir { get; }
 
         public TransmitterRepository Repository { get; }
+
+        public static ICommandReceiver _cmdReceiver;
+        private static readonly ManualResetEvent _initEvent = new(false);
 
         /// <summary>
         /// In fact, this is a limiter to reduce the flow of sending probes 
@@ -66,12 +72,16 @@ namespace Drill4Net.Agent.Transmitter
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
 
+            var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(), rep.ConfigPath);
+            _cmdReceiver = new CommandKafkaReceiver(targRep);
+            _cmdReceiver.CommandReceived += CommandReceiver_CommandReceived;
+
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
-            const int delay = 12;
-            _logger.Debug($"Waiting for {delay} seconds...");
-            Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
+            //const int delay = 12;
+            //_logger.Debug($"Waiting for {delay} seconds...");
+            //Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
 
             //debug
             _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
@@ -85,6 +95,8 @@ namespace Drill4Net.Agent.Transmitter
             }
 
             _logger.Debug("Initialized.");
+            _logger.Info("Wait for command to continue executing...");
+            _initEvent.WaitOne();
         }
 
         private DataTransmitter(TransmitterRepository rep)
@@ -149,6 +161,20 @@ namespace Drill4Net.Agent.Transmitter
             TargetSender.SendTargetInfo(info);
         }
 
+        private static void CommandReceiver_CommandReceived(Command command)
+        {
+            _logger.Info($"Get the command: [{command}]");
+            switch ((AgentCommandType)command.Type)
+            {
+                case AgentCommandType.TRANSMITTER_CAN_CONTINUE:
+                    _initEvent.Set();
+                    break;
+                default:
+                    _logger.Error($"Unknown command: [{command}]");
+                    return;
+            }
+        }
+
         #region Transmit probe
         /// <summary>
         /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
@@ -201,9 +227,13 @@ namespace Drill4Net.Agent.Transmitter
         public void ExecCommand(int command, string data)
         {
             _logger.Info($"Command: [{command}] -> {data}");
-            Repository.RegisterCommand(command, data);
-            ProbeSender.Flush(); //we have to guarantee the delivery of the previous probes
-            CommandSender.SendCommand(command, data);
+            Repository.RegisterCommandByPlugins(command, data);
+
+            //we have to guarantee the delivery of the previous probes
+            ProbeSender.Flush();
+            
+            CommandSender.SendCommand(command, data); //with flushing
+
             Log.Flush();
         }
         #endregion

@@ -301,7 +301,7 @@ namespace Drill4Net.Agent.Service
             senderOpts.Servers.AddRange(_rep.Options.Servers); //for sending we use the same server options
             senderOpts.Topics.Add(topic);
 
-            ITargetSenderRepository trgRep = new TargetedSenderRepository(target, senderOpts);
+            ITargetSenderRepository trgRep = new TargetedInfoSenderRepository(target, senderOpts);
             using ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
             sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here is exclusive topic for the Worker
         }

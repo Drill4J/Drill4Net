@@ -22,17 +22,10 @@ namespace Drill4Net.Agent.Transport
         public AgentSender(Connector connector): base(CoreConstants.SUBSYSTEM_AGENT)
         {
             _connector = connector ?? throw new ArgumentNullException(nameof(connector));
-            _deserOpts = new JsonSerializerSettings
-            {
-            };
+            _deserOpts = new JsonSerializerSettings();
         }
 
         /************************************************************************/
-
-        protected override string Serialize(object data)
-        {
-            return JsonConvert.SerializeObject(data, _deserOpts);
-        }
 
         protected override void SendConcrete(string messageType, string route, string message)
         {
@@ -74,6 +67,11 @@ namespace Drill4Net.Agent.Transport
         public override void RegisterTestsRunConcrete(string pluginId, string tests2Run)
         {
             _connector.AddTestsRun(pluginId, tests2Run);
+        }
+        
+        protected override string Serialize(object data)
+        {
+            return JsonConvert.SerializeObject(data, _deserOpts);
         }
 
         #region Debug
