@@ -132,17 +132,17 @@ namespace Drill4Net.Agent.Transport
                                 var stopInfo = Deserialize<StopAgentSession>(message);
                                 StopSession?.Invoke(stopInfo);
                                 break;
-                            case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
+                            case AgentConstants.MESSAGE_IN_STOP_ALL:
                                 StopAllSessions?.Invoke();
                                 break;
                             case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
                                 var cancelInfo = Deserialize<CancelAgentSession>(message);
                                 CancelSession?.Invoke(cancelInfo);
                                 break;
-                            case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
+                            case AgentConstants.MESSAGE_IN_CANCEL_ALL:
                                 CancelAllSessions?.Invoke();
                                 break;
-                            case AgentConstants.MESSAGE_IN_ADD_SESSION_TESTS: //in fact
+                            case AgentConstants.MESSAGE_IN_ADD_SESSION_TESTS: //as ack
                                 break;
                             default:
                                 _logger.Error($"Unknown message type for {nameof(AgentConstants.TOPIC_PLUGIN_ACTION)}: [{baseInfo.type}]\nMessage:\n{message}");

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Reflection;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Profiling.Tree;
@@ -181,7 +180,7 @@ namespace Drill4Net.Agent.Standard
             return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
         }
         #endregion
-        #region Events
+        #region Events from Admin side
         /// <summary>
         /// Handler of the event for the creating new test scope on the Admin side
         /// </summary>
@@ -325,7 +324,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
-        #region Register probes
+        #region Register probes from Target
         #region Static register
         /// <summary>
         ///  Registers the probe data from the injected Target app
@@ -402,7 +401,11 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
         #endregion
-        #region Commands: test2Run, etc
+        #region Commands: autotests, etc
+
+        //each agent can serve only one target, so there is only one autotest session
+        private StartSessionPayload _curAutoSession;
+
         /// <summary>
         /// Do some command
         /// </summary>
@@ -465,8 +468,6 @@ namespace Drill4Net.Agent.Standard
         }
 
         #region Manage sessions on Agent side
-        private StartSessionPayload _curAutoSession;
-
         /// <summary>
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
