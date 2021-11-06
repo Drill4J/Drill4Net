@@ -452,21 +452,16 @@ namespace Drill4Net.Agent.Standard
                 #endregion
 
                 case AgentCommandType.TEST_CASE_START:
-                    testCaseCtx = GetTestCaseContext(data);
-                    RegisterTest2RunInfoStart(testCaseCtx);
+                    testCaseCtx = Repository.GetTestCaseContext(data);
+                    RegisterTestInfoStart(testCaseCtx);
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
-                    testCaseCtx = GetTestCaseContext(data);
-                    RegisterTest2RunInfoFinish(testCaseCtx);
+                    testCaseCtx = Repository.GetTestCaseContext(data);
+                    RegisterTestInfoFinish(testCaseCtx);
                     break;
                 default:
                     break;
             }
-        }
-
-        internal TestCaseContext GetTestCaseContext(string str)
-        {
-            return JsonConvert.DeserializeObject<TestCaseContext>(str);
         }
 
         #region Manage sessions on Agent side
@@ -548,10 +543,11 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        internal void RegisterTest2RunInfoStart(TestCaseContext testCtx)
+        internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
 
+            //TODO: dict of auto-sessions for many Targets with autotests
             if (_curAutoSession != null)
                 Repository.RecreateSessionData(_curAutoSession, testCtx.CaseName); //because we need recreate the Coverager at all in the current session - guanito
 
@@ -559,7 +555,7 @@ namespace Drill4Net.Agent.Standard
             ReleaseProbeProcessing();
         }
 
-        internal void RegisterTest2RunInfoFinish(TestCaseContext testCtx)
+        internal void RegisterTestInfoFinish(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
             if (_curAutoSession != null)
