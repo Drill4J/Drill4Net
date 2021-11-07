@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.BanderLog;
+using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
-using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Kafka;
-using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -26,6 +26,7 @@ namespace Drill4Net.Agent.Worker
         private readonly ICommandReceiver _cmdReceiver;
         public ICommandSender _cmdSender;
 
+        private readonly IEnumerable<string> _cmdToTransTopics;
         private readonly Logger _logger;
 
         /********************************************************************************************/
@@ -52,6 +53,9 @@ namespace Drill4Net.Agent.Worker
 
             _cmdReceiver.CommandReceived += Receiver_CommandReceived;
             _cmdReceiver.ErrorOccured += Receiver_ErrorOccured;
+
+            _cmdToTransTopics = GetCommandToTransmitterTopics();
+            _logger.Debug($"Command topics: {string.Join(",", _cmdToTransTopics)}");
 
             _logger.Debug($"{nameof(AgentWorker)} is created");
         }
@@ -109,9 +113,7 @@ namespace Drill4Net.Agent.Worker
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
-            IMessageSenderRepository targRep = new TargetedSenderRepository(_rep.Subsystem, _rep.TargetSession, target.TargetName, _rep.Options);
-            _cmdSender = new CommandKafkaSender(targRep);
-
+            CreateCommandSender(target.TargetName);
             InitAgent(target);
 
             _logger.Info($"{nameof(AgentWorker)} starts receiving the commands...");
@@ -119,6 +121,13 @@ namespace Drill4Net.Agent.Worker
 
             _logger.Info($"{nameof(AgentWorker)} starts receiving the probes...");
             _probeReceiver.Start();
+        }
+
+        private void CreateCommandSender(string targetName)
+        {
+            IMessagerRepository targRep = new TargetedSenderRepository(_rep.Subsystem, _rep.TargetSession, targetName, _rep.ConfigPath); //need read own config
+            targRep.MessagerOptions.Receiver.Topics.Add(MessagingUtils.GetCommandToTransmitterTopic(_rep.TargetSession));
+            _cmdSender = new CommandKafkaSender(targRep);
         }
 
         private void InitAgent(TargetInfo target)
@@ -133,10 +142,15 @@ namespace Drill4Net.Agent.Worker
 
         private void AgentInitialized()
         {
-            _logger.Info("Agent is initialized. It sending the command to Transmitter to continue executing...");
+            _logger.Info("Agent is initialized: sending the command to Transmitter to continue executing");
 
             //Send message "Can start to execute the probes" to the Target
-            _cmdSender.SendCommand((int)AgentCommandType.TRANSMITTER_CAN_CONTINUE, null);
+            _cmdSender.SendCommand((int)AgentCommandType.TRANSMITTER_CAN_CONTINUE, null, _cmdToTransTopics);
+        }
+
+        private IEnumerable<string> GetCommandToTransmitterTopics()
+        {
+            return MessagingUtils.FilterCommandTopics(_rep.Options.Sender.Topics);
         }
 
         private void Receiver_ProbeReceived(Probe probe)

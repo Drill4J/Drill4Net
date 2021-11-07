@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
@@ -12,9 +13,9 @@ namespace Drill4Net.Agent.Transmitter
     /// Repository for the transmitting of retrieved data from the Proxy class
     /// in Target's memory to the real Agent in another (micro)service
     /// </summary>
-    public class TransmitterRepository : TreeRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, ITargetSenderRepository
+    public class TransmitterRepository : TreeRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, ITargetedInfoSenderRepository
     {
-        public BaseMessageOptions SenderOptions { get; set; }
+        public MessagerOptions MessagerOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the testing target which transmitter will be loaded into.
@@ -41,7 +42,7 @@ namespace Drill4Net.Agent.Transmitter
         public TransmitterRepository() : base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
             ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
-            SenderOptions = GetSenderOptions();
+            MessagerOptions = GetMessagerOptions();
             TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem);
@@ -49,9 +50,9 @@ namespace Drill4Net.Agent.Transmitter
 
         /*********************************************************************************************/
 
-        private BaseMessageOptions GetSenderOptions()
+        private MessagerOptions GetMessagerOptions()
         {
-            var optHelper = new BaseOptionsHelper<BaseMessageOptions>();
+            var optHelper = new BaseOptionsHelper<MessagerOptions>();
             return optHelper.ReadOptions(ConfigPath);
         }
 
@@ -84,6 +85,11 @@ namespace Drill4Net.Agent.Transmitter
         {
             var entryType = Assembly.GetEntryAssembly().EntryPoint.DeclaringType.FullName;
             return $"{entryType.Replace(".", "-")} (generated)";
+        }
+
+        internal IEnumerable<string> GetReceiverCommandTopics()
+        {
+            return MessagingUtils.FilterCommandTopics(MessagerOptions.Receiver?.Topics);
         }
 
         public string GetContextId()

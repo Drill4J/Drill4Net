@@ -452,7 +452,7 @@ namespace Drill4Net.Agent.Standard
         public void ExecCommand(int command, string data)
         {
             var type = (AgentCommandType)command;
-            _logger.Debug($"Command: [{type}] -> [{data}]");
+            _logger.Debug($"Command received: [{type}] -> [{data}]");
 
             Repository.RegisterCommand(command, data);
 

@@ -5,7 +5,7 @@ using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
-    public class MessageReceiverRepository<T> : AbstractRepository<T> where T: MessageReceiverOptions, new()
+    public class MessageReceiverRepository<T> : AbstractRepository<T> where T: MessagerOptions, new()
     {
         public MessageReceiverRepository(string subsystem, string cfgPath = null):
             this(subsystem, GetOptionsByPath(subsystem, cfgPath))

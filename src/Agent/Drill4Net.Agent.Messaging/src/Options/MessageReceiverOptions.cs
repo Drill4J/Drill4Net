@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Agent.Messaging.Transport
+﻿namespace Drill4Net.Agent.Messaging
 {
     public class MessageReceiverOptions : BaseMessageOptions
     {

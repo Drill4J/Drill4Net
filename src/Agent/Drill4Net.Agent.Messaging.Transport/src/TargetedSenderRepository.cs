@@ -1,25 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
+using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
-    public class TargetedSenderRepository : IMessageSenderRepository
+    public class TargetedSenderRepository : ConfiguredRepository<MessagerOptions, BaseOptionsHelper<MessagerOptions>>, IMessagerRepository
     {
-        public string Subsystem { get; }
+        public Guid TargetSession { get; private set; }
 
-        public Guid TargetSession { get; }
+        public string TargetName { get; private set; }
 
-        public string TargetName { get; set; }
-
-        public BaseMessageOptions SenderOptions { get; set; }
+        public MessagerOptions MessagerOptions { get; private set; }
 
         /***************************************************************************************/
 
-        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, BaseMessageOptions senderOptions)
+        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, string cfgPath) : base(subsystem, cfgPath)
         {
-            Subsystem = subsystem ?? throw new ArgumentNullException(nameof(subsystem));
-            SenderOptions = senderOptions ?? throw new ArgumentNullException(nameof(senderOptions));
+            Init(targetSession, targetName);
+        }
+
+        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, MessagerOptions opts) : base(subsystem, opts)
+        {
+            Init(targetSession, targetName);
+        }
+
+        /***************************************************************************************/
+
+        private void Init(Guid targetSession, string targetName)
+        {
             TargetName = targetName ?? throw new ArgumentNullException(nameof(targetName));
             TargetSession = targetSession;
+            MessagerOptions = Options; //guano
+            if (Options.Sender == null)
+                Options.Sender = new();
+            if (Options.Sender.Topics == null)
+                Options.Sender.Topics = new();
+        }
+
+        public void AddTopics(IEnumerable<string> topics)
+        {
+            foreach (var topic in topics)
+                AddTopic(topic);
+        }
+
+        public void AddTopic(string topic)
+        {
+            if (string.IsNullOrWhiteSpace(topic))
+                throw new ArgumentNullException("Topic's name can't be empty");
+            Options.Sender.Topics.Add(topic);
         }
     }
 }

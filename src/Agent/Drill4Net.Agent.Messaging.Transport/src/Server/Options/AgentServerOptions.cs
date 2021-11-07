@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Messaging.Transport
 {
-    public class AgentServerOptions : MessageReceiverOptions
+    public class AgentServerOptions : MessagerOptions
     {
         /// <summary>
         /// Gets or sets the agent worker path.

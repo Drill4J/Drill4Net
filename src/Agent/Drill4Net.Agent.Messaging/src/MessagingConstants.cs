@@ -25,6 +25,8 @@
         public static readonly string TOPIC_TARGET_INFO = $"{TOPIC_PREFIX}-server-target-info";
         public static readonly string TOPIC_PROBE_PREFIX = $"{TOPIC_PREFIX}-probes";
         public static readonly string TOPIC_COMMAND_PREFIX = $"{TOPIC_PREFIX}-commands";
+        public static readonly string TOPIC_COMMAND_TRANSMITTER_PREFIX = $"{TOPIC_COMMAND_PREFIX}-to-trans";
+        public static readonly string TOPIC_COMMAND_WORKER_PREFIX = $"{TOPIC_COMMAND_PREFIX}-to-worker";
         #endregion
         #region Ping data
         public const string PING_SUBSYSTEM = "subsystem";

@@ -8,7 +8,7 @@ using Drill4Net.Core.Repository;
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
     public class PingKafkaReceiver<T> : AbstractKafkaReceiver<T>, IPingReceiver
-        where T : MessageReceiverOptions, new()
+        where T : MessagerOptions, new()
     {
         public event PingReceivedHandler PingReceived;
 

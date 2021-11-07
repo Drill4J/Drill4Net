@@ -6,7 +6,7 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class CommandKafkaReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, ICommandReceiver
+    public class CommandKafkaReceiver : AbstractKafkaReceiver<MessagerOptions>, ICommandReceiver
     {
         public event CommandReceivedHandler CommandReceived;
 
@@ -48,9 +48,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             _logger.Info("Start retrieving commands...");
 
             _cts = new();
-            var opts = _rep.Options;
-            var topics = MessagingUtils.GetCommandTopic(TargetSession);
-            _logger.Debug($"Command topic: {topics}");
+            var cmdTopics = MessagingUtils.FilterCommandTopics(_rep.Options.Receiver.Topics);
+            _logger.Debug($"Command topic: {cmdTopics}");
 
             while (true)
             {
@@ -59,7 +58,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                     using var c = new ConsumerBuilder<Ignore, Command>(_cfg)
                         .SetValueDeserializer(new CommandDeserializer())
                         .Build();
-                    c.Subscribe(topics);
+                    c.Subscribe(cmdTopics);
 
                     try
                     {

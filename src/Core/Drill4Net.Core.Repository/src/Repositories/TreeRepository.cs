@@ -15,17 +15,17 @@ namespace Drill4Net.Core.Repository
 
         /*****************************************************************************************/
 
-        protected TreeRepository(string[] args, string subsystem) : base(args, subsystem)
+        protected TreeRepository(string[] args, string subsystem) : base(subsystem, args)
         {
             CreateTypedLogger();
         }
 
-        protected TreeRepository(string cfgPath, string subsystem) : base(cfgPath, subsystem)
+        protected TreeRepository(string cfgPath, string subsystem) : base(subsystem, cfgPath)
         {
             CreateTypedLogger();
         }
 
-        protected TreeRepository(TOptions opts, string subsystem) : base(opts, subsystem)
+        protected TreeRepository(TOptions opts, string subsystem) : base(subsystem, opts)
         {
             CreateTypedLogger();
         }

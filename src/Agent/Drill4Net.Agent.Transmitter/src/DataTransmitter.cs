@@ -1,19 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Agent.Abstract;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using Drill4Net.Agent.Abstract;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -71,10 +72,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extras);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
-
-            var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(), rep.ConfigPath);
-            _cmdReceiver = new CommandKafkaReceiver(targRep);
-            _cmdReceiver.CommandReceived += CommandReceiver_CommandReceived;
+            StartCommandReceiver(rep);
 
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
@@ -161,6 +159,29 @@ namespace Drill4Net.Agent.Transmitter
             TargetSender.SendTargetInfo(info);
         }
 
+        #region CommandReceiver
+        private static IEnumerable<string> _cmdReceiverTopics;
+        private static void StartCommandReceiver(TransmitterRepository rep)
+        {
+            _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
+            Log.Flush();
+
+            var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(), rep.ConfigPath);
+            _logger.Trace("Command receiver created");
+            Log.Flush();
+
+            var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
+            _logger.Trace($"Dynamic command topic: [{topic}]");
+            Log.Flush();
+            targRep.AddTopic(topic); //get commands for this Transmitter
+            _cmdReceiverTopics = Transmitter.Repository.GetReceiverCommandTopics();
+            _logger.Debug($"Command topics: [{string.Join(",", _cmdReceiverTopics)}]");
+
+            _cmdReceiver = new CommandKafkaReceiver(targRep);
+            _cmdReceiver.CommandReceived += CommandReceiver_CommandReceived;
+            Task.Run(_cmdReceiver.Start);
+        }
+
         private static void CommandReceiver_CommandReceived(Command command)
         {
             _logger.Info($"Get the command: [{command}]");
@@ -174,7 +195,7 @@ namespace Drill4Net.Agent.Transmitter
                     return;
             }
         }
-
+        #endregion
         #region Transmit probe
         /// <summary>
         /// Transmits the specified probe from the Proxy class injected into Target to the middleware.
@@ -232,7 +253,8 @@ namespace Drill4Net.Agent.Transmitter
             //we have to guarantee the delivery of the previous probes
             ProbeSender.Flush();
             
-            CommandSender.SendCommand(command, data); //with flushing
+            //send command
+            CommandSender.SendCommand(command, data, _cmdReceiverTopics); //with flushing
 
             Log.Flush();
         }

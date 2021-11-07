@@ -7,7 +7,7 @@ using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class ProbeKafkaReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, IProbeReceiver
+    public class ProbeKafkaReceiver : AbstractKafkaReceiver<MessagerOptions>, IProbeReceiver
     {
         public event ProbeReceivedHandler ProbeReceived;
 
@@ -16,7 +16,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         /****************************************************************************************/
 
-        public ProbeKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep) : base(rep)
+        public ProbeKafkaReceiver(AbstractRepository<MessagerOptions> rep) : base(rep)
         {
             _logger = new TypedLogger<ProbeKafkaReceiver>(rep.Subsystem);
         }
@@ -47,10 +47,10 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             _cts = new();
             var opts = _rep.Options;
-            var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
+            var probeTopics = MessagingUtils.FilterProbeTopics(opts.Receiver.Topics);
             _logger.Debug($"Probe topics: {string.Join(",", probeTopics)}");
 
-            while (true) //?
+            while (true)
             {
                 try
                 {

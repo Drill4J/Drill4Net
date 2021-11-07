@@ -16,17 +16,17 @@ namespace Drill4Net.Agent.Messaging.Kafka
         protected readonly int _packetMaxSize;
 
         protected readonly ProducerConfig _cfg;
-        protected readonly IMessageSenderRepository _rep;
+        protected readonly IMessagerRepository _rep;
         protected Headers _headers;
 
         private bool _disposed;
 
         /***************************************************************************************/
 
-        protected AbstractKafkaSender(IMessageSenderRepository rep)
+        protected AbstractKafkaSender(IMessagerRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            _cfg = CreateBaseProducerConfig(rep.SenderOptions);
+            _cfg = CreateBaseProducerConfig(rep.MessagerOptions);
 
             //https://stackoverflow.com/questions/21020347/how-can-i-send-large-messages-with-kafka-over-15mb
             _packetMaxSize = (_cfg.MessageMaxBytes ?? MessagingConstants.MaxMessageSize) - 512; //less because also service info included!
@@ -77,8 +77,13 @@ namespace Drill4Net.Agent.Messaging.Kafka
         #region Producer
         protected abstract void CreateProducers();
 
-        private ProducerConfig CreateBaseProducerConfig(BaseMessageOptions opts)
+        private ProducerConfig CreateBaseProducerConfig(MessagerOptions opts)
         {
+            if (opts == null)
+                throw new Exception("Options are empty");
+            if (opts.Servers == null || opts.Servers.Count == 0)
+                throw new Exception("Servers are empty");
+            //
             return new ProducerConfig
             {
                 BootstrapServers = string.Join(",", opts.Servers),

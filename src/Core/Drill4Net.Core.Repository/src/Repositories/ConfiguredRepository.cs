@@ -25,11 +25,11 @@ namespace Drill4Net.Core.Repository
 
         /**********************************************************************************/
 
-        protected ConfiguredRepository(string[] args, string subsystem): this(GetArgumentConfigPath(args), subsystem)
+        protected ConfiguredRepository(string subsystem, string[] args) : this(subsystem, GetArgumentConfigPath(args))
         {
         }
 
-        protected ConfiguredRepository(string cfgPath, string subsystem): base(subsystem)
+        protected ConfiguredRepository(string subsystem, string cfgPath) : base(subsystem)
         {
             _optHelper = new THelper();
 
@@ -43,7 +43,7 @@ namespace Drill4Net.Core.Repository
             PrepareLogger();
         }
 
-        protected ConfiguredRepository(TOptions opts, string subsystem) : base(subsystem)
+        protected ConfiguredRepository(string subsystem, TOptions opts) : base(subsystem)
         {
             _optHelper = new THelper();
             Options = opts ?? throw new ArgumentNullException(nameof(opts));

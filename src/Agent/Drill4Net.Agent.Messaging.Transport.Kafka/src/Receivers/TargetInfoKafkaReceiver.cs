@@ -12,19 +12,21 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     //https://github.com/patsevanton/docker-compose-kafka-zk-kafdrop-cmak/blob/main/docker-compose.yml
 
     public class TargetInfoKafkaReceiver<T> : AbstractKafkaReceiver<T>, ITargetInfoReceiver
-        where T : MessageReceiverOptions, new()
+        where T : MessagerOptions, new()
     {
         public event TargetReceivedInfoHandler TargetInfoReceived;
 
+        private bool _isServer;
         private readonly Logger _logger;
         private CancellationTokenSource _cts;
 
         /****************************************************************************************/
 
-        public TargetInfoKafkaReceiver(AbstractRepository<T> rep, CancellationTokenSource cts = null):
+        public TargetInfoKafkaReceiver(AbstractRepository<T> rep, bool isServer, CancellationTokenSource cts = null):
             base(rep)
         {
             _cts = cts;
+            _isServer = isServer;
             _logger = new TypedLogger<TargetInfoKafkaReceiver<T>>(rep.Subsystem);
         }
 
@@ -57,7 +59,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 _cts = new();
 
             var opts = _rep.Options; //can contains different topics
-            var topics = MessagingUtils.FilterTargetTopics(opts.Topics); //get only target info topics
+            var topics = MessagingUtils.FilterTargetTopics(opts.Receiver?.Topics, _isServer);
             _logger.Debug($"Target info topics: {string.Join(",", topics)}");
 
             try

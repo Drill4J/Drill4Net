@@ -31,27 +31,46 @@ namespace Drill4Net.Agent.Worker
             //receivers
             ICommandReceiver cmdReceiver = new CommandKafkaReceiver(rep);
             IProbeReceiver probeReceiver = new ProbeKafkaReceiver(rep);
-            ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessageReceiverOptions>(rep);
+            ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessagerOptions>(rep, false);
 
             //worker
-            var worker = new AgentWorker(rep, targetReceiver, probeReceiver, cmdReceiver);
-            return worker;
+            return new AgentWorker(rep, targetReceiver, probeReceiver, cmdReceiver);
         }
 
         internal virtual TargetedReceiverRepository GetRepository()
         {
-            var opts = GetBaseOptions(_args);
+            #region Get options
+            var (cfgPath, opts) = GetBaseOptions(_args);
             var targetSession = GetTargetSession(_args);
+            if (opts.Sender == null)
+                opts.Sender = new();
+            if (opts.Sender.Topics == null)
+                opts.Sender.Topics = new();
+            if (opts.Receiver == null)
+                throw new Exception("Receiver is empty");
+            #endregion
 
+            //some topics are located together in the Topics property of options //
+
+            //Receiver
             var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
             if (!string.IsNullOrWhiteSpace(targetTopic))
-                opts.Topics.Add(targetTopic);
+                opts.Receiver.Topics.Add(targetTopic);
+
+            var cmdForWorkerTopic = MessagingUtils.GetCommandToWorkerTopic(targetSession); //get the commands to this Worker
+            if (!string.IsNullOrWhiteSpace(cmdForWorkerTopic))
+                opts.Receiver.Topics.Add(cmdForWorkerTopic);
 
             var probeTopic = MessagingUtils.GetProbeTopic(targetSession);
             if (!string.IsNullOrWhiteSpace(probeTopic))
-                opts.Topics.Add(probeTopic);
+                opts.Receiver.Topics.Add(probeTopic);
 
-            return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, opts);
+            //Sender
+            var cmdForTransTopic = MessagingUtils.GetCommandToWorkerTopic(targetSession); //get the commands to this Worker
+            if (!string.IsNullOrWhiteSpace(cmdForTransTopic))
+                opts.Sender.Topics.Add(cmdForTransTopic);
+
+            return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, opts, cfgPath);
         }
 
         private string GetTargetSession(string[] args)
@@ -59,7 +78,7 @@ namespace Drill4Net.Agent.Worker
             return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
         }
 
-        internal virtual MessageReceiverOptions GetBaseOptions(string[] args)
+        internal virtual (string cfgPath, MessagerOptions opts) GetBaseOptions(string[] args)
         {
             var cfgPathArg = AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
             _logger.Debug($"Config path from argumants: [{cfgPathArg}]");
@@ -68,7 +87,7 @@ namespace Drill4Net.Agent.Worker
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
             _logger.Debug($"Communicator options: [{opts}]");
-            return opts;
+            return (cfgPathArg, opts);
         }
     }
 }

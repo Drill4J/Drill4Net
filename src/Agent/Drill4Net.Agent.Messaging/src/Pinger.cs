@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.Messaging
 {
     public class Pinger : IDisposable
     {
-        private readonly IMessageSenderRepository _rep;
+        private readonly IMessagerRepository _rep;
         private readonly StringDictionary _state;
         private readonly IPingSender _sender;
         private readonly TimeSpan _period;
@@ -15,7 +15,7 @@ namespace Drill4Net.Agent.Messaging
 
         /***************************************************************/
 
-        public Pinger(IMessageSenderRepository rep, IPingSender sender)
+        public Pinger(IMessagerRepository rep, IPingSender sender)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _sender = sender ?? throw new ArgumentNullException(nameof(sender));

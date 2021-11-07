@@ -250,7 +250,7 @@ namespace Drill4Net.Agent.Service
             //topics
             string trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid);
             var probeTopic = MessagingUtils.GetProbeTopic(sessionUid);
-            var cmdTopic = MessagingUtils.GetCommandTopic(sessionUid);
+            var cmdTopic = MessagingUtils.GetCommandToWorkerTopic(sessionUid);
 
             int pid = -1;
             var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
@@ -297,11 +297,11 @@ namespace Drill4Net.Agent.Service
         internal void SendTargetInfoToAgentWorker(string topic, TargetInfo target)
         {
             //send to worker the Target info by the exclusive topic     
-            var senderOpts = new BaseMessageOptions();
+            var senderOpts = new MessagerOptions() { Sender = new() };
             senderOpts.Servers.AddRange(_rep.Options.Servers); //for sending we use the same server options
-            senderOpts.Topics.Add(topic);
+            senderOpts.Sender.Topics.Add(topic);
 
-            ITargetSenderRepository trgRep = new TargetedInfoSenderRepository(target, senderOpts);
+            ITargetedInfoSenderRepository trgRep = new TargetedInfoSenderRepository(target, senderOpts);
             using ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
             sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here is exclusive topic for the Worker
         }
