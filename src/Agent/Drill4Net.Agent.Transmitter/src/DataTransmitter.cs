@@ -49,6 +49,8 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
 
+        private static readonly IEnumerable<string> _cmdSenderTopics;
+
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
@@ -74,6 +76,9 @@ namespace Drill4Net.Agent.Transmitter
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
             StartCommandReceiver(rep);
 
+            _cmdSenderTopics = Transmitter.Repository.GetSenderCommandTopics();
+            _logger.Debug($"Command sender topics: [{string.Join(",", _cmdSenderTopics)}]");
+
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
 
@@ -94,6 +99,8 @@ namespace Drill4Net.Agent.Transmitter
 
             _logger.Debug("Initialized.");
             _logger.Info("Wait for command to continue executing...");
+            Log.Flush();
+
             _initEvent.WaitOne();
         }
 
@@ -160,7 +167,6 @@ namespace Drill4Net.Agent.Transmitter
         }
 
         #region CommandReceiver
-        private static IEnumerable<string> _cmdReceiverTopics;
         private static void StartCommandReceiver(TransmitterRepository rep)
         {
             _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
@@ -169,10 +175,9 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Trace("Command receiver created");
 
             var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
-            _logger.Trace($"Dynamic command topic: [{topic}]");
             targRep.AddTopic(topic); //get commands for this Transmitter
-            _cmdReceiverTopics = Transmitter.Repository.GetReceiverCommandTopics();
-            _logger.Debug($"Command topics: [{string.Join(",", _cmdReceiverTopics)}]");
+            _logger.Trace($"Dynamic command topic: [{topic}]");
+            Log.Flush();
 
             _cmdReceiver = new CommandKafkaReceiver(targRep);
             _cmdReceiver.CommandReceived += CommandReceiver_CommandReceived;
@@ -182,6 +187,7 @@ namespace Drill4Net.Agent.Transmitter
         private static void CommandReceiver_CommandReceived(Command command)
         {
             _logger.Info($"Get the command: [{command}]");
+            Log.Flush();
             switch ((AgentCommandType)command.Type)
             {
                 case AgentCommandType.TRANSMITTER_CAN_CONTINUE:
@@ -251,7 +257,7 @@ namespace Drill4Net.Agent.Transmitter
             ProbeSender.Flush();
             
             //send command
-            CommandSender.SendCommand(command, data, _cmdReceiverTopics); //with flushing
+            CommandSender.SendCommand(command, data, _cmdSenderTopics); //with flushing
 
             Log.Flush();
         }

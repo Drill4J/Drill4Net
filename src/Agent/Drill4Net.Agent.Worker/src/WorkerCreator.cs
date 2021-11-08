@@ -58,7 +58,7 @@ namespace Drill4Net.Agent.Worker
 
             //some topics are located together in the Topics property of options //
 
-            //Receiver
+            //Receivers
             var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
             if (!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Receiver.Topics.Add(targetTopic);
@@ -71,7 +71,7 @@ namespace Drill4Net.Agent.Worker
             if (!string.IsNullOrWhiteSpace(probeTopic))
                 opts.Receiver.Topics.Add(probeTopic);
 
-            //Sender
+            //Senders
             var cmdForTransTopic = MessagingUtils.GetCommandToTransmitterTopic(targetSession); //get the topic for the commands to the Transmitter
             if (!string.IsNullOrWhiteSpace(cmdForTransTopic))
                 opts.Sender.Topics.Add(cmdForTransTopic);

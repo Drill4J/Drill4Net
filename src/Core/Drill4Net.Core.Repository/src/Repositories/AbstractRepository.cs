@@ -58,6 +58,7 @@ namespace Drill4Net.Core.Repository
             var path = LoggerHelper.GetCommonFilePath(folder);
             var logger = new LogBuilder()
                 .AddSink(new FileSink(path))
+                .AddSink(new ConsoleSink())
                 .Build();
             Log.Configure(logger);
         }

@@ -87,9 +87,9 @@ namespace Drill4Net.Agent.Transmitter
             return $"{entryType.Replace(".", "-")} (generated)";
         }
 
-        internal IEnumerable<string> GetReceiverCommandTopics()
+        internal IEnumerable<string> GetSenderCommandTopics()
         {
-            return MessagingUtils.FilterCommandTopics(MessagerOptions.Receiver?.Topics);
+            return MessagingUtils.FilterCommandTopics(MessagerOptions.Sender?.Topics);
         }
 
         public string GetContextId()
