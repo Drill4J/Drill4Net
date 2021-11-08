@@ -33,15 +33,14 @@ namespace Drill4Net.Agent.Transmitter
         public IProbeSender ProbeSender { get; }
         public ICommandSender CommandSender { get; }
 
+        public ICommandReceiver CommandReceiver { get; private set; }
+
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
         public string EmergencyLogDir { get; }
 
         public TransmitterRepository Repository { get; }
-
-        public static ICommandReceiver _cmdReceiver;
-        private static readonly ManualResetEvent _initEvent = new(false);
 
         /// <summary>
         /// In fact, this is a limiter to reduce the flow of sending probes 
@@ -58,6 +57,7 @@ namespace Drill4Net.Agent.Transmitter
         private static readonly FileSink _probeLogger;
         private static readonly bool _writeProbesToFile;
 
+        private static readonly ManualResetEvent _initEvent = new(false);
         private bool _disposed;
 
         /***********************************************************************************/
@@ -74,17 +74,12 @@ namespace Drill4Net.Agent.Transmitter
             _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extras);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
-            StartCommandReceiver(rep);
 
             _cmdSenderTopics = Transmitter.Repository.GetSenderCommandTopics();
             _logger.Debug($"Command sender topics: [{string.Join(",", _cmdSenderTopics)}]");
 
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
-
-            //const int delay = 12;
-            //_logger.Debug($"Waiting for {delay} seconds...");
-            //Thread.Sleep(delay * 1000); //here we need "sync waiting" for the Agent Worker init
 
             //debug
             _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
@@ -127,6 +122,8 @@ namespace Drill4Net.Agent.Transmitter
             var pingSender = new PingKafkaSender(rep);
             _pinger = new Pinger(rep, pingSender);
 
+            StartCommandReceiver(rep);
+
             _logger.Debug($"{nameof(DataTransmitter)} singleton is created");
         }
 
@@ -167,7 +164,7 @@ namespace Drill4Net.Agent.Transmitter
         }
 
         #region CommandReceiver
-        private static void StartCommandReceiver(TransmitterRepository rep)
+        private void StartCommandReceiver(TransmitterRepository rep)
         {
             _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
 
@@ -179,18 +176,18 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Trace($"Dynamic command topic: [{topic}]");
             Log.Flush();
 
-            _cmdReceiver = new CommandKafkaReceiver(targRep);
-            _cmdReceiver.CommandReceived += CommandReceiver_CommandReceived;
-            Task.Run(_cmdReceiver.Start);
+            CommandReceiver = new CommandKafkaReceiver(targRep);
+            CommandReceiver.CommandReceived += CommandReceiver_CommandReceived;
+            Task.Run(CommandReceiver.Start);
         }
 
-        private static void CommandReceiver_CommandReceived(Command command)
+        private void CommandReceiver_CommandReceived(Command command)
         {
             _logger.Info($"Get the command: [{command}]");
-            Log.Flush();
             switch ((AgentCommandType)command.Type)
             {
                 case AgentCommandType.TRANSMITTER_CAN_CONTINUE:
+                    _logger.Info("Unlock the Target");
                     _initEvent.Set();
                     break;
                 default:
