@@ -48,8 +48,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             _logger.Info("Start retrieving commands...");
 
             _cts = new();
-            var cmdTopics = MessagingUtils.FilterCommandTopics(_rep.Options.Receiver.Topics);
-            _logger.Debug($"Command topics: {string.Join(",", cmdTopics)}");
+            var cmdTopics = MessagingUtils.FilterCommandTopics(_rep.Options.Receiver?.Topics);
+            _logger.Debug($"Receiver command topics: [{string.Join(",", cmdTopics)}]");
 
             while (true)
             {

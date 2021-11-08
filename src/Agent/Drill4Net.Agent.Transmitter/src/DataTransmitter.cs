@@ -15,6 +15,7 @@ using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
+using System.Linq;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -48,7 +49,7 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
 
-        private static readonly IEnumerable<string> _cmdSenderTopics;
+        private static readonly List<string> _cmdSenderTopics;
 
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
@@ -75,8 +76,9 @@ namespace Drill4Net.Agent.Transmitter
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
 
-            _cmdSenderTopics = Transmitter.Repository.GetSenderCommandTopics();
-            _logger.Debug($"Command sender topics: [{string.Join(",", _cmdSenderTopics)}]");
+            _cmdSenderTopics = rep.GetSenderCommandTopics().ToList();
+            _cmdSenderTopics.Add(MessagingUtils.GetCommandToWorkerTopic(rep.TargetSession));
+            _logger.Debug($"Sender command topics: [{string.Join(",", _cmdSenderTopics)}]");
 
             _logger.Debug("Getting & sending the Target's info");
             Transmitter.SendTargetInfo(rep.GetTargetInfo());
