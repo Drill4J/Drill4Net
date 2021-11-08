@@ -49,7 +49,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             _cts = new();
             var cmdTopics = MessagingUtils.FilterCommandTopics(_rep.Options.Receiver.Topics);
-            _logger.Debug($"Command topic: {cmdTopics}");
+            _logger.Debug($"Command topics: {string.Join(",", cmdTopics)}");
 
             while (true)
             {
@@ -71,6 +71,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                                 _logger.Debug($"Received command type: [{command?.Type}]");
                                 CommandReceived?.Invoke(command);
                             }
+                            //Unknown topic (is not create by Server yet)
+                            catch (ConsumeException e) when (e.HResult == -2146233088) { }
                             catch (ConsumeException e)
                             {
                                 var err = e.Error;

@@ -19,6 +19,7 @@ namespace Drill4Net.Agent.Worker
 
         public bool IsStarted { get; private set; }
 
+        private bool _isAgentInitStarted;
         private bool _isAgentInitialized;
         private readonly TargetedReceiverRepository _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
@@ -32,7 +33,7 @@ namespace Drill4Net.Agent.Worker
         /********************************************************************************************/
 
         public AgentWorker(TargetedReceiverRepository rep, ITargetInfoReceiver targetReceiver,
-            IProbeReceiver probeReceiver, ICommandReceiver cmdReceiver)
+            IProbeReceiver probeReceiver, ICommandReceiver cmdReceiver, ICommandSender cmdSender)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
 
@@ -45,6 +46,8 @@ namespace Drill4Net.Agent.Worker
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
             _cmdReceiver = cmdReceiver ?? throw new ArgumentNullException(nameof(cmdReceiver));
 
+            _cmdSender = cmdSender ?? throw new ArgumentNullException(nameof(cmdSender));
+
             _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
             _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
 
@@ -55,7 +58,7 @@ namespace Drill4Net.Agent.Worker
             _cmdReceiver.ErrorOccured += Receiver_ErrorOccured;
 
             _cmdToTransTopics = GetCommandToTransmitterTopics();
-            _logger.Debug($"Command topics: {string.Join(",", _cmdToTransTopics)}");
+            _logger.Debug($"Topics for commands to Transmitter: {string.Join(",", _cmdToTransTopics)}");
 
             _logger.Debug($"{nameof(AgentWorker)} is created");
         }
@@ -96,7 +99,7 @@ namespace Drill4Net.Agent.Worker
         {
             _logger.Info(command.ToString());
 
-            if (!_isAgentInitialized)
+            if (!_isAgentInitStarted)
             {
                 _logger.Warning($"Command [{command.Type}] is received, but the Agent is not initialized");
                 return;
@@ -113,7 +116,6 @@ namespace Drill4Net.Agent.Worker
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
-            CreateCommandSender(target.TargetName);
             InitAgent(target);
 
             _logger.Info($"{nameof(AgentWorker)} starts receiving the commands...");
@@ -123,26 +125,20 @@ namespace Drill4Net.Agent.Worker
             _probeReceiver.Start();
         }
 
-        private void CreateCommandSender(string targetName)
-        {
-            IMessagerRepository targRep = new TargetedSenderRepository(_rep.Subsystem, _rep.TargetSession, targetName, _rep.ConfigPath); //need read own config
-            targRep.MessagerOptions.Receiver.Topics.Add(MessagingUtils.GetCommandToTransmitterTopic(_rep.TargetSession));
-            _cmdSender = new CommandKafkaSender(targRep);
-        }
-
         private void InitAgent(TargetInfo target)
         {
-            if (_isAgentInitialized)
+            if (_isAgentInitStarted)
                 return;
             StandardAgentCCtorParameters.SkipCctor = true;
             StandardAgent.Init(target.Options, target.Solution, AgentInitialized);
-            _isAgentInitialized = true;
-            _logger.Debug($"{nameof(StandardAgent)} is initialized");
+            _isAgentInitStarted = true;
+            _logger.Debug($"{nameof(StandardAgent)} is primarly initialized");
         }
 
         private void AgentInitialized()
         {
-            _logger.Info("Agent is initialized: sending the command to Transmitter to continue executing");
+            _isAgentInitialized = true;
+            _logger.Info("Sending the command to Transmitter to continue executing");
 
             //Send message "Can start to execute the probes" to the Target
             _cmdSender.SendCommand((int)AgentCommandType.TRANSMITTER_CAN_CONTINUE, null, _cmdToTransTopics);

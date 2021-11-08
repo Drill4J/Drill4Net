@@ -3,35 +3,41 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
-    public class TargetedReceiverRepository : MessageReceiverRepository<MessagerOptions>
+    public class TargetedReceiverRepository : MessageReceiverRepository<MessagerOptions>, ITargetedRepository
     {
         public Guid TargetSession { get; private set; }
+        public string TargetName { get; private set; }
         public string ConfigPath { get; private set; }
 
         /***************************************************************************************************/
 
-        public TargetedReceiverRepository(): base(null) { }
+        public TargetedReceiverRepository() : base(null) { }
 
-        public TargetedReceiverRepository(string subsystem, string targetSession, string cfgPath = null): base(subsystem, cfgPath)
+        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, string cfgPath = null) :
+            base(subsystem, cfgPath)
         {
-            Init(targetSession, cfgPath);
+            Init(targetSession, targetName, cfgPath);
         }
 
-        public TargetedReceiverRepository(string subsystem, string targetSession, MessagerOptions opts, string cfgPath = null) : base(subsystem, opts)
+        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, MessagerOptions opts, string cfgPath = null) :
+            base(subsystem, opts)
         {
-            Init(targetSession, cfgPath);
+            Init(targetSession, targetName, cfgPath);
         }
 
         /***************************************************************************************************/
 
-        private void Init(string targetSession, string configPath)
+        private void Init(string targetSession, string targetName, string configPath)
         {
             TargetSession = Guid.Parse(targetSession);
+            TargetName = targetName ?? throw new ArgumentNullException(nameof(targetName));
             ConfigPath = configPath;
+            //
             if (Options.Receiver == null)
                 throw new Exception("No receiver section in config");
             if (Options.Receiver.Topics == null)
                 Options.Receiver.Topics = new();
+            //
             PrepareLogger();
         }
 

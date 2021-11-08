@@ -263,6 +263,7 @@ namespace Drill4Net.Agent.Standard
                 CoverageSender.SendInitializedMessage();
 
                 //4. Send message "Can start to execute the probes" to the Target from Worker
+                _logger.Info("Agent is fully initialized");
                 RaiseInitilizedEvent();
             }
             catch (Exception ex)

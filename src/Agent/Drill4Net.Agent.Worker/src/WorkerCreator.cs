@@ -5,6 +5,7 @@ using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
+using Drill4Net.Agent.Messaging.Kafka;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -33,8 +34,11 @@ namespace Drill4Net.Agent.Worker
             IProbeReceiver probeReceiver = new ProbeKafkaReceiver(rep);
             ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessagerOptions>(rep, false);
 
+            //senders
+            ICommandSender cmdSender = CreateCommandSender(rep);
+
             //worker
-            return new AgentWorker(rep, targetReceiver, probeReceiver, cmdReceiver);
+            return new AgentWorker(rep, targetReceiver, probeReceiver, cmdReceiver, cmdSender);
         }
 
         internal virtual TargetedReceiverRepository GetRepository()
@@ -42,6 +46,8 @@ namespace Drill4Net.Agent.Worker
             #region Get options
             var (cfgPath, opts) = GetBaseOptions(_args);
             var targetSession = GetTargetSession(_args);
+            var targetName = GetTargetName(_args);
+
             if (opts.Sender == null)
                 opts.Sender = new();
             if (opts.Sender.Topics == null)
@@ -57,7 +63,7 @@ namespace Drill4Net.Agent.Worker
             if (!string.IsNullOrWhiteSpace(targetTopic))
                 opts.Receiver.Topics.Add(targetTopic);
 
-            var cmdForWorkerTopic = MessagingUtils.GetCommandToWorkerTopic(targetSession); //get the commands to this Worker
+            var cmdForWorkerTopic = MessagingUtils.GetCommandToWorkerTopic(targetSession); //get the topic for the commands to this Worker
             if (!string.IsNullOrWhiteSpace(cmdForWorkerTopic))
                 opts.Receiver.Topics.Add(cmdForWorkerTopic);
 
@@ -66,16 +72,38 @@ namespace Drill4Net.Agent.Worker
                 opts.Receiver.Topics.Add(probeTopic);
 
             //Sender
-            var cmdForTransTopic = MessagingUtils.GetCommandToWorkerTopic(targetSession); //get the commands to this Worker
+            var cmdForTransTopic = MessagingUtils.GetCommandToTransmitterTopic(targetSession); //get the topic for the commands to the Transmitter
             if (!string.IsNullOrWhiteSpace(cmdForTransTopic))
                 opts.Sender.Topics.Add(cmdForTransTopic);
 
-            return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, opts, cfgPath);
+            return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, targetName, opts, cfgPath);
+        }
+
+        private ICommandSender CreateCommandSender(ITargetedRepository rep)
+        {
+            _logger.Debug("Creating command sender...");
+            IMessagerRepository targRep = new TargetedSenderRepository(rep.Subsystem, rep.TargetSession, rep.TargetName, rep.ConfigPath); //need read own config
+            if (targRep.MessagerOptions.Receiver == null)
+                throw new Exception("Receiver is empty");
+
+            var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
+            _logger.Debug($"Command sender topic is {topic}");
+            (targRep.MessagerOptions.Receiver.Topics ??= new()).Add(topic);
+
+            _logger.Debug("Command sender is created.");
+            Log.Flush();
+
+            return new CommandKafkaSender(targRep);
         }
 
         private string GetTargetSession(string[] args)
         {
             return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
+        }
+
+        private string GetTargetName(string[] args)
+        {
+            return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_NAME);
         }
 
         internal virtual (string cfgPath, MessagerOptions opts) GetBaseOptions(string[] args)

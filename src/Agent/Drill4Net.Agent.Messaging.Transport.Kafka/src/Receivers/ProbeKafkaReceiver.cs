@@ -69,6 +69,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                                 var probe = cr.Message.Value;
                                 ProbeReceived?.Invoke(probe);
                             }
+                            //Unknown topic (is not create by Server yet)
+                            catch (ConsumeException e) when (e.HResult == -2146233088) { }
                             catch (ConsumeException e)
                             {
                                 var err = e.Error;
