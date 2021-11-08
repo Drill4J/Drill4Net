@@ -164,15 +164,12 @@ namespace Drill4Net.Agent.Transmitter
         private static void StartCommandReceiver(TransmitterRepository rep)
         {
             _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
-            Log.Flush();
 
             var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(), rep.ConfigPath);
             _logger.Trace("Command receiver created");
-            Log.Flush();
 
             var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
             _logger.Trace($"Dynamic command topic: [{topic}]");
-            Log.Flush();
             targRep.AddTopic(topic); //get commands for this Transmitter
             _cmdReceiverTopics = Transmitter.Repository.GetReceiverCommandTopics();
             _logger.Debug($"Command topics: [{string.Join(",", _cmdReceiverTopics)}]");

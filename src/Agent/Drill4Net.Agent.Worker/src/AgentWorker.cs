@@ -6,7 +6,6 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
-using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Worker
@@ -19,8 +18,9 @@ namespace Drill4Net.Agent.Worker
 
         public bool IsStarted { get; private set; }
 
+        public bool IsAgentInitialized { get; private set; }
+
         private bool _isAgentInitStarted;
-        private bool _isAgentInitialized;
         private readonly TargetedReceiverRepository _rep;
         private readonly ITargetInfoReceiver _targetReceiver;
         private readonly IProbeReceiver _probeReceiver;
@@ -137,7 +137,7 @@ namespace Drill4Net.Agent.Worker
 
         private void AgentInitialized()
         {
-            _isAgentInitialized = true;
+            IsAgentInitialized = true;
             _logger.Info("Sending the command to Transmitter to continue executing");
 
             //Send message "Can start to execute the probes" to the Target

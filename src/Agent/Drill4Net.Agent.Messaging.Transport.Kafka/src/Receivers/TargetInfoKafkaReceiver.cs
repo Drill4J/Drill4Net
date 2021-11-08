@@ -62,7 +62,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             var topics = MessagingUtils.FilterTargetTopics(opts.Receiver?.Topics, _isServer);
             _logger.Debug($"Target info topics: {string.Join(",", topics)}");
 
-            while (true)
+            while (true) //??
             {
                 try
                 {

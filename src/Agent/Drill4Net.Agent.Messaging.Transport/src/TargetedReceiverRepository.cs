@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
-    public class TargetedReceiverRepository : MessageReceiverRepository<MessagerOptions>, ITargetedRepository
+    public class TargetedReceiverRepository : MessagingRepository<MessagerOptions>, ITargetedRepository
     {
         public Guid TargetSession { get; private set; }
         public string TargetName { get; private set; }
@@ -13,13 +13,13 @@ namespace Drill4Net.Agent.Messaging.Transport
 
         public TargetedReceiverRepository() : base(null) { }
 
-        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, string cfgPath = null) :
+        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, string cfgPath = null):
             base(subsystem, cfgPath)
         {
             Init(targetSession, targetName, cfgPath);
         }
 
-        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, MessagerOptions opts, string cfgPath = null) :
+        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, MessagerOptions opts, string cfgPath = null):
             base(subsystem, opts)
         {
             Init(targetSession, targetName, cfgPath);
