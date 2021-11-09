@@ -237,16 +237,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Frameworks
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Docker", "!!_Docker", "{8D22F77E-8C1E-4AA0-B0B3-86FE0B51A178}"
 	ProjectSection(SolutionItems) = preProject
-		C:\Users\Ivan_Bezrodnyi\Downloads\docker-compose.yml = C:\Users\Ivan_Bezrodnyi\Downloads\docker-compose.yml
+		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflow", "Workflow", "{3D3544E8-2D7D-4EE1-BA6E-43FCFDCB19C0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Probes", "Probes", "{68682248-869A-474C-9B57-11E8B12CBEE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Transmitter.xUnit", "src\Agent\Drill4Net.Agent.Transmitter.xUnit\Drill4Net.Agent.Transmitter.xUnit.csproj", "{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.xUnit", "src\Agent\Drill4Net.Agent.Transmitter.xUnit\Drill4Net.Agent.Transmitter.xUnit.csproj", "{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Agent.Transmitter.NUnit", "src\Agent\Drill4Net.Agent.Transmitter.NUnit\Drill4Net.Agent.Transmitter.NUnit.csproj", "{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.NUnit", "src\Agent\Drill4Net.Agent.Transmitter.NUnit\Drill4Net.Agent.Transmitter.NUnit.csproj", "{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
