@@ -19,6 +19,7 @@ Source: # what and how processing
         Folders:
           - "*" # "*" means "all"
         Files:
+          - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
           - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
 Destination: # where copying injected assemblies
     Directory: # or full directory...
@@ -44,9 +45,10 @@ Probes: # types of cross-cutting points
     EventRemove: false
     SkipEnterType: true
     SkipIfElseType: true
-Plugins:
+Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
        Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
+       Config: plug_IHS_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs: # for Injector
     - Type: console
       Level: debug

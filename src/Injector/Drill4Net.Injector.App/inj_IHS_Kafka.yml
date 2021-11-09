@@ -17,24 +17,24 @@ Source: # what and how processing
         Folders:
           - "*" # "*" means "all"
         Files:
-          #- Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
+          - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
           - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
 Proxy: # the injecting for transfer data to profiler
-  Class: ProfilerProxy
-  Method: Register
-  Static: true
+    Class: ProfilerProxy
+    Method: Register
+    Static: true
 Profiler: # data collector/processor in separate assembly
-  Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\
-  #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
-  AssemblyName: Drill4Net.Agent.Transmitter.dll
-  Namespace: Drill4Net.Agent.Transmitter
-  Class: DataTransmitter
-  Method: Transmit
-  Static: true
+    Name: Standard agent # name exactly for agent subsystem
+    Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\
+    #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
+    AssemblyName: Drill4Net.Agent.Transmitter.dll
+    Namespace: Drill4Net.Agent.Transmitter
+    Class: DataTransmitter
+    Method: Transmit
+    Static: true
 Probes: # types of cross-cutting points
     Ctor: true
     Private: true
@@ -44,9 +44,10 @@ Probes: # types of cross-cutting points
     EventRemove: false
     SkipEnterType: true
     SkipIfElseType: true
-Plugins:
+Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
        Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
+       Config: plug_IHS_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs: # for Injector
     - Type: console
       Level: debug

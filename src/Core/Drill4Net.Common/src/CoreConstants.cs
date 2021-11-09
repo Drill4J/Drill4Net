@@ -7,6 +7,7 @@
     {
         #region Subsystems
         public const string SUBSYSTEM_INJECTOR = "Injector";
+        public const string SUBSYSTEM_INJECTOR_PLUGIN = "InjectorPlugin";
         public const string SUBSYSTEM_TESTER = "Tester";
         public const string SUBSYSTEM_TEST_SERVER = "TestServer";
         public const string SUBSYSTEM_AGENT_TEST_RUNNER = "AgentTestRunner";

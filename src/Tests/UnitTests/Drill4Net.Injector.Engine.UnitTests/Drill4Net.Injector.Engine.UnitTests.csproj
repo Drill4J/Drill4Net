@@ -36,4 +36,8 @@
     <ProjectReference Include="..\Drill4Net.TestDataHelper\Drill4Net.TestDataHelper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="src\TestData\" />
+  </ItemGroup>
+
 </Project>

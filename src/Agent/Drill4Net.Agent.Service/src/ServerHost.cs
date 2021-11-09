@@ -56,7 +56,7 @@ namespace Drill4Net.Agent.Service
         {
             try
             {
-                ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<AgentServerOptions>(_rep);
+                ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<AgentServerOptions>(_rep, true);
                 IPingReceiver pingReceiver = new PingKafkaReceiver<AgentServerOptions>(_rep);
                 using var server = new AgentServer(_rep, targetReceiver, pingReceiver);
                 server.ErrorOccured += Server_ErrorOccured;

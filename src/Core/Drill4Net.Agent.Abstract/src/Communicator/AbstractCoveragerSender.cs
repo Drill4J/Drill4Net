@@ -126,7 +126,6 @@ namespace Drill4Net.Agent.Abstract
         }
         #endregion
         #region Test2Run
-
         //https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
         //https://github.com/Drill4J/js-auto-test-agent/blob/master/src/admin-connect/index.ts
         //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
@@ -134,7 +133,7 @@ namespace Drill4Net.Agent.Abstract
         #region Session (managed on Agent side)
         public virtual void SendStartSessionCommand(string sessionId)
         {
-            ClearSessionData();
+            ClearAutoSessionData();
             StartSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME,
                 sessionId,
                 isRealtime: true, //?
@@ -145,10 +144,10 @@ namespace Drill4Net.Agent.Abstract
         public virtual void SendStopSessionCommand(string sessionUid)
         {
             StopSessionConcrete(AgentConstants.ADMIN_PLUGIN_NAME, sessionUid);
-            ClearSessionData();
+            ClearAutoSessionData();
         }
 
-        private void ClearSessionData()
+        private void ClearAutoSessionData()
         {
             _startTestTime = 0;
             _test2RunSessionId = null;

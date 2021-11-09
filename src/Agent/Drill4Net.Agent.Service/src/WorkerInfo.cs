@@ -9,17 +9,19 @@ namespace Drill4Net.Agent.Service
         public int PID { get; }
         public string TargetInfoTopic { get; }
         public string ProbeTopic { get; }
-        public string CommandTopic { get; }
+        public string CommandToWorkerTopic { get; }
+        public string CommandToTransmitterTopic { get; }
 
         /*************************************************************************************/
 
-        public WorkerInfo(TargetInfo targtInfotarget, string targetTopic, string probeTopic,
-            string cmdTopic, int pID)
+        public WorkerInfo(TargetInfo targetInfotarget, int pID, string targetTopic,
+            string probeTopic, string cmdToWorkerTopic, string cmdToTransTopic)
         {
-            Target = targtInfotarget ?? throw new ArgumentNullException(nameof(targtInfotarget));
+            Target = targetInfotarget ?? throw new ArgumentNullException(nameof(targetInfotarget));
             TargetInfoTopic = targetTopic ?? throw new ArgumentNullException(nameof(targetTopic));
             ProbeTopic = probeTopic ?? throw new ArgumentNullException(nameof(probeTopic));
-            CommandTopic = cmdTopic ?? throw new ArgumentNullException(nameof(cmdTopic));
+            CommandToWorkerTopic = cmdToWorkerTopic ?? throw new ArgumentNullException(nameof(cmdToWorkerTopic));
+            CommandToTransmitterTopic = cmdToTransTopic ?? throw new ArgumentNullException(nameof(cmdToTransTopic));
             PID = pID;
         }
     }

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<LangVersion>latest</LangVersion>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+  </ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DocumentationFile>..\..\..\doc\xml\Drill4Net.Agent.Transmitter.NUnit\Drill4Net.Agent.Transmitter.NUnit.xml</DocumentationFile>
+		<OutputPath>..\..\..\build\bin\Debug\Drill4Net.Agent.Transmitter.NUnit</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Transmitter.NUnit</OutputPath>
+	</PropertyGroup>
+
+</Project>

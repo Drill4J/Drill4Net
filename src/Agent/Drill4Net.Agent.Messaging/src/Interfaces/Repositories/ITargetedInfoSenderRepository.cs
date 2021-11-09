@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Messaging
 {
-    public interface ITargetSenderRepository : IMessageSenderRepository
+    public interface ITargetedInfoSenderRepository : IMessagerRepository
     {
         byte[] GetTargetInfo();
     }

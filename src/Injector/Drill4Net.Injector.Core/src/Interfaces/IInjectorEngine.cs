@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Injector.Core
@@ -11,6 +12,8 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public interface IInjectorEngine
     {
+        List<IInjectorPlugin> Plugins { get; }
+
         /// <summary>
         /// Inject the target accordingly by the current config from repository
         /// </summary>

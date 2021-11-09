@@ -41,7 +41,7 @@ Probes: # types of cross-cutting points
    EventRemove: false
    SkipEnterType: true
    SkipIfElseType: true
-Plugins:
+Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
        Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
 Logs:

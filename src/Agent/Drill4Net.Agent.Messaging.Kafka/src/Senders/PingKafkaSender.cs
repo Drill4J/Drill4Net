@@ -9,7 +9,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         /*************************************************************************/
 
-        public PingKafkaSender(IMessageSenderRepository rep): base(rep)
+        public PingKafkaSender(IMessagerRepository rep): base(rep)
         {
         }
 

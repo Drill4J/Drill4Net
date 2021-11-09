@@ -34,7 +34,7 @@ namespace Drill4Net.Injector.Core
         /// <exception cref="FileNotFoundException">$"File not exists: [{filePath}]</exception>
         public AssemblyContext ReadAssembly(RunContext runCtx)
         {
-            var filePath = runCtx.SourceFile;
+            var filePath = runCtx.CurrentSourceFile;
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not exists: [{filePath}]");
 

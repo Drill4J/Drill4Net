@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.Agent.Transport
 {
-    //https://drill4j.jfrog.io/ui/native/drill/com/epam/drill/dotnet/agent_connector-mingwX64-release/0.5.2
+    //https://drill4j.jfrog.io/ui/repos/tree/General/drill%2Fcom%2Fepam%2Fdrill%2Fdotnet%2Fagent_connector-mingwX64-debug%2F0.5.3
 
     //Delegates are marshalled directly. The only thing you need to take care of is the “calling convention”.
     //The default calling convention is WinApi (which equals to StdCall on Windows).

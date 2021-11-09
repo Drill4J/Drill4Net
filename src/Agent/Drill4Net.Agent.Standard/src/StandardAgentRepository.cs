@@ -1,35 +1,18 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
-using Drill4Net.Agent.Standard.Utils;
 using Drill4Net.Agent.Abstract.Transfer;
-
-// automatic version tagger including Git info - https://github.com/devlooped/GitInfo
-// semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
-// the most common format is v0.0 (or just 0.0 is enough)
-// to change semVer it is nesseccary to create appropriate tag and push it to remote repository
-// patches'(commits) count starts with 0 again after new tag pushing
-// For file version format exactly is digit
-[assembly: AssemblyFileVersion(
-    ThisAssembly.Git.SemVer.Major + "." +
-    ThisAssembly.Git.SemVer.Minor + "." +
-    ThisAssembly.Git.SemVer.Patch)]
-
-[assembly: AssemblyInformationalVersion(
-  ThisAssembly.Git.SemVer.Major + "." +
-  ThisAssembly.Git.SemVer.Minor + "." +
-  ThisAssembly.Git.SemVer.Patch + "-" +
-  ThisAssembly.Git.Branch + "+" +
-  ThisAssembly.Git.Commit)]
+using Drill4Net.BanderLog.Sinks.File;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -49,6 +32,7 @@ namespace Drill4Net.Agent.Standard
         private ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
         private ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
+        private static ContextDispatcher _ctxDisp;
         private CoverageRegistrator _globalRegistrator;
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
@@ -64,7 +48,7 @@ namespace Drill4Net.Agent.Standard
         /// Create repository for Standard Agent by options specified by the file path
         /// </summary>
         /// <param name="cfgPath"></param>
-        public StandardAgentRepository(string cfgPath = null) : base(cfgPath)
+        public StandardAgentRepository(string cfgPath = null): base(cfgPath)
         {
             Init(null);
         }
@@ -88,6 +72,8 @@ namespace Drill4Net.Agent.Standard
         {
             _logger = new TypedLogger<StandardAgentRepository>(CoreConstants.SUBSYSTEM_AGENT);
             _logger.Debug("Creating...");
+
+            _ctxDisp = new ContextDispatcher(Options.PluginDir, CoreConstants.SUBSYSTEM_AGENT);
 
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();
@@ -131,15 +117,58 @@ namespace Drill4Net.Agent.Standard
                 targVersion = GetExecutingAssemblyVersion(); //Guanito: a little inproperly (in Worker we get its version)
 
             // aux connector parameters
-            var connLogParams = new ConnectorLogHelper();
-            (var logFile, LogLevel logLevel) = connLogParams.GetConnectorLogParameters(connOpts, _logger);
-            _logger.Debug($"Connector's logging: [{logLevel}] to [{logFile}]");
+            (var logFile, Microsoft.Extensions.Logging.LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
 
             return new AdminAgentConfig(targOpts.Name, targVersion, GetAgentVersion())
             {
                 ConnectorLogFilePath = logFile,
                 ConnectorLogLevel = logLevel
             };
+        }
+
+        internal (string logFile, Microsoft.Extensions.Logging.LogLevel logLevel) GetConnectorLogParameters(ConnectorAuxOptions connOpts, Logger logger)
+        {
+            var logDir = connOpts?.LogDir;
+            var logFile = connOpts?.LogFile;
+            var logLevel = Microsoft.Extensions.Logging.LogLevel.Debug; //TODO: get real level from ...somewhere
+
+            //Guanito: just first file sink is bad idea...
+            //the last because the firast may be just emergency logger
+            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink; 
+
+            //dir
+            if (string.IsNullOrWhiteSpace(logDir))
+            {
+                if (fileSink == null)
+                {
+                    logDir = FileUtils.GetEntryDir();
+                }
+                else
+                {
+                    logDir = Path.GetDirectoryName(fileSink.Filepath);
+                }
+            }
+            else
+            {
+                logDir = FileUtils.GetFullPath(logDir);
+            }
+
+            //file path
+            if (string.IsNullOrWhiteSpace(logFile)) //no file path
+                logFile = AgentConstants.CONNECTOR_LOG_FILE_NAME;
+
+            //is it file path?
+            if (FileUtils.IsPossibleFilePath(logFile))
+            {
+                logFile = FileUtils.GetFullPath(logFile); //maybe it is relative path
+            }
+            else //it is just file name
+            {
+                logFile = Path.Combine(logDir, logFile);
+            }
+            _logger.Debug($"Connector's logging: [{logLevel}] to [{logFile}]");
+
+            return (logFile, logLevel);
         }
 
         internal string GetAgentVersion()
@@ -243,23 +272,28 @@ namespace Drill4Net.Agent.Standard
             }
 
             //...all another types of sessions must be reinitialized
-            RecreateSessionData(info);
+            RecreateSessionData(info, null);
         }
 
         /// <summary>
         /// Recreate the session
         /// </summary>
         /// <param name="info"></param>
-        public void RecreateSessionData(StartSessionPayload info)
+        public void RecreateSessionData(StartSessionPayload info, string context)
         {
-            RemoveSession(info.SessionId);
-            AddSession(info);
+            RemoveSessionData(info.SessionId);
+            AddSessionData(info, context);
             StartSendCycle();
         }
 
-        internal void AddSession(StartSessionPayload session)
+        internal void AddSessionData(StartSessionPayload session, string context)
         {
-            var ctxId = Contexter.GetContextId(); //GUANO: it's WRONG!!! HOW DO I GET THE REAL CONTEXT FROM A TARGET?!!
+            string ctxId = null;
+            if (session.TestType == AgentConstants.TEST_MANUAL)
+                ctxId = session.TestName;
+            if(string.IsNullOrWhiteSpace(ctxId))
+                ctxId = context ?? _ctxDisp.GetContextId();
+
             if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
 
@@ -269,7 +303,7 @@ namespace Drill4Net.Agent.Standard
             _sessionToCtx.TryAdd(sessionUid, ctxId);
 
             if (session.IsGlobal)
-                _globalRegistrator = CreateCoverageRegistrator(session);
+               _globalRegistrator = CreateCoverageRegistrator(ctxId, session);
         }
         #endregion
         #region Stop
@@ -295,7 +329,7 @@ namespace Drill4Net.Agent.Standard
             SendCoverages();
 
             //removing session/data
-            RemoveSession(uid);
+            RemoveSessionData(uid);
             StopSendCycleIfNeeded();
         }
         #endregion
@@ -306,7 +340,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="info"></param>
         public void SessionCancelled(CancelAgentSession info)
         {
-            RemoveSession(info.Payload.SessionId);
+            RemoveSessionData(info.Payload.SessionId);
         }
 
         /// <summary>
@@ -322,7 +356,7 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        internal void RemoveSession(string sessionUid)
+        internal void RemoveSessionData(string sessionUid)
         {
             if (!_sessionToCtx.TryRemove(sessionUid, out var ctxId))
                 return;
@@ -348,7 +382,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="pointUid"></param>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public bool RegisterCoverage(string pointUid, string ctx = null)
+        public bool RegisterCoverage(string pointUid, string ctx)
         {
             //global session
             var isGlobalReg = false;
@@ -455,13 +489,10 @@ namespace Drill4Net.Agent.Standard
         /// for local type of session (user's MANUAL or autotest's AUTO)
         /// </summary>
         /// <returns></returns>
-        public CoverageRegistrator GetOrCreateLocalRegistrator(string ctx = null)
+        public CoverageRegistrator GetOrCreateLocalRegistrator(string ctx)
         {
-            //This defines the logical execution path of function callers regardless
-            //of whether threads are created in async/await or Parallel.For
-            //if(string.IsNullOrWhiteSpace(ctx))
-                ctx = Contexter.GetContextId(); //GUANO: IT IS WRONG (especially for distributed architecture) !!!!
-            //Debug.WriteLine($"Profiler: id={ctxId}, trId={Thread.CurrentThread.ManagedThreadId}");
+            if (string.IsNullOrWhiteSpace(ctx))
+                ctx = GetContextId(); //it is only for local Agent injected directly in Target's sys process
 
             CoverageRegistrator reg;
             if (_ctxToRegistrator.ContainsKey(ctx))
@@ -476,7 +507,7 @@ namespace Drill4Net.Agent.Standard
                 var session = TryGetLocalSession();
                 if (session == null)
                     return null;
-                reg = CreateCoverageRegistrator(session);
+                reg = CreateCoverageRegistrator(ctx, session);
                 _ctxToRegistrator.TryAdd(ctx, reg);
             }
             return reg;
@@ -512,10 +543,41 @@ namespace Drill4Net.Agent.Standard
                                     (_globalRegistrator == null || _globalRegistrator.Session != a));
         }
 
-        internal CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session)
+        internal CoverageRegistrator CreateCoverageRegistrator(string context, StartSessionPayload session)
         {
-            return _converter.CreateCoverageRegistrator(session, _injTypes);
+            var reg = _converter.CreateCoverageRegistrator(context, session, _injTypes);
+            _logger.Debug($"{nameof(CoverageRegistrator)} is created: {reg}");
+            return reg;
         }
         #endregion
+
+        /// <summary>
+        /// Deserialize <see cref="TestCaseContext"/> from JSON string
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public TestCaseContext GetTestCaseContext(string str)
+        {
+            return JsonConvert.DeserializeObject<TestCaseContext>(str);
+        }
+
+        /// <summary>
+        /// Register specified command
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        public void RegisterCommand(int command, string data)
+        {
+            _ctxDisp.RegisterCommand(command, data);
+        }
+
+        /// <summary>
+        /// Get context only for local Agent injected directly in Target's sys process
+        /// </summary>
+        /// <returns></returns>
+        internal string GetContextId()
+        {
+            return _ctxDisp.GetContextId();
+        }
     }
 }

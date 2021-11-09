@@ -34,18 +34,20 @@ namespace Drill4Net.Agent.Transmitter.Debug
             //what is loaded into the Target process and used by the Proxy class
             var trans = DataTransmitter.Transmitter;
             var sender = trans.ProbeSender;
+
             const string ctx = "DBG";
+            WriteMessage($"\nContext: {ctx}");
 
             while (true)
             {
-                WriteMessage("\nInput:");
+                WriteMessage("\nInput probe Uid:");
                 var input = Console.ReadLine()?.Trim();
                 if (input == "q" || input == "Q")
                     break;
 
                 if (string.IsNullOrWhiteSpace(input))
                     input = Guid.NewGuid().ToString();
-                WriteMessage($"Data: {input}", COLOR_DATA);
+                WriteMessage($"Uid: {input}", COLOR_DATA);
 
                 var res = trans.SendProbe(input, ctx); //TODO: return normal Status object
 

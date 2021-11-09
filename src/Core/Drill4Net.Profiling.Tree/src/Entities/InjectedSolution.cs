@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Drill4Net.Profiling.Tree
 {
@@ -13,6 +13,7 @@ namespace Drill4Net.Profiling.Tree
     {
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+        public string SourceDir => Path;
         public string Description { get; set; }
 
         /************************************************************************/
@@ -23,10 +24,10 @@ namespace Drill4Net.Profiling.Tree
         {
         }
 
-        public InjectedSolution(string name, string path) : base(path, path)
+        public InjectedSolution(string name, string sourceDir) : base(sourceDir, sourceDir)
         {
             Name = name;
-            Path = path;
+            Path = sourceDir;
         }
 
         /************************************************************************/

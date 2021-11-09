@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Core.UnitTests
 {
     internal class FilterOptionsNullTestData
     {
-        const string DIR = @"C:\bin\Debug\Test.File";
-        const string FOLDER= "Test";
-        const string FILE = "Test.File.cs";
-        const string NS = "Drill4Net.Common.Utils";
-        const string CLASS = "CommonUtils";
-        const string ATTRIBUTE = "CustomAttribute";
+        private const string DIR = @"C:\bin\Debug\Test.File";
+        private const string FOLDER= "Test";
+        private const string FILE = "Test.File.cs";
+        private const string NS = "Drill4Net.Common.Utils";
+        private const string CLASS = "CommonUtils";
+        private const string ATTRIBUTE = "CustomAttribute";
 
         /***************************************************************************/
 

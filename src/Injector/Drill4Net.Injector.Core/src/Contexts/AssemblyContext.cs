@@ -103,7 +103,9 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// The Key of the assembly
         /// </summary>
-        public string Key => $"{Definition?.FullName}${Version}";
+        public string NameKey => $"{DestinationDir}${Definition?.FullName}${Version}";
+
+        public string DestinationKey => $"{DestinationDir}{Path.DirectorySeparatorChar}{Module?.Name}";
 
         private bool _disposedValue;
 

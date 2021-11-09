@@ -5,7 +5,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 
-/* 
+/* About MS standard serializer
  * DO NOT USE $MS standard serializer from System.Text.Json 
  * because it will fail to resolve in some cases (project is NetStandard 2.0 now)
  */
@@ -118,6 +118,7 @@ namespace Drill4Net.Agent.Transport
                     case AgentConstants.TOPIC_PLUGIN_ACTION:
                         message = message.Substring(message.IndexOf('{')); //crunch: bug in messages on admin side
                         var baseInfo = Deserialize<IncomingMessage>(message);
+                        _logger.Debug($"Plugin action type: {baseInfo.type}");
                         switch (baseInfo.type)
                         {
                             case AgentConstants.MESSAGE_IN_INIT_ACTIVE_SCOPE:
@@ -132,17 +133,17 @@ namespace Drill4Net.Agent.Transport
                                 var stopInfo = Deserialize<StopAgentSession>(message);
                                 StopSession?.Invoke(stopInfo);
                                 break;
-                            case AgentConstants.MESSAGE_IN_STOP_ALL: //in fact
+                            case AgentConstants.MESSAGE_IN_STOP_ALL:
                                 StopAllSessions?.Invoke();
                                 break;
                             case AgentConstants.MESSAGE_IN_CANCEL_SESSION:
                                 var cancelInfo = Deserialize<CancelAgentSession>(message);
                                 CancelSession?.Invoke(cancelInfo);
                                 break;
-                            case AgentConstants.MESSAGE_IN_CANCEL_ALL: //in fact
+                            case AgentConstants.MESSAGE_IN_CANCEL_ALL:
                                 CancelAllSessions?.Invoke();
                                 break;
-                            case AgentConstants.MESSAGE_IN_ADD_SESSION_TESTS: //in fact
+                            case AgentConstants.MESSAGE_IN_ADD_SESSION_TESTS: //as ack
                                 break;
                             default:
                                 _logger.Error($"Unknown message type for {nameof(AgentConstants.TOPIC_PLUGIN_ACTION)}: [{baseInfo.type}]\nMessage:\n{message}");
@@ -156,7 +157,7 @@ namespace Drill4Net.Agent.Transport
             }
             catch (Exception e)
             {
-                _logger.Error("Message receive error", e);
+                _logger.Error("Message receiving error", e);
             }
         }
 

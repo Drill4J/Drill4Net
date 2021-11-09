@@ -3,9 +3,34 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using Mono.Cecil;
+using Drill4Net.Common;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.Core
 {
+    public abstract class AbstractCodeInjector<TOptions> : AbstractCodeInjector
+        where TOptions : AbstractOptions
+    {
+        public TOptions Options { get; set; }
+
+        /*****************************************************************************************/
+
+        protected string GetInnerConfigFullPath(string pathFromInjectorConfig)
+        {
+            if (string.IsNullOrWhiteSpace(pathFromInjectorConfig))
+                return string.Empty;
+            if (FileUtils.IsPossibleFilePath(pathFromInjectorConfig))
+                return FileUtils.GetFullPath(pathFromInjectorConfig); //maybe it is relative path (will be used the Injector root)
+            // it is just config name
+            const string ext = ".yml";
+            if (!pathFromInjectorConfig.EndsWith(ext))
+                pathFromInjectorConfig += ext;
+            return Path.Combine(FileUtils.EntryDir, pathFromInjectorConfig);
+        }
+    }
+
+    /*********************************************************************************************************/
+
     public abstract class AbstractCodeInjector : IDisposable
     {
         public const string METHOD_COMMAND_NAME = "DoCommand";

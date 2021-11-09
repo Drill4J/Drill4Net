@@ -10,6 +10,11 @@ namespace Drill4Net.Agent.Standard
     public class CoverageRegistrator
     {
         /// <summary>
+        /// Context of Target's probes
+        /// </summary>
+        public string Context { get; }
+
+        /// <summary>
         /// Gets or sets the test session on the Drill Admin side.
         /// </summary>
         /// <value>
@@ -62,9 +67,11 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Create manager of the coverage data for the user's or global session
         /// </summary>
+        /// <param name="context"></param>
         /// <param name="session"></param>
-        public CoverageRegistrator(StartSessionPayload session)
+        public CoverageRegistrator(string context, StartSessionPayload session)
         {
+            Context = context;
             Session = session; // ?? throw new .....
             PointToType = new ConcurrentDictionary<string, ExecClassData>();
             PointToRange = new ConcurrentDictionary<string, (int, int)>();
@@ -146,6 +153,15 @@ namespace Drill4Net.Agent.Standard
         {
             AffectedTypes.Clear();
             AffectedProbeCount = 0;
+        }
+
+        /// <summary>
+        /// String representation of object for the debug purposes
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"Context=[{Context}]; Session=[{Session?.SessionId}]; TestName=[{Session?.TestName}]; Type={Session? .TestType}";
         }
     }
 }

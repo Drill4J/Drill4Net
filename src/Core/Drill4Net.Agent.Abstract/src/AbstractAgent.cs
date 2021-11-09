@@ -5,10 +5,25 @@ using Drill4Net.Common;
 namespace Drill4Net.Agent.Abstract
 {
     /// <summary>
+    /// Handler for <see cref="AbstractAgent.Initialized"/>
+    /// </summary>
+    public delegate void AgentInitializedHandler();
+
+    /// <summary>
     /// Abstract Agent collecting probe data of the cross-point in instrumented Target
     /// </summary>
     public abstract class AbstractAgent
     {
+        /// <summary>
+        /// The Agent is initialized
+        /// </summary>
+        public event AgentInitializedHandler Initialized;
+
+        protected void RaiseInitilizedEvent()
+        {
+            Initialized?.Invoke();
+        }
+
         /// <summary>
         /// Register the cross-pont's probe data.
         /// </summary>

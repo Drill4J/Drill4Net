@@ -10,7 +10,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         /**************************************************************************/
 
-        public TargetInfoKafkaSender(ITargetSenderRepository rep): base(rep)
+        public TargetInfoKafkaSender(ITargetedInfoSenderRepository rep): base(rep)
         {
         }
 

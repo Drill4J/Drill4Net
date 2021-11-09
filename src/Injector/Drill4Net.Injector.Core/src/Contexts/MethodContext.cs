@@ -38,6 +38,11 @@ namespace Drill4Net.Injector.Core
         public List<Instruction> OrigInstructions { get; }
 
         /// <summary>
+        /// Last instruction of the method (potentially including first instrumented instruction for this block)
+        /// </summary>
+        public Instruction LastOperation { get; set; }
+
+        /// <summary>
         /// Exactly business instructions as hashset
         /// </summary>
         public HashSet<Instruction> BusinessInstructions { get; }
@@ -46,11 +51,6 @@ namespace Drill4Net.Injector.Core
         /// Exactly business instructions as list
         /// </summary>
         public List<Instruction> BusinessInstructionList { get; }
-
-        /// <summary>
-        /// Last instruction of the method (potentially including first instrumented instruction for this block)
-        /// </summary>
-        public Instruction LastOperation { get; set; }
 
         /// <summary>
         /// These instructions do not apply to the business code itself

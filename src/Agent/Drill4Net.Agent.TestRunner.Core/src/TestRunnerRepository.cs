@@ -17,7 +17,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /********************************************************************************/
 
-        public TestRunnerRepository(): base(string.Empty, CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER)
+        public TestRunnerRepository(): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, string.Empty)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
 

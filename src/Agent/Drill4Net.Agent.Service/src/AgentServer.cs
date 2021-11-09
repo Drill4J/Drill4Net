@@ -184,7 +184,7 @@ namespace Drill4Net.Agent.Service
                 CheckWorker(uid);
         }
 
-        private void CheckWorker(Guid uid)
+        internal virtual void CheckWorker(Guid uid)
         {
             var now = GetTime();
             if (!_pings.TryGetValue(uid, out StringDictionary data))
@@ -199,14 +199,15 @@ namespace Drill4Net.Agent.Service
             Task.Run(() => CloseWorker(uid));
             Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
             Task.Run(() => DeleteTopic(worker.ProbeTopic));
-            Task.Run(() => DeleteTopic(worker.CommandTopic));
+            Task.Run(() => DeleteTopic(worker.CommandToWorkerTopic));
+            Task.Run(() => DeleteTopic(worker.CommandToTransmitterTopic));
         }
 
         /// <summary>
         /// Closing already unnecessary workers, whose targets are no longer being worked out.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        internal void CloseWorker(Guid uid)
+        internal virtual void CloseWorker(Guid uid)
         {
             if (!_workers.TryRemove(uid, out WorkerInfo worker))
                 return;
@@ -221,7 +222,7 @@ namespace Drill4Net.Agent.Service
             catch { }
         }
 
-        internal void DeleteTopic(string topic)
+        internal virtual void DeleteTopic(string topic)
         {
             _admin.DeleteTopics(_rep.Options.Servers, new List<string> { topic });
         }
@@ -240,7 +241,7 @@ namespace Drill4Net.Agent.Service
         /// Runs the agent worker.
         /// </summary>
         /// <param name="target">The target info.</param>
-        internal void RunAgentWorker(TargetInfo target)
+        internal virtual void RunAgentWorker(TargetInfo target)
         {
             //Target session
             var sessionUid = target.SessionUid;
@@ -250,17 +251,18 @@ namespace Drill4Net.Agent.Service
             //topics
             string trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid);
             var probeTopic = MessagingUtils.GetProbeTopic(sessionUid);
-            var cmdTopic = MessagingUtils.GetCommandTopic(sessionUid);
+            var cmdToWorkerTopic = MessagingUtils.GetCommandToWorkerTopic(sessionUid);
+            var cmdToTransTopic = MessagingUtils.GetCommandToTransmitterTopic(sessionUid);
 
             int pid = -1;
             var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
             if (needStartWorker)
             {
-                pid = StartAgentWorkerProcess(target.SessionUid);
+                pid = StartAgentWorkerProcess(target.SessionUid, target.TargetName);
                 _logger.Info($"Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
 
                 //add local worker info
-                var worker = new WorkerInfo(target, trgTopic, probeTopic, cmdTopic, pid);
+                var worker = new WorkerInfo(target, pid, trgTopic, probeTopic, cmdToWorkerTopic, cmdToTransTopic);
                 if (!_workers.TryAdd(target.SessionUid, worker))
                     return;
             }
@@ -274,9 +276,9 @@ namespace Drill4Net.Agent.Service
             _logger.Debug($"Target info was sent to the topic={trgTopic} for the Worker with pid={pid}");
         }
 
-        internal int StartAgentWorkerProcess(Guid targetSession)
+        internal virtual int StartAgentWorkerProcess(Guid targetSession, string targetName)
         {
-            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession}";
+            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName}";
             _logger.Debug($"Agent Worker's argument: [{args}]");
 
             var process = new Process
@@ -294,14 +296,14 @@ namespace Drill4Net.Agent.Service
             return process.Id;
         }
 
-        internal void SendTargetInfoToAgentWorker(string topic, TargetInfo target)
+        internal virtual void SendTargetInfoToAgentWorker(string topic, TargetInfo target)
         {
             //send to worker the Target info by the exclusive topic     
-            var senderOpts = new MessageSenderOptions();
+            var senderOpts = new MessagerOptions() { Sender = new() };
             senderOpts.Servers.AddRange(_rep.Options.Servers); //for sending we use the same server options
-            senderOpts.Topics.Add(topic);
+            senderOpts.Sender.Topics.Add(topic);
 
-            ITargetSenderRepository trgRep = new TargetedSenderRepository(target, senderOpts);
+            ITargetedInfoSenderRepository trgRep = new TargetedInfoSenderRepository(target, senderOpts);
             using ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
             sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here is exclusive topic for the Worker
         }

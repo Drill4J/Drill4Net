@@ -4,9 +4,12 @@ Servers: # list of Kafka servers
    - 'localhost:9093'
    - 'localhost:9094'
    - 'localhost:9095'
-GroupId: dodnet-agent
-#Topics: # additional topics for the probes
-#    #- probes
+Sender:
+  Topics: # additional topics for the probes
+Receiver:
+  GroupId: dodnet-agent # group of consumers
+  #Topics: # additional topics for the probes
+  #    #- aaa
 WorkerPath: ..\..\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe
 #Debug:
 #    Disabled: false

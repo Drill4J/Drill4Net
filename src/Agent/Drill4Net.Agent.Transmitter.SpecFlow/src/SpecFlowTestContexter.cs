@@ -1,16 +1,16 @@
 ﻿using System.Linq;
+using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
-using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transmitter.SpecFlow
 {
     /// <summary>
-    /// Helper for SpecFlow part of the point data transmitter
+    /// Helper for SpecFlow for retrieving tests' workflow from the specific contexts
     /// </summary>
-    public static class ContextHelper
+    public static class SpecFlowTestContexter
     {
         private static readonly ConcurrentDictionary<string, long> _testCaseStartTimes = new();
 

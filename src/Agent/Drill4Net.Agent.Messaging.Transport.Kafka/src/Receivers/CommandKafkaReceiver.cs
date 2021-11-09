@@ -6,18 +6,18 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class CommandKafkaReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, ICommandReceiver
+    public class CommandKafkaReceiver : AbstractKafkaReceiver<MessagerOptions>, ICommandReceiver
     {
         public event CommandReceivedHandler CommandReceived;
 
-        public string TargetSession { get; }
+        public Guid TargetSession { get; }
 
         private readonly Logger _logger;
         private CancellationTokenSource _cts;
 
         /****************************************************************************************/
 
-        public CommandKafkaReceiver(AgentWorkerRepository rep) : base(rep)
+        public CommandKafkaReceiver(TargetedReceiverRepository rep) : base(rep)
         {
             _logger = new TypedLogger<CommandKafkaReceiver>(rep.Subsystem);
             TargetSession = rep.TargetSession;
@@ -48,9 +48,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             _logger.Info("Start retrieving commands...");
 
             _cts = new();
-            var opts = _rep.Options;
-            var topics = MessagingUtils.GetCommandTopic(TargetSession);
-            _logger.Debug($"Command topic: {topics}");
+            var cmdTopics = MessagingUtils.FilterCommandTopics(_rep.Options.Receiver?.Topics);
+            _logger.Debug($"Receiver command topics: [{string.Join(",", cmdTopics)}]");
 
             while (true)
             {
@@ -59,7 +58,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                     using var c = new ConsumerBuilder<Ignore, Command>(_cfg)
                         .SetValueDeserializer(new CommandDeserializer())
                         .Build();
-                    c.Subscribe(topics);
+                    c.Subscribe(cmdTopics);
 
                     try
                     {
@@ -72,6 +71,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                                 _logger.Debug($"Received command type: [{command?.Type}]");
                                 CommandReceived?.Invoke(command);
                             }
+                            //Unknown topic (is not create by Server yet)
+                            catch (ConsumeException e) when (e.HResult == -2146233088) { }
                             catch (ConsumeException e)
                             {
                                 var err = e.Error;

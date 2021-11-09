@@ -14,5 +14,7 @@ namespace Drill4Net.Agent.Abstract
 
         TEST_CASE_START = 4,
         TEST_CASE_STOP = 5,
+
+        TRANSMITTER_CAN_CONTINUE = 50,
     }
 }

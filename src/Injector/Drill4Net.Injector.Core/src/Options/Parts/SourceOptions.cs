@@ -1,4 +1,5 @@
 ﻿using System;
+using Drill4Net.Common;
 
 namespace Drill4Net.Injector.Core
 {
