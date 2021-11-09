@@ -90,6 +90,8 @@ namespace Drill4Net.Agent.Standard
                 _logger.Fatal("Creation is failed");
                 throw new Exception($"{_logPrefix}: creation is failed");
             }
+            Agent.Initialized += Agent_Initialized;
+
             //recreate the logger with external context
             _logger = new TypedLogger<StandardAgent>($"{Agent.Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", extras);
         }
@@ -160,10 +162,6 @@ namespace Drill4Net.Agent.Standard
             {
                 _logger.Fatal($"{_logPrefix}: error of initializing", ex);
             }
-            finally
-            {
-                ReleaseProbeProcessing();
-            }
         }
 
         /*****************************************************************************/
@@ -180,7 +178,13 @@ namespace Drill4Net.Agent.Standard
             Agent = new StandardAgent(opts, tree);
             if (Agent == null)
                 throw new Exception($"{_logPrefix}: creation is failed");
-            Agent.Initialized += initHandler;
+            Agent.Initialized += Agent_Initialized; //internal
+            Agent.Initialized += initHandler; //external
+        }
+
+        private static void Agent_Initialized()
+        {
+            Agent.ReleaseProbeProcessing();
         }
 
         private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
@@ -211,7 +215,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                Repository.AllSessionsCancelled(); //just in case
+                Repository.RegisterAllSessionsCancelled(); //just in case
                 _scope = scope;
                 CoverageSender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
             }
@@ -306,7 +310,7 @@ namespace Drill4Net.Agent.Standard
 
         private void RegisterFinishedSession(string uid)
         {
-            Repository.SessionStopped(uid);
+            Repository.RegisterSessionStopped(uid);
             CoverageSender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
@@ -314,7 +318,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                var uids = Repository.AllSessionsStopped();
+                var uids = Repository.RegisterAllSessionsStopped();
                 CoverageSender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -328,7 +332,7 @@ namespace Drill4Net.Agent.Standard
             try
             {
                 var uid = info.Payload.SessionId;
-                Repository.SessionCancelled(info);
+                Repository.RegisterSessionCancelled(info);
                 CoverageSender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -341,7 +345,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                var uids = Repository.AllSessionsCancelled();
+                var uids = Repository.RegisterAllSessionsCancelled();
                 CoverageSender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -520,8 +524,14 @@ namespace Drill4Net.Agent.Standard
             _logger.Info($"Agent have to stop the session: [{session}]");
 
             SendRemainedCoverage();
-            RegisterFinishedSession(session); //name as uid yet
-            CoverageSender.SendStopSessionCommand(session); //actually stopping the session
+
+            //actually force stopping the session from Connector DLL API
+            CoverageSender.SendStopSessionCommand(session);
+
+            //send message to admin side about finishing
+            //RegisterFinishedSession(session); //uncomment this if without SendStopSessionCommand (and comment the next line)
+            CoverageSender.SendSessionFinishedMessage(session, CommonUtils.GetCurrentUnixTimeMs()); //name as uid (still)
+
             _curAutoSession = null;
 
             ReleaseProbeProcessing(); //excess probes aren't need

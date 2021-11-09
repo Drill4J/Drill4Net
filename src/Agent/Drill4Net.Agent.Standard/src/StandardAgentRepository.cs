@@ -279,6 +279,7 @@ namespace Drill4Net.Agent.Standard
         /// Recreate the session
         /// </summary>
         /// <param name="info"></param>
+        /// <param name="context"></param>
         public void RecreateSessionData(StartSessionPayload info, string context)
         {
             RemoveSessionData(info.SessionId);
@@ -311,7 +312,7 @@ namespace Drill4Net.Agent.Standard
         /// All sessions were stopped on the Admin side
         /// </summary>
         /// <returns></returns>
-        public List<string> AllSessionsStopped()
+        public List<string> RegisterAllSessionsStopped()
         {
             StopSendCycle();
             SendCoverages();
@@ -323,7 +324,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// The session was stopped on the Admin side
         /// </summary>
-        public void SessionStopped(string uid)
+        public void RegisterSessionStopped(string uid)
         {
             //send remaining data
             SendCoverages();
@@ -338,7 +339,7 @@ namespace Drill4Net.Agent.Standard
         /// The session was cancelled on the Admin side
         /// </summary>
         /// <param name="info"></param>
-        public void SessionCancelled(CancelAgentSession info)
+        public void RegisterSessionCancelled(CancelAgentSession info)
         {
             RemoveSessionData(info.Payload.SessionId);
         }
@@ -347,7 +348,7 @@ namespace Drill4Net.Agent.Standard
         /// All sessions were cancelled on the Admin side
         /// </summary>
         /// <param name="info"></param>
-        public List<string> AllSessionsCancelled()
+        public List<string> RegisterAllSessionsCancelled()
         {
             StopSendCycle();
             var uids = _sessionToCtx.Keys.ToList();
