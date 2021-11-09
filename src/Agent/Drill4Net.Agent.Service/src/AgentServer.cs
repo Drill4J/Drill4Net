@@ -38,7 +38,7 @@ namespace Drill4Net.Agent.Service
         private readonly AbstractTransportAdmin _admin;
         private readonly Logger _logger;
 
-        private AgentServerDebugOptions _debugOpts;
+        private readonly AgentServerDebugOptions _debugOpts;
         private bool _isDebug;
 
         private Timer _timeoutTimer;
@@ -102,6 +102,8 @@ namespace Drill4Net.Agent.Service
             var period = new TimeSpan(0, 0, 0, 1, 500);
             _timeoutTimer = new Timer(PingCheckCallback, null, period, period);
 
+            ClearAllTopics();
+
             var tasks = new List<Task>
             {
                Task.Run(_pingReceiver.Start),
@@ -125,6 +127,14 @@ namespace Drill4Net.Agent.Service
 
             CheckWorkers();
             IsStarted = false;
+        }
+
+        internal void ClearAllTopics()
+        {
+            var topics = _admin.GetAllTopics(_rep.Options.Servers)
+                .Where(a => a.StartsWith(MessagingConstants.TOPIC_PREFIX));
+            foreach(var topic in topics)
+                DeleteTopic(topic);
         }
 
         private void PingReceiver_PingReceived(string targetSession, StringDictionary data)
