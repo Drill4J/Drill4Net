@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  drill-admin:
+    image: drill4j/admin:0.8.0-35
+    environment:
+      - TEST2CODE_PLUGIN_VERSION=0.8.0-27
+      - LOG_LEVEL=DEBUG
+      - DRILL_AGENTS_SOCKET_TIMEOUT=60
+    ports:
+      - 8090:8090
+      - 5006:5006
+      
+  admin-ui:
+    image: drill4j/admin-ui-root-config:0.1.0-62
+    restart: always
+    ports:
+      - 8091:8080
+    environment:
+      WAIT_HOSTS: drill-admin:8090
+      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-59/dist/Drill4J-test-to-code.js
