@@ -12,6 +12,7 @@ using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
+using System.Threading.Tasks;
 
 /*** INFO
  automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -516,8 +517,9 @@ namespace Drill4Net.Agent.Standard
         internal void StopSession(string metadata)
         {
             var session = GetSessionName(metadata);
-            _logger.Info($"Admin side session is stopping: [{session}]");
+            _logger.Info($"Agent have to stop the session: [{session}]");
 
+            SendRemainedCoverage();
             RegisterFinishedSession(session); //name as uid yet
             CoverageSender.SendStopSessionCommand(session); //actually stopping the session
             _curAutoSession = null;
@@ -577,9 +579,15 @@ namespace Drill4Net.Agent.Standard
         internal void RegisterTestInfoFinish(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
+            SendRemainedCoverage();
+            CoverageSender.RegisterTestCaseFinish(testCtx);
+        }
+
+        private void SendRemainedCoverage()
+        {
+            Task.Delay(500); // this is inefficient: TODO control by probe's context (=test) by dict
             if (_curAutoSession != null)
                 Repository.SendCoverage(_curAutoSession.SessionId);
-            CoverageSender.RegisterTestCaseFinish(testCtx);
         }
         #endregion
 

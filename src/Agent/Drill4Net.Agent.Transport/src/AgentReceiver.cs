@@ -118,6 +118,7 @@ namespace Drill4Net.Agent.Transport
                     case AgentConstants.TOPIC_PLUGIN_ACTION:
                         message = message.Substring(message.IndexOf('{')); //crunch: bug in messages on admin side
                         var baseInfo = Deserialize<IncomingMessage>(message);
+                        _logger.Debug($"Plugin action type: {baseInfo.type}");
                         switch (baseInfo.type)
                         {
                             case AgentConstants.MESSAGE_IN_INIT_ACTIVE_SCOPE:
