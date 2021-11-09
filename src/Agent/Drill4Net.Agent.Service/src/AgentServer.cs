@@ -215,7 +215,7 @@ namespace Drill4Net.Agent.Service
                 worker.CommandToWorkerTopic,
                 worker.CommandToTransmitterTopic
             };
-            Task.Run(() => _admin.DeleteTopics(topics, _rep.Options.Servers));
+            Task.Run(() => _admin.DeleteTopics(topics));
         }
 
         /// <summary>
@@ -235,11 +235,6 @@ namespace Drill4Net.Agent.Service
                 proc?.Kill();
             }
             catch { }
-        }
-
-        internal virtual void DeleteTopic(string topic)
-        {
-            _admin.DeleteTopics(new List<string> { topic }, _rep.Options.Servers);
         }
         #endregion
         #region Targets
