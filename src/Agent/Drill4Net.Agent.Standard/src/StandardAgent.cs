@@ -520,7 +520,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="metadata"></param>
         internal void StopSession(string metadata)
         {
-            var session = GetSessionName(metadata);
+            var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
 
             SendRemainedCoverage();
