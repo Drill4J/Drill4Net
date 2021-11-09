@@ -131,10 +131,9 @@ namespace Drill4Net.Agent.Service
 
         internal void ClearAllTopics()
         {
-            var servers = _rep.Options.Servers;
-            var topics = _admin.GetAllTopics(servers)
+            var topics = _admin.GetAllTopics()
                 .Where(a => a.StartsWith(MessagingConstants.TOPIC_PREFIX));
-            _admin.DeleteTopics(servers, topics);
+            _admin.DeleteTopics(topics);
         }
 
         private void PingReceiver_PingReceived(string targetSession, StringDictionary data)
@@ -207,10 +206,16 @@ namespace Drill4Net.Agent.Service
             //
             _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
             Task.Run(() => CloseWorker(uid));
-            Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
-            Task.Run(() => DeleteTopic(worker.ProbeTopic));
-            Task.Run(() => DeleteTopic(worker.CommandToWorkerTopic));
-            Task.Run(() => DeleteTopic(worker.CommandToTransmitterTopic));
+
+            //delete topics
+            var topics = new List<string>
+            {
+                worker.TargetInfoTopic,
+                worker.ProbeTopic,
+                worker.CommandToWorkerTopic,
+                worker.CommandToTransmitterTopic
+            };
+            Task.Run(() => _admin.DeleteTopics(topics, _rep.Options.Servers));
         }
 
         /// <summary>
@@ -234,7 +239,7 @@ namespace Drill4Net.Agent.Service
 
         internal virtual void DeleteTopic(string topic)
         {
-            _admin.DeleteTopics(_rep.Options.Servers, new List<string> { topic });
+            _admin.DeleteTopics(new List<string> { topic }, _rep.Options.Servers);
         }
         #endregion
         #region Targets

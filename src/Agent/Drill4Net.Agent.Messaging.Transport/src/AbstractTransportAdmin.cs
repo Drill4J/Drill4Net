@@ -7,7 +7,7 @@ namespace Drill4Net.Agent.Messaging.Transport
     /// </summary>
     public abstract class AbstractTransportAdmin
     {
-        public abstract List<string> GetAllTopics(IEnumerable<string> brokerList);
-        public abstract void DeleteTopics(IEnumerable<string> servers, IEnumerable<string> topicNameList);
+        public abstract List<string> GetAllTopics(IEnumerable<string> brokerList = null);
+        public abstract void DeleteTopics(IEnumerable<string> topicNameList, IEnumerable<string> servers = null);
     }
 }
