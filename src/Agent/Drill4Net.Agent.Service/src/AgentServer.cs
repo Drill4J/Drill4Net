@@ -131,10 +131,10 @@ namespace Drill4Net.Agent.Service
 
         internal void ClearAllTopics()
         {
-            var topics = _admin.GetAllTopics(_rep.Options.Servers)
+            var servers = _rep.Options.Servers;
+            var topics = _admin.GetAllTopics(servers)
                 .Where(a => a.StartsWith(MessagingConstants.TOPIC_PREFIX));
-            foreach(var topic in topics)
-                DeleteTopic(topic);
+            _admin.DeleteTopics(servers, topics);
         }
 
         private void PingReceiver_PingReceived(string targetSession, StringDictionary data)

@@ -9,9 +9,11 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
     {
         public override List<string> GetAllTopics(IEnumerable<string> brokerList)
         {
+            if (brokerList?.Any() != true)
+                throw new ArgumentNullException(nameof(brokerList));
+            //
             using var adminClient = new AdminClientBuilder(GetClientConfig(brokerList)).Build();
             var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
-            var topicsMetadata = metadata.Topics;
             return metadata.Topics.ConvertAll(a => a.Topic);
         }
 
