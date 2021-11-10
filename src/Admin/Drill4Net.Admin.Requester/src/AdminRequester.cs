@@ -10,13 +10,15 @@ namespace Drill4Net.Admin.Requester
     {
         private readonly string _url;
         private readonly string _target;
+        private readonly string _build;
         private readonly RestClient _client;
 
         /****************************************************************************/
 
-        public AdminRequester(string url, string target)
+        public AdminRequester(string url, string target, string build)
         {
             _target = target ?? throw new ArgumentNullException(nameof(target));
+            _build = build ?? throw new ArgumentNullException(nameof(build));
             _url = ResourceManager.CheckUrl(url);
             _client = new RestClient(_url);
             //client.Authenticator = new HttpBasicAuthenticator("username", "password");
@@ -24,11 +26,13 @@ namespace Drill4Net.Admin.Requester
 
         /****************************************************************************/
 
-        public virtual List<BuildSummary> GetBuildSummaries()
+        public virtual List<BuildSummary> GetBuildSummaries(string target = null)
         {
             //http://localhost:8090/api/agents/IHS-bdd/plugins/test2code/builds/summary
 
-            var request = new RestRequest(ResourceManager.GetSummaryResource(_target), Method.GET, DataFormat.Json);
+            if (string.IsNullOrWhiteSpace(target))
+                target = _target;
+            var request = new RestRequest(ResourceManager.GetSummaryResource(target), Method.GET, DataFormat.Json);
             var a = _client.Get(request);
             if (a.StatusCode != System.Net.HttpStatusCode.OK)
                 return null;
@@ -38,14 +42,32 @@ namespace Drill4Net.Admin.Requester
             return summary;
         }
 
-        public async virtual Task<TestToRunResponse> GetTestToRun()
+        public async virtual Task<TestToRunResponse> GetTestToRun(string target = null)
         {
             //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
-            var request = new RestRequest(ResourceManager.GetTest2RunResource(_target), DataFormat.Json);
+
+            if (string.IsNullOrWhiteSpace(target))
+                target = _target;
+            var request = new RestRequest(ResourceManager.GetTest2RunResource(target), DataFormat.Json);
             //var a = client.Get(request);
             var run = await _client.GetAsync<TestToRunResponse>(request)
                  .ConfigureAwait(false);
             return run;
+        }
+
+        public virtual object GetTestList(string build = null) => GetTestList(null, build);
+
+        public virtual object GetTestList(string target, string build)
+        {
+            if (string.IsNullOrWhiteSpace(target))
+                target = _target;
+            if (string.IsNullOrWhiteSpace(build))
+                build = _build;
+            //
+            var request = new RestRequest(ResourceManager.GetTestListResource(target, build), Method.GET, DataFormat.Json);
+            var a = _client.Get(request);
+
+            return null;
         }
     }
 }

@@ -23,5 +23,11 @@ namespace Drill4Net.Admin.Requester
         {
             return $"api/agents/{target}/plugins/test2code/data/tests-to-run";
         }
+
+        public static string GetTestListResource(string target, string build)
+        {
+            //http://localhost:8090/api/plugins/test2code/build/tests?agentId=IHS-bdd&buildVersion=0.8.66-main+0a5448c&type=AGENT
+            return $"api/plugins/test2code/build/tests?agentId={target}&buildVersion={build}&type=AGENT";
+        }
     }
 }

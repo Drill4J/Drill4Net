@@ -19,7 +19,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         public TestRunnerRepository(): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, string.Empty)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
-            _requester = new(Options.Url, Options.Target);
+            //TODO: WRONG!!! we need get the Target version by Options.FilePath (when Admin sode will get the Target version, not Agent's one)
+            var version = FileUtils.GetProductVersion(typeof(TestRunnerRepository));
+            _requester = new(Options.Url, Options.Target, version);
+
+            //TEST!!!
+            _requester.GetTestList();
         }
 
         /********************************************************************************/
