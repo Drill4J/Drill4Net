@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="ConsoleTables" Version="2.4.2" />
-    <PackageReference Include="K4os.Compression.LZ4" Version="1.2.13" />
+    <PackageReference Include="K4os.Compression.LZ4" Version="1.2.15" />
   </ItemGroup>
 
   <ItemGroup>
