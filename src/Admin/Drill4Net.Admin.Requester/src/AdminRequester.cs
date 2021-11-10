@@ -55,9 +55,9 @@ namespace Drill4Net.Admin.Requester
             return run;
         }
 
-        public virtual object GetTestList(string build = null) => GetTestList(null, build);
+        public virtual object GetTestList(string build = null) => GetTestList(build, null);
 
-        public virtual object GetTestList(string target, string build)
+        public virtual object GetTestList(string build, string target)
         {
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;

@@ -525,12 +525,18 @@ namespace Drill4Net.Agent.Standard
 
             SendRemainedCoverage();
 
-            //actually force stopping the session from Connector DLL API
-            CoverageSender.SendStopSessionCommand(session);
+            //DON'T REMOVE THESE COMMENTED LINES: the scope will be removed as entity from Drill Admin... soon...
 
+            //actually force stopping the session from Connector DLL API
+            //CoverageSender.SendStopSessionCommand(session);
+
+            //TODO: check if it received in AgentReceiver (more proper do it there)
             //send message to admin side about finishing
             //RegisterFinishedSession(session); //uncomment this if without SendStopSessionCommand (and comment the next line)
-            CoverageSender.SendSessionFinishedMessage(session, CommonUtils.GetCurrentUnixTimeMs()); //name as uid (still)
+            //CoverageSender.SendSessionFinishedMessage(session, CommonUtils.GetCurrentUnixTimeMs()); //name as uid (still)
+
+            //we need to finish test scope + force finish the session
+            CoverageSender.SendFinishScopeAction();
 
             _curAutoSession = null;
 
@@ -595,7 +601,7 @@ namespace Drill4Net.Agent.Standard
 
         private void SendRemainedCoverage()
         {
-            Task.Delay(500); // this is inefficient: TODO control by probe's context (=test) by dict
+            Task.Delay(1500); // this is inefficient: TODO control by probe's context (=test) by dict
             if (_curAutoSession != null)
                 Repository.SendCoverage(_curAutoSession.SessionId);
         }

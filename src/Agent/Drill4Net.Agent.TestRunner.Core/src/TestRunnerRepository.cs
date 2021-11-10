@@ -22,9 +22,6 @@ namespace Drill4Net.Agent.TestRunner.Core
             //TODO: WRONG!!! we need get the Target version by Options.FilePath (when Admin sode will get the Target version, not Agent's one)
             var version = FileUtils.GetProductVersion(typeof(TestRunnerRepository));
             _requester = new(Options.Url, Options.Target, version);
-
-            //TEST!!!
-            _requester.GetTestList();
         }
 
         /********************************************************************************/

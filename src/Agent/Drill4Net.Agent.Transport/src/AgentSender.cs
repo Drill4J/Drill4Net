@@ -27,14 +27,19 @@ namespace Drill4Net.Agent.Transport
 
         /************************************************************************/
 
-        protected override void SendConcrete(string messageType, string route, string message)
+        protected override void SendMessageConcrete(string messageType, string route, string message)
         {
             _connector.SendMessage(messageType, route, message);
         }
 
-        protected override void SendToPluginConcrete(string pluginId, string message)
+        protected override void SendMessageToPluginConcrete(string pluginId, string message)
         {
             _connector.SendPluginMessage(pluginId, message);
+        }
+
+        protected override void SendActionToPluginConcrete(string pluginId, string message)
+        {
+            _connector.SendPluginAction(pluginId, message);
         }
 
         /// <summary>

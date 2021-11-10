@@ -78,6 +78,8 @@
         public const string MESSAGE_OUT_SESSION_ALL_CANCELLED = "SESSIONS_CANCELLED";
         public const string MESSAGE_OUT_SESSION_FINISHED = "SESSION_FINISHED";
         public const string MESSAGE_OUT_SESSION_ALL_FINISHED = "SESSIONS_FINISHED";
+
+        public const string MESSAGE_OUT_SCOPE_SWITCH = "SWITCH_ACTIVE_SCOPE";
         #endregion
 
     }

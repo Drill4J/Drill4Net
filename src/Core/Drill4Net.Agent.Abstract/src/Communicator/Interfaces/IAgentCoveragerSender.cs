@@ -28,6 +28,8 @@ namespace Drill4Net.Agent.Abstract
         void SendSessionCancelledMessage(string uid, long ts);
         void SendAllSessionCancelledMessage(List<string> uids, long ts);
 
+        void SendFinishScopeAction();
+
         /// <summary>
         /// Send coverage data to the admin part ("COVERAGE_DATA_PART")
         /// </summary>
