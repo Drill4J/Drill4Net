@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using Drill4Net.Common;
 
 namespace Drill4Net.Profiling.Tree
@@ -8,14 +8,17 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class InjectedAssembly : InjectedEntity
     {
-        public AssemblyVersioning Version { get; }
+        public bool IsProcessed { get; set; }
+        public AssemblyVersioning FrameworkVersion { get; }
+        public string ProductVersion { get; }
 
         /*********************************************************************/
 
         public InjectedAssembly(AssemblyVersioning version, string name, string fullName, string path): base(name, name, path)
         {
             FullName = fullName;
-            Version = version;
+            FrameworkVersion = version;
+            ProductVersion = FileUtils.GetProductVersion(path);
         }
 
         /*********************************************************************/

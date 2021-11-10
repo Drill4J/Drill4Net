@@ -6,7 +6,6 @@ namespace Drill4Net.Admin.Requester
     {
         public static string CheckUrl(string url)
         {
-            //{url}/api/agents/{Id}/plugins/test2code/builds/summary
             if(string.IsNullOrWhiteSpace(url))
                 throw new ArgumentNullException(nameof(url));
             if (!url.StartsWith("http"))

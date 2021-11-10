@@ -68,6 +68,8 @@ namespace Drill4Net.Injector.Engine
 
             //need exactly after the injections
             AssemblyHelper.CorrectBusinessIndexes(asmCtx);
+
+            asmCtx.InjAssembly.IsProcessed = true;
         }
 
         /// <summary>

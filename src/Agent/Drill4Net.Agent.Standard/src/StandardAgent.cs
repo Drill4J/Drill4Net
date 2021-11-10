@@ -4,6 +4,7 @@ using System.Web;
 using System.Linq;
 using System.Threading;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -12,7 +13,7 @@ using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
-using System.Threading.Tasks;
+using Drill4Net.Admin.Requester;
 
 /*** INFO
  automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -58,14 +59,23 @@ namespace Drill4Net.Agent.Standard
         public StandardAgentRepository Repository { get; }
 
         /// <summary>
+        /// Is the Agent initialized?
+        /// </summary>
+        public static bool IsInitialized { get; private set; }
+
+        /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
         public string EmergencyLogDir { get; }
 
         private readonly ICommunicator _comm;
-        private static readonly ManualResetEvent _initEvent = new(false);
+        private readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
+
+        private static bool _isFastInitializing;
+        private readonly AdminRequester _requester;
+
         private static readonly Logger _logger;
         private static FileSink _probeLogger;
         private readonly bool _writeProbesToFile;
@@ -128,7 +138,27 @@ namespace Drill4Net.Agent.Standard
                 #endregion
 
                 Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
+                if (opts == null)
+                    opts = Repository.Options;
                 _comm = Repository.Communicator;
+
+                //it needed to be done here  before connect to Admin by Connector with websocket
+                _requester = new AdminRequester(opts.Admin.Url, Repository.TargetName, Repository.TargetVersion);
+                _isFastInitializing = GetIsFastInitilizing();
+                _logger.Debug($"Initializing is fast: {_isFastInitializing}");
+
+                //events from admin side
+                Receiver.InitScopeData += OnInitScopeData;
+                Receiver.PluginLoaded += PluginLoaded;
+                Receiver.TogglePlugin += OnTogglePlugin;
+                Receiver.RequestClassesData += OnRequestClassesData;
+                Receiver.StartSession += OnStartSession;
+                Receiver.CancelSession += OnCancelSession;
+                Receiver.CancelAllSessions += OnCancelAllSessions;
+                Receiver.StopSession += OnFinishSession;
+                Receiver.StopAllSessions += OnFinishAllSessions;
+
+                _comm.Connect(); //connect to Drill Admin side
 
                 //debug
                 _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
@@ -141,22 +171,10 @@ namespace Drill4Net.Agent.Standard
                     _probeLogger = new FileSink(probeLogfile);
                 }
 
-                //events from admin side
-                Receiver.InitScopeData += OnInitScopeData;
-                Receiver.TogglePlugin += OnTogglePlugin;
-                Receiver.RequestClassesData += OnRequestClassesData;
-                Receiver.StartSession += OnStartSession;
-                Receiver.CancelSession += OnCancelSession;
-                Receiver.CancelAllSessions += OnCancelAllSessions;
-                Receiver.StopSession += OnFinishSession;
-                Receiver.StopAllSessions += OnFinishAllSessions;
-
-                _comm.Connect(); //connect to Drill Admin side
-
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                _logger.Debug($"{_logPrefix} is initialized.");
+                _logger.Debug($"{_logPrefix} is primarly initialized.");
             }
             catch (Exception ex)
             {
@@ -182,9 +200,37 @@ namespace Drill4Net.Agent.Standard
             Agent.Initialized += initHandler; //external
         }
 
+        private bool GetIsFastInitilizing()
+        {
+            var summaryInfo = _requester.GetBuildSummaries();
+            if (summaryInfo == null || summaryInfo.Count == 0)
+                return false;
+            var exactly = summaryInfo.Find(a => a.BuildVersion == Repository.TargetVersion);
+            if (exactly?.Summary != null) //such version already exists
+                return true;
+            //var last = summaryInfo.OrderByDescending(a => a.DetectedAt).First();
+            //if(last.Summary == null)
+            //    return false;
+            return false;
+        }
+
+        //TODO: parameter with plugin name and checkikn if this plugin... test2code (guanito)
+        private void PluginLoaded()
+        {
+            if (_isFastInitializing)
+                Agent_Initialized();
+        }
+
         private static void Agent_Initialized()
         {
+            if (IsInitialized)
+                return;
+            //
+            IsInitialized = true;
+            Agent.RaiseInitilizedEvent();
             Agent.ReleaseProbeProcessing();
+
+            _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }
 
         private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
@@ -268,7 +314,6 @@ namespace Drill4Net.Agent.Standard
                 CoverageSender.SendInitializedMessage();
 
                 //4. Send message "Can start to execute the probes" to the Target from Worker
-                _logger.Info("Agent is fully initialized");
                 RaiseInitilizedEvent();
             }
             catch (Exception ex)

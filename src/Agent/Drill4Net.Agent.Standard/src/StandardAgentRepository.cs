@@ -21,6 +21,10 @@ namespace Drill4Net.Agent.Standard
     /// </summary>
     public sealed class StandardAgentRepository : AbstractCommunicatorRepository
     {
+        public string TargetName { get; private set; }
+
+        public string TargetVersion { get; private set; }
+
         /// <summary>
         /// Any sesion is exists?
         /// </summary>
@@ -95,6 +99,12 @@ namespace Drill4Net.Agent.Standard
             if(tree == null)
                 tree = ReadInjectedTree();
             _injTypes = GetTypesByCallerVersion(tree);
+
+            TargetName = Options.Target.Name ?? tree.Name;
+            TargetVersion = Options.Target.Version ??
+                           tree.GetAssemblies().FirstOrDefault(a => a.IsProcessed && a.ProductVersion != "0.0.0.0")?.ProductVersion ?? //guanito
+                           FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
+            _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(1200);
@@ -230,7 +240,7 @@ namespace Drill4Net.Agent.Standard
                         foreach (var dir in rootDirs)
                         {
                             var asms = dir.GetAssemblies().ToList();
-                            if (asms[0].Version.Version != execVer.Version)
+                            if (asms[0].FrameworkVersion.Version != execVer.Version)
                                 continue;
                             targetDir = dir;
                             break;

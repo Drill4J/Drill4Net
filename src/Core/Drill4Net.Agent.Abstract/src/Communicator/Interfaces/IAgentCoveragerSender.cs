@@ -38,15 +38,15 @@ namespace Drill4Net.Agent.Abstract
         void SendSessionChangedMessage(string sessionUid, int probeCount);
         void Send(string topic, AbstractMessage message);
         
-        //for local tests
-        void DebugSendOutgoingTest(OutgoingMessage data);
-        void DebugSendOutgoingTest(string topic, OutgoingMessage data);
-        void DebugSendIncomingTest(string topic, IncomingMessage message);
-
         void SendStartSessionCommand(string name);
         void SendStopSessionCommand(string name);
 
         void RegisterTestCaseStart(TestCaseContext testCtx);
         void RegisterTestCaseFinish(TestCaseContext testCtx);
+
+        //for debug
+        void DebugSendOutgoingTest(OutgoingMessage data);
+        void DebugSendOutgoingTest(string topic, OutgoingMessage data);
+        void DebugSendIncomingTest(string topic, IncomingMessage message);
     }
 }

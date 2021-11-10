@@ -30,7 +30,7 @@
         /// The Admin Panel uses the topic for agent registration
         /// with plugins and attaching registered with plugins agent.
         /// </summary>
-        public const string TOPIC_AGENT_LOAD = "/agent/load";
+        public const string TOPIC_AGENT_PLUGIN_LOAD = "/agent/load";
 
         /// <summary>
         /// The topic is used for agent registration with/without a plugin, package settings changing.

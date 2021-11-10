@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\..\build\bin\Relese\Tests\Drill4Net.TestDataHelper</OutputPath>
+    <OutputPath>..\..\..\..\build\bin\Release\Tests\Drill4Net.TestDataHelper</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

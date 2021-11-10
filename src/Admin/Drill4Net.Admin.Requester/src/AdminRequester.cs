@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace Drill4Net.Admin.Requester
 {
+    //ALSO: http://localhost:8090/apidocs/index.html?url=./openapi.json#/
+
     public class AdminRequester
     {
         private readonly string _url;
@@ -66,6 +68,7 @@ namespace Drill4Net.Admin.Requester
             //
             var request = new RestRequest(ResourceManager.GetTestListResource(target, build), Method.GET, DataFormat.Json);
             var a = _client.Get(request);
+            // DON'T WORK YET
 
             return null;
         }
