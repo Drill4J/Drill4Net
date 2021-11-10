@@ -465,8 +465,8 @@ namespace Drill4Net.Agent.Standard
             TestCaseContext testCaseCtx;
             switch (type)
             {
-                case AgentCommandType.ASSEMBLY_TESTS_START: StartSession(data); break;
-                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_START: StartAutoSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopAutoSession(); break;
 
                 #region BDD features, test groups...
                 //now, in fact, these are group of tests for one "test method" with many different cases
@@ -495,9 +495,9 @@ namespace Drill4Net.Agent.Standard
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
         /// <param name="metadata">Some info about session. It can be empty</param>
-        internal void StartSession(string metadata)
+        internal void StartAutoSession(string metadata)
         {
-            var session = GetSessionName(metadata);
+            var session = GetAutoSessionName(metadata);
             _logger.Info($"Admin side session is starting: [{session}]");
 
             _curAutoSession = new StartSessionPayload
@@ -518,7 +518,7 @@ namespace Drill4Net.Agent.Standard
         /// Automatic command from Agent to Admin side to stop the session (for autotests)
         /// </summary>
         /// <param name="metadata"></param>
-        internal void StopSession(string metadata)
+        internal void StopAutoSession()
         {
             var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
@@ -539,7 +539,7 @@ namespace Drill4Net.Agent.Standard
             _logger.Info($"Admin side session is stopped: [{session}]");
         }
 
-        internal string GetSessionName(string metadata)
+        internal string GetAutoSessionName(string metadata)
         {
             //in fact, this metadata is just test run's name, and actually may be empty
             if (string.IsNullOrWhiteSpace(metadata))

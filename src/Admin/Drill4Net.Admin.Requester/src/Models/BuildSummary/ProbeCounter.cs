@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Drill4Net.Agent.TestRunner.Core
+namespace Drill4Net.Admin.Requester
 {
     /// <summary>
     /// Probes info of 'type' tests

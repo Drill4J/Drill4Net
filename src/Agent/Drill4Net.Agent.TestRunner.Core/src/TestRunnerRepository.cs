@@ -2,17 +2,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using RestSharp;
-using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
+using Drill4Net.Admin.Requester;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
     public class TestRunnerRepository : ConfiguredRepository<TestRunnerOptions, BaseOptionsHelper<TestRunnerOptions>>
     {
-        private readonly RestClient _client;
+        private readonly AdminRequester _requester;
         private readonly Logger _logger;
 
         /********************************************************************************/
@@ -20,10 +19,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         public TestRunnerRepository(): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, string.Empty)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
-
-            var url = GetUrl();
-            _client = new RestClient(url);
-            //client.Authenticator = new HttpBasicAuthenticator("username", "password");
+            _requester = new(Options.Url, Options.Target);
         }
 
         /********************************************************************************/
@@ -40,7 +36,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             if (runType == RunningType.Certain)
             {
-                var run = await (!isFake ? GetTestToRun() : GetFakeTestToRun())
+                var run = await (!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
                     .ConfigureAwait(false);
                 foreach (var type in run.ByType.Keys)
                 {
@@ -93,21 +89,11 @@ namespace Drill4Net.Agent.TestRunner.Core
             return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
         }
 
-        internal async virtual Task<TestToRunResponse> GetTestToRun()
-        {
-            //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
-            var request = new RestRequest(GetTest2RunResource(), DataFormat.Json);
-            //var a = client.Get(request);
-            var run = await _client.GetAsync<TestToRunResponse>(request)
-                 .ConfigureAwait(false);
-            return run;
-        }
-
         internal virtual RunningType GetRunningType()
         {
             //TODO: add error handling
-            List<BuildSummary> summary = GetBuildSummaries();
-            var count = summary == null ? 0 : summary.Count;
+            List<BuildSummary> summary = _requester.GetBuildSummaries();
+            var count = (summary?.Count) ?? 0;
             _logger.Debug($"Builds: {count}");
             //
             var runType = RunningType.All;
@@ -134,39 +120,6 @@ namespace Drill4Net.Agent.TestRunner.Core
             }
             _logger.Debug($"Running type: {runType}");
             return runType;
-        }
-
-        internal virtual List<BuildSummary> GetBuildSummaries()
-        {
-            //http://localhost:8090/api/agents/IHS-bdd/plugins/test2code/builds/summary
-
-            var request = new RestRequest(GetSummaryResource(), Method.GET, DataFormat.Json);
-            var a = _client.Get(request);
-            if (a.StatusCode != System.Net.HttpStatusCode.OK)
-                return null;
-            var summary = JsonConvert.DeserializeObject<List<BuildSummary>>(a.Content);
-            //var summary = await _client.GetAsync<List<BuildSummary>>(request) //it is failed on empty member (Summary)
-            //    .ConfigureAwait(false);
-            return summary;
-        }
-
-        public string GetUrl()
-        {
-            //{url}/api/agents/{Id}/plugins/test2code/builds/summary
-            var url = Options.Url;
-            if (!url.StartsWith("http"))
-                url = "http://" + url; //TODO: check for https
-            return url;
-        }
-
-        public string GetSummaryResource()
-        {
-            return $"api/agents/{Options.Target}/plugins/test2code/builds/summary";
-        }
-
-        public string GetTest2RunResource()
-        {
-            return $"api/agents/{Options.Target}/plugins/test2code/data/tests-to-run";
         }
     }
 }

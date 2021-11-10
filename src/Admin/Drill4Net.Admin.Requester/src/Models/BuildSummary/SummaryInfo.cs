@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Drill4Net.Agent.TestRunner.Core
+namespace Drill4Net.Admin.Requester
 {
     /// <summary>
     /// All key metrics of the build

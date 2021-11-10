@@ -35,7 +35,6 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
         /// <param name="featureCtx"></param>
         /// <param name="scenarioCtx"></param>
         /// <param name="asmPath"></param>
-        /// <param name="isFinished"></param>
         /// <returns></returns>
         public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath)
         {
@@ -70,8 +69,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
                 caseCtx.StartTime = CommonUtils.GetCurrentUnixTimeMs();
                 _testCaseStartTimes.TryAdd(key, caseCtx.StartTime);
             }
-            var data = JsonConvert.SerializeObject(caseCtx);
-            return data;
+            return JsonConvert.SerializeObject(caseCtx);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

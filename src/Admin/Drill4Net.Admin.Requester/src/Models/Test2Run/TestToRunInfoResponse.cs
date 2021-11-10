@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Drill4Net.Agent.TestRunner.Core
+namespace Drill4Net.Admin.Requester
 {
     public record TestToRunInfoResponse
     {

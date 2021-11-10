@@ -30,10 +30,10 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         public override void DeleteTopics(IEnumerable<string> topicNameList, IEnumerable<string> brokerList = null)
         {
-            if (brokerList?.Any() != true)
-                brokerList = _servers;
             if (topicNameList?.Any() != true)
                 return;
+            if (brokerList?.Any() != true)
+                brokerList = _servers;
             //
             using var adminClient = new AdminClientBuilder(GetClientConfig(brokerList)).Build();
             adminClient.DeleteTopicsAsync(topicNameList, null);
