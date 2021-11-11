@@ -102,8 +102,9 @@ namespace Drill4Net.Agent.Standard
 
             TargetName = Options.Target.Name ?? tree.Name;
             TargetVersion = Options.Target.Version ??
-                           tree.GetAssemblies().FirstOrDefault(a => a.IsProcessed && a.ProductVersion != "0.0.0.0")?.ProductVersion ?? //guanito
-                           FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
+                            tree.ProductVersion ??
+                            tree.GetAssemblies().FirstOrDefault(a => a.IsProcessed && a.ProductVersion != "0.0.0.0")?.ProductVersion ?? //guanito
+                            FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
 
             //timer for periodically sending coverage data to admin side

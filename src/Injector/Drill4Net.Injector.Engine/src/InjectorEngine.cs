@@ -140,6 +140,7 @@ namespace Drill4Net.Injector.Engine
                 .ConfigureAwait(false);
 
             var tree = runCtx.Tree;
+            tree.ProductVersion = opts.Target.Version;
             DeployInjectedTree(tree);
 
             ProcessByPlugins(runCtx);

@@ -2,6 +2,7 @@
 Type: Injector #type as hint
 Target: # some metadata about target
     Name: blazor-wasm-app # optional injection name
+    Version:  # version of whole Product, can be empty and can be overrided by Agent's configs
 Source: # what and how processing
     Directory: ..\..\Tests\BlazorWasm\
     Filter: # filter for files, namespaces, classes...

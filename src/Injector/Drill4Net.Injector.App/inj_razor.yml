@@ -2,6 +2,7 @@
 Type: Injector #type as hint
 Target:
     Name: razor-app
+    Version:  # version of whole Product, can be empty and can be overrided by Agent's configs
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Demo.Razor.App\
     Filter: # filter for files, namespaces, classes...

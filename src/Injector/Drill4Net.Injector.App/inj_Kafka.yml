@@ -2,6 +2,7 @@
 Type: Injector #type as hint
 Target: # some metadata about target
     Name: console-testing-target-kafka # optional injection name
+    Version: #0.0.999 # version of whole Product, can be empty and can be overrided by Agent's configs
 Source: # what and how processing
     Directory: ..\..\Tests\TargetApps\
     Filter: # filter for files, namespaces, classes...

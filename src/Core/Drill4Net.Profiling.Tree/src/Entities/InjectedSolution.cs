@@ -14,6 +14,7 @@ namespace Drill4Net.Profiling.Tree
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
         public string SourceDir => Path;
+        public string ProductVersion { get; set; }
         public string Description { get; set; }
 
         /************************************************************************/
