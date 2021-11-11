@@ -7,9 +7,9 @@ Servers: # list of Kafka servers
 Sender:
   Topics: # additional topics for the probes
 Receiver:
-  GroupId: dodnet-agent # group of consumers
+  GroupId: dotnet-agent # group of consumers
   #Topics: # additional topics for the probes
-  #    #- aaa
+     #- aaa
 Logs:
   - Type: console
     Level: debug

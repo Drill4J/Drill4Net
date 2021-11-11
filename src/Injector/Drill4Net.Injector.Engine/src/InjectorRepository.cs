@@ -32,7 +32,7 @@ namespace Drill4Net.Injector.Engine
         /// injector for them, the reading/writing of resulting tree data, etc).
         /// </summary>
         /// <param name="cfgPath">Path to the config of injection</param>
-        public InjectorRepository(string cfgPath): base(cfgPath, _subsystem)
+        public InjectorRepository(string cfgPath): base(_subsystem, cfgPath)
         {
             CreateLogger();
         }
@@ -42,7 +42,7 @@ namespace Drill4Net.Injector.Engine
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
         /// <param name="args">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(string[] args): base(args, _subsystem)
+        public InjectorRepository(string[] args): base(_subsystem, args)
         {
             CreateLogger();
             _optHelper.Clarify(args, Options);

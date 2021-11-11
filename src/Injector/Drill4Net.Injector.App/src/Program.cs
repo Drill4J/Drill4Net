@@ -49,7 +49,7 @@ namespace Drill4Net.Injector.App
                 _logger.Info($"Duration of target injection: {duration} ms.");
 
                 IBenchmarkLogger benchmarkFileLogger = new BenchmarkFileLogger(Path.Combine(FileUtils.ExecutingDir, LOG_PATH));
-                BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger,AssemblyGitInfo.GetSourceBranchName(), AssemblyGitInfo.GetCommit(),
+                BenchmarkLog.WriteBenchmarkToLog(benchmarkFileLogger, AssemblyGitInfo.GetSourceBranchName(), AssemblyGitInfo.GetCommit(),
                     duration.ToString());
 
                 _logger.Info("Done.");

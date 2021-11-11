@@ -32,19 +32,19 @@
         /// <summary>
         /// Name of the file for the redirecting to the certain config
         /// </summary>
-        public const string CONFIG_REDIRECT_NAME = "_redirect.yml";
+        public const string CONFIG_NAME_REDIRECT = "_redirect.yml";
 
         /// <summary>
-        /// Standard file name for the Injector's config (if no <see cref="CONFIG_REDIRECT_NAME"/> and other configs exists)
+        /// Standard file name for the Injector's config (if no <see cref="CONFIG_NAME_REDIRECT"/> and other configs exists)
         /// </summary>
-        public const string CONFIG_DEFAULT_NAME = "cfg.yml";
+        public const string CONFIG_NAME_DEFAULT = "cfg.yml";
 
         /// <summary>
         /// Config file name for the Tester subsystem
         /// </summary>
-        public const string CONFIG_TESTS_NAME = "tests_cfg.yml";
+        public const string CONFIG_NAME_TESTS = "tests_cfg.yml";
 
-        public const string CONFIG_SERVICE_NAME = "svc.yml";
+        public const string CONFIG_NAME_ADMIN_SERVICE = "svc.yml";
 
         /// <summary>
         /// File name for the injected entities' metadata (files, types, classes, methods, cross-points, etc)

@@ -35,7 +35,7 @@ namespace Drill4Net.Core.Repository
 
             //options
             if (string.IsNullOrWhiteSpace(cfgPath))
-                cfgPath = _optHelper.GetActualConfigPath(CoreConstants.CONFIG_DEFAULT_NAME);
+                cfgPath = _optHelper.GetActualConfigPath(CoreConstants.CONFIG_NAME_DEFAULT);
             DefaultCfgPath = cfgPath;
             Options = _optHelper.ReadOptions(cfgPath);
 

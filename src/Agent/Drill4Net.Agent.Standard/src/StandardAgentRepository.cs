@@ -21,8 +21,14 @@ namespace Drill4Net.Agent.Standard
     /// </summary>
     public sealed class StandardAgentRepository : AbstractCommunicatorRepository
     {
+        /// <summary>
+        /// Name of Target app
+        /// </summary>
         public string TargetName { get; private set; }
 
+        /// <summary>
+        /// Target app's version
+        /// </summary>
         public string TargetVersion { get; private set; }
 
         /// <summary>
@@ -47,6 +53,16 @@ namespace Drill4Net.Agent.Standard
         private bool _inTimer;
 
         /**************************************************************************************/
+
+        /// <summary>
+        /// Create repository by paths for config and target's entities' tree
+        /// </summary>
+        /// <param name="cfgPath"></param>
+        /// <param name="treePath"></param>
+        public StandardAgentRepository(string cfgPath, string treePath) : base(cfgPath)
+        {
+            Init(ReadInjectedTree(treePath));
+        }
 
         /// <summary>
         /// Create repository for Standard Agent by options specified by the file path

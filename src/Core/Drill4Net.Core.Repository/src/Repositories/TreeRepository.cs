@@ -15,17 +15,17 @@ namespace Drill4Net.Core.Repository
 
         /*****************************************************************************************/
 
-        protected TreeRepository(string[] args, string subsystem) : base(subsystem, args)
+        protected TreeRepository(string subsystem, string[] args) : base(subsystem, args)
         {
             CreateTypedLogger();
         }
 
-        protected TreeRepository(string cfgPath, string subsystem) : base(subsystem, cfgPath)
+        protected TreeRepository(string subsystem, string cfgPath) : base(subsystem, cfgPath)
         {
             CreateTypedLogger();
         }
 
-        protected TreeRepository(TOptions opts, string subsystem) : base(subsystem, opts)
+        protected TreeRepository(string subsystem, TOptions opts) : base(subsystem, opts)
         {
             CreateTypedLogger();
         }
@@ -67,9 +67,11 @@ namespace Drill4Net.Core.Repository
         {
             _logger.Debug($"Path param = [{path}]");
 
-            var optTreeDir = string.IsNullOrWhiteSpace(Options.TreePath) ?
-                FileUtils.EntryDir :
-                FileUtils.GetFullPath(Options.TreePath);
+            if (string.IsNullOrWhiteSpace(path) && !string.IsNullOrWhiteSpace(Options.TreePath))
+            {
+                path = Options.TreePath;
+                _logger.Debug($"Used path from cfg = [{path}]");
+            }
             //
             if (!string.IsNullOrWhiteSpace(path))
             {
@@ -77,7 +79,7 @@ namespace Drill4Net.Core.Repository
             }
             else //by hint file
             {
-                var hintPath = GetTreeFileHintPath(optTreeDir);
+                var hintPath = GetTreeFileHintPath(FileUtils.EntryDir);
                 if (File.Exists(hintPath))
                 {
                     _logger.Debug($"The tree hint file founded: [{hintPath}]");
@@ -91,7 +93,7 @@ namespace Drill4Net.Core.Repository
             //
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
             {
-                path = Path.Combine(optTreeDir, CoreConstants.TREE_FILE_NAME);
+                path = Path.Combine(FileUtils.EntryDir, CoreConstants.TREE_FILE_NAME);
                 _logger.Debug($"Last chance to get the tree path: [{path}]");
             }
             if (!File.Exists(path))

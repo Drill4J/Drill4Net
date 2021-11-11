@@ -39,9 +39,9 @@ namespace Drill4Net.Agent.Transmitter
 
         /*********************************************************************************************/
 
-        public TransmitterRepository() : base(string.Empty, CoreConstants.SUBSYSTEM_TRANSMITTER)
+        public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
-            ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
+            ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_ADMIN_SERVICE);
             MessagerOptions = GetMessagerOptions();
             TargetName = Options.Target?.Name ?? GenerateTargetName();
             TargetSession = GetSession();
