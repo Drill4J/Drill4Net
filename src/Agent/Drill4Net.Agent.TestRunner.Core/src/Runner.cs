@@ -86,7 +86,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest break
                 var ind = test.IndexOf("("); //after ( the parameters of case followed 
                 if (ind != -1)
-                    test = test.Substring(0, ind);
+                    test = test[..ind];
                 //
                 test = test.Replace(",", "%2C").Replace("\"","\\\"").Replace("!", "\\!"); //need escaping
                 //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace
@@ -97,7 +97,8 @@ namespace Drill4Net.Agent.TestRunner.Core
                 else
                     args += "\"";
             }
-            args += $" {GetLoggerParameters()} {GetParallelRunParameters()}"; //need at end of args
+
+            args += $" {GetLoggerParameters()} {GetParallelRunParameters()}"; //RunConfiguration must be at the end of args
 
             if (args.Length > 32767)
                 throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
@@ -106,8 +107,8 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         internal string GetParallelRunParameters()
         {
-            //TODO: depending on the type of test framework:
-            // xUnit still disable, others aren't
+            //TODO: depending on the type of test framework: xUnit still disable, others aren't
+            //Config - is bad... from Tree after injection?... hmmm...
             return "-- RunConfiguration.DisableParallelization=true";
         }
 
