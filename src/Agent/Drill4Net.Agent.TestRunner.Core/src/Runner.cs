@@ -74,7 +74,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal string GetRunArguments(IList<string> tests)
         {
             // prefix "/C" - is for running in the CMD
-            var args = $"/C dotnet test \"{_rep.Options.FilePath}\" {GetLoggerParameters()} {GetParallelRunParameters()}";
+            var args = $"/C dotnet test \"{_rep.Options.FilePath}\"";
             if (tests?.Any() != true)
                 return args;
             //
@@ -97,6 +97,8 @@ namespace Drill4Net.Agent.TestRunner.Core
                 else
                     args += "\"";
             }
+            args += $" {GetLoggerParameters()} {GetParallelRunParameters()}"; //need at end of args
+
             if (args.Length > 32767)
                 throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
             return args;

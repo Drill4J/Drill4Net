@@ -32,7 +32,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             var runType = GetRunningType();
             _logger.Debug($"Running type: {runType}");
 
-            var isFake = true; //TEST !!!!
+            var isFake = Options.Debug is { Disabled: false, IsFake: true };
             if (isFake)
                 runType = RunningType.Certain;
 

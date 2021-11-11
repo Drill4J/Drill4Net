@@ -5,4 +5,4 @@ FilePath: d:\Projects\IHS-bdd.Injected\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # full
 Url: localhost:8090 # Drill Admin service
 Debug:
     Disabled: false
-    IsFake: true
+    IsFake: true # use fake data

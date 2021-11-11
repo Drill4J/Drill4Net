@@ -21,5 +21,10 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// File path for the Test assembly
         /// </summary>
         public string FilePath { get; set; }
+
+        /// <summary>
+        /// Options exclusive for debug
+        /// </summary>
+        public TestRunnerDebugOptions Debug { get; set; }
     }
 }
