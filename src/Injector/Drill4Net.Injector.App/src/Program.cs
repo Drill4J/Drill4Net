@@ -21,7 +21,7 @@ namespace Drill4Net.Injector.App
         {
             AbstractRepository.PrepareEmergencyLogger();
             //program name... yep, from namespace
-            var name = typeof(Program).Namespace.Split('.')[0];
+            var name = typeof(Program).Namespace + " " + FileUtils.GetProductVersion(typeof(InjectorRepository));
             Log.Info($"{name} is starting"); //using emergency logger by simple static call
 
             IInjectorRepository rep = null;
@@ -57,7 +57,10 @@ namespace Drill4Net.Injector.App
             }
             catch (Exception ex)
             {
-                _logger.Fatal(ex);
+                if (_logger == null)
+                    Log.Fatal(ex);
+                else
+                    _logger.Fatal(ex);
             }
 
             Log.Shutdown();

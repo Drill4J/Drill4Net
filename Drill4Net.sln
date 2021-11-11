@@ -124,7 +124,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Engine.U
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Adoption_cfg", "!!_Adoption_cfg", "{62F8FA14-B664-46E8-BDF1-88A1E77B959C}"
 	ProjectSection(SolutionItems) = preProject
-		IHS_std.yml = IHS_std.yml
+		IHS_v1.yml = IHS_v1.yml
+		IHS_v2.yml = IHS_v2.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Debug", "src\Agent\Drill4Net.Agent.Kafka.Debug\Drill4Net.Agent.Kafka.Debug.csproj", "{3FB0F998-6ED8-49CD-AE52-71E27A54B9DA}"
@@ -250,7 +251,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{F1C75788-70FA-477E-8C12-360DE73A02B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Admin.Requester", "src\Admin\Drill4Net.Admin.Requester\Drill4Net.Admin.Requester.csproj", "{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Admin.Requester", "src\Admin\Drill4Net.Admin.Requester\Drill4Net.Admin.Requester.csproj", "{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

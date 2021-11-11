@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,26 @@ using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injection.SpecFlow;
+
+/*** INFO
+ automatic version tagger including Git info - https://github.com/devlooped/GitInfo
+ semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
+ the most common format is v0.0 (or just 0.0 is enough)
+ to change semVer it is nesseccary to create appropriate tag and push it to remote repository
+ patches'(commits) count starts with 0 again after new tag pushing
+ For file version format exactly is digit
+***/
+[assembly: AssemblyFileVersion(
+    ThisAssembly.Git.SemVer.Major + "." +
+    ThisAssembly.Git.SemVer.Minor + "." +
+    ThisAssembly.Git.SemVer.Patch)]
+
+[assembly: AssemblyInformationalVersion(
+  ThisAssembly.Git.SemVer.Major + "." +
+  ThisAssembly.Git.SemVer.Minor + "." +
+  ThisAssembly.Git.SemVer.Patch + "-" +
+  ThisAssembly.Git.Branch + "+" +
+  ThisAssembly.Git.Commit)]
 
 [assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Engine.UnitTests")]
 namespace Drill4Net.Injector.Engine
