@@ -11,30 +11,32 @@ namespace Drill4Net.Core.Repository
             where TOptions : TargetOptions, new()
             where THelper : BaseOptionsHelper<TOptions>, new()
     {
+        protected TreeRepositoryHelper _helper;
         private Logger _logger;
 
         /*****************************************************************************************/
 
         protected TreeRepository(string subsystem, string[] args) : base(subsystem, args)
         {
-            CreateTypedLogger();
+            Init();
         }
 
         protected TreeRepository(string subsystem, string cfgPath) : base(subsystem, cfgPath)
         {
-            CreateTypedLogger();
+            Init();
         }
 
         protected TreeRepository(string subsystem, TOptions opts) : base(subsystem, opts)
         {
-            CreateTypedLogger();
+            Init();
         }
 
         /*****************************************************************************************/
 
-        private void CreateTypedLogger()
+        private void Init()
         {
             _logger = new TypedLogger<TreeRepository<TOptions, THelper>>(Subsystem);
+            _helper = new TreeRepositoryHelper(Subsystem);
         }
 
         #region Injected Tree
@@ -72,51 +74,23 @@ namespace Drill4Net.Core.Repository
                 path = Options.TreePath;
                 _logger.Debug($"Used path from cfg = [{path}]");
             }
-            //
-            if (!string.IsNullOrWhiteSpace(path))
-            {
-                path = FileUtils.GetFullPath(path);
-            }
-            else //by hint file
-            {
-                var hintPath = GetTreeFileHintPath(FileUtils.EntryDir);
-                if (File.Exists(hintPath))
-                {
-                    _logger.Debug($"The tree hint file founded: [{hintPath}]");
-                    path = File.ReadAllText(hintPath);
-                }
-                else
-                {
-                    _logger.Debug("The tree hint file not exists");
-                }
-            }
-            //
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
-            {
-                path = Path.Combine(FileUtils.EntryDir, CoreConstants.TREE_FILE_NAME);
-                _logger.Debug($"Last chance to get the tree path: [{path}]");
-            }
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"Solution Tree not found: [{path}]");
-            //
-            return path;
+
+            return _helper.CalculateTreeFilePath(path, FileUtils.EntryDir);
         }
 
-        public virtual string GetTreeFilePath(InjectedSolution tree)
+        public string GetTreeFilePath(InjectedSolution tree)
         {
-            return GetTreeFilePath(tree.DestinationPath);
+            return _helper.GetTreeFilePath(tree);
         }
 
-        public virtual string GetTreeFilePath(string targetDir)
+        public string GetTreeFileHintPath(string path)
         {
-            if (string.IsNullOrWhiteSpace(targetDir))
-                targetDir = FileUtils.ExecutingDir;
-            return Path.Combine(targetDir, CoreConstants.TREE_FILE_NAME);
+            return _helper.GetTreeFileHintPath(path);
         }
 
-        public virtual string GetTreeFileHintPath(string targetDir)
+        public string GetTreeFilePathByDir(string targetDir)
         {
-            return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
+            return _helper.GetTreeFilePathByDir(targetDir);
         }
         #endregion
     }

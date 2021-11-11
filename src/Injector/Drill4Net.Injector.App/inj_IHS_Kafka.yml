@@ -2,7 +2,7 @@
 Type: Injector #type as hint
 Target: # some metadata about target
     Name: IHS-bdd #optional injection name
-    Version:  # version of whole Product, can be empty and can be overrided by Agent's configs
+    Version: 0.1.0  # version of whole Product, can be empty and can be overrided by Agent's configs
 Source: # what and how processing
     Directory: d:\Projects\IHS-bdd\
     Filter: # mask for search files, namespaces, classes...

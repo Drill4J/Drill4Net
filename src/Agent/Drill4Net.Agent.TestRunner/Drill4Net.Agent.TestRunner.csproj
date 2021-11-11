@@ -28,7 +28,7 @@
 	  <None Update="IHS_2.yml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="svc.yml">
+	  <None Update="cfg.yml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="_redirect.yml">

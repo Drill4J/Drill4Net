@@ -61,7 +61,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Is the Agent initialized?
         /// </summary>
-        public static bool IsInitialized { get; private set; }
+        public bool IsInitialized { get; private set; }
 
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
@@ -76,19 +76,20 @@ namespace Drill4Net.Agent.Standard
         private static bool _isFastInitializing;
         private readonly AdminRequester _requester;
 
-        private static readonly Logger _logger;
+        private static Logger _logger;
         private static FileSink _probeLogger;
         private readonly bool _writeProbesToFile;
         private readonly AssemblyResolver _resolver;
         private static readonly object _entitiesLocker = new();
         private static readonly string _logPrefix;
+        private static Dictionary<string, object> _logExtras;
 
         /*****************************************************************************/
 
         static StandardAgent() //it's needed for invocation from Target
         {
-            var extras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
-            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, extras);
+            _logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
+            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, _logExtras);
             _logPrefix = nameof(StandardAgent);
 
             if (StandardAgentCCtorParameters.SkipCctor)
@@ -100,15 +101,19 @@ namespace Drill4Net.Agent.Standard
                 _logger.Fatal("Creation is failed");
                 throw new Exception($"{_logPrefix}: creation is failed");
             }
-            Agent.Initialized += Agent_Initialized;
-
-            //recreate the logger with external context
-            _logger = new TypedLogger<StandardAgent>($"{Agent.Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", extras);
         }
 
-        private StandardAgent(): this(null, null) { }
+        /// <summary>
+        /// Create the Standard Agent with default Repository
+        /// </summary>
+        /// <param name="rep"></param>
+        public StandardAgent(): this(null) { }
 
-        private StandardAgent(AgentOptions opts, InjectedSolution tree)
+        /// <summary>
+        /// Create the Standard Agent with specified Repository
+        /// </summary>
+        /// <param name="rep"></param>
+        public StandardAgent(StandardAgentRepository rep)
         {
             try
             {
@@ -137,13 +142,15 @@ namespace Drill4Net.Agent.Standard
                 //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
                 #endregion
 
-                Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
-                if (opts == null)
-                    opts = Repository.Options;
+                Repository = rep ?? new StandardAgentRepository();
+
+                //recreate the logger with external context
+                _logger = new TypedLogger<StandardAgent>($"{Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", _logExtras);
+
                 _comm = Repository.Communicator;
 
                 //it needed to be done here  before connect to Admin by Connector with websocket
-                _requester = new AdminRequester(opts.Admin.Url, Repository.TargetName, Repository.TargetVersion);
+                _requester = new AdminRequester(Repository.Options.Admin.Url, Repository.TargetName, Repository.TargetVersion);
                 _isFastInitializing = GetIsFastInitilizing();
                 _logger.Debug($"Initializing is fast: {_isFastInitializing}");
 
@@ -171,6 +178,8 @@ namespace Drill4Net.Agent.Standard
                     _probeLogger = new FileSink(probeLogfile);
                 }
 
+                Initialized += Agent_Initialized; //Agent needs to control itself
+
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
@@ -191,13 +200,12 @@ namespace Drill4Net.Agent.Standard
         /// <param name="opts"></param>
         /// <param name="tree"></param>
         /// <param name="initHandler"></param>
-        public static void Init(AgentOptions opts, InjectedSolution tree, AgentInitializedHandler initHandler)
+        public static void Init(AgentOptions opts, InjectedSolution tree)
         {
-            Agent = new StandardAgent(opts, tree);
+            var rep = new StandardAgentRepository(opts, tree);
+            Agent = new StandardAgent(rep);
             if (Agent == null)
                 throw new Exception($"{_logPrefix}: creation is failed");
-            Agent.Initialized += Agent_Initialized; //internal
-            Agent.Initialized += initHandler; //external
         }
 
         private bool GetIsFastInitilizing()
@@ -221,14 +229,14 @@ namespace Drill4Net.Agent.Standard
                 Agent_Initialized();
         }
 
-        private static void Agent_Initialized()
+        private void Agent_Initialized()
         {
             if (IsInitialized)
                 return;
             //
             IsInitialized = true;
-            Agent.RaiseInitilizedEvent();
-            Agent.ReleaseProbeProcessing();
+            RaiseInitilizedEvent(); //external delegates
+            ReleaseProbeProcessing();
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }

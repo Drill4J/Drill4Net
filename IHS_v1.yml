@@ -2,7 +2,7 @@ Description: IHS BDD tests v.1
 Type: Agent #type as hint
 Target:
   Name: IHS-bdd 
-  Version: 0.1.0.0 # if empty will retrieved dynamically by first call of profiler (for simple systems)
+  Version: # if empty will retrieved from Tree file or dynamically by first call of profiler (for simple systems)
 TreePath: # were tree data about probes are located - if empty, system will try find it by another ways
 Admin:
   Url: localhost:8090

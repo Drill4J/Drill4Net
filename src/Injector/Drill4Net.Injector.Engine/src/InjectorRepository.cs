@@ -188,7 +188,7 @@ namespace Drill4Net.Injector.Engine
             if (Options?.Destination != null)
             {
                 var targetDir = Options.Destination.Directory;
-                treePath = GetTreeFilePath(targetDir);
+                treePath = _helper.GetTreeFilePathByDir(targetDir);
             }
             return ReadInjectedTree(treePath);
         }

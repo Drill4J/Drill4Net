@@ -1,0 +1,4 @@
+﻿Description: Test runner using Kafka as middleware
+Type: Agent for TestRunner # type as hint
+Admin: # Drill admin
+  Url: localhost:8090

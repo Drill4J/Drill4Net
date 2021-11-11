@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Reflection;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.BanderLog;
-using System.Reflection;
+
+using Drill4Net.Agent.Standard;
 
 /*** INFO
 automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -32,7 +35,9 @@ namespace Drill4Net.Agent.TestRunner.Core
 
     public class Runner
     {
+        private readonly StandardAgent _agent;
         private readonly TestRunnerRepository _rep;
+        private readonly ManualResetEvent _initEvent = new(false);
         private readonly Logger _logger;
 
         /***********************************************************************************/
@@ -41,12 +46,24 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _logger = new TypedLogger<Runner>(_rep.Subsystem);
+
+            //agent
+            _agent = _rep.GetAgent();
+            _agent.Initialized += AgentInitialized;
         }
 
         /***********************************************************************************/
 
+        private void AgentInitialized()
+        {
+            _initEvent.Set();
+        }
+
         public async Task Run()
         {
+            _logger.Debug("Wait for Agent's initializing...");
+            _initEvent.WaitOne();
+
             _logger.Debug("Getting the build summaries...");
 
             try

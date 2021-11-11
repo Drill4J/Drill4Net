@@ -109,19 +109,25 @@ namespace Drill4Net.Agent.Standard
             _converter = new TreeConverter();
             _sendLocker = new object();
 
-            Communicator = GetCommunicator(Options.Admin, Options.Target, Options.Connector); //TODO: connector's log options
-
-            //target classes' tree
-            if(tree == null)
+            //Target
+            if (tree == null)
                 tree = ReadInjectedTree();
             _injTypes = GetTypesByCallerVersion(tree);
 
-            TargetName = Options.Target.Name ?? tree.Name;
-            TargetVersion = Options.Target.Version ??
+            TargetName = Options.Target?.Name ?? tree.Name;
+            TargetVersion = Options.Target?.Version ??
                             tree.ProductVersion ??
                             tree.GetAssemblies().FirstOrDefault(a => a.IsProcessed && a.ProductVersion != "0.0.0.0")?.ProductVersion ?? //guanito
                             FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
+
+            //Communicator
+            var targData = new TargetData
+            {
+                Name = TargetName,
+                Version = TargetVersion,
+            };
+            Communicator = GetCommunicator(Options.Admin, targData, Options.Connector); //TODO: connector's log options
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(1200);

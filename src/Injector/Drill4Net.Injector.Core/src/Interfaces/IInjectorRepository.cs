@@ -82,6 +82,6 @@ namespace Drill4Net.Injector.Core
 
         string GetTreeFilePath(InjectedSolution tree);
         string GetTreeFileHintPath(string path);
-        string GetTreeFilePath(string targetDir);
+        string GetTreeFilePathByDir(string targetDir);
     }
 }
