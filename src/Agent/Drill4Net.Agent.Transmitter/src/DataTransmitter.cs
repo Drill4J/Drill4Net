@@ -220,7 +220,7 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
-            _initEvent.WaitOne();
+            _initEvent.WaitOne(); //?? check - is it needed?
 
             //unfortunately, caching is wrong techique here
             //if (!_probes.TryAdd(data, true))
