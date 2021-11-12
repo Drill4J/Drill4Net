@@ -3,9 +3,9 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
+using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using Drill4Net.Agent.Messaging.Kafka;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -48,6 +48,7 @@ namespace Drill4Net.Agent.Worker
             var targetSession = GetTargetSession(_args);
             var targetName = GetTargetName(_args);
             var targetVersion = GetTargetVersion(_args);
+            _logger.Info($"Parameters: session={targetSession};name={targetName};version={targetVersion}");
 
             if (opts.Sender == null)
                 opts.Sender = new();
@@ -80,11 +81,10 @@ namespace Drill4Net.Agent.Worker
             return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, targetName, targetVersion, opts, cfgPath);
         }
 
-
         private ICommandSender CreateCommandSender(ITargetedRepository rep)
         {
             _logger.Debug("Creating command sender...");
-            IMessagerRepository targRep = new TargetedSenderRepository(rep.Subsystem, rep.TargetSession, rep.TargetName, 
+            IMessagerRepository targRep = new TargetedSenderRepository(rep.Subsystem, rep.TargetSession, rep.TargetName,
                 rep.TargetVersion, rep.ConfigPath); //need read own config
             if (targRep.MessagerOptions.Receiver == null)
                 throw new Exception("Receiver is empty");

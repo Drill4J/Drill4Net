@@ -14,24 +14,25 @@ namespace Drill4Net.Agent.Messaging.Transport
 
         public TargetedReceiverRepository() : base(null) { }
 
-        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, string targetversion, string cfgPath = null):
+        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, string targetVersion, string cfgPath = null):
             base(subsystem, cfgPath)
         {
-            Init(targetSession, targetName, cfgPath);
+            Init(targetSession, targetName, targetVersion, cfgPath);
         }
 
-        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, string targetversion, MessagerOptions opts, string cfgPath = null):
+        public TargetedReceiverRepository(string subsystem, string targetSession, string targetName, string targetVersion, MessagerOptions opts, string cfgPath = null):
             base(subsystem, opts)
         {
-            Init(targetSession, targetName, cfgPath);
+            Init(targetSession, targetName, targetVersion, cfgPath);
         }
 
         /***************************************************************************************************/
 
-        private void Init(string targetSession, string targetName, string configPath)
+        private void Init(string targetSession, string targetName, string targetVersion, string configPath)
         {
             TargetSession = Guid.Parse(targetSession);
             TargetName = targetName ?? throw new ArgumentNullException(nameof(targetName));
+            TargetVersion = targetVersion ?? throw new ArgumentNullException(nameof(targetVersion));
             ConfigPath = configPath;
             //
             if (Options.Receiver == null)
