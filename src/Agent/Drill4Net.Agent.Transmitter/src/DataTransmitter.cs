@@ -50,14 +50,14 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         private static ConcurrentDictionary<string, bool> _probes;
 
-        private static readonly List<string> _cmdSenderTopics;
+        private readonly List<string> _cmdSenderTopics;
 
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
         private static readonly Logger _logger;
-        private static readonly FileSink _probeLogger;
-        private static readonly bool _writeProbesToFile;
+        private readonly FileSink _probeLogger;
+        private readonly bool _writeProbesToFile;
 
         private static readonly ManualResetEvent _initEvent = new(false);
         private bool _disposed;
@@ -76,25 +76,6 @@ namespace Drill4Net.Agent.Transmitter
             _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extras);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
-
-            _cmdSenderTopics = rep.GetSenderCommandTopics().ToList();
-            _cmdSenderTopics.Add(MessagingUtils.GetCommandToWorkerTopic(rep.TargetSession));
-            _logger.Debug($"Sender command topics: [{string.Join(",", _cmdSenderTopics)}]");
-
-            _logger.Debug("Getting & sending the Target's info");
-            Transmitter.SendTargetInfo(rep.GetTargetInfo());
-            _logger.Debug("Target's info is sent");
-
-            //debug
-            _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
-            if (_writeProbesToFile)
-            {
-                var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
-                _logger.Debug($"Probes writing to [{probeLogfile}]");
-                if (File.Exists(probeLogfile))
-                    File.Delete(probeLogfile);
-                _probeLogger = new FileSink(probeLogfile);
-            }
 
             _logger.Debug("Initialized.");
             _logger.Info("Wait for command to continue executing...");
@@ -127,6 +108,25 @@ namespace Drill4Net.Agent.Transmitter
             _pinger = new Pinger(rep, pingSender);
 
             StartCommandReceiver(rep);
+
+            _cmdSenderTopics = rep.GetSenderCommandTopics().ToList();
+            _cmdSenderTopics.Add(MessagingUtils.GetCommandToWorkerTopic(rep.TargetSession));
+            _logger.Debug($"Sender command topics: [{string.Join(",", _cmdSenderTopics)}]");
+
+            _logger.Debug("Getting & sending the Target's info");
+            SendTargetInfo(rep.GetTargetInfo());
+            _logger.Debug("Target's info is sent");
+
+            //debug
+            _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
+            if (_writeProbesToFile)
+            {
+                var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
+                _logger.Debug($"Probes writing to [{probeLogfile}]");
+                if (File.Exists(probeLogfile))
+                    File.Delete(probeLogfile);
+                _probeLogger = new FileSink(probeLogfile);
+            }
 
             _logger.Trace($"{nameof(DataTransmitter)} singleton is created");
         }
@@ -220,9 +220,11 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
+            _initEvent.WaitOne();
+
             //unfortunately, caching is wrong techique here
             //if (!_probes.TryAdd(data, true))
-               //return;
+            //return;
             Transmitter.SendProbe(data, ctx);
         }
 

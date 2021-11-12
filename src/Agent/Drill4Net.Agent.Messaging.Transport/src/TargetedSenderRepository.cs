@@ -32,9 +32,10 @@ namespace Drill4Net.Agent.Messaging.Transport
 
         private void Init(Guid targetSession, string targetName, string targetVersion)
         {
+            TargetSession = targetSession;
             TargetName = targetName ?? throw new ArgumentNullException(nameof(targetName));
             TargetVersion = targetVersion ?? throw new ArgumentNullException(nameof(targetVersion));
-            TargetSession = targetSession;
+
             MessagerOptions = Options; //guano
 
             if (Options.Sender == null)
