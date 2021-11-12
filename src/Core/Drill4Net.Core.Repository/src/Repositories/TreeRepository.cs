@@ -69,13 +69,16 @@ namespace Drill4Net.Core.Repository
         {
             _logger.Debug($"Path param = [{path}]");
 
+            string baseDir;
             if (string.IsNullOrWhiteSpace(path) && !string.IsNullOrWhiteSpace(Options.TreePath))
             {
-                path = Options.TreePath;
+                baseDir = Options.TreePath;
                 _logger.Debug($"Used path from cfg = [{path}]");
             }
+            else
+                baseDir = FileUtils.EntryDir;
 
-            return _helper.CalculateTreeFilePath(path, FileUtils.EntryDir);
+            return _helper.CalculateTreeFilePath(path, baseDir);
         }
 
         public string GetTreeFilePath(InjectedSolution tree)

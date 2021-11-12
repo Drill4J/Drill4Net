@@ -1,14 +1,14 @@
 Description: IHS BDD tests v.1
-Type: Agent #type as hint
-Target:
-  Name: IHS-bdd 
+Type: Agent # type as hint
+Target: # metadata about Target - overriding one from tree file
+  Name: #IHS-bdd
   Version: # if empty will retrieved from Tree file or dynamically by first call of profiler (for simple systems)
 TreePath: # were tree data about probes are located - if empty, system will try find it by another ways
 Admin:
   Url: localhost:8090
 PluginDir: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\ # agent's plugins
-Connector: #parameters for the connector auxiliary subsystem (native Drill library), it can be missed
-  LogDir: #if empty, will be used the current common log directory
+Connector: # parameters for the connector auxiliary subsystem (native Drill library), it can be missed
+  LogDir: # if empty, will be used the current common log directory
   LogFile: connector.log #it can be presented as full file path (in this case LogDir will be ignored), it can be empty
   LogLevel: debug
 Debug:

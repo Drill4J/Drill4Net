@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
+using System.Web;
 
 namespace Drill4Net.Agent.Transport
 {
@@ -57,8 +58,8 @@ namespace Drill4Net.Agent.Transport
             {
                 agentId = agentCfg.Id,
                 adminAddress = url,
-                buildVersion = agentCfg.BuildVersion,
-                agentVersion = agentCfg.AgentVersion,
+                buildVersion = HttpUtility.UrlEncode(agentCfg.BuildVersion),
+                agentVersion = HttpUtility.UrlEncode(agentCfg.AgentVersion),
                 instanceId = agentCfg.InstanceId,
                 groupId = agentCfg.ServiceGroupId,
                 logLevel = ConvertToConnectorLogLevel(agentCfg.ConnectorLogLevel).ToString(),

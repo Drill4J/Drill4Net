@@ -12,7 +12,8 @@ namespace Drill4Net.Agent.Service
         /*******************************************************************************/
 
         public TargetedInfoSenderRepository(TargetInfo targetInfo, MessagerOptions senderOptions):
-            base(CoreConstants.SUBSYSTEM_AGENT_SERVER, targetInfo.SessionUid, targetInfo.TargetName ?? targetInfo.Solution?.Name, senderOptions)
+            base(CoreConstants.SUBSYSTEM_AGENT_SERVER, targetInfo.SessionUid, targetInfo.TargetName ?? targetInfo.Solution?.Name,
+                targetInfo.TargetVersion ?? targetInfo.Solution?.ProductVersion, senderOptions)
         {
             _targetInfo = targetInfo;
         }

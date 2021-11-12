@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.Service
         private readonly ConcurrentDictionary<Guid, StringDictionary> _pings;
         private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
 
-        private const long _oldPingTickDelta = 10 * 10_000_000; //n sec
+        private const long _oldPingTickDelta = 15 * 10_000_000; //n sec
 
         private readonly AbstractTransportAdmin _admin;
         private readonly Logger _logger;
@@ -204,7 +204,7 @@ namespace Drill4Net.Agent.Service
             if (!_workers.TryGetValue(uid, out WorkerInfo worker))
                 return;
             //
-            _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
+            _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]} {data[MessagingConstants.PING_TARGET_VERSION]}");
             Task.Run(() => CloseWorker(uid));
 
             //delete topics
@@ -268,8 +268,8 @@ namespace Drill4Net.Agent.Service
             var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
             if (needStartWorker)
             {
-                pid = StartAgentWorkerProcess(target.SessionUid, target.TargetName);
-                _logger.Info($"Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
+                pid = StartAgentWorkerProcess(target.SessionUid, target.TargetName, target.TargetVersion);
+                _logger.Info($"Worker was started with pid={pid} -> {sessionUid} : {target.TargetName} {target.TargetVersion}");
 
                 //add local worker info
                 var worker = new WorkerInfo(target, pid, trgTopic, probeTopic, cmdToWorkerTopic, cmdToTransTopic);
@@ -286,9 +286,9 @@ namespace Drill4Net.Agent.Service
             _logger.Debug($"Target info was sent to the topic={trgTopic} for the Worker with pid={pid}");
         }
 
-        internal virtual int StartAgentWorkerProcess(Guid targetSession, string targetName)
+        internal virtual int StartAgentWorkerProcess(Guid targetSession, string targetName, string targetVersion)
         {
-            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName}";
+            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetVersion}";
             _logger.Debug($"Agent Worker's argument: [{args}]");
 
             var process = new Process

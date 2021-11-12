@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -15,7 +16,6 @@ using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using System.Linq;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -170,7 +170,8 @@ namespace Drill4Net.Agent.Transmitter
         {
             _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
 
-            var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(), rep.ConfigPath);
+            var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(),
+                rep.TargetName, rep.TargetVersion, rep.ConfigPath);
             _logger.Trace("Command receiver created");
 
             var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);

@@ -8,7 +8,10 @@ namespace Drill4Net.Profiling.Tree
     [Serializable]
     public class InjectedAssembly : InjectedEntity
     {
-        public bool IsProcessed { get; set; }
+        /// <summary>
+        /// Assembly has entry point method
+        /// </summary>
+        public bool HasEntryPoint { get; set; }
         public AssemblyVersioning FrameworkVersion { get; }
         public string ProductVersion { get; }
 

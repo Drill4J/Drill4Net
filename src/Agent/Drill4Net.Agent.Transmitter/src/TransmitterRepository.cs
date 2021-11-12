@@ -6,6 +6,7 @@ using Drill4Net.Common;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Messaging;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Transmitter
 {
@@ -25,6 +26,8 @@ namespace Drill4Net.Agent.Transmitter
         /// </value>
         public string TargetName { get; set; }
 
+        public string TargetVersion { get; set; }
+
         /// <summary>
         /// Gets the session of Target/Transmitter's Run.
         /// </summary>
@@ -35,6 +38,7 @@ namespace Drill4Net.Agent.Transmitter
 
         public string ConfigPath { get; }
 
+        private InjectedSolution _tree;
         private readonly ContextDispatcher _ctxDisp;
 
         /*********************************************************************************************/
@@ -43,7 +47,9 @@ namespace Drill4Net.Agent.Transmitter
         {
             ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_ADMIN_SERVICE);
             MessagerOptions = GetMessagerOptions();
-            TargetName = Options.Target?.Name ?? GenerateTargetName();
+            _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
+            TargetName = Options.Target?.Name ?? _tree.Name ?? GenerateTargetName();
+            TargetVersion = Options.Target?.Version ?? _tree.ProductVersion ?? FileUtils.GetProductVersion(Assembly.GetEntryAssembly()); //but EntryDir is BAD! It's version of Test Framework for tests
             TargetSession = GetSession();
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem);
         }
@@ -63,17 +69,15 @@ namespace Drill4Net.Agent.Transmitter
 
         public byte[] GetTargetInfo()
         {
-            var tree = ReadInjectedTree();
-            //TODO: remove Target's data with "not current version" from the Solution
-
             var targetInfo = new TargetInfo
             {
                 TargetName = TargetName,
+                TargetVersion = TargetVersion,
                 SessionUid = TargetSession,
                 Options = Options,
-                Solution = tree,
+                Solution = _tree,
             };
-
+            _tree = null; //in general, this data is no longer needed - we save memory
             return Serializer.ToArray<TargetInfo>(targetInfo);
         }
 

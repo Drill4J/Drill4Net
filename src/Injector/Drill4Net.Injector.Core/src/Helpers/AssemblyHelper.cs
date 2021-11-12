@@ -37,6 +37,7 @@ namespace Drill4Net.Injector.Core
             var asmPath = runCtx.CurrentSourceFile;
             var treeAsm = tree.GetAssembly(asmPath, true) ??
                           new InjectedAssembly(asmCtx.Version, asmCtx.Module.Name, asmFullName, asmPath);
+            treeAsm.HasEntryPoint = asmCtx.Definition.EntryPoint != null;
             treeDir.Add(treeAsm);
             asmCtx.InjAssembly = treeAsm;
 

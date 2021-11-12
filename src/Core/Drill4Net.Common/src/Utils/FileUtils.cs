@@ -36,7 +36,12 @@ namespace Drill4Net.Common
 
         public static string GetProductVersion(Type type)
         {
-            return GetProductVersion(type.Assembly.Location);
+            return GetProductVersion(type.Assembly);
+        }
+
+        public static string GetProductVersion(Assembly asm)
+        {
+            return GetProductVersion(asm.Location);
         }
 
         public static string GetProductVersion(string asmPath)

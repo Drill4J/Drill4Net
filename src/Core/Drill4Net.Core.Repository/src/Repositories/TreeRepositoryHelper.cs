@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Drill4Net.BanderLog;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;

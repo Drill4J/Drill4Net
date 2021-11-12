@@ -115,10 +115,17 @@ namespace Drill4Net.Agent.Standard
             _injTypes = GetTypesByCallerVersion(tree);
 
             TargetName = Options.Target?.Name ?? tree.Name;
+
+            //Target's version
+            var asms = tree.GetAssemblies().Where(a => a.ProductVersion != "0.0.0.0");
+            var entryAsmVersion = asms.FirstOrDefault(a => a.HasEntryPoint)?.ProductVersion;
+            var nonEntryAsmVersion = asms.FirstOrDefault(a => !a.HasEntryPoint)?.ProductVersion;
             TargetVersion = Options.Target?.Version ??
                             tree.ProductVersion ??
-                            tree.GetAssemblies().FirstOrDefault(a => a.IsProcessed && a.ProductVersion != "0.0.0.0")?.ProductVersion ?? //guanito
+                            entryAsmVersion ??
+                            nonEntryAsmVersion ??
                             FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
+           
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
 
             //Communicator

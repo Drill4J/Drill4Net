@@ -7,6 +7,7 @@ namespace Drill4Net.Agent.Messaging
         MessagerOptions MessagerOptions { get; }
         Guid TargetSession { get; }
         string TargetName { get; }
+        string TargetVersion { get; }
         string Subsystem { get; }
     }
 }
