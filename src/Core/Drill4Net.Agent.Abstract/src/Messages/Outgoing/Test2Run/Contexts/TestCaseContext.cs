@@ -6,6 +6,16 @@
     public class TestCaseContext : BaseTestContext
     {
         /// <summary>
+        /// Engine of test framework, maybe + version (moniker, etc)
+        /// </summary>
+        public string Engine { get; set; }
+
+        /// <summary>
+        /// Test adapter: xUnit, NUnit, MsTest, etc
+        /// </summary>
+        public string Adapter { get; set; }
+
+        /// <summary>
         /// Group (trait) of the test
         /// </summary>
         public string Group { get; set; }

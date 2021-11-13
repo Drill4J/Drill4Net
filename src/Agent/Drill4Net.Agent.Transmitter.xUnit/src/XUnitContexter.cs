@@ -33,6 +33,7 @@ namespace Drill4Net.Agent.Transmitter.xUnit
             {
                 case AgentCommandType.TEST_CASE_START:
                     var testCaseCtx = GetTestCaseContext(data);
+                    testCaseCtx.Adapter = "xUnit"; //TODO: + version?
                     _curCtx = testCaseCtx.CaseName;
                     break;
                 case AgentCommandType.TEST_CASE_STOP:

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Drill4Net.Target.Tests.Engine
 {
-    public class TestInfo
+    public class TestMetadata
     {
         internal MethodInfo Info { get; set; }
         internal string Signature { get; set; }
@@ -14,14 +14,14 @@ namespace Drill4Net.Target.Tests.Engine
 
         /**********************************************************************************/
 
-        public TestInfo(MethodInfo mi, List<string> checks = null, bool needSort = false)
+        public TestMetadata(MethodInfo mi, List<string> checks = null, bool needSort = false)
         {
             Info = mi ?? throw new ArgumentNullException(nameof(mi));
             Checks = checks ?? throw new ArgumentNullException(nameof(checks));
             NeedSort = needSort;
         }
 
-        public TestInfo(string sig, bool ignoreCtx, List<string> checks = null,bool needSort = false)
+        public TestMetadata(string sig, bool ignoreCtx, List<string> checks = null,bool needSort = false)
         {
             Signature = sig ?? throw new ArgumentNullException(nameof(sig));
             IgnoreContextForSig = ignoreCtx;

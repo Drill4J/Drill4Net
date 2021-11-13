@@ -42,6 +42,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             var caseCtx = new TestCaseContext
             {
                 AssemblyPath = asmPath,
+                Engine = "SpecFlow", //TODO: + version?
                 Group = GetTestGroup(featureCtx.FeatureInfo),
                 QualifiedName = GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
                 DisplayName = info.Title,

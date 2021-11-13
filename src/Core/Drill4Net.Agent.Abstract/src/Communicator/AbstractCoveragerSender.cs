@@ -234,8 +234,46 @@ namespace Drill4Net.Agent.Abstract
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
             var test = testCtx.GetKey();
+            var(type, method) = GetNames(testCtx);
             var metaData = GetTestCaseMetadata(testCtx, test);
-            return new Test2RunInfo(test, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
+
+            var info = new TestName
+            {
+                engine = GetFullEngineName(testCtx),
+                className = type,
+                method = method,
+                //classParams =  // ??
+                methodParams = GetMethodParams(testCtx.CaseName), // TODO: +??
+            };
+            return new Test2RunInfo(test, info, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
+        }
+
+        internal string GetFullEngineName(TestCaseContext testCtx)
+        {
+            var engine = ".NET";
+            if (!string.IsNullOrWhiteSpace(testCtx.Engine))
+                engine += "/" + testCtx.Engine;
+            if (testCtx.Engine != testCtx.Adapter && !string.IsNullOrWhiteSpace(testCtx.Adapter))
+                engine += "/" + testCtx.Adapter;
+            return engine;
+        }
+
+        internal (string type, string method) GetNames(TestCaseContext testCtx)
+        {
+            var qName = testCtx.QualifiedName;
+            if (qName.Contains(".")) //normal full method name
+                return Common.CommonUtils.DeconstructFullMethodName(qName);
+            return (testCtx.Group.Replace("/", "."), qName); //Group is full type namme with "/", and qName is short method name
+        }
+
+        internal string GetMethodParams(string testCase)
+        {
+            if (string.IsNullOrWhiteSpace(testCase))
+                return null;
+            var ind = testCase.IndexOf('(');
+            if (ind == -1)
+                return null;
+            return testCase.Substring(ind, testCase.Length - ind - 2);
         }
 
         internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx, string testNameForAdmin)

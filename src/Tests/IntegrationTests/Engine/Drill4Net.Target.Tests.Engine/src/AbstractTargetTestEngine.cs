@@ -96,7 +96,7 @@ namespace Drill4Net.Target.Tests.Engine
         /// Target tests which affect several methods
         /// </summary>
         [TestCaseSource(typeof(CommonSourceData), nameof(CommonSourceData.Parented))]
-        public void Base_Parented(MethodInfo mi, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] inputs)
+        public void Base_Parented(MethodInfo mi, object[] args, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestMetadata[] inputs)
         {
             #region Arrange
             Assert.IsTrue(inputs?.Length > 0, "Method inputs is empty");

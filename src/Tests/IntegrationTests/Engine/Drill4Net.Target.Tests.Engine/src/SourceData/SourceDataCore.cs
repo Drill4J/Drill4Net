@@ -178,24 +178,24 @@ namespace Drill4Net.Target.Tests.Engine
                 .SetName(caption);
         }
 
-        public static TestCaseData GetCase(object[] pars, params TestInfo[] input)
+        public static TestCaseData GetCase(object[] pars, params TestMetadata[] input)
         {
             return GetCase(pars, false, false, false, input);
         }
 
-        public static TestCaseData GetCase(object[] pars, bool ignoreEnterReturns, params TestInfo[] input)
+        public static TestCaseData GetCase(object[] pars, bool ignoreEnterReturns, params TestMetadata[] input)
         {
             return GetCase(pars, false, false, ignoreEnterReturns, input);
         }
 
         public static TestCaseData GetCase(object[] pars, bool isAsync, bool ignoreEnterReturns,
-            params TestInfo[] input)
+            params TestMetadata[] input)
         {
             return GetCase(pars, isAsync, false, ignoreEnterReturns,input);
         }
 
         //parented
-        public static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestInfo[] input)
+        public static TestCaseData GetCase(object[] pars, bool isAsync, bool isBunch, bool ignoreEnterReturns, params TestMetadata[] input)
         {
             Assert.IsNotNull(input);
             Assert.True(input.Length > 0);

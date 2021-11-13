@@ -13,18 +13,20 @@ namespace Drill4Net.Agent.Abstract
     public class Test2RunInfo
     {
         public string name { get; set; }
-        public string result  { get; set; }
+        public TestName testName { get; set; }
         public long startedAt { get; set; }
         public long finishedAt { get; set; }
+        public string result { get; set; }
         public Test2RunMetadata metadata { get; set; }
 
         /************************************************************************/
 
-        public Test2RunInfo(string name, long startedAt, string result, Dictionary<string, string> metadata)
+        public Test2RunInfo(string name, TestName testName, long startedAt, string result, Dictionary<string, string> metadata)
         {
             this.name = name;
             this.startedAt = startedAt;
             this.result = result;
+            this.testName = testName;
             this.metadata = new Test2RunMetadata()
             {
                 data = metadata,

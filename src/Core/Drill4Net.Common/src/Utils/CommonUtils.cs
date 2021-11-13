@@ -181,7 +181,7 @@ namespace Drill4Net.Common
             return ex?.ToString();
         }
         #endregion
-
+        #region Type & method name parsing
         public static string GetTypeByMethod(string methodFullName)
         {
             if (string.IsNullOrWhiteSpace(methodFullName))
@@ -206,21 +206,32 @@ namespace Drill4Net.Common
 
         public static (string ns, string type) DeconstructFullTypeName(string typeFullName)
         {
-            string typeName;
-            string ns = null;
+            return DeconstructForLastGroup(typeFullName);
+        }
+
+        public static (string type, string method) DeconstructFullMethodName(string methodFullName)
+        {
+            return DeconstructForLastGroup(methodFullName);
+        }
+
+        private static (string prefix, string lastGroup) DeconstructForLastGroup(string typeFullName)
+        {
+            string lastGroup;
+            string prefix = null;
             if (typeFullName.Contains("."))
             {
                 var list = typeFullName.Split('.').ToList();
-                typeName = list[list.Count-1];
+                lastGroup = list[list.Count-1];
                 list.RemoveAt(list.Count - 1);
-                ns = string.Join(".", list);
+                prefix = string.Join(".", list);
             }
             else
             {
-                typeName = typeFullName;
+                lastGroup = typeFullName;
             }
-            return (ns, typeName);
+            return (prefix, lastGroup);
         }
+        #endregion
 
         public static string GetPreciseTime()
         {
