@@ -28,8 +28,8 @@ namespace Drill4Net.Agent.Abstract
                 {
                     Classes = new List<string>
                     {
-                        "Drill4Net.Agent.Abstract.ContextDispatcher",
-                        "Drill4Net.Agent.Abstract.SimpleContexter"
+                        typeof(ContextDispatcher).FullName,
+                        typeof(SimpleContexter).FullName,
                     },
                 },
             };

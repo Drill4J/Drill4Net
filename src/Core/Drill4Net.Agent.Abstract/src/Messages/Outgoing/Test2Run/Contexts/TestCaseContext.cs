@@ -11,6 +11,11 @@
         public string Engine { get; set; }
 
         /// <summary>
+        /// Type of Test Engine (in most cses it is the Hooks class)
+        /// </summary>
+        public string EngineTypeName { get; set; }
+
+        /// <summary>
         /// Test adapter: xUnit, NUnit, MsTest, etc
         /// </summary>
         public string Adapter { get; set; }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 
 //automatic version tagger including Git info
@@ -29,6 +31,8 @@ namespace Drill4Net.Agent.Transmitter.Debug
 
         static void Main(string[] args)
         {
+            //aaa();
+
             SetTitle();
 
             //what is loaded into the Target process and used by the Proxy class
@@ -58,6 +62,13 @@ namespace Drill4Net.Agent.Transmitter.Debug
             }
             Console.ReadKey(true);
         }
+
+        //private static void aaa()
+        //{
+        //    StackTrace stackTrace = new StackTrace(1, false);
+        //   // var frames = stackTrace.GetFrames();
+        //    var type = stackTrace.GetFrame(0).GetMethod().DeclaringType;
+        //}
 
         #region Info
         private static void SetTitle()

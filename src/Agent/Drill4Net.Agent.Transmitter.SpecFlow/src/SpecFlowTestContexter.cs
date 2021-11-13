@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Diagnostics;
 using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
@@ -35,14 +36,19 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
         /// <param name="featureCtx"></param>
         /// <param name="scenarioCtx"></param>
         /// <param name="asmPath"></param>
+        /// <param name="callerMethod"></param>
         /// <returns></returns>
         public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath)
         {
+            var stackTrace = new StackTrace(1, false);
+            var type = stackTrace.GetFrame(3).GetMethod().DeclaringType;
+            //
             var info = scenarioCtx.ScenarioInfo;
             var caseCtx = new TestCaseContext
             {
                 AssemblyPath = asmPath,
                 Engine = "SpecFlow", //TODO: + version?
+                EngineTypeName = type.FullName,
                 Group = GetTestGroup(featureCtx.FeatureInfo),
                 QualifiedName = GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
                 DisplayName = info.Title,
