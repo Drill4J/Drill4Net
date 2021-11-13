@@ -21,6 +21,11 @@
         public string Adapter { get; set; }
 
         /// <summary>
+        /// Tests should be run in sequential, not parallel mode
+        /// </summary>
+        public bool MustSequential { get; set; }
+
+        /// <summary>
         /// Group (trait) of the test
         /// </summary>
         public string Group { get; set; }

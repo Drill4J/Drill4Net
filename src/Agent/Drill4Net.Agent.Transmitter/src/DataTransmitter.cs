@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,6 @@ using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using System.Reflection;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -220,11 +220,9 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
-            _initEvent.WaitOne(); //?? check - is it needed?
-
             //unfortunately, caching is wrong techique here
             //if (!_probes.TryAdd(data, true))
-            //return;
+                //return;
             Transmitter.SendProbe(data, ctx);
         }
 

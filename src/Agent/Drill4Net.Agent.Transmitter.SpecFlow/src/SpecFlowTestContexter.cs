@@ -40,6 +40,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
         /// <returns></returns>
         public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath)
         {
+            //[CallerMemberName] is not convient here
             var stackTrace = new StackTrace(1, false);
             var type = stackTrace.GetFrame(3).GetMethod().DeclaringType;
             //
