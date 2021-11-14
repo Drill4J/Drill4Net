@@ -1,4 +1,5 @@
-﻿using Drill4Net.Agent.Abstract;
+﻿using Drill4Net.Common;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Transmitter.NUnit3
 {
@@ -15,6 +16,16 @@ namespace Drill4Net.Agent.Transmitter.NUnit3
         public override string GetContextId()
         {
             return NUnit.Framework.TestContext.CurrentContext.Test.FullName; //TODO: check !!!!
+        }
+
+        public TestEngine GetTestEngine()
+        {
+            return new TestEngine
+            {
+                Name = "NUnit",
+                Version = FileUtils.GetProductVersion(typeof(NUnit.Framework.TestContext)),
+                MustSequential = false,
+            };
         }
 
         public override bool RegisterCommand(int command, string data)

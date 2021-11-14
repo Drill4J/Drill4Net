@@ -1,7 +1,9 @@
 ﻿using System;
+using Xunit.Abstractions;
+using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 
-namespace Drill4Net.Agent.Transmitter.xUnit
+namespace Drill4Net.Agent.Transmitter.xUnit2
 {
     // https://github.com/xunit/xunit/issues/621 - they say, no test context in xUnit 2.4.x now. It is sad.
     // but in the discussion above and in the source xUnit 3.x (as silly class) it exists (not in NuGet package - commit on 23 Jule, 2021):
@@ -24,6 +26,16 @@ namespace Drill4Net.Agent.Transmitter.xUnit
             return _curCtx;
         }
 
+        public TestEngine GetTestEngine()
+        {
+            return new TestEngine
+            {
+                Name = "xUnit",
+                Version = FileUtils.GetProductVersion(typeof(IExecutionMessage)),
+                MustSequential = true,
+            };
+        }
+
         public override bool RegisterCommand(int command, string data)
         {
             if (!_comTypes.Contains(command))
@@ -33,10 +45,6 @@ namespace Drill4Net.Agent.Transmitter.xUnit
             {
                 case AgentCommandType.TEST_CASE_START:
                     var testCaseCtx = GetTestCaseContext(data);
-                    //data about test adapter
-                    //TODO: these aren't included to the test context on test workflow yet - only to the probe's context... :((
-                    //testCaseCtx.Adapter = "xUnit"; //TODO: + version?
-                    //testCaseCtx.MustSequential = true;
                     _curCtx = testCaseCtx.CaseName;
                     break;
                 case AgentCommandType.TEST_CASE_STOP:

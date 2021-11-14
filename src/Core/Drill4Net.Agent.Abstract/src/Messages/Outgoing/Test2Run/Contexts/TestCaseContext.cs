@@ -9,22 +9,12 @@
         /// Engine of test generator framework (SpecFlow, xUnit, NUmit, etc).
         /// Maybe + version (moniker, etc)??
         /// </summary>
-        public string Generator { get; set; }
-
-        /// <summary>
-        /// Type of Test Engine (in most cses it is the Hooks class)
-        /// </summary>
-        public string GeneratorTypeName { get; set; }
+        public TestGenerator Generator { get; set; }
 
         /// <summary>
         /// Test engine for test runners: xUnit, NUnit, MsTest, etc
         /// </summary>
-        public string Engine { get; set; }
-
-        /// <summary>
-        /// Tests should be run in sequential, not parallel mode
-        /// </summary>
-        public bool MustSequential { get; set; }
+        public TestEngine Engine { get; set; }
 
         /// <summary>
         /// Group (trait) of the test

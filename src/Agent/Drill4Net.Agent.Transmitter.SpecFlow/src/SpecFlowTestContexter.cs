@@ -13,7 +13,20 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
     /// </summary>
     public class SpecFlowTestContexter : IGeneratorContexter
     {
+        private static readonly SpecFlowTestContexter _singleton = new SpecFlowTestContexter();
+        private readonly TestGenerator _generator;
         private static readonly ConcurrentDictionary<string, long> _testCaseStartTimes = new();
+
+        /**********************************************************************************************/
+
+        public SpecFlowTestContexter()
+        {
+            _generator = new TestGenerator
+            {
+                Name = "SpecFlow",
+                Version = FileUtils.GetProductVersion(typeof(FeatureContext)),
+            };
+        }
 
         /**********************************************************************************************/
 
@@ -45,11 +58,11 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             var type = stackTrace.GetFrame(3).GetMethod().DeclaringType;
             //
             var info = scenarioCtx.ScenarioInfo;
+            _singleton._generator.TypeName = type.FullName;
             var caseCtx = new TestCaseContext
             {
                 AssemblyPath = asmPath,
-                Generator = "SpecFlow", //TODO: + version?
-                GeneratorTypeName = type.FullName,
+                Generator = _singleton._generator,
                 Group = GetTestGroup(featureCtx.FeatureInfo),
                 QualifiedName = GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
                 DisplayName = info.Title,
@@ -163,6 +176,11 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             }
             displayName = string.Join(null, ar).Replace(" ", null);
             return displayName;
+        }
+
+        public TestGenerator GetTestGenerator()
+        {
+            return _generator;
         }
     }
 }
