@@ -241,9 +241,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Docker", "!!_Docker", "{
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflow", "Workflow", "{3D3544E8-2D7D-4EE1-BA6E-43FCFDCB19C0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestGenerators", "TestGenerators", "{3D3544E8-2D7D-4EE1-BA6E-43FCFDCB19C0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Probes", "Probes", "{68682248-869A-474C-9B57-11E8B12CBEE5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestEngines", "TestEngines", "{68682248-869A-474C-9B57-11E8B12CBEE5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.xUnit", "src\Agent\Drill4Net.Agent.Transmitter.xUnit\Drill4Net.Agent.Transmitter.xUnit.csproj", "{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4}"
 EndProject

@@ -9,9 +9,9 @@ using Drill4Net.Agent.Abstract;
 namespace Drill4Net.Agent.Transmitter.SpecFlow
 {
     /// <summary>
-    /// Helper for SpecFlow for retrieving tests' workflow from the specific contexts
+    /// SpecFlow helper for retrieving tests' workflow from the specific contexts
     /// </summary>
-    public static class SpecFlowTestContexter
+    public class SpecFlowTestContexter : IGeneratorContexter
     {
         private static readonly ConcurrentDictionary<string, long> _testCaseStartTimes = new();
 
@@ -48,8 +48,8 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             var caseCtx = new TestCaseContext
             {
                 AssemblyPath = asmPath,
-                Engine = "SpecFlow", //TODO: + version?
-                EngineTypeName = type.FullName,
+                Generator = "SpecFlow", //TODO: + version?
+                GeneratorTypeName = type.FullName,
                 Group = GetTestGroup(featureCtx.FeatureInfo),
                 QualifiedName = GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
                 DisplayName = info.Title,

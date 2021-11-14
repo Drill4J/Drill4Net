@@ -251,10 +251,10 @@ namespace Drill4Net.Agent.Abstract
         internal string GetFullEngineName(TestCaseContext testCtx)
         {
             var engine = ".NET";
-            if (!string.IsNullOrWhiteSpace(testCtx.Engine))
+            if (!string.IsNullOrWhiteSpace(testCtx.Generator))
+                engine += "/" + testCtx.Generator;
+            if (testCtx.Generator != testCtx.Engine && !string.IsNullOrWhiteSpace(testCtx.Engine))
                 engine += "/" + testCtx.Engine;
-            if (testCtx.Engine != testCtx.Adapter && !string.IsNullOrWhiteSpace(testCtx.Adapter))
-                engine += "/" + testCtx.Adapter;
             return engine;
         }
 

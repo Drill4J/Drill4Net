@@ -6,19 +6,20 @@
     public class TestCaseContext : BaseTestContext
     {
         /// <summary>
-        /// Engine of test framework, maybe + version (moniker, etc)
+        /// Engine of test generator framework (SpecFlow, xUnit, NUmit, etc).
+        /// Maybe + version (moniker, etc)??
         /// </summary>
-        public string Engine { get; set; }
+        public string Generator { get; set; }
 
         /// <summary>
         /// Type of Test Engine (in most cses it is the Hooks class)
         /// </summary>
-        public string EngineTypeName { get; set; }
+        public string GeneratorTypeName { get; set; }
 
         /// <summary>
-        /// Test adapter: xUnit, NUnit, MsTest, etc
+        /// Test engine for test runners: xUnit, NUnit, MsTest, etc
         /// </summary>
-        public string Adapter { get; set; }
+        public string Engine { get; set; }
 
         /// <summary>
         /// Tests should be run in sequential, not parallel mode

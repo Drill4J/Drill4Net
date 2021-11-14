@@ -21,19 +21,21 @@ namespace Drill4Net.Agent.Abstract
         {
             _logger = new TypedLogger<ContextDispatcher>(subsystem);
 
-            var pluginator = new Pluginator();
-            var filter = new SourceFilterOptions
-            {
-                Excludes = new SourceFilterParams
-                {
-                    Classes = new List<string>
-                    {
-                        typeof(ContextDispatcher).FullName,
-                        typeof(SimpleContexter).FullName,
-                    },
-                },
-            };
-            var ctxTypes = pluginator.GetByInterface(dir, typeof(AbstractContexter), filter);
+            var pluginator = new TypeFinder();
+            //var filter = new SourceFilterOptions
+            //{
+            //    Excludes = new SourceFilterParams
+            //    {
+            //        Classes = new List<string>
+            //        {
+            //            typeof(ContextDispatcher).FullName,
+            //            typeof(SimpleContexter).FullName,
+            //        },
+            //    },
+            //};
+            //var tstTypes = pluginator.GetBy(TypeFinderMode.Class, dir, typeof(AbstractContexter), filter);
+            //dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Transmitter.NUnit\netstandard2.0\"; //TEST !!!
+            var ctxTypes = pluginator.GetBy(TypeFinderMode.Interface, dir, typeof(IEngineContexter));
 
             _contexters = new List<AbstractContexter>();
             foreach (var contexter in ctxTypes)

@@ -1,8 +1,10 @@
 ﻿using Drill4Net.Agent.Abstract;
 
-namespace Drill4Net.Agent.Transmitter.NUnit
+namespace Drill4Net.Agent.Transmitter.NUnit3
 {
-    public class NUnitContexter : AbstractContexter
+    //https://docs.nunit.org/articles/nunit/writing-tests/TestContext.html
+
+    public class NUnitContexter : AbstractContexter, IEngineContexter
     {
         public NUnitContexter() : base(nameof(NUnitContexter))
         {
@@ -12,7 +14,7 @@ namespace Drill4Net.Agent.Transmitter.NUnit
 
         public override string GetContextId()
         {
-            return null; //TODO real !!!!
+            return NUnit.Framework.TestContext.CurrentContext.Test.FullName; //TODO: check !!!!
         }
 
         public override bool RegisterCommand(int command, string data)

@@ -7,7 +7,7 @@ namespace Drill4Net.Agent.Transmitter.xUnit
     // but in the discussion above and in the source xUnit 3.x (as silly class) it exists (not in NuGet package - commit on 23 Jule, 2021):
     // https://github.com/xunit/xunit/blob/32a168c759e38d25931ee91925fa75b6900209e1/src/xunit.v3.core/Sdk/Frameworks/TestContextAccessor.cs
 
-    public class XUnitContexter : AbstractContexter
+    public class XUnitContexter : AbstractContexter, IEngineContexter
     {
         private string _curCtx;
 
@@ -33,14 +33,16 @@ namespace Drill4Net.Agent.Transmitter.xUnit
             {
                 case AgentCommandType.TEST_CASE_START:
                     var testCaseCtx = GetTestCaseContext(data);
-                    testCaseCtx.Adapter = "xUnit"; //TODO: + version?
-                    testCaseCtx.MustSequential = true;
+                    //data about test adapter
+                    //TODO: these aren't included to the test context on test workflow yet - only to the probe's context... :((
+                    //testCaseCtx.Adapter = "xUnit"; //TODO: + version?
+                    //testCaseCtx.MustSequential = true;
                     _curCtx = testCaseCtx.CaseName;
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
                     _curCtx = null;
                     break;
-                //another options we don't process
+                //another options we don't process here
             }
             return true;
         }
