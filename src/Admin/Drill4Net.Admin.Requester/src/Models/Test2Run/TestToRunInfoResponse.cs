@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Admin.Requester
 {
@@ -6,7 +6,7 @@ namespace Drill4Net.Admin.Requester
     {
         public string Name { get; set; }
 
-        public Dictionary<string, string> Metadata { get; set; } //<string, object>
+        public Test2RunMetadata Metadata { get; set; }
 
         /******************************************************************/
 

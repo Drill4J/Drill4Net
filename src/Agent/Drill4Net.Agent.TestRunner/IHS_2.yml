@@ -4,5 +4,5 @@ Target: IHS-bdd # must match with injection's target name
 FilePath: d:\Projects\IHS-bdd-2.Injected\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # full path: dll for running the injected tests by CLI
 Url: localhost:8090 # Drill Admin service
 Debug:
-    Disabled: false
-    IsFake: false # use fake data
+   Disabled: false
+   IsFake: false # use fake data

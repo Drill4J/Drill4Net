@@ -65,10 +65,10 @@ namespace Drill4Net.Agent.TestRunner.Core
                     {
                         //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
                         var name = t2r.Name; //it is DisplayName, not QualifiedName
-                        var meta = t2r.Metadata; //TODO: use info about executing file!
+                        var metadata = t2r.Metadata.data; //TODO: use info about executing file!
                         string qName = null;
-                        if(meta.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
-                            qName = GetTestCaseContext(meta[AgentConstants.KEY_TESTCASE_CONTEXT])?.QualifiedName;
+                        if(metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
+                            qName = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT])?.QualifiedName;
                         if (string.IsNullOrWhiteSpace(qName))
                             qName = TestContextHelper.GetQualifiedName(name);
                         tests.Add(qName);

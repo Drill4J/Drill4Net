@@ -68,6 +68,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             try
             {
+                await Task.Delay(5_000);
                 var (runType, tests) = await _rep.GetRunToTests().ConfigureAwait(false);
                 if (runType == RunningType.Nothing)
                     return;

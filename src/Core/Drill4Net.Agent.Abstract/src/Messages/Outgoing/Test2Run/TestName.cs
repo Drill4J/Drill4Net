@@ -6,7 +6,7 @@ namespace Drill4Net.Agent.Abstract
 
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public record TestName
+    public class TestName
     {
         public string engine { get; set; }
         public string className { get; set; }
@@ -24,7 +24,7 @@ namespace Drill4Net.Agent.Abstract
             var mth = method;
             if (methodParams != null)
                 mth += ":" + methodParams;
-            return $"${engine}${cl}/{mth}";
+            return $"{engine}: {cl}/{mth}";
         }
     }
 }

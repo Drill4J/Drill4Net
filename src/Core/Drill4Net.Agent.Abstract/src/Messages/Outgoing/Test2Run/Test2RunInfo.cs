@@ -21,7 +21,8 @@ namespace Drill4Net.Agent.Abstract
 
         /************************************************************************/
 
-        public Test2RunInfo(string name, TestName testName, long startedAt, string result, Dictionary<string, string> metadata)
+        public Test2RunInfo(string name, TestName testName, long startedAt, string result, 
+            Dictionary<string, string> metadata)
         {
             this.name = name;
             this.startedAt = startedAt;
@@ -32,6 +33,13 @@ namespace Drill4Net.Agent.Abstract
                 hash = name,
                 data = metadata,
             };
+        }
+
+        /************************************************************************/
+
+        public override string ToString()
+        {
+            return $"{name} -> [{testName}] -> Result: {result} -> Metadata: {metadata}";
         }
     }
 }

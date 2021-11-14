@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -20,5 +21,14 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
 
         public Dictionary<string, string> data { get; set; }
+
+        /***************************************************************************************/
+
+        public override string ToString()
+        {
+            if (data == null)
+                return null;
+            return JsonConvert.SerializeObject(data);
+        }
     }
 }
