@@ -200,7 +200,7 @@ namespace Drill4Net.Agent.Abstract
                 info = PrepareTest2RunInfo(testCtx);
             info.result = testCtx.Result ?? nameof(TestResult.UNKNOWN);
             info.finishedAt = testCtx.FinishTime;
-            _logger.Debug($"Test name for Admin service: [{info.name}]");
+            _logger.Debug($"Finish test case: [{info}]");
             
             //test run
             var testRun = new TestRun

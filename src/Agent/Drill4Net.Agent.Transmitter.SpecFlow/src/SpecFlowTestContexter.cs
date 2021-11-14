@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
     /// </summary>
     public class SpecFlowTestContexter : IGeneratorContexter
     {
-        private static readonly SpecFlowTestContexter _singleton = new SpecFlowTestContexter();
+        private static readonly SpecFlowTestContexter _singleton = new();
         private readonly TestGenerator _generator;
         private static readonly ConcurrentDictionary<string, long> _testCaseStartTimes = new();
 
@@ -63,8 +63,11 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             {
                 AssemblyPath = asmPath,
                 Generator = _singleton._generator,
+                //TODO: get Engine from plugins (through TransmitterRepository tranferred to SpecFlowTestContexter's .ctor -
+                //this static class must be fully non-static with creating reference in ProfilerProxy)
+                //Engine =
                 Group = GetTestGroup(featureCtx.FeatureInfo),
-                QualifiedName = GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
+                QualifiedName = TestContextHelper.GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
                 DisplayName = info.Title,
                 CaseName = GetTestCase(scenarioCtx.ScenarioInfo),
                 Tags = info.Tags.ToList(),
@@ -152,30 +155,6 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
             if (isParams)
                 title += "])";
             return title;
-        }
-
-        /// <summary>
-        /// Converts "Request with invalid parameters" -> "RequestWitInvalidParameters".
-        /// In fact, it is just part of full quailifies name (full method name) - short name
-        /// </summary>
-        /// <param name="displayName"></param>
-        /// <returns></returns>
-        private static string GetQualifiedName(string displayName)
-        {
-            if (!displayName.Contains(" "))
-                return displayName; //as is
-            var ar = displayName.Split(' ');
-            for (int i = 0; i < ar.Length; i++)
-            {
-                string word = ar[i];
-                if (string.IsNullOrWhiteSpace(word))
-                    continue;
-                char[] a = word.ToLower().ToCharArray();
-                a[0] = char.ToUpper(a[0]);
-                ar[i] = new string(a);
-            }
-            displayName = string.Join(null, ar).Replace(" ", null);
-            return displayName;
         }
 
         public TestGenerator GetTestGenerator()

@@ -8,6 +8,8 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Core.Repository;
 using Drill4Net.Admin.Requester;
+using Drill4Net.Agent.Abstract;
+using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
@@ -62,16 +64,26 @@ namespace Drill4Net.Agent.TestRunner.Core
                     foreach (var t2r in testByType)
                     {
                         //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
-                        var name = t2r.Name;
+                        var name = t2r.Name; //it is DisplayName, not QualifiedName
                         var meta = t2r.Metadata; //TODO: use info about executing file!
-                        tests.Add(name);
+                        string qName = null;
+                        if(meta.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
+                            qName = GetTestCaseContext(meta[AgentConstants.KEY_TESTCASE_CONTEXT])?.QualifiedName;
+                        if (string.IsNullOrWhiteSpace(qName))
+                            qName = TestContextHelper.GetQualifiedName(name);
+                        tests.Add(qName);
                     }
                 }
             }
             return (runType, tests);
         }
 
-        #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        protected TestCaseContext GetTestCaseContext(string str)
+        {
+            return JsonConvert.DeserializeObject<TestCaseContext>(str);
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         internal async virtual Task<TestToRunResponse> GetFakeTestToRun()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
@@ -123,7 +135,10 @@ namespace Drill4Net.Agent.TestRunner.Core
                 test2Run = actual?.Summary?.TestsToRun;
                 if (test2Run == null)
                     return RunningType.All;
+                if (test2Run.Count > 0)
+                    return RunningType.Certain;
 
+                //hmm...
                 var testCnt = actual.Summary.Tests.Count;
                 var test2runCnt = test2Run.Count;
                 _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");

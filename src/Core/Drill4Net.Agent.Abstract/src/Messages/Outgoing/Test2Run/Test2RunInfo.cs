@@ -29,8 +29,8 @@ namespace Drill4Net.Agent.Abstract
             this.testName = testName;
             this.metadata = new Test2RunMetadata()
             {
-                data = metadata,
                 hash = name,
+                data = metadata,
             };
         }
     }

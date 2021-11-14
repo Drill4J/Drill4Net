@@ -15,7 +15,7 @@ namespace Drill4Net.Agent.Transmitter.NUnit3
 
         public override string GetContextId()
         {
-            return NUnit.Framework.TestContext.CurrentContext.Test.FullName; //TODO: check !!!!
+            return null; // NUnit.Framework.TestContext.CurrentContext?.Test?.FullName; //TODO: check !!!!
         }
 
         public TestEngine GetTestEngine()
