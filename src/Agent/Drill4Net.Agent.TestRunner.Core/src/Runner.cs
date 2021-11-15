@@ -69,7 +69,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             try
             {
-                var runInfo = await _rep.GetRunToTests().ConfigureAwait(false);
+                var runInfo = await _rep.GetRunInfo().ConfigureAwait(false);
                 if (runInfo.RunType == RunningType.Nothing)
                     return;
 

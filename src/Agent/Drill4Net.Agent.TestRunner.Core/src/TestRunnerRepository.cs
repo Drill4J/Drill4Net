@@ -49,43 +49,43 @@ namespace Drill4Net.Agent.TestRunner.Core
             return new StandardAgent(_agentRep);
         }
 
-        internal async Task<RunInfo> GetRunToTests()
+        internal async Task<RunInfo> GetRunInfo()
         {
-            var res = new RunInfo { RunType = GetRunningType() };
-            _logger.Debug($"Real running type: {res.RunType}");
-
             var isFake = Options.Debug is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
+
+            //running type
+            RunningType runningType;
             if (isFake)
             {
-                res.RunType = RunningType.Certain;
-                _logger.Debug($"Fake running type: {res.RunType}");
+                runningType = RunningType.Certain;
+                _logger.Debug($"Fake running type: {runningType}");
             }
-
-            if (res.RunType != RunningType.Certain)
-                return res;
-
-            TestToRunResponse run = null;
-            for (var i = 0; i < 5; i++)
+            else
             {
-                run = await (!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
-                    .ConfigureAwait(false);
-                if (run.ByType != null)
-                    break;
-                await Task.Delay(1000);
+                runningType = GetRunningType();
+                _logger.Debug($"Real running type: {runningType}");
             }
+            var res = new RunInfo { RunType = runningType };
+            if (runningType != RunningType.Certain)
+                return res;
+            
+            // get tests to run from Admin
+            var run = await GetTestToRun(isFake)
+                .ConfigureAwait(false);
             if (run.ByType == null) //it is error here
             {
                 _logger.Error("No tests");
                 return res;
             }
-            //
+
             if (!run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
             {
                 res.RunType = RunningType.Nothing; //ALL??
                 return res;
             }
-
+            
+            // adapt tests to run in CLI
             foreach (var t2r in run.ByType[AgentConstants.TEST_AUTO])
             {
                 //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
@@ -136,6 +136,20 @@ namespace Drill4Net.Agent.TestRunner.Core
                 info.Tests.Add(qName);
             }
             return res;
+        }
+
+        internal async Task<TestToRunResponse> GetTestToRun(bool isFake)
+        {
+            TestToRunResponse run = null;
+            for (var i = 0; i < 5; i++) //guanito, but Drill REST can be starnge
+            {
+                run = await(!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
+                    .ConfigureAwait(false);
+                if (run.ByType != null)
+                    break;
+                await Task.Delay(1000).ConfigureAwait(false);
+            }
+            return run;
         }
 
         protected TestCaseContext GetTestCaseContext(string str)
