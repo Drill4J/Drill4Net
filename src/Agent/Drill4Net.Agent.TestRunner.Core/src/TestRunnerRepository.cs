@@ -15,7 +15,9 @@ namespace Drill4Net.Agent.TestRunner.Core
 {
     public class TestRunnerRepository : ConfiguredRepository<TestRunnerOptions, BaseOptionsHelper<TestRunnerOptions>>
     {
+        //TODO: more abstract type (but Agent shouldn't connect immedeately after its creating)
         private readonly StandardAgentRepository _agentRep;
+
         private readonly AdminRequester _requester;
         private readonly Logger _logger;
 

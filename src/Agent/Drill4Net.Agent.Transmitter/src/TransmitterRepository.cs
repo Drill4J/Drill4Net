@@ -49,7 +49,7 @@ namespace Drill4Net.Agent.Transmitter
             MessagerOptions = GetMessagerOptions();
             _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
             TargetName = Options.Target?.Name ?? _tree.Name ?? GenerateTargetName();
-            TargetVersion = Options.Target?.Version ?? _tree.ProductVersion ?? FileUtils.GetProductVersion(Assembly.GetEntryAssembly()); //but EntryDir is BAD! It's version of Test Framework for tests
+            TargetVersion = Options.Target?.Version ?? _tree.ProductVersion ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
             TargetSession = GetSession();
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem);
         }

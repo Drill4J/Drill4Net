@@ -19,6 +19,8 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public event AgentInitializedHandler Initialized;
 
+        /**************************************************************************/
+
         protected void RaiseInitilizedEvent()
         {
             Initialized?.Invoke();

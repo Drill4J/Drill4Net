@@ -142,14 +142,10 @@ namespace Drill4Net.Agent.Standard
 
         internal AdminAgentConfig GetAdminAgentConfig(TargetData targOpts, ConnectorAuxOptions connOpts)
         {
-            string targVersion = targOpts.Version;
-            if (string.IsNullOrWhiteSpace(targVersion))
-                targVersion = GetExecutingAssemblyVersion(); //Guanito: a little inproperly (in Worker we get its version)
-
             // aux connector parameters
             (var logFile, Microsoft.Extensions.Logging.LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
 
-            return new AdminAgentConfig(targOpts.Name, targVersion, GetAgentVersion())
+            return new AdminAgentConfig(targOpts.Name, TargetVersion, GetAgentVersion())
             {
                 ConnectorLogFilePath = logFile,
                 ConnectorLogLevel = logLevel
@@ -204,16 +200,6 @@ namespace Drill4Net.Agent.Standard
         internal string GetAgentVersion()
         {
             return FileUtils.GetProductVersion(typeof(StandardAgentRepository));
-        }
-
-        /// <summary>
-        /// In the Server/Worker distributed environment it is the Worker's version, not Target's one
-        /// </summary>
-        /// <returns></returns>
-        internal string GetExecutingAssemblyVersion()
-        {
-            var asm = Assembly.GetExecutingAssembly();
-            return FileUtils.GetProductVersion(asm.Location);
         }
 
         /// <summary>

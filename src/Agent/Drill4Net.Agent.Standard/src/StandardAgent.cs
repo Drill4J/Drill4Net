@@ -43,6 +43,8 @@ namespace Drill4Net.Agent.Standard
     // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class StandardAgent : AbstractAgent
     {
+        //TODO: move some props & fields to the abstract parent type
+
         /// <summary>
         /// Agent as singleton
         /// </summary>
@@ -69,20 +71,20 @@ namespace Drill4Net.Agent.Standard
         public string EmergencyLogDir { get; }
 
         private readonly ICommunicator _comm;
-        private readonly ManualResetEvent _initEvent = new(false);
+
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
-
         private static bool _isFastInitializing;
         private readonly AdminRequester _requester;
+        private readonly AssemblyResolver _resolver;
+        private static readonly object _entitiesLocker = new();
+        private readonly ManualResetEvent _initEvent = new(false);
 
         private static Logger _logger;
         private static FileSink _probeLogger;
         private readonly bool _writeProbesToFile;
-        private readonly AssemblyResolver _resolver;
-        private static readonly object _entitiesLocker = new();
         private static readonly string _logPrefix;
-        private static Dictionary<string, object> _logExtras;
+        private static readonly Dictionary<string, object> _logExtras;
 
         /*****************************************************************************/
 
