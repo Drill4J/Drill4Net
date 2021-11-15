@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Drill4Net.BanderLog;
 
 using Drill4Net.Agent.Standard;
+using System.IO;
 
 /*** INFO
 automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -68,11 +69,11 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             try
             {
-                await Task.Delay(5_000);
-                var (runType, tests) = await _rep.GetRunToTests().ConfigureAwait(false);
-                if (runType == RunningType.Nothing)
+                var runInfo = await _rep.GetRunToTests().ConfigureAwait(false);
+                if (runInfo.RunType == RunningType.Nothing)
                     return;
-                var args = GetRunArguments(tests);
+
+                var args = GetRunArguments(runInfo);
                 RunTests(args); //we need for the test's names here - they runs by CLI ("dotnet test ...")
 
                 _logger.Debug("Finished");
@@ -86,48 +87,57 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <summary>
         /// Get the arguments for running the test by VSTest CLI
         /// </summary>
-        /// <param name="tests"></param>
+        /// <param name="info"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        internal string GetRunArguments(IList<string> tests)
+        internal List<string> GetRunArguments(RunInfo info)
         {
-            // prefix "/C" - is for running in the CMD
-            var args = $"/C dotnet test \"{_rep.Options.FilePath}\"";
-            if (tests?.Any() != true)
-                return args;
-            //
-            args += " --filter \"";
-            for (int i = 0; i < tests.Count; i++)
+            var asmInfos = info.AssemblyInfos;
+            var res = new List<string>();
+
+            foreach (var asmInfo in asmInfos.Values)
             {
-                string test = tests[i];
+                var tests = asmInfo.Tests;
+                var asmPath = Path.Combine(_rep.Options.Directory, asmInfo.AssemblyName);
 
-                // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest break
-                var ind = test.IndexOf("("); //after ( the parameters of case followed 
-                if (ind != -1)
-                    test = test[..ind];
+                // prefix "/C" - is for running in the CMD
+                var args = $"/C dotnet test \"{asmPath}\"";
+                if (tests?.Any() != true)
+                    continue;
                 //
-                test = test.Replace(",", "%2C").Replace("\"","\\\"").Replace("!", "\\!"); //need escaping
-                //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace
-                //TODO: = comparing with real namespaces
-                args += $"FullyQualifiedName~.{test}";
-                if (i < tests.Count - 1)
-                    args += "|";
-                else
-                    args += "\"";
+                args += " --filter \"";
+                for (int i = 0; i < tests.Count; i++)
+                {
+                    string test = tests[i];
+
+                    // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest break
+                    var ind = test.IndexOf("("); //after ( the parameters of case followed 
+                    if (ind != -1)
+                        test = test[..ind];
+                    //
+                    test = test.Replace(",", "%2C").Replace("\"", "\\\"").Replace("!", "\\!"); //need escaping
+                    //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace
+                    //TODO: = comparing with real namespaces
+                    args += $"FullyQualifiedName~.{test}";
+                    if (i < tests.Count - 1)
+                        args += "|";
+                    else
+                        args += "\"";
+                }
+
+                args += $" {GetLoggerParameters()} {GetParallelRunParameters(asmInfo.MustSequential)}"; //RunConfiguration must be at the end of args
+                if (args.Length > 32767) //TODO: split tests and create separate cmd processes
+                    throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
+                
+                res.Add(args);
             }
-
-            args += $" {GetLoggerParameters()} {GetParallelRunParameters()}"; //RunConfiguration must be at the end of args
-
-            if (args.Length > 32767)
-                throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
-            return args;
+            return res;
         }
 
-        internal string GetParallelRunParameters()
+        internal string GetParallelRunParameters(bool mustSequential)
         {
             //TODO: depending on the type of test framework: xUnit still disable, others aren't
-            //Config - is bad... from Tree after injection?... hmmm...
-            return "-- RunConfiguration.DisableParallelization=true";
+            return $"-- RunConfiguration.DisableParallelization={mustSequential}";
         }
 
         internal string GetLoggerParameters()
@@ -138,20 +148,24 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <summary>
         /// Run the specified test in arguments by VSTest CLI
         /// </summary>
-        /// <param name="args"></param>
-        internal void RunTests(string args)
+        /// <param name="argsList"></param>
+        internal void RunTests(List<string> argsList)
         {
-            var process = new Process
+            //TODO: restrict count of simultaneously running cmd processes
+            foreach (var args in argsList)
             {
-                StartInfo =
+                var process = new Process
                 {
-                    FileName = "cmd.exe",
-                    Arguments = args,
-                    CreateNoWindow = false,
-                    UseShellExecute = true,
-                }
-            };
-            process.Start();
+                    StartInfo =
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = args,
+                        CreateNoWindow = false,
+                        UseShellExecute = true,
+                    }
+                };
+                process.Start();
+            }
         }
     }
 }

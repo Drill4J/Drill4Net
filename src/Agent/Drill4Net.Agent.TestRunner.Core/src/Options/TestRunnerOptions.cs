@@ -8,12 +8,12 @@ namespace Drill4Net.Agent.TestRunner.Core
     public class TestRunnerOptions : AbstractOptions
     {
         /// <summary>
-        /// File path for the Test assembly
+        /// Directory for the injected tests
         /// </summary>
-        public string FilePath { get; set; }
+        public string Directory { get; set; }
 
         /// <summary>
-        /// Options exclusive for debug
+        /// Options exclusively for debug
         /// </summary>
         public TestRunnerDebugOptions Debug { get; set; }
     }

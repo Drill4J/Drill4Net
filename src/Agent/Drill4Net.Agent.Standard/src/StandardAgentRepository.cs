@@ -13,6 +13,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.Admin.Requester;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -21,6 +22,8 @@ namespace Drill4Net.Agent.Standard
     /// </summary>
     public sealed class StandardAgentRepository : AbstractCommunicatorRepository
     {
+        public List<BuildSummary> Builds { get; private set; }
+
         /// <summary>
         /// Any sesion is exists?
         /// </summary>
@@ -36,6 +39,7 @@ namespace Drill4Net.Agent.Standard
         private CoverageRegistrator _globalRegistrator;
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
+        private AdminRequester _requester;
 
         private Logger _logger;
         private System.Timers.Timer _sendTimer;
@@ -117,6 +121,9 @@ namespace Drill4Net.Agent.Standard
                             FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
            
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
+
+            _requester = new AdminRequester(Options.Admin.Url, TargetName, TargetVersion);
+            Builds = _requester.GetBuildSummaries().GetAwaiter().GetResult();
 
             //Communicator
             var targData = new TargetData

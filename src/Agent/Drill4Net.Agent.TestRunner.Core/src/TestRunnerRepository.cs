@@ -26,6 +26,8 @@ namespace Drill4Net.Agent.TestRunner.Core
         public TestRunnerRepository(): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, string.Empty)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
+            if (string.IsNullOrWhiteSpace(Options.Directory))
+                throw new Exception("Directory for tests is empty in config");
             _agentRep = CreateAgentRepository();
             _requester = new(_agentRep.Options.Admin.Url, _agentRep.TargetName, _agentRep.TargetVersion);
         }
@@ -37,7 +39,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             //we need to give the concrete path to the agent config because also the others  are located here
             var agentCfgPath = Path.Combine(FileUtils.EntryDir, CoreConstants.CONFIG_NAME_DEFAULT);
             var helper = new TreeRepositoryHelper(Subsystem);
-            var treePath = helper.CalculateTreeFilePath(Path.GetDirectoryName(Options.FilePath));
+            var treePath = helper.CalculateTreeFilePath(Options.Directory);
             return new StandardAgentRepository(agentCfgPath, treePath);
         }
 
@@ -47,42 +49,86 @@ namespace Drill4Net.Agent.TestRunner.Core
             return new StandardAgent(_agentRep);
         }
 
-        public async Task<(RunningType runType, List<string> tests)> GetRunToTests()
+        internal async Task<RunInfo> GetRunToTests()
         {
-            var tests = new List<string>();
-            var runType = GetRunningType();
-            _logger.Debug($"Real running type: {runType}");
+            var res = new RunInfo { RunType = GetRunningType() };
+            _logger.Debug($"Real running type: {res.RunType}");
 
             var isFake = Options.Debug is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
             if (isFake)
             {
-                runType = RunningType.Certain;
-                _logger.Debug($"Fake running type: {runType}");
+                res.RunType = RunningType.Certain;
+                _logger.Debug($"Fake running type: {res.RunType}");
             }
 
-            if (runType == RunningType.Certain)
+            if (res.RunType != RunningType.Certain)
+                return res;
+
+            var run = await (!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
+                .ConfigureAwait(false);
+            if (run.ByType == null)
             {
-                var run = await (!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
-                    .ConfigureAwait(false);
-                foreach (var type in run.ByType.Keys)
+                _logger.Info("No tests");
+                return res;
+            }
+            //
+            if (!run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
+            {
+                res.RunType = RunningType.Nothing; //ALL??
+                return res;
+            }
+
+            foreach (var t2r in run.ByType[AgentConstants.TEST_AUTO])
+            {
+                //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
+                var name = t2r.Name; //it is DisplayName, not QualifiedName
+                var metadata = t2r.Metadata.data; //TODO: use info about executing file!
+                string qName = null;
+                string asmName = null;
+                bool mustSeq = true;
+                if (metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
                 {
-                    var testByType = run.ByType[type];
-                    foreach (var t2r in testByType)
+                    var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
+                    if (ctx != null)
                     {
-                        //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
-                        var name = t2r.Name; //it is DisplayName, not QualifiedName
-                        var metadata = t2r.Metadata.data; //TODO: use info about executing file!
-                        string qName = null;
-                        if(metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
-                            qName = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT])?.QualifiedName;
-                        if (string.IsNullOrWhiteSpace(qName))
-                            qName = TestContextHelper.GetQualifiedName(name);
-                        tests.Add(qName);
+                        asmName = Path.GetFileName(ctx.AssemblyPath);
+                        qName = ctx.QualifiedName;
+                        if (ctx.Engine != null)
+                            mustSeq = ctx.Engine.MustSequential;
                     }
                 }
+
+                //test qualified name
+                if (string.IsNullOrWhiteSpace(qName))
+                    qName = TestContextHelper.GetQualifiedName(name);
+
+                // assembly path
+                if (string.IsNullOrWhiteSpace(asmName))
+                {
+                    _logger.Error($"Unknowm test assembly for test {qName}");
+                    continue;
+                }
+                    
+                // insert test info
+                RunAssemblyInfo info;
+                if (res.AssemblyInfos.ContainsKey(asmName))
+                {
+                    info = res.AssemblyInfos[asmName];
+                }
+                else
+                {
+                    info = new()
+                    {
+                        AssemblyName = asmName,
+                        MustSequential = mustSeq,
+                        Tests = new(),
+                    };
+                    res.AssemblyInfos.Add(asmName, info);
+                }
+                info.Tests.Add(qName);
             }
-            return (runType, tests);
+            return res;
         }
 
         protected TestCaseContext GetTestCaseContext(string str)
@@ -129,7 +175,8 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal virtual RunningType GetRunningType()
         {
             //TODO: add error handling
-            List<BuildSummary> summary = _requester.GetBuildSummaries();
+            //List<BuildSummary> summary = await _requester.GetBuildSummaries();
+            var summary = _agentRep.Builds;
             var count = (summary?.Count) ?? 0;
             _logger.Debug($"Builds: {count}");
             //
@@ -158,7 +205,6 @@ namespace Drill4Net.Agent.TestRunner.Core
                         RunningType.Certain;
                 }
             }
-            _logger.Debug($"Running type: {runType}");
             return runType;
         }
     }

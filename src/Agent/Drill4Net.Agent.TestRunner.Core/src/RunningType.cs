@@ -2,6 +2,7 @@
 {
     public enum RunningType
     {
+        Unknown = -1,
         Nothing,
         Certain,
         All

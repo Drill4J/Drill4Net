@@ -28,33 +28,37 @@ namespace Drill4Net.Admin.Requester
 
         /****************************************************************************/
 
-        public virtual List<BuildSummary> GetBuildSummaries(string target = null)
+        public virtual Task<List<BuildSummary>> GetBuildSummaries(string target = null)
         {
             //http://localhost:8090/api/agents/IHS-bdd/plugins/test2code/builds/summary
-
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var request = new RestRequest(ResourceManager.GetSummaryResource(target), Method.GET, DataFormat.Json);
-            var a = _client.Get(request);
-            if (a.StatusCode != System.Net.HttpStatusCode.OK)
-                return null;
-            var summary = JsonConvert.DeserializeObject<List<BuildSummary>>(a.Content);
-            //var summary = await _client.GetAsync<List<BuildSummary>>(request) //it is failed on empty member (Summary)
-            //    .ConfigureAwait(false);
-            return summary;
+            return GetData<List<BuildSummary>>(request, "Bad response for build summaries retrieving");
         }
 
-        public async virtual Task<TestToRunResponse> GetTestToRun(string target = null)
+        public virtual Task<TestToRunResponse> GetTestToRun(string target = null)
         {
             //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
-
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var request = new RestRequest(ResourceManager.GetTest2RunResource(target), DataFormat.Json);
-            //var a = client.Get(request);
-            var run = await _client.GetAsync<TestToRunResponse>(request)
-                 .ConfigureAwait(false);
-            return run;
+            return GetData<TestToRunResponse>(request, "Bad response for tasks to run retrieving");
+        }
+
+        private async Task<T> GetData<T>(IRestRequest request, string errorMsg)
+        {
+            IRestResponse response = null;
+            for (var i = 0; i < 5; i++)
+            {
+                response = _client.Get(request);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    break;
+                await Task.Delay(1000).ConfigureAwait(false);
+            }
+            if (response == null)
+                throw new Exception(errorMsg);
+            return JsonConvert.DeserializeObject<T>(response.Content);
         }
 
         public virtual object GetTestList(string build = null) => GetTestList(build, null);

@@ -75,7 +75,6 @@ namespace Drill4Net.Agent.Standard
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static bool _isFastInitializing;
-        private readonly AdminRequester _requester;
         private readonly AssemblyResolver _resolver;
         private static object _entitiesLocker;
         private readonly ManualResetEvent _initEvent;
@@ -156,7 +155,6 @@ namespace Drill4Net.Agent.Standard
                 _comm = Repository.Communicator;
 
                 //it needed to be done here  before connect to Admin by Connector with websocket
-                _requester = new AdminRequester(Repository.Options.Admin.Url, Repository.TargetName, Repository.TargetVersion);
                 _isFastInitializing = GetIsFastInitilizing();
                 _logger.Debug($"Initializing is fast: {_isFastInitializing}");
 
@@ -216,10 +214,10 @@ namespace Drill4Net.Agent.Standard
 
         private bool GetIsFastInitilizing()
         {
-            var summaryInfo = _requester.GetBuildSummaries();
-            if (summaryInfo == null || summaryInfo.Count == 0)
+            var builds = Repository.Builds;
+            if (builds == null || builds.Count == 0)
                 return false;
-            var exactly = summaryInfo.Find(a => a.BuildVersion == Repository.TargetVersion);
+            var exactly = builds.Find(a => a.BuildVersion == Repository.TargetVersion);
             if (exactly?.Summary != null) //such version already exists
                 return true;
             //var last = summaryInfo.OrderByDescending(a => a.DetectedAt).First();
