@@ -8,6 +8,18 @@ namespace Drill4Net.Agent.Abstract
     /// </summary>
     public class AgentRepository : TreeRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>
     {
+        /// <summary>
+        /// Name of Target app
+        /// </summary>
+        public string TargetName { get; protected set; }
+
+        /// <summary>
+        /// Target app's version
+        /// </summary>
+        public string TargetVersion { get; protected set; }
+
+        /****************************************************************************/
+
         public AgentRepository(string cfgPath = null) : base(CoreConstants.SUBSYSTEM_AGENT, cfgPath)
         {
         }

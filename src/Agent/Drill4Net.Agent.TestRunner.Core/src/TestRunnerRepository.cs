@@ -3,19 +3,19 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Core.Repository;
 using Drill4Net.Admin.Requester;
 using Drill4Net.Agent.Abstract;
-using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
     public class TestRunnerRepository : ConfiguredRepository<TestRunnerOptions, BaseOptionsHelper<TestRunnerOptions>>
     {
-
+        private readonly StandardAgentRepository _agentRep;
         private readonly AdminRequester _requester;
         private readonly Logger _logger;
 
@@ -24,20 +24,23 @@ namespace Drill4Net.Agent.TestRunner.Core
         public TestRunnerRepository(): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, string.Empty)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
-            //TODO: WRONG!!! we need get the Target version by Options.FilePath (when Admin sode will get the Target version, not Agent's one)
-            var version = FileUtils.GetProductVersion(typeof(TestRunnerRepository));
-            _requester = new(Options.Url, Options.Target, version);
+            _agentRep = CreateAgentRepository();
+            _requester = new(Options.Url, _agentRep.TargetName, _agentRep.TargetVersion);
         }
 
         /********************************************************************************/
 
-        internal StandardAgent GetAgent()
+        internal StandardAgentRepository CreateAgentRepository()
         {
             var agentCfgPath = Path.Combine(FileUtils.EntryDir, CoreConstants.CONFIG_NAME_DEFAULT);
             var helper = new TreeRepositoryHelper(Subsystem);
             var treePath = helper.CalculateTreeFilePath(Path.GetDirectoryName(Options.FilePath));
-            var agentRep = new StandardAgentRepository(agentCfgPath, treePath);
-            return new StandardAgent(agentRep);
+            return new StandardAgentRepository(agentCfgPath, treePath);
+        }
+
+        internal StandardAgent CreateAgent()
+        {
+           return new StandardAgent(_agentRep);
         }
 
         public async Task<(RunningType runType, List<string> tests)> GetRunToTests()

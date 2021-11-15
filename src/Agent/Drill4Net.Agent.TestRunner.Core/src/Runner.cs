@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             _logger = new TypedLogger<Runner>(_rep.Subsystem);
 
             //agent
-            _agent = _rep.GetAgent();
+            _agent = _rep.CreateAgent();
             _agent.Initialized += AgentInitialized;
         }
 

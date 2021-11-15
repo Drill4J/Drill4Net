@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Abstract
 {
-    public interface IAgentRepository
+    public interface ICommunicatorRepository
     {
         /// <summary>
         /// Communicator for transfer probe data to admin side

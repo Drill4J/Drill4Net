@@ -22,16 +22,6 @@ namespace Drill4Net.Agent.Standard
     public sealed class StandardAgentRepository : AbstractCommunicatorRepository
     {
         /// <summary>
-        /// Name of Target app
-        /// </summary>
-        public string TargetName { get; private set; }
-
-        /// <summary>
-        /// Target app's version
-        /// </summary>
-        public string TargetVersion { get; private set; }
-
-        /// <summary>
         /// Any sesion is exists?
         /// </summary>
         public bool IsAnySession => _sessionToCtx.Count > 0;
