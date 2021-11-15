@@ -65,11 +65,18 @@ namespace Drill4Net.Agent.TestRunner.Core
             if (res.RunType != RunningType.Certain)
                 return res;
 
-            var run = await (!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
-                .ConfigureAwait(false);
-            if (run.ByType == null)
+            TestToRunResponse run = null;
+            for (var i = 0; i < 5; i++)
             {
-                _logger.Info("No tests");
+                run = await (!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
+                    .ConfigureAwait(false);
+                if (run.ByType != null)
+                    break;
+                await Task.Delay(1000);
+            }
+            if (run.ByType == null) //it is error here
+            {
+                _logger.Error("No tests");
                 return res;
             }
             //
