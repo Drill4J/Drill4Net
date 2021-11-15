@@ -4,7 +4,7 @@ services:
   drill-admin:
     image: drill4j/admin:0.8.0-35
     environment:
-      - TEST2CODE_PLUGIN_VERSION=0.8.0-27
+      - TEST2CODE_PLUGIN_VERSION=0.8.0-31
       - LOG_LEVEL=DEBUG
       - DRILL_AGENTS_SOCKET_TIMEOUT=60
     ports:

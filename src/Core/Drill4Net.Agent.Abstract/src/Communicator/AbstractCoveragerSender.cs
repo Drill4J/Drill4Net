@@ -285,8 +285,8 @@ namespace Drill4Net.Agent.Abstract
                 return null;
             var ind = testCase.IndexOf('(');
             if (ind == -1)
-                return null;
-            return testCase.Substring(ind, testCase.Length - ind - 2);
+                return "()";
+            return testCase.Substring(ind);
         }
 
         internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx, string testNameForAdmin)
