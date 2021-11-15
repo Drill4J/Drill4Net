@@ -77,8 +77,8 @@ namespace Drill4Net.Agent.Standard
         private static bool _isFastInitializing;
         private readonly AdminRequester _requester;
         private readonly AssemblyResolver _resolver;
-        private static readonly object _entitiesLocker = new();
-        private readonly ManualResetEvent _initEvent = new(false);
+        private static object _entitiesLocker;
+        private readonly ManualResetEvent _initEvent;
 
         private static Logger _logger;
         private static FileSink _probeLogger;
@@ -90,11 +90,13 @@ namespace Drill4Net.Agent.Standard
 
         static StandardAgent() //it's needed for invocation from Target
         {
+            _entitiesLocker = new();
+
             _logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
             _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, _logExtras);
             _logPrefix = nameof(StandardAgent);
 
-            if (StandardAgentCCtorParameters.SkipCctor)
+            if (StandardAgentCCtorParameters.SkipCreatingSingleton)
                 return;
 
             Agent = new StandardAgent();
@@ -117,6 +119,8 @@ namespace Drill4Net.Agent.Standard
         /// <param name="rep"></param>
         public StandardAgent(StandardAgentRepository rep)
         {
+            _initEvent = new(false);
+
             try
             {
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;

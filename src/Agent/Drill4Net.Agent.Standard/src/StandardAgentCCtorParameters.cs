@@ -13,6 +13,6 @@
         /// <value>
         ///   <c>true</c> if skip cctor; otherwise, <c>false</c>.
         /// </value>
-        public static bool SkipCctor { get; set; }
+        public static bool SkipCreatingSingleton { get; set; }
     }
 }

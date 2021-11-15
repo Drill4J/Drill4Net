@@ -8,16 +8,6 @@ namespace Drill4Net.Agent.TestRunner.Core
     public class TestRunnerOptions : AbstractOptions
     {
         /// <summary>
-        /// Target name (ID)
-        /// </summary>
-        public string Target { get; set; }
-
-        /// <summary>
-        /// URL for Admin side
-        /// </summary>
-        public string Url { get; set; }
-
-        /// <summary>
         /// File path for the Test assembly
         /// </summary>
         public string FilePath { get; set; }

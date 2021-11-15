@@ -1,8 +1,6 @@
 ﻿Description: Run BDD tests for IHS project v.1
 Type: TestRunner # type as hint
-Target: IHS-bdd # must match with injection's target name
 FilePath: d:\Projects\IHS-bdd.Injected\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # full path: dll for running the injected tests by CLI
-Url: localhost:8090 # Drill Admin service
 Debug:
     Disabled: false
     IsFake: true # use fake data

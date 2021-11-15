@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Core.Repository;
 using Drill4Net.Admin.Requester;
-using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
@@ -27,13 +27,14 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
             _agentRep = CreateAgentRepository();
-            _requester = new(Options.Url, _agentRep.TargetName, _agentRep.TargetVersion);
+            _requester = new(_agentRep.Options.Admin.Url, _agentRep.TargetName, _agentRep.TargetVersion);
         }
 
         /********************************************************************************/
 
         internal StandardAgentRepository CreateAgentRepository()
         {
+            //we need to give the concrete path to the agent config because also the others  are located here
             var agentCfgPath = Path.Combine(FileUtils.EntryDir, CoreConstants.CONFIG_NAME_DEFAULT);
             var helper = new TreeRepositoryHelper(Subsystem);
             var treePath = helper.CalculateTreeFilePath(Path.GetDirectoryName(Options.FilePath));
@@ -42,7 +43,8 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         internal StandardAgent CreateAgent()
         {
-           return new StandardAgent(_agentRep);
+            StandardAgentCCtorParameters.SkipCreatingSingleton = true;
+            return new StandardAgent(_agentRep);
         }
 
         public async Task<(RunningType runType, List<string> tests)> GetRunToTests()
