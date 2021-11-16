@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Reflection;
@@ -6,9 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.BanderLog;
-
 using Drill4Net.Agent.Standard;
-using System.IO;
 
 /*** INFO
 automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -74,7 +73,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                     return;
 
                 var args = GetRunArguments(runInfo);
-                RunTests(args); //we need for the test's names here - they runs by CLI ("dotnet test ...")
+                RunTests(args); //the tests are run by CLI ("dotnet test ...")
 
                 _logger.Debug("Finished");
             }
