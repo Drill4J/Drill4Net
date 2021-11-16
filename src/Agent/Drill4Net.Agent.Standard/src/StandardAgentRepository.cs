@@ -163,6 +163,10 @@ namespace Drill4Net.Agent.Standard
             };
         }
 
+        /// <summary>
+        /// Retrieve Target's builds to property <see cref="Builds"/>
+        /// </summary>
+        /// <returns></returns>
         public async Task RetrieveTargetBuilds()
         {
             Builds = await _requester.GetBuildSummaries()
@@ -393,7 +397,7 @@ namespace Drill4Net.Agent.Standard
         {
             if (!_sessionToCtxs.TryRemove(sessionUid, out var ctxList))
                 return;
-            foreach (var ctxId in ctxList)
+            foreach (var ctxId in ctxList.AsParallel())
             {
                 _ctxToSession.TryRemove(ctxId, out var _);
                 _ctxToExecData.TryRemove(ctxId, out var _);
@@ -456,13 +460,15 @@ namespace Drill4Net.Agent.Standard
                 if (_globalRegistrator != null)
                     SendCoverageData(_globalRegistrator);
 
-                //foreach (var ctxId in _ctxToSession.Keys)
-                //{
-                //    if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
-                //        reg = GetOrCreateLocalRegistrator(ctxId); //?? hmmm...
-                //    SendCoverageData(reg);
-                //}
-                foreach (var reg in _ctxToRegistrator.Values)
+                //clean old regs
+                var timeout = new TimeSpan(0, 1, 0);
+                var oldRegs = _ctxToRegistrator.Values.Where(a => a.AffectedProbeCount == 0 && (DateTime.Now - a.SentTime) > timeout).AsParallel();
+                foreach(var reg in oldRegs)
+                    _ctxToRegistrator.TryRemove(reg.Context, out _);
+
+                //send coverage
+                var regs = _ctxToRegistrator.Values.Where(a => a.AffectedProbeCount > 0).AsParallel();
+                foreach (var reg in regs)
                 {
                     SendCoverageData(reg);
                 }
@@ -471,10 +477,10 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendCoverage(string sessionUid)
         {
-            var regs = GetRegistrator(sessionUid);
+            var regs = GetRegistrators(sessionUid);
             if (regs == null)
                 return; //??
-            foreach(var reg in regs)
+            foreach(var reg in regs.AsParallel())
                 SendCoverageData(reg);
         }
 
@@ -501,6 +507,7 @@ namespace Drill4Net.Agent.Standard
             if (session is { IsRealtime: true })
                 Communicator.Sender.SendSessionChangedMessage(sessionUid, reg.AffectedProbeCount);
             reg.ClearAffectedData();
+            reg.SentTime = DateTime.Now;
         }
 
         private void StartSendCycle()
@@ -519,7 +526,7 @@ namespace Drill4Net.Agent.Standard
                 _sendTimer.Enabled = false;
         }
 
-        internal List<CoverageRegistrator> GetRegistrator(string sessionUid)
+        internal List<CoverageRegistrator> GetRegistrators(string sessionUid)
         {
             if (!_sessionToCtxs.TryGetValue(sessionUid, out var ctxList))
                 return null;
