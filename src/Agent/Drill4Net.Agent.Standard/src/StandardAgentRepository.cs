@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -152,9 +153,9 @@ namespace Drill4Net.Agent.Standard
         internal AdminAgentConfig GetAdminAgentConfig(TargetData targOpts, ConnectorAuxOptions connOpts)
         {
             // aux connector parameters
-            (var logFile, Microsoft.Extensions.Logging.LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
+            (var logFile, LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
 
-            return new AdminAgentConfig(targOpts.Name, TargetVersion, GetAgentVersion())
+            return new AdminAgentConfig(targOpts.Name, targOpts.Version, GetAgentVersion())
             {
                 ConnectorLogFilePath = logFile,
                 ConnectorLogLevel = logLevel

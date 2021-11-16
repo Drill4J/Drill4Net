@@ -12,6 +12,9 @@ namespace Drill4Net.Agent.Abstract
     /// </summary>
     public delegate void AgentInitializedHandler();
 
+    /// <summary>
+    /// Abstract agent with basic functionality. Concrete agent with repository should inherit next level of agents: "AbstractAgent[TRep] where TRep : AgentRepository"
+    /// </summary>
     public abstract class AbstractAgent
     {
         /// <summary>
