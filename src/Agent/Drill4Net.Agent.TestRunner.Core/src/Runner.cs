@@ -80,7 +80,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             }
             catch (Exception ex)
             {
-                _logger.Fatal("Get builds' summary", ex);
+                _logger.Fatal("Get CLI run info", ex);
             }
         }
 
@@ -103,7 +103,11 @@ namespace Drill4Net.Agent.TestRunner.Core
                 // prefix "/C" - is for running in the CMD
                 var args = $"/C dotnet test \"{asmPath}\"";
                 if (tests?.Any() != true)
+                {
+                    args = AddPostfixArgs(args, asmInfo);
+                    res.Add(args);
                     continue;
+                }
                 //
                 args += " --filter \"";
                 for (int i = 0; i < tests.Count; i++)
@@ -125,13 +129,18 @@ namespace Drill4Net.Agent.TestRunner.Core
                         args += "\"";
                 }
 
-                args += $" {GetLoggerParameters()} {GetParallelRunParameters(asmInfo.MustSequential)}"; //RunConfiguration must be at the end of args
-                if (args.Length > 32767) //TODO: split tests and create separate cmd processes
-                    throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
-                
+                args = AddPostfixArgs(args, asmInfo);
                 res.Add(args);
             }
             return res;
+        }
+
+        internal string AddPostfixArgs(string args, RunAssemblyInfo asmInfo)
+        {
+            args += $" {GetLoggerParameters()} {GetParallelRunParameters(asmInfo.MustSequential)}"; //RunConfiguration must be at the end of args
+            if (args.Length > 32767) //TODO: split tests and create separate cmd processes
+                throw new Exception("Argument's length exceeds the maximum. We need improve algorithm (to do some separate runnings)");
+            return args;
         }
 
         internal string GetParallelRunParameters(bool mustSequential)

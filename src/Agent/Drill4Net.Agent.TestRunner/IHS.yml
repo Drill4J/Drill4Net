@@ -1,6 +1,8 @@
 ﻿Description: Run BDD tests for IHS project v.1
 Type: TestRunner # type as hint
-Directory: d:\Projects\IHS-bdd.Injected\ # directory for the injected tests
+Directory: d:\Projects\IHS-bdd.Injected\ # actually directory for the injected tests
+DefaultAssemblyName: Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
+DefaultParallelRestrict: true
 Debug:
     Disabled: false
-    IsFake: true # use fake data
+    IsFake: false # use fake data

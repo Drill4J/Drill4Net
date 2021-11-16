@@ -55,87 +55,93 @@ namespace Drill4Net.Agent.TestRunner.Core
             var isFake = Options.Debug is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
 
-            //running type
-            RunningType runningType;
-            if (isFake)
-            {
-                runningType = RunningType.Certain;
-                _logger.Debug($"Fake running type: {runningType}");
-            }
-            else
-            {
-                runningType = GetRunningType();
-                _logger.Debug($"Real running type: {runningType}");
-            }
+            RunningType runningType = GetRunningType(isFake);
+            _logger.Debug($"Running type: {runningType}");
+
             var res = new RunInfo { RunType = runningType };
-            if (runningType != RunningType.Certain)
-                return res;
-            
-            // get tests to run from Admin
-            var run = await GetTestToRun(isFake)
-                .ConfigureAwait(false);
-            if (run.ByType == null) //it is error here
-            {
-                _logger.Error("No tests");
-                return res;
-            }
 
-            if (!run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
+            #region Certain
+            if (runningType == RunningType.Certain)
             {
-                res.RunType = RunningType.Nothing; //ALL??
-                return res;
-            }
-            
-            // adapt tests to run in CLI
-            foreach (var t2r in run.ByType[AgentConstants.TEST_AUTO])
-            {
-                //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
-                var name = t2r.Name; //it is DisplayName, not QualifiedName
-                var metadata = t2r.Metadata.data; //TODO: use info about executing file!
-                string qName = null;
-                string asmName = null;
-                bool mustSeq = true;
-                if (metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
+                // get tests to run from Admin
+                var run = await GetTestToRun(isFake)
+                    .ConfigureAwait(false);
+                if (run.ByType == null) //it is error here
                 {
-                    var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
-                    if (ctx != null)
+                    _logger.Error("No tests");
+                    return res;
+                }
+
+                if (!run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
+                {
+                    res.RunType = RunningType.Nothing;
+                    return res;
+                }
+
+                // adapt tests to run in CLI
+                foreach (var t2r in run.ByType[AgentConstants.TEST_AUTO])
+                {
+                    //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
+                    var name = t2r.Name; //it is DisplayName, not QualifiedName
+                    var metadata = t2r.Metadata.data; //TODO: use info about executing file!
+                    string qName = null;
+                    string asmName = null;
+                    bool mustSeq = true;
+                    if (metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
                     {
-                        asmName = Path.GetFileName(ctx.AssemblyPath);
-                        qName = ctx.QualifiedName;
-                        if (ctx.Engine != null)
-                            mustSeq = ctx.Engine.MustSequential;
+                        var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
+                        if (ctx != null)
+                        {
+                            asmName = Path.GetFileName(ctx.AssemblyPath);
+                            qName = ctx.QualifiedName;
+                            if (ctx.Engine != null)
+                                mustSeq = ctx.Engine.MustSequential;
+                        }
                     }
-                }
 
-                //test qualified name
-                if (string.IsNullOrWhiteSpace(qName))
-                    qName = TestContextHelper.GetQualifiedName(name);
+                    //test qualified name
+                    if (string.IsNullOrWhiteSpace(qName))
+                        qName = TestContextHelper.GetQualifiedName(name);
 
-                // assembly path
-                if (string.IsNullOrWhiteSpace(asmName))
-                {
-                    _logger.Error($"Unknowm test assembly for test {qName}");
-                    continue;
-                }
-                    
-                // insert test info
-                RunAssemblyInfo info;
-                if (res.AssemblyInfos.ContainsKey(asmName))
-                {
-                    info = res.AssemblyInfos[asmName];
-                }
-                else
-                {
-                    info = new()
+                    // assembly path
+                    if (string.IsNullOrWhiteSpace(asmName))
                     {
-                        AssemblyName = asmName,
-                        MustSequential = mustSeq,
-                        Tests = new(),
-                    };
-                    res.AssemblyInfos.Add(asmName, info);
+                        _logger.Error($"Unknowm test assembly for test {qName}");
+                        continue;
+                    }
+
+                    // insert test info
+                    RunAssemblyInfo info;
+                    if (res.AssemblyInfos.ContainsKey(asmName))
+                    {
+                        info = res.AssemblyInfos[asmName];
+                    }
+                    else
+                    {
+                        info = new()
+                        {
+                            AssemblyName = asmName,
+                            MustSequential = mustSeq,
+                            Tests = new(),
+                        };
+                        res.AssemblyInfos.Add(asmName, info);
+                    }
+                    info.Tests.Add(qName);
                 }
-                info.Tests.Add(qName);
+                return res;
             }
+            #endregion
+            #region All
+            if (res.RunType == RunningType.All)
+            {
+                var allRun = new RunAssemblyInfo
+                {
+                    AssemblyName = Options.DefaultAssemblyName,
+                    MustSequential = Options.DefaultParallelRestrict,
+                };
+                res.AssemblyInfos.Add(allRun.AssemblyName, allRun);
+            }
+            #endregion
             return res;
         }
 
@@ -194,40 +200,48 @@ namespace Drill4Net.Agent.TestRunner.Core
             return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
         }
 
-        internal virtual RunningType GetRunningType()
+        internal virtual RunningType GetRunningType(bool isFake)
         {
-            //TODO: add error handling
-            //List<BuildSummary> summary = await _requester.GetBuildSummaries();
-            var summary = _agentRep.Builds;
-            var count = (summary?.Count) ?? 0;
-            _logger.Debug($"Builds: {count}");
-            //
-            var runType = RunningType.All;
-            TestToRunSummaryInfo test2Run = null;
-            if (count > 0) //some builds exists
+            RunningType runningType;
+            if (isFake)
             {
-                summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
-                var actual = summary[0];
-                test2Run = actual?.Summary?.TestsToRun;
-                if (test2Run == null)
-                    return RunningType.All;
-                if (test2Run.Count > 0)
-                    return RunningType.Certain;
-
-                //hmm...
-                var testCnt = actual.Summary.Tests.Count;
-                var test2runCnt = test2Run.Count;
-                _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");
+                runningType = RunningType.Certain;
+            }
+            else
+            {
+                //TODO: add error handling
+                //List<BuildSummary> summary = await _requester.GetBuildSummaries();
+                var summary = _agentRep.Builds;
+                var count = (summary?.Count) ?? 0;
+                _logger.Debug($"Builds: {count}");
                 //
-                if (testCnt > 0)
+                runningType = RunningType.All;
+                TestToRunSummaryInfo test2Run = null;
+                if (count > 0) //some builds exists
                 {
-                    //tests exists but no test to run (no difference between builds)
-                    runType = test2runCnt == 0 ?
-                        RunningType.Nothing :
-                        RunningType.Certain;
+                    summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
+                    var actual = summary[0];
+                    test2Run = actual?.Summary?.TestsToRun;
+                    if (test2Run == null)
+                        return RunningType.All;
+                    if (test2Run.Count > 0)
+                        return RunningType.Certain;
+
+                    //hmm...
+                    var testCnt = actual.Summary.Tests.Count;
+                    var test2runCnt = test2Run.Count;
+                    _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");
+                    //
+                    if (testCnt > 0)
+                    {
+                        //tests exists but no test to run (no difference between builds)
+                        runningType = test2runCnt == 0 ?
+                            RunningType.Nothing :
+                            RunningType.Certain;
+                    }
                 }
             }
-            return runType;
+            return runningType;
         }
     }
 }
