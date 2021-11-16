@@ -120,6 +120,8 @@ namespace Drill4Net.Agent.TestRunner.Core
                     var ind = test.IndexOf("("); //after ( the parameters of case followed 
                     if (ind != -1)
                         test = test[..ind];
+                    if(test.EndsWith(":")) //it can be so...
+                        test = test[0..^1];
                     //
                     test = test.Replace(",", "%2C").Replace("\"", "\\\"").Replace("!", "\\!"); //need escaping
                     //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace

@@ -456,10 +456,14 @@ namespace Drill4Net.Agent.Standard
                 if (_globalRegistrator != null)
                     SendCoverageData(_globalRegistrator);
 
-                foreach (var ctxId in _ctxToSession.Keys)
+                //foreach (var ctxId in _ctxToSession.Keys)
+                //{
+                //    if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
+                //        reg = GetOrCreateLocalRegistrator(ctxId); //?? hmmm...
+                //    SendCoverageData(reg);
+                //}
+                foreach (var reg in _ctxToRegistrator.Values)
                 {
-                    if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
-                        reg = GetOrCreateLocalRegistrator(ctxId); //?? hmmm...
                     SendCoverageData(reg);
                 }
             }

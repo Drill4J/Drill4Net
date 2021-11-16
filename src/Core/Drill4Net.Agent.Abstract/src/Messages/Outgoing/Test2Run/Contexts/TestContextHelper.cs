@@ -22,7 +22,7 @@
                 a[0] = char.ToUpper(a[0]);
                 ar[i] = new string(a);
             }
-            displayName = string.Join(null, ar).Replace(" ", null);
+            displayName = string.Join(null, ar).Replace(" ", null).Replace(":", null);
             return displayName;
         }
     }

@@ -336,7 +336,7 @@ namespace Drill4Net.Target.Tests.Engine
         public static string GetNameFromSig(string shortSig)
         {
             var name = shortSig.Split(' ')[1];
-            name = name.Substring(0, name.IndexOf("("));
+            name = name[..name.IndexOf("(")];
             return name;
         }
         #endregion
