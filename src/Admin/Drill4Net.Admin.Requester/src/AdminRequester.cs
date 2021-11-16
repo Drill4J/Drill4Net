@@ -54,10 +54,12 @@ namespace Drill4Net.Admin.Requester
                 response = _client.Get(request);
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     break;
-                await Task.Delay(500).ConfigureAwait(false);
+                await Task.Delay(1000).ConfigureAwait(false);
             }
             if (response == null)
                 throw new Exception(errorMsg);
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                return default;
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
 

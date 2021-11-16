@@ -11,8 +11,8 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
 using Drill4Net.Admin.Requester;
-using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Standard
 {

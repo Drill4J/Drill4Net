@@ -40,7 +40,7 @@ namespace Drill4Net.Agent.Standard
     /// Standard Agent (Profiler) for the Drill Admin side
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
-    public sealed class StandardAgent : AbstractAgent
+    public sealed class StandardAgent : AbstractAgent<StandardAgentRepository>
     {
         //TODO: move some props & fields to the abstract parent type
 
@@ -54,34 +54,15 @@ namespace Drill4Net.Agent.Standard
         //in fact, it is the Main sender. Others are additional ones - as plugins
         private IAgentCoveragerSender CoverageSender => _comm?.Sender;
 
-        /// <summary>
-        /// Repository for Agent
-        /// </summary>
-        public StandardAgentRepository Repository { get; }
-
-        /// <summary>
-        /// Is the Agent initialized?
-        /// </summary>
-        public bool IsInitialized { get; private set; }
-
-        /// <summary>
-        /// Directory for the emergency logs out of scope of the common log system
-        /// </summary>
-        public string EmergencyLogDir { get; }
-
-        private readonly ICommunicator _comm;
-
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
         private static bool _isFastInitializing;
-        private readonly AssemblyResolver _resolver;
-        private static object _entitiesLocker;
+        private static readonly object _entitiesLocker;
         private readonly ManualResetEvent _initEvent;
 
         private static Logger _logger;
         private static FileSink _probeLogger;
         private readonly bool _writeProbesToFile;
-        private static readonly string _logPrefix;
         private static readonly Dictionary<string, object> _logExtras;
 
         /*****************************************************************************/
@@ -92,7 +73,6 @@ namespace Drill4Net.Agent.Standard
 
             _logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
             _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, _logExtras);
-            _logPrefix = nameof(StandardAgent);
 
             if (StandardAgentCCtorParameters.SkipCreatingSingleton)
                 return;
@@ -101,7 +81,7 @@ namespace Drill4Net.Agent.Standard
             if (Agent == null)
             {
                 _logger.Fatal("Creation is failed");
-                throw new Exception($"{_logPrefix}: creation is failed");
+                throw new Exception($"{nameof(StandardAgent)}: creation is failed");
             }
         }
 
@@ -121,30 +101,7 @@ namespace Drill4Net.Agent.Standard
 
             try
             {
-                AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-                AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
-                AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
-                _resolver = new AssemblyResolver();
-
-                EmergencyLogDir = FileUtils.EmergencyDir;
-                AbstractRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
-
-                _logger.Debug($"{_logPrefix} is initializing...");
-
-                #region TEST assembly resolving
-                //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
-                //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
-
-                //var ver = "System.Private.Xml.resources, Version=4.0.2.0, Culture=en-US, PublicKeyToken=cc7b13ffcd2ddd51";
-                //var reqPath = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.16\System.Private.Xml.dll";
-
-                //var ver = "Drill4Net.Target.Common.VB, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null";
-                //var reqPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net50.App\net5.0\";
-                //var asm = _resolver.Resolve(ver, reqPath);
-
-                //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
-                #endregion
+                _logger.Debug($"{nameof(StandardAgent)} is initializing...");
 
                 Repository = rep ?? new StandardAgentRepository();
 
@@ -186,11 +143,11 @@ namespace Drill4Net.Agent.Standard
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                _logger.Debug($"{_logPrefix} is primarly initialized.");
+                _logger.Debug($"{nameof(StandardAgent)} is primarly initialized.");
             }
             catch (Exception ex)
             {
-                _logger.Fatal($"{_logPrefix}: error of initializing", ex);
+                _logger.Fatal($"{nameof(StandardAgent)}: error of initializing", ex);
             }
         }
 
@@ -208,7 +165,7 @@ namespace Drill4Net.Agent.Standard
             var rep = new StandardAgentRepository(opts, tree);
             Agent = new StandardAgent(rep);
             if (Agent == null)
-                throw new Exception($"{_logPrefix}: creation is failed");
+                throw new Exception($"{nameof(StandardAgent)}: creation is failed");
         }
 
         private bool GetIsFastInitilizing()
@@ -242,26 +199,6 @@ namespace Drill4Net.Agent.Standard
             ReleaseProbeProcessing();
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
-        }
-
-        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
-        {
-            CommonUtils.LogFirstChanceException(EmergencyLogDir, _logPrefix, e.Exception);
-        }
-
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            return CommonUtils.TryResolveAssembly(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
-        }
-
-        private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
-        {
-            return CommonUtils.TryResolveResource(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
-        }
-
-        private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
-        {
-            return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
         }
         #endregion
         #region Events from Admin side
