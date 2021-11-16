@@ -38,6 +38,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             //we need to give the concrete path to the agent config because also the others  are located here
             var agentCfgPath = Path.Combine(FileUtils.EntryDir, CoreConstants.CONFIG_NAME_DEFAULT);
+
             var helper = new TreeRepositoryHelper(Subsystem);
             var treePath = helper.CalculateTreeFilePath(Options.Directory);
             return new StandardAgentRepository(agentCfgPath, treePath);

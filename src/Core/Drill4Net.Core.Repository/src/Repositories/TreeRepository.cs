@@ -1,12 +1,18 @@
 ﻿using System;
 using System.IO;
-using Drill4Net.BanderLog;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Core.Repository
 {
+    /// <summary>
+    /// Repository that can work with Target's tree <see cref="InjectedSolution"/> from file,
+    /// search and check paths for it
+    /// </summary>
+    /// <typeparam name="TOptions"></typeparam>
+    /// <typeparam name="THelper"></typeparam>
     public abstract class TreeRepository<TOptions, THelper> : ConfiguredRepository<TOptions, THelper>
             where TOptions : TargetOptions, new()
             where THelper : BaseOptionsHelper<TOptions>, new()

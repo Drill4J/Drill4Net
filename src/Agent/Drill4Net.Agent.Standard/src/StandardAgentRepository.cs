@@ -51,6 +51,15 @@ namespace Drill4Net.Agent.Standard
         /**************************************************************************************/
 
         /// <summary>
+        /// Create repository for Standard Agent by options specified by the file path
+        /// </summary>
+        /// <param name="cfgPath"></param>
+        public StandardAgentRepository(string cfgPath = null) : base(cfgPath)
+        {
+            Init(null);
+        }
+
+        /// <summary>
         /// Create repository by paths for config and target's entities' tree
         /// </summary>
         /// <param name="cfgPath"></param>
@@ -58,15 +67,6 @@ namespace Drill4Net.Agent.Standard
         public StandardAgentRepository(string cfgPath, string treePath) : base(cfgPath)
         {
             Init(ReadInjectedTree(treePath));
-        }
-
-        /// <summary>
-        /// Create repository for Standard Agent by options specified by the file path
-        /// </summary>
-        /// <param name="cfgPath"></param>
-        public StandardAgentRepository(string cfgPath = null): base(cfgPath)
-        {
-            Init(null);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Drill4Net.Agent.Standard
                 Name = TargetName,
                 Version = TargetVersion,
             };
-            Communicator = GetCommunicator(Options.Admin, targData, Options.Connector); //TODO: connector's log options
+            Communicator = GetCommunicator(Options.Admin, targData, Options.Connector);
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(1200);
