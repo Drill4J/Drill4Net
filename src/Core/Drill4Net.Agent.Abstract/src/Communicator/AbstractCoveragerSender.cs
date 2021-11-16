@@ -251,7 +251,7 @@ namespace Drill4Net.Agent.Abstract
         internal string GetFullEngineName(TestCaseContext testCtx)
         {
             var engineDesc = ".NET";
-            
+
             //a-la BDD SpecFlow
             var generator = testCtx.Generator;
             if (generator != null)
@@ -259,7 +259,7 @@ namespace Drill4Net.Agent.Abstract
                 if (!string.IsNullOrWhiteSpace(generator.Name))
                     engineDesc += $"/{generator.Name} {generator.Version}";
             }
-            
+
             //a-la xUnit, NUnit, etc
             var engine = testCtx.Engine;
             if (engine != null)
@@ -267,7 +267,7 @@ namespace Drill4Net.Agent.Abstract
                 if (generator.Name != engine.Name && !string.IsNullOrWhiteSpace(engine.Name))
                     engineDesc += $"/{testCtx.Engine} {engine.Version}";
             }
-            
+
             return engineDesc;
         }
 

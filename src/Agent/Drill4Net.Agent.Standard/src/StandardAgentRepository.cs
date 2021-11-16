@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
@@ -30,10 +31,10 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Any sesion is exists?
         /// </summary>
-        public bool IsAnySession => _sessionToCtx.Count > 0;
+        public bool IsAnySession => _ctxToSession.Count > 0;
 
         private ConcurrentDictionary<string, string> _ctxToSession;
-        private ConcurrentDictionary<string, string> _sessionToCtx;
+        private ConcurrentDictionary<string, List<string>> _sessionToCtxs;
         private ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
         private ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
         private ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
@@ -97,7 +98,7 @@ namespace Drill4Net.Agent.Standard
             _ctxToRegistrator = new ConcurrentDictionary<string, CoverageRegistrator>();
 
             //session maps
-            _sessionToCtx = new ConcurrentDictionary<string, string>();
+            _sessionToCtxs = new ConcurrentDictionary<string, List<string>>();
             _sessionToObject = new ConcurrentDictionary<string, StartSessionPayload>();
 
             // execution data by session ids
@@ -126,7 +127,7 @@ namespace Drill4Net.Agent.Standard
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
 
             _requester = new AdminRequester(Options.Admin.Url, TargetName, TargetVersion);
-            Builds = _requester.GetBuildSummaries().GetAwaiter().GetResult();
+            RetrieveTargetBuilds().GetAwaiter().GetResult();
 
             //Communicator
             var targData = new TargetData
@@ -160,6 +161,12 @@ namespace Drill4Net.Agent.Standard
                 ConnectorLogFilePath = logFile,
                 ConnectorLogLevel = logLevel
             };
+        }
+
+        public async Task RetrieveTargetBuilds()
+        {
+            Builds = await _requester.GetBuildSummaries()
+                .ConfigureAwait(false);
         }
 
         internal (string logFile, Microsoft.Extensions.Logging.LogLevel logLevel) GetConnectorLogParameters(ConnectorAuxOptions connOpts, Logger logger)
@@ -293,7 +300,7 @@ namespace Drill4Net.Agent.Standard
             //but AUTO start was initialized from Agent side and should not be recreated
             if (info.TestType == AgentConstants.TEST_AUTO)
             {
-                if (_sessionToCtx.TryGetValue(info.SessionId, out var _))
+                if (_sessionToCtxs.TryGetValue(info.SessionId, out var _))
                     return;
             }
 
@@ -327,7 +334,7 @@ namespace Drill4Net.Agent.Standard
             var sessionUid = session.SessionId;
             _sessionToObject.TryAdd(sessionUid, session);
             _ctxToSession.TryAdd(ctxId, sessionUid);
-            _sessionToCtx.TryAdd(sessionUid, ctxId);
+            _sessionToCtxs.TryAdd(sessionUid, new List<string> { ctxId });
 
             if (session.IsGlobal)
                _globalRegistrator = CreateCoverageRegistrator(ctxId, session);
@@ -342,7 +349,7 @@ namespace Drill4Net.Agent.Standard
         {
             StopSendCycle();
             SendCoverages();
-            var uids = _sessionToCtx.Keys.ToList();
+            var uids = _sessionToCtxs.Keys.ToList();
             ClearScopeData();
             return uids;
         }
@@ -373,11 +380,10 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// All sessions were cancelled on the Admin side
         /// </summary>
-        /// <param name="info"></param>
         public List<string> RegisterAllSessionsCancelled()
         {
             StopSendCycle();
-            var uids = _sessionToCtx.Keys.ToList();
+            var uids = _sessionToCtxs.Keys.ToList();
             ClearScopeData();
             return uids;
         }
@@ -385,18 +391,21 @@ namespace Drill4Net.Agent.Standard
 
         internal void RemoveSessionData(string sessionUid)
         {
-            if (!_sessionToCtx.TryRemove(sessionUid, out var ctxId))
+            if (!_sessionToCtxs.TryRemove(sessionUid, out var ctxList))
                 return;
-            _ctxToSession.TryRemove(ctxId, out var _);
-            _ctxToExecData.TryRemove(ctxId, out var _);
-            _ctxToRegistrator.TryRemove(ctxId, out var _);
+            foreach (var ctxId in ctxList)
+            {
+                _ctxToSession.TryRemove(ctxId, out var _);
+                _ctxToExecData.TryRemove(ctxId, out var _);
+                _ctxToRegistrator.TryRemove(ctxId, out var _);
+            }
             _sessionToObject.TryRemove(sessionUid, out var _);
         }
 
         internal void ClearScopeData()
         {
             _ctxToSession.Clear();
-            _sessionToCtx.Clear();
+            _sessionToCtxs.Clear();
             _ctxToExecData.Clear();
             _ctxToRegistrator.Clear();
             _sessionToObject.Clear();
@@ -450,7 +459,7 @@ namespace Drill4Net.Agent.Standard
                 foreach (var ctxId in _ctxToSession.Keys)
                 {
                     if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
-                        continue; // reg = GetUserRegistrator(); //?? hmmm...
+                        reg = GetOrCreateLocalRegistrator(ctxId); //?? hmmm...
                     SendCoverageData(reg);
                 }
             }
@@ -458,7 +467,11 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendCoverage(string sessionUid)
         {
-            SendCoverageData(GetRegistrator(sessionUid));
+            var regs = GetRegistrator(sessionUid);
+            if (regs == null)
+                return; //??
+            foreach(var reg in regs)
+                SendCoverageData(reg);
         }
 
         private void SendCoverageData(CoverageRegistrator reg)
@@ -502,13 +515,18 @@ namespace Drill4Net.Agent.Standard
                 _sendTimer.Enabled = false;
         }
 
-        internal CoverageRegistrator GetRegistrator(string sessionUid)
+        internal List<CoverageRegistrator> GetRegistrator(string sessionUid)
         {
-            if (!_sessionToCtx.TryGetValue(sessionUid, out var ctxId))
+            if (!_sessionToCtxs.TryGetValue(sessionUid, out var ctxList))
                 return null;
-            if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
-                return null;
-            return reg;
+            var regs = new List<CoverageRegistrator>();
+            foreach (var ctxId in ctxList)
+            {
+                if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
+                    return null;
+                regs.Add(reg);
+            }
+            return regs;
         }
 
         /// <summary>
@@ -528,7 +546,7 @@ namespace Drill4Net.Agent.Standard
                 if (reg is { Session: null })
                     reg.Session = TryGetLocalSession();
             }
-            else
+            else  //create
             {
                 //TODO: do it properly! Need right binding ctx to session!
                 var session = TryGetLocalSession();

@@ -55,7 +55,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             var isFake = Options.Debug is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
 
-            RunningType runningType = GetRunningType(isFake);
+            RunningType runningType = await GetRunningType(isFake).ConfigureAwait(false);
             _logger.Debug($"Running type: {runningType}");
 
             var res = new RunInfo { RunType = runningType };
@@ -200,7 +200,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
         }
 
-        internal virtual RunningType GetRunningType(bool isFake)
+        internal async virtual Task<RunningType> GetRunningType(bool isFake)
         {
             RunningType runningType;
             if (isFake)
@@ -211,6 +211,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             {
                 //TODO: add error handling
                 //List<BuildSummary> summary = await _requester.GetBuildSummaries();
+                await _agentRep.RetrieveTargetBuilds();
                 var summary = _agentRep.Builds;
                 var count = (summary?.Count) ?? 0;
                 _logger.Debug($"Builds: {count}");

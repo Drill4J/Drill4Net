@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
@@ -174,12 +173,9 @@ namespace Drill4Net.Agent.Standard
             if (builds == null || builds.Count == 0)
                 return false;
             var exactly = builds.Find(a => a.BuildVersion == Repository.TargetVersion);
-            if (exactly?.Summary != null) //such version already exists
-                return true;
-            //var last = summaryInfo.OrderByDescending(a => a.DetectedAt).First();
-            //if(last.Summary == null)
-            //    return false;
-            return false;
+            if (exactly?.Summary == null) //such version already exists
+                return false;
+            return true;
         }
 
         //TODO: parameter with plugin name and checkikn if this plugin... test2code (guanito)
@@ -578,7 +574,7 @@ namespace Drill4Net.Agent.Standard
             BlockProbeProcessing();
 
             //each agent can serve only one target, so there is only one autotest session
-            if (_curAutoSession != null)
+            if (_curAutoSession != null) //TODO: for parallel tests it is WRONG !!!!!
                 Repository.RecreateSessionData(_curAutoSession, testCtx.CaseName); //because we need recreate the Coverager at all in the current session - guanito
 
             CoverageSender.RegisterTestCaseStart(testCtx);

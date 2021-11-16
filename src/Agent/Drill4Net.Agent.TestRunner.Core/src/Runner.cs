@@ -70,7 +70,10 @@ namespace Drill4Net.Agent.TestRunner.Core
             {
                 var runInfo = await _rep.GetRunInfo().ConfigureAwait(false);
                 if (runInfo.RunType == RunningType.Nothing)
+                {
+                    _logger.Info("Nothing to run");
                     return;
+                }
 
                 var args = GetRunArguments(runInfo);
                 RunTests(args); //the tests are run by CLI ("dotnet test ...")
