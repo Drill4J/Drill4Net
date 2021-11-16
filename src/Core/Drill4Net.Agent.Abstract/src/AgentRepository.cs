@@ -18,6 +18,11 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         public string TargetVersion { get; protected set; }
 
+        /// <summary>
+        /// Communicator for transfer probe data to admin side
+        /// </summary>
+        public AbstractCommunicator Communicator { get; set; }
+
         /****************************************************************************/
 
         public AgentRepository(string cfgPath = null) : base(CoreConstants.SUBSYSTEM_AGENT, cfgPath)

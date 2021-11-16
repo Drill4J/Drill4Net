@@ -65,7 +65,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             _logger.Debug("Wait for Agent's initializing...");
             _initEvent.WaitOne();
 
-            _logger.Debug("Getting the build summaries...");
+            _logger.Debug("Getting CLI run info...");
 
             try
             {

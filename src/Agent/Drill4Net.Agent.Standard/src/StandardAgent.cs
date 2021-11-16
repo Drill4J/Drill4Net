@@ -13,7 +13,6 @@ using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
-using Drill4Net.Admin.Requester;
 
 /*** INFO
  automatic version tagger including Git info - https://github.com/devlooped/GitInfo

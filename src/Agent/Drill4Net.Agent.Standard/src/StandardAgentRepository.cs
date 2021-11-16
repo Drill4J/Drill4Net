@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Newtonsoft.Json;
@@ -11,17 +10,20 @@ using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Transport;
+using Drill4Net.Admin.Requester;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
-using Drill4Net.Admin.Requester;
 
 namespace Drill4Net.Agent.Standard
 {
     /// <summary>
     /// Repository for Standard Agent
     /// </summary>
-    public sealed class StandardAgentRepository : AbstractCommunicatorRepository
+    public sealed class StandardAgentRepository : AgentRepository
     {
+        /// <summary>
+        /// Target builds' information from Drill Admin service
+        /// </summary>
         public List<BuildSummary> Builds { get; private set; }
 
         /// <summary>
