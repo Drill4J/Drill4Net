@@ -38,7 +38,7 @@ namespace Drill4Net.Admin.Requester
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var request = new RestRequest(ResourceManager.GetSummaryResource(target), Method.GET, DataFormat.Json);
-            return GetData<List<BuildSummary>>(request, "builds' summaries", "Bad response for builds' summaries retrieving");
+            return GetData<List<BuildSummary>>(request, target, "builds' summaries", "Bad response for builds' summaries retrieving");
         }
 
         public virtual Task<TestToRunResponse> GetTestToRun(string target = null)
@@ -47,10 +47,10 @@ namespace Drill4Net.Admin.Requester
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var request = new RestRequest(ResourceManager.GetTest2RunResource(target), DataFormat.Json);
-            return GetData<TestToRunResponse>(request, "test to run", "Bad response for tasks to run retrieving");
+            return GetData<TestToRunResponse>(request, target, "test to run", "Bad response for tasks to run retrieving");
         }
 
-        private async Task<T> GetData<T>(IRestRequest request, string purpose, string errorMsg)
+        private async Task<T> GetData<T>(IRestRequest request, string target, string purpose, string errorMsg)
         {
             IRestResponse response = null;
             for (var i = 0; i < 25; i++)
@@ -60,6 +60,12 @@ namespace Drill4Net.Admin.Requester
                     break;
                 if (response.StatusCode == HttpStatusCode.BadRequest)
                 {
+                    var answer = JsonConvert.DeserializeObject<SimpleRestAnswer>(response.Content);
+                    if (answer?.message.Contains("not found") == true) //Drill doesn't know about this Target yet
+                    {
+                        _logger.Info($"New target for Drill: {target}");
+                        return default;
+                    }
                     _logger.Warning($"Waiting for retrieving {purpose}...");
                     await Task.Delay(4000);
                 }

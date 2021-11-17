@@ -60,7 +60,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             _logger.Info($"Fake mode: {isFake}");
 
             var runningType = await GetRunningType(isFake).ConfigureAwait(false);
-            _logger.Debug($"Running type: {runningType}");
+            _logger.Info($"Running type: {runningType}");
 
             var res = new RunInfo { RunType = runningType };
 
@@ -83,6 +83,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 }
 
                 // adapt tests to run in CLI
+                var hash = new HashSet<string>();
                 foreach (var t2r in run.ByType[AgentConstants.TEST_AUTO])
                 {
                     //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
@@ -113,6 +114,11 @@ namespace Drill4Net.Agent.TestRunner.Core
                         _logger.Error($"Unknowm test assembly for test {qName}");
                         continue;
                     }
+
+                    //dublicates aren't needed
+                    if (hash.Contains(qName))
+                        continue;
+                    hash.Add(qName);
 
                     // insert test info
                     RunAssemblyInfo info;

@@ -104,6 +104,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 }
                 //
                 args += " --filter \"";
+                _logger.Info($"Assembly: {asmPath} -> {tests.Count} tests");
                 for (int i = 0; i < tests.Count; i++)
                 {
                     string test = tests[i];
