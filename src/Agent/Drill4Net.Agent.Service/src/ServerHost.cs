@@ -14,17 +14,8 @@ using Drill4Net.Agent.Messaging.Transport.Kafka;
 // to change semVer it is nesseccary to create appropriate tag and push it to remote repository
 // patches'(commits) count starts with 0 again after new tag pushing
 // For file version format exactly is digit
-[assembly: AssemblyFileVersion(
-    ThisAssembly.Git.SemVer.Major + "." +
-    ThisAssembly.Git.SemVer.Minor + "." +
-    ThisAssembly.Git.SemVer.Patch)]
-
-[assembly: AssemblyInformationalVersion(
-      ThisAssembly.Git.SemVer.Major + "." +
-      ThisAssembly.Git.SemVer.Minor + "." +
-      ThisAssembly.Git.SemVer.Patch + "-" +
-      ThisAssembly.Git.Branch + "+" +
-      ThisAssembly.Git.Commit)]
+[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
 
 namespace Drill4Net.Agent.Service
 {

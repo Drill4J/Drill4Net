@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Standard;
 
@@ -17,17 +18,8 @@ to change semVer it is nesseccary to create appropriate tag and push it to remot
 patches'(commits) count starts with 0 again after new tag pushing
 For file version format exactly is digit
 ***/
-[assembly: AssemblyFileVersion(
-    ThisAssembly.Git.SemVer.Major + "." +
-    ThisAssembly.Git.SemVer.Minor + "." +
-    ThisAssembly.Git.SemVer.Patch)]
-
-[assembly: AssemblyInformationalVersion(
-  ThisAssembly.Git.SemVer.Major + "." +
-  ThisAssembly.Git.SemVer.Minor + "." +
-  ThisAssembly.Git.SemVer.Patch + "-" +
-  ThisAssembly.Git.Branch + "+" +
-  ThisAssembly.Git.Commit)]
+[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
 
 namespace Drill4Net.Agent.TestRunner.Core
 {

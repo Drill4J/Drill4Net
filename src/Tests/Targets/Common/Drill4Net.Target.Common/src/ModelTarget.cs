@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Drill4Net.Common;
 using Drill4Net.Target.Common.VB;
 
 [assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Engine")]
@@ -22,17 +23,8 @@ using Drill4Net.Target.Common.VB;
  patches'(commits) count starts with 0 again after new tag pushing
  For file version format exactly is digit
 ***/
-[assembly: AssemblyFileVersion(
-    ThisAssembly.Git.SemVer.Major + "." +
-    ThisAssembly.Git.SemVer.Minor + "." +
-    ThisAssembly.Git.SemVer.Patch)]
-
-[assembly: AssemblyInformationalVersion(
-  ThisAssembly.Git.SemVer.Major + "." +
-  ThisAssembly.Git.SemVer.Minor + "." +
-  ThisAssembly.Git.SemVer.Patch + "-" +
-  ThisAssembly.Git.Branch + "+" +
-  ThisAssembly.Git.Commit)]
+[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
 
 //add this in project's csproj file: 
 //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

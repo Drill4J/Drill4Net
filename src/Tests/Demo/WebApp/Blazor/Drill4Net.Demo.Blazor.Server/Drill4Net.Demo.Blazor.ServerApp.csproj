@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
     <ProjectReference Include="..\..\..\Shared\Drill4Net.Demo.Target\Drill4Net.Demo.Target.csproj" />
   </ItemGroup>
 
