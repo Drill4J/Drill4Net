@@ -399,7 +399,7 @@ namespace Drill4Net.Agent.Standard
                 //var probe = ar[3];         
 
                 if (_writeProbesToFile)
-                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"{ctx} -> {probeUid}");
+                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"[{ctx}] -> {probeUid}");
 
                 var res = Repository.RegisterCoverage(probeUid, ctx);
                 if (!res) //for debug

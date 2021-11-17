@@ -13,4 +13,4 @@ Connector: # parameters for the connector auxiliary subsystem (native Drill libr
   LogLevel: debug
 Debug:
   Disabled: true
-  WriteProbes: true # write trace probe data to the file probes.log in Log directory
+  WriteProbes: false # write trace probe data to the file probes.log in Log directory

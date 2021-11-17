@@ -2,7 +2,7 @@
 
 namespace Drill4Net.Agent.Abstract
 {
-    public class SimpleContexter : AbstractContexter
+    public class SimpleContexter : AbstractEngineContexter
     {
         public SimpleContexter() : base(nameof(SimpleContexter))
         {

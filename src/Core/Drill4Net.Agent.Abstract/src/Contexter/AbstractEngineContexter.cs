@@ -5,7 +5,10 @@ using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Abstract
 {
-    public abstract class AbstractContexter
+    /// <summary>
+    /// Manager rerieving execution context (name of current testcases) for cpecific engines: xUnit, NUnit, etc
+    /// </summary>
+    public abstract class AbstractEngineContexter : IEngineContexter
     {
         public string Name { get; }
 
@@ -13,7 +16,7 @@ namespace Drill4Net.Agent.Abstract
 
         /******************************************************************************/
 
-        protected AbstractContexter(string name)
+        protected AbstractEngineContexter(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException("Name of plugin cannot be empty");
@@ -30,5 +33,7 @@ namespace Drill4Net.Agent.Abstract
         {
             return JsonConvert.DeserializeObject<TestCaseContext>(str);
         }
+
+        public abstract TestEngine GetTestEngine();
     }
 }

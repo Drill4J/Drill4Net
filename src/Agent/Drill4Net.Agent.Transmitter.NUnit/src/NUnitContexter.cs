@@ -5,7 +5,7 @@ namespace Drill4Net.Agent.Transmitter.NUnit3
 {
     //https://docs.nunit.org/articles/nunit/writing-tests/TestContext.html
 
-    public class NUnitContexter : AbstractContexter, IEngineContexter
+    public class NUnitContexter : AbstractEngineContexter
     {
         public NUnitContexter() : base(nameof(NUnitContexter))
         {
@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.Transmitter.NUnit3
             return null; // NUnit.Framework.TestContext.CurrentContext?.Test?.FullName; //TODO: check !!!!
         }
 
-        public TestEngine GetTestEngine()
+        public override TestEngine GetTestEngine()
         {
             return new TestEngine
             {

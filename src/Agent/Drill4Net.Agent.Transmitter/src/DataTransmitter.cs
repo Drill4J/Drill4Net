@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.Transmitter
         /// In fact, this is a limiter to reduce the flow of sending probes 
         /// to the administrator's side
         /// </summary>
-        private static ConcurrentDictionary<string, bool> _probes;
+        private static ConcurrentDictionary<string, ConcurrentDictionary<string, bool>> _probesByCtx;
 
         private readonly List<string> _cmdSenderTopics;
 
@@ -97,7 +97,7 @@ namespace Drill4Net.Agent.Transmitter
             _resolver = new AssemblyResolver();
 
             EmergencyLogDir = FileUtils.EmergencyDir;
-            _probes = new ConcurrentDictionary<string, bool>();
+            _probesByCtx = new ConcurrentDictionary<string, ConcurrentDictionary<string, bool>>();
 
             //TODO: factory
             TargetSender = new TargetInfoKafkaSender(rep);
@@ -207,9 +207,6 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="data">The cross-point data.</param>
         public static void Transmit(string data)
         {
-            //unfortunately, caching is wrong techique here - maybe later...
-            //if (!_probes.TryAdd(data, true))
-                //return;
             TransmitWithContext(data, null);
         }
 
@@ -220,9 +217,6 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
-            //unfortunately, caching is wrong techique here
-            //if (!_probes.TryAdd(data, true))
-                //return;
             Transmitter.SendProbe(data, ctx);
         }
 
@@ -232,14 +226,31 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         /// <param name="data">The cross-point data.</param>
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
+        /// <param name="sysCtx">System execution context</param>
         internal int SendProbe(string data, string ctx)
         {
             if (string.IsNullOrWhiteSpace(ctx))
                 ctx = Repository.GetContextId();
 
+            //no need the same probe in the same context
+            var bagExists = _probesByCtx.TryGetValue(ctx, out var probes);
+            if (bagExists) //for ctx some probes are exist
+            {
+                if (!probes.TryAdd(data, true)) //the probe already exists
+                    return 0;
+            }
+            else
+            {
+                probes = new ConcurrentDictionary<string, bool>();
+                probes.TryAdd(data, true);
+                _probesByCtx.TryAdd(ctx, probes);
+            }
+
+            //debug
             if (_writeProbesToFile)
                 _probeLogger.Log(LogLevel.Trace, $"{ctx} -> [{data}]");
 
+            //send the probe
             return ProbeSender.SendProbe(data, ctx);
         }
         #endregion

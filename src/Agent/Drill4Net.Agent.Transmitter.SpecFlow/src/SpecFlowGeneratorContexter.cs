@@ -11,15 +11,15 @@ namespace Drill4Net.Agent.Transmitter.SpecFlow
     /// <summary>
     /// SpecFlow helper for retrieving tests' workflow from the specific contexts
     /// </summary>
-    public class SpecFlowTestContexter : IGeneratorContexter
+    public class SpecFlowGeneratorContexter : IGeneratorContexter
     {
-        private static readonly SpecFlowTestContexter _singleton = new();
+        private static readonly SpecFlowGeneratorContexter _singleton = new();
         private readonly TestGenerator _generator;
         private static readonly ConcurrentDictionary<string, long> _testCaseStartTimes = new();
 
         /**********************************************************************************************/
 
-        public SpecFlowTestContexter()
+        public SpecFlowGeneratorContexter()
         {
             _generator = new TestGenerator
             {
