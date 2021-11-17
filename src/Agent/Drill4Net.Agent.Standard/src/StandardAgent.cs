@@ -42,7 +42,7 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Agent works in separate Worker (not in the Target's process directly)
         /// </summary>
-        public bool ReplacedInWorker { get; set; }
+        public bool LocatedInWorker { get; set; }
 
         private IAgentReceiver Receiver => _comm?.Receiver;
 
@@ -375,7 +375,10 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            var ctx = Repository?.GetContextId(); //it is only for local Agent injected directly in Target's sys process
+            //it is only for local Agent injected directly in Target's sys process
+            if (LocatedInWorker)
+                return;
+            var ctx = Repository?.GetContextId();
             RegisterWithContext(data, ctx);
         }
 
@@ -389,13 +392,16 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                //in Worker we can work only with one autotests' Target/suite/session (I still think so)
-                if (_isAutotests && _curAutoSession == null)
-                    return; //yes, some probes of tests' infrastructure we can to lose
-
-                _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
-
                 #region Checks
+                //in Worker we can work only with one autotests' Target/suite/session (I still think so)
+                //yes, some needless probes of tests' infrastructure we can to lose
+                if (_isAutotests)
+                {
+                    if(_curAutoSession == null)
+                        return;
+                    if (ctx?.StartsWith(AgentConstants.CONTEXT_SYSTEM_PREFIX) == true)
+                        return;
+                }
                 if (Repository?.IsAnySession != true)
                     return;
                 if (string.IsNullOrWhiteSpace(data))
@@ -409,7 +415,9 @@ namespace Drill4Net.Agent.Standard
                 var probeUid = ar[0];
                 //var asmName = ar[1];
                 //var funcName = ar[2];
-                //var probe = ar[3];         
+                //var probe = ar[3];
+
+                _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
 
                 if (_writeProbesToFile)
                     _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"[{ctx}] -> {probeUid}");
@@ -512,8 +520,8 @@ namespace Drill4Net.Agent.Standard
             var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
 
-            _curAutoSession = null;
             SendRemainedCoverage();
+            _curAutoSession = null;
 
             //DON'T REMOVE THESE COMMENTED LINES: the scope will be removed as entity from Drill Admin... soon...
 
@@ -588,9 +596,11 @@ namespace Drill4Net.Agent.Standard
 
         private void SendRemainedCoverage()
         {
-            Task.Delay(1500); // this is inefficient: TODO control by probe's context (=test) by dict
             if (_curAutoSession != null)
+            {
+                Task.Delay(1500); // this is inefficient: TODO control by probe's context (=test) by dict
                 Repository.SendCoverage(_curAutoSession.SessionId);
+            }
         }
         #endregion
 

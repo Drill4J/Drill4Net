@@ -11,7 +11,7 @@ namespace Drill4Net.Agent.Abstract
         public string GetContextId()
         {
             var ctx = Thread.CurrentThread.ExecutionContext;
-            return $"$$$_{ctx?.GetHashCode()}";
+            return $"{AgentConstants.CONTEXT_SYSTEM_PREFIX}{ctx?.GetHashCode()}";
         }
 
         public TestEngine GetTestEngine()
