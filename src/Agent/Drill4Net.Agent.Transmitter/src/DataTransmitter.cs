@@ -69,6 +69,7 @@ namespace Drill4Net.Agent.Transmitter
             AbstractRepository.PrepareEmergencyLogger();
             Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
+            _probesByCtx = new ConcurrentDictionary<string, ConcurrentDictionary<string, bool>>();
             var rep = new TransmitterRepository();
             Log.Debug($"{nameof(TransmitterRepository)} is created. Session={rep.TargetSession}. Name={rep.TargetName}. Version={rep.TargetVersion}");
 
@@ -97,7 +98,6 @@ namespace Drill4Net.Agent.Transmitter
             _resolver = new AssemblyResolver();
 
             EmergencyLogDir = FileUtils.EmergencyDir;
-            _probesByCtx = new ConcurrentDictionary<string, ConcurrentDictionary<string, bool>>();
 
             //TODO: factory
             TargetSender = new TargetInfoKafkaSender(rep);

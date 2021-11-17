@@ -2,7 +2,7 @@
 {
     public enum TypeFinderMode
     {
-        Class,
+        ClassChildren,
         Interface,
         Attribute,
     }

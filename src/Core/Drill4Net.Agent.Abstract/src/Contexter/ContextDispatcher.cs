@@ -38,7 +38,9 @@ namespace Drill4Net.Agent.Abstract
             //};
             //var tstTypes = pluginator.GetBy(TypeFinderMode.Class, dir, typeof(AbstractContexter), filter);
             //dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Transmitter.NUnit\netstandard2.0\"; //TEST !!!
-            var ctxTypes = pluginator.GetBy(TypeFinderMode.Interface, dir, typeof(IEngineContexter));
+
+            //var ctxTypes = pluginator.GetBy(TypeFinderMode.Interface, dir, typeof(IEngineContexter));
+            var ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter));
 
             _contexters = new List<AbstractEngineContexter>();
             foreach (var contexter in ctxTypes)
@@ -49,7 +51,7 @@ namespace Drill4Net.Agent.Abstract
             }
 
             _stdContexter = new SimpleContexter();
-            _logger.Info($"Plugin added (standard): [{_stdContexter.Name}]");
+            _logger.Info($"Plugin added (standard): [{nameof(SimpleContexter)}]");
         }
 
         /**********************************************************************************/

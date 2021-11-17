@@ -10,6 +10,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Transmitter.SpecFlow;
 
 namespace Drill4Net.Injection.SpecFlow
 {
@@ -52,9 +53,10 @@ namespace Drill4Net.Injection.SpecFlow
             HelperReadDir = loaderCfg.Path;
 
             // these are real constants, aren't the cfg params
-            HelperClass = "SpecFlowTestContexter";
-            HelperNs = "Drill4Net.Agent.Transmitter.SpecFlow";
-            HelperAsmName = "Drill4Net.Agent.Transmitter.SpecFlow.dll";
+            var typeHelper = typeof(SpecFlowGeneratorContexter);
+            HelperClass = typeHelper.Name;
+            HelperNs = typeHelper.Namespace;
+            HelperAsmName = Path.GetFileName(typeHelper.Assembly.Location); // "Drill4Net.Agent.Transmitter.SpecFlow.dll";
 
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()

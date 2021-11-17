@@ -105,7 +105,7 @@ namespace Drill4Net.Common
 
                     switch (finderMode)
                     {
-                        case TypeFinderMode.Class:
+                        case TypeFinderMode.ClassChildren:
                             if (type.IsSubclassOf(searchType))
                                 list.Add(type);
                             break;
