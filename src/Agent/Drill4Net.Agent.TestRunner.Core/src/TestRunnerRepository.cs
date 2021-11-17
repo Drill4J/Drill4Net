@@ -13,6 +13,9 @@ using Drill4Net.Admin.Requester;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
+    /// <summary>
+    /// Repository for TestRunner
+    /// </summary>
     public class TestRunnerRepository : ConfiguredRepository<TestRunnerOptions, BaseOptionsHelper<TestRunnerOptions>>
     {
         //TODO: more abstract type (but Agent shouldn't connect immedeately after its creating)
@@ -29,7 +32,8 @@ namespace Drill4Net.Agent.TestRunner.Core
             if (string.IsNullOrWhiteSpace(Options.Directory))
                 throw new Exception("Directory for tests is empty in config");
             _agentRep = CreateAgentRepository();
-            _requester = new(_agentRep.Options.Admin.Url, _agentRep.TargetName, _agentRep.TargetVersion);
+            _requester = new(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, _agentRep.Options.Admin.Url,
+                _agentRep.TargetName, _agentRep.TargetVersion);
         }
 
         /********************************************************************************/
@@ -55,7 +59,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             var isFake = Options.Debug is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
 
-            RunningType runningType = await GetRunningType(isFake).ConfigureAwait(false);
+            var runningType = await GetRunningType(isFake).ConfigureAwait(false);
             _logger.Debug($"Running type: {runningType}");
 
             var res = new RunInfo { RunType = runningType };
@@ -211,7 +215,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             {
                 //TODO: add error handling
                 //List<BuildSummary> summary = await _requester.GetBuildSummaries();
-                await _agentRep.RetrieveTargetBuilds();
+                await _agentRep.RetrieveTargetBuilds().ConfigureAwait(false);
                 var summary = _agentRep.Builds;
                 var count = (summary?.Count) ?? 0;
                 _logger.Debug($"Builds: {count}");

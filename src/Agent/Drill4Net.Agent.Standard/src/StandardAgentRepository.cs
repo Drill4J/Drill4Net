@@ -126,7 +126,7 @@ namespace Drill4Net.Agent.Standard
            
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
 
-            _requester = new AdminRequester(Options.Admin.Url, TargetName, TargetVersion);
+            _requester = new AdminRequester(Subsystem, Options.Admin.Url, TargetName, TargetVersion);
             RetrieveTargetBuilds().GetAwaiter().GetResult();
 
             //Communicator

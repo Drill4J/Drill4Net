@@ -22,7 +22,11 @@
                 a[0] = char.ToUpper(a[0]);
                 ar[i] = new string(a);
             }
-            displayName = string.Join(null, ar).Replace(" ", null).Replace(":", null);
+            //TODO: regex (check also another bad symbols)
+            displayName = string.Join(null, ar)
+                .Replace(" ", null)
+                .Replace(":", null)
+                .Replace("-", "_");
             return displayName;
         }
     }

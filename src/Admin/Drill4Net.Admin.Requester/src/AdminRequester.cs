@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RestSharp;
 using Newtonsoft.Json;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Admin.Requester
 {
@@ -14,13 +16,15 @@ namespace Drill4Net.Admin.Requester
         private readonly string _target;
         private readonly string _build;
         private readonly RestClient _client;
+        private readonly Logger _logger;
 
         /****************************************************************************/
 
-        public AdminRequester(string url, string target, string build)
+        public AdminRequester(string subsystem, string url, string target, string build)
         {
             _target = target ?? throw new ArgumentNullException(nameof(target));
             _build = build ?? throw new ArgumentNullException(nameof(build));
+            _logger = new TypedLogger<AdminRequester>(subsystem);
             _url = ResourceManager.CheckUrl(url);
             _client = new RestClient(_url);
             //client.Authenticator = new HttpBasicAuthenticator("username", "password");
@@ -34,7 +38,7 @@ namespace Drill4Net.Admin.Requester
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var request = new RestRequest(ResourceManager.GetSummaryResource(target), Method.GET, DataFormat.Json);
-            return GetData<List<BuildSummary>>(request, "Bad response for build summaries retrieving");
+            return GetData<List<BuildSummary>>(request, "builds' summaries", "Bad response for builds' summaries retrieving");
         }
 
         public virtual Task<TestToRunResponse> GetTestToRun(string target = null)
@@ -43,23 +47,27 @@ namespace Drill4Net.Admin.Requester
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var request = new RestRequest(ResourceManager.GetTest2RunResource(target), DataFormat.Json);
-            return GetData<TestToRunResponse>(request, "Bad response for tasks to run retrieving");
+            return GetData<TestToRunResponse>(request, "test to run", "Bad response for tasks to run retrieving");
         }
 
-        private async Task<T> GetData<T>(IRestRequest request, string errorMsg)
+        private async Task<T> GetData<T>(IRestRequest request, string purpose, string errorMsg)
         {
             IRestResponse response = null;
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 25; i++)
             {
                 response = _client.Get(request);
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK)
                     break;
-                await Task.Delay(1000).ConfigureAwait(false);
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    _logger.Warning($"Waiting for retrieving {purpose}...");
+                    await Task.Delay(4000);
+                }
+                else
+                    break;
             }
-            if (response == null)
+            if (response == null || response.StatusCode != HttpStatusCode.OK)
                 throw new Exception(errorMsg);
-            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                return default;
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
 
