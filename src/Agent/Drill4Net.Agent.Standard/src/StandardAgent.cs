@@ -39,10 +39,19 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public static StandardAgent Agent { get; private set; }
 
+        /// <summary>
+        /// Agent works in separate Worker (not in the Target's process directly)
+        /// </summary>
+        public bool ReplacedInWorker { get; set; }
+
         private IAgentReceiver Receiver => _comm?.Receiver;
 
         //in fact, it is the Main sender. Others are additional ones - as plugins
         private IAgentCoveragerSender CoverageSender => _comm?.Sender;
+
+        //each agent can serve only one target, so there is only one autotest session
+        private StartSessionPayload _curAutoSession;
+        private bool _isAutotests;
 
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
@@ -380,6 +389,10 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
+                //in Worker we can work only with one autotests' Target/suite/session (I still think so)
+                if (_isAutotests && _curAutoSession == null)
+                    return; //yes, some probes of tests' infrastructure we can to lose
+
                 _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
 
                 #region Checks
@@ -413,10 +426,6 @@ namespace Drill4Net.Agent.Standard
         #endregion
         #endregion
         #region Commands: autotests, etc
-
-        //each agent can serve only one target, so there is only one autotest session
-        private StartSessionPayload _curAutoSession;
-
         /// <summary>
         /// Do some command
         /// </summary>
@@ -480,6 +489,7 @@ namespace Drill4Net.Agent.Standard
             var session = GetAutoSessionName(metadata);
             _logger.Info($"Admin side session is starting: [{session}]");
 
+            _isAutotests = true;
             _curAutoSession = new StartSessionPayload
             {
                 SessionId = session,
@@ -497,12 +507,12 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Automatic command from Agent to Admin side to stop the session (for autotests)
         /// </summary>
-        /// <param name="metadata"></param>
         internal void StopAutoSession()
         {
             var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
 
+            _curAutoSession = null;
             SendRemainedCoverage();
 
             //DON'T REMOVE THESE COMMENTED LINES: the scope will be removed as entity from Drill Admin... soon...
@@ -517,9 +527,6 @@ namespace Drill4Net.Agent.Standard
 
             //we need to finish test scope + force finish the session
             CoverageSender.SendFinishScopeAction();
-
-            _curAutoSession = null;
-
             ReleaseProbeProcessing(); //excess probes aren't need
 
             _logger.Info($"Admin side session is stopped: [{session}]");

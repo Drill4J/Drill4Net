@@ -20,6 +20,11 @@ namespace Drill4Net.Agent.Abstract
             return ctx?.GetHashCode().ToString() ?? "";
         }
 
+        public override TestEngine GetTestEngine()
+        {
+            return null;
+        }
+
         public override bool RegisterCommand(int command, string data)
         {
             return true;

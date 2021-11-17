@@ -132,6 +132,7 @@ namespace Drill4Net.Agent.Worker
             StandardAgentCCtorParameters.SkipCreatingSingleton = true;
             StandardAgent.Init(target.Options, target.Solution);
             StandardAgent.Agent.Initialized += AgentInitialized;
+            StandardAgent.Agent.ReplacedInWorker = true;
             _isAgentInitStarted = true;
             _logger.Debug($"{nameof(StandardAgent)} is primarly initialized");
         }
