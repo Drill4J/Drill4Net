@@ -76,7 +76,7 @@ namespace Drill4Net.Agent.Service
             _workerDir = Path.GetDirectoryName(_processName);
 
             //for using by workers
-            _cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_ADMIN_SERVICE);
+            _cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
 
             //events
             _pingReceiver.PingReceived += PingReceiver_PingReceived;

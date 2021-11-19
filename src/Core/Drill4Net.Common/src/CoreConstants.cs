@@ -44,7 +44,7 @@
         /// </summary>
         public const string CONFIG_NAME_TESTS = "tests_cfg.yml";
 
-        public const string CONFIG_NAME_ADMIN_SERVICE = "svc.yml";
+        public const string CONFIG_NAME_MIDDLEWARE = "svc.yml";
 
         /// <summary>
         /// File name for the injected entities' metadata (files, types, classes, methods, cross-points, etc)

@@ -45,7 +45,7 @@ namespace Drill4Net.Agent.Transmitter
 
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
-            ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_ADMIN_SERVICE);
+            ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
             MessagerOptions = GetMessagerOptions();
             _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
             TargetName = Options.Target?.Name ?? _tree.Name ?? GenerateTargetName();
