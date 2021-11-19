@@ -2,7 +2,7 @@
 Type: Injector #type as hint
 Target: # some metadata about target
     Name: bdd-specflow-xUnit-kafka #optional injection name
-    Version:  # version of whole Product, can be empty and can be overrided by Agent's configs
+    Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit\
     Filter: # mask for search files, namespaces, classes...
