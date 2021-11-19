@@ -1,7 +1,7 @@
 ﻿Description: IHS adoption for BDD tests
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: IHS-bdd #optional injection name
+    Name: IHS-bdd #optional injection name, if empty must be set in agent config
     Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
 Source: # what and how processing
     Directory: d:\Projects\IHS-bdd\

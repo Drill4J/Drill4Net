@@ -1,7 +1,7 @@
 ﻿Description: For post build actions in IDE, forming dirs for testing engine
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: test-target #optional injection name
+    Name: test-target #optional injection name, if empty must be set in agent config
 Source: # what and how processing
     Directory: ..\..\Tests\TargetApps\
     Filter: # filter for files, namespaces, classes...
