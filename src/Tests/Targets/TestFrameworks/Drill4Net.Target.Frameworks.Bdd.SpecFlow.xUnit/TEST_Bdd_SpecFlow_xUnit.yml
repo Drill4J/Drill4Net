@@ -3,7 +3,7 @@ Type: Agent #type as hint
 Target:
   Name: bdd-specflow-xUnit-kafka # if empty will be retrieved by another ways
   Version: #0.0.1.1 # if empty will be retrieved by another ways
-TreePath: # were tree data about probes are located - if empty, system will try find it by another ways
+TreePath: # were tree data about probes are located - if empty, system will try to find it by another ways
 Admin: #Drill admin
   Url: localhost:8090
 PluginDir: ..\..\..\  # agent's plugins

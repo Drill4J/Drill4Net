@@ -3,7 +3,7 @@ Type: Agent #type as hint
 Target:
   Name: bdd-specflow-mstest-kafka 
   Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
-TreePath: # were tree data about probes are located - if empty, system will try find it by another ways
+TreePath: # were tree data about probes are located - if empty, system will try to find it by another ways
 Admin:
   Url: localhost:8090
 PluginDir: ..\..\..\  # agent's plugins

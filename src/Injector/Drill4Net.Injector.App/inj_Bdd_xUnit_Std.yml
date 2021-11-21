@@ -44,8 +44,8 @@ Probes: # types of cross-cutting points
    SkipIfElseType: true
 Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
-       Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
-Logs:
+       Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\ # directory
+Logs: # logging for Injector
     - Type: console
       Level: debug
     #local log
@@ -57,7 +57,7 @@ Logs:
       Level: trace
 Debug:
     CrossPointInfo : true # cross-point information is included into injected probe data. By default is true if this section presents
-Versions: # what will be tested - by target moniker/assembly/class
+Versions: # what will be injected - by target moniker/assembly/class, can be empty, can be empty
     Directory: ..\..\TargetApps\ #target dir relatively Test project
     Targets:
         #net461: #assembly moniker (MonikerData)
