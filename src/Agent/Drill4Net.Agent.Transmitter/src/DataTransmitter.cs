@@ -66,7 +66,7 @@ namespace Drill4Net.Agent.Transmitter
 
         static DataTransmitter()
         {
-            AbstractRepository.PrepareEmergencyLogger();
+            AbstractRepository.PrepareEmergencyLogger(CoreConstants.LOG_FOLDER_EMERGENCY);
             Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
             _probesByCtx = new ConcurrentDictionary<string, ConcurrentDictionary<string, bool>>();

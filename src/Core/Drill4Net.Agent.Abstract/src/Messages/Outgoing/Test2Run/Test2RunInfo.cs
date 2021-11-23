@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -25,6 +24,7 @@ namespace Drill4Net.Agent.Abstract
 
         public Test2RunInfo(string name, TestDetails testName, long startedAt, string result)
         {
+            this.id = name;
             this.name = name;
             this.startedAt = startedAt;
             this.result = result;

@@ -6,16 +6,16 @@ namespace Drill4Net.Agent.Abstract
 {
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public record TestRunMessage : OutgoingMessage
+    public record AddTestsMessage : OutgoingMessage
     {
-        public TestRunPayload payload { get; set; }
+        public AddTestsPayload payload { get; set; }
 
         /****************************************************************/
 
-        public TestRunMessage(string sessionId, List<Test2RunInfo> tests):
+        public AddTestsMessage(string sessionId, List<Test2RunInfo> tests):
             base(TestConstants.TEST_TOPIC_TESTS_ADD)
         {
-            payload = new TestRunPayload(sessionId, tests);
+            payload = new AddTestsPayload(sessionId, tests);
         }
 
         /****************************************************************/

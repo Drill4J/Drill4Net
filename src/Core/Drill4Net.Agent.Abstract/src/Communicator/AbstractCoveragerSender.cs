@@ -203,7 +203,7 @@ namespace Drill4Net.Agent.Abstract
             _logger.Debug($"Test case is finished: {info}");
 
             //send it
-            var message = new TestRunMessage(_test2RunSessionId, new List<Test2RunInfo> { info });
+            var message = new AddTestsMessage(_test2RunSessionId, new List<Test2RunInfo> { info });
             RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
@@ -216,7 +216,8 @@ namespace Drill4Net.Agent.Abstract
             {
                 engine = GetFullEngineName(testCtx),
                 testName = method,
-                @params = GetAutotestParams(testCtx, type),
+                path = type,
+                testParams = GetAutotestParams(testCtx, type),
                 metadata = GetTestCaseMetadata(testCtx, test),
             };
             return new Test2RunInfo(test, info, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN));

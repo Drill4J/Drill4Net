@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -15,19 +16,21 @@ namespace Drill4Net.Agent.Abstract
         public string engine { get; set; }
 
         /// <summary>
-        /// Contextual "path" - may vary in meaning for different autotest agents
+        /// Contextual "path" - may vary in meaning for different autotest agents.
+        /// For ordinal tests it is type full name (?)
         /// </summary>
         public string path { get; set; }
 
         /// <summary>
-        /// Name of test
+        /// Name of test's method
         /// </summary>
         public string testName { get; set; }
 
         /// <summary>
         /// metadata about test for Admin side
         /// </summary>
-        public Dictionary<string, string> @params { get; set; } = new();
+        [JsonProperty(PropertyName = "params")]
+        public Dictionary<string, string> testParams { get; set; } = new();
 
         /// <summary>
         /// Arbitrary metadata from/for Agent (its specific goals)

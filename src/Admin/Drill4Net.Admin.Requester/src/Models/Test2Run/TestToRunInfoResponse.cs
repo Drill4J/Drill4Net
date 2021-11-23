@@ -6,13 +6,13 @@ namespace Drill4Net.Admin.Requester
     {
         public string Name { get; set; }
 
-        public Test2RunMetadata Metadata { get; set; }
+        public TestDetails Details { get; set; }
 
-        /******************************************************************/
+        /****************************************************/
 
         public override string ToString()
         {
-            return Name;
+            return $"{Name} -> {Details}";
         }
     }
 }

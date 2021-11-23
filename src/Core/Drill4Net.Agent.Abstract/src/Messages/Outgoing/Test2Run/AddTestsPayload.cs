@@ -5,7 +5,7 @@ namespace Drill4Net.Agent.Abstract
 {
     [Serializable]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public class TestRunPayload
+    public class AddTestsPayload
     {
         public string sessionId { get; set; }
 
@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Abstract
 
         /************************************************************************/
 
-        public TestRunPayload(string sessionId, List<Test2RunInfo> tests)
+        public AddTestsPayload(string sessionId, List<Test2RunInfo> tests)
         {
             if (string.IsNullOrWhiteSpace(sessionId))
                 throw new ArgumentNullException(nameof(sessionId));

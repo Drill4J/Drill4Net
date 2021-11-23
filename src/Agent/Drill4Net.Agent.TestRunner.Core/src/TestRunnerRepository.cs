@@ -89,7 +89,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 {
                     //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
                     var name = t2r.Name; //it is DisplayName, not QualifiedName
-                    var metadata = t2r.Metadata.data; //TODO: use info about executing file!
+                    var metadata = t2r.Details.metadata; //TODO: use info about executing file!
                     string qName = null;
                     string asmName = null;
                     bool mustSeq = true;

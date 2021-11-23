@@ -60,7 +60,7 @@ namespace Drill4Net.Agent.Abstract
             #endregion
 
             EmergencyLogDir = FileUtils.EmergencyDir;
-            AbstractRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
+            AbstractRepository.PrepareEmergencyLogger(CoreConstants.LOG_FOLDER_EMERGENCY);
         }
 
         /**************************************************************************/

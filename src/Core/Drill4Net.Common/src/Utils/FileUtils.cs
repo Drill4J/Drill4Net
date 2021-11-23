@@ -21,8 +21,6 @@ namespace Drill4Net.Common
 
         public static string EmergencyDir { get; }
 
-        public const string LOG_FOLDER_EMERGENCY = "logs_drill";
-
         /******************************************************************/
 
         static FileUtils()
@@ -70,7 +68,7 @@ namespace Drill4Net.Common
 
         internal static string GetEmergencyDir()
         {
-            return Path.Combine(EntryDir, LOG_FOLDER_EMERGENCY);
+            return Path.Combine(EntryDir, CoreConstants.LOG_FOLDER_EMERGENCY);
         }
 
         public static bool IsPossibleFilePath(string str)
