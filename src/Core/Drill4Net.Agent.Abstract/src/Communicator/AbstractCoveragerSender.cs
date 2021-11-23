@@ -201,51 +201,25 @@ namespace Drill4Net.Agent.Abstract
             info.result = testCtx.Result ?? nameof(TestResult.UNKNOWN);
             info.finishedAt = testCtx.FinishTime;
             _logger.Debug($"Test case is finished: {info}");
-            
-            //test run
-            var testRun = new TestRun
-            {
-                startedAt = _startTestTime == 0 ? info.startedAt : _startTestTime,
-                finishedAt = info.finishedAt
-            };
-            testRun.tests.Add(info);
 
             //send it
-            var message = new TestRunMessage(_test2RunSessionId, testRun);
+            var message = new TestRunMessage(_test2RunSessionId, new List<Test2RunInfo> { info });
             RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
-
-            ////TEST!!!
-            //var testCtx2 = new TestCaseContext()
-            //{
-            //    CaseName = $"TestCase_{_testCaseCnt}",
-            //    IsFinished = true,
-            //    Result = "FAILED",
-            //    StartTime = info.startedAt,
-            //    FinishTime = info.finishedAt,
-            //    AssemblyPath = @"c:\\test.dll"
-            //};
-            //var info2 = PrepareTest2RunInfo(testCtx2);
-            //testRun.tests.Clear();
-            //testRun.tests.Add(info2);
-            //message = new TestRunMessage(_test2RunSessionId, testRun);
-            //RegisterTestsRunConcrete(AgentConstants.ADMIN_PLUGIN_NAME, Serialize(message));
         }
 
         internal Test2RunInfo PrepareTest2RunInfo(TestCaseContext testCtx)
         {
             var test = testCtx.GetKey();
             var(type, method) = GetNames(testCtx);
-            var metaData = GetTestCaseMetadata(testCtx, test);
 
-            var info = new TestName
+            var info = new TestDetails
             {
                 engine = GetFullEngineName(testCtx),
-                className = type,
-                method = method,
-                //classParams =  // ??
-                methodParams = GetMethodParams(testCtx.CaseName), // TODO: +??
+                testName = method,
+                @params = GetAutotestParams(testCtx, type),
+                metadata = GetTestCaseMetadata(testCtx, test),
             };
-            return new Test2RunInfo(test, info, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN), metaData);
+            return new Test2RunInfo(test, info, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN));
         }
 
         internal string GetFullEngineName(TestCaseContext testCtx)
@@ -279,14 +253,24 @@ namespace Drill4Net.Agent.Abstract
             return (testCtx.Group.Replace("/", "."), qName); //Group is full type namme with "/", and qName is short method name
         }
 
-        internal string GetMethodParams(string testCase)
+        internal Dictionary<string, string> GetAutotestParams(TestCaseContext testCtx, string type)
         {
+            var res = new Dictionary<string, string>();
+
+            //type of method
+            res.Add(AgentConstants.AUTOTEST_PARAMS_KEY_TYPE, type);
+
+            //method params
+            var testCase = testCtx.CaseName;
             if (string.IsNullOrWhiteSpace(testCase))
                 return null;
             var ind = testCase.IndexOf('(');
-            if (ind == -1)
-                return "()";
-            return testCase.Substring(ind);
+            var methParams = ind == -1 ? "()" : testCase.Substring(ind);
+            res.Add(AgentConstants.AUTOTEST_PARAMS_KEY_METHOD_PARAMS, methParams);
+
+            //and so on...
+
+            return res;
         }
 
         internal Dictionary<string, string> GetTestCaseMetadata(TestCaseContext testCtx, string testNameForAdmin)

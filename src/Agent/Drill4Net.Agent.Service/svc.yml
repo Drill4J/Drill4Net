@@ -2,8 +2,8 @@
 Type: agent-service # type as hint
 Servers: # list of Kafka servers
    - 'localhost:9093'
-   - 'localhost:9094'
-   - 'localhost:9095'
+   #- 'localhost:9094'
+   #- 'localhost:9095'
 Sender:
    #Topics: # additional topics
 Receiver:

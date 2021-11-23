@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Drill4Net.Agent.Abstract.Transfer;
 
 namespace Drill4Net.Agent.Abstract
@@ -11,9 +12,10 @@ namespace Drill4Net.Agent.Abstract
 
         /****************************************************************/
 
-        public TestRunMessage(string sessionId, TestRun run) : base(TestConstants.TEST_TOPIC_TESTS_ADD)
+        public TestRunMessage(string sessionId, List<Test2RunInfo> tests):
+            base(TestConstants.TEST_TOPIC_TESTS_ADD)
         {
-            payload = new TestRunPayload(sessionId, run);
+            payload = new TestRunPayload(sessionId, tests);
         }
 
         /****************************************************************/

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -8,23 +9,23 @@ namespace Drill4Net.Agent.Abstract
     {
         public string sessionId { get; set; }
 
-        public TestRun testRun { get; set; }
+        public List<Test2RunInfo> tests { get; set; }
 
         /************************************************************************/
 
-        public TestRunPayload(string sessionId, TestRun run)
+        public TestRunPayload(string sessionId, List<Test2RunInfo> tests)
         {
             if (string.IsNullOrWhiteSpace(sessionId))
                 throw new ArgumentNullException(nameof(sessionId));
             this.sessionId = sessionId;
-            this.testRun = run  ?? throw new ArgumentNullException(nameof(run));
+            this.tests = tests ?? throw new ArgumentNullException(nameof(tests));
         }
 
         /************************************************************************/
 
         public override string ToString()
         {
-            return $"[{sessionId}] -> {testRun}";
+            return $"[{sessionId}] -> {(tests?.Count) ?? 0}";
         }
     }
 }

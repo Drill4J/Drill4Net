@@ -12,34 +12,30 @@ namespace Drill4Net.Agent.Abstract
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class Test2RunInfo
     {
+        public string id { get; set; }
+
+        // TODO EPMDJ-9150 Replace name with test hash(id)
         public string name { get; set; }
-        public TestName testName { get; set; }
+        public TestDetails details { get; set; }
         public long startedAt { get; set; }
         public long finishedAt { get; set; }
         public string result { get; set; }
-        public Test2RunMetadata metadata { get; set; }
 
         /************************************************************************/
 
-        public Test2RunInfo(string name, TestName testName, long startedAt, string result, 
-            Dictionary<string, string> metadata)
+        public Test2RunInfo(string name, TestDetails testName, long startedAt, string result)
         {
             this.name = name;
             this.startedAt = startedAt;
             this.result = result;
-            this.testName = testName;
-            this.metadata = new Test2RunMetadata()
-            {
-                hash = name,
-                data = metadata,
-            };
+            this.details = testName;
         }
 
         /************************************************************************/
 
         public override string ToString()
         {
-            return $"{name} -> [{testName}] -> Result: {result} -> Metadata: {metadata}";
+            return $"{name} -> [{details}] -> Result: {result}";
         }
     }
 }

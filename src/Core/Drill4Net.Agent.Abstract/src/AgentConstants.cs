@@ -83,6 +83,10 @@
 
         public const string MESSAGE_OUT_SCOPE_SWITCH = "SWITCH_ACTIVE_SCOPE";
         #endregion
-
+        #region Autotests params
+        //these should be sync with the same ones on Admin side (it seems, in frontend)
+        public const string AUTOTEST_PARAMS_KEY_METHOD_PARAMS = "MethodParams";
+        public const string AUTOTEST_PARAMS_KEY_TYPE = "MethodType";
+        #endregion
     }
 }
