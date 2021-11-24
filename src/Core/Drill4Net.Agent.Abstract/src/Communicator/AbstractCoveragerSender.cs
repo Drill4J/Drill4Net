@@ -215,9 +215,9 @@ namespace Drill4Net.Agent.Abstract
             var info = new TestDetails
             {
                 engine = GetFullEngineName(testCtx),
-                testName = method,
+                testName = testCtx.CaseName,
                 path = type,
-                testParams = GetAutotestParams(testCtx, type),
+                testParams = GetAutotestParams(testCtx, type, method),
                 metadata = GetTestCaseMetadata(testCtx, test),
             };
             return new Test2RunInfo(test, info, testCtx.StartTime, testCtx.Result ?? nameof(TestResult.UNKNOWN));
@@ -254,12 +254,16 @@ namespace Drill4Net.Agent.Abstract
             return (testCtx.Group.Replace("/", "."), qName); //Group is full type namme with "/", and qName is short method name
         }
 
-        internal Dictionary<string, string> GetAutotestParams(TestCaseContext testCtx, string type)
+        internal Dictionary<string, string> GetAutotestParams(TestCaseContext testCtx, string type, string method)
         {
-            var res = new Dictionary<string, string>();
+            var res = new Dictionary<string, string>
+            {
+                //type of method
+                { AgentConstants.AUTOTEST_PARAMS_KEY_TYPE, type },
 
-            //type of method
-            res.Add(AgentConstants.AUTOTEST_PARAMS_KEY_TYPE, type);
+                //method
+                { AgentConstants.AUTOTEST_PARAMS_KEY_METHOD, method }
+            };
 
             //method params
             var testCase = testCtx.CaseName;
