@@ -34,6 +34,7 @@ namespace Drill4Net.Core.Repository
         protected AbstractRepository(string subsystem)
         {
             Subsystem = subsystem;
+            CreateDefaultLogger = true;
         }
 
         /*********************************************************************************/
@@ -61,7 +62,7 @@ namespace Drill4Net.Core.Repository
         /// It creates the console output and the local file log
         /// </summary>
         /// <returns>The file path to the emergency log</returns>
-        public static string PrepareEmergencyLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
+        public static string PrepareEmergencyLogger(string folder = LoggerHelper.LOG_FOLDER)
         {
             var path = LoggerHelper.GetCommonFilePath(folder);
             var logger = new LogBuilder()
@@ -115,7 +116,7 @@ namespace Drill4Net.Core.Repository
             else
             {
                 if(CreateDefaultLogger)
-                    logger = bld.CreateStandardLogger();
+                    logger = bld.CreateStandardLogger(LoggerHelper.GetDefaultLogPath());
             }
             //
             if(logger != null)

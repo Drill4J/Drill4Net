@@ -12,6 +12,7 @@ using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.Core.Repository;
 
 /*** INFO
  automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -130,7 +131,7 @@ namespace Drill4Net.Agent.Standard
                 _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
                 if (_writeProbesToFile)
                 {
-                    var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
+                    var probeLogfile = Path.Combine(LoggerHelper.GetDefaultLogDir(), "probes.log");
                     _logger.Debug($"Probes writing to [{probeLogfile}]");
                     if (File.Exists(probeLogfile))
                         File.Delete(probeLogfile);

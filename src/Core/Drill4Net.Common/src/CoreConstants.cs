@@ -63,7 +63,5 @@
         /// </summary>
         public const string REGEX_FILTER_PREFIX = "reg:";
         #endregion
-
-        public const string LOG_FOLDER_EMERGENCY = "logs_drill";
     }
 }

@@ -19,15 +19,12 @@ namespace Drill4Net.Common
 
         public static string ExecutingDir { get; }
 
-        public static string EmergencyDir { get; }
-
         /******************************************************************/
 
         static FileUtils()
         {
             ExecutingDir = GetExecutionDir();
             EntryDir = GetEntryDir() ?? ExecutingDir;
-            EmergencyDir = GetEmergencyDir();
         }
 
         /******************************************************************/
@@ -64,11 +61,6 @@ namespace Drill4Net.Common
         public static string GetEntryDir()
         {
             return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
-        }
-
-        internal static string GetEmergencyDir()
-        {
-            return Path.Combine(EntryDir, CoreConstants.LOG_FOLDER_EMERGENCY);
         }
 
         public static bool IsPossibleFilePath(string str)
@@ -128,16 +120,5 @@ namespace Drill4Net.Common
             }
         }
         #endregion
-
-        /// <summary>
-        /// Get directory for the all subsystems of the Drill4Net
-        /// </summary>
-        /// <param name="relativeBaseDir"></param>
-        /// <param name="logFolder"></param>
-        /// <returns>Log directory's path</returns>
-        public static string GetCommonLogDirectory(string relativeBaseDir, string logFolder = "logs")
-        {
-            return Path.Combine(GetFullPath(relativeBaseDir), logFolder);
-        }
     }
 }

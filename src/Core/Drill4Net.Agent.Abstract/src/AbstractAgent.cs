@@ -30,12 +30,18 @@ namespace Drill4Net.Agent.Abstract
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
-        public string EmergencyLogDir { get; }
+        public static string EmergencyLogDir { get; }
 
         protected ICommunicator _comm;
         private readonly AssemblyResolver _resolver;
 
         /**************************************************************************/
+
+        static AbstractAgent()
+        {
+            EmergencyLogDir = LoggerHelper.GetDefaultLogDir();
+            AbstractRepository.PrepareEmergencyLogger();
+        }
 
         protected AbstractAgent()
         {
@@ -58,9 +64,6 @@ namespace Drill4Net.Agent.Abstract
 
             //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
             #endregion
-
-            EmergencyLogDir = FileUtils.EmergencyDir;
-            AbstractRepository.PrepareEmergencyLogger(CoreConstants.LOG_FOLDER_EMERGENCY);
         }
 
         /**************************************************************************/
@@ -121,7 +124,7 @@ namespace Drill4Net.Agent.Abstract
 
         public static string GetDefaultConnectorLogFilePath()
         {
-            return Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.GetCallingDir()), AgentConstants.CONNECTOR_LOG_FILE_NAME);
+            return Path.Combine(LoggerHelper.GetDefaultLogDir(), AgentConstants.CONNECTOR_LOG_FILE_NAME);
         }
     }
 

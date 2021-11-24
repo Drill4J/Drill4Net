@@ -66,7 +66,7 @@ namespace Drill4Net.Agent.Transmitter
 
         static DataTransmitter()
         {
-            AbstractRepository.PrepareEmergencyLogger(CoreConstants.LOG_FOLDER_EMERGENCY);
+            AbstractRepository.PrepareEmergencyLogger();
             Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
             _probesByCtx = new ConcurrentDictionary<string, ConcurrentDictionary<string, bool>>();
@@ -97,7 +97,7 @@ namespace Drill4Net.Agent.Transmitter
             AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
             _resolver = new AssemblyResolver();
 
-            EmergencyLogDir = FileUtils.EmergencyDir;
+            EmergencyLogDir = LoggerHelper.GetDefaultLogDir();
 
             //TODO: factory
             TargetSender = new TargetInfoKafkaSender(rep);
@@ -121,7 +121,7 @@ namespace Drill4Net.Agent.Transmitter
             _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
             if (_writeProbesToFile)
             {
-                var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
+                var probeLogfile = Path.Combine(LoggerHelper.GetDefaultLogDir(), "probes.log");
                 _logger.Debug($"Probes writing to [{probeLogfile}]");
                 if (File.Exists(probeLogfile))
                     File.Delete(probeLogfile);

@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.TestRunner
             finally
             {
                 _logger?.Info("Finished");
-                _logger.GetManager().Shutdown();
+                _logger?.GetManager()?.Shutdown();
             }
         }
     }
