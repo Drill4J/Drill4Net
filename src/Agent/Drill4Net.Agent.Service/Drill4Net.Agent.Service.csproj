@@ -5,7 +5,7 @@
     <UserSecretsId>dotnet-Drill4Net.Agent.Kafka.Service-BA553775-1DB1-49EF-9629-34F45C62C2AD</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
-    <ApplicationIcon>server_113337.ico</ApplicationIcon>
+    <ApplicationIcon>document_192560.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="server_113337.ico" />
+    <Content Include="document_192560.ico" />
   </ItemGroup>
 
   <ItemGroup>

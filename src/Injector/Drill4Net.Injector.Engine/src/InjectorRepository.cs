@@ -29,16 +29,6 @@ namespace Drill4Net.Injector.Engine
 
         /// <summary>
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
-        /// injector for them, the reading/writing of resulting tree data, etc).
-        /// </summary>
-        /// <param name="cfgPath">Path to the config of injection</param>
-        public InjectorRepository(string cfgPath): base(_subsystem, cfgPath)
-        {
-            CreateLogger();
-        }
-
-        /// <summary>
-        /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
         /// <param name="args">Input arguments from console, including path to config, etc</param>
@@ -48,9 +38,14 @@ namespace Drill4Net.Injector.Engine
             _optHelper.Clarify(args, Options);
         }
 
-        private void CreateLogger()
+        /// <summary>
+        /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
+        /// injector for them, the reading/writing of resulting tree data, etc).
+        /// </summary>
+        /// <param name="cfgPath">Path to the config of injection</param>
+        public InjectorRepository(string cfgPath) : base(_subsystem, cfgPath)
         {
-            _logger = new TypedLogger<InjectorRepository>(_subsystem);
+            CreateLogger();
         }
 
         /*****************************************************************************************/
@@ -71,6 +66,11 @@ namespace Drill4Net.Injector.Engine
         public CodeHandlerStrategy GetStrategy()
         {
             return new BlockStrategy(Options);
+        }
+
+        private void CreateLogger()
+        {
+            _logger = new TypedLogger<InjectorRepository>(_subsystem);
         }
 
         /// <summary>

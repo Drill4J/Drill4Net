@@ -57,6 +57,7 @@
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
+        public const string ARGUMENT_TARGET_VERSION = "version";
 
         /// <summary>
         /// Prefix for regex filter in config

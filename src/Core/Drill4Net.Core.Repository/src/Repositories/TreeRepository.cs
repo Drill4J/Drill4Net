@@ -17,6 +17,8 @@ namespace Drill4Net.Core.Repository
             where TOptions : TargetOptions, new()
             where THelper : BaseOptionsHelper<TOptions>, new()
     {
+        public string TargetVersionFromArgs { get; }
+
         protected TreeRepositoryHelper _helper;
         private Logger _logger;
 
@@ -25,6 +27,9 @@ namespace Drill4Net.Core.Repository
         protected TreeRepository(string subsystem, string[] args) : base(subsystem, args)
         {
             Init();
+            TargetVersionFromArgs = GetArgumentTargetVersion(args);
+            if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
+                Options.Target.Version = TargetVersionFromArgs;
         }
 
         protected TreeRepository(string subsystem, string cfgPath) : base(subsystem, cfgPath)
@@ -43,6 +48,11 @@ namespace Drill4Net.Core.Repository
         {
             _logger = new TypedLogger<TreeRepository<TOptions, THelper>>(Subsystem);
             _helper = new TreeRepositoryHelper(Subsystem);
+        }
+
+        protected string GetArgumentTargetVersion(string[] args)
+        {
+            return GetArgument(args, CoreConstants.ARGUMENT_TARGET_VERSION, null);
         }
 
         #region Injected Tree
