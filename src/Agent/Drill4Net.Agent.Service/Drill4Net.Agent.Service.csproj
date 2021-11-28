@@ -5,6 +5,7 @@
     <UserSecretsId>dotnet-Drill4Net.Agent.Kafka.Service-BA553775-1DB1-49EF-9629-34F45C62C2AD</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
+    <ApplicationIcon>server_113337.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,6 +16,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Service</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="server_113337.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DumpExtensions" Version="2.0.0" />

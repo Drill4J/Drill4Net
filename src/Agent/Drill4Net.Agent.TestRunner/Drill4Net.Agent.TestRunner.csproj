@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
+	<ApplicationIcon>rocket_business_startup_icon_188656.ico</ApplicationIcon>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -14,6 +15,10 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.TestRunner</OutputPath>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="rocket_business_startup_icon_188656.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />

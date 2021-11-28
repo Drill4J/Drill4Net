@@ -159,7 +159,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal async Task<TestToRunResponse> GetTestToRun(bool isFake)
         {
             TestToRunResponse run = null;
-            for (var i = 0; i < 5; i++) //guanito, but Drill REST can be starnge
+            for (var i = 0; i < 5; i++) //guanito, but Drill REST has strange behaviour
             {
                 run = await(!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
                     .ConfigureAwait(false);
