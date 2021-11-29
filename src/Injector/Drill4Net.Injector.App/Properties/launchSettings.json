@@ -2,6 +2,15 @@
   "profiles": {
     "Drill4Net.Injector.App": {
       "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
+    },
+    "VersionFromArgs": {
+      "commandName": "Project",
+      "commandLineArgs": "-version=0.Z.0"
     }
   }
 }

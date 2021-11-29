@@ -5,7 +5,7 @@
     <TargetFrameworks>net5.0</TargetFrameworks>
 	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	<LangVersion>latest</LangVersion>
-	<ApplicationIcon>injection_178160.ico</ApplicationIcon>
+	<ApplicationIcon>syringe-58824.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="injection_178160.ico" />
+    <Content Include="syringe-58824.ico" />
   </ItemGroup>
 
   <ItemGroup>
