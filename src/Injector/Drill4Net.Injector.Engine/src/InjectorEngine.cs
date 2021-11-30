@@ -184,7 +184,7 @@ namespace Drill4Net.Injector.Engine
             var destDir = opts.Destination.Directory;
             var monikers = opts.Versions?.Targets;
 
-            _logger.Debug("The source is copying...");
+            _logger.Debug($"The source is copying: [{sourceDir}] to [{destDir}]");
             await _rep.CopySource(sourceDir, destDir, monikers) //TODO: copy dirs only according to the monikers
                 .ConfigureAwait(false);
             _logger.Info("The source is copied");

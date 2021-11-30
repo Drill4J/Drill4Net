@@ -4,6 +4,7 @@ using System.Reflection;
 using Drill4Net.Agent.Abstract;
 using Microsoft.Extensions.Logging;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.File
 {
@@ -22,7 +23,7 @@ namespace Drill4Net.Agent.File
 
         static LoggerAgent()
         {
-            var filepath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "crosspoints.txt");
+            var filepath = Path.Combine(FileUtils.EntryDir, "crosspoints.txt");
             _fileSink = new FileSink(filepath);
             _rep = new AgentRepository();
         }
@@ -37,7 +38,6 @@ namespace Drill4Net.Agent.File
         }
 
         //this method must exists due to common injection's logic
-        //TODO: do something with it
         public static void DoCommand(int command, string data)
         {
             _fileSink.Log(LogLevel.Information, $"************ COMMAND: [{command}] -> {data}");

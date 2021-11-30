@@ -94,6 +94,13 @@ namespace Drill4Net.Common
             return path;
         }
 
+        public static string GetDirectoryName(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return null;
+            return path.EndsWith("\\") || path.EndsWith("/") ? Path.GetDirectoryName(path) : path;
+        }
+
         public async static Task DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)
         {
             var dir = new DirectoryInfo(sourceDir);
