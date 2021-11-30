@@ -39,7 +39,6 @@ namespace Drill4Net.Agent.Standard
         private ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
         private ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
 
-        private static ContextDispatcher _ctxDisp;
         private CoverageRegistrator _globalRegistrator;
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
@@ -90,8 +89,6 @@ namespace Drill4Net.Agent.Standard
         {
             _logger = new TypedLogger<StandardAgentRepository>(CoreConstants.SUBSYSTEM_AGENT);
             _logger.Debug("Creating...");
-
-            _ctxDisp = new ContextDispatcher(Options.PluginDir, CoreConstants.SUBSYSTEM_AGENT);
 
             //ctx maps
             _ctxToSession = new ConcurrentDictionary<string, string>();
@@ -330,7 +327,7 @@ namespace Drill4Net.Agent.Standard
             if (session.TestType == AgentConstants.TEST_MANUAL)
                 ctxId = session.TestName;
             if(string.IsNullOrWhiteSpace(ctxId))
-                ctxId = context ?? _ctxDisp.GetContextId();
+                ctxId = context ?? GetContextId();
 
             if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
@@ -430,7 +427,7 @@ namespace Drill4Net.Agent.Standard
                 isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid); //always register
 
             //local session
-            var reg = GetOrCreateLocalRegistrator(ctx);
+            var reg = GetOrCreateLocalCoverageRegistrator(ctx);
             if (reg != null)
                 return reg.RegisterCoverage(pointUid);
             else
@@ -477,7 +474,7 @@ namespace Drill4Net.Agent.Standard
 
         internal void SendCoverage(string sessionUid)
         {
-            var regs = GetRegistrators(sessionUid);
+            var regs = GetCoverageRegistrators(sessionUid);
             if (regs == null)
                 return; //??
             foreach(var reg in regs.AsParallel())
@@ -526,7 +523,7 @@ namespace Drill4Net.Agent.Standard
                 _sendTimer.Enabled = false;
         }
 
-        internal List<CoverageRegistrator> GetRegistrators(string sessionUid)
+        internal List<CoverageRegistrator> GetCoverageRegistrators(string sessionUid)
         {
             if (!_sessionToCtxs.TryGetValue(sessionUid, out var ctxList))
                 return null;
@@ -545,7 +542,7 @@ namespace Drill4Net.Agent.Standard
         /// for local type of session (user's MANUAL or autotest's AUTO)
         /// </summary>
         /// <returns></returns>
-        public CoverageRegistrator GetOrCreateLocalRegistrator(string ctx)
+        public CoverageRegistrator GetOrCreateLocalCoverageRegistrator(string ctx)
         {
             if (string.IsNullOrWhiteSpace(ctx))
                 ctx = GetContextId(); //it is only for local Agent injected directly in Target's sys process
@@ -607,33 +604,5 @@ namespace Drill4Net.Agent.Standard
         }
         #endregion
 
-        /// <summary>
-        /// Deserialize <see cref="TestCaseContext"/> from JSON string
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public TestCaseContext GetTestCaseContext(string str)
-        {
-            return JsonConvert.DeserializeObject<TestCaseContext>(str);
-        }
-
-        /// <summary>
-        /// Register specified command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <param name="data"></param>
-        public void RegisterCommand(int command, string data)
-        {
-            _ctxDisp.RegisterCommand(command, data);
-        }
-
-        /// <summary>
-        /// Get context only for local Agent injected directly in Target's sys process
-        /// </summary>
-        /// <returns></returns>
-        internal string GetContextId()
-        {
-            return _ctxDisp.GetContextId();
-        }
     }
 }
