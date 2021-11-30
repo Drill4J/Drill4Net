@@ -23,8 +23,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="cfg.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

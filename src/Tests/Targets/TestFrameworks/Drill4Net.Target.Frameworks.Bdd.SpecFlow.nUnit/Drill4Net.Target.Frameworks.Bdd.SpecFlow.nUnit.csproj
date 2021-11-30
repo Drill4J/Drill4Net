@@ -54,6 +54,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="cfg.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <SpecFlowFeatureFiles Update="Features\Longer.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
