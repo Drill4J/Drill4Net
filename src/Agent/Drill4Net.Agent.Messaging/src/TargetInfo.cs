@@ -45,5 +45,12 @@ namespace Drill4Net.Agent.Messaging
         /// The Tree of injected entities of Target.
         /// </value>
         public InjectedSolution Solution { get; set; }
+
+        /*******************************************************************/
+
+        public override string ToString()
+        {
+            return $"{SessionUid} -> {TargetName} {TargetVersion}";
+        }
     }
 }

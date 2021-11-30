@@ -45,7 +45,7 @@ namespace Drill4Net.Agent.Service
         private bool _inPingCheck;
         private readonly string _cfgPath;
         private readonly string _workerDir;
-        private readonly string _processName;
+        private readonly string _workerPath;
         private bool _disposed;
 
         /*****************************************************************************************************/
@@ -72,8 +72,10 @@ namespace Drill4Net.Agent.Service
             _debugOpts = _rep?.Options?.Debug;
             _isDebug = _debugOpts?.Disabled == false;
 
-            _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.ExecutingDir);
-            _workerDir = Path.GetDirectoryName(_processName);
+            _workerPath = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.ExecutingDir);
+            if (!File.Exists(_workerPath))
+                throw new Exception("Agent Worker's executable not found");
+            _workerDir = Path.GetDirectoryName(_workerPath);
 
             //for using by workers
             _cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
@@ -244,7 +246,14 @@ namespace Drill4Net.Agent.Service
         /// <param name="target">The target.</param>
         private void TargetReceiver_TargetInfoReceived(TargetInfo target)
         {
-            RunAgentWorker(target);
+            try
+            {
+                RunAgentWorker(target);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Start worker is failed: {target}", ex);
+            }
         }
 
         /// <summary>
@@ -288,21 +297,23 @@ namespace Drill4Net.Agent.Service
 
         internal virtual int StartAgentWorkerProcess(Guid targetSession, string targetName, string targetVersion)
         {
-            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName} -{MessagingTransportConstants.ARGUMENT_TARGET_VERSION}={targetVersion}";
+            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}=\"{_cfgPath}\" -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName} -{MessagingTransportConstants.ARGUMENT_TARGET_VERSION}={targetVersion}";
             _logger.Debug($"Agent Worker's argument: [{args}]");
 
             var process = new Process
             {
                 StartInfo =
                 {
-                    FileName = _processName,
+                    FileName = _workerPath,
                     Arguments = args,
                     WorkingDirectory = _workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
                 }
             };
-            process.Start();
+            var res = process.Start();
+            if(!res)
+                throw new Exception($"Worker {targetName} {targetVersion} -> pid={process.Id} isn't started");
             return process.Id;
         }
 

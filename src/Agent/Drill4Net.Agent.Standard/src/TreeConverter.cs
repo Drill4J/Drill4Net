@@ -20,6 +20,9 @@ namespace Drill4Net.Agent.Standard
 
         /***********************************************************************************/
 
+        /// <summary>
+        /// Create helper for converting DTO entities
+        /// </summary>
         public TreeConverter()
         {
             _logger = new TypedLogger<TreeConverter>(CoreConstants.SUBSYSTEM_AGENT);
@@ -42,8 +45,15 @@ namespace Drill4Net.Agent.Standard
             var res = new ConcurrentBag<AstEntity>();
             foreach (var type in injTypes.Where(a => !a.IsCompilerGenerated).AsParallel())
             {
+                if (type == null)
+                    continue;
+
                 lock (res)
-                    res.Add(ToAstEntity(type));
+                {
+                    var entity = ToAstEntity(type);
+                    if (entity != null)
+                        res.Add(entity);
+                }
             }
             return res.OrderBy(a => a.name).ToList();
         }
@@ -61,9 +71,13 @@ namespace Drill4Net.Agent.Standard
             //
             var entity = new AstEntity(injType.Namespace, injType.Name);
             var injMethods = GetOrderedBusinessMethods(injType);
-            foreach (var injMethod in injMethods)
+            if (injMethods != null)
             {
-                entity.methods.Add(ToAstMethod(injMethod));
+                foreach (var injMethod in injMethods)
+                {
+                    if (injMethod != null)
+                        entity.methods.Add(ToAstMethod(injMethod));
+                }
             }
             return entity;
         }
@@ -162,7 +176,7 @@ namespace Drill4Net.Agent.Standard
         internal IOrderedEnumerable<InjectedMethod> GetOrderedBusinessMethods(InjectedType injType)
         {
             var injMethods = injType?.GetMethods()?
-                .Where(a => !a.IsCompilerGenerated && a.End2EndBusinessIndexes.Count > 0)
+                .Where(a => !a.IsCompilerGenerated && a.End2EndBusinessIndexes?.Count > 0)?
                 .OrderBy(a => a, new MethodNameComparer());
             return injMethods;
         }

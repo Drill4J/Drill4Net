@@ -95,6 +95,7 @@ namespace Drill4Net.Agent.Transmitter
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
             AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
+
             _resolver = new AssemblyResolver();
 
             EmergencyLogDir = LoggerHelper.GetDefaultLogDir();
