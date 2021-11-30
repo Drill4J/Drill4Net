@@ -1,10 +1,10 @@
-﻿Description: BDD SpecFlow + xUnit tests with Kafka
+﻿Description: BDD SpecFlow + NUnit tests with Kafka
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: bdd-specflow-xUnit-kafka #optional injection name, if empty must be set in agent config
+    Name: bdd-specflow-NUnit-kafka #optional injection name, if empty must be set in agent config
     Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
 Source: # what and how processing
-    Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit\
+    Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit\
     Filter: # mask for search files, namespaces, classes...
       Includes:
         Directories:
@@ -14,9 +14,8 @@ Source: # what and how processing
         Classes:
         Attributes:
       Excludes:
-        Directories:
-        Folders:
-          - ref
+        Files:
+          - Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll
 Destination: # where copying injected assemblies
    Directory: # or full directory...
    FolderPostfix: Injected #...or prefix to source dir
@@ -26,12 +25,12 @@ Proxy: # the injecting for transfer data to profiler
    Static: true
 Profiler: # data collector/processor in separate assembly
    Name: Standard agent # name exactly for agent subsystem
-   Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\
+   Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\
    #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
-   AssemblyName: Drill4Net.Agent.Transmitter.dll
-   Namespace: Drill4Net.Agent.Transmitter
-   Class: DataTransmitter
-   Method: Transmit
+   AssemblyName: Drill4Net.Agent.Standard.dll
+   Namespace: Drill4Net.Agent.Standard
+   Class: StandardAgent
+   Method: RegisterStatic
    Static: true
 Probes: # types of cross-cutting points
    Ctor: false
@@ -44,9 +43,9 @@ Probes: # types of cross-cutting points
    SkipIfElseType: true
 Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
-       Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
-       Config: 
-Logs:
+       Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\ # directory
+       Config: plug_NUnit_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
+Logs: # logging for Injector
     - Type: console
       Level: debug
     #local log
@@ -58,11 +57,4 @@ Logs:
       Level: trace
 Debug:
     CrossPointInfo : true # cross-point information is included into injected probe data. By default is true if this section presents
-Versions: # what will be tested - by target moniker/assembly/class
-    Directory: ..\..\TargetApps\ #target dir relatively Test project
-    Targets:
-        net48: #default assembly & class if empty
-          BaseFolder: net48\
-        net5.0:
-          BaseFolder: net5.0\
 Silent: false # no wait, no questions...

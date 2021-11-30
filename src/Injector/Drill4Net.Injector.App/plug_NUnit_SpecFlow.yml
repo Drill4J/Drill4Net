@@ -1,10 +1,10 @@
-﻿Description: BDD SpecFlow injector's plugin options for IHS
+﻿Description: BDD SpecFlow injector's plugin options for NUnit test project
 Type: InjectorPlugin #type as hint
 Filter: # mask for search files, namespaces, classes...
    Includes:
       Directories:
       Files:
-         - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # BDD framework's hooks located exactly here
+         - Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll # BDD framework's hooks located exactly here
       Namespaces:
       Classes:
       Attributes:
