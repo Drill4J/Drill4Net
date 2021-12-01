@@ -266,7 +266,7 @@ namespace Drill4Net.Injection.SpecFlow
             //var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Agent.Test\bin\Debug\netstandard2.0\Agent.Test.dll";
             var lv_profPath1 = new VariableDefinition(module.TypeSystem.String);
             funcDef.Body.Variables.Add(lv_profPath1);
-            var Ldstr2 = il_meth.Create(OpCodes.Ldstr, $"{HelperReadDir}{HelperAsmName}");
+            var Ldstr2 = il_meth.Create(OpCodes.Ldstr, Path.Combine(HelperReadDir, HelperAsmName));
             il_meth.Append(Ldstr2);
             var Stloc3 = il_meth.Create(OpCodes.Stloc, lv_profPath1);
             il_meth.Append(Stloc3);
