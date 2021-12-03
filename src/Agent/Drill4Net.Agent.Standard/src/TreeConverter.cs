@@ -120,8 +120,9 @@ namespace Drill4Net.Agent.Standard
                 testName = context ?? $"UnknownContext_{Guid.NewGuid()}";
             _logger.Debug($"TestName=[{testName}]; context=[{context}]");
 
-            if (session != null)
+            if(session.TestType == AgentConstants.TEST_MANUAL && session != null)
                 session.TestName = testName;
+
             var bizTypes = injTypes
                 .Where(a => !a.IsCompilerGenerated)
                 .Distinct(new InjectedEntityComparer<InjectedType>());

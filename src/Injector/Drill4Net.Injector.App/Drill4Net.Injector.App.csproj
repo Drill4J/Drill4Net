@@ -32,12 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="inj_File.yml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
   </ItemGroup>
@@ -70,6 +64,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="inj_blazor_wasm.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="inj_File.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="inj_IHS_bdd.yml">

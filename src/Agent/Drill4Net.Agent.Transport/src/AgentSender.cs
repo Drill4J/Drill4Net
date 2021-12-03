@@ -15,14 +15,14 @@ namespace Drill4Net.Agent.Transport
     public class AgentSender : AbstractCoveragerSender
     {
         private readonly Connector _connector;
-        private readonly JsonSerializerSettings _deserOpts;
+        private readonly JsonSerializerSettings _serOpts;
 
         /************************************************************************/
 
         public AgentSender(Connector connector): base(CoreConstants.SUBSYSTEM_AGENT)
         {
             _connector = connector ?? throw new ArgumentNullException(nameof(connector));
-            _deserOpts = new JsonSerializerSettings();
+            _serOpts = new JsonSerializerSettings();
         }
 
         /************************************************************************/
@@ -73,10 +73,9 @@ namespace Drill4Net.Agent.Transport
         {
             _connector.AddTestsRun(pluginId, tests2Run);
         }
-        
         protected override string Serialize(object data)
         {
-            return JsonConvert.SerializeObject(data, _deserOpts);
+            return JsonConvert.SerializeObject(data, _serOpts);
         }
 
         #region Debug

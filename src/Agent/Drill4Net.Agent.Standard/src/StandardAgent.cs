@@ -53,6 +53,7 @@ namespace Drill4Net.Agent.Standard
         //each agent can serve only one target, so there is only one autotest session
         private StartSessionPayload _curAutoSession;
         private bool _isAutotests;
+        private bool _autotestsSequentialRegistering;
 
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
@@ -499,6 +500,7 @@ namespace Drill4Net.Agent.Standard
             _logger.Info($"Admin side session is starting: [{session}]");
 
             _isAutotests = true;
+            //an agent can serve only one target, so there is only one autotest session
             _curAutoSession = new StartSessionPayload
             {
                 SessionId = session,
@@ -578,12 +580,15 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
+            //in one test assembly can be located different Engines. If such tests have started (xUnit 2.x) -
+            //now is only sequential registering (with blocking probes between tests' finish/start)
+            if (testCtx.Engine?.MustSequential == true)
+            {
+                _logger.Info("Tests' registering is sequential now");
+                _autotestsSequentialRegistering = true;
+            }
+
             BlockProbeProcessing();
-
-            //each agent can serve only one target, so there is only one autotest session
-            if (_curAutoSession != null) //TODO: for parallel tests it is WRONG !!!!!
-                Repository.RecreateSessionData(_curAutoSession, testCtx.CaseName); //because we need recreate the Coverager at all in the current session - guanito
-
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
         }
@@ -607,7 +612,8 @@ namespace Drill4Net.Agent.Standard
 
         private void BlockProbeProcessing()
         {
-            _initEvent.Reset();
+            if(_autotestsSequentialRegistering)
+                _initEvent.Reset();
         }
 
         private void ReleaseProbeProcessing()

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
@@ -174,11 +173,11 @@ namespace Drill4Net.Agent.Standard
         {
             var logDir = connOpts?.LogDir;
             var logFile = connOpts?.LogFile;
-            var logLevel = Microsoft.Extensions.Logging.LogLevel.Debug; //TODO: get real level from ...somewhere
+            var logLevel = LogLevel.Debug; //TODO: get real level from ...somewhere
 
             //Guanito: just first file sink is bad idea...
             //the last because the firast may be just emergency logger
-            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink; 
+            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink;
 
             //dir
             if (string.IsNullOrWhiteSpace(logDir))
@@ -306,7 +305,7 @@ namespace Drill4Net.Agent.Standard
             }
 
             //...all another types of sessions must be reinitialized
-            RecreateSessionData(info, null);
+            RecreateSessionData(info);
         }
 
         /// <summary>
@@ -314,20 +313,20 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        public void RecreateSessionData(StartSessionPayload info, string context)
+        public void RecreateSessionData(StartSessionPayload info)
         {
             RemoveSessionData(info.SessionId);
-            AddSessionData(info, context);
+            AddSessionData(info);
             StartSendCycle();
         }
 
-        internal void AddSessionData(StartSessionPayload session, string context)
+        internal void AddSessionData(StartSessionPayload session)
         {
             string ctxId = null;
-            if (session.TestType == AgentConstants.TEST_MANUAL)
+            if (session.TestType == AgentConstants.TEST_MANUAL) //maybe at first to check context parameter?
                 ctxId = session.TestName;
             if(string.IsNullOrWhiteSpace(ctxId))
-                ctxId = context ?? GetContextId();
+                ctxId = /*context ?? */GetContextId();
 
             if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
@@ -480,6 +479,7 @@ namespace Drill4Net.Agent.Standard
             foreach(var reg in regs.AsParallel())
                 SendCoverageData(reg);
         }
+
 
         private void SendCoverageData(CoverageRegistrator reg)
         {
