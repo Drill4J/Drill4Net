@@ -17,7 +17,7 @@
         public const string KEY_TESTCASE_CONTEXT = "TestCaseContext";
         public const string KEY_TESTCASE_TESTNAME_FOR_ADMIN = "TestNameForAdmin";
 
-        public const string CONTEXT_SYSTEM_PREFIX = "$$$__";
+        public const string CONTEXT_SYSTEM_PREFIX = "$$__";
 
         public const string CONNECTOR_LOG_FILE_NAME = "connector.log";
 

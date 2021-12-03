@@ -19,10 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TEST_Bdd_SpecFlow_xUnit.yml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_redirect.yml">
+    <None Update="cfg.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

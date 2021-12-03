@@ -1,0 +1,3 @@
+Description: RnD File Agent config
+Type: Agent #type as hint
+PluginDir: ../../../ # path to the IEngineContexter's plugins

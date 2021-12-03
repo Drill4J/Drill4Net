@@ -17,6 +17,8 @@ Source: # what and how processing
         Directories:
         Folders:
           - ref
+        Files:
+          - Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll
 Destination: # where copying injected assemblies
    Directory: # or full directory...
    FolderPostfix: Injected #...or prefix to source dir
@@ -45,7 +47,7 @@ Probes: # types of cross-cutting points
 Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
        Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
-       Config: # if empty will be used redirect file
+       Config: plug_xUnit_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs:
     - Type: console
       Level: debug
