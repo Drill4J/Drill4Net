@@ -51,7 +51,7 @@ namespace Drill4Net.Agent.Abstract
             }
 
             _stdContexter = new SimpleContexter();
-            _logger.Info($"Plugin added (standard): [{nameof(SimpleContexter)}]");
+            _logger.Info($"Plugin added: [{nameof(SimpleContexter)}] (standard)");
         }
 
         /**********************************************************************************/
