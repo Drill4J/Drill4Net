@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using Drill4Net.Agent.Abstract;
 using Microsoft.Extensions.Logging;
-using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Common;
+using Drill4Net.BanderLog.Sinks.File;
 
 namespace Drill4Net.Agent.File
 {

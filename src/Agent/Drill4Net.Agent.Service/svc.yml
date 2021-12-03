@@ -10,8 +10,8 @@ Receiver:
       # #- aaa
 WorkerPath: ..\..\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe
 #Debug:
-#    Disabled: false
-#    DontStartWorker: true
+#    Disabled: true
+#    DontStartWorker: false
 Logs:
     - Type: console
       Level: debug

@@ -45,7 +45,7 @@ Probes: # types of cross-cutting points
 Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
        Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
-       Config: plug_xUnit_SpecFlow
+       Config: # if empty will be used redirect file
 Logs:
     - Type: console
       Level: debug
