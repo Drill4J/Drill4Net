@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Core.Repository;
@@ -16,8 +17,6 @@ namespace Drill4Net.Agent.Transmitter
     /// </summary>
     public class TransmitterRepository : TreeRepository<AgentOptions, BaseOptionsHelper<AgentOptions>>, ITargetedInfoSenderRepository
     {
-        public MessagerOptions MessagerOptions { get; set; }
-
         /// <summary>
         /// Gets or sets the testing target which transmitter will be loaded into.
         /// </summary>
@@ -36,7 +35,9 @@ namespace Drill4Net.Agent.Transmitter
         /// </value>
         public Guid TargetSession { get; }
 
-        public string ConfigPath { get; }
+        public MessagerOptions MessagerOptions { get; set; }
+
+        public string MessagerConfigPath { get; }
 
         private InjectedSolution _tree;
         private readonly ContextDispatcher _ctxDisp;
@@ -45,12 +46,16 @@ namespace Drill4Net.Agent.Transmitter
 
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
-            ConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            MessagerConfigPath = Path.Combine(FileUtils.GetAssemblyDir(typeof(TransmitterRepository)), CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            Log.Debug($"Messager config path: [{MessagerConfigPath}]");
+            Log.Flush();
             MessagerOptions = GetMessagerOptions();
+
             _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
             TargetName = Options.Target?.Name ?? _tree.Name ?? GenerateTargetName();
             TargetVersion = Options.Target?.Version ?? _tree.ProductVersion ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
             TargetSession = GetSession();
+
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem);
         }
 
@@ -59,7 +64,7 @@ namespace Drill4Net.Agent.Transmitter
         private MessagerOptions GetMessagerOptions()
         {
             var optHelper = new BaseOptionsHelper<MessagerOptions>();
-            return optHelper.ReadOptions(ConfigPath);
+            return optHelper.ReadOptions(MessagerConfigPath);
         }
 
         private Guid GetSession()

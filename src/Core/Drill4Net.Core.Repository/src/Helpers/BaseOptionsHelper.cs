@@ -53,7 +53,10 @@ namespace Drill4Net.Core.Repository
             var path = redirect?.Path;
             if (!path.EndsWith(".yml"))
                 path += ".yml";
-            return FileUtils.GetFullPath(path);
+            var actualPath = FileUtils.GetFullPath(path);
+            _logger.Info($"Actual config path is defined: [{actualPath}]");
+            Log.Flush();
+            return actualPath;
         }
 
         /// <summary>

@@ -170,10 +170,10 @@ namespace Drill4Net.Agent.Transmitter
         #region CommandReceiver
         private void StartCommandReceiver(TransmitterRepository rep)
         {
-            _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
+            _logger.Trace($"Read receiver config: [{rep.MessagerConfigPath}]");
 
             var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(),
-                rep.TargetName, rep.TargetVersion, rep.ConfigPath);
+                rep.TargetName, rep.TargetVersion, rep.MessagerConfigPath);
             _logger.Trace("Command receiver created");
 
             var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
@@ -218,6 +218,11 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
+            if (Transmitter == null)
+            {
+                _logger?.Error($"Transmitter is empty. Context is [{ctx}], data: [{data}]");
+                return;
+            }
             Transmitter.SendProbe(data, ctx);
         }
 
@@ -258,6 +263,11 @@ namespace Drill4Net.Agent.Transmitter
         #region Command
         public static void DoCommand(int command, string data)
         {
+            if (Transmitter == null)
+            {
+                _logger?.Error($"Transmitter is empty. Command is [{command}], data: [{data}]");
+                return;
+            }
             Transmitter.ExecCommand(command, data);
         }
 

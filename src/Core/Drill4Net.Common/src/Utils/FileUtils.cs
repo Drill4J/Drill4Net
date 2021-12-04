@@ -63,6 +63,11 @@ namespace Drill4Net.Common
             return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
         }
 
+        public static string GetAssemblyDir(Type type)
+        {
+            return Path.GetDirectoryName(Assembly.GetAssembly(type).Location);
+        }
+
         public static bool IsPossibleFilePath(string str)
         {
             if (string.IsNullOrWhiteSpace(str))
