@@ -47,8 +47,14 @@ namespace Drill4Net.Agent.Transmitter
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
             MessagerConfigPath = Path.Combine(FileUtils.GetAssemblyDir(typeof(TransmitterRepository)), CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            if (!File.Exists(MessagerConfigPath))
+            {
+                var err = $"Messager config path is not exists: [{MessagerConfigPath}]";
+                Log.Debug(err);
+                Log.Flush();
+                throw new Exception(err);
+            }
             Log.Debug($"Messager config path: [{MessagerConfigPath}]");
-            Log.Flush();
             MessagerOptions = GetMessagerOptions();
 
             _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution

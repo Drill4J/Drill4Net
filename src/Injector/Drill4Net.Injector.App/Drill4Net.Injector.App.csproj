@@ -69,7 +69,7 @@
     <None Update="inj_File.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="inj_IHS_bdd.yml">
+    <None Update="inj_IHS_bdd_Std.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="inj_IHS_bdd_FILE.yml">

@@ -1,11 +1,11 @@
 ﻿Path: inj_Bdd_NUnit_Kafka # Full/relative path or simple name of real injection cfg (as name with or without extension)
       
-      #inj_Kafka
       #inj_File
       #inj_Std
+      #inj_Kafka
 
       #inj_IHS_bdd_FILE
-      #inj_IHS_bdd 
+      #inj_IHS_bdd_Std
       #inj_IHS_Kafka      #build-1
       #inj_IHS_Kafka_2    #build-2
 

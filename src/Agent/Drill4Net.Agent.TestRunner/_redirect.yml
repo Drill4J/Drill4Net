@@ -1,7 +1,7 @@
-﻿Path: IHS
+﻿Path: run_SpecFlow_xUnit
 
-     #IHS
-     #IHS_2
+     #run_IHS
+     #run_IHS_2
 
      #run_SpecFlow_xUnit
      #run_SpecFlow_NUnit

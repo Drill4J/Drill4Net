@@ -27,10 +27,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="IHS.yml">
+	  <None Update="run_IHS.yml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="IHS_2.yml">
+	  <None Update="run_IHS_2.yml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="run_SpecFlow_NUnit.yml">
