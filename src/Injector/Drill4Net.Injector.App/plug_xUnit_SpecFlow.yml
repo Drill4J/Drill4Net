@@ -11,5 +11,6 @@ Filter: # mask for search files, namespaces, classes...
    Excludes:
       Directories:
       Folders:
-         - "*" # "*" means "all"
+         #- "*" # "*" means "all"
+         - ref
       Files:
