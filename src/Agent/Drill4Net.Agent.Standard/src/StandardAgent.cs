@@ -174,7 +174,7 @@ namespace Drill4Net.Agent.Standard
             var builds = Repository.Builds;
             if (builds == null || builds.Count == 0)
                 return false;
-            var exactly = builds.Find(a => a.BuildVersion == Repository.TargetVersion);
+            var exactly = builds.Find(a => HttpUtility.UrlDecode(a.BuildVersion) == Repository.TargetVersion);
             if (exactly?.Summary == null) //such version already exists
                 return false;
             return true;
@@ -580,7 +580,7 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
-            //in one test assembly can be located different Engines. If such tests have started (xUnit 2.x) -
+            //in one test assembly can be different Engines are located. If such tests have started (xUnit 2.x) -
             //now is only sequential registering (with blocking probes between tests' finish/start)
             if (testCtx.Engine?.MustSequential == true)
             {

@@ -1,3 +1,9 @@
-﻿Description: RnD File Agent config
-Type: Agent #type as hint
+﻿Description: Debug SpecFlow + NUnit Agent config
+Type: Agent # type as hint
+Target: # metadata about Target - overriding one from tree file
+  Name: #IHS-bdd
+  Version: # if empty will retrieved from Tree file or dynamically by first call of profiler (for simple systems)
+TreePath: # were tree data about probes are located - if empty, system will try find it by another ways
+Admin:
+  Url: localhost:8090
 PluginDir: ../../../ # path to the IEngineContexter's plugins
