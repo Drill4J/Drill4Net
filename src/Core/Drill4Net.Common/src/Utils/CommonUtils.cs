@@ -106,20 +106,19 @@ namespace Drill4Net.Common
         }
         #endregion
         #region FirstChanceException & Resolving
-        //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
-
         public static void LogFirstChanceException(string emergencyLogDir, string context, Exception e)
         {
             try
             {
                 if (!Directory.Exists(emergencyLogDir))
                     Directory.CreateDirectory(emergencyLogDir);
-                File.WriteAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
-                    new List<string> { $"{GetPreciseTime()}|{context}:\n{e}" });
+                File.AppendAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
+                    new List<string> { $"{GetPreciseTime()}|{context}|{e}" });
             }
             catch { }
         }
 
+        //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File) in next methods!!!
         public static Assembly TryResolveAssembly(string dir, string context, ResolveEventArgs args, AssemblyResolver resolver, ILogger log)
         {
             if (!Directory.Exists(dir))

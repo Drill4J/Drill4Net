@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.Transmitter
         /// In fact, this is a limiter to reduce the flow of sending probes 
         /// to the administrator's side
         /// </summary>
-        private static ConcurrentDictionary<string, ConcurrentDictionary<string, bool>> _probesByCtx;
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, bool>> _probesByCtx;
 
         private readonly List<string> _cmdSenderTopics;
 
