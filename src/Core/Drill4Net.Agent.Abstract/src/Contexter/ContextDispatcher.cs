@@ -23,6 +23,15 @@ namespace Drill4Net.Agent.Abstract
         {
             _logger = new TypedLogger<ContextDispatcher>(subsystem);
 
+            if (string.IsNullOrWhiteSpace(dir))
+            {
+                _logger.Info($"Plugin directory parameter: [{dir}]");
+                dir = FileUtils.EntryDir;
+            }
+            dir = FileUtils.GetFullPath(dir);
+            _logger.Info($"Actual plugin directory: [{dir}]");
+            Log.Flush();
+
             _contextBindings = new();
             var pluginator = new TypeFinder();
             //var filter = new SourceFilterOptions
@@ -41,13 +50,22 @@ namespace Drill4Net.Agent.Abstract
 
             //var ctxTypes = pluginator.GetBy(TypeFinderMode.Interface, dir, typeof(IEngineContexter));
             var ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter));
+            Console.Beep(600, 600);
 
             _contexters = new List<AbstractEngineContexter>();
             foreach (var contexter in ctxTypes)
             {
-                var plug = Activator.CreateInstance(contexter) as AbstractEngineContexter;
-                _contexters.Add(plug);
-                _logger.Info($"Plugin added: [{plug.Name}]");
+                try
+                {
+                    var plug = Activator.CreateInstance(contexter) as AbstractEngineContexter;
+                    _contexters.Add(plug);
+                    _logger.Info($"Plugin added: [{plug.Name}]");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Plugin creation failed: [{contexter.Name}]", ex);
+                    Console.Beep(3000, 600);
+                }
             }
 
             _stdContexter = new SimpleContexter();

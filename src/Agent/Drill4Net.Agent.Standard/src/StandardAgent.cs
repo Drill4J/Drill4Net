@@ -40,11 +40,6 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public static StandardAgent Agent { get; private set; }
 
-        /// <summary>
-        /// Agent works in separate Worker (not in the Target's process directly)
-        /// </summary>
-        public bool LocatedInWorker { get; set; }
-
         private IAgentReceiver Receiver => _comm?.Receiver;
 
         //in fact, it is the Main sender. Others are additional ones - as plugins
@@ -75,7 +70,7 @@ namespace Drill4Net.Agent.Standard
             _logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
             _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, _logExtras);
 
-            if (StandardAgentCCtorParameters.SkipCreatingSingleton)
+            if (StandardAgentInitParameters.SkipCreatingSingleton)
                 return;
 
             Agent = new StandardAgent();
@@ -378,7 +373,7 @@ namespace Drill4Net.Agent.Standard
         public override void Register(string data)
         {
             //it is only for local Agent injected directly in Target's sys process
-            if (LocatedInWorker)
+            if (StandardAgentInitParameters.LocatedInWorker)
                 return;
             var ctx = Repository?.GetContextId();
             RegisterWithContext(data, ctx);

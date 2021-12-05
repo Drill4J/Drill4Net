@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using Drill4Net.Common;
@@ -46,6 +47,8 @@ namespace Drill4Net.Agent.Transmitter
 
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
+            //messager options
+            Console.Beep(2000,120);
             MessagerConfigPath = Path.Combine(FileUtils.GetAssemblyDir(typeof(TransmitterRepository)), CoreConstants.CONFIG_NAME_MIDDLEWARE);
             if (!File.Exists(MessagerConfigPath))
             {
@@ -57,12 +60,19 @@ namespace Drill4Net.Agent.Transmitter
             Log.Debug($"Messager config path: [{MessagerConfigPath}]");
             MessagerOptions = GetMessagerOptions();
 
+            //tree
+            Console.Beep(2100, 200);
             _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
+            Console.Beep(2200, 300);
+
+            //target info
             TargetName = Options.Target?.Name ?? _tree.Name ?? GenerateTargetName();
-            TargetVersion = Options.Target?.Version ?? _tree.ProductVersion ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
+            TargetVersion = Options.Target?.Version ?? _tree.GetProductVersion() ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
             TargetSession = GetSession();
 
-            _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem);
+            Log.Flush();
+            _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem); //IEngineContexters plugins
+            Console.Beep(2400, 600);
         }
 
         /*********************************************************************************************/
@@ -96,10 +106,12 @@ namespace Drill4Net.Agent.Transmitter
         /// Generates the name of the target if in injected Options doesn't contains one.
         /// </summary>
         /// <returns></returns>
-        private string GenerateTargetName()
+        internal string GenerateTargetName()
         {
-            var entryType = Assembly.GetEntryAssembly().EntryPoint.DeclaringType.FullName;
-            return $"{entryType.Replace(".", "-")} (generated)";
+            string entryType = Assembly.GetEntryAssembly()?.EntryPoint?.DeclaringType?.FullName;
+            if (entryType == null) // over-reinsurance
+                entryType =_tree.GetAssemblies().First().GetAllTypes().First(a => !a.IsCompilerGenerated)?.BusinessType ?? "unknown";
+            return $"$_{entryType.Replace(".", "-")}";
         }
 
         internal IEnumerable<string> GetSenderCommandTopics()

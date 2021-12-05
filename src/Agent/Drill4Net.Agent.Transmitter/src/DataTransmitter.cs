@@ -66,6 +66,7 @@ namespace Drill4Net.Agent.Transmitter
 
         static DataTransmitter()
         {
+            Console.Beep();
             AbstractRepository.PrepareEmergencyLogger();
             Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
@@ -82,7 +83,9 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Info("Wait for command to continue executing...");
             Log.Flush();
 
+            Console.Beep(440, 300);
             _initEvent.WaitOne();
+            Console.Beep(200, 500);
         }
 
         private DataTransmitter(TransmitterRepository rep)
@@ -283,6 +286,18 @@ namespace Drill4Net.Agent.Transmitter
             CommandSender.SendCommand(command, data, _cmdSenderTopics); //with flushing
 
             Log.Flush();
+
+            //beep sounds
+            if (command == 0)
+                Console.Beep(600, 300);
+            if (command == 1)
+            {
+                Console.Beep(2000, 120);
+                Console.Beep(1200, 120);
+                Console.Beep(600, 600);
+            }
+            if(command == 5)
+                Console.Beep(2000, 120);
         }
         #endregion
         #region Dispose

@@ -14,6 +14,7 @@ using Drill4Net.Agent.Transport;
 using Drill4Net.Admin.Requester;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Abstract.Transfer;
+using System.Reflection;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -64,6 +65,7 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="cfgPath"></param>
         /// <param name="treePath"></param>
+        /// <param name="locatedInWorker">Is the Agent located in Agent Worker</param>
         public StandardAgentRepository(string cfgPath, string treePath) : base(cfgPath)
         {
             Init(ReadInjectedTree(treePath));
@@ -109,17 +111,10 @@ namespace Drill4Net.Agent.Standard
             _injTypes = GetTypesByCallerVersion(tree);
 
             TargetName = Options.Target?.Name ?? tree.Name;
-
-            //Target's version
-            var asms = tree.GetAssemblies().Where(a => a.ProductVersion != "0.0.0.0");
-            var entryAsmVersion = asms.FirstOrDefault(a => a.HasEntryPoint)?.ProductVersion;
-            var nonEntryAsmVersion = asms.FirstOrDefault(a => !a.HasEntryPoint)?.ProductVersion;
             TargetVersion = Options.Target?.Version ??
-                            tree.ProductVersion ??
-                            entryAsmVersion ??
-                            nonEntryAsmVersion ??
-                            FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
-           
+                            tree.GetProductVersion() ??
+                            (StandardAgentInitParameters.LocatedInWorker ? "0.0.0.0-unknown" : FileUtils.GetProductVersion(Assembly.GetCallingAssembly())); //for Agents injected directly to Target
+
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
 
             _requester = new AdminRequester(Subsystem, Options.Admin.Url, TargetName, TargetVersion);

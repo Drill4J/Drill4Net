@@ -1,10 +1,10 @@
 ﻿namespace Drill4Net.Agent.Standard
 {
     /// <summary>
-    /// Some parameters for initializing the Standard Agent (instead of 
+    /// Some parameters for the Standard Agent (instead of
     /// impossible parameters for any static constructor).
     /// </summary>
-    public static class StandardAgentCCtorParameters
+    public static class StandardAgentInitParameters
     {
         /// <summary>
         /// Gets or sets a value indicating whether skip the static constructor 
@@ -14,5 +14,10 @@
         ///   <c>true</c> if skip cctor; otherwise, <c>false</c>.
         /// </value>
         public static bool SkipCreatingSingleton { get; set; }
+
+        /// <summary>
+        /// Agent works in separate Worker (not in the Target's process directly)
+        /// </summary>
+        public static bool LocatedInWorker { get; set; }
     }
 }
