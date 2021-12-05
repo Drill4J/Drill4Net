@@ -50,7 +50,6 @@ namespace Drill4Net.Agent.Abstract
 
             //var ctxTypes = pluginator.GetBy(TypeFinderMode.Interface, dir, typeof(IEngineContexter));
             var ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter));
-            Console.Beep(600, 600);
 
             _contexters = new List<AbstractEngineContexter>();
             foreach (var contexter in ctxTypes)
@@ -64,7 +63,6 @@ namespace Drill4Net.Agent.Abstract
                 catch (Exception ex)
                 {
                     _logger.Error($"Plugin creation failed: [{contexter.Name}]", ex);
-                    Console.Beep(3000, 600);
                 }
             }
 

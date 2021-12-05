@@ -112,7 +112,7 @@ namespace Drill4Net.Agent.Standard
 
             TargetName = Options.Target?.Name ?? tree.Name;
             TargetVersion = Options.Target?.Version ??
-                            tree.GetProductVersion() ??
+                            tree.SearchProductVersion() ??
                             (StandardAgentInitParameters.LocatedInWorker ? "0.0.0.0-unknown" : FileUtils.GetProductVersion(Assembly.GetCallingAssembly())); //for Agents injected directly to Target
 
             _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");

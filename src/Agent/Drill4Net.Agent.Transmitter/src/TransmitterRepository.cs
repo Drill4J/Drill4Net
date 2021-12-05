@@ -48,7 +48,6 @@ namespace Drill4Net.Agent.Transmitter
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
             //messager options
-            Console.Beep(2000,120);
             MessagerConfigPath = Path.Combine(FileUtils.GetAssemblyDir(typeof(TransmitterRepository)), CoreConstants.CONFIG_NAME_MIDDLEWARE);
             if (!File.Exists(MessagerConfigPath))
             {
@@ -60,19 +59,14 @@ namespace Drill4Net.Agent.Transmitter
             Log.Debug($"Messager config path: [{MessagerConfigPath}]");
             MessagerOptions = GetMessagerOptions();
 
-            //tree
-            Console.Beep(2100, 200);
             _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
-            Console.Beep(2200, 300);
 
-            //target info
             TargetName = Options.Target?.Name ?? _tree.Name ?? GenerateTargetName();
-            TargetVersion = Options.Target?.Version ?? _tree.GetProductVersion() ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
+            TargetVersion = Options.Target?.Version ?? _tree.SearchProductVersion() ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
             TargetSession = GetSession();
 
             Log.Flush();
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem); //IEngineContexters plugins
-            Console.Beep(2400, 600);
         }
 
         /*********************************************************************************************/
