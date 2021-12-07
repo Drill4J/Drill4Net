@@ -61,12 +61,13 @@ namespace Drill4Net.Agent.Transmitter
 
             _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
 
-            TargetName = Options.Target?.Name ?? _tree.Name ?? GenerateTargetName();
+            TargetName = Options.Target?.Name ?? _tree.Name ?? TrySearchTargetName(); //don't relocate TrySearchTargetName method to the InjectedSolution, it's local specific
             TargetVersion = Options.Target?.Version ?? _tree.SearchProductVersion() ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
             TargetSession = GetSession();
 
             Log.Flush();
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem); //IEngineContexters plugins
+            CommonUtils.WriteTempLog($"TransmitterRepository created");
         }
 
         /*********************************************************************************************/
@@ -100,7 +101,7 @@ namespace Drill4Net.Agent.Transmitter
         /// Generates the name of the target if in injected Options doesn't contains one.
         /// </summary>
         /// <returns></returns>
-        internal string GenerateTargetName()
+        internal string TrySearchTargetName()
         {
             string entryType = Assembly.GetEntryAssembly()?.EntryPoint?.DeclaringType?.FullName;
             if (entryType == null) // over-reinsurance

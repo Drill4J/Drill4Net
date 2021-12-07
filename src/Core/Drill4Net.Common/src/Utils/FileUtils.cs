@@ -19,40 +19,60 @@ namespace Drill4Net.Common
 
         public static string ExecutingDir { get; }
 
-        /******************************************************************/
+        /***************************************************************************/
 
         static FileUtils()
         {
-            ExecutingDir = GetExecutionDir();
-            EntryDir = GetEntryDir() ?? ExecutingDir;
+            try
+            {
+                ExecutingDir = GetExecutionDir();
+                EntryDir = GetEntryDir() ?? GetCallingDir() ?? ExecutingDir;
+            }
+            catch(Exception ex)
+            {
+                var err = "";
+                var ex2 = ex;
+                while (ex2 != null)
+                    err += $"{ex.Message}{ex.StackTrace}\n";
+                Console.Write(err);
+                throw;
+            }
         }
 
-        /******************************************************************/
+        /***************************************************************************/
 
         public static string GetProductVersion(Type type)
         {
-            return GetProductVersion(type.Assembly);
+            return GetProductVersion(type?.Assembly);
         }
 
         public static string GetProductVersion(Assembly asm)
         {
-            return GetProductVersion(asm.Location);
+            return GetProductVersion(asm?.Location);
         }
 
         public static string GetProductVersion(string asmPath)
         {
-            return FileVersionInfo.GetVersionInfo(asmPath).ProductVersion;
+            if(string.IsNullOrWhiteSpace(asmPath))
+                return null;
+            return FileVersionInfo.GetVersionInfo(asmPath)?.ProductVersion;
         }
 
         #region Directories
         public static string GetExecutionDir()
         {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var asm = Assembly.GetExecutingAssembly();
+            if (asm == null)
+                return null;
+            return Path.GetDirectoryName(asm.Location);
         }
 
         public static string GetCallingDir()
         {
-            return Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            var asm = Assembly.GetCallingAssembly();
+            if (asm == null)
+                return null;
+            return Path.GetDirectoryName(asm.Location);
         }
 
         /// <summary>
@@ -60,7 +80,10 @@ namespace Drill4Net.Common
         /// </summary>
         public static string GetEntryDir()
         {
-            return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+            var asm = Assembly.GetEntryAssembly();
+            if (asm == null)
+                return null;
+            return Path.GetDirectoryName(asm.Location);
         }
 
         public static string GetAssemblyDir(Type type)

@@ -240,6 +240,17 @@ namespace Drill4Net.Common
             return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
         }
 
+        private static readonly object _tmpLogLocker = new();
+        public static void WriteTempLog(string content, string logFile = null)
+        {
+            if (string.IsNullOrWhiteSpace(logFile))
+                logFile = @"D:\drill_tmpLog.txt"; //Path.Combine(FileUtils.EntryDir, "drill_tmpLog.txt");
+            lock (_tmpLogLocker)
+            {
+                File.AppendAllText(logFile, $"{GetPreciseTime()}|{content}\n");
+            }
+        }
+
         public static bool IsStringMachRegexPattern(string s, string pattern)
         {
             if (string.IsNullOrWhiteSpace(s))

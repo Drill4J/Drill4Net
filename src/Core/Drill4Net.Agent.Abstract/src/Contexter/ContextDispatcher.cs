@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -33,36 +34,61 @@ namespace Drill4Net.Agent.Abstract
             Log.Flush();
 
             _contextBindings = new();
+
+            //search plugin
             var pluginator = new TypeFinder();
-            //var filter = new SourceFilterOptions
-            //{
-            //    Excludes = new SourceFilterParams
-            //    {
-            //        Classes = new List<string>
-            //        {
-            //            typeof(ContextDispatcher).FullName,
-            //            typeof(SimpleContexter).FullName,
-            //        },
-            //    },
-            //};
+            var filter = new SourceFilterOptions
+            {
+                Excludes = new SourceFilterParams
+                {
+                    Files = new List<string>
+                    {
+                        "reg:.resources.dll$",
+                    },
+                    //Classes = new List<string>
+                    //{
+                    //    typeof(ContextDispatcher).FullName,
+                    //    typeof(SimpleContexter).FullName,
+                    //},
+                },
+            };
             //var tstTypes = pluginator.GetBy(TypeFinderMode.Class, dir, typeof(AbstractContexter), filter);
             //dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Transmitter.NUnit\netstandard2.0\"; //TEST !!!
 
             //var ctxTypes = pluginator.GetBy(TypeFinderMode.Interface, dir, typeof(IEngineContexter));
-            var ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter));
+            List<Type> ctxTypes;
+            try
+            {
+                CommonUtils.WriteTempLog("Ready to get the plugins");
+                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter), filter);
+                CommonUtils.WriteTempLog($"Found plugins: {ctxTypes.Count}");
+            }
+            catch (Exception ex)
+            {
+                CommonUtils.WriteTempLog($"Get the contexters' plugins: {ex}");
+                _logger.Fatal("Search for contexters' plugin is failed", ex);
+                Log.Flush();
+                throw;
+            }
 
+            //creating plugin
             _contexters = new List<AbstractEngineContexter>();
             foreach (var contexter in ctxTypes)
             {
+                var name = contexter.Name;
+                if (string.IsNullOrWhiteSpace(name))
+                    continue;
+                CommonUtils.WriteTempLog($"Creating: {name}");
+                //
                 try
                 {
                     var plug = Activator.CreateInstance(contexter) as AbstractEngineContexter;
                     _contexters.Add(plug);
-                    _logger.Info($"Plugin added: [{plug.Name}]");
+                    _logger.Info($"Plugin added: [{name}]");
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Plugin creation failed: [{contexter.Name}]", ex);
+                    _logger.Error($"Plugin creation failed: [{name}]", ex);
                 }
             }
 

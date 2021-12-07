@@ -82,6 +82,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Info("Wait for command to continue executing...");
 
             Log.Flush();
+            CommonUtils.WriteTempLog($"Transmitter WaitOne");
             _initEvent.WaitOne();
         }
 
