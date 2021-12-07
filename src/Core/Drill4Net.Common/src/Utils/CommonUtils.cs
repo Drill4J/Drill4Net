@@ -241,14 +241,26 @@ namespace Drill4Net.Common
         }
 
         private static readonly object _tmpLogLocker = new();
+        private static bool _errorOnTmpLog;
         public static void WriteTempLog(string content, string logFile = null)
         {
+            if (_errorOnTmpLog)
+                return;
             if (string.IsNullOrWhiteSpace(logFile))
                 logFile = @"D:\drill_tmpLog.txt"; //Path.Combine(FileUtils.EntryDir, "drill_tmpLog.txt");
-            lock (_tmpLogLocker)
+            if (!Directory.Exists(Path.GetPathRoot(logFile)))
+                return;
+            try
             {
-                File.AppendAllText(logFile, $"{GetPreciseTime()}|{content}\n");
+                var dir = Path.GetDirectoryName(logFile);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                lock (_tmpLogLocker)
+                {
+                    File.AppendAllText(logFile, $"{GetPreciseTime()}|{content}\n");
+                }
             }
+            catch { _errorOnTmpLog = true; }
         }
 
         public static bool IsStringMachRegexPattern(string s, string pattern)
