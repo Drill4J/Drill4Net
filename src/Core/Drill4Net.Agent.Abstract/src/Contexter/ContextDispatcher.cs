@@ -65,8 +65,9 @@ namespace Drill4Net.Agent.Abstract
             }
             catch (Exception ex)
             {
-                CommonUtils.WriteTempLog($"Get the contexters' plugins: {ex}");
-                _logger.Fatal("Search for contexters' plugin is failed", ex);
+                var err = "Search for contexters' plugin is failed";
+                CommonUtils.WriteTempLog($"{err}: {ex}");
+                _logger.Fatal(err, ex);
                 Log.Flush();
                 throw;
             }

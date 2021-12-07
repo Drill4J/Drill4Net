@@ -85,19 +85,18 @@ namespace Drill4Net.Injection.SpecFlow
             _proxyGenerator = runCtx.ProxyGenerator;
 
             //inner folders: already filtered by base process needed targets' directories
-            var dirs = runCtx.MonikerDirectories.ToList(); //copy
-            if (dirs.Count == 0)
-                dirs.Add(runCtx.Options.Destination.Directory); //we work with already injected assemblies
+            //we work with already injected assemblies
+            var dirs = new List<string>() { runCtx.Options.Destination.Directory };
             foreach (var dir in dirs)
             {
-                runCtx.CurrentSourceDirectory = dir;
+                runCtx.ProcessingDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
 
             //possible files in the root directly
             if (!runCtx.Tree.GetAllAssemblies().Any()) //get only the needed assemblies
             {
-                runCtx.CurrentSourceDirectory = runCtx.RootDirectory;
+                runCtx.ProcessingDirectory = runCtx.RootDirectory;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
         }
@@ -109,7 +108,7 @@ namespace Drill4Net.Injection.SpecFlow
         /// <returns>Is the directory processed?</returns>
         internal async Task<bool> ProcessDirectory(RunContext runCtx)
         {
-            var directory = runCtx.CurrentSourceDirectory;
+            var directory = runCtx.ProcessingDirectory;
             if (!InjectorCoreUtils.IsNeedProcessDirectory(Options.Filter, directory, directory == runCtx.Options.Destination.Directory))
                 return false;
             _logger.Info($"Processing dir [{directory}]");
@@ -118,7 +117,7 @@ namespace Drill4Net.Injection.SpecFlow
             var files = GetAssemblies(directory);
             foreach (var file in files)
             {
-                runCtx.CurrentSourceFile = file;
+                runCtx.ProcessingFile = file;
                 ProcessFile(runCtx);
             }
 
@@ -126,7 +125,7 @@ namespace Drill4Net.Injection.SpecFlow
             var dirs = Directory.GetDirectories(directory, "*");
             foreach (var dir in dirs)
             {
-                runCtx.CurrentSourceDirectory = dir;
+                runCtx.ProcessingDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
             return true;
@@ -136,7 +135,7 @@ namespace Drill4Net.Injection.SpecFlow
         {
             #region Checks
             //filter
-            var filePath = runCtx.CurrentSourceFile;
+            var filePath = runCtx.ProcessingFile;
             if (!InjectorCoreUtils.IsNeedProcessFile(Options.Filter, filePath))
                 return false;
             #endregion
@@ -174,7 +173,7 @@ namespace Drill4Net.Injection.SpecFlow
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Processing of file by plugin failed: {runCtx.CurrentSourceFile}");
+                _logger.Error(ex, $"Processing of file by plugin failed: {runCtx.ProcessingFile}");
                 if (runCtx.Options.Debug?.IgnoreErrors != true)
                     throw;
                 return false;
