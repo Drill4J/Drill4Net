@@ -92,7 +92,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             foreach (var asmInfo in asmInfos.Values)
             {
                 var tests = asmInfo.Tests;
-                var asmPath = Path.Combine(_rep.Options.Directory, asmInfo.AssemblyName);
+                var asmPath = FileUtils.GetFullPath(Path.Combine(_rep.Options.Directory, asmInfo.AssemblyName), FileUtils.EntryDir);
 
                 // prefix "/C" - is for running in the CMD
                 var args = $"/C dotnet test \"{asmPath}\"";
@@ -160,6 +160,8 @@ namespace Drill4Net.Agent.TestRunner.Core
             //TODO: restrict count of simultaneously running cmd processes
             foreach (var args in argsList)
             {
+                _logger.Debug($"Running tests with args: [{args}]");
+
                 var process = new Process
                 {
                     StartInfo =

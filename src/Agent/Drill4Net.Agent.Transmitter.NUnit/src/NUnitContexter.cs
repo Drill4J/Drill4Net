@@ -15,7 +15,10 @@ namespace Drill4Net.Agent.Transmitter.NUnit3
 
         public override string GetContextId()
         {
-            return null; // NUnit.Framework.TestContext.CurrentContext?.Test?.FullName; //TODO: check !!!!
+            var ctx = NUnit.Framework.TestContext.CurrentContext?.Test?.FullName;
+            if (ctx?.Contains("Internal.TestExecutionContext+") == true) //in fact, NUnit's context is absent
+                return null;
+            return ctx; //TODO: check !!!!
         }
 
         public override TestEngine GetTestEngine()
@@ -30,7 +33,7 @@ namespace Drill4Net.Agent.Transmitter.NUnit3
 
         public override bool RegisterCommand(int command, string data)
         {
-            return true;
+            return true; //no specific action for NUnit
         }
     }
 }

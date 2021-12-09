@@ -38,6 +38,8 @@ namespace Drill4Net.Common
             if (filter?.IsFolderNeed(di.Parent.Name) == false)
                 return list;
 
+            //CommonUtils.WriteTempLog($"{nameof(TypeFinder)}|SearchBy|Dir: [{dir}]");
+
             //files
             var files = Directory.GetFiles(dir)
                 .Where(a => Path.GetExtension(a) == ".dll");
@@ -69,11 +71,12 @@ namespace Drill4Net.Common
         internal IEnumerable<Type> GetTypes(TypeFinderMode finderMode, string asmPath, Type searchType, ConcurrentDictionary<string, string> asms,
             SourceFilterOptions filter)
         {
-            if(!asms.TryAdd(Path.GetFileName(asmPath), null))
+            if (!asms.TryAdd(Path.GetFileName(asmPath), null))
                 return new List<Type>();
             //
             try
             {
+                //CommonUtils.WriteTempLog($"{nameof(TypeFinder)}|GetTypes|Asm: [{asmPath}]");
                 var assembly = Assembly.LoadFrom(asmPath);
                 var types = assembly.GetTypes().Where(a => a.IsPublic);
                 var list = new List<Type>();

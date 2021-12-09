@@ -17,50 +17,83 @@ namespace Drill4Net.Common
         /// </summary>
         public static string EntryDir { get; }
 
+        public static string CallingDir { get; }
+
         public static string ExecutingDir { get; }
 
-        /******************************************************************/
+        /***************************************************************************/
 
         static FileUtils()
         {
-            ExecutingDir = GetExecutionDir();
-            EntryDir = GetEntryDir() ?? ExecutingDir;
+            ExecutingDir = GetExecutingDir() ?? GetProcessDir();
+            CallingDir = GetCallingDir() ?? ExecutingDir;
+            EntryDir = GetEntryDir() ?? CallingDir;
         }
 
-        /******************************************************************/
+        /***************************************************************************/
 
+        #region ProductVersion
         public static string GetProductVersion(Type type)
         {
-            return GetProductVersion(type.Assembly);
+            return GetProductVersion(type?.Assembly);
         }
 
         public static string GetProductVersion(Assembly asm)
         {
-            return GetProductVersion(asm.Location);
+            return GetProductVersion(asm?.Location);
         }
 
         public static string GetProductVersion(string asmPath)
         {
-            return FileVersionInfo.GetVersionInfo(asmPath).ProductVersion;
+            if(string.IsNullOrWhiteSpace(asmPath))
+                return null;
+            return FileVersionInfo.GetVersionInfo(asmPath)?.ProductVersion;
         }
-
+        #endregion
         #region Directories
-        public static string GetExecutionDir()
+        internal static string GetExecutingDir()
         {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            try
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
-        public static string GetCallingDir()
+        internal static string GetCallingDir()
         {
-            return Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            try
+            {
+                var asm = Assembly.GetCallingAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
-        public static string GetEntryDir()
+        internal static string GetEntryDir()
         {
-            return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+            try
+            {
+                var asm = Assembly.GetEntryAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
+        }
+
+        internal static string GetProcessDir()
+        {
+            var prc = Process.GetCurrentProcess();
+            return Path.GetDirectoryName(prc.MainModule.FileName);
         }
 
         public static bool IsPossibleFilePath(string str)

@@ -51,7 +51,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         internal StandardAgent CreateAgent()
         {
-            StandardAgentCCtorParameters.SkipCreatingSingleton = true;
+            StandardAgentInitParameters.SkipCreatingSingleton = true;
             return new StandardAgent(_agentRep);
         }
 

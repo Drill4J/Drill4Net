@@ -18,6 +18,10 @@ namespace Drill4Net.Agent.Abstract.Transfer
         /// </summary>
         public string TestType { get; set; }
 
+        /// <summary>
+        /// In fact, for MANUL tests, uses as context
+        /// </summary>
+
         public string TestName { get; set; }
 
         /// <summary>

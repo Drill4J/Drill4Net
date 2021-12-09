@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.Transmitter
         /// In fact, this is a limiter to reduce the flow of sending probes 
         /// to the administrator's side
         /// </summary>
-        private static ConcurrentDictionary<string, ConcurrentDictionary<string, bool>> _probesByCtx;
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, bool>> _probesByCtx;
 
         private readonly List<string> _cmdSenderTopics;
 
@@ -80,8 +80,8 @@ namespace Drill4Net.Agent.Transmitter
 
             _logger.Debug("Initialized.");
             _logger.Info("Wait for command to continue executing...");
-            Log.Flush();
 
+            //CommonUtils.WriteTempLog($"Transmitter WaitOne");
             _initEvent.WaitOne();
         }
 
@@ -170,10 +170,10 @@ namespace Drill4Net.Agent.Transmitter
         #region CommandReceiver
         private void StartCommandReceiver(TransmitterRepository rep)
         {
-            _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
+            _logger.Trace($"Read receiver config: [{rep.MessagerConfigPath}]");
 
             var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(),
-                rep.TargetName, rep.TargetVersion, rep.ConfigPath);
+                rep.TargetName, rep.TargetVersion, rep.MessagerConfigPath);
             _logger.Trace("Command receiver created");
 
             var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
@@ -218,6 +218,11 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
+            if (Transmitter == null)
+            {
+                _logger?.Error($"Transmitter is empty. Context is [{ctx}], data: [{data}]");
+                return;
+            }
             Transmitter.SendProbe(data, ctx);
         }
 
@@ -258,6 +263,11 @@ namespace Drill4Net.Agent.Transmitter
         #region Command
         public static void DoCommand(int command, string data)
         {
+            if (Transmitter == null)
+            {
+                _logger?.Error($"Transmitter is empty. Command is [{command}], data: [{data}]");
+                return;
+            }
             Transmitter.ExecCommand(command, data);
         }
 

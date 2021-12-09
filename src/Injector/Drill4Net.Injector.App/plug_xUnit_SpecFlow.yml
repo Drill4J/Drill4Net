@@ -4,7 +4,7 @@ Filter: # mask for search files, namespaces, classes...
    Includes:
       Directories:
       Files:
-         - Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll # BDD framework's hooks located exactly here
+         - Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll # BDD framework's hooks located exactly here
       Namespaces:
       Classes:
       Attributes:

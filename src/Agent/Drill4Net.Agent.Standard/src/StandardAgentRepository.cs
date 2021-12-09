@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
@@ -15,6 +14,7 @@ using Drill4Net.Agent.Transport;
 using Drill4Net.Admin.Requester;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Abstract.Transfer;
+using System.Reflection;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -65,6 +65,7 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="cfgPath"></param>
         /// <param name="treePath"></param>
+        /// <param name="locatedInWorker">Is the Agent located in Agent Worker</param>
         public StandardAgentRepository(string cfgPath, string treePath) : base(cfgPath)
         {
             Init(ReadInjectedTree(treePath));
@@ -110,18 +111,11 @@ namespace Drill4Net.Agent.Standard
             _injTypes = GetTypesByCallerVersion(tree);
 
             TargetName = Options.Target?.Name ?? tree.Name;
-
-            //Target's version
-            var asms = tree.GetAssemblies().Where(a => a.ProductVersion != "0.0.0.0");
-            var entryAsmVersion = asms.FirstOrDefault(a => a.HasEntryPoint)?.ProductVersion;
-            var nonEntryAsmVersion = asms.FirstOrDefault(a => !a.HasEntryPoint)?.ProductVersion;
             TargetVersion = Options.Target?.Version ??
-                            tree.ProductVersion ??
-                            entryAsmVersion ??
-                            nonEntryAsmVersion ??
-                            FileUtils.GetProductVersion(typeof(StandardAgent)); //for Agents injected directly to Target TODO: flag about it!!!
-           
-            _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
+                            tree.SearchProductVersion() ??
+                            (StandardAgentInitParameters.LocatedInWorker ? "0.0.0.0-unknown" : FileUtils.GetProductVersion(Assembly.GetCallingAssembly())); //for Agents injected directly to Target
+
+            _logger.Info($"Target: [{TargetName}], version: {TargetVersion}");
 
             _requester = new AdminRequester(Subsystem, Options.Admin.Url, TargetName, TargetVersion);
             RetrieveTargetBuilds().GetAwaiter().GetResult();
@@ -174,18 +168,18 @@ namespace Drill4Net.Agent.Standard
         {
             var logDir = connOpts?.LogDir;
             var logFile = connOpts?.LogFile;
-            var logLevel = Microsoft.Extensions.Logging.LogLevel.Debug; //TODO: get real level from ...somewhere
+            var logLevel = LogLevel.Debug; //TODO: get real level from ...somewhere
 
             //Guanito: just first file sink is bad idea...
             //the last because the firast may be just emergency logger
-            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink; 
+            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink;
 
             //dir
             if (string.IsNullOrWhiteSpace(logDir))
             {
                 if (fileSink == null)
                 {
-                    logDir = FileUtils.GetEntryDir();
+                    logDir = FileUtils.EntryDir;
                 }
                 else
                 {
@@ -306,7 +300,7 @@ namespace Drill4Net.Agent.Standard
             }
 
             //...all another types of sessions must be reinitialized
-            RecreateSessionData(info, null);
+            RecreateSessionData(info);
         }
 
         /// <summary>
@@ -314,20 +308,20 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        public void RecreateSessionData(StartSessionPayload info, string context)
+        public void RecreateSessionData(StartSessionPayload info)
         {
             RemoveSessionData(info.SessionId);
-            AddSessionData(info, context);
+            AddSessionData(info);
             StartSendCycle();
         }
 
-        internal void AddSessionData(StartSessionPayload session, string context)
+        internal void AddSessionData(StartSessionPayload session)
         {
             string ctxId = null;
-            if (session.TestType == AgentConstants.TEST_MANUAL)
+            if (session.TestType == AgentConstants.TEST_MANUAL) //maybe at first to check context parameter?
                 ctxId = session.TestName;
             if(string.IsNullOrWhiteSpace(ctxId))
-                ctxId = context ?? GetContextId();
+                ctxId = /*context ?? */GetContextId();
 
             if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
                 return;
@@ -480,6 +474,7 @@ namespace Drill4Net.Agent.Standard
             foreach(var reg in regs.AsParallel())
                 SendCoverageData(reg);
         }
+
 
         private void SendCoverageData(CoverageRegistrator reg)
         {

@@ -32,12 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="inj_File.yml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
   </ItemGroup>
@@ -72,7 +66,10 @@
     <None Update="inj_blazor_wasm.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="inj_IHS_bdd.yml">
+    <None Update="inj_File.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="inj_IHS_bdd_Std.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="inj_IHS_bdd_FILE.yml">
@@ -96,10 +93,16 @@
     <None Update="inj_Bdd_xUnit_File.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="inj_test-specflow-xUnit-File.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="plug_IHS_SpecFlow.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="plug_NUnit_SpecFlow.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="plug_xUnit_SpecFlow.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="_redirect.yml">

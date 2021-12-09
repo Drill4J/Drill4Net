@@ -40,11 +40,6 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         public static StandardAgent Agent { get; private set; }
 
-        /// <summary>
-        /// Agent works in separate Worker (not in the Target's process directly)
-        /// </summary>
-        public bool LocatedInWorker { get; set; }
-
         private IAgentReceiver Receiver => _comm?.Receiver;
 
         //in fact, it is the Main sender. Others are additional ones - as plugins
@@ -53,6 +48,7 @@ namespace Drill4Net.Agent.Standard
         //each agent can serve only one target, so there is only one autotest session
         private StartSessionPayload _curAutoSession;
         private bool _isAutotests;
+        private bool _autotestsSequentialRegistering;
 
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
@@ -74,7 +70,7 @@ namespace Drill4Net.Agent.Standard
             _logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
             _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, _logExtras);
 
-            if (StandardAgentCCtorParameters.SkipCreatingSingleton)
+            if (StandardAgentInitParameters.SkipCreatingSingleton)
                 return;
 
             Agent = new StandardAgent();
@@ -173,7 +169,7 @@ namespace Drill4Net.Agent.Standard
             var builds = Repository.Builds;
             if (builds == null || builds.Count == 0)
                 return false;
-            var exactly = builds.Find(a => a.BuildVersion == Repository.TargetVersion);
+            var exactly = builds.Find(a => HttpUtility.UrlDecode(a.BuildVersion) == Repository.TargetVersion);
             if (exactly?.Summary == null) //such version already exists
                 return false;
             return true;
@@ -377,7 +373,7 @@ namespace Drill4Net.Agent.Standard
         public override void Register(string data)
         {
             //it is only for local Agent injected directly in Target's sys process
-            if (LocatedInWorker)
+            if (StandardAgentInitParameters.LocatedInWorker)
                 return;
             var ctx = Repository?.GetContextId();
             RegisterWithContext(data, ctx);
@@ -499,6 +495,7 @@ namespace Drill4Net.Agent.Standard
             _logger.Info($"Admin side session is starting: [{session}]");
 
             _isAutotests = true;
+            //an agent can serve only one target, so there is only one autotest session
             _curAutoSession = new StartSessionPayload
             {
                 SessionId = session,
@@ -578,12 +575,15 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
+            //in one test assembly can be different Engines are located. If such tests have started (xUnit 2.x) -
+            //now is only sequential registering (with blocking probes between tests' finish/start)
+            if (testCtx.Engine?.MustSequential == true)
+            {
+                _logger.Info("Tests' registering is sequential now");
+                _autotestsSequentialRegistering = true;
+            }
+
             BlockProbeProcessing();
-
-            //each agent can serve only one target, so there is only one autotest session
-            if (_curAutoSession != null) //TODO: for parallel tests it is WRONG !!!!!
-                Repository.RecreateSessionData(_curAutoSession, testCtx.CaseName); //because we need recreate the Coverager at all in the current session - guanito
-
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
         }
@@ -607,7 +607,8 @@ namespace Drill4Net.Agent.Standard
 
         private void BlockProbeProcessing()
         {
-            _initEvent.Reset();
+            if(_autotestsSequentialRegistering)
+                _initEvent.Reset();
         }
 
         private void ReleaseProbeProcessing()
