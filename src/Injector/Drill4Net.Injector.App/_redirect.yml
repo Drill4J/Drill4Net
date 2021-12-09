@@ -1,4 +1,4 @@
-﻿Path: inj_Bdd_xUnit_File # Full/relative path or simple name of real injection cfg (as name with or without extension)
+﻿Path: inj_Bdd_xUnit_Kafka # Full/relative path or simple name of real injection cfg (as name with or without extension)
       
       #inj_File
       #inj_Std
@@ -20,3 +20,5 @@
       #inj_Bdd_NUnit_File
       #inj_Bdd_NUnit_Std
       #inj_Bdd_NUnit_Kafka
+
+      #inj_test-specflow-xUnit-File

@@ -197,7 +197,7 @@ namespace Drill4Net.Injection.SpecFlow
         private void LoadTestFramework(string sourceDir)
         {
             const string dllName = "TechTalk.SpecFlow.dll";
-            var specDir = Path.Combine(FileUtils.GetExecutionDir(), dllName);
+            var specDir = Path.Combine(FileUtils.ExecutingDir, dllName);
             if (!File.Exists(specDir))
                 specDir = Path.Combine(sourceDir, dllName);
             if (!File.Exists(specDir))

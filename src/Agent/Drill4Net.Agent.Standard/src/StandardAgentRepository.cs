@@ -179,7 +179,7 @@ namespace Drill4Net.Agent.Standard
             {
                 if (fileSink == null)
                 {
-                    logDir = FileUtils.GetEntryDir();
+                    logDir = FileUtils.EntryDir;
                 }
                 else
                 {

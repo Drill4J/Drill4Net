@@ -54,7 +54,7 @@ namespace Drill4Net.Agent.Standard.Utils
 
         internal virtual string GetBaseDir()
         {
-            return FileUtils.GetEntryDir();
+            return FileUtils.EntryDir;
         }
 
         internal void PrepareLogDir( ref string logDir, FileSink fileSink)

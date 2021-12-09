@@ -17,22 +17,17 @@ namespace Drill4Net.Common
         /// </summary>
         public static string EntryDir { get; }
 
+        public static string CallingDir { get; }
+
         public static string ExecutingDir { get; }
 
         /***************************************************************************/
 
         static FileUtils()
         {
-            try
-            {
-                ExecutingDir = GetExecutionDir() ?? @"D:\drill_debug";
-                EntryDir = GetEntryDir() ?? GetCallingDir() ?? ExecutingDir;
-            }
-            catch(Exception ex)
-            {
-                File.WriteAllText(@"D:\drill_debug\FileUtils.txt", ex.ToString());
-                throw;
-            }
+            ExecutingDir = GetExecutionDir();
+            CallingDir = GetCallingDir() ?? ExecutingDir;
+            EntryDir = GetEntryDir() ?? CallingDir;
         }
 
         /***************************************************************************/
@@ -55,7 +50,7 @@ namespace Drill4Net.Common
         }
 
         #region Directories
-        public static string GetExecutionDir()
+        internal static string GetExecutionDir()
         {
             try
             {
@@ -67,7 +62,7 @@ namespace Drill4Net.Common
             catch { return null; }
         }
 
-        public static string GetCallingDir()
+        internal static string GetCallingDir()
         {
             try
             {
@@ -82,14 +77,17 @@ namespace Drill4Net.Common
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
-        public static string GetEntryDir()
+        internal static string GetEntryDir()
         {
             try
             {
-                var asm = Assembly.GetEntryAssembly();
-                if (asm == null)
-                    return null;
-                return Path.GetDirectoryName(asm.Location);
+                //var asm = Assembly.GetEntryAssembly();
+                //if (asm == null)
+                //    return null;
+                //return Path.GetDirectoryName(asm.Location);
+
+                var prc = Process.GetCurrentProcess();
+                return Path.GetDirectoryName(prc.MainModule.FileName);
             }
             catch { return null; }
         }
