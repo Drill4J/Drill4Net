@@ -45,28 +45,19 @@ namespace Drill4Net.Agent.Abstract
                     {
                         "reg:.resources.dll$",
                     },
-                    //Classes = new List<string>
-                    //{
-                    //    typeof(ContextDispatcher).FullName,
-                    //    typeof(SimpleContexter).FullName,
-                    //},
                 },
             };
-            //var tstTypes = pluginator.GetBy(TypeFinderMode.Class, dir, typeof(AbstractContexter), filter);
-            //dir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Agent.Transmitter.NUnit\netstandard2.0\"; //TEST !!!
-
-            //var ctxTypes = pluginator.GetBy(TypeFinderMode.Interface, dir, typeof(IEngineContexter));
             List<Type> ctxTypes;
             try
             {
-                CommonUtils.WriteTempLog("Ready to get the plugins");
+                //CommonUtils.WriteTempLog("Ready to get the plugins");
                 ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter), filter);
-                CommonUtils.WriteTempLog($"Found plugins: {ctxTypes.Count}");
+                //CommonUtils.WriteTempLog($"Found plugins: {ctxTypes.Count}");
             }
             catch (Exception ex)
             {
                 var err = "Search for contexters' plugin is failed";
-                CommonUtils.WriteTempLog($"{err}: {ex}");
+                //CommonUtils.WriteTempLog($"{err}: {ex}");
                 _logger.Fatal(err, ex);
                 Log.Flush();
                 throw;
@@ -79,7 +70,7 @@ namespace Drill4Net.Agent.Abstract
                 var name = contexter.Name;
                 if (string.IsNullOrWhiteSpace(name))
                     continue;
-                CommonUtils.WriteTempLog($"Creating: {name}");
+                //CommonUtils.WriteTempLog($"Creating: {name}");
                 //
                 try
                 {

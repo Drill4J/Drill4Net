@@ -52,15 +52,14 @@ namespace Drill4Net.Agent.Transmitter
             if (!File.Exists(MessagerConfigPath))
             {
                 var err = $"Messager config path is not exists: [{MessagerConfigPath}]";
-                Console.WriteLine(err);
-                Log.Debug(err);
+                Log.Fatal(err);
                 Log.Flush();
                 throw new Exception(err);
             }
             Log.Debug($"Messager config path: [{MessagerConfigPath}]");
             MessagerOptions = GetMessagerOptions();
 
-            _tree = ReadInjectedTree(); //TODO: remove Target's data with "not current version" from the Solution
+            _tree = ReadInjectedTree(); //TODO: remove "not current version framework" data from the tree
 
             TargetName = Options.Target?.Name ?? _tree.Name ?? TrySearchTargetName(); //don't relocate TrySearchTargetName method to the InjectedSolution, it's local specific
             TargetVersion = Options.Target?.Version ?? _tree.SearchProductVersion() ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
@@ -68,7 +67,7 @@ namespace Drill4Net.Agent.Transmitter
 
             Log.Flush();
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem); //IEngineContexters plugins
-            CommonUtils.WriteTempLog($"TransmitterRepository created");
+            //CommonUtils.WriteTempLog($"TransmitterRepository created");
         }
 
         /*********************************************************************************************/
