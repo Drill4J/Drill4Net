@@ -48,10 +48,11 @@ namespace Drill4Net.Agent.Transmitter
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
             //messager options
-            MessagerConfigPath = Path.Combine(FileUtils.GetAssemblyDir(typeof(TransmitterRepository)), CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            MessagerConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
             if (!File.Exists(MessagerConfigPath))
             {
                 var err = $"Messager config path is not exists: [{MessagerConfigPath}]";
+                Console.WriteLine(err);
                 Log.Debug(err);
                 Log.Flush();
                 throw new Exception(err);

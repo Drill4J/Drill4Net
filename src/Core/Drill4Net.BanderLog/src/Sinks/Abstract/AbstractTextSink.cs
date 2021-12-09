@@ -33,7 +33,7 @@ namespace Drill4Net.BanderLog.Sinks
             //TODO: structure of message - by CONFIG !!!
             var data = $"{CommonUtils.GetPreciseTime()}{DELIM}{logLevel}";
 
-            if(eventId.Id != 0)
+            if(eventId != null && eventId.Id != 0)
                 data += $"{DELIM}{eventId}";
 
             if (formatter != null)
@@ -77,6 +77,8 @@ namespace Drill4Net.BanderLog.Sinks
         {
             if (ex == null)
             {
+                if (state == null)
+                    return null;
                 if (state is string)
                     return state as string;
                 return JsonConvert.SerializeObject(state, Formatting.None, _jsonSettings);

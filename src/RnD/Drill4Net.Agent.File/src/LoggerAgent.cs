@@ -22,7 +22,8 @@ namespace Drill4Net.Agent.File
 
         static LoggerAgent()
         {
-            var filepath = Path.Combine(FileUtils.EntryDir, "crosspoints.txt");
+            var filepath = Path.Combine(@"D:\", "crosspoints.txt"); //FileUtils.EntryDir
+            //CommonUtils.WriteTempLog($"Crosspoints: {filepath}");
             _fileSink = new FileSink(filepath);
             _rep = new AgentRepository();
         }
@@ -31,7 +32,7 @@ namespace Drill4Net.Agent.File
 
         public static void RegisterStatic(string data)
         {
-            var ctx = _rep.GetContextId();
+            var ctx = _rep?.GetContextId();
             _fileSink.Log(LogLevel.Information, $"[{ctx}] -> {data}");
             //no slow flush!
         }
@@ -42,7 +43,7 @@ namespace Drill4Net.Agent.File
             _fileSink.Log(LogLevel.Information, $"************ COMMAND: [{command}] -> {data}");
             _fileSink.Flush();
 
-            _rep.RegisterCommand(command, data);
+            _rep?.RegisterCommand(command, data);
         }
     }
 }

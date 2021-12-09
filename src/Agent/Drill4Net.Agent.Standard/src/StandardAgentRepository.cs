@@ -115,7 +115,7 @@ namespace Drill4Net.Agent.Standard
                             tree.SearchProductVersion() ??
                             (StandardAgentInitParameters.LocatedInWorker ? "0.0.0.0-unknown" : FileUtils.GetProductVersion(Assembly.GetCallingAssembly())); //for Agents injected directly to Target
 
-            _logger.Info($"Target: [{TargetName}] version: {TargetVersion}");
+            _logger.Info($"Target: [{TargetName}], version: {TargetVersion}");
 
             _requester = new AdminRequester(Subsystem, Options.Admin.Url, TargetName, TargetVersion);
             RetrieveTargetBuilds().GetAwaiter().GetResult();

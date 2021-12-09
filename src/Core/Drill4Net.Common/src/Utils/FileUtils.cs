@@ -25,16 +25,12 @@ namespace Drill4Net.Common
         {
             try
             {
-                ExecutingDir = GetExecutionDir();
+                ExecutingDir = GetExecutionDir() ?? @"D:\drill_debug";
                 EntryDir = GetEntryDir() ?? GetCallingDir() ?? ExecutingDir;
             }
             catch(Exception ex)
             {
-                var err = "";
-                var ex2 = ex;
-                while (ex2 != null)
-                    err += $"{ex.Message}{ex.StackTrace}\n";
-                Console.Write(err);
+                File.WriteAllText(@"D:\drill_debug\FileUtils.txt", ex.ToString());
                 throw;
             }
         }
@@ -61,18 +57,26 @@ namespace Drill4Net.Common
         #region Directories
         public static string GetExecutionDir()
         {
-            var asm = Assembly.GetExecutingAssembly();
-            if (asm == null)
-                return null;
-            return Path.GetDirectoryName(asm.Location);
+            try
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
         public static string GetCallingDir()
         {
-            var asm = Assembly.GetCallingAssembly();
-            if (asm == null)
-                return null;
-            return Path.GetDirectoryName(asm.Location);
+            try
+            {
+                var asm = Assembly.GetCallingAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
         /// <summary>
@@ -80,15 +84,14 @@ namespace Drill4Net.Common
         /// </summary>
         public static string GetEntryDir()
         {
-            var asm = Assembly.GetEntryAssembly();
-            if (asm == null)
-                return null;
-            return Path.GetDirectoryName(asm.Location);
-        }
-
-        public static string GetAssemblyDir(Type type)
-        {
-            return Path.GetDirectoryName(Assembly.GetAssembly(type).Location);
+            try
+            {
+                var asm = Assembly.GetEntryAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
         public static bool IsPossibleFilePath(string str)
