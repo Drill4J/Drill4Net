@@ -25,13 +25,14 @@ namespace Drill4Net.Common
 
         static FileUtils()
         {
-            ExecutingDir = GetExecutionDir();
+            ExecutingDir = GetExecutingDir() ?? GetProcessDir();
             CallingDir = GetCallingDir() ?? ExecutingDir;
             EntryDir = GetEntryDir() ?? CallingDir;
         }
 
         /***************************************************************************/
 
+        #region ProductVersion
         public static string GetProductVersion(Type type)
         {
             return GetProductVersion(type?.Assembly);
@@ -48,9 +49,9 @@ namespace Drill4Net.Common
                 return null;
             return FileVersionInfo.GetVersionInfo(asmPath)?.ProductVersion;
         }
-
+        #endregion
         #region Directories
-        internal static string GetExecutionDir()
+        internal static string GetExecutingDir()
         {
             try
             {
@@ -81,15 +82,18 @@ namespace Drill4Net.Common
         {
             try
             {
-                //var asm = Assembly.GetEntryAssembly();
-                //if (asm == null)
-                //    return null;
-                //return Path.GetDirectoryName(asm.Location);
-
-                var prc = Process.GetCurrentProcess();
-                return Path.GetDirectoryName(prc.MainModule.FileName);
+                var asm = Assembly.GetEntryAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
             }
             catch { return null; }
+        }
+
+        internal static string GetProcessDir()
+        {
+            var prc = Process.GetCurrentProcess();
+            return Path.GetDirectoryName(prc.MainModule.FileName);
         }
 
         public static bool IsPossibleFilePath(string str)

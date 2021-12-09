@@ -22,8 +22,7 @@ namespace Drill4Net.Agent.File
 
         static LoggerAgent()
         {
-            var filepath = Path.Combine(@"D:\", "crosspoints.txt"); //FileUtils.EntryDir
-            //CommonUtils.WriteTempLog($"Crosspoints: {filepath}");
+            var filepath = Path.Combine(FileUtils.EntryDir, "crosspoints.txt");
             _fileSink = new FileSink(filepath);
             _rep = new AgentRepository();
         }
