@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Drill4Net.Agent.Abstract;
 using Microsoft.Extensions.Logging;
 using Drill4Net.Common;
@@ -32,15 +31,15 @@ namespace Drill4Net.Agent.File
         public static void RegisterStatic(string data)
         {
             var ctx = _rep?.GetContextId();
-            _fileSink.Log(LogLevel.Information, $"[{ctx}] -> {data}");
+            _fileSink?.Log(LogLevel.Information, $"[{ctx}] -> {data}");
             //no slow flush!
         }
 
         //this method must exists due to common injection's logic
         public static void DoCommand(int command, string data)
         {
-            _fileSink.Log(LogLevel.Information, $"************ COMMAND: [{command}] -> {data}");
-            _fileSink.Flush();
+            _fileSink?.Log(LogLevel.Information, $"************ COMMAND: [{command}] -> {data}");
+            _fileSink?.Flush();
 
             _rep?.RegisterCommand(command, data);
         }
