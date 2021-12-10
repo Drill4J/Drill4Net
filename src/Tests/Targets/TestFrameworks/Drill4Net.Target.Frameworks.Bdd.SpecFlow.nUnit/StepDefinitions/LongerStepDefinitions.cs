@@ -3,6 +3,13 @@ using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Frameworks.Common;
 
+            /* *
+             * 
+             * NEVER!!!! NEVER!!!! NEVER INCLUDE ANY DRILL4NET DEPENDENCIES TO THIS PROJECT (except specific common tests' ones)
+             * Because they will be injected and then conflict with depenedncies from Transmitter, Agents and so on in memory
+             * 
+             * */
+
 // automatic version tagger including Git info - https://github.com/devlooped/GitInfo
 // semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
 // the most common format is v0.0 (or just 0.0 is enough)

@@ -2,7 +2,13 @@ using System.Reflection;
 using TechTalk.SpecFlow;
 using Xunit;
 using Drill4Net.Target.Frameworks.Common;
-using Drill4Net.Common;
+
+        /* *
+         * 
+         * NEVER!!!! NEVER!!!! NEVER INCLUDE ANY DRILL4NET DEPENDENCIES TO THIS PROJECT (except specific common tests' ones)
+         * Because they will be injected and then conflict with depenedncies from Transmitter, Agents and so on in memory
+         * 
+         * */
 
 //http://gasparnagy.com/2016/02/running-specflow-scenarios-in-parallel-with-xunit-v2/
 //https://github.com/Microsoft/vstest-docs/blob/master/docs/configure.md
@@ -28,8 +34,8 @@ using Drill4Net.Common;
 // to change semVer it is nesseccary to create appropriate tag and push it to remote repository
 // patches'(commits) count starts with 0 again after new tag pushing
 // For file version format exactly is digit
-[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyFileVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}")]
+[assembly: AssemblyInformationalVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}")]
 
 //https://xunit.net/docs/running-tests-in-parallel
 [assembly: CollectionBehavior(DisableTestParallelization = false, //Default: false
