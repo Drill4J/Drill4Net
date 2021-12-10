@@ -1,7 +1,6 @@
 using System.Reflection;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
-using Drill4Net.Common;
 using Drill4Net.Target.Frameworks.Common;
 
 // automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -10,8 +9,8 @@ using Drill4Net.Target.Frameworks.Common;
 // to change semVer it is nesseccary to create appropriate tag and push it to remote repository
 // patches'(commits) count starts with 0 again after new tag pushing
 // For file version format exactly is digit
-[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyFileVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}")]
+[assembly: AssemblyInformationalVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}")]
 
 //Project mustn't have in its name "NUnit" part, only "nUnit" - with small letter "n"
 
