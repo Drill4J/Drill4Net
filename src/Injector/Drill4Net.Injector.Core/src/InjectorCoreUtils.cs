@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.Core
 {
+    /// <summary>
+    /// Some core utils for Injector
+    /// </summary>
     public static class InjectorCoreUtils
     {
         public static string GetDestinationDirectory(InjectorOptions opts, string currentDir)

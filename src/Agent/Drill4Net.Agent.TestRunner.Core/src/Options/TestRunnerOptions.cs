@@ -1,4 +1,5 @@
-﻿using Drill4Net.Configuration;
+﻿using System.Collections.Generic;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
@@ -10,15 +11,10 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <summary>
         /// Directory for the injected tests
         /// </summary>
-        public string Directory { get; set; }
+        public List<RunDirectoryOptions> Directories { get; set; }
 
         /// <summary>
-        /// DEFAULT assembly to run tests if no builds still exists in Drill service
-        /// </summary>
-        public string DefaultAssemblyName { get; set; }
-
-        /// <summary>
-        /// The parallel execution is restricted by default (if no builds still exists in Drill service)?
+        /// The parallel execution is restricted by default (if no builds still exists in Drill service)
         /// </summary>
         public bool DefaultParallelRestrict { get; set; }
 

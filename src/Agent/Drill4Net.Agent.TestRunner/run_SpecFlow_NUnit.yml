@@ -1,4 +1,4 @@
-﻿Description: Run BDD + NUnit for debug
+﻿Description: Run SpecFlow + NUnit for debug
 Type: TestRunner # type as hint
 Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Injected\net5.0\  # actually directory for the injected tests
 DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service

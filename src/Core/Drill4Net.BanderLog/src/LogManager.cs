@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Drill4Net.BanderLog.Sinks;
 
@@ -9,13 +10,13 @@ namespace Drill4Net.BanderLog
 {
     public class LogManager : AbstractSink, ILogManager
     {
-        public Dictionary<int, ILogger> Sinks { get; }
+        public ConcurrentDictionary<int, ILogger> Sinks { get; }
 
         /*****************************************************************************/
 
         public LogManager(IEnumerable<AbstractSink> sinks = null)
         {
-            Sinks = new Dictionary<int, ILogger>();
+            Sinks = new ConcurrentDictionary<int, ILogger>();
             if (sinks != null)
             {
                 foreach (var sink in sinks)
@@ -43,8 +44,8 @@ namespace Drill4Net.BanderLog
 
             //essentially the same loggers are replaced by the latter
             if (Sinks.ContainsKey(key))
-                Sinks.Remove(key); //return? exception? remove old? -> add func parameter?
-            Sinks.Add(key, sink);
+                Sinks.TryRemove(key, out _); //return? exception? remove old? -> add func parameter?
+            Sinks.TryAdd(key, sink);
         }
 
         public IList<ILogSink> GetSinks()
