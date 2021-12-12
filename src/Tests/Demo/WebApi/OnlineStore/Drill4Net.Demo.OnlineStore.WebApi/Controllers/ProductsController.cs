@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
 using System.Collections.Generic;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Drill4Net.Demo.OnlineStore.WebApi.Models;
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
-using System;
+
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 
 namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
@@ -14,9 +15,10 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IMapper _mapper;
-
         private readonly IProductBusinessService _productBllService;
         private readonly IProductDataReadService _productDalService;
+
+        /******************************************************************/
 
         public ProductsController(IProductBusinessService productBllService, IProductDataReadService productDalService, IMapper mapper)
         {
@@ -24,8 +26,10 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             _productDalService = productDalService;
             _mapper = mapper;
         }
+       
+        /******************************************************************/
 
-       [HttpGet("sorted")]
+        [HttpGet("sorted")]
         public IEnumerable<ProductInfoDto> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
         {
             var products = _productDalService.GetSortedProductsByPage(page, pageItemsNumber, sortField);
@@ -45,12 +49,14 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             var newProduct = _productBllService.AddProduct(_mapper.Map<Product>(productDto));
             return Created(new Uri($"/{newProduct.Id}", UriKind.Relative), _mapper.Map<ProductDto>(newProduct));
         }
+
         [HttpDelete("{id}")]
         public ActionResult DeleteProduct(Guid id)
         {
             _productBllService.DeleteProduct(id);
             return NoContent();
         }
+
         [HttpPut("{id}")]
         public ActionResult UpdateProduct(Guid id, ProductDto productDto)
         {

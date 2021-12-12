@@ -2,7 +2,6 @@
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 using Drill4Net.Demo.OnlineStore.WebApi.Models;
 
-
 namespace Drill4Net.Demo.OnlineStore.WebApi.Mapping
 {
     public class ApiDtoProfile: Profile
@@ -13,9 +12,9 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Mapping
             CreateMap<NewCartDto, Cart>().ReverseMap();
             CreateMap<CartItemDto, CartItem>().ReverseMap();
             CreateMap<ProductInfoDto, CartItem>()
-                .ForMember("ProductId", opt => opt.MapFrom(p => p.Id))
-                .ForMember("ProductName", opt => opt.MapFrom(p => p.Name))
-                .ForMember("ProductPrice", opt => opt.MapFrom(p => p.Price));
+                .ForMember(_ => _.ProductId, opt => opt.MapFrom(p => p.Id))
+                .ForMember(_ => _.ProductName, opt => opt.MapFrom(p => p.Name))
+                .ForMember(_ => _.ProductPrice, opt => opt.MapFrom(p => p.Price));
             CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<Product, ProductInfoDto>();
             CreateMap<NewProductDto, Product>();

@@ -1,20 +1,26 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using AutoMapper;
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 using Drill4Net.Demo.OnlineStore.Dal.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Drill4Net.Demo.OnlineStore.Dal.Services
 {
     public class ProductInMemoryStorage : IProductDataReadService, IProductDataWriteService
     {
         private readonly IMapper _mapper;
+
+        /******************************************************************/
+
         public ProductInMemoryStorage(IMapper mapper)
         {
             _mapper = mapper;
         }
+
+        /******************************************************************/
+
         public IEnumerable<Product> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
         {
             var products = DataContext.Products.Skip((page - 1) * pageItemsNumber).Take(pageItemsNumber);
@@ -33,7 +39,6 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
                     goto case "name";
             }
             return _mapper.Map<IEnumerable<Bll.Contracts.Models.Product>>(products);
-
         }
 
         public IEnumerable<Product> GetFilteredProducts(string category , string namePart)
@@ -49,6 +54,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
             DataContext.Products.Add(dalItem);
             return item;
         }
+
         public void Delete(Guid id)
         {
             var product = ProductDataHelper.GetProduct(id);
@@ -57,6 +63,7 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
                 DataContext.Products.Remove(product);
             }
         }
+
         public void Update(Product item)
         {
             var product = ProductDataHelper.GetProduct(item.Id);

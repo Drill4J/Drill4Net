@@ -1,10 +1,6 @@
-﻿using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
+﻿using System;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Bll.Services
 {
@@ -12,10 +8,15 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Services
     {
         private readonly ICartDataWriteService _cartDataServiceWrite;
 
+        /******************************************************************/
+
         public CartService(ICartDataWriteService cartDataServiceWrite)
         {
             _cartDataServiceWrite = cartDataServiceWrite;
         }
+
+        /******************************************************************/
+
         public void AddToCart(Guid cartId, Guid productId, int amount)
         {
             _cartDataServiceWrite.AddToCart(cartId, productId, amount);

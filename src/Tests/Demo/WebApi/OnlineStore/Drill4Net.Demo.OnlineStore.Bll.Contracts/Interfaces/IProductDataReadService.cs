@@ -1,9 +1,6 @@
-﻿using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 
 namespace Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces
 {

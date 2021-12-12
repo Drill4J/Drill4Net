@@ -15,9 +15,10 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
     public class CartsController : ControllerBase
     {
         private readonly IMapper _mapper;
-
         private readonly ICartBusinessService _cartBllService;
         private readonly ICartDataReadService _cartDalService;
+
+        /******************************************************************/
 
         public CartsController(ICartBusinessService cartBllService, ICartDataReadService cartDalService, IMapper mapper)
         {
@@ -25,6 +26,9 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             _cartDalService = cartDalService;
             _mapper = mapper;
         }
+
+        /******************************************************************/
+
         [HttpGet]
         public CartDto GetCart(Guid cartId)
         {

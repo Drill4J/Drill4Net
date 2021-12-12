@@ -1,22 +1,25 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using AutoMapper;
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces;
 using Drill4Net.Demo.OnlineStore.Bll.Contracts.Models;
 using Drill4Net.Demo.OnlineStore.Dal.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drill4Net.Demo.OnlineStore.Dal.Services
 {
     public class CartInMemoryStorage : ICartDataReadService, ICartDataWriteService
     {
         private readonly IMapper _mapper;
+
+        /******************************************************************/
+
         public CartInMemoryStorage(IMapper mapper)
         {
             _mapper = mapper;
         }
+
+        /******************************************************************/
+
         public Cart GetCart(Guid id)
         {
             var dalItem = DataContext.Carts.FirstOrDefault(x => x.Id == id);
