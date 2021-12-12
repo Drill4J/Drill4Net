@@ -19,6 +19,8 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// </summary>
     public class TestInformer
     {
+        public string TargetName { get; }
+
         private readonly RunDirectoryOptions _dirOptions;
         private readonly RunAssemblyOptions _asmOptions;
         private readonly TestRunnerDebugOptions _dbgOpts;
@@ -43,7 +45,8 @@ namespace Drill4Net.Agent.TestRunner.Core
             _logger = new TypedLogger<TestInformer>(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
             //
             _agentRep = CreateAgentRepository();
-            _logger.Extras.Add("Target", _agentRep.TargetName);
+            TargetName = _agentRep.TargetName;
+            _logger.Extras.Add("Target", TargetName);
             _logger.RefreshExtrasInfo();
             _requester = new(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, _agentRep.Options.Admin.Url,
                 _agentRep.TargetName, _agentRep.TargetVersion);
@@ -93,7 +96,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             var res = new RunInfo
             {
-                Target = _agentRep.TargetName,
+                Target = TargetName,
                 RunType = runningType,
                 DirectoryOptions = _dirOptions,
                 AssemblyOptions = _asmOptions,
@@ -157,9 +160,9 @@ namespace Drill4Net.Agent.TestRunner.Core
 
                     // insert test info
                     RunAssemblyInfo info;
-                    if (res.AssemblyInfos.ContainsKey(asmName))
+                    if (res.RunAssemblyInfos.ContainsKey(asmName))
                     {
-                        info = res.AssemblyInfos[asmName];
+                        info = res.RunAssemblyInfos[asmName];
                     }
                     else
                     {
@@ -169,7 +172,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                             MustSequential = mustSeq,
                             Tests = new(),
                         };
-                        res.AssemblyInfos.Add(asmName, info);
+                        res.RunAssemblyInfos.Add(asmName, info);
                     }
                     info.Tests.Add(qName);
                 }
@@ -184,7 +187,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                     AssemblyName = _asmOptions.DefaultAssemblyName,
                     MustSequential = _asmOptions.DefaultParallelRestrict,
                 };
-                res.AssemblyInfos.Add(allRun.AssemblyName, allRun);
+                res.RunAssemblyInfos.Add(allRun.AssemblyName, allRun);
             }
             #endregion
             return res;
@@ -289,6 +292,11 @@ namespace Drill4Net.Agent.TestRunner.Core
                 AllowTrailingCommas = true,
             };
             return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
+        }
+
+        public override string ToString()
+        {
+            return $"{TargetName}: [{_dirOptions}] -> [{_asmOptions}]";
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace Drill4Net.BanderLog

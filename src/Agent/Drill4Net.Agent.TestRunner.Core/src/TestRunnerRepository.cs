@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
@@ -36,9 +35,15 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal async Task<List<RunInfo>> GetRunInfos()
         {
             var list = new List<RunInfo>();
-            foreach (var informer in _informers.AsParallel())
+            var targetInformes = _informers.DistinctBy(a => a.TargetName); //we need to collect test2Run data just by target
+            foreach (var informer in targetInformes.AsParallel())
             {
                 RunInfo runInfo = await informer.GetRunInfo().ConfigureAwait(false);
+                if (runInfo.RunType == RunningType.Nothing)
+                {
+                    _logger.Info($"Nothing to run for [{informer}]");
+                    continue;
+                }
                 list.Add(runInfo);
             }
             return list;

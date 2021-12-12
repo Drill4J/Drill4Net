@@ -15,9 +15,10 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal RunningType RunType { get; set; } = RunningType.Unknown;
 
         /// <summary>
-        /// Tests to run with parameters by assembly path retrieved from admin side
+        /// Tests to run with parameters by assembly path retrieved
+        /// from admin side for WHOLE Target
         /// </summary>
-        internal Dictionary<string, RunAssemblyInfo> AssemblyInfos { get; set; } = new();
+        internal Dictionary<string, RunAssemblyInfo> RunAssemblyInfos { get; set; } = new();
 
         /// <summary>
         /// Options for tests' directory
@@ -35,7 +36,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{Target}: {RunType} -> [{DirectoryOptions.Path}] -> assemblies: {AssemblyInfos.Count}";
+            return $"{Target}: {RunType} -> [{DirectoryOptions.Path}] -> assemblies: {RunAssemblyInfos.Count}";
         }
     }
 }

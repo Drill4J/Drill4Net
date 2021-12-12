@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
-using Drill4Net.Agent.Standard;
 
 /*** INFO
     automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -43,23 +42,26 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public async Task Run()
         {
-            _logger.Debug("Wait for Agents' initializing...");
+            _logger.Debug("Wait for agents' initializing...");
             _rep.Start();
+
             _logger.Debug("Getting tests' run info...");
             var infos = await _rep.GetRunInfos().ConfigureAwait(false);
+            if (infos.Count == 0)
+            {
+                _logger.Info("Nothing to run");
+                return;
+            }
+            //
             _logger.Debug("Getting CLI run info...");
-
             try
             {
-                //RunInfo runInfo = await _rep.GetRunInfo().ConfigureAwait(false);
-                //if (runInfo.RunType == RunningType.Nothing)
-                //{
-                //    _logger.Info("Nothing to run");
-                //    return;
-                //}
-
-                //var args = GetRunArguments(runInfo);
-                //RunTests(args); //the tests are run by CLI ("dotnet test ...")
+                var globalParallelRestrict = _rep.Options.DefaultParallelRestrict;
+                foreach (var runInfo in infos)
+                {
+                    var args = GetRunArguments(runInfo);
+                    var pids = RunTests(args); //the tests are run by CLI ("dotnet test ...")
+                }
 
                 _logger.Debug("Finished");
             }
@@ -77,7 +79,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <exception cref="Exception"></exception>
         internal List<string> GetRunArguments(RunInfo info)
         {
-            var asmInfos = info.AssemblyInfos;
+            var asmInfos = info.RunAssemblyInfos;
             var res = new List<string>();
 
             //foreach (var asmInfo in asmInfos.Values)
@@ -146,8 +148,10 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// Run the specified test in arguments by VSTest CLI
         /// </summary>
         /// <param name="argsList"></param>
-        internal void RunTests(List<string> argsList)
+        internal List<int> RunTests(List<string> argsList)
         {
+            var pids = new List<int>();
+
             //TODO: restrict count of simultaneously running cmd processes
             foreach (var args in argsList)
             {
@@ -163,8 +167,18 @@ namespace Drill4Net.Agent.TestRunner.Core
                         UseShellExecute = true,
                     }
                 };
-                process.Start();
+
+                if (process.Start())
+                {
+                    pids.Add(process.Id);
+                    _logger.Info($"Process started for [{args}]");
+                }
+                else
+                {
+                    _logger.Error($"Process does not started for [{args}]");
+                }
             }
+            return pids;
         }
     }
 }
