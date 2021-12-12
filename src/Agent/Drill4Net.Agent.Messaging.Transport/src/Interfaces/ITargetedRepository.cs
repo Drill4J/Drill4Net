@@ -7,6 +7,7 @@ namespace Drill4Net.Agent.Messaging.Transport
         string Subsystem { get; }
         string ConfigPath { get; }
         string TargetName { get; }
+        string TargetVersion { get; }
         Guid TargetSession { get; }
     }
 }

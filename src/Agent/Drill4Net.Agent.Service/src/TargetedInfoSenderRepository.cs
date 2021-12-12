@@ -1,5 +1,4 @@
-﻿using System;
-using Drill4Net.Common;
+﻿using Drill4Net.Common;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
 
@@ -12,7 +11,8 @@ namespace Drill4Net.Agent.Service
         /*******************************************************************************/
 
         public TargetedInfoSenderRepository(TargetInfo targetInfo, MessagerOptions senderOptions):
-            base(CoreConstants.SUBSYSTEM_AGENT_SERVER, targetInfo.SessionUid, targetInfo.TargetName ?? targetInfo.Solution?.Name, senderOptions)
+            base(CoreConstants.SUBSYSTEM_AGENT_SERVER, targetInfo.SessionUid, targetInfo.TargetName ?? targetInfo.Solution?.Name,
+                targetInfo.TargetVersion ?? targetInfo.Solution?.ProductVersion, senderOptions)
         {
             _targetInfo = targetInfo;
         }

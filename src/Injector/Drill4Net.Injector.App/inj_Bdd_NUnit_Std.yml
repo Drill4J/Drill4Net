@@ -1,0 +1,60 @@
+﻿Description: BDD SpecFlow + NUnit tests with Kafka
+Type: Injector #type as hint
+Target: # some metadata about target
+    Name: bdd-specflow-NUnit-kafka #optional injection name, if empty must be set in agent config
+    Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
+Source: # what and how processing
+    Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit\
+    Filter: # mask for search files, namespaces, classes...
+      Includes:
+        Directories:
+        Files: 
+        Namespaces:
+          - Drill4Net
+        Classes:
+        Attributes:
+      Excludes:
+        Files:
+          - Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll
+Destination: # where copying injected assemblies
+   Directory: # or full directory...
+   FolderPostfix: Injected #...or prefix to source dir
+Proxy: # the injecting for transfer data to profiler
+   Class: ProfilerProxy
+   Method: Register
+   Static: true
+Profiler: # data collector/processor in separate assembly
+   Name: Standard agent # name exactly for agent subsystem
+   Directory: ..\..\Drill4Net.Agent.Standard\netstandard2.0\
+   #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
+   AssemblyName: Drill4Net.Agent.Standard.dll
+   Namespace: Drill4Net.Agent.Standard
+   Class: StandardAgent
+   Method: RegisterStatic
+   Static: true
+Probes: # types of cross-cutting points
+   Ctor: false
+   Private: true
+   Getter: true
+   Setter: true
+   EventAdd: false
+   EventRemove: false
+   SkipEnterType: true
+   SkipIfElseType: true
+Plugins: # injected references to plugins for runtime transmitting data to the Admin service
+   'SpecFlow':
+       Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\ # directory
+       Config: plug_NUnit_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
+Logs: # logging for Injector
+    - Type: console
+      Level: debug
+    #local log
+    - Type: file
+      Level: trace
+    #common place
+    - Type: file
+      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+      Level: trace
+Debug:
+    CrossPointInfo : true # cross-point information is included into injected probe data. By default is true if this section presents
+Silent: false # no wait, no questions...

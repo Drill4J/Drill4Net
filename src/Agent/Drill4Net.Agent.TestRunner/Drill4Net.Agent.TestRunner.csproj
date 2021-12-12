@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
+	<ApplicationIcon>rocket_business_startup_icon_188656.ico</ApplicationIcon>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,13 +17,26 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Include="rocket_business_startup_icon_188656.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
 	  <ProjectReference Include="..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
 	  <ProjectReference Include="..\Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="IHS.yml">
+	  <None Update="run_IHS.yml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="run_IHS_2.yml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="run_SpecFlow_NUnit.yml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="run_SpecFlow_xUnit.yml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="_redirect.yml">

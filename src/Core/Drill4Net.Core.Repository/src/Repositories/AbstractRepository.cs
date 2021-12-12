@@ -23,11 +23,18 @@ namespace Drill4Net.Core.Repository
         /// </value>
         public string Subsystem { get; }
 
+        /// <summary>
+        /// Create sntandard file log in the process directory,
+        /// if no log section in options
+        /// </summary>
+        public static bool CreateDefaultLogger { get; set; }
+
         /*********************************************************************************/
 
         protected AbstractRepository(string subsystem)
         {
             Subsystem = subsystem;
+            CreateDefaultLogger = true;
         }
 
         /*********************************************************************************/
@@ -52,8 +59,10 @@ namespace Drill4Net.Core.Repository
 
         /// <summary>
         /// Prepares the initialize logger (it is usually for simple emergency logging).
+        /// It creates the console output and the local file log
         /// </summary>
-        public static void PrepareEmergencyLogger(string folder = LoggerHelper.LOG_DIR_DEFAULT)
+        /// <returns>The file path to the emergency log</returns>
+        public static string PrepareEmergencyLogger(string folder = LoggerHelper.LOG_FOLDER)
         {
             var path = LoggerHelper.GetCommonFilePath(folder);
             var logger = new LogBuilder()
@@ -61,6 +70,7 @@ namespace Drill4Net.Core.Repository
                 .AddSink(new ConsoleSink())
                 .Build();
             Log.Configure(logger);
+            return path;
         }
     }
 
@@ -91,7 +101,7 @@ namespace Drill4Net.Core.Repository
         /// </summary>
         internal protected void PrepareLogger()
         {
-            LogManager logger;
+            LogManager logger = null;
             var bld = new LogBuilder();
             //cfg.MinimumLevel.Verbose(); //global min level must be the most "verbosing"
             if (Options.Logs != null)
@@ -105,9 +115,12 @@ namespace Drill4Net.Core.Repository
             }
             else
             {
-                logger = bld.CreateStandardLogger();
+                if(CreateDefaultLogger)
+                    logger = bld.CreateStandardLogger(LoggerHelper.GetDefaultLogPath());
             }
-            Log.Configure(logger);
+            //
+            if(logger != null)
+                Log.Configure(logger);
         }
 
         internal void AddLogOption(LogBuilder bld, LogData logOpt)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Drill4Net.Agent.Abstract.Transfer;
 
@@ -21,6 +22,11 @@ namespace Drill4Net.Agent.Standard
         /// The test session.
         /// </value>
         public StartSessionPayload Session { get; set; }
+
+        /// <summary>
+        /// Time for last sending the probes
+        /// </summary>
+        public DateTime? SentTime { get; set; }
 
         /// <summary>
         /// Maps the cross-point's Uid to the corresponding target type.

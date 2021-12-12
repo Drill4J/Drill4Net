@@ -3,10 +3,10 @@ Type: Agent #type as hint
 Target: 
   Name: IHS-bdd-kafka-transmitter-debug
   Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)
-TreePath: d:\Projects\IHS-bdd.Injected\ # directory - where tree data about probes are located - if empty, system will try find it by another ways
+TreePath: d:\Projects\IHS-bdd.Injected\ # directory - where tree data about probes are located - if empty, system will try to find it by another ways
 Admin:
   Url: localhost:8090
-PluginDir: ..\..\ # agent's plugins
+PluginDir: ..\..\ # in real cases better FULL path to the Transmitter's plugins with IEngineContexter interface
 Connector: #parameters for the connector auxiliary subsystem (native Drill library), it can be missed
   LogDir: #if empty, will be used the current common log directory
   LogFile: connector.log #it can be presented as full file path (in this case LogDir will be ignored), it can be empty

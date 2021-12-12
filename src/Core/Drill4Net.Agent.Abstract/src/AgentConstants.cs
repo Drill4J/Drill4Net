@@ -17,6 +17,8 @@
         public const string KEY_TESTCASE_CONTEXT = "TestCaseContext";
         public const string KEY_TESTCASE_TESTNAME_FOR_ADMIN = "TestNameForAdmin";
 
+        public const string CONTEXT_SYSTEM_PREFIX = "$$__";
+
         public const string CONNECTOR_LOG_FILE_NAME = "connector.log";
 
         #region Topics
@@ -30,7 +32,7 @@
         /// The Admin Panel uses the topic for agent registration
         /// with plugins and attaching registered with plugins agent.
         /// </summary>
-        public const string TOPIC_AGENT_LOAD = "/agent/load";
+        public const string TOPIC_AGENT_PLUGIN_LOAD = "/agent/load";
 
         /// <summary>
         /// The topic is used for agent registration with/without a plugin, package settings changing.
@@ -78,7 +80,14 @@
         public const string MESSAGE_OUT_SESSION_ALL_CANCELLED = "SESSIONS_CANCELLED";
         public const string MESSAGE_OUT_SESSION_FINISHED = "SESSION_FINISHED";
         public const string MESSAGE_OUT_SESSION_ALL_FINISHED = "SESSIONS_FINISHED";
-        #endregion
 
+        public const string MESSAGE_OUT_SCOPE_SWITCH = "SWITCH_ACTIVE_SCOPE";
+        #endregion
+        #region Autotests params
+        //these should be sync with the same ones on Admin side (it seems, in frontend)
+        public const string AUTOTEST_PARAMS_KEY_TYPE = "MethodType";
+        public const string AUTOTEST_PARAMS_KEY_METHOD = "Method";
+        public const string AUTOTEST_PARAMS_KEY_METHOD_PARAMS = "MethodParams";
+        #endregion
     }
 }

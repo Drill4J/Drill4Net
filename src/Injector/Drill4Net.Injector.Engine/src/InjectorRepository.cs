@@ -29,28 +29,23 @@ namespace Drill4Net.Injector.Engine
 
         /// <summary>
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
-        /// injector for them, the reading/writing of resulting tree data, etc).
-        /// </summary>
-        /// <param name="cfgPath">Path to the config of injection</param>
-        public InjectorRepository(string cfgPath): base(cfgPath, _subsystem)
-        {
-            CreateLogger();
-        }
-
-        /// <summary>
-        /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
         /// <param name="args">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(string[] args): base(args, _subsystem)
+        public InjectorRepository(string[] args): base(_subsystem, args)
         {
             CreateLogger();
             _optHelper.Clarify(args, Options);
         }
 
-        private void CreateLogger()
+        /// <summary>
+        /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
+        /// injector for them, the reading/writing of resulting tree data, etc).
+        /// </summary>
+        /// <param name="cfgPath">Path to the config of injection</param>
+        public InjectorRepository(string cfgPath) : base(_subsystem, cfgPath)
         {
-            _logger = new TypedLogger<InjectorRepository>(_subsystem);
+            CreateLogger();
         }
 
         /*****************************************************************************************/
@@ -71,6 +66,11 @@ namespace Drill4Net.Injector.Engine
         public CodeHandlerStrategy GetStrategy()
         {
             return new BlockStrategy(Options);
+        }
+
+        private void CreateLogger()
+        {
+            _logger = new TypedLogger<InjectorRepository>(_subsystem);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Drill4Net.Injector.Engine
             if (Options?.Destination != null)
             {
                 var targetDir = Options.Destination.Directory;
-                treePath = GetTreeFilePath(targetDir);
+                treePath = _helper.GetTreeFilePathByDir(targetDir);
             }
             return ReadInjectedTree(treePath);
         }

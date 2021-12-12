@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Worker
             catch (Exception ex)
             {
                 var mess = ex.ToString();
-                _logger.Error(mess);
+                _logger.Fatal(mess);
             }
         }
 

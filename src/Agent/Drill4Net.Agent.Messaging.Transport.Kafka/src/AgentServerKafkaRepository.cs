@@ -12,7 +12,7 @@
 
         public override AbstractTransportAdmin GetTransportAdmin()
         {
-            return new TransportKafkaAdmin();
+            return new TransportKafkaAdmin(Options.Servers);
         }
     }
 }

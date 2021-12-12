@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -15,7 +17,6 @@ using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using System.Linq;
 
 [assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
 
@@ -47,16 +48,16 @@ namespace Drill4Net.Agent.Transmitter
         /// In fact, this is a limiter to reduce the flow of sending probes 
         /// to the administrator's side
         /// </summary>
-        private static ConcurrentDictionary<string, bool> _probes;
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, bool>> _probesByCtx;
 
-        private static readonly List<string> _cmdSenderTopics;
+        private readonly List<string> _cmdSenderTopics;
 
         private readonly Pinger _pinger;
         private readonly AssemblyResolver _resolver;
 
         private static readonly Logger _logger;
-        private static readonly FileSink _probeLogger;
-        private static readonly bool _writeProbesToFile;
+        private readonly FileSink _probeLogger;
+        private readonly bool _writeProbesToFile;
 
         private static readonly ManualResetEvent _initEvent = new(false);
         private bool _disposed;
@@ -68,36 +69,19 @@ namespace Drill4Net.Agent.Transmitter
             AbstractRepository.PrepareEmergencyLogger();
             Log.Trace($"Enter to {nameof(DataTransmitter)} .cctor");
 
+            _probesByCtx = new ConcurrentDictionary<string, ConcurrentDictionary<string, bool>>();
             var rep = new TransmitterRepository();
-            Log.Debug($"{nameof(TransmitterRepository)} created.");
+            Log.Debug($"{nameof(TransmitterRepository)} is created. Session={rep.TargetSession}. Name={rep.TargetName}. Version={rep.TargetVersion}");
 
             var extras = new Dictionary<string, object> { { "TargetSession", rep.TargetSession } };
             _logger = new TypedLogger<DataTransmitter>(rep.Subsystem, extras);
 
             Transmitter = new DataTransmitter(rep); //what is loaded into the Target process and used by the Proxy class
 
-            _cmdSenderTopics = rep.GetSenderCommandTopics().ToList();
-            _cmdSenderTopics.Add(MessagingUtils.GetCommandToWorkerTopic(rep.TargetSession));
-            _logger.Debug($"Sender command topics: [{string.Join(",", _cmdSenderTopics)}]");
-
-            _logger.Debug("Getting & sending the Target's info");
-            Transmitter.SendTargetInfo(rep.GetTargetInfo());
-
-            //debug
-            _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
-            if (_writeProbesToFile)
-            {
-                var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
-                _logger.Debug($"Probes writing to [{probeLogfile}]");
-                if (File.Exists(probeLogfile))
-                    File.Delete(probeLogfile);
-                _probeLogger = new FileSink(probeLogfile);
-            }
-
             _logger.Debug("Initialized.");
             _logger.Info("Wait for command to continue executing...");
-            Log.Flush();
 
+            //CommonUtils.WriteTempLog($"Transmitter WaitOne");
             _initEvent.WaitOne();
         }
 
@@ -107,14 +91,14 @@ namespace Drill4Net.Agent.Transmitter
             Repository = rep ?? throw new ArgumentNullException(nameof(rep));
 
             //TODO: find out - on IHS adoption it falls
-            //AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-            //AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            //AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
-            //AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
-            //_resolver = new AssemblyResolver();
+            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
+            AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
 
-            EmergencyLogDir = FileUtils.EmergencyDir;
-            _probes = new ConcurrentDictionary<string, bool>();
+            _resolver = new AssemblyResolver();
+
+            EmergencyLogDir = LoggerHelper.GetDefaultLogDir();
 
             //TODO: factory
             TargetSender = new TargetInfoKafkaSender(rep);
@@ -126,7 +110,26 @@ namespace Drill4Net.Agent.Transmitter
 
             StartCommandReceiver(rep);
 
-            _logger.Debug($"{nameof(DataTransmitter)} singleton is created");
+            _cmdSenderTopics = rep.GetSenderCommandTopics().ToList();
+            _cmdSenderTopics.Add(MessagingUtils.GetCommandToWorkerTopic(rep.TargetSession));
+            _logger.Debug($"Sender command topics: [{string.Join(",", _cmdSenderTopics)}]");
+
+            _logger.Debug("Getting & sending the Target's info");
+            SendTargetInfo(rep.GetTargetInfo());
+            _logger.Debug("Target's info is sent");
+
+            //debug
+            _writeProbesToFile = rep.Options.Debug is { Disabled: false, WriteProbes: true };
+            if (_writeProbesToFile)
+            {
+                var probeLogfile = Path.Combine(LoggerHelper.GetDefaultLogDir(), "probes.log");
+                _logger.Debug($"Probes writing to [{probeLogfile}]");
+                if (File.Exists(probeLogfile))
+                    File.Delete(probeLogfile);
+                _probeLogger = new FileSink(probeLogfile);
+            }
+
+            _logger.Trace($"{nameof(DataTransmitter)} singleton is created");
         }
 
         ~DataTransmitter()
@@ -137,26 +140,25 @@ namespace Drill4Net.Agent.Transmitter
         /************************************************************************************/
 
         #region Resolving
-        //TODO: find out - on IHS adoption it falls
-        //private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
-        //{
-        //    CommonUtils.LogFirstChanceException(EmergencyLogDir, _logPrefix, e.Exception);
-        //}
+        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        {
+            CommonUtils.LogFirstChanceException(EmergencyLogDir, "FirstChanceException", e.Exception);
+        }
 
-        //private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        //{
-        //    return CommonUtils.TryResolveAssembly(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
-        //}
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return CommonUtils.TryResolveAssembly(EmergencyLogDir, "AssemblyResolve", args, _resolver, null); //TODO: use BanderLog!
+        }
 
-        //private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
-        //{
-        //    return CommonUtils.TryResolveResource(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
-        //}
+        private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
+        {
+            return CommonUtils.TryResolveResource(EmergencyLogDir, "ResourceResolve", args, _resolver, null); //TODO: use BanderLog!
+        }
 
-        //private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
-        //{
-        //    return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
-        //}
+        private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
+        {
+            return CommonUtils.TryResolveType(EmergencyLogDir, "TypeResolve", args, null); //TODO: use BanderLog!
+        }
         #endregion
 
         internal void SendTargetInfo(byte[] info)
@@ -168,9 +170,10 @@ namespace Drill4Net.Agent.Transmitter
         #region CommandReceiver
         private void StartCommandReceiver(TransmitterRepository rep)
         {
-            _logger.Trace($"Read receiver config: [{rep.ConfigPath}]");
+            _logger.Trace($"Read receiver config: [{rep.MessagerConfigPath}]");
 
-            var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(), rep.ConfigPath);
+            var targRep = new TargetedReceiverRepository(rep.Subsystem, rep.TargetSession.ToString(),
+                rep.TargetName, rep.TargetVersion, rep.MessagerConfigPath);
             _logger.Trace("Command receiver created");
 
             var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
@@ -205,9 +208,6 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="data">The cross-point data.</param>
         public static void Transmit(string data)
         {
-            //unfortunately, caching is wrong techique here - maybe later...
-            //if (!_probes.TryAdd(data, true))
-                //return;
             TransmitWithContext(data, null);
         }
 
@@ -218,9 +218,11 @@ namespace Drill4Net.Agent.Transmitter
         /// <param name="ctx">context of the probe</param>
         public static void TransmitWithContext(string data, string ctx)
         {
-            //unfortunately, caching is wrong techique here
-            //if (!_probes.TryAdd(data, true))
-               //return;
+            if (Transmitter == null)
+            {
+                _logger?.Error($"Transmitter is empty. Context is [{ctx}], data: [{data}]");
+                return;
+            }
             Transmitter.SendProbe(data, ctx);
         }
 
@@ -230,20 +232,42 @@ namespace Drill4Net.Agent.Transmitter
         /// </summary>
         /// <param name="data">The cross-point data.</param>
         /// <param name="ctx">The context of data (user, process, worker, etc)</param>
+        /// <param name="sysCtx">System execution context</param>
         internal int SendProbe(string data, string ctx)
         {
             if (string.IsNullOrWhiteSpace(ctx))
                 ctx = Repository.GetContextId();
 
+            //no need the same probe in the same context
+            var bagExists = _probesByCtx.TryGetValue(ctx, out var probes);
+            if (bagExists) //for ctx some probes are exist
+            {
+                if (!probes.TryAdd(data, true)) //the probe already exists
+                    return 0;
+            }
+            else
+            {
+                probes = new ConcurrentDictionary<string, bool>();
+                probes.TryAdd(data, true);
+                _probesByCtx.TryAdd(ctx, probes);
+            }
+
+            //debug
             if (_writeProbesToFile)
                 _probeLogger.Log(LogLevel.Trace, $"{ctx} -> [{data}]");
 
+            //send the probe
             return ProbeSender.SendProbe(data, ctx);
         }
         #endregion
         #region Command
         public static void DoCommand(int command, string data)
         {
+            if (Transmitter == null)
+            {
+                _logger?.Error($"Transmitter is empty. Command is [{command}], data: [{data}]");
+                return;
+            }
             Transmitter.ExecCommand(command, data);
         }
 

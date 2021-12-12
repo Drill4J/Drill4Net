@@ -1,18 +1,27 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using RestSharp;
 using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Standard;
 using Drill4Net.Core.Repository;
+using Drill4Net.Admin.Requester;
 
 namespace Drill4Net.Agent.TestRunner.Core
 {
+    /// <summary>
+    /// Repository for TestRunner
+    /// </summary>
     public class TestRunnerRepository : ConfiguredRepository<TestRunnerOptions, BaseOptionsHelper<TestRunnerOptions>>
     {
-        private readonly RestClient _client;
+        //TODO: more abstract type (but Agent shouldn't connect immedeately after its creating)
+        private readonly StandardAgentRepository _agentRep;
+
+        private readonly AdminRequester _requester;
         private readonly Logger _logger;
 
         /********************************************************************************/
@@ -20,42 +29,153 @@ namespace Drill4Net.Agent.TestRunner.Core
         public TestRunnerRepository(): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, string.Empty)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
-
-            var url = GetUrl();
-            _client = new RestClient(url);
-            //client.Authenticator = new HttpBasicAuthenticator("username", "password");
+            if (string.IsNullOrWhiteSpace(Options.Directory))
+                throw new Exception("Directory for tests is empty in config");
+            _agentRep = CreateAgentRepository();
+            _requester = new(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, _agentRep.Options.Admin.Url,
+                _agentRep.TargetName, _agentRep.TargetVersion);
         }
 
         /********************************************************************************/
 
-        public async Task<(RunningType runType, List<string> tests)> GetRunToTests()
+        internal StandardAgentRepository CreateAgentRepository()
         {
-            var tests = new List<string>();
-            var runType = GetRunningType();
-            _logger.Debug($"Running type: {runType}");
+            //we need to give the concrete path to the agent config from target's directory
+            var optsHelper = new BaseOptionsHelper<AgentOptions>();
+            var agentCfgPath = optsHelper.GetActualConfigPath(Options.Directory);
 
-            if (runType == RunningType.Certain)
-            {
-                var run = await
-                    GetTestToRun()
-                    //GetFakeTestToRun()  // TEST !!!!!!!!!
-                    .ConfigureAwait(false);
-                foreach (var type in run.ByType.Keys)
-                {
-                    var testByType = run.ByType[type];
-                    foreach (var t2r in testByType)
-                    {
-                        //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
-                        var name = t2r.Name;
-                        var meta = t2r.Metadata;
-                        tests.Add(name);
-                    }
-                }
-            }
-            return (runType, tests);
+            var helper = new TreeRepositoryHelper(Subsystem);
+            var treePath = helper.CalculateTreeFilePath(Options.Directory);
+            return new StandardAgentRepository(agentCfgPath, treePath);
         }
 
-        #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        internal StandardAgent CreateAgent()
+        {
+            StandardAgentInitParameters.SkipCreatingSingleton = true;
+            return new StandardAgent(_agentRep);
+        }
+
+        internal async Task<RunInfo> GetRunInfo()
+        {
+            var isFake = Options.Debug is { Disabled: false, IsFake: true };
+            _logger.Info($"Fake mode: {isFake}");
+
+            var runningType = await GetRunningType(isFake).ConfigureAwait(false);
+            _logger.Info($"Running type: {runningType}");
+
+            var res = new RunInfo { RunType = runningType };
+
+            #region Certain
+            if (runningType == RunningType.Certain)
+            {
+                // get tests to run from Admin
+                var run = await GetTestToRun(isFake)
+                    .ConfigureAwait(false);
+                if (run.ByType == null) //it is error here
+                {
+                    _logger.Error("No tests");
+                    return res;
+                }
+
+                if (!run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
+                {
+                    res.RunType = RunningType.Nothing;
+                    return res;
+                }
+
+                // adapt tests to run in CLI
+                var hash = new HashSet<string>();
+                foreach (var t2r in run.ByType[AgentConstants.TEST_AUTO])
+                {
+                    //Name must be equal to QualifiedName... or to get exactly the QualifiedName from metadata
+                    var name = t2r.Name; //it is DisplayName, not QualifiedName
+                    var metadata = t2r.Details.metadata; //TODO: use info about executing file!
+                    string qName = null;
+                    string asmName = null;
+                    bool mustSeq = true;
+                    if (metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
+                    {
+                        var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
+                        if (ctx != null)
+                        {
+                            asmName = Path.GetFileName(ctx.AssemblyPath);
+                            qName = ctx.QualifiedName;
+                            if (ctx.Engine != null)
+                                mustSeq = ctx.Engine.MustSequential;
+                        }
+                    }
+
+                    //test qualified name
+                    if (string.IsNullOrWhiteSpace(qName))
+                        qName = TestContextHelper.GetQualifiedName(name);
+
+                    // assembly path
+                    if (string.IsNullOrWhiteSpace(asmName))
+                    {
+                        _logger.Error($"Unknowm test assembly for test {qName}");
+                        continue;
+                    }
+
+                    //dublicates aren't needed
+                    if (hash.Contains(qName))
+                        continue;
+                    hash.Add(qName);
+
+                    // insert test info
+                    RunAssemblyInfo info;
+                    if (res.AssemblyInfos.ContainsKey(asmName))
+                    {
+                        info = res.AssemblyInfos[asmName];
+                    }
+                    else
+                    {
+                        info = new()
+                        {
+                            AssemblyName = asmName,
+                            MustSequential = mustSeq,
+                            Tests = new(),
+                        };
+                        res.AssemblyInfos.Add(asmName, info);
+                    }
+                    info.Tests.Add(qName);
+                }
+                return res;
+            }
+            #endregion
+            #region All
+            if (res.RunType == RunningType.All)
+            {
+                var allRun = new RunAssemblyInfo
+                {
+                    AssemblyName = Options.DefaultAssemblyName,
+                    MustSequential = Options.DefaultParallelRestrict,
+                };
+                res.AssemblyInfos.Add(allRun.AssemblyName, allRun);
+            }
+            #endregion
+            return res;
+        }
+
+        internal async Task<TestToRunResponse> GetTestToRun(bool isFake)
+        {
+            TestToRunResponse run = null;
+            for (var i = 0; i < 5; i++) //guanito, but Drill REST has strange behaviour
+            {
+                run = await(!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
+                    .ConfigureAwait(false);
+                if (run.ByType != null)
+                    break;
+                await Task.Delay(1000).ConfigureAwait(false);
+            }
+            return run;
+        }
+
+        protected TestCaseContext GetTestCaseContext(string str)
+        {
+            return JsonConvert.DeserializeObject<TestCaseContext>(str);
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         internal async virtual Task<TestToRunResponse> GetFakeTestToRun()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
@@ -91,80 +211,49 @@ namespace Drill4Net.Agent.TestRunner.Core
             return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
         }
 
-        internal async virtual Task<TestToRunResponse> GetTestToRun()
+        internal async virtual Task<RunningType> GetRunningType(bool isFake)
         {
-            //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
-            var request = new RestRequest(GetTest2RunResource(), DataFormat.Json);
-            //var a = client.Get(request);
-            var run = await _client.GetAsync<TestToRunResponse>(request)
-                 .ConfigureAwait(false);
-            return run;
-        }
-
-        internal virtual RunningType GetRunningType()
-        {
-            //TODO: add error handling
-            List<BuildSummary> summary = GetBuildSummaries();
-            var count = summary == null ? 0 : summary.Count;
-            _logger.Debug($"Builds: {count}");
-            //
-            var runType = RunningType.All;
-            TestToRunSummaryInfo test2Run = null;
-            if (count > 0) //some builds exists
+            RunningType runningType;
+            if (isFake)
             {
-                summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
-                var actual = summary[0];
-                test2Run = actual?.Summary?.TestsToRun;
-                if (test2Run == null)
-                    return RunningType.All;
-
-                var testCnt = actual.Summary.Tests.Count;
-                var test2runCnt = test2Run.Count;
-                _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");
+                runningType = RunningType.Certain;
+            }
+            else
+            {
+                //TODO: add error handling
+                //List<BuildSummary> summary = await _requester.GetBuildSummaries();
+                await _agentRep.RetrieveTargetBuilds().ConfigureAwait(false);
+                var summary = _agentRep.Builds;
+                var count = (summary?.Count) ?? 0;
+                _logger.Debug($"Builds: {count}");
                 //
-                if (testCnt > 0)
+                runningType = RunningType.All;
+                TestToRunSummaryInfo test2Run = null;
+                if (count > 0) //some builds exists
                 {
-                    //tests exists but no test to run (no difference between builds)
-                    runType = test2runCnt == 0 ?
-                        RunningType.Nothing :
-                        RunningType.Certain;
+                    summary = summary.OrderByDescending(a => a.DetectedAt).ToList();
+                    var actual = summary[0];
+                    test2Run = actual?.Summary?.TestsToRun;
+                    if (test2Run == null)
+                        return RunningType.All;
+                    if (test2Run.Count > 0)
+                        return RunningType.Certain;
+
+                    //hmm...
+                    var testCnt = actual.Summary.Tests.Count;
+                    var test2runCnt = test2Run.Count;
+                    _logger.Debug($"Total tests: {testCnt}, tests to run: {test2runCnt}");
+                    //
+                    if (testCnt > 0)
+                    {
+                        //tests exists but no test to run (no difference between builds)
+                        runningType = test2runCnt == 0 ?
+                            RunningType.Nothing :
+                            RunningType.Certain;
+                    }
                 }
             }
-            _logger.Debug($"Running type: {runType}");
-            return runType;
-        }
-
-        internal virtual List<BuildSummary> GetBuildSummaries()
-        {
-            //http://localhost:8090/api/agents/IHS-bdd/plugins/test2code/builds/summary
-
-            var request = new RestRequest(GetSummaryResource(), Method.GET, DataFormat.Json);
-            var a = _client.Get(request);
-            if (a.StatusCode != System.Net.HttpStatusCode.OK)
-                return null;
-            var summary = JsonConvert.DeserializeObject<List<BuildSummary>>(a.Content);
-            //var summary = await _client.GetAsync<List<BuildSummary>>(request) //it is failed on empty member (Summary)
-            //    .ConfigureAwait(false);
-            return summary;
-        }
-
-        public string GetUrl()
-        {
-            //{url}/api/agents/{Id}/plugins/test2code/builds/summary
-            var url = Options.Url;
-            if (!url.StartsWith("http"))
-                url = "http://" + url; //TODO: check for https
-            return url;
-        }
-
-        public string GetSummaryResource()
-        {
-            return $"api/agents/{Options.Target}/plugins/test2code/builds/summary";
-        }
-
-        public string GetTest2RunResource()
-        {
-            return $"api/agents/{Options.Target}/plugins/test2code/data/tests-to-run";
+            return runningType;
         }
     }
 }

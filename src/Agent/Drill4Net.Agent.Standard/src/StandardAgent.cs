@@ -4,15 +4,15 @@ using System.Web;
 using System.Linq;
 using System.Threading;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog.Sinks.File;
-using System.Threading.Tasks;
+using Drill4Net.Core.Repository;
 
 /*** INFO
  automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -22,17 +22,8 @@ using System.Threading.Tasks;
  patches'(commits) count starts with 0 again after new tag pushing
  For file version format exactly is digit
 ***/
-[assembly: AssemblyFileVersion(
-    ThisAssembly.Git.SemVer.Major + "." +
-    ThisAssembly.Git.SemVer.Minor + "." +
-    ThisAssembly.Git.SemVer.Patch)]
-
-[assembly: AssemblyInformationalVersion(
-  ThisAssembly.Git.SemVer.Major + "." +
-  ThisAssembly.Git.SemVer.Minor + "." +
-  ThisAssembly.Git.SemVer.Patch + "-" +
-  ThisAssembly.Git.Branch + "+" +
-  ThisAssembly.Git.Commit)]
+[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
 
 namespace Drill4Net.Agent.Standard
 {
@@ -40,8 +31,10 @@ namespace Drill4Net.Agent.Standard
     /// Standard Agent (Profiler) for the Drill Admin side
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
-    public sealed class StandardAgent : AbstractAgent
+    public sealed class StandardAgent : AbstractAgent<StandardAgentRepository>
     {
+        //TODO: move some props & fields to the abstract parent type
+
         /// <summary>
         /// Agent as singleton
         /// </summary>
@@ -52,95 +45,74 @@ namespace Drill4Net.Agent.Standard
         //in fact, it is the Main sender. Others are additional ones - as plugins
         private IAgentCoveragerSender CoverageSender => _comm?.Sender;
 
-        /// <summary>
-        /// Repository for Agent
-        /// </summary>
-        public StandardAgentRepository Repository { get; }
+        //each agent can serve only one target, so there is only one autotest session
+        private StartSessionPayload _curAutoSession;
+        private bool _isAutotests;
+        private bool _autotestsSequentialRegistering;
 
-        /// <summary>
-        /// Directory for the emergency logs out of scope of the common log system
-        /// </summary>
-        public string EmergencyLogDir { get; }
-
-        private readonly ICommunicator _comm;
-        private static readonly ManualResetEvent _initEvent = new(false);
         private static List<AstEntity> _entities;
         private static InitActiveScope _scope;
-        private static readonly Logger _logger;
+        private static bool _isFastInitializing;
+        private static readonly object _entitiesLocker;
+        private readonly ManualResetEvent _initEvent;
+
+        private static Logger _logger;
         private static FileSink _probeLogger;
         private readonly bool _writeProbesToFile;
-        private readonly AssemblyResolver _resolver;
-        private static readonly object _entitiesLocker = new();
-        private static readonly string _logPrefix;
+        private static readonly Dictionary<string, object> _logExtras;
 
         /*****************************************************************************/
 
         static StandardAgent() //it's needed for invocation from Target
         {
-            var extras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
-            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, extras);
-            _logPrefix = nameof(StandardAgent);
+            _entitiesLocker = new();
 
-            if (StandardAgentCCtorParameters.SkipCctor)
+            _logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
+            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, _logExtras);
+
+            if (StandardAgentInitParameters.SkipCreatingSingleton)
                 return;
 
             Agent = new StandardAgent();
             if (Agent == null)
             {
                 _logger.Fatal("Creation is failed");
-                throw new Exception($"{_logPrefix}: creation is failed");
+                throw new Exception($"{nameof(StandardAgent)}: creation is failed");
             }
-            //recreate the logger with external context
-            _logger = new TypedLogger<StandardAgent>($"{Agent.Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", extras);
         }
 
-        private StandardAgent(): this(null, null) { }
+        /// <summary>
+        /// Create the Standard Agent with default Repository
+        /// </summary>
+        /// <param name="rep"></param>
+        public StandardAgent(): this(null) { }
 
-        private StandardAgent(AgentOptions opts, InjectedSolution tree)
+        /// <summary>
+        /// Create the Standard Agent with specified Repository
+        /// </summary>
+        /// <param name="rep"></param>
+        public StandardAgent(StandardAgentRepository rep)
         {
+            _initEvent = new(false);
+
             try
             {
-                AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-                AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
-                AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
-                _resolver = new AssemblyResolver();
+                _logger.Debug($"{nameof(StandardAgent)} is initializing...");
 
-                EmergencyLogDir = FileUtils.EmergencyDir;
-                AbstractRepository.PrepareEmergencyLogger(FileUtils.LOG_FOLDER_EMERGENCY);
+                Repository = rep ?? new StandardAgentRepository();
 
-                _logger.Debug($"{_logPrefix} is initializing...");
+                //recreate the logger with external context
+                _logger = new TypedLogger<StandardAgent>($"{Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", _logExtras);
 
-                #region TEST assembly resolving
-                //var ver = "Microsoft.Data.SqlClient.resources, Version=2.0.20168.4, Culture=en-US, PublicKeyToken=23ec7fc2d6eaa4a5";
-                //var ver = "System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51";
-
-                //var ver = "System.Private.Xml.resources, Version=4.0.2.0, Culture=en-US, PublicKeyToken=cc7b13ffcd2ddd51";
-                //var reqPath = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.16\System.Private.Xml.dll";
-
-                //var ver = "Drill4Net.Target.Common.VB, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null";
-                //var reqPath = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net50.App\net5.0\";
-                //var asm = _resolver.Resolve(ver, reqPath);
-
-                //var asm = _resolver.ResolveResource(@"d:\Projects\IHS-bdd.Injected\de-DE\Microsoft.Data.Tools.Schema.Sql.resources.dll", "Microsoft.Data.Tools.Schema.Sql.Deployment.DeploymentResources.en-US.resources");
-                #endregion
-
-                Repository = opts == null || tree == null ? new StandardAgentRepository() : new StandardAgentRepository(opts, tree);
                 _comm = Repository.Communicator;
 
-                //debug
-                _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
-                if (_writeProbesToFile)
-                {
-                    var probeLogfile = Path.Combine(FileUtils.GetCommonLogDirectory(FileUtils.EntryDir), "probes.log");
-                    _logger.Debug($"Probes writing to [{probeLogfile}]");
-                    if (File.Exists(probeLogfile))
-                        File.Delete(probeLogfile);
-                    _probeLogger = new FileSink(probeLogfile);
-                }
+                //it needed to be done here  before connect to Admin by Connector with websocket
+                _isFastInitializing = GetIsFastInitilizing();
+                _logger.Debug($"Initializing is fast: {_isFastInitializing}");
 
                 //events from admin side
                 Receiver.InitScopeData += OnInitScopeData;
+                Receiver.PluginLoaded += PluginLoaded;
                 Receiver.TogglePlugin += OnTogglePlugin;
                 Receiver.RequestClassesData += OnRequestClassesData;
                 Receiver.StartSession += OnStartSession;
@@ -151,18 +123,27 @@ namespace Drill4Net.Agent.Standard
 
                 _comm.Connect(); //connect to Drill Admin side
 
+                //debug
+                _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
+                if (_writeProbesToFile)
+                {
+                    var probeLogfile = Path.Combine(LoggerHelper.GetDefaultLogDir(), "probes.log");
+                    _logger.Debug($"Probes writing to [{probeLogfile}]");
+                    if (File.Exists(probeLogfile))
+                        File.Delete(probeLogfile);
+                    _probeLogger = new FileSink(probeLogfile);
+                }
+
+                Initialized += Agent_Initialized; //Agent needs to control itself
+
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                _logger.Debug($"{_logPrefix} is initialized.");
+                _logger.Debug($"{nameof(StandardAgent)} is primarly initialized.");
             }
             catch (Exception ex)
             {
-                _logger.Fatal($"{_logPrefix}: error of initializing", ex);
-            }
-            finally
-            {
-                ReleaseProbeProcessing();
+                _logger.Fatal($"{nameof(StandardAgent)}: error of initializing", ex);
             }
         }
 
@@ -175,32 +156,42 @@ namespace Drill4Net.Agent.Standard
         /// <param name="opts"></param>
         /// <param name="tree"></param>
         /// <param name="initHandler"></param>
-        public static void Init(AgentOptions opts, InjectedSolution tree, AgentInitializedHandler initHandler)
+        public static void Init(AgentOptions opts, InjectedSolution tree)
         {
-            Agent = new StandardAgent(opts, tree);
+            var rep = new StandardAgentRepository(opts, tree);
+            Agent = new StandardAgent(rep);
             if (Agent == null)
-                throw new Exception($"{_logPrefix}: creation is failed");
-            Agent.Initialized += initHandler;
+                throw new Exception($"{nameof(StandardAgent)}: creation is failed");
         }
 
-        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        private bool GetIsFastInitilizing()
         {
-            CommonUtils.LogFirstChanceException(EmergencyLogDir, _logPrefix, e.Exception);
+            var builds = Repository.Builds;
+            if (builds == null || builds.Count == 0)
+                return false;
+            var exactly = builds.Find(a => HttpUtility.UrlDecode(a.BuildVersion) == Repository.TargetVersion);
+            if (exactly?.Summary == null) //such version already exists
+                return false;
+            return true;
         }
 
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        //TODO: parameter with plugin name and checkikn if this plugin... test2code (guanito)
+        private void PluginLoaded()
         {
-            return CommonUtils.TryResolveAssembly(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
+            if (_isFastInitializing)
+                Agent_Initialized();
         }
 
-        private Assembly CurrentDomain_ResourceResolve(object sender, ResolveEventArgs args)
+        private void Agent_Initialized()
         {
-            return CommonUtils.TryResolveResource(EmergencyLogDir, _logPrefix, args, _resolver, null); //TODO: use BanderLog!
-        }
+            if (IsInitialized)
+                return;
+            //
+            IsInitialized = true;
+            RaiseInitilizedEvent(); //external delegates
+            ReleaseProbeProcessing();
 
-        private Assembly CurrentDomain_TypeResolve(object sender, ResolveEventArgs args)
-        {
-            return CommonUtils.TryResolveType(EmergencyLogDir, _logPrefix, args, null); //TODO: use BanderLog!
+            _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }
         #endregion
         #region Events from Admin side
@@ -211,7 +202,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                Repository.AllSessionsCancelled(); //just in case
+                Repository.RegisterAllSessionsCancelled(); //just in case
                 _scope = scope;
                 CoverageSender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
             }
@@ -264,7 +255,6 @@ namespace Drill4Net.Agent.Standard
                 CoverageSender.SendInitializedMessage();
 
                 //4. Send message "Can start to execute the probes" to the Target from Worker
-                _logger.Info("Agent is fully initialized");
                 RaiseInitilizedEvent();
             }
             catch (Exception ex)
@@ -306,7 +296,7 @@ namespace Drill4Net.Agent.Standard
 
         private void RegisterFinishedSession(string uid)
         {
-            Repository.SessionStopped(uid);
+            Repository.RegisterSessionStopped(uid);
             CoverageSender.SendSessionFinishedMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
         }
 
@@ -314,7 +304,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                var uids = Repository.AllSessionsStopped();
+                var uids = Repository.RegisterAllSessionsStopped();
                 CoverageSender.SendAllSessionFinishedMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -328,7 +318,7 @@ namespace Drill4Net.Agent.Standard
             try
             {
                 var uid = info.Payload.SessionId;
-                Repository.SessionCancelled(info);
+                Repository.RegisterSessionCancelled(info);
                 CoverageSender.SendSessionCancelledMessage(uid, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -341,7 +331,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                var uids = Repository.AllSessionsCancelled();
+                var uids = Repository.RegisterAllSessionsCancelled();
                 CoverageSender.SendAllSessionCancelledMessage(uids, CommonUtils.GetCurrentUnixTimeMs());
             }
             catch (Exception ex)
@@ -382,7 +372,10 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            var ctx = Repository?.GetContextId(); //it is only for local Agent injected directly in Target's sys process
+            //it is only for local Agent injected directly in Target's sys process
+            if (StandardAgentInitParameters.LocatedInWorker)
+                return;
+            var ctx = Repository?.GetContextId();
             RegisterWithContext(data, ctx);
         }
 
@@ -396,9 +389,16 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
-
                 #region Checks
+                //in Worker we can work only with one autotests' Target/suite/session (I still think so)
+                //yes, some needless probes of tests' infrastructure we can to lose
+                if (_isAutotests)
+                {
+                    if(_curAutoSession == null)
+                        return;
+                    if (ctx?.StartsWith(AgentConstants.CONTEXT_SYSTEM_PREFIX) == true)
+                        return;
+                }
                 if (Repository?.IsAnySession != true)
                     return;
                 if (string.IsNullOrWhiteSpace(data))
@@ -412,10 +412,12 @@ namespace Drill4Net.Agent.Standard
                 var probeUid = ar[0];
                 //var asmName = ar[1];
                 //var funcName = ar[2];
-                //var probe = ar[3];         
+                //var probe = ar[3];
+
+                _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
 
                 if (_writeProbesToFile)
-                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"{ctx} -> {probeUid}");
+                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"[{ctx}] -> {probeUid}");
 
                 var res = Repository.RegisterCoverage(probeUid, ctx);
                 if (!res) //for debug
@@ -429,10 +431,6 @@ namespace Drill4Net.Agent.Standard
         #endregion
         #endregion
         #region Commands: autotests, etc
-
-        //each agent can serve only one target, so there is only one autotest session
-        private StartSessionPayload _curAutoSession;
-
         /// <summary>
         /// Do some command
         /// </summary>
@@ -461,8 +459,8 @@ namespace Drill4Net.Agent.Standard
             TestCaseContext testCaseCtx;
             switch (type)
             {
-                case AgentCommandType.ASSEMBLY_TESTS_START: StartSession(data); break;
-                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_START: StartAutoSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopAutoSession(); break;
 
                 #region BDD features, test groups...
                 //now, in fact, these are group of tests for one "test method" with many different cases
@@ -491,11 +489,13 @@ namespace Drill4Net.Agent.Standard
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
         /// <param name="metadata">Some info about session. It can be empty</param>
-        internal void StartSession(string metadata)
+        internal void StartAutoSession(string metadata)
         {
-            var session = GetSessionName(metadata);
+            var session = GetAutoSessionName(metadata);
             _logger.Info($"Admin side session is starting: [{session}]");
 
+            _isAutotests = true;
+            //an agent can serve only one target, so there is only one autotest session
             _curAutoSession = new StartSessionPayload
             {
                 SessionId = session,
@@ -513,23 +513,32 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Automatic command from Agent to Admin side to stop the session (for autotests)
         /// </summary>
-        /// <param name="metadata"></param>
-        internal void StopSession(string metadata)
+        internal void StopAutoSession()
         {
-            var session = GetSessionName(metadata);
+            var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
 
             SendRemainedCoverage();
-            RegisterFinishedSession(session); //name as uid yet
-            CoverageSender.SendStopSessionCommand(session); //actually stopping the session
             _curAutoSession = null;
 
+            //DON'T REMOVE THESE COMMENTED LINES: the scope will be removed as entity from Drill Admin... soon...
+
+            //actually force stopping the session from Connector DLL API
+            //CoverageSender.SendStopSessionCommand(session);
+
+            //TODO: check if it received in AgentReceiver (more proper do it there)
+            //send message to admin side about finishing
+            //RegisterFinishedSession(session); //uncomment this if without SendStopSessionCommand (and comment the next line)
+            //CoverageSender.SendSessionFinishedMessage(session, CommonUtils.GetCurrentUnixTimeMs()); //name as uid (still)
+
+            //we need to finish test scope + force finish the session
+            CoverageSender.SendFinishScopeAction();
             ReleaseProbeProcessing(); //excess probes aren't need
 
             _logger.Info($"Admin side session is stopped: [{session}]");
         }
 
-        internal string GetSessionName(string metadata)
+        internal string GetAutoSessionName(string metadata)
         {
             //in fact, this metadata is just test run's name, and actually may be empty
             if (string.IsNullOrWhiteSpace(metadata))
@@ -566,12 +575,15 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
+            //in one test assembly can be different Engines are located. If such tests have started (xUnit 2.x) -
+            //now is only sequential registering (with blocking probes between tests' finish/start)
+            if (testCtx.Engine?.MustSequential == true)
+            {
+                _logger.Info("Tests' registering is sequential now");
+                _autotestsSequentialRegistering = true;
+            }
+
             BlockProbeProcessing();
-
-            //each agent can serve only one target, so there is only one autotest session
-            if (_curAutoSession != null)
-                Repository.RecreateSessionData(_curAutoSession, testCtx.CaseName); //because we need recreate the Coverager at all in the current session - guanito
-
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
         }
@@ -585,15 +597,18 @@ namespace Drill4Net.Agent.Standard
 
         private void SendRemainedCoverage()
         {
-            Task.Delay(500); // this is inefficient: TODO control by probe's context (=test) by dict
             if (_curAutoSession != null)
+            {
+                Task.Delay(1500); // this is inefficient: TODO control by probe's context (=test) by dict
                 Repository.SendCoverage(_curAutoSession.SessionId);
+            }
         }
         #endregion
 
         private void BlockProbeProcessing()
         {
-            _initEvent.Reset();
+            if(_autotestsSequentialRegistering)
+                _initEvent.Reset();
         }
 
         private void ReleaseProbeProcessing()

@@ -10,27 +10,34 @@ namespace Drill4Net.Agent.Messaging.Transport
 
         public string TargetName { get; private set; }
 
+        public string TargetVersion { get; private set; }
+
         public MessagerOptions MessagerOptions { get; private set; }
 
         /***************************************************************************************/
 
-        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, string cfgPath) : base(subsystem, cfgPath)
+        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, string targetVersion, string cfgPath):
+            base(subsystem, cfgPath)
         {
-            Init(targetSession, targetName);
+            Init(targetSession, targetName, targetVersion);
         }
 
-        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, MessagerOptions opts) : base(subsystem, opts)
+        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, string targetVersion, MessagerOptions opts):
+            base(subsystem, opts)
         {
-            Init(targetSession, targetName);
+            Init(targetSession, targetName, targetVersion);
         }
 
         /***************************************************************************************/
 
-        private void Init(Guid targetSession, string targetName)
+        private void Init(Guid targetSession, string targetName, string targetVersion)
         {
-            TargetName = targetName ?? throw new ArgumentNullException(nameof(targetName));
             TargetSession = targetSession;
+            TargetName = targetName ?? throw new ArgumentNullException(nameof(targetName));
+            TargetVersion = targetVersion ?? throw new ArgumentNullException(nameof(targetVersion));
+
             MessagerOptions = Options; //guano
+
             if (Options.Sender == null)
                 Options.Sender = new();
             if (Options.Sender.Topics == null)

@@ -10,6 +10,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Transmitter.SpecFlow;
 
 namespace Drill4Net.Injection.SpecFlow
 {
@@ -52,9 +53,10 @@ namespace Drill4Net.Injection.SpecFlow
             HelperReadDir = loaderCfg.Path;
 
             // these are real constants, aren't the cfg params
-            HelperClass = "SpecFlowTestContexter";
-            HelperNs = "Drill4Net.Agent.Transmitter.SpecFlow";
-            HelperAsmName = "Drill4Net.Agent.Transmitter.SpecFlow.dll";
+            var typeHelper = typeof(SpecFlowGeneratorContexter);
+            HelperClass = typeHelper.Name;
+            HelperNs = typeHelper.Namespace;
+            HelperAsmName = Path.GetFileName(typeHelper.Assembly.Location); // "Drill4Net.Agent.Transmitter.SpecFlow.dll";
 
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
@@ -83,19 +85,18 @@ namespace Drill4Net.Injection.SpecFlow
             _proxyGenerator = runCtx.ProxyGenerator;
 
             //inner folders: already filtered by base process needed targets' directories
-            var dirs = runCtx.MonikerDirectories.ToList(); //copy
-            if (dirs.Count == 0)
-                dirs.Add(runCtx.Options.Destination.Directory); //we work with already injected assemblies
+            //we work with already injected assemblies
+            var dirs = new List<string>() { runCtx.Options.Destination.Directory };
             foreach (var dir in dirs)
             {
-                runCtx.CurrentSourceDirectory = dir;
+                runCtx.ProcessingDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
 
             //possible files in the root directly
             if (!runCtx.Tree.GetAllAssemblies().Any()) //get only the needed assemblies
             {
-                runCtx.CurrentSourceDirectory = runCtx.RootDirectory;
+                runCtx.ProcessingDirectory = runCtx.RootDirectory;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
         }
@@ -107,7 +108,7 @@ namespace Drill4Net.Injection.SpecFlow
         /// <returns>Is the directory processed?</returns>
         internal async Task<bool> ProcessDirectory(RunContext runCtx)
         {
-            var directory = runCtx.CurrentSourceDirectory;
+            var directory = runCtx.ProcessingDirectory;
             if (!InjectorCoreUtils.IsNeedProcessDirectory(Options.Filter, directory, directory == runCtx.Options.Destination.Directory))
                 return false;
             _logger.Info($"Processing dir [{directory}]");
@@ -116,25 +117,25 @@ namespace Drill4Net.Injection.SpecFlow
             var files = GetAssemblies(directory);
             foreach (var file in files)
             {
-                runCtx.CurrentSourceFile = file;
-                await ProcessFile(runCtx).ConfigureAwait(false);
+                runCtx.ProcessingFile = file;
+                ProcessFile(runCtx);
             }
 
             //subdirectories
             var dirs = Directory.GetDirectories(directory, "*");
             foreach (var dir in dirs)
             {
-                runCtx.CurrentSourceDirectory = dir;
+                runCtx.ProcessingDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
             return true;
         }
 
-        private async Task<bool> ProcessFile(RunContext runCtx)
+        private bool ProcessFile(RunContext runCtx)
         {
             #region Checks
             //filter
-            var filePath = runCtx.CurrentSourceFile;
+            var filePath = runCtx.ProcessingFile;
             if (!InjectorCoreUtils.IsNeedProcessFile(Options.Filter, filePath))
                 return false;
             #endregion
@@ -144,6 +145,8 @@ namespace Drill4Net.Injection.SpecFlow
                 //reading
                 var reader = new AssemblyReader();
                 using var asmCtx = reader.ReadAssembly(runCtx);
+                if (asmCtx.Definition == null)
+                    return false;
 
                 if (!Directory.Exists(asmCtx.DestinationDir))
                     Directory.CreateDirectory(asmCtx.DestinationDir);
@@ -170,7 +173,7 @@ namespace Drill4Net.Injection.SpecFlow
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Processing of file by plugin failed: {runCtx.CurrentSourceFile}");
+                _logger.Error(ex, $"Processing of file by plugin failed: {runCtx.ProcessingFile}");
                 if (runCtx.Options.Debug?.IgnoreErrors != true)
                     throw;
                 return false;
@@ -194,7 +197,7 @@ namespace Drill4Net.Injection.SpecFlow
         private void LoadTestFramework(string sourceDir)
         {
             const string dllName = "TechTalk.SpecFlow.dll";
-            var specDir = Path.Combine(Common.FileUtils.GetExecutionDir(), dllName);
+            var specDir = Path.Combine(FileUtils.ExecutingDir, dllName);
             if (!File.Exists(specDir))
                 specDir = Path.Combine(sourceDir, dllName);
             if (!File.Exists(specDir))
@@ -264,7 +267,7 @@ namespace Drill4Net.Injection.SpecFlow
             //var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Agent.Test\bin\Debug\netstandard2.0\Agent.Test.dll";
             var lv_profPath1 = new VariableDefinition(module.TypeSystem.String);
             funcDef.Body.Variables.Add(lv_profPath1);
-            var Ldstr2 = il_meth.Create(OpCodes.Ldstr, $"{HelperReadDir}{HelperAsmName}");
+            var Ldstr2 = il_meth.Create(OpCodes.Ldstr, Path.Combine(HelperReadDir, HelperAsmName));
             il_meth.Append(Ldstr2);
             var Stloc3 = il_meth.Create(OpCodes.Stloc, lv_profPath1);
             il_meth.Append(Stloc3);
@@ -434,9 +437,9 @@ namespace Drill4Net.Injection.SpecFlow
             funcDef.Body.Variables.Add(lv_data_6);
 
             //Method : GetContextData
-            var m_GetContextData_7 = type.Methods.Single(a => a.Name == _getContextDataMethod);
+            var m_GetContextData_7 = type.Methods.Last(a => a.Name == _getContextDataMethod);
             m_GetContextData_7.ReturnType = module.TypeSystem.String;
-            var fld_scenarioMethInfo_1 = type.Fields.Single(a => a.Name == _scenarioField);
+            var fld_scenarioMethInfo_1 = type.Fields.Last(a => a.Name == _scenarioField);
             ilProc.Emit(OpCodes.Ldsfld, fld_scenarioMethInfo_1);
             ilProc.Emit(OpCodes.Ldarg_0);
             ilProc.Emit(OpCodes.Ldarg_1);

@@ -24,7 +24,7 @@ namespace Drill4Net.Agent.Messaging.Transport
         {
              var optHelper = new BaseOptionsHelper<T>(subsystem);
              if(string.IsNullOrWhiteSpace(cfgPath))
-                cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
+                cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
              return optHelper.ReadOptions(cfgPath);
         }
     }

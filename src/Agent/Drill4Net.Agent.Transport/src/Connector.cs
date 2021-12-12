@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Drill4Net.Agent.Abstract;
-using Microsoft.Extensions.Logging;
+using System.Web;
 
 namespace Drill4Net.Agent.Transport
 {
@@ -34,6 +35,9 @@ namespace Drill4Net.Agent.Transport
         static extern int sendPluginMessage(string pluginId, string content);
 
         [DllImport("agent_connector")]
+        static extern int sendPluginAction(string pluginId, string content);
+
+        [DllImport("agent_connector")]
         static extern int addTests(string pluginId, string testsRun);
 
         [DllImport("agent_connector")]
@@ -54,8 +58,8 @@ namespace Drill4Net.Agent.Transport
             {
                 agentId = agentCfg.Id,
                 adminAddress = url,
-                buildVersion = agentCfg.BuildVersion,
-                agentVersion = agentCfg.AgentVersion,
+                buildVersion = HttpUtility.UrlEncode(agentCfg.BuildVersion),
+                agentVersion = HttpUtility.UrlEncode(agentCfg.AgentVersion),
                 instanceId = agentCfg.InstanceId,
                 groupId = agentCfg.ServiceGroupId,
                 logLevel = ConvertToConnectorLogLevel(agentCfg.ConnectorLogLevel).ToString(),
@@ -106,6 +110,16 @@ namespace Drill4Net.Agent.Transport
         public void SendPluginMessage(string pluginId, string message)
         {
             sendPluginMessage(pluginId, message); //currently pluginId is the only one = "test2code"
+        }
+
+        /// <summary>
+        /// Send action for plugin
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="message"></param>
+        public void SendPluginAction(string pluginId, string message)
+        {
+            sendPluginAction(pluginId, message); //currently pluginId is the only one = "test2code"
         }
 
         /// <summary>

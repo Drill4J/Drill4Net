@@ -21,10 +21,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
-    <PackageReference Include="MudBlazor" Version="5.1.5" />
+    <PackageReference Include="MudBlazor" Version="5.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
     <ProjectReference Include="..\..\..\Shared\Drill4Net.Demo.Target\Drill4Net.Demo.Target.csproj" />
   </ItemGroup>
 

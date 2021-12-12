@@ -2,25 +2,24 @@
 
 namespace Drill4Net.Agent.Abstract
 {
-    public class SimpleContexter : AbstractContexter
+    public class SimpleContexter : IEngineContexter
     {
-        public SimpleContexter() : base(nameof(SimpleContexter))
-        {
-        }
-
-        /**********************************************************************/
-
         /// <summary>
         /// Gets the context identifier.
         /// </summary>
         /// <returns></returns>
-        public override string GetContextId()
+        public string GetContextId()
         {
             var ctx = Thread.CurrentThread.ExecutionContext;
-            return ctx?.GetHashCode().ToString() ?? "";
+            return $"{AgentConstants.CONTEXT_SYSTEM_PREFIX}{ctx?.GetHashCode()}";
         }
 
-        public override bool RegisterCommand(int command, string data)
+        public TestEngine GetTestEngine()
+        {
+            return null;
+        }
+
+        public bool RegisterCommand(int command, string data)
         {
             return true;
         }

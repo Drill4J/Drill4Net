@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Messaging
         private readonly Timer _timer;
         private bool _isSending;
 
-        /***************************************************************/
+        /***********************************************************************/
 
         public Pinger(IMessagerRepository rep, IPingSender sender)
         {
@@ -23,6 +23,7 @@ namespace Drill4Net.Agent.Messaging
             {
                 { MessagingConstants.PING_SUBSYSTEM, rep.Subsystem },
                 { MessagingConstants.PING_TARGET_NAME, rep.TargetName },
+                { MessagingConstants.PING_TARGET_VERSION, rep.TargetVersion },
                 { MessagingConstants.PING_TARGET_SESSION, rep.TargetSession.ToString() },
                 { MessagingConstants.PING_TIME, GetTime() },
                 { MessagingConstants.PING_MEMORY, GetMemory() },

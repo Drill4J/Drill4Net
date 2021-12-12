@@ -30,15 +30,21 @@ namespace Drill4Net.Core.Repository
 
         /********************************************************************/
 
+        public string GetActualConfigPath()
+        {
+            return GetActualConfigPath(null, null);
+        }
+
         /// <summary>
         /// Tryings to get the actual configuration file path.
         /// </summary>
         /// <returns></returns>
-        protected internal string GetActualConfigPath(string configDefaultName)
+        public string GetActualConfigPath(string dir, string configDefaultName = null)
         {
-            var dir = FileUtils.EntryDir;
-            var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_REDIRECT_NAME);
-            var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_DEFAULT_NAME : configDefaultName;
+            if(string.IsNullOrWhiteSpace(dir))
+                dir = FileUtils.EntryDir;
+            var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_NAME_REDIRECT); //possible redirect
+            var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_NAME_DEFAULT : configDefaultName;
             if (!File.Exists(redirectPath))
                 return Path.Combine(dir, defName);
             Deserializer deser = new();
@@ -47,7 +53,10 @@ namespace Drill4Net.Core.Repository
             var path = redirect?.Path;
             if (!path.EndsWith(".yml"))
                 path += ".yml";
-            return FileUtils.GetFullPath(path);
+            var actualPath = FileUtils.GetFullPath(path);
+            _logger.Info($"Actual config path is defined: [{actualPath}]");
+            Log.Flush();
+            return actualPath;
         }
 
         /// <summary>

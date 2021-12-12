@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+
+  # Drill Admin
+  drill-admin:
+    image: drill4j/admin:0.8.0-39
+    environment:
+      - TEST2CODE_PLUGIN_VERSION=0.8.0-38
+      - LOG_LEVEL=DEBUG
+      - DRILL_AGENTS_SOCKET_TIMEOUT=60
+    ports:
+      - 8090:8090
+      - 5006:5006
+      
+  admin-ui:
+    image: drill4j/admin-ui-root-config:0.1.0-83
+    restart: always
+    ports:
+      - 8091:8080
+    environment:
+      WAIT_HOSTS: drill-admin:8090
+      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-79/dist/Drill4J-test-to-code.js
+
+  # Kafka middleware
+  zookeeper:
+    image: bitnami/zookeeper:3.6.2
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      
+  kafka1:
+    image: bitnami/kafka:2.7.0
+    container_name: kafka1
+    ports:
+      - '9093:9093'
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka1:9092,EXTERNAL://localhost:9093
+      - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
+      - KAFKA_CREATE_TOPICS="input:2:1, output:2:1"
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true  
+      # - KAFKA_MAX_REQUEST_SIZE=20000000
+      # - KAFKA_MAX_MESSAGE_BYTES=20000000
+    depends_on:
+      - zookeeper
+  
+  # Kafka UI
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    ports:
+      - 9000:9000
+    environment:
+      - KAFKA_BROKERCONNECT=kafka1:9092
+    depends_on: 
+      - kafka1

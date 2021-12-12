@@ -1,5 +1,4 @@
 ﻿using System;
-using Drill4Net.Common;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Core.Repository
@@ -35,7 +34,7 @@ namespace Drill4Net.Core.Repository
 
             //options
             if (string.IsNullOrWhiteSpace(cfgPath))
-                cfgPath = _optHelper.GetActualConfigPath(CoreConstants.CONFIG_DEFAULT_NAME);
+                cfgPath = _optHelper.GetActualConfigPath();
             DefaultCfgPath = cfgPath;
             Options = _optHelper.ReadOptions(cfgPath);
 

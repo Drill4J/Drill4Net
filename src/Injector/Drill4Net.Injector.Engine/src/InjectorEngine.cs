@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,17 @@ using Drill4Net.Common;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Injection.SpecFlow;
+
+/*** INFO
+ automatic version tagger including Git info - https://github.com/devlooped/GitInfo
+ semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
+ the most common format is v0.0 (or just 0.0 is enough)
+ to change semVer it is nesseccary to create appropriate tag and push it to remote repository
+ patches'(commits) count starts with 0 again after new tag pushing
+ For file version format exactly is digit
+***/
+[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
 
 [assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Engine.UnitTests")]
 namespace Drill4Net.Injector.Engine
@@ -140,6 +152,7 @@ namespace Drill4Net.Injector.Engine
                 .ConfigureAwait(false);
 
             var tree = runCtx.Tree;
+            tree.ProductVersion = opts.Target.Version;
             DeployInjectedTree(tree);
 
             ProcessByPlugins(runCtx);
@@ -171,7 +184,7 @@ namespace Drill4Net.Injector.Engine
             var destDir = opts.Destination.Directory;
             var monikers = opts.Versions?.Targets;
 
-            _logger.Debug("The source is copying...");
+            _logger.Debug($"The source is copying: [{sourceDir}] to [{destDir}]");
             await _rep.CopySource(sourceDir, destDir, monikers) //TODO: copy dirs only according to the monikers
                 .ConfigureAwait(false);
             _logger.Info("The source is copied");
@@ -194,9 +207,10 @@ namespace Drill4Net.Injector.Engine
 
         internal async Task InjectSource(RunContext runCtx)
         {
-            var sourceDir = runCtx.CurrentSourceDirectory ?? runCtx.RootDirectory;
+            var sourceDir = runCtx.ProcessingDirectory ?? runCtx.RootDirectory;
             var monikers = runCtx.Options.Versions?.Targets;
             var isMonikersRoot = monikers?.Count > 0 && sourceDir == runCtx.RootDirectory;
+            runCtx.Monikers = monikers?.Keys == null ? new List<string>() : monikers?.Keys?.ToList();
 
             //inner folders: possible targets from cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
@@ -207,14 +221,14 @@ namespace Drill4Net.Injector.Engine
                 //
                 if(isMonikersRoot)
                     runCtx.MonikerDirectories.Add(dir);
-                runCtx.CurrentSourceDirectory = dir;
+                runCtx.ProcessingDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
 
             //possible files in the root directly
             if (!runCtx.Tree.GetAllAssemblies().Any()) //get only the needed assemblies
             {
-                runCtx.CurrentSourceDirectory = runCtx.RootDirectory;
+                runCtx.ProcessingDirectory = runCtx.RootDirectory;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
         }
@@ -235,7 +249,7 @@ namespace Drill4Net.Injector.Engine
         internal async Task<bool> ProcessDirectory(RunContext runCtx)
         {
             var opts = runCtx.Options;
-            var directory = runCtx.CurrentSourceDirectory;
+            var directory = runCtx.ProcessingDirectory;
             if(!InjectorCoreUtils.IsNeedProcessDirectory(opts.Source.Filter, directory, directory == runCtx.RootDirectory))
                 return false;
             _logger.Info($"Processing dir [{directory}]");
@@ -244,7 +258,7 @@ namespace Drill4Net.Injector.Engine
             var files = _rep.GetAssemblies(directory);
             foreach (var file in files)
             {
-                runCtx.CurrentSourceFile = file;
+                runCtx.ProcessingFile = file;
                 await ProcessFile(runCtx).ConfigureAwait(false);
             }
 
@@ -252,7 +266,7 @@ namespace Drill4Net.Injector.Engine
             var dirs = Directory.GetDirectories(directory, "*");
             foreach (var dir in dirs)
             {
-                runCtx.CurrentSourceDirectory = dir;
+                runCtx.ProcessingDirectory = dir;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
             return true;
@@ -267,7 +281,7 @@ namespace Drill4Net.Injector.Engine
         {
             #region Checks
             var opts = runCtx.Options;
-            var filePath = runCtx.CurrentSourceFile;
+            var filePath = runCtx.ProcessingFile;
 
             //filter
             if(!InjectorCoreUtils.IsNeedProcessFile(opts.Source.Filter, filePath))
@@ -297,7 +311,7 @@ namespace Drill4Net.Injector.Engine
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Processing of file failed: {runCtx.CurrentSourceFile}");
+                _logger.Error(ex, $"Processing of file failed: {runCtx.ProcessingFile}");
                 if (opts.Debug?.IgnoreErrors != true)
                     throw;
                 return false;

@@ -2,9 +2,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Drill4Net.BanderLog.Sinks.File;
-using Drill4Net.BanderLog.Sinks.Console;
-using Drill4Net.BanderLog;
-using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Service
 {

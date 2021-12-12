@@ -73,7 +73,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
             //
             var mess = new Message<Null, byte[]> { Value = packet, Headers = _headers };
             _targetProducer.Produce(topic, mess, HandleBytesData);
-            _targetProducer.Flush();
+            _targetProducer.Flush(new TimeSpan(0,0,5));
             return LastError == null ? 0 : -2;
         }
 

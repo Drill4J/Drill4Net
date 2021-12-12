@@ -1,24 +1,41 @@
-using Xunit;
+using System.Reflection;
 using TechTalk.SpecFlow;
+using Xunit;
 using Drill4Net.Target.Frameworks.Common;
 
-            //http://gasparnagy.com/2016/02/running-specflow-scenarios-in-parallel-with-xunit-v2/
-            //https://github.com/Microsoft/vstest-docs/blob/master/docs/configure.md
+        /* *
+         * 
+         * NEVER!!!! NEVER!!!! NEVER INCLUDE ANY DRILL4NET DEPENDENCIES TO THIS PROJECT (except specific common tests' ones)
+         * Because they will be injected and then conflict with depenedncies from Transmitter, Agents and so on in memory
+         * 
+         * */
 
-            /***************************************************************************************
-            * 
-            * In xUnit 2.4.x the TestContest is not exists
-            * In xUnit 3.x the TestContext is exists (commit on 23 July, 2021) but this version 
-            * in alpha state in late 2021
-            * So, all tests for xUnit 2.4.x must be run in serial, not parallel mode
-            * Run from console with misc modes: https://xunit.net/docs/running-tests-in-parallel &
-            * https://xunit.net/docs/getting-started/netfx/cmdline, e.g.
-            * c:\Users\Ivan_Bezrodnyi\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.exe Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll -parallel none
-            * dotnet test Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll -- RunConfiguration.DisableParallelization=true
-            * 
-            ****************************************************************************************/
+//http://gasparnagy.com/2016/02/running-specflow-scenarios-in-parallel-with-xunit-v2/
+//https://github.com/Microsoft/vstest-docs/blob/master/docs/configure.md
+
+/***************************************************************************************
+* 
+* In xUnit 2.4.x the TestContest is not exists
+* In xUnit 3.x the TestContext is exists (commit on 23 July, 2021) but this version 
+* in alpha state in late 2021
+* So, all tests for xUnit 2.4.x must be run in serial, not parallel mode
+* Run from console with misc modes: https://xunit.net/docs/running-tests-in-parallel &
+* https://xunit.net/docs/getting-started/netfx/cmdline, e.g.
+* c:\Users\Ivan_Bezrodnyi\.nuget\packages\xunit.runner.console\2.4.1\tools\net472\xunit.console.exe Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll -parallel none
+* dotnet test Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll -- RunConfiguration.DisableParallelization=true
+* 
+****************************************************************************************/
 
 //https://docs.specflow.org/projects/specflow/en/latest/Execution/Parallel-Execution.html
+
+// automatic version tagger including Git info - https://github.com/devlooped/GitInfo
+// semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
+// the most common format is v0.0 (or just 0.0 is enough)
+// to change semVer it is nesseccary to create appropriate tag and push it to remote repository
+// patches'(commits) count starts with 0 again after new tag pushing
+// For file version format exactly is digit
+[assembly: AssemblyFileVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}")]
+[assembly: AssemblyInformationalVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}")]
 
 //https://xunit.net/docs/running-tests-in-parallel
 [assembly: CollectionBehavior(DisableTestParallelization = false, //Default: false

@@ -23,6 +23,8 @@ namespace Drill4Net.Agent.Transport
         /// </summary>
         public event InitScopeDataHandler InitScopeData;
 
+        public event PluginLoadedHandler PluginLoaded;
+
         /// <summary>
         /// Admin side requests the classes metadata
         /// </summary>
@@ -106,7 +108,8 @@ namespace Drill4Net.Agent.Transport
                         break;
                     case AgentConstants.TOPIC_AGENT_NAMESPACES: //TODO: additional filter for incoming probes?
                         break;
-                    case AgentConstants.TOPIC_AGENT_LOAD: //needed?
+                    case AgentConstants.TOPIC_AGENT_PLUGIN_LOAD: //don't use yet
+                        PluginLoaded?.Invoke();
                         break;
                     case AgentConstants.TOPIC_CLASSES_LOAD:
                         RequestClassesData?.Invoke();
@@ -118,7 +121,7 @@ namespace Drill4Net.Agent.Transport
                     case AgentConstants.TOPIC_PLUGIN_ACTION:
                         message = message.Substring(message.IndexOf('{')); //crunch: bug in messages on admin side
                         var baseInfo = Deserialize<IncomingMessage>(message);
-                        _logger.Debug($"Plugin action type: {baseInfo.type}");
+                        _logger.Debug($"Plugin action: {baseInfo.type}");
                         switch (baseInfo.type)
                         {
                             case AgentConstants.MESSAGE_IN_INIT_ACTIVE_SCOPE:

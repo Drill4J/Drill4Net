@@ -124,7 +124,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Engine.U
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Adoption_cfg", "!!_Adoption_cfg", "{62F8FA14-B664-46E8-BDF1-88A1E77B959C}"
 	ProjectSection(SolutionItems) = preProject
-		IHS_std.yml = IHS_std.yml
+		IHS_v1.yml = IHS_v1.yml
+		IHS_v2.yml = IHS_v2.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Kafka.Debug", "src\Agent\Drill4Net.Agent.Kafka.Debug\Drill4Net.Agent.Kafka.Debug.csproj", "{3FB0F998-6ED8-49CD-AE52-71E27A54B9DA}"
@@ -237,7 +238,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Frameworks
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Docker", "!!_Docker", "{8D22F77E-8C1E-4AA0-B0B3-86FE0B51A178}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\Users\Ivan_Bezrodnyi\Downloads\docker-compose.yml = ..\..\Users\Ivan_Bezrodnyi\Downloads\docker-compose.yml
+		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard.UnitTests", "src\Tests\UnitTests\Drill4Net.Agent.Standard.UnitTests\Drill4Net.Agent.Standard.UnitTests.csproj", "{554F7FB7-F2BB-45EE-A069-03C778CD1E2D}"
@@ -250,13 +251,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AssemblyInstructi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AsyncTest", "src\RnD\AsyncTest\Drill4Net.AsyncTest.csproj", "{8A9BD652-E575-4BEF-801B-DE60A86D4900}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflow", "Workflow", "{3D3544E8-2D7D-4EE1-BA6E-43FCFDCB19C0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestGenerators", "TestGenerators", "{3D3544E8-2D7D-4EE1-BA6E-43FCFDCB19C0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Probes", "Probes", "{68682248-869A-474C-9B57-11E8B12CBEE5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestEngines", "TestEngines", "{68682248-869A-474C-9B57-11E8B12CBEE5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.xUnit", "src\Agent\Drill4Net.Agent.Transmitter.xUnit\Drill4Net.Agent.Transmitter.xUnit.csproj", "{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.NUnit", "src\Agent\Drill4Net.Agent.Transmitter.NUnit\Drill4Net.Agent.Transmitter.NUnit.csproj", "{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{F1C75788-70FA-477E-8C12-360DE73A02B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Admin.Requester", "src\Admin\Drill4Net.Admin.Requester\Drill4Net.Admin.Requester.csproj", "{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -704,6 +709,12 @@ Global
 		{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -821,6 +832,7 @@ Global
 		{68682248-869A-474C-9B57-11E8B12CBEE5} = {023DAB8F-8554-4DF4-B7F6-65F118089B31}
 		{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4} = {68682248-869A-474C-9B57-11E8B12CBEE5}
 		{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD} = {68682248-869A-474C-9B57-11E8B12CBEE5}
+		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E} = {F1C75788-70FA-477E-8C12-360DE73A02B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

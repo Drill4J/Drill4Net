@@ -27,12 +27,14 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Current source directory during processing
         /// </summary>
-        public string CurrentSourceDirectory { get; set; }
+        public string ProcessingDirectory { get; set; }
 
         /// <summary>
         /// Current source file path during processing
         /// </summary>
-        public string CurrentSourceFile { get; set; }
+        public string ProcessingFile { get; set; }
+
+        public List<string> Monikers { get; set; }
 
         public List<string> MonikerDirectories { get; }
 
@@ -97,6 +99,7 @@ namespace Drill4Net.Injector.Core
             Tree = tree ?? throw new ArgumentNullException(nameof(tree));
             AssemblyPaths = new Dictionary<string, string>();
             MonikerDirectories = new List<string>();
+            Monikers = new List<string>();
             ProxyNamespaceByKeys = new Dictionary<string, string>();
             Versions = DefineProjectVersions(RootDirectory);
             Strategy = Repository.GetStrategy();

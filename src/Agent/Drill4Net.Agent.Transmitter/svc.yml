@@ -2,21 +2,22 @@
 Type: kafka-transmitter # type as hint
 Servers: # list of Kafka servers
    - 'localhost:9093'
-   - 'localhost:9094'
-   - 'localhost:9095'
+   #- 'localhost:9094'
+   #- 'localhost:9095'
 Sender:
   Topics: # additional topics for the probes
 Receiver:
-  GroupId: dodnet-agent # group of consumers
+  GroupId: dotnet-agent # group of consumers
   #Topics: # additional topics for the probes
-  #    #- aaa
+     #- aaa
 Logs:
   - Type: console
     Level: debug
   # local log
   - Type: file
+    Path: logs_drill
     Level: trace
   # common place
   - Type: file
-    Path: ..\..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
+    Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
     Level: trace

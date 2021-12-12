@@ -27,11 +27,13 @@ namespace Drill4Net.Agent.TestRunner
             catch (Exception ex)
             {
                 Log.Fatal(ex);
+                Log.Flush();
+                await Task.Delay(5000);
             }
             finally
             {
                 _logger?.Info("Finished");
-                _logger.GetManager().Shutdown();
+                _logger?.GetManager()?.Shutdown();
             }
         }
     }

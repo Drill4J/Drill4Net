@@ -6,6 +6,17 @@
     public class TestCaseContext : BaseTestContext
     {
         /// <summary>
+        /// Engine of test generator framework (SpecFlow, xUnit, NUmit, etc).
+        /// Maybe + version (moniker, etc)??
+        /// </summary>
+        public TestGenerator Generator { get; set; }
+
+        /// <summary>
+        /// Test engine for test runners: xUnit, NUnit, MsTest, etc
+        /// </summary>
+        public TestEngine Engine { get; set; }
+
+        /// <summary>
         /// Group (trait) of the test
         /// </summary>
         public string Group { get; set; }

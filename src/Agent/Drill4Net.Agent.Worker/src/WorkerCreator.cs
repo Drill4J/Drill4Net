@@ -3,9 +3,9 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Core.Repository;
 using Drill4Net.Agent.Messaging;
+using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
-using Drill4Net.Agent.Messaging.Kafka;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -47,6 +47,8 @@ namespace Drill4Net.Agent.Worker
             var (cfgPath, opts) = GetBaseOptions(_args);
             var targetSession = GetTargetSession(_args);
             var targetName = GetTargetName(_args);
+            var targetVersion = GetTargetVersion(_args);
+            _logger.Info($"Parameters: session={targetSession};name={targetName};version={targetVersion}");
 
             if (opts.Sender == null)
                 opts.Sender = new();
@@ -76,13 +78,14 @@ namespace Drill4Net.Agent.Worker
             if (!string.IsNullOrWhiteSpace(cmdForTransTopic))
                 opts.Sender.Topics.Add(cmdForTransTopic);
 
-            return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, targetName, opts, cfgPath);
+            return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, targetName, targetVersion, opts, cfgPath);
         }
 
         private ICommandSender CreateCommandSender(ITargetedRepository rep)
         {
             _logger.Debug("Creating command sender...");
-            IMessagerRepository targRep = new TargetedSenderRepository(rep.Subsystem, rep.TargetSession, rep.TargetName, rep.ConfigPath); //need read own config
+            IMessagerRepository targRep = new TargetedSenderRepository(rep.Subsystem, rep.TargetSession, rep.TargetName,
+                rep.TargetVersion, rep.ConfigPath); //need read own config
             if (targRep.MessagerOptions.Receiver == null)
                 throw new Exception("Receiver is empty");
 
@@ -104,6 +107,11 @@ namespace Drill4Net.Agent.Worker
         private string GetTargetName(string[] args)
         {
             return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_NAME);
+        }
+
+        private string GetTargetVersion(string[] args)
+        {
+            return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_VERSION);
         }
 
         internal virtual (string cfgPath, MessagerOptions opts) GetBaseOptions(string[] args)

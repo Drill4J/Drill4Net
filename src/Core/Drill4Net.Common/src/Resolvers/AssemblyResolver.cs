@@ -61,7 +61,9 @@ namespace Drill4Net.Common
             }
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Resolve failed, file not found: [{path}]");
-            asm = Assembly.LoadFrom(path);
+            asm = LoadAssembly(path);
+            if (asm == null)
+                return null;
             _cache.Add(fullName, asm);
             return asm;
         }
@@ -97,7 +99,16 @@ namespace Drill4Net.Common
             var path = Path.Combine(dir2, Path.GetFileName(requestingAssemblyPath));
             if (!File.Exists(path))
                 path = requestingAssemblyPath; // null;
-            return string.IsNullOrWhiteSpace(path) ? null : Assembly.LoadFrom(path);
+            return string.IsNullOrWhiteSpace(path) ? null : LoadAssembly(path);
+        }
+
+        private Assembly LoadAssembly(string path)
+        {
+            try
+            {
+                return Assembly.LoadFrom(path);
+            }
+            catch { return null; }
         }
     }
 }

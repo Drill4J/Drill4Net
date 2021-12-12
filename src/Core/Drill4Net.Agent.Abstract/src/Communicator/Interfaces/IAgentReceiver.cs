@@ -11,7 +11,12 @@ namespace Drill4Net.Agent.Abstract
     /// Handler for <see cref="IAgentReceiver.InitScopeData"/>
     /// </summary>
     public delegate void InitScopeDataHandler(InitActiveScope scope);
-    
+
+    /// <summary>
+    /// Handler for <see cref="IAgentReceiver.PluginLoaded"/>
+    /// </summary>
+    public delegate void PluginLoadedHandler();
+
     /// <summary>
     /// Handler for <see cref="IAgentReceiver.RequestClassesData"/>
     /// </summary>
@@ -57,7 +62,12 @@ namespace Drill4Net.Agent.Abstract
         /// New scope data is initialized
         /// </summary>
         event InitScopeDataHandler InitScopeData;
-        
+
+        /// <summary>
+        /// Some plugin is loaded from Admin side
+        /// </summary>
+        event PluginLoadedHandler PluginLoaded;
+
         /// <summary>
         /// Command for start session
         /// </summary>

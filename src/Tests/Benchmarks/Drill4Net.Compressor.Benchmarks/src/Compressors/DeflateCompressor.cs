@@ -7,7 +7,7 @@ namespace Drill4Net.Compressor.Benchmarks.Compressors
     {
         internal static byte[] CompressData(byte[] data, CompressionLevel compressionLevel)
         {
-            MemoryStream compressedData = new();
+            using MemoryStream compressedData = new();
             using (DeflateStream dstream = new(compressedData, compressionLevel))
             {
                 dstream.Write(data, 0, data.Length);

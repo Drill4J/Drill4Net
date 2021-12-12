@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 
@@ -9,47 +11,86 @@ namespace Drill4Net.Agent.Abstract
     /// <summary>
     /// Manager for retrieving current context of probes using contexter plugins.
     /// </summary>
-    public class ContextDispatcher : AbstractContexter
+    public class ContextDispatcher
     {
+        private readonly ConcurrentDictionary<string, string> _contextBindings;
         private readonly SimpleContexter _stdContexter;
-        private readonly List<AbstractContexter> _contexters;
+        private readonly List<AbstractEngineContexter> _contexters;
         private readonly Logger _logger;
 
         /**********************************************************************************/
 
-        public ContextDispatcher(string dir, string subsystem): base(nameof(ContextDispatcher))
+        public ContextDispatcher(string dir, string subsystem)
         {
             _logger = new TypedLogger<ContextDispatcher>(subsystem);
 
-            var pluginator = new Pluginator();
+            if (string.IsNullOrWhiteSpace(dir))
+            {
+                _logger.Info($"Plugin directory parameter: [{dir}]");
+                dir = FileUtils.EntryDir;
+            }
+            dir = FileUtils.GetFullPath(dir);
+            _logger.Info($"Actual plugin directory: [{dir}]");
+            Log.Flush();
+
+            _contextBindings = new();
+
+            //search plugin
+            var pluginator = new TypeFinder();
             var filter = new SourceFilterOptions
             {
                 Excludes = new SourceFilterParams
                 {
-                    Classes = new List<string>
+                    Files = new List<string>
                     {
-                        "Drill4Net.Agent.Abstract.ContextDispatcher",
-                        "Drill4Net.Agent.Abstract.SimpleContexter"
+                        "reg:.resources.dll$",
                     },
                 },
             };
-            var ctxTypes = pluginator.GetByInterface(dir, typeof(AbstractContexter), filter);
+            List<Type> ctxTypes;
+            try
+            {
+                //CommonUtils.WriteTempLog("Ready to get the plugins");
+                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter), filter);
+                //CommonUtils.WriteTempLog($"Found plugins: {ctxTypes.Count}");
+            }
+            catch (Exception ex)
+            {
+                var err = "Search for contexters' plugin is failed";
+                //CommonUtils.WriteTempLog($"{err}: {ex}");
+                _logger.Fatal(err, ex);
+                Log.Flush();
+                throw;
+            }
 
-            _contexters = new List<AbstractContexter>();
+            //creating plugin
+            _contexters = new List<AbstractEngineContexter>();
             foreach (var contexter in ctxTypes)
             {
-                var plug = Activator.CreateInstance(contexter) as AbstractContexter;
-                _contexters.Add(plug);
-                _logger.Info($"Plugin added: [{plug.Name}]");
+                var name = contexter.Name;
+                if (string.IsNullOrWhiteSpace(name))
+                    continue;
+                //CommonUtils.WriteTempLog($"Creating: {name}");
+                //
+                try
+                {
+                    var plug = Activator.CreateInstance(contexter) as AbstractEngineContexter;
+                    _contexters.Add(plug);
+                    _logger.Info($"Plugin added: [{name}]");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Plugin creation failed: [{name}]", ex);
+                }
             }
 
             _stdContexter = new SimpleContexter();
-            _logger.Info($"Plugin added (standard): [{_stdContexter.Name}]");
+            _logger.Info($"Plugin added: [{nameof(SimpleContexter)}] (standard)");
         }
 
         /**********************************************************************************/
 
-        public override bool RegisterCommand(int command, string data)
+        public bool RegisterCommand(int command, string data)
         {
             _logger.Debug($"Command: [{command}] -> [{data}]");
             foreach (var ctxr in _contexters)
@@ -60,19 +101,28 @@ namespace Drill4Net.Agent.Abstract
             return true;
         }
 
-        public override string GetContextId()
+        public string GetContextId()
         {
-            //TODO: dynamic prioritizing !!!
+            var sysCtx = _stdContexter.GetContextId();
+            if (_contextBindings.TryGetValue(sysCtx, out string ctx))
+                return ctx;
+
+            //TODO: dynamic prioritizing ?!!!
             foreach (var ctxr in _contexters)
             {
-                var ctx = ctxr.GetContextId();
+                ctx = ctxr.GetContextId();
                 //_logger.Trace($"Contexter: [{ctxr.Name}] -> [{ctx}]");
                 if (ctx != null)
-                    return ctx;
+                    break;
             }
+
             //nobody from specific plugins know how to retrieve the current context...
             //we will use the standard contexter
-            return _stdContexter.GetContextId();
+            if (ctx == null)
+                 ctx = sysCtx;
+
+            _contextBindings.TryAdd(sysCtx, ctx);
+            return ctx;
         }
     }
 }
