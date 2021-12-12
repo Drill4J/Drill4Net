@@ -1,12 +1,15 @@
-﻿using Mono.Cecil;
-using Mono.Cecil.Cil;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace Drill4Net.AssemblyInstruction.Helper
-{ 
+{
+    /// <summary>
+    /// Process IL Instructions for assembly.
+    /// </summary>
     public class AsyncInstructionManager
     {
         public List<MethodInfo> AsyncMethodInfo { get; }
@@ -22,12 +25,17 @@ namespace Drill4Net.AssemblyInstruction.Helper
 
         //**************************************************************************************//
 
+        /// <summary>
+        ///Skip compiller generated code at the beggining of method and find start index for processing.
+        /// </summary>
+        ///<param name="body">Method body</param>
+        ///<returns> Start index for processing.</returns>
         private int CalcStartIndex(MethodBody body)
         {
             var startIndex = 0;
             while (startIndex < body.Instructions.Count())
             {
-                if (IsNopeCheck(body.Instructions[startIndex]))
+                if (IsNopCheck(body.Instructions[startIndex]))
                 {
                     startIndex++;
                     break;
@@ -37,6 +45,12 @@ namespace Drill4Net.AssemblyInstruction.Helper
             return startIndex;
         }
 
+        /// <summary>
+        ///Check if instruction starts try block and skip generated code at the beggining.
+        /// </summary>
+        ///<param name="body">Method body</param>
+        ///<param name="processedInfo">Method info</param>
+        ///<param name="currentInst">Idex of current instruction</param>
         private void CheckStartTryBlock(MethodBody body, ref MethodInfo processedInfo, ref int currentInst)
         {
             var index= currentInst;
@@ -45,7 +59,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
                 processedInfo.Instructions.Add(new InstructionData(body.Instructions[currentInst], false));
                 currentInst++;
 
-                while (currentInst < body.Instructions.Count && !IsNopeCheck(body.Instructions[currentInst]))
+                while (currentInst < body.Instructions.Count && !IsNopCheck(body.Instructions[currentInst]))
                 {
                     processedInfo.Instructions.Add(new InstructionData(body.Instructions[currentInst], false));
                     currentInst++;
@@ -53,6 +67,12 @@ namespace Drill4Net.AssemblyInstruction.Helper
             }
         }
 
+        /// <summary>
+        ///Check if instruction starts generated handler block (last handler block) and skip it.
+        /// </summary>
+        ///<param name="body">Method body</param>
+        ///<param name="processedInfo">Method info</param>
+        ///<param name="currentInst">Idex of current instruction</param>
         private void CheckGenHandlerBlock(MethodBody body, ref MethodInfo processedInfo, ref int currentInst)
         {
             var index = currentInst;
@@ -63,7 +83,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
                     processedInfo.Instructions.Add(new InstructionData(body.Instructions[currentInst], false));
                     currentInst++;
                 }
-                while (currentInst < body.Instructions.Count && !IsNopeCheck(body.Instructions[currentInst]))
+                while (currentInst < body.Instructions.Count && !IsNopCheck(body.Instructions[currentInst]))
                 {
                     processedInfo.Instructions.Add(new InstructionData(body.Instructions[currentInst], false));
                     currentInst++;
@@ -71,6 +91,10 @@ namespace Drill4Net.AssemblyInstruction.Helper
             }
         }
 
+        /// <summary>
+        ///Read MoveNext Methods From Assembly.
+        /// </summary>
+        ///<param name="assemmblyPath">Path to assembly</param>
         private List<MethodDefinition> ReadAsyncMethodsFromAssembly(string assemmblyPath)
         {
             var instructions = new List<InstructionData>();
@@ -82,6 +106,10 @@ namespace Drill4Net.AssemblyInstruction.Helper
                       .ToList();
         }
 
+        /// <summary>
+        ///Check if instruction starts try block and skip generated code at the beggining.
+        /// </summary>
+        ///<param name="methods">List of MethodDefinition</param>
         private void ProcessInstructions(List<MethodDefinition> methods)
         {
             foreach (var method in methods)
@@ -105,30 +133,49 @@ namespace Drill4Net.AssemblyInstruction.Helper
                     }
                 }
                 AsyncMethodInfo.Add(methodInfo);
-                var test = methodInfo.GetUserInstruction();
+                var test = methodInfo.GetUserInstructions();
                 Console.WriteLine("Done.");
             }
         }
 
-        private bool IsNopeCheck(Instruction inst)
+        /// <summary>
+        ///Check if instruction is Nop.
+        /// </summary>
+        ///<param name="inst">Instruction</param>
+        ///<returns> true if it is Nop and false in other cases</returns>
+        private bool IsNopCheck(Instruction inst)
         {
             return inst.OpCode.Code == Code.Nop;
         }
 
+        /// <summary>
+        ///Check if instruction is Leave.
+        /// </summary>
+        ///<param name="inst">Instruction</param>
+        ///<returns> true if it is Leave and false in other cases</returns>
         private bool IsLeaveCheck(Instruction inst)
         {
             return inst.OpCode.Code == Code.Leave || inst.OpCode.Code == Code.Leave_S;
         }
 
+        /// <summary>
+        ///Check if instruction is Br.
+        /// </summary>
+        ///<param name="inst">Instruction</param>
+        ///<returns> true if it is Br and false in other cases</returns>
         private bool IsBrCheck(Instruction inst)
         {
             return inst.OpCode.Code == Code.Br || inst.OpCode.Code == Code.Br_S;
         }
 
+        /// <summary>
+        ///Check if instruction is user instruction.
+        /// </summary>
+        ///<param name="inst">Instruction</param>
         public void UserInstCheck(List<Instruction> instList, ref MethodInfo processedInfo, ref int currentInst)
         {
             //process Nop
-            if (IsNopeCheck(instList[currentInst]))
+            if (IsNopCheck(instList[currentInst]))
                 processedInfo.Instructions.Add(new InstructionData(instList[currentInst], false));
 
             //process Leave
@@ -147,7 +194,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
                 }
 
                 while (currentInst < instList.Count() &&
-                    (IsNopeCheck(instList[currentInst]) || IsLeaveCheck(instList[currentInst])|| IsBrCheck(instList[currentInst])))
+                    (IsNopCheck(instList[currentInst]) || IsLeaveCheck(instList[currentInst])|| IsBrCheck(instList[currentInst])))
                 {
                     processedInfo.Instructions.Add(new InstructionData(instList[currentInst], false));
                     currentInst++;
