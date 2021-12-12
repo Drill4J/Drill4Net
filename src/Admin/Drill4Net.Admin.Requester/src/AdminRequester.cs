@@ -24,7 +24,10 @@ namespace Drill4Net.Admin.Requester
         {
             _target = target ?? throw new ArgumentNullException(nameof(target));
             _build = build ?? throw new ArgumentNullException(nameof(build));
-            _logger = new TypedLogger<AdminRequester>(subsystem);
+
+            var logExtras = new Dictionary<string, object> { { "Target", target } };
+            _logger = new TypedLogger<AdminRequester>(subsystem, logExtras);
+
             _url = ResourceManager.CheckUrl(url);
             _client = new RestClient(_url);
             //client.Authenticator = new HttpBasicAuthenticator("username", "password");
@@ -56,21 +59,18 @@ namespace Drill4Net.Admin.Requester
             for (var i = 0; i < 25; i++)
             {
                 response = _client.Get(request);
-                if (response.StatusCode == HttpStatusCode.OK)
+                //if (response.StatusCode == HttpStatusCode.OK)
+                //    break;
+                if (response.StatusCode != HttpStatusCode.BadRequest)
                     break;
-                if (response.StatusCode == HttpStatusCode.BadRequest)
+                var answer = JsonConvert.DeserializeObject<SimpleRestAnswer>(response.Content);
+                if (answer?.message.Contains("not found") == true) //Drill doesn't know about this Target yet
                 {
-                    var answer = JsonConvert.DeserializeObject<SimpleRestAnswer>(response.Content);
-                    if (answer?.message.Contains("not found") == true) //Drill doesn't know about this Target yet
-                    {
-                        _logger.Info($"New target for Drill: {target}");
-                        return default;
-                    }
-                    _logger.Warning($"Waiting for retrieving {purpose}...");
-                    await Task.Delay(4000);
+                    _logger.Info($"New target for Drill: {target}");
+                    return default;
                 }
-                else
-                    break;
+                _logger.Warning($"Waiting for retrieving {purpose}...");
+                await Task.Delay(5000).ConfigureAwait(false);
             }
             if (response == null || response.StatusCode != HttpStatusCode.OK)
                 throw new Exception(errorMsg);

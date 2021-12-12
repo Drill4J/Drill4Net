@@ -14,5 +14,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// The parallel execution is restricted by default (if no builds still exists in Drill service)
         /// </summary>
         public bool DefaultParallelRestrict { get; set; }
+
+        /***********************************************************************/
+
+        public override string ToString()
+        {
+            return $"{DefaultAssemblyName} -> DefaultParallelRestrict: {DefaultParallelRestrict}";
+        }
     }
 }

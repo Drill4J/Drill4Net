@@ -45,7 +45,8 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             _logger.Debug("Wait for Agents' initializing...");
             _rep.Start();
-
+            _logger.Debug("Getting tests' run info...");
+            var infos = await _rep.GetRunInfos().ConfigureAwait(false);
             _logger.Debug("Getting CLI run info...");
 
             try

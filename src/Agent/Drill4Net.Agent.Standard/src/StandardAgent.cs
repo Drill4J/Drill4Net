@@ -59,16 +59,13 @@ namespace Drill4Net.Agent.Standard
         private static Logger _logger;
         private static FileSink _probeLogger;
         private readonly bool _writeProbesToFile;
-        private static readonly Dictionary<string, object> _logExtras;
 
         /*****************************************************************************/
 
         static StandardAgent() //it's needed for invocation from Target
         {
             _entitiesLocker = new();
-
-            _logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId } };
-            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT, _logExtras);
+            _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT);
 
             if (StandardAgentInitParameters.SkipCreatingSingleton)
                 return;
@@ -102,7 +99,8 @@ namespace Drill4Net.Agent.Standard
                 Repository = rep ?? new StandardAgentRepository();
 
                 //recreate the logger with external context
-                _logger = new TypedLogger<StandardAgent>($"{Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", _logExtras);
+                var logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId }, { "Target", Repository.TargetName } };
+                _logger = new TypedLogger<StandardAgent>($"{Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", logExtras);
 
                 _comm = Repository.Communicator;
 

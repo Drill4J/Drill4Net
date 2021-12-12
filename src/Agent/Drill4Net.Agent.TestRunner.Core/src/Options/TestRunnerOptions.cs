@@ -22,5 +22,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// Options exclusively for debug
         /// </summary>
         public TestRunnerDebugOptions Debug { get; set; }
+
+        /***********************************************************************/
+
+        public override string ToString()
+        {
+            return $"Directories: {Directories.Count}, DefaultParallelRestrict: {DefaultParallelRestrict}";
+        }
     }
 }

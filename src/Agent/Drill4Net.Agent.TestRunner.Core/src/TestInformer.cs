@@ -40,15 +40,20 @@ namespace Drill4Net.Agent.TestRunner.Core
             _dbgOpts = dbgOpts;
             if (string.IsNullOrWhiteSpace(asmOptions.DefaultAssemblyName))
                 throw new Exception("Assembly name is empty");
-            _logger = new TypedLogger<TestRunnerRepository>(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
+            _logger = new TypedLogger<TestInformer>(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
             //
             _agentRep = CreateAgentRepository();
+            _logger.Extras.Add("Target", _agentRep.TargetName);
+            _logger.RefreshExtrasInfo();
             _requester = new(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, _agentRep.Options.Admin.Url,
                 _agentRep.TargetName, _agentRep.TargetVersion);
 
             // agent
+            _logger.Debug("Preparing the agent...");
             _agent = CreateAgent();
             _agent.Initialized += AgentInitialized;
+
+            _logger.Debug("Wait for the agent's initializing...");
             _initEvent.WaitOne(); //waiting for agent's init
         }
 

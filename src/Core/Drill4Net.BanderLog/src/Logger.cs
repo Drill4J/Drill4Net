@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Drill4Net.BanderLog
 {
@@ -12,7 +12,9 @@ namespace Drill4Net.BanderLog
         public string Category { get; }
         public Dictionary<string, object> Extras { get; }
 
-        public string ExtrasString { get; }
+        public string ExtrasString { get; private set; }
+
+        private readonly JsonSerializerSettings _serOpts;
 
         /**********************************************************************************************/
 
@@ -28,21 +30,25 @@ namespace Drill4Net.BanderLog
 
             //serialization 
             //TODO: get options from parameters, etc
-            if (Extras.Count > 0)
+            //https://www.newtonsoft.com/json/help/html/SerializationSettings.htm
+            _serOpts = new JsonSerializerSettings
             {
-                //https://www.newtonsoft.com/json/help/html/SerializationSettings.htm
-                var settings = new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-
-                };
-                ExtrasString = JsonConvert.SerializeObject(Extras, Formatting.None, settings); //as one object yet
-            }
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+            };
+            RefreshExtrasInfo();
         }
 
         /**********************************************************************************************/
 
         public virtual ILogManager GetManager() => BanderLog.Log.Manager;
+
+        public void RefreshExtrasInfo()
+        {
+            if (Extras?.Count > 0)
+                ExtrasString = JsonConvert.SerializeObject(Extras, Formatting.None, _serOpts); //as one object yet
+            else
+                ExtrasString = null;
+        }
 
         #region Specific
         public void Trace<TState>(TState message, Exception exception = null, [CallerMemberName] string callerMethod = "")

@@ -33,18 +33,28 @@ namespace Drill4Net.Agent.TestRunner.Core
             _informers = CreateInformers(Options.Directories, Options.Debug);
         }
 
+        internal async Task<List<RunInfo>> GetRunInfos()
+        {
+            var list = new List<RunInfo>();
+            foreach (var informer in _informers)
+            {
+                RunInfo runInfo = await informer.GetRunInfo().ConfigureAwait(false);
+                list.Add(runInfo);
+            }
+            return list;
+        }
+
         private List<TestInformer> CreateInformers(IEnumerable<RunDirectoryOptions> dirs, TestRunnerDebugOptions dbgOpts)
         {
-            //https://stackoverflow.com/questions/30225476/task-run-with-parameters
+            // 1. No parallel execution - Connector with websocket cannot so
+            // 2. No async here because inside TestInformer (and deeper) all so
             var list = new List<TestInformer>();
-            // 1. No parallel execution - Connector cannot so
-            // 2. No async here because inside TestInformer and deeper all so
             foreach (var dirOpts in dirs)
             {
                 foreach(var asmOpts in dirOpts.Assemblies)
                     list.Add(new TestInformer(dirOpts, asmOpts, dbgOpts));
             }
-            //we wait here until all agents are initialized (and manually registered in Dril admin!)
+            //we wait here until ALL agents are initialized (and manually registered in Dril admin!)
             return list;
         }
     }

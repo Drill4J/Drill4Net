@@ -24,5 +24,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// on current directory level
         /// </summary>
         public bool DefaultParallelRestrict { get; set; }
+
+        /***********************************************************************/
+
+        public override string ToString()
+        {
+            return $"{Path} -> assemblies: {Assemblies.Count}, DefaultParallelRestrict: {DefaultParallelRestrict}";
+        }
     }
 }

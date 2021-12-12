@@ -18,5 +18,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal Dictionary<string, RunAssemblyInfo> AssemblyInfos { get; set; } = new();
 
         //TODO: restrict count of simultaneously running cmd processes
+
+        /***********************************************************************/
+
+        public override string ToString()
+        {
+            return $"{RunType} -> assemblies: {AssemblyInfos.Count}";
+        }
     }
 }
