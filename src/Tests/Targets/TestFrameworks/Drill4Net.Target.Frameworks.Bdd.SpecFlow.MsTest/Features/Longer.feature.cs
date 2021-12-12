@@ -95,11 +95,11 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest.Features
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Wait 5000")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Longer")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("timeout_5000")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("wait_5000")]
         public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
-                    "timeout_5000"};
+                    "wait_5000"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6

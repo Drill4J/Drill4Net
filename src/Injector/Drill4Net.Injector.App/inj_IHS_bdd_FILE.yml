@@ -1,7 +1,8 @@
 ﻿Description: IHS adoption for BDD tests
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: IHS-bdd #optional injection name
+    Name: IHS-bdd #optional injection name, if empty must be set in agent config
+    Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
 Source: # what and how processing
     Directory: d:\Projects\IHS-bdd\
     Filter: # mask for search files, namespaces, classes...
@@ -17,8 +18,10 @@ Source: # what and how processing
       Excludes:
         Directories:
         Folders:
-          - "*"
+          - "*" # "*" means "all"
         Files:
+          - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll
+          - Ipreo.Csp.IaDeal.Test.Infrastructure.dll
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
@@ -43,6 +46,10 @@ Probes: # types of cross-cutting points
     EventRemove: false
     SkipEnterType: true
     SkipIfElseType: true
+Plugins: # injected references to plugins for runtime transmitting data to the Admin service
+   'SpecFlow':
+       Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
+       Config: plug_IHS_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs: # for Injector
     - Type: console
       Level: debug

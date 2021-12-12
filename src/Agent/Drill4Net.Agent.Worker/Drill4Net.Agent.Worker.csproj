@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
+	<ApplicationIcon>worker_65699.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -14,6 +15,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Worker</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="worker_65699.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DumpExtensions" Version="2.0.0" />

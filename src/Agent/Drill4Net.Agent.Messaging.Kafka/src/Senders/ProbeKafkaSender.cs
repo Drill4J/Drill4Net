@@ -11,7 +11,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         /**************************************************************************/
 
-        public ProbeKafkaSender(IMessageSenderRepository rep): base(rep)
+        public ProbeKafkaSender(IMessagerRepository rep): base(rep)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
         protected override void CreateProducers()
         {
             //topics
-            _probeTopics = _rep.SenderOptions.Topics ?? new List<string>(); //additional probe topics from cfg
+            _probeTopics = _rep.MessagerOptions.Sender.Topics ?? new List<string>(); //additional probe topics from cfg
             var baseProbeTopic = MessagingUtils.GetProbeTopic(_rep.TargetSession); //the base one
             _probeTopics.Add(baseProbeTopic);
 
@@ -54,9 +54,14 @@ namespace Drill4Net.Agent.Messaging.Kafka
             return MessagingConstants.MESSAGE_TYPE_PROBE;
         }
 
-        protected override void ConcreteDisposing()
+        public void Flush()
         {
             _probeProducer?.Flush(TimeSpan.FromSeconds(10));
+        }
+
+        protected override void ConcreteDisposing()
+        {
+            Flush();
             _probeProducer?.Dispose();
         }
     }

@@ -7,7 +7,7 @@ namespace Drill4Net.Injector.Core
 {
     public class InjectorOptionsHelper : BaseOptionsHelper<InjectorOptions>
     {
-        protected override void PostProcess(InjectorOptions opts) 
+        protected override void PostProcess(InjectorOptions opts)
         {
             SetDestinationDirectory(opts, null);
             NormalizePaths(opts);
@@ -19,12 +19,10 @@ namespace Drill4Net.Injector.Core
                 opts.Destination = new DestinationOptions();
             if (string.IsNullOrWhiteSpace(destDir))
             {
-                if (opts.Source == null)
-                    throw new ArgumentException("Sourse options are empty");
-                if (opts.Destination?.FolderPostfix != null)
-                    destDir = $"{Path.GetDirectoryName(opts.Source.Directory)}.{opts.Destination.FolderPostfix}";
+                if (string.IsNullOrWhiteSpace(opts.Destination?.Directory))
+                    destDir = $"{FileUtils.GetDirectoryName(opts.Source.Directory)}.{opts.Destination?.FolderPostfix ?? "Injected"}";
                 else
-                    destDir = Path.GetDirectoryName(opts.Source.Directory);
+                    destDir = FileUtils.GetDirectoryName(opts.Destination.Directory);
             }
 
             opts.Destination.Directory = destDir;
@@ -88,7 +86,7 @@ namespace Drill4Net.Injector.Core
             //
             var sourceDir = args?.Length > 1 ? PotentialPath(args[0]) : null;
             if (!string.IsNullOrWhiteSpace(sourceDir))
-                opts.Source.Directory = sourceDir;
+                opts.Source.Directory = FileUtils.GetDirectoryName(sourceDir);
         }
 
         internal void ClarifyDestinationDirectory(string[] args, InjectorOptions opts)
@@ -97,7 +95,8 @@ namespace Drill4Net.Injector.Core
                 throw new ArgumentNullException(nameof(opts));
             //
             var destDir = args?.Length > 1 ? PotentialPath(args?[1]) : null;
-            SetDestinationDirectory(opts, destDir);
+            if (!string.IsNullOrWhiteSpace(destDir))
+                SetDestinationDirectory(opts, destDir);
         }
 
         //Guanito:
@@ -112,6 +111,8 @@ namespace Drill4Net.Injector.Core
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
+            if (opts.Source == null)
+                throw new ArgumentException("Sourсe options are empty");
             //
             var sourceDir = FileUtils.GetFullPath(opts.Source.Directory);
             if (string.IsNullOrEmpty(sourceDir))

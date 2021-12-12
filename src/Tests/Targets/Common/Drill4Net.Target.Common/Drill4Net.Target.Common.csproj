@@ -52,6 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
     <ProjectReference Include="..\Drill4Net.Target.Common.Another\Drill4Net.Target.Common.Another.csproj" />
     <ProjectReference Include="..\Drill4Net.Target.Common.VB\Drill4Net.Target.Common.VB.vbproj" />
   </ItemGroup>

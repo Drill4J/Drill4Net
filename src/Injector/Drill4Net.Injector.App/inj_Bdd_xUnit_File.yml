@@ -1,7 +1,8 @@
 ﻿Description: BDD SpecFlow + xUnit tests for debug to the file
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: bdd-specflow-xUnit-file #optional injection name
+    Name: bdd-specflow-xUnit-file #optional injection name, if empty must be set in agent config
+    Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit\
     Filter: # mask for search files, namespaces, classes...
@@ -16,6 +17,8 @@ Source: # what and how processing
         Directories:
         Folders:
           - ref
+        Files:
+          - Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll
 Destination: # where copying injected assemblies
     Directory: # or full directory...
     FolderPostfix: Injected #...or prefix to source dir
@@ -40,9 +43,10 @@ Probes: # types of cross-cutting points
     EventRemove: false
     SkipEnterType: true
     SkipIfElseType: true
-Plugins:
+Plugins: # injected references to plugins for runtime transmitting data to the Admin service
     'SpecFlow':
         Path: ..\..\Drill4Net.Agent.Transmitter.SpecFlow\netstandard2.0\
+        Config: plug_xUnit_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs:
     - Type: console
       Level: debug

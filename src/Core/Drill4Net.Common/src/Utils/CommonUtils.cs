@@ -16,6 +16,8 @@ namespace Drill4Net.Common
     /// </summary>
     public static class CommonUtils
     {
+        public const string AssemblyFileGitVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}";
+        public const string AssemblyGitVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}";
         public static int CurrentProcessId { get; }
 
         /******************************************************************/
@@ -103,16 +105,19 @@ namespace Drill4Net.Common
         }
         #endregion
         #region FirstChanceException & Resolving
-        //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File)!!!
-
         public static void LogFirstChanceException(string emergencyLogDir, string context, Exception e)
         {
-            if (!Directory.Exists(emergencyLogDir))
-                Directory.CreateDirectory(emergencyLogDir);
-            File.WriteAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
-                new List<string> { $"{GetPreciseTime()}|{context}:\n{e}" });
+            try
+            {
+                if (!Directory.Exists(emergencyLogDir))
+                    Directory.CreateDirectory(emergencyLogDir);
+                File.AppendAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
+                    new List<string> { $"{GetPreciseTime()}|{context}|{e}" });
+            }
+            catch { }
         }
 
+        //TODO: replace all File.AppendAllLines on normal writer to file (see ChannelsQueue in Agent.File) in next methods!!!
         public static Assembly TryResolveAssembly(string dir, string context, ResolveEventArgs args, AssemblyResolver resolver, ILogger log)
         {
             if (!Directory.Exists(dir))
@@ -177,7 +182,7 @@ namespace Drill4Net.Common
             return ex?.ToString();
         }
         #endregion
-
+        #region Type & method name parsing
         public static string GetTypeByMethod(string methodFullName)
         {
             if (string.IsNullOrWhiteSpace(methodFullName))
@@ -202,26 +207,60 @@ namespace Drill4Net.Common
 
         public static (string ns, string type) DeconstructFullTypeName(string typeFullName)
         {
-            string typeName;
-            string ns = null;
+            return DeconstructForLastGroup(typeFullName);
+        }
+
+        public static (string type, string method) DeconstructFullMethodName(string methodFullName)
+        {
+            return DeconstructForLastGroup(methodFullName);
+        }
+
+        private static (string prefix, string lastGroup) DeconstructForLastGroup(string typeFullName)
+        {
+            string lastGroup;
+            string prefix = null;
             if (typeFullName.Contains("."))
             {
                 var list = typeFullName.Split('.').ToList();
-                typeName = list[list.Count-1];
+                lastGroup = list[list.Count-1];
                 list.RemoveAt(list.Count - 1);
-                ns = string.Join(".", list);
+                prefix = string.Join(".", list);
             }
             else
             {
-                typeName = typeFullName;
+                lastGroup = typeFullName;
             }
-            return (ns, typeName);
+            return (prefix, lastGroup);
         }
+        #endregion
 
         public static string GetPreciseTime()
         {
             return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
         }
+
+        //private static readonly object _tmpLogLocker = new();
+        //private static bool _errorOnTmpLog;
+        //public static void WriteTempLog(string content, string logFile = null)
+        //{
+        //    if (_errorOnTmpLog)
+        //        return;
+        //    if (string.IsNullOrWhiteSpace(logFile))
+        //        logFile = @"D:\drill_tmpLog.txt"; //Path.Combine(FileUtils.EntryDir, "drill_tmpLog.txt");
+        //    if (!Directory.Exists(Path.GetPathRoot(logFile)))
+        //        return;
+        //    try
+        //    {
+        //        var dir = Path.GetDirectoryName(logFile);
+        //        if (!Directory.Exists(dir))
+        //            Directory.CreateDirectory(dir);
+        //        lock (_tmpLogLocker)
+        //        {
+        //            File.AppendAllText(logFile, $"{GetPreciseTime()}|{content}\n");
+        //        }
+        //    }
+        //    catch { _errorOnTmpLog = true; }
+        //}
 
         public static bool IsStringMachRegexPattern(string s, string pattern)
         {

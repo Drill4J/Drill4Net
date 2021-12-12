@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Messaging.Transport
 {
-    public delegate void CommandReceivedHandler(Command probe);
+    public delegate void CommandReceivedHandler(Command command);
 
     /*************************************************************/
 

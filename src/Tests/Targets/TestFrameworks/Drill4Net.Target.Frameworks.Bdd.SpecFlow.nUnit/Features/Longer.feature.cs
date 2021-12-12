@@ -76,11 +76,11 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Wait 5000")]
-        [NUnit.Framework.CategoryAttribute("timeout_5000")]
+        [NUnit.Framework.CategoryAttribute("wait_5000")]
         public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
-                    "timeout_5000"};
+                    "wait_5000"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
@@ -28,28 +29,23 @@ namespace Drill4Net.Injector.Engine
 
         /// <summary>
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
-        /// injector for them, the reading/writing of resulting tree data, etc).
-        /// </summary>
-        /// <param name="cfgPath">Path to the config of injection</param>
-        public InjectorRepository(string cfgPath): base(cfgPath, _subsystem)
-        {
-            CreateLogger();
-        }
-
-        /// <summary>
-        /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
         /// <param name="args">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(string[] args): base(args, _subsystem)
+        public InjectorRepository(string[] args): base(_subsystem, args)
         {
             CreateLogger();
             _optHelper.Clarify(args, Options);
         }
 
-        private void CreateLogger()
+        /// <summary>
+        /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
+        /// injector for them, the reading/writing of resulting tree data, etc).
+        /// </summary>
+        /// <param name="cfgPath">Path to the config of injection</param>
+        public InjectorRepository(string cfgPath) : base(_subsystem, cfgPath)
         {
-            _logger = new TypedLogger<InjectorRepository>(_subsystem);
+            CreateLogger();
         }
 
         /*****************************************************************************************/
@@ -72,6 +68,11 @@ namespace Drill4Net.Injector.Engine
             return new BlockStrategy(Options);
         }
 
+        private void CreateLogger()
+        {
+            _logger = new TypedLogger<InjectorRepository>(_subsystem);
+        }
+
         /// <summary>
         /// Get the IL code generator of the injecting Proxy Type
         /// </summary>
@@ -80,10 +81,9 @@ namespace Drill4Net.Injector.Engine
         {
             var profilerOpts = Options.Profiler;
             var profDir = profilerOpts.Directory;
-            var proxyGenerator = new ProfilerProxyInjector(Options.Proxy.Class, Options.Proxy.Method, //proxy to profiler
-                                                            profDir, profilerOpts.AssemblyName, //real profiler
-                                                            profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
-            return proxyGenerator;
+            return new ProfilerProxyInjector(Options.Proxy.Class, Options.Proxy.Method, //proxy to profiler
+                                             profDir, profilerOpts.AssemblyName, //real profiler
+                                             profilerOpts.Namespace, profilerOpts.Class, profilerOpts.Method);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Drill4Net.Injector.Engine
         /// <param name="destPath">destintation directory</param>
         /// <param name="monikers">Dictionary of framework versions monikers from <see cref="VersionOptions.Targets"/>.
         /// Key is moniker (for example, net5.0)</param>
-        public virtual void CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
+        public async virtual Task CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {
             if (Directory.Exists(destPath))
             {
@@ -109,7 +109,8 @@ namespace Drill4Net.Injector.Engine
 
             if (monikers == null)
             {
-                FileUtils.DirectoryCopy(sourcePath, destPath);
+                await FileUtils.DirectoryCopy(sourcePath, destPath)
+                    .ConfigureAwait(false);
             }
             else
             {
@@ -118,7 +119,8 @@ namespace Drill4Net.Injector.Engine
                     var data = monikers[moniker];
                     var sourcePath2 = Path.Combine(sourcePath, data.BaseFolder);
                     var destPath2 = Path.Combine(destPath, data.BaseFolder);
-                    FileUtils.DirectoryCopy(sourcePath2, destPath2);
+                    await FileUtils.DirectoryCopy(sourcePath2, destPath2)
+                        .ConfigureAwait(false);
                 }
             }
         }
@@ -165,13 +167,7 @@ namespace Drill4Net.Injector.Engine
                     return new AssemblyVersioning() { IsStrongName = true };
                 }
 
-                //var asm = _asmCtxManager.Load(filePath);
-                //var versionS = CommonUtils.GetAssemblyVersion(asm);
-                //var version = new AssemblyVersioning(versionS);
-                //_asmCtxManager.Unload(filePath);
-
-                var version = CommonUtils.GetAssemblyVersion(filePath);
-                return version;
+                return CommonUtils.GetAssemblyVersion(filePath);
             }
             catch (Exception ex)
             {
@@ -192,7 +188,7 @@ namespace Drill4Net.Injector.Engine
             if (Options?.Destination != null)
             {
                 var targetDir = Options.Destination.Directory;
-                treePath = GetTreeFilePath(targetDir);
+                treePath = _helper.GetTreeFilePathByDir(targetDir);
             }
             return ReadInjectedTree(treePath);
         }

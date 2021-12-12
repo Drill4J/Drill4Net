@@ -36,7 +36,7 @@ namespace Drill4Net.Injector.Core
                 //collect methods including business & compiler's nested classes
                 //together (for async, delegates, anonymous types...)
                 var methods = TypeHelper.GetMethods(typeCtx, opts.Probes).ToArray();
-                if (!methods.Any())
+                if (methods.Length == 0)
                     continue;
 
                 asmCtx.TypeContexts.Add(typeFullName, typeCtx);
@@ -59,6 +59,7 @@ namespace Drill4Net.Injector.Core
                 return false;
 
             PrepareProxyCalls(asmCtx, opts);
+            runCtx.ProxyNamespaceByKeys.Add(asmCtx.DestinationKey, asmCtx.ProxyNamespace);
             return true;
         }
 

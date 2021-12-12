@@ -33,19 +33,19 @@ namespace Drill4Net.Agent.Service
         private readonly ConcurrentDictionary<Guid, StringDictionary> _pings;
         private readonly ConcurrentDictionary<Guid, WorkerInfo> _workers;
 
-        private const long _oldPingTickDelta = 5 * 10_000_000; //5 sec
+        private const long _oldPingTickDelta = 30 * 10_000_000; //n sec
 
         private readonly AbstractTransportAdmin _admin;
         private readonly Logger _logger;
 
-        private AgentServerDebugOptions _debugOpts;
-        private bool _isDebug;
+        private readonly AgentServerDebugOptions _debugOpts;
+        private readonly bool _isDebug;
 
         private Timer _timeoutTimer;
         private bool _inPingCheck;
         private readonly string _cfgPath;
         private readonly string _workerDir;
-        private readonly string _processName;
+        private readonly string _workerPath;
         private bool _disposed;
 
         /*****************************************************************************************************/
@@ -72,11 +72,13 @@ namespace Drill4Net.Agent.Service
             _debugOpts = _rep?.Options?.Debug;
             _isDebug = _debugOpts?.Disabled == false;
 
-            _processName = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.ExecutingDir);
-            _workerDir = Path.GetDirectoryName(_processName);
+            _workerPath = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.ExecutingDir);
+            if (!File.Exists(_workerPath))
+                throw new Exception("Agent Worker's executable not found");
+            _workerDir = Path.GetDirectoryName(_workerPath);
 
             //for using by workers
-            _cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_SERVICE_NAME);
+            _cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
 
             //events
             _pingReceiver.PingReceived += PingReceiver_PingReceived;
@@ -102,6 +104,8 @@ namespace Drill4Net.Agent.Service
             var period = new TimeSpan(0, 0, 0, 1, 500);
             _timeoutTimer = new Timer(PingCheckCallback, null, period, period);
 
+            ClearAllTopics();
+
             var tasks = new List<Task>
             {
                Task.Run(_pingReceiver.Start),
@@ -125,6 +129,13 @@ namespace Drill4Net.Agent.Service
 
             CheckWorkers();
             IsStarted = false;
+        }
+
+        internal void ClearAllTopics()
+        {
+            var topics = _admin.GetAllTopics()
+                .Where(a => a.StartsWith(MessagingConstants.TOPIC_PREFIX));
+            _admin.DeleteTopics(topics);
         }
 
         private void PingReceiver_PingReceived(string targetSession, StringDictionary data)
@@ -184,7 +195,7 @@ namespace Drill4Net.Agent.Service
                 CheckWorker(uid);
         }
 
-        private void CheckWorker(Guid uid)
+        internal virtual void CheckWorker(Guid uid)
         {
             var now = GetTime();
             if (!_pings.TryGetValue(uid, out StringDictionary data))
@@ -195,18 +206,25 @@ namespace Drill4Net.Agent.Service
             if (!_workers.TryGetValue(uid, out WorkerInfo worker))
                 return;
             //
-            _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]}");
+            _logger.Info($"Closing worker: {uid} -> {data[MessagingConstants.PING_TARGET_NAME]} {data[MessagingConstants.PING_TARGET_VERSION]}");
             Task.Run(() => CloseWorker(uid));
-            Task.Run(() => DeleteTopic(worker.TargetInfoTopic));
-            Task.Run(() => DeleteTopic(worker.ProbeTopic));
-            Task.Run(() => DeleteTopic(worker.CommandTopic));
+
+            //delete topics
+            var topics = new List<string>
+            {
+                worker.TargetInfoTopic,
+                worker.ProbeTopic,
+                worker.CommandToWorkerTopic,
+                worker.CommandToTransmitterTopic
+            };
+            Task.Run(() => _admin.DeleteTopics(topics));
         }
 
         /// <summary>
         /// Closing already unnecessary workers, whose targets are no longer being worked out.
         /// </summary>
         /// <param name="uid">The uid.</param>
-        internal void CloseWorker(Guid uid)
+        internal virtual void CloseWorker(Guid uid)
         {
             if (!_workers.TryRemove(uid, out WorkerInfo worker))
                 return;
@@ -220,11 +238,6 @@ namespace Drill4Net.Agent.Service
             }
             catch { }
         }
-
-        internal void DeleteTopic(string topic)
-        {
-            _admin.DeleteTopics(_rep.Options.Servers, new List<string> { topic });
-        }
         #endregion
         #region Targets
         /// <summary>
@@ -233,14 +246,21 @@ namespace Drill4Net.Agent.Service
         /// <param name="target">The target.</param>
         private void TargetReceiver_TargetInfoReceived(TargetInfo target)
         {
-            RunAgentWorker(target);
+            try
+            {
+                RunAgentWorker(target);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Start worker is failed: {target}", ex);
+            }
         }
 
         /// <summary>
         /// Runs the agent worker.
         /// </summary>
         /// <param name="target">The target info.</param>
-        internal void RunAgentWorker(TargetInfo target)
+        internal virtual void RunAgentWorker(TargetInfo target)
         {
             //Target session
             var sessionUid = target.SessionUid;
@@ -250,17 +270,18 @@ namespace Drill4Net.Agent.Service
             //topics
             string trgTopic = MessagingUtils.GetTargetWorkerTopic(sessionUid);
             var probeTopic = MessagingUtils.GetProbeTopic(sessionUid);
-            var cmdTopic = MessagingUtils.GetCommandTopic(sessionUid);
+            var cmdToWorkerTopic = MessagingUtils.GetCommandToWorkerTopic(sessionUid);
+            var cmdToTransTopic = MessagingUtils.GetCommandToTransmitterTopic(sessionUid);
 
             int pid = -1;
             var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
             if (needStartWorker)
             {
-                pid = StartAgentWorkerProcess(target.SessionUid);
-                _logger.Info($"Worker was started with pid={pid} -> {trgTopic} : {probeTopic}");
+                pid = StartAgentWorkerProcess(target.SessionUid, target.TargetName, target.TargetVersion);
+                _logger.Info($"Worker was started with pid={pid} -> {sessionUid} : {target.TargetName} {target.TargetVersion}");
 
                 //add local worker info
-                var worker = new WorkerInfo(target, trgTopic, probeTopic, cmdTopic, pid);
+                var worker = new WorkerInfo(target, pid, trgTopic, probeTopic, cmdToWorkerTopic, cmdToTransTopic);
                 if (!_workers.TryAdd(target.SessionUid, worker))
                     return;
             }
@@ -274,32 +295,37 @@ namespace Drill4Net.Agent.Service
             _logger.Debug($"Target info was sent to the topic={trgTopic} for the Worker with pid={pid}");
         }
 
-        internal int StartAgentWorkerProcess(Guid targetSession)
+        internal virtual int StartAgentWorkerProcess(Guid targetSession, string targetName, string targetVersion)
         {
+            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}=\"{_cfgPath}\" -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName} -{MessagingTransportConstants.ARGUMENT_TARGET_VERSION}={targetVersion}";
+            _logger.Debug($"Agent Worker's argument: [{args}]");
+
             var process = new Process
             {
                 StartInfo =
                 {
-                    FileName = _processName,
-                    Arguments = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}={_cfgPath} -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession}",
+                    FileName = _workerPath,
+                    Arguments = args,
                     WorkingDirectory = _workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
                 }
             };
-            process.Start();
+            var res = process.Start();
+            if(!res)
+                throw new Exception($"Worker {targetName} {targetVersion} -> pid={process.Id} isn't started");
             return process.Id;
         }
 
-        internal void SendTargetInfoToAgentWorker(string topic, TargetInfo target)
+        internal virtual void SendTargetInfoToAgentWorker(string topic, TargetInfo target)
         {
             //send to worker the Target info by the exclusive topic     
-            var senderOpts = new MessageSenderOptions();
+            var senderOpts = new MessagerOptions() { Sender = new() };
             senderOpts.Servers.AddRange(_rep.Options.Servers); //for sending we use the same server options
-            senderOpts.Topics.Add(topic);
+            senderOpts.Sender.Topics.Add(topic);
 
-            ITargetSenderRepository trgRep = new TargetedSenderRepository(target, senderOpts);
-            /*using*/ ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
+            ITargetedInfoSenderRepository trgRep = new TargetedInfoSenderRepository(target, senderOpts);
+            using ITargetInfoSender sender = new TargetInfoKafkaSender(trgRep);
             sender.SendTargetInfo(trgRep.GetTargetInfo(), topic); //here is exclusive topic for the Worker
         }
 

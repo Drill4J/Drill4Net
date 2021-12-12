@@ -6,16 +6,16 @@ namespace Drill4Net.Agent.Messaging
 {
     public class Pinger : IDisposable
     {
-        private readonly IMessageSenderRepository _rep;
+        private readonly IMessagerRepository _rep;
         private readonly StringDictionary _state;
         private readonly IPingSender _sender;
         private readonly TimeSpan _period;
         private readonly Timer _timer;
         private bool _isSending;
 
-        /***************************************************************/
+        /***********************************************************************/
 
-        public Pinger(IMessageSenderRepository rep, IPingSender sender)
+        public Pinger(IMessagerRepository rep, IPingSender sender)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _sender = sender ?? throw new ArgumentNullException(nameof(sender));
@@ -23,6 +23,7 @@ namespace Drill4Net.Agent.Messaging
             {
                 { MessagingConstants.PING_SUBSYSTEM, rep.Subsystem },
                 { MessagingConstants.PING_TARGET_NAME, rep.TargetName },
+                { MessagingConstants.PING_TARGET_VERSION, rep.TargetVersion },
                 { MessagingConstants.PING_TARGET_SESSION, rep.TargetSession.ToString() },
                 { MessagingConstants.PING_TIME, GetTime() },
                 { MessagingConstants.PING_MEMORY, GetMemory() },

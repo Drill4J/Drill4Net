@@ -1,26 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using Confluent.Kafka;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Kafka
 {
     public class CommandKafkaSender : AbstractKafkaSender, ICommandSender
     {
         private IProducer<Null, Command> _producer;
+        private readonly Logger _logger;
 
         /**************************************************************************/
 
-        public CommandKafkaSender(IMessageSenderRepository rep) : base(rep)
+        public CommandKafkaSender(IMessagerRepository rep) : base(rep)
         {
+            _logger = new TypedLogger<CommandKafkaSender>(rep.Subsystem);
         }
 
         /**************************************************************************/
 
-        public void SendCommand(int type, string data)
+        public void SendCommand(int type, string data, IEnumerable<string> topics)
         {
-            var topic = MessagingUtils.GetCommandTopic(_rep.TargetSession.ToString());
             var com = new Command { Type = type, Data = data };
             var mess = new Message<Null, Command> { Value = com, Headers = _headers };
-            _producer.Produce(topic, mess, HandleProbeData);
+            foreach (var topic in topics)
+            {
+                _logger.Debug($"Sending command [{type}] to topic [{topic}]");
+                _producer.Produce(topic, mess, HandleProbeData);
+            }
+            Flush(); //we must guarantee the delivery
         }
 
         private void HandleProbeData(DeliveryReport<Null, Command> report)
@@ -42,8 +50,13 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         protected override void ConcreteDisposing()
         {
-            _producer?.Flush(TimeSpan.FromSeconds(10));
+            Flush();
             _producer?.Dispose();
+        }
+
+        public void Flush()
+        {
+            _producer?.Flush(TimeSpan.FromSeconds(10));
         }
     }
 }

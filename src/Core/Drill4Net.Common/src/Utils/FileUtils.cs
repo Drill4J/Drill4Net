@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Common
 {
@@ -16,55 +17,90 @@ namespace Drill4Net.Common
         /// </summary>
         public static string EntryDir { get; }
 
+        public static string CallingDir { get; }
+
         public static string ExecutingDir { get; }
 
-        public static string EmergencyDir { get; }
-
-        public const string LOG_FOLDER_EMERGENCY = "logs_drill";
-
-        /******************************************************************/
+        /***************************************************************************/
 
         static FileUtils()
         {
-            ExecutingDir = GetExecutionDir();
-            EntryDir = GetEntryDir() ?? ExecutingDir;
-            EmergencyDir = GetEmergencyDir();
+            ExecutingDir = GetExecutingDir() ?? GetProcessDir();
+            CallingDir = GetCallingDir() ?? ExecutingDir;
+            EntryDir = GetEntryDir() ?? CallingDir;
         }
 
-        /******************************************************************/
+        /***************************************************************************/
 
+        #region ProductVersion
         public static string GetProductVersion(Type type)
         {
-            return GetProductVersion(type.Assembly.Location);
+            return GetProductVersion(type?.Assembly);
+        }
+
+        public static string GetProductVersion(Assembly asm)
+        {
+            return GetProductVersion(asm?.Location);
         }
 
         public static string GetProductVersion(string asmPath)
         {
-            return FileVersionInfo.GetVersionInfo(asmPath).ProductVersion;
+            if(string.IsNullOrWhiteSpace(asmPath))
+                return null;
+            return FileVersionInfo.GetVersionInfo(asmPath)?.ProductVersion;
         }
-
+        #endregion
         #region Directories
-        public static string GetExecutionDir()
+        internal static string GetExecutingDir()
         {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            try
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
-        public static string GetCallingDir()
+        internal static string GetCallingDir()
         {
-            return Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            try
+            {
+                var asm = Assembly.GetCallingAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
         /// <summary>
         /// Directory for the emergency logs out of scope of the common log system
         /// </summary>
-        public static string GetEntryDir()
+        internal static string GetEntryDir()
         {
-            return Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+            try
+            {
+                var asm = Assembly.GetEntryAssembly();
+                if (asm == null)
+                    return null;
+                return Path.GetDirectoryName(asm.Location);
+            }
+            catch { return null; }
         }
 
-        internal static string GetEmergencyDir()
+        internal static string GetProcessDir()
         {
-            return Path.Combine(EntryDir, LOG_FOLDER_EMERGENCY);
+            var prc = Process.GetCurrentProcess();
+            return Path.GetDirectoryName(prc.MainModule.FileName);
+        }
+
+        public static bool IsPossibleFilePath(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return false;
+            return str.Contains(":") || str.Contains("..") || str.Contains("/") || str.Contains("\\");
         }
 
         public static bool IsSameDirectories(string dir1, string dir2)
@@ -91,7 +127,14 @@ namespace Drill4Net.Common
             return path;
         }
 
-        public static void DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)
+        public static string GetDirectoryName(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return null;
+            return path.EndsWith("\\") || path.EndsWith("/") ? Path.GetDirectoryName(path) : path;
+        }
+
+        public async static Task DirectoryCopy(string sourceDir, string destDir, bool copySubDirs = true)
         {
             var dir = new DirectoryInfo(sourceDir);
             if (!dir.Exists)
@@ -100,11 +143,10 @@ namespace Drill4Net.Common
             var dirs = dir.GetDirectories();
             Directory.CreateDirectory(destDir);
 
-            var files = dir.GetFiles();
-            foreach (FileInfo file in files)
+            foreach (FileInfo file in dir.GetFiles())
             {
                 string tempPath = Path.Combine(destDir, file.Name);
-                file.CopyTo(tempPath, false);
+                _ = Task.Run(() => file.CopyTo(tempPath, false));
             }
 
             if (copySubDirs)
@@ -112,21 +154,11 @@ namespace Drill4Net.Common
                 foreach (DirectoryInfo subdir in dirs)
                 {
                     string tempPath = Path.Combine(destDir, subdir.Name);
-                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
+                    await DirectoryCopy(subdir.FullName, tempPath, copySubDirs)
+                        .ConfigureAwait(false);
                 }
             }
         }
         #endregion
-
-        /// <summary>
-        /// Get directory for the all subsystems of the Drill4Net
-        /// </summary>
-        /// <param name="relativeBaseDir"></param>
-        /// <param name="logFolder"></param>
-        /// <returns>Log directory's path</returns>
-        public static string GetCommonLogDirectory(string relativeBaseDir, string logFolder = "logs")
-        {
-            return Path.Combine(GetFullPath(relativeBaseDir), logFolder);
-        }
     }
 }

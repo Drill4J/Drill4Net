@@ -7,15 +7,15 @@ using Drill4Net.BanderLog.Sinks;
 
 namespace Drill4Net.BanderLog
 {
-    public class LogManager : AbstractSink
+    public class LogManager : AbstractSink, ILogManager
     {
-        public Dictionary<int, ILogger> _sinks;
+        public Dictionary<int, ILogger> Sinks { get; }
 
         /*****************************************************************************/
 
         public LogManager(IEnumerable<AbstractSink> sinks = null)
         {
-            _sinks = new Dictionary<int, ILogger>();
+            Sinks = new Dictionary<int, ILogger>();
             if (sinks != null)
             {
                 foreach (var sink in sinks)
@@ -40,20 +40,22 @@ namespace Drill4Net.BanderLog
                     key = sink.GetHashCode();
                     break;
             }
-            if (_sinks.ContainsKey(key))
-                _sinks.Remove(key); //return? exception? remove old? -> add func parameter?
-            _sinks.Add(key, sink);
+
+            //essentially the same loggers are replaced by the latter
+            if (Sinks.ContainsKey(key))
+                Sinks.Remove(key); //return? exception? remove old? -> add func parameter?
+            Sinks.Add(key, sink);
         }
 
         public IList<ILogSink> GetSinks()
         {
-            return _sinks.Values.OfType<ILogSink>().ToList();
+            return Sinks.Values.OfType<ILogSink>().ToList();
         }
 
         #region Log
         public override void Log<TState>(LogLevel logLevel, TState message, Exception exception = null, [CallerMemberName] string caller = "")
         {
-            foreach (var sink in _sinks.Values)
+            foreach (var sink in Sinks.Values)
             {
                 //sink.Log(logLevel, message, exception, caller,);
                 switch (sink)
@@ -71,14 +73,14 @@ namespace Drill4Net.BanderLog
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            foreach (var sink in _sinks.Values)
+            foreach (var sink in Sinks.Values)
                 sink.Log(logLevel, eventId, state, exception, formatter);
         }
 
         internal override void LogEx<TState>(LogLevel logLevel, ILoggerData loggerData, TState state, Exception exception,
             string caller, Func<TState, Exception, string> formatter)
         {
-            foreach (var sink in _sinks.Values)
+            foreach (var sink in Sinks.Values)
             {
                 //hmmm....
                 switch (sink)

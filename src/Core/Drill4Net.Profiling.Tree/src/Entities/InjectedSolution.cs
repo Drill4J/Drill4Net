@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Drill4Net.Profiling.Tree
 {
@@ -13,6 +13,12 @@ namespace Drill4Net.Profiling.Tree
     {
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+        public string SourceDir => Path;
+
+        /// <summary>
+        /// Specified product version from the injection configuration.
+        /// </summary>
+        public string ProductVersion { get; set; }
         public string Description { get; set; }
 
         /************************************************************************/
@@ -23,10 +29,10 @@ namespace Drill4Net.Profiling.Tree
         {
         }
 
-        public InjectedSolution(string name, string path) : base(path, path)
+        public InjectedSolution(string name, string sourceDir) : base(sourceDir, sourceDir)
         {
             Name = name;
-            Path = path;
+            Path = sourceDir;
         }
 
         /************************************************************************/
@@ -59,6 +65,22 @@ namespace Drill4Net.Profiling.Tree
             CleanEntities(GetAllTypes().Cast<InjectedSimpleEntity>().ToList(), parents);
             CleanEntities(GetAllAssemblies().Cast<InjectedSimpleEntity>().ToList(), parents);
             CleanEntities(GetAllDirectories().Cast<InjectedSimpleEntity>().ToList(), parents);
+        }
+
+        /// <summary>
+        /// If the ProductVersion property is not empty, it returns. Otherwise it tries 
+        /// to get the version from processed assemblies.
+        /// </summary>
+        /// <returns></returns>
+        public string SearchProductVersion()
+        {
+            if(!string.IsNullOrWhiteSpace(ProductVersion))
+                return ProductVersion;
+            var asms = GetAssemblies().Where(a => a.ProductVersion != "0.0.0.0");
+            var entryAsmVersion = asms.FirstOrDefault(a => a.HasEntryPoint)?.ProductVersion;
+            if(entryAsmVersion != null)
+                return entryAsmVersion;
+            return asms.FirstOrDefault(a => !a.HasEntryPoint)?.ProductVersion;
         }
     }
 }

@@ -6,18 +6,18 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class CommandKafkaReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, ICommandReceiver
+    public class CommandKafkaReceiver : AbstractKafkaReceiver<MessagerOptions>, ICommandReceiver
     {
         public event CommandReceivedHandler CommandReceived;
 
-        public string TargetSession { get; }
+        public Guid TargetSession { get; }
 
         private readonly Logger _logger;
         private CancellationTokenSource _cts;
 
         /****************************************************************************************/
 
-        public CommandKafkaReceiver(AgentWorkerRepository rep) : base(rep)
+        public CommandKafkaReceiver(TargetedReceiverRepository rep) : base(rep)
         {
             _logger = new TypedLogger<CommandKafkaReceiver>(rep.Subsystem);
             TargetSession = rep.TargetSession;
@@ -48,47 +48,52 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
             _logger.Info("Start retrieving commands...");
 
             _cts = new();
-            var opts = _rep.Options;
-            var topics = MessagingUtils.GetCommandTopic(TargetSession);
-            _logger.Debug($"Command topic: {topics}");
+            var cmdTopics = MessagingUtils.FilterCommandTopics(_rep.Options.Receiver?.Topics);
+            _logger.Debug($"Receiver command topics: [{string.Join(",", cmdTopics)}]");
 
-            try
+            while (true)
             {
-                using var c = new ConsumerBuilder<Ignore, Command>(_cfg)
-                    .SetValueDeserializer(new CommandDeserializer())
-                    .Build();
-                c.Subscribe(topics);
-
                 try
                 {
-                    while (true)
+                    using var c = new ConsumerBuilder<Ignore, Command>(_cfg)
+                        .SetValueDeserializer(new CommandDeserializer())
+                        .Build();
+                    c.Subscribe(cmdTopics);
+
+                    try
                     {
-                        try
+                        while (true)
                         {
-                            var cr = c.Consume(_cts.Token);
-                            var command = cr?.Message?.Value;
-                            _logger.Debug($"Received command type: [{command?.Type}]");
-                            CommandReceived?.Invoke(command);
-                        }
-                        catch (ConsumeException e)
-                        {
-                            var err = e.Error;
-                            ErrorOccuredHandler(this, err.IsFatal, err.IsLocalError, err.Reason);
+                            try
+                            {
+                                var cr = c.Consume(_cts.Token);
+                                var command = cr?.Message?.Value;
+                                _logger.Debug($"Received command type: [{command?.Type}]");
+                                CommandReceived?.Invoke(command);
+                            }
+                            //Unknown topic (is not create by Server yet)
+                            catch (ConsumeException e) when (e.HResult == -2146233088) { }
+                            catch (ConsumeException e)
+                            {
+                                var err = e.Error;
+                                ErrorOccuredHandler(this, err.IsFatal, err.IsLocalError, err.Reason);
+                            }
                         }
                     }
-                }
-                catch (OperationCanceledException opex)
-                {
-                    // Ensure the consumer leaves the group cleanly and final offsets are committed.
-                    c.Close();
+                    catch (OperationCanceledException opex)
+                    {
+                        // Ensure the consumer leaves the group cleanly and final offsets are committed.
+                        c.Close();
 
-                    _logger.Warning("Consuming was cancelled", opex);
-                    ErrorOccuredHandler(this, true, false, opex.Message);
+                        _logger.Warning("Consuming was cancelled", opex);
+                        ErrorOccuredHandler(this, true, false, opex.Message);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Fatal("Error for init retrieving of commands", ex);
+                catch (Exception ex)
+                {
+                    _logger.Error("Error for init retrieving of commands", ex);
+                    Thread.Sleep(2000); //yes, I think sync call is better, because the problem more likely is remote
+                }
             }
         }
     }

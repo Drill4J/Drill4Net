@@ -2,6 +2,7 @@
 Type: Injector #type as hint
 Target: # some metadata about target
     Name: console-testing-target-kafka # optional injection name
+    Version: #0.0.999 # version of whole Product, can be empty and can be overridden by Agent's configs
 Source: # what and how processing
     Directory: ..\..\Tests\TargetApps\
     Filter: # filter for files, namespaces, classes...
@@ -26,7 +27,7 @@ Proxy: # the injecting for transfer data to profiler
   Static: true
 Profiler: # data collector/processor in separate assembly
   Name: Standard agent # name exactly for agent subsystem
-  Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\ # for developers in VS
+  Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\
   #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
   AssemblyName: Drill4Net.Agent.Transmitter.dll
   Namespace: Drill4Net.Agent.Transmitter

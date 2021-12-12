@@ -23,7 +23,7 @@ namespace Drill4Net.Compressor.Benchmarks
         {
             IBenchmarkLogger fileLogger = new BenchmarkFileLogger(Path.Combine(FileUtils.ExecutingDir, CompressorConfigurator.BENCHMARK_LOG_PATH));
             var logBld = new LogBuilder();
-            var logger = logBld.CreateStandardLogger(Path.Combine(FileUtils.GetExecutionDir(), CompressorConfigurator.LOG_PATH));
+            var logger = logBld.CreateStandardLogger(Path.Combine(FileUtils.ExecutingDir, CompressorConfigurator.LOG_PATH));
             var tests = new Tests(logger);
             var cfgPath = Path.Combine(FileUtils.ExecutingDir, CompressorConfigurator.CFG_NAME);
 

@@ -16,12 +16,14 @@
 
 	<ItemGroup>
 	  <PackageReference Include="DumpExtensions" Version="2.0.0" />
-	  <PackageReference Include="RestSharp" Version="106.12.0" />
+	  <PackageReference Include="GitInfo" Version="2.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\Admin\Drill4Net.Admin.Requester\Drill4Net.Admin.Requester.csproj" />
 	  <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
 	  <ProjectReference Include="..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
+	  <ProjectReference Include="..\Drill4Net.Agent.Standard\Drill4Net.Agent.Standard.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ using Drill4Net.Core.Repository;
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
     public abstract class AbstractKafkaReceiver<T> : IMessageReceiver
-        where T : MessageReceiverOptions, new()
+        where T : MessagerOptions, new()
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
@@ -22,13 +22,21 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         protected AbstractKafkaReceiver(AbstractRepository<T> rep)
         {
+            #region Init/checks
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _logger = new TypedLogger<AbstractKafkaReceiver<T>>(rep.Subsystem);
             var opts = _rep.Options;
+            if(opts == null)
+                throw new Exception("Options are empty");
+            if (opts.Receiver == null)
+                throw new Exception("Receiver is empty");
+            if (opts.Servers == null || opts.Servers.Count == 0)
+                throw new Exception("Servers are empty");
+            #endregion
 
             _cfg = new ConsumerConfig
             {
-                GroupId = opts.GroupId,
+                GroupId = opts.Receiver.GroupId,
                 BootstrapServers = string.Join(",", opts.Servers),
 
                 // Note: The AutoOffsetReset property determines the start offset in the event

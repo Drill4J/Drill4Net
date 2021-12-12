@@ -25,8 +25,8 @@ namespace Drill4Net.Injector.Strategies.Blocks
             //
             var processor = ctx.Processor;
             var instructions = ctx.Instructions;
-            var jumpers = ctx.BusinessInstructions.Where(a => ctx.Jumpers.Contains(a) &&
-                                                              !ctx.Switches.Contains(a))
+            var jumpers = ctx.BusinessInstructions
+                .Where(a => ctx.Jumpers.Contains(a) && !ctx.Switches.Contains(a))
                 .OrderBy(a => a.Offset);
 
             int lastProcInd = -1;

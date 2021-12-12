@@ -1,40 +1,58 @@
 ﻿using System;
 using System.IO;
-using Drill4Net.BanderLog;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Core.Repository
 {
+    /// <summary>
+    /// Repository that can work with Target's tree <see cref="InjectedSolution"/> from file,
+    /// search and check paths for it
+    /// </summary>
+    /// <typeparam name="TOptions"></typeparam>
+    /// <typeparam name="THelper"></typeparam>
     public abstract class TreeRepository<TOptions, THelper> : ConfiguredRepository<TOptions, THelper>
             where TOptions : TargetOptions, new()
             where THelper : BaseOptionsHelper<TOptions>, new()
     {
+        public string TargetVersionFromArgs { get; }
+
+        protected TreeRepositoryHelper _helper;
         private Logger _logger;
 
         /*****************************************************************************************/
 
-        protected TreeRepository(string[] args, string subsystem) : base(args, subsystem)
+        protected TreeRepository(string subsystem, string[] args) : base(subsystem, args)
         {
-            CreateTypedLogger();
+            Init();
+            TargetVersionFromArgs = GetArgumentTargetVersion(args);
+            if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
+                Options.Target.Version = TargetVersionFromArgs;
         }
 
-        protected TreeRepository(string cfgPath, string subsystem) : base(cfgPath, subsystem)
+        protected TreeRepository(string subsystem, string cfgPath) : base(subsystem, cfgPath)
         {
-            CreateTypedLogger();
+            Init();
         }
 
-        protected TreeRepository(TOptions opts, string subsystem) : base(opts, subsystem)
+        protected TreeRepository(string subsystem, TOptions opts) : base(subsystem, opts)
         {
-            CreateTypedLogger();
+            Init();
         }
 
         /*****************************************************************************************/
 
-        private void CreateTypedLogger()
+        private void Init()
         {
             _logger = new TypedLogger<TreeRepository<TOptions, THelper>>(Subsystem);
+            _helper = new TreeRepositoryHelper(Subsystem);
+        }
+
+        protected string GetArgumentTargetVersion(string[] args)
+        {
+            return GetArgument(args, CoreConstants.ARGUMENT_TARGET_VERSION, null);
         }
 
         #region Injected Tree
@@ -67,54 +85,31 @@ namespace Drill4Net.Core.Repository
         {
             _logger.Debug($"Path param = [{path}]");
 
-            var optTreeDir = string.IsNullOrWhiteSpace(Options.TreePath) ?
-                FileUtils.EntryDir :
-                FileUtils.GetFullPath(Options.TreePath);
-            //
-            if (!string.IsNullOrWhiteSpace(path))
+            string baseDir;
+            if (string.IsNullOrWhiteSpace(path) && !string.IsNullOrWhiteSpace(Options.TreePath))
             {
-                path = FileUtils.GetFullPath(path);
+                baseDir = Options.TreePath;
+                _logger.Debug($"Used path from cfg = [{path}]");
             }
-            else //by hint file
-            {
-                var hintPath = GetTreeFileHintPath(optTreeDir);
-                if (File.Exists(hintPath))
-                {
-                    _logger.Debug($"The tree hint file founded: [{hintPath}]");
-                    path = File.ReadAllText(hintPath);
-                }
-                else
-                {
-                    _logger.Debug("The tree hint file not exists");
-                }
-            }
-            //
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
-            {
-                path = Path.Combine(optTreeDir, CoreConstants.TREE_FILE_NAME);
-                _logger.Debug($"Last chance to get the tree path: [{path}]");
-            }
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"Solution Tree not found: [{path}]");
-            //
-            return path;
+            else
+                baseDir = FileUtils.EntryDir;
+
+            return _helper.CalculateTreeFilePath(path, baseDir);
         }
 
-        public virtual string GetTreeFilePath(InjectedSolution tree)
+        public string GetTreeFilePath(InjectedSolution tree)
         {
-            return GetTreeFilePath(tree.DestinationPath);
+            return _helper.GetTreeFilePath(tree);
         }
 
-        public virtual string GetTreeFilePath(string targetDir)
+        public string GetTreeFileHintPath(string path)
         {
-            if (string.IsNullOrWhiteSpace(targetDir))
-                targetDir = FileUtils.ExecutingDir;
-            return Path.Combine(targetDir, CoreConstants.TREE_FILE_NAME);
+            return _helper.GetTreeFileHintPath(path);
         }
 
-        public virtual string GetTreeFileHintPath(string targetDir)
+        public string GetTreeFilePathByDir(string targetDir)
         {
-            return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
+            return _helper.GetTreeFilePathByDir(targetDir);
         }
         #endregion
     }

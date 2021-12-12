@@ -15,33 +15,67 @@ namespace Drill4Net.Agent.Transport
     public class AgentSender : AbstractCoveragerSender
     {
         private readonly Connector _connector;
-        private readonly JsonSerializerSettings _deserOpts;
+        private readonly JsonSerializerSettings _serOpts;
 
         /************************************************************************/
 
         public AgentSender(Connector connector): base(CoreConstants.SUBSYSTEM_AGENT)
         {
             _connector = connector ?? throw new ArgumentNullException(nameof(connector));
-            _deserOpts = new JsonSerializerSettings
-            {
-            };
+            _serOpts = new JsonSerializerSettings();
         }
 
         /************************************************************************/
 
-        protected override string Serialize(object data)
-        {
-            return JsonConvert.SerializeObject(data, _deserOpts);
-        }
-
-        protected override void SendConcrete(string messageType, string route, string message)
+        protected override void SendMessageConcrete(string messageType, string route, string message)
         {
             _connector.SendMessage(messageType, route, message);
         }
 
-        protected override void SendToPluginConcrete(string pluginId, string message)
+        protected override void SendMessageToPluginConcrete(string pluginId, string message)
         {
             _connector.SendPluginMessage(pluginId, message);
+        }
+
+        protected override void SendActionToPluginConcrete(string pluginId, string message)
+        {
+            _connector.SendPluginAction(pluginId, message);
+        }
+
+        /// <summary>
+        /// Start the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        /// <param name="isRealtime"></param>
+        /// <param name="isGlobal"></param>
+        protected override void StartSessionConcrete(string pluginId, string sessionId, bool isRealtime, bool isGlobal)
+        {
+            _connector.StartSession(pluginId, sessionId, isRealtime, isGlobal);
+        }
+
+        /// <summary>
+        /// Stop the session on Drill Admin side
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="sessionId"></param>
+        protected override void StopSessionConcrete(string pluginId, string sessionId)
+        {
+            _connector.StopSession(pluginId, sessionId);
+        }
+
+        /// <summary>
+        /// Register info about running tests.
+        /// </summary>
+        /// <param name="pluginId"></param>
+        /// <param name="tests2Run"></param>
+        public override void RegisterTestsRunConcrete(string pluginId, string tests2Run)
+        {
+            _connector.AddTestsRun(pluginId, tests2Run);
+        }
+        protected override string Serialize(object data)
+        {
+            return JsonConvert.SerializeObject(data, _serOpts);
         }
 
         #region Debug

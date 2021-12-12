@@ -8,9 +8,18 @@
     public static class AgentConstants
     {
         public const string TEST_NAME_DEFAULT = "Default";
+
+        public const string TEST_AUTO = "AUTO";
         public const string TEST_MANUAL = "MANUAL";
+
         public const string ADMIN_PLUGIN_NAME = "test2code";
-        public static readonly string KEY_TESTCASE_CONTEXT = "TestCase_Context";
+
+        public const string KEY_TESTCASE_CONTEXT = "TestCaseContext";
+        public const string KEY_TESTCASE_TESTNAME_FOR_ADMIN = "TestNameForAdmin";
+
+        public const string CONTEXT_SYSTEM_PREFIX = "$$__";
+
+        public const string CONNECTOR_LOG_FILE_NAME = "connector.log";
 
         #region Topics
         /// <summary>
@@ -23,7 +32,7 @@
         /// The Admin Panel uses the topic for agent registration
         /// with plugins and attaching registered with plugins agent.
         /// </summary>
-        public const string TOPIC_AGENT_LOAD = "/agent/load";
+        public const string TOPIC_AGENT_PLUGIN_LOAD = "/agent/load";
 
         /// <summary>
         /// The topic is used for agent registration with/without a plugin, package settings changing.
@@ -50,11 +59,12 @@
         #endregion
         #region Message incoming
         public const string MESSAGE_IN_START_SESSION = "START_AGENT_SESSION";
-        public const string MESSAGE_IN_INIT_ACTIVE_SCOPE = "INIT_ACTIVE_SCOPE"; 
+        public const string MESSAGE_IN_INIT_ACTIVE_SCOPE = "INIT_ACTIVE_SCOPE";
         public const string MESSAGE_IN_STOP_SESSION = "STOP";
         public const string MESSAGE_IN_STOP_ALL = "STOP_ALL";
         public const string MESSAGE_IN_CANCEL_SESSION = "CANCEL";
         public const string MESSAGE_IN_CANCEL_ALL = "CANCEL_ALL";
+        public const string MESSAGE_IN_ADD_SESSION_TESTS = "ADD_SESSION_TESTS";
         #endregion
         #region Messages outgoing
         public const string MESSAGE_OUT_INIT = "INIT";
@@ -70,7 +80,14 @@
         public const string MESSAGE_OUT_SESSION_ALL_CANCELLED = "SESSIONS_CANCELLED";
         public const string MESSAGE_OUT_SESSION_FINISHED = "SESSION_FINISHED";
         public const string MESSAGE_OUT_SESSION_ALL_FINISHED = "SESSIONS_FINISHED";
-        #endregion
 
+        public const string MESSAGE_OUT_SCOPE_SWITCH = "SWITCH_ACTIVE_SCOPE";
+        #endregion
+        #region Autotests params
+        //these should be sync with the same ones on Admin side (it seems, in frontend)
+        public const string AUTOTEST_PARAMS_KEY_TYPE = "MethodType";
+        public const string AUTOTEST_PARAMS_KEY_METHOD = "Method";
+        public const string AUTOTEST_PARAMS_KEY_METHOD_PARAMS = "MethodParams";
+        #endregion
     }
 }

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Profiling.Tree;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.Common;
+using Drill4Net.BanderLog;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Standard
 {
@@ -13,6 +16,20 @@ namespace Drill4Net.Agent.Standard
     /// </summary>
     public class TreeConverter
     {
+        private readonly Logger _logger;
+
+        /***********************************************************************************/
+
+        /// <summary>
+        /// Create helper for converting DTO entities
+        /// </summary>
+        public TreeConverter()
+        {
+            _logger = new TypedLogger<TreeConverter>(CoreConstants.SUBSYSTEM_AGENT);
+        }
+
+        /***********************************************************************************/
+
         #region AstEntities
         /// <summary>
         /// Convert list of <see cref="InjectedType"/> to the list of <see cref="AstEntity"/>
@@ -28,8 +45,15 @@ namespace Drill4Net.Agent.Standard
             var res = new ConcurrentBag<AstEntity>();
             foreach (var type in injTypes.Where(a => !a.IsCompilerGenerated).AsParallel())
             {
+                if (type == null)
+                    continue;
+
                 lock (res)
-                    res.Add(ToAstEntity(type));
+                {
+                    var entity = ToAstEntity(type);
+                    if (entity != null)
+                        res.Add(entity);
+                }
             }
             return res.OrderBy(a => a.name).ToList();
         }
@@ -47,9 +71,13 @@ namespace Drill4Net.Agent.Standard
             //
             var entity = new AstEntity(injType.Namespace, injType.Name);
             var injMethods = GetOrderedBusinessMethods(injType);
-            foreach (var injMethod in injMethods)
+            if (injMethods != null)
             {
-                entity.methods.Add(ToAstMethod(injMethod));
+                foreach (var injMethod in injMethods)
+                {
+                    if (injMethod != null)
+                        entity.methods.Add(ToAstMethod(injMethod));
+                }
             }
             return entity;
         }
@@ -77,16 +105,24 @@ namespace Drill4Net.Agent.Standard
         /// Create <see cref="CoverageRegistrator"/> for session <see cref="StartSessionPayload"/> 
         /// and bind it to list of <see cref="InjectedType"/>
         /// </summary>
+        /// <param name="context"></param>
         /// <param name="session"></param>
         /// <param name="injTypes"></param>
         /// <returns></returns>
-        public CoverageRegistrator CreateCoverageRegistrator(StartSessionPayload session, IEnumerable<InjectedType> injTypes)
+        public CoverageRegistrator CreateCoverageRegistrator(string context, StartSessionPayload session, IEnumerable<InjectedType> injTypes)
         {
-            //TODO: cloning from some Template object?
-            var reg = new CoverageRegistrator(session);
-            var testName = session?.TestName ?? Guid.NewGuid().ToString();
-            if (session != null)
+            //TODO: cloning from some Template object !!!
+            var reg = new CoverageRegistrator(context, session);
+            string testName = null;
+            if (session.TestType == AgentConstants.TEST_MANUAL)
+                testName = session?.TestName;
+            if(string.IsNullOrWhiteSpace(testName))
+                testName = context ?? $"UnknownContext_{Guid.NewGuid()}";
+            _logger.Debug($"TestName=[{testName}]; context=[{context}]");
+
+            if(session.TestType == AgentConstants.TEST_MANUAL && session != null)
                 session.TestName = testName;
+
             var bizTypes = injTypes
                 .Where(a => !a.IsCompilerGenerated)
                 .Distinct(new InjectedEntityComparer<InjectedType>());
@@ -141,7 +177,7 @@ namespace Drill4Net.Agent.Standard
         internal IOrderedEnumerable<InjectedMethod> GetOrderedBusinessMethods(InjectedType injType)
         {
             var injMethods = injType?.GetMethods()?
-                .Where(a => !a.IsCompilerGenerated && a.End2EndBusinessIndexes.Count > 0)
+                .Where(a => !a.IsCompilerGenerated && a.End2EndBusinessIndexes?.Count > 0)?
                 .OrderBy(a => a, new MethodNameComparer());
             return injMethods;
         }

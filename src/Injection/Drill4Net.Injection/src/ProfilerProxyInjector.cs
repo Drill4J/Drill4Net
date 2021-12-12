@@ -4,6 +4,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Cecilifier.Runtime;
 using Drill4Net.Injector.Core;
+using System.IO;
 
 namespace Drill4Net.Injection
 {
@@ -91,7 +92,7 @@ namespace Drill4Net.Injection
             //var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Agent.Test\bin\Debug\netstandard2.0\Agent.Test.dll";
             var lv_profPath1 = new VariableDefinition(module.TypeSystem.String);
             profilerProxy_cctor.Body.Variables.Add(lv_profPath1);
-            var Ldstr2 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, $"{ProfilerReadDir}{ProfilerAsmName}");
+            var Ldstr2 = il_ProfilerProxy_cctor.Create(OpCodes.Ldstr, Path.Combine(ProfilerReadDir, ProfilerAsmName));
             il_ProfilerProxy_cctor.Append(Ldstr2);
             var Stloc3 = il_ProfilerProxy_cctor.Create(OpCodes.Stloc, lv_profPath1);
             il_ProfilerProxy_cctor.Append(Stloc3);

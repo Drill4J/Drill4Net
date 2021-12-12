@@ -6,11 +6,11 @@ namespace Drill4Net.Agent.Messaging.Kafka
 {
     public class TargetInfoKafkaSender : AbstractKafkaSender, ITargetInfoSender
     {
-        private IProducer<Null, byte[]> _infoProducer;
+        private IProducer<Null, byte[]> _targetProducer;
 
         /**************************************************************************/
 
-        public TargetInfoKafkaSender(ITargetSenderRepository rep): base(rep)
+        public TargetInfoKafkaSender(ITargetedInfoSenderRepository rep): base(rep)
         {
         }
 
@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         protected override void CreateProducers()
         {
-            _infoProducer = new ProducerBuilder<Null, byte[]>(_cfg).Build();
+            _targetProducer = new ProducerBuilder<Null, byte[]>(_cfg).Build();
         }
 
         public int SendTargetInfo(byte[] info, string topic)
@@ -62,7 +62,6 @@ namespace Drill4Net.Agent.Messaging.Kafka
                     SetHeaderValue<int>(MessagingConstants.HEADER_MESSAGE_PACKET_IND, i);
                     SendPacket(packet, topic);
                 }
-                _infoProducer.Flush();
             }
             return LastError == null ? 0 : -2;
         }
@@ -73,7 +72,8 @@ namespace Drill4Net.Agent.Messaging.Kafka
                 topic = MessagingConstants.TOPIC_TARGET_INFO;
             //
             var mess = new Message<Null, byte[]> { Value = packet, Headers = _headers };
-            _infoProducer.Produce(topic, mess, HandleBytesData);
+            _targetProducer.Produce(topic, mess, HandleBytesData);
+            _targetProducer.Flush(new TimeSpan(0,0,5));
             return LastError == null ? 0 : -2;
         }
 
@@ -89,8 +89,8 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         protected override void ConcreteDisposing()
         {
-            _infoProducer.Flush();
-            _infoProducer?.Dispose();
+            _targetProducer.Flush();
+            _targetProducer?.Dispose();
         }
     }
 }

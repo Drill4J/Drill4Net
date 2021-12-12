@@ -6,6 +6,17 @@
     public class TestCaseContext : BaseTestContext
     {
         /// <summary>
+        /// Engine of test generator framework (SpecFlow, xUnit, NUmit, etc).
+        /// Maybe + version (moniker, etc)??
+        /// </summary>
+        public TestGenerator Generator { get; set; }
+
+        /// <summary>
+        /// Test engine for test runners: xUnit, NUnit, MsTest, etc
+        /// </summary>
+        public TestEngine Engine { get; set; }
+
+        /// <summary>
         /// Group (trait) of the test
         /// </summary>
         public string Group { get; set; }
@@ -30,9 +41,21 @@
 
         public long FinishTime { get; set; }
 
+        public bool IsFinished { get; set; }
+
         /// <summary>
         /// Tests's execution result
         /// </summary>
-        public TestResult Result { get; set; }
+        public string Result { get; set; }
+
+        /********************************************************************/
+
+        public string GetKey()
+        {
+            var key = CaseName ?? QualifiedName ?? DisplayName;
+            //key = System.Web.HttpUtility.UrlEncode(key); //different test cases are different tests
+            //key = key.GetHashCode().ToString(); // TEST!!!
+            return key;
+        }
     }
 }

@@ -7,7 +7,7 @@ using Drill4Net.Core.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public class ProbeKafkaReceiver : AbstractKafkaReceiver<MessageReceiverOptions>, IProbeReceiver
+    public class ProbeKafkaReceiver : AbstractKafkaReceiver<MessagerOptions>, IProbeReceiver
     {
         public event ProbeReceivedHandler ProbeReceived;
 
@@ -16,7 +16,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         /****************************************************************************************/
 
-        public ProbeKafkaReceiver(AbstractRepository<MessageReceiverOptions> rep) : base(rep)
+        public ProbeKafkaReceiver(AbstractRepository<MessagerOptions> rep) : base(rep)
         {
             _logger = new TypedLogger<ProbeKafkaReceiver>(rep.Subsystem);
         }
@@ -47,45 +47,52 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
             _cts = new();
             var opts = _rep.Options;
-            var probeTopics = MessagingUtils.FilterProbeTopics(opts.Topics);
+            var probeTopics = MessagingUtils.FilterProbeTopics(opts.Receiver.Topics);
             _logger.Debug($"Probe topics: {string.Join(",", probeTopics)}");
 
-            try
+            while (true)
             {
-                using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
-                    .SetValueDeserializer(new ProbeDeserializer())
-                    .Build();
-                c.Subscribe(probeTopics);
-
                 try
                 {
-                    while (true)
+                    using var c = new ConsumerBuilder<Ignore, Probe>(_cfg)
+                        .SetValueDeserializer(new ProbeDeserializer())
+                        .Build();
+                    c.Subscribe(probeTopics);
+
+                    try
                     {
-                        try
+                        while (true)
                         {
-                            var cr = c.Consume(_cts.Token);
-                            var probe = cr.Message.Value;
-                            ProbeReceived?.Invoke(probe);
-                        }
-                        catch (ConsumeException e)
-                        {
-                            var err = e.Error;
-                            ErrorOccuredHandler(this, err.IsFatal, err.IsLocalError, err.Reason);
+                            try
+                            {
+                                var cr = c.Consume(_cts.Token);
+                                var probe = cr.Message.Value;
+                                ProbeReceived?.Invoke(probe);
+                            }
+                            //Unknown topic (is not create by Server yet)
+                            catch (ConsumeException e) when (e.HResult == -2146233088) { }
+                            catch (ConsumeException e)
+                            {
+                                var err = e.Error;
+                                ErrorOccuredHandler(this, err.IsFatal, err.IsLocalError, err.Reason);
+                            }
                         }
                     }
-                }
-                catch (OperationCanceledException opex)
-                {
-                    // Ensure the consumer leaves the group cleanly and final offsets are committed.
-                    c.Close();
+                    catch (OperationCanceledException opex)
+                    {
+                        // Ensure the consumer leaves the group cleanly and final offsets are committed.
+                        c.Close();
 
-                    _logger.Warning("Consuming was cancelled", opex);
-                    ErrorOccuredHandler(this, true, false, opex.Message);
+                        _logger.Warning("Consuming was cancelled", opex);
+                        ErrorOccuredHandler(this, true, false, opex.Message);
+                        return;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Fatal("Error for init retrieving of probes", ex);
+                catch (Exception ex)
+                {
+                    _logger.Error("Error for init retrieving of probes", ex);
+                    Thread.Sleep(2000); //yes, I think sync call is better, because the problem more likely is remote
+                }
             }
         }
     }

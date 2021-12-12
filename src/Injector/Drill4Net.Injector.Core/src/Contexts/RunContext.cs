@@ -27,12 +27,16 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Current source directory during processing
         /// </summary>
-        public string SourceDirectory { get; set; }
+        public string ProcessingDirectory { get; set; }
 
         /// <summary>
         /// Current source file path during processing
         /// </summary>
-        public string SourceFile { get; set; }
+        public string ProcessingFile { get; set; }
+
+        public List<string> Monikers { get; set; }
+
+        public List<string> MonikerDirectories { get; }
 
         /// <summary>
         /// Options for injecting process
@@ -79,6 +83,11 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public IProfilerProxyInjector ProxyGenerator { get; }
 
+        /// <summary>
+        /// Generated proxy namespaces by assembly Key
+        /// </summary>
+        public Dictionary<string, string> ProxyNamespaceByKeys { get; set; }
+
         /***************************************************************************************/
 
         /// <summary>
@@ -89,6 +98,9 @@ namespace Drill4Net.Injector.Core
             Repository = rep ?? throw new ArgumentNullException(nameof(rep));
             Tree = tree ?? throw new ArgumentNullException(nameof(tree));
             AssemblyPaths = new Dictionary<string, string>();
+            MonikerDirectories = new List<string>();
+            Monikers = new List<string>();
+            ProxyNamespaceByKeys = new Dictionary<string, string>();
             Versions = DefineProjectVersions(RootDirectory);
             Strategy = Repository.GetStrategy();
             Injector = Repository.GetInjector();

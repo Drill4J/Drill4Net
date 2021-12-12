@@ -1,16 +1,17 @@
 ﻿Description: Agent Server for controlling workers processing the probes for Drill Admin side by messaging
 Type: agent-service # type as hint
-Servers: # list of servers
+Servers: # list of Kafka servers
    - 'localhost:9093'
-   - 'localhost:9094'
-   - 'localhost:9095'
-GroupId: dodnet-agent
-#Topics: # additional topics for the probes
-#    #- probes
+Sender:
+   #Topics: # additional topics
+Receiver:
+   GroupId: dotnet-agent # group of consumers
+   #Topics: # additional topics
+      # #- aaa
 WorkerPath: ..\..\Drill4Net.Agent.Worker\net5.0\Drill4Net.Agent.Worker.exe
 #Debug:
-#    Disabled: false
-#    DontStartWorker: true
+#    Disabled: true
+#    DontStartWorker: false
 Logs:
     - Type: console
       Level: debug

@@ -2,24 +2,37 @@
 using System.IO;
 using System.Linq;
 using System.Dynamic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Drill4Net.Common;
 using Drill4Net.Target.Common.VB;
 
 [assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Engine")]
 //[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
 
+/*** INFO
+ automatic version tagger including Git info - https://github.com/devlooped/GitInfo
+ semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
+ the most common format is v0.0 (or just 0.0 is enough)
+ to change semVer it is nesseccary to create appropriate tag and push it to remote repository
+ patches'(commits) count starts with 0 again after new tag pushing
+ For file version format exactly is digit
+***/
+[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+
 //add this in project's csproj file: 
 //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-                                                /*                                             *
-                                                 *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
-                                                 *   It's needed AS it IS !!!                  *
-                                                 *                                             */
+/*                                             *
+ *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
+ *   It's needed AS it IS !!!                  *
+ *                                             */
 
 namespace Drill4Net.Target.Common
 {

@@ -14,8 +14,9 @@ namespace Drill4Net.Common
         public BenchmarkFileLogger(string filePath)
         {
             FilePath = filePath;
-            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            var dir = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
         }
         /**************************************************************/
 

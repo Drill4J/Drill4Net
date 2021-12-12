@@ -127,6 +127,11 @@ namespace Drill4Net.BanderLog
         }
         #endregion
 
+        public static void Flush()
+        {
+            Manager?.Flush();
+        }
+
         public static void Shutdown()
         {
             Manager?.Shutdown();

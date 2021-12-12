@@ -8,7 +8,7 @@ namespace Drill4Net.BanderLog
     {
         bool IsEnabled(LogLevel logLevel);
         IDisposable BeginScope<TState>(TState state);
-        LogManager GetManager();
+        ILogManager GetManager();
 
         void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
 
