@@ -4,6 +4,15 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.OnlineStore.WebApi</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.OnlineStore.WebApi\Drill4Net.Demo.OnlineStore.WebApi.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.OnlineStore.WebApi</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
