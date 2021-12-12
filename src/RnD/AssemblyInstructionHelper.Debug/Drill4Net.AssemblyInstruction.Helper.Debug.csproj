@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.AssemblyInstruction.Helper.Debug</OutputPath>
+    <DocumentationFile>..\..\..\build\bin\Debug\Drill4Net.AssemblyInstruction.Helper.Debug\Drill4Net.AssemblyInstruction.Helper.Debug.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.AssemblyInstruction.Helper.Debug</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+    <ProjectReference Include="..\AssemblyInstructionHelper\Drill4Net.AssemblyInstruction.Helper.csproj" />
+  </ItemGroup>
+
+</Project>
