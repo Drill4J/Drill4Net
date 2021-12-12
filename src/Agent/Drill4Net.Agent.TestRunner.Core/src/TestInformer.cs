@@ -91,7 +91,13 @@ namespace Drill4Net.Agent.TestRunner.Core
             var runningType = await GetRunningType(isFake).ConfigureAwait(false);
             _logger.Info($"Running type: {runningType}");
 
-            var res = new RunInfo { RunType = runningType };
+            var res = new RunInfo
+            {
+                Target = _agentRep.TargetName,
+                RunType = runningType,
+                DirectoryOptions = _dirOptions,
+                AssemblyOptions = _asmOptions,
+            };
 
             #region Certain
             if (runningType == RunningType.Certain)

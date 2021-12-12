@@ -36,7 +36,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal async Task<List<RunInfo>> GetRunInfos()
         {
             var list = new List<RunInfo>();
-            foreach (var informer in _informers)
+            foreach (var informer in _informers.AsParallel())
             {
                 RunInfo runInfo = await informer.GetRunInfo().ConfigureAwait(false);
                 list.Add(runInfo);

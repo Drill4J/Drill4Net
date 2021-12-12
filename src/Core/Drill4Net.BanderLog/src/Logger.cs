@@ -10,8 +10,16 @@ namespace Drill4Net.BanderLog
     {
         public string Subsystem { get; }
         public string Category { get; }
+
+        /// <summary>
+        /// Extra information for log record. If the data are added separately (not in constructor),
+        /// you need call RefreshExtrasInfo() method.
+        /// </summary>
         public Dictionary<string, object> Extras { get; }
 
+        /// <summary>
+        /// This string will be added into the each log record (now it is JSON representation of the <see cref="Extras"/> property).
+        /// </summary>
         public string ExtrasString { get; private set; }
 
         private readonly JsonSerializerSettings _serOpts;

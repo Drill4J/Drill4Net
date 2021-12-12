@@ -7,15 +7,27 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// </summary>
     internal class RunInfo
     {
+        internal string Target { get; set; }
+
         /// <summary>
         /// Type of autotests' run
         /// </summary>
         internal RunningType RunType { get; set; } = RunningType.Unknown;
 
         /// <summary>
-        /// Tests to run with parameters by assembly path
+        /// Tests to run with parameters by assembly path retrieved from admin side
         /// </summary>
         internal Dictionary<string, RunAssemblyInfo> AssemblyInfos { get; set; } = new();
+
+        /// <summary>
+        /// Options for tests' directory
+        /// </summary>
+        internal RunDirectoryOptions DirectoryOptions { get; set; }
+
+        /// <summary>
+        ///  Options for tests' assembly
+        /// </summary>
+        internal RunAssemblyOptions AssemblyOptions { get; set; }
 
         //TODO: restrict count of simultaneously running cmd processes
 
@@ -23,7 +35,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{RunType} -> assemblies: {AssemblyInfos.Count}";
+            return $"{Target}: {RunType} -> [{DirectoryOptions.Path}] -> assemblies: {AssemblyInfos.Count}";
         }
     }
 }
