@@ -20,9 +20,9 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Host
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services = Bootstrapper.AddTransitentServices(services);
+            services.AddTransientServices();
             services.AddControllers();
-            services = Bootstrapper.AddAutoMapperService(services);
+            services.AddAutoMapperService();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Drill4Net.Demo.OnlineStore.WebApi", Version = "v1" });

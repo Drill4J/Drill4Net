@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class CartsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -39,24 +39,25 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             return Created(new Uri($"/{newCart.Id}", UriKind.Relative), _mapper.Map<CartDto>(newCart));
         }
 
-        [HttpPut("{id}")]
-        public ActionResult AddToCart(Guid cartId, Guid productId, int amount)
+        [HttpPut("{cartId}/items/{itemId}/add")]
+        public ActionResult AddToCart(Guid cartId, Guid itemId, int amount)
         {
-            _cartBllService.AddToCart(cartId, productId, amount);
+            _cartBllService.AddToCart(cartId, itemId, amount);
             return NoContent();
         }
 
-        [HttpPut("{id}")]
-        public ActionResult ChangeCartItemAmount(Guid cartId, Guid productId, int amount)
+        [HttpPut("{cartId}/items/{itemId}/change")]
+        public ActionResult ChangeCartItemAmount(Guid cartId, Guid itemId, int amount)
+
         {
-            _cartBllService.ChangeCartItemAmount(cartId, productId, amount);
+            _cartBllService.ChangeCartItemAmount(cartId, itemId, amount);
             return NoContent();
         }
 
-        [HttpPut("{id}")]
-        public ActionResult RemoveFromCart(Guid cartId, Guid productId)
+        [HttpDelete("{cartId}/items/{itemId}")]
+        public ActionResult RemoveFromCart(Guid cartId, Guid itemId)
         {
-            _cartBllService.RemoveFromCart(cartId, productId);
+            _cartBllService.RemoveFromCart(cartId, itemId);
             return NoContent();
         }
     }

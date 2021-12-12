@@ -11,5 +11,6 @@ namespace Drill4Net.Demo.OnlineStore.Bll.Contracts.Interfaces
     {
         public IEnumerable<Product> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField);
         public IEnumerable<Product> GetFilteredProducts(string category, string namePart);
+        public Product GetProduct(Guid id);
     }
 }

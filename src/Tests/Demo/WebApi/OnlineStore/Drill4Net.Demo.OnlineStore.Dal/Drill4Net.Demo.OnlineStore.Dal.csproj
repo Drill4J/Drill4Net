@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Bll\Drill4Net.Demo.OnlineStore.Bll.csproj" />
+    <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Bll.Contracts\Drill4Net.Demo.OnlineStore.Bll.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,10 +8,10 @@ using System.Linq;
 
 namespace Drill4Net.Demo.OnlineStore.Dal.Services
 {
-    public class ProductDataReadService : IProductDataReadService
+    public class ProductInMemoryStorage : IProductDataReadService, IProductDataWriteService
     {
         private readonly IMapper _mapper;
-        public ProductDataReadService(IMapper mapper)
+        public ProductInMemoryStorage(IMapper mapper)
         {
             _mapper = mapper;
         }
@@ -43,5 +43,36 @@ namespace Drill4Net.Demo.OnlineStore.Dal.Services
             return _mapper.Map<IEnumerable<Bll.Contracts.Models.Product>>(products);
         }
 
+        public Product Create(Product item)
+        {
+            var dalItem = _mapper.Map<Dal.Models.Product>(item);
+            DataContext.Products.Add(dalItem);
+            return item;
+        }
+        public void Delete(Guid id)
+        {
+            var product = ProductDataHelper.GetProduct(id);
+            if (product != null)
+            {
+                DataContext.Products.Remove(product);
+            }
+        }
+        public void Update(Product item)
+        {
+            var product = ProductDataHelper.GetProduct(item.Id);
+            if (product != null)
+            {
+                product.Name = item.Name;
+                product.Category = item.Category;
+                product.Price = item.Price;
+                product.Stock = item.Stock;
+            }
+        }
+
+        public Product GetProduct(Guid id)
+        {
+            var product = ProductDataHelper.GetProduct(id);
+            return _mapper.Map<Bll.Contracts.Models.Product>(product);
+        }
     }
 }

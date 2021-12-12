@@ -10,9 +10,9 @@ namespace Drill4Net.Demo.OnlineStore.WebApi
 {
     public static class Bootstrapper
     {
-        public static IServiceCollection AddTransitentServices(IServiceCollection services)
+        public static IServiceCollection AddTransientServices( this IServiceCollection services)
         {
-            services.AddTransient<IProductDataReadService, ProductDataReadService>();
+            services.AddTransient<IProductDataReadService, ProductInMemoryStorage>();
             services.AddTransient<IProductDataWriteService, ProductDataWriteService>();
             services.AddTransient<ICartDataReadService, CartDataReadService>();
             services.AddTransient<ICartDataWriteService, CartDataWriteService>();
@@ -21,7 +21,7 @@ namespace Drill4Net.Demo.OnlineStore.WebApi
             services.AddTransient<ICartBusinessService, CartService>();
             return services;
         }
-        public static IServiceCollection AddAutoMapperService(IServiceCollection services)
+        public static IServiceCollection AddAutoMapperService(this IServiceCollection services)
         {
             services.AddAutoMapper(
                 typeof(ApiDtoProfile).Assembly, 

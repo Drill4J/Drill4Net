@@ -10,7 +10,7 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -25,14 +25,14 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             _mapper = mapper;
         }
 
-       [HttpGet]
+       [HttpGet("sorted")]
         public IEnumerable<ProductInfoDto> GetSortedProductsByPage(int page, int pageItemsNumber, string sortField)
         {
             var products = _productDalService.GetSortedProductsByPage(page, pageItemsNumber, sortField);
             return _mapper.Map <IEnumerable<ProductInfoDto>>(products);
         }
 
-        [HttpGet]
+        [HttpGet("filtered")]
         public IEnumerable<ProductInfoDto> GetFilteredProducts(string category, string namePart)
         {
             var products = _productDalService.GetFilteredProducts(category, namePart);
@@ -46,15 +46,15 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             return Created(new Uri($"/{newProduct.Id}", UriKind.Relative), _mapper.Map<ProductDto>(newProduct));
         }
         [HttpDelete("{id}")]
-        public ActionResult DeleteProduct(Guid productDtoGuid)
+        public ActionResult DeleteProduct(Guid id)
         {
-            _productBllService.DeleteProduct(productDtoGuid);
+            _productBllService.DeleteProduct(id);
             return NoContent();
         }
         [HttpPut("{id}")]
-        public ActionResult UpdateProduct(Guid productDtoGuid, ProductDto productDto)
+        public ActionResult UpdateProduct(Guid id, ProductDto productDto)
         {
-            if (productDtoGuid != productDto.Id)
+            if (id != productDto.Id)
             {
                 return BadRequest();
             }
