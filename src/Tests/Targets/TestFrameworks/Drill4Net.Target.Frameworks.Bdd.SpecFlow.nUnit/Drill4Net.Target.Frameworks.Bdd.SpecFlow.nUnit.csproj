@@ -16,8 +16,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <SpecFlowObsoleteCodeBehindFiles Remove="Features\Basics\Calculator.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Features\Basics\StringProcessor.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\Longer.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Features\Longer0.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\LongerDefault.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Features\LongerTooBig.feature.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,10 +51,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Features\Longer.feature.cs">
+    <Compile Update="Features\Basics\Calculator.feature.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Features\LongerDefault.feature.cs">
+    <Compile Update="Features\Basics\StringProcessor.feature.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Long\Longer.feature.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Long\Longer0.feature.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Long\LongerDefault.feature.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Long\LongerTooBig.feature.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -62,11 +78,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <SpecFlowFeatureFiles Update="Features\Longer.feature">
+    <SpecFlowFeatureFiles Update="Features\Basics\Calculator.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Features\LongerDefault.feature">
+    <SpecFlowFeatureFiles Update="Features\Basics\StringProcessor.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Features\Long\Longer.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Features\Long\Longer0.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Features\Long\LongerDefault.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Features\Long\LongerTooBig.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>

@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Basics
+namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Features.Basics
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,41 +19,39 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Basics
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class StringProcessorFeature : object, Xunit.IClassFixture<StringProcessorFeature.FixtureData>, System.IDisposable
+    [NUnit.Framework.TestFixtureAttribute()]
+    [NUnit.Framework.DescriptionAttribute("StringProcessor")]
+    public partial class StringProcessorFeature
     {
         
-        private static TechTalk.SpecFlow.ITestRunner testRunner;
+        private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private string[] _featureTags = ((string[])(null));
-        
-        private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
 #line 1 "StringProcessor.feature"
 #line hidden
         
-        public StringProcessorFeature(StringProcessorFeature.FixtureData fixtureData, Drill4Net_Target_Frameworks_Bdd_SpecFlow_xUnit_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
-        {
-            this._testOutputHelper = testOutputHelper;
-            this.TestInitialize();
-        }
-        
-        public static void FeatureSetup()
+        [NUnit.Framework.OneTimeSetUpAttribute()]
+        public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Basics", "StringProcessor", "Simplest string processor", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
-        public static void FeatureTearDown()
+        [NUnit.Framework.OneTimeTearDownAttribute()]
+        public virtual void FeatureTearDown()
         {
             testRunner.OnFeatureEnd();
             testRunner = null;
         }
         
+        [NUnit.Framework.SetUpAttribute()]
         public virtual void TestInitialize()
         {
         }
         
+        [NUnit.Framework.TearDownAttribute()]
         public virtual void TestTearDown()
         {
             testRunner.OnScenarioEnd();
@@ -62,7 +60,7 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Basics
         public virtual void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
-            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<Xunit.Abstractions.ITestOutputHelper>(_testOutputHelper);
+            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<NUnit.Framework.TestContext>(NUnit.Framework.TestContext.CurrentContext);
         }
         
         public virtual void ScenarioStart()
@@ -75,15 +73,9 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Basics
             testRunner.CollectScenarioErrors();
         }
         
-        void System.IDisposable.Dispose()
-        {
-            this.TestTearDown();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Uppercase")]
-        [Xunit.TraitAttribute("FeatureTitle", "StringProcessor")]
-        [Xunit.TraitAttribute("Description", "Uppercase")]
-        [Xunit.TraitAttribute("Category", "uppercase")]
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Uppercase")]
+        [NUnit.Framework.CategoryAttribute("uppercase")]
         public virtual void Uppercase()
         {
             string[] tagsOfScenario = new string[] {
@@ -123,10 +115,9 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="UppercaseEmpty")]
-        [Xunit.TraitAttribute("FeatureTitle", "StringProcessor")]
-        [Xunit.TraitAttribute("Description", "UppercaseEmpty")]
-        [Xunit.TraitAttribute("Category", "uppercase_empty")]
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("UppercaseEmpty")]
+        [NUnit.Framework.CategoryAttribute("uppercase_empty")]
         public virtual void UppercaseEmpty()
         {
             string[] tagsOfScenario = new string[] {
@@ -166,10 +157,9 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="UppercaseNull")]
-        [Xunit.TraitAttribute("FeatureTitle", "StringProcessor")]
-        [Xunit.TraitAttribute("Description", "UppercaseNull")]
-        [Xunit.TraitAttribute("Category", "uppercase_null")]
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("UppercaseNull")]
+        [NUnit.Framework.CategoryAttribute("uppercase_null")]
         public virtual void UppercaseNull()
         {
             string[] tagsOfScenario = new string[] {
@@ -207,22 +197,6 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
             }
             this.ScenarioCleanup();
-        }
-        
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
-        [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        public class FixtureData : System.IDisposable
-        {
-            
-            public FixtureData()
-            {
-                StringProcessorFeature.FeatureSetup();
-            }
-            
-            void System.IDisposable.Dispose()
-            {
-                StringProcessorFeature.FeatureTearDown();
-            }
         }
     }
 }

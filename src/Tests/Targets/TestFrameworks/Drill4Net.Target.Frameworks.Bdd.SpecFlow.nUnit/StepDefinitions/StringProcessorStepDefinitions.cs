@@ -2,7 +2,7 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Frameworks.Common;
 
-namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.StepDefinitions
+namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.StepDefinitions
 {
     [Binding]
     public class StringProcessorStepDefinitions
