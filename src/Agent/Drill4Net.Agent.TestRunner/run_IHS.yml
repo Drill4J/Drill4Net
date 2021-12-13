@@ -1,8 +1,12 @@
 ﻿Description: Run SpecFlow tests for IHS project v.1
 Type: TestRunner # type as hint
-Directory: d:\Projects\IHS-bdd.Injected\ # actually directory for the injected tests
-DefaultAssemblyName: Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
-DefaultParallelRestrict: true
+DefaultParallelRestrict: true # level of the whole Run
+Directories:
+   - Path: d:\Projects\IHS-bdd.Injected\ # actually directory for the injected tests
+     DefaultParallelRestrict: false # level of the assemblies on the current directory
+     Assemblies:
+       - DefaultAssemblyName: Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
+         DefaultParallelRestrict: true # level of the tests in current assembly - default value is false
 Debug:
     Disabled: false
     IsFake: false # use fake data

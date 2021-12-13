@@ -46,7 +46,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             _logger.Debug("Wait for agents' initializing...");
             _rep.Start();
-
+            //
             _logger.Debug("Getting tests' run info...");
             var infos = await _rep.GetRunInfos().ConfigureAwait(false);
             if (infos.Count == 0)
@@ -76,18 +76,19 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <summary>
         /// Get the arguments for running the test by VSTest CLI
         /// </summary>
-        /// <param name="info"></param>
-        /// <returns></returns>
+        /// <param name="runInfo"></param>
+        /// <returns>CLI strings to run tests, possibly for different assemblies or
+        /// divided by chunks due too much long argument's length</returns>
         /// <exception cref="Exception"></exception>
-        internal List<string> GetRunArguments(RunInfo info)
+        internal List<string> GetRunArguments(RunInfo runInfo)
         {
-            var asmInfos = info.RunAssemblyInfos;
+            var asmInfos = runInfo.RunAssemblyInfos;
             var res = new List<string>();
 
             foreach (var asmInfo in asmInfos.Values)
             {
                 var tests = asmInfo.Tests;
-                var asmPath = FileUtils.GetFullPath(asmInfo.AssemblyPath, FileUtils.EntryDir);
+                var asmPath = FileUtils.GetFullPath(Path.Combine(runInfo.DirectoryOptions.Path, asmInfo.AssemblyName), FileUtils.EntryDir);
 
                 // prefix "/C" - is for running in the CMD
                 var args = $"/C dotnet test \"{asmPath}\"";
@@ -100,11 +101,12 @@ namespace Drill4Net.Agent.TestRunner.Core
                 //
                 args += " --filter \"";
                 _logger.Info($"Assembly: {asmPath} -> {tests.Count} tests");
+                //TODO: dividing the too much long string to several argument strings
                 for (int i = 0; i < tests.Count; i++)
                 {
                     string test = tests[i];
 
-                    // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest break
+                    // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest breaks
                     var ind = test.IndexOf("("); //after ( the parameters of case followed 
                     if (ind != -1)
                         test = test[..ind];

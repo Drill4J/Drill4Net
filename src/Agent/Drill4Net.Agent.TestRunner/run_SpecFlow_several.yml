@@ -1,12 +1,14 @@
 ﻿Description: Run SpecFlow + several engines' tests for debug
 Type: TestRunner # type as hint
-DefaultParallelRestrict: false
+DefaultParallelRestrict: false # level of the whole Run
 Directories:
    - Path: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Injected\net5.0\
+     DefaultParallelRestrict: false # level of the assemblies on the current directory
      Assemblies:
        - DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
-         #DefaultParallelRestrict: false # default value is false
+         #DefaultParallelRestrict: false # level of the tests in current assembly - default value is false
    - Path: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Injected\net5.0\
+     #DefaultParallelRestrict: false # level of the assemblies on the current directory
      Assemblies:
        - DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
          DefaultParallelRestrict: true

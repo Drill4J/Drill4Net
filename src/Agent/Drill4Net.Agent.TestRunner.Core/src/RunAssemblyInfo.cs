@@ -4,9 +4,18 @@ namespace Drill4Net.Agent.TestRunner.Core
 {
     internal class RunAssemblyInfo
     {
-        internal string Directory { get; set; }
+        /// <summary>
+        /// Original tests' assembly directory
+        /// </summary>
+        internal string OrigDirectory { get; set; }
+
+        /// <summary>
+        /// Original tests' assembly path
+        /// </summary>
+        internal string OrigAssemblyPath => System.IO.Path.Combine(OrigDirectory, AssemblyName);
+        
         internal string AssemblyName { get; set; }
-        internal string AssemblyPath => System.IO.Path.Combine(Directory, AssemblyName);
+
         internal bool MustSequential { get; set; }
 
         /// <summary>
@@ -18,7 +27,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{AssemblyPath} -> tests: {Tests.Count} -> MustSequential: {MustSequential}";
+            return $"{OrigAssemblyPath} -> tests: {Tests.Count} -> MustSequential: {MustSequential}";
         }
     }
 }

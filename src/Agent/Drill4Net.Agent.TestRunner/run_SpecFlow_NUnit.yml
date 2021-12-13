@@ -1,8 +1,12 @@
 ﻿Description: Run SpecFlow + NUnit for debug
 Type: TestRunner # type as hint
-Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Injected\net5.0\  # actually directory for the injected tests
-DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
-DefaultParallelRestrict: false
+DefaultParallelRestrict: false # level of the whole Run
+Directories:
+   - Path: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Injected\net5.0\  # actually directory for the injected tests
+     DefaultParallelRestrict: false # level of the assemblies on the current directory
+     Assemblies:
+       - DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
+         #DefaultParallelRestrict: false # level of the tests in the current assembly - default value is false
 Debug:
     Disabled: false
     IsFake: false # use fake data

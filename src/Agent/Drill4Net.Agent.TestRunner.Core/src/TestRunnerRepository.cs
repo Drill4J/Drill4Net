@@ -36,12 +36,12 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             var list = new List<RunInfo>();
             var targetInformes = _informers.DistinctBy(a => a.TargetName); //we need to collect test2Run data just by target
-            foreach (var informer in targetInformes.AsParallel())
+            foreach (var trgInformer in targetInformes.AsParallel())
             {
-                RunInfo runInfo = await informer.GetRunInfo().ConfigureAwait(false);
+                RunInfo runInfo = await trgInformer.GetRunInfo().ConfigureAwait(false);
                 if (runInfo.RunType == RunningType.Nothing)
                 {
-                    _logger.Info($"Nothing to run for [{informer}]");
+                    _logger.Info($"Nothing to run for [{trgInformer}]");
                     continue;
                 }
                 list.Add(runInfo);
