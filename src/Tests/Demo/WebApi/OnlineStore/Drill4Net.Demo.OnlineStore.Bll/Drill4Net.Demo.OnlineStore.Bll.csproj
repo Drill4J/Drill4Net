@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.OnlineStore.Bll</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.OnlineStore.Bll\Drill4Net.Demo.OnlineStore.Bll.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\build\bin\ReleaseTests\Drill4Net.Demo.OnlineStore.Bll</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Bll.Contracts\Drill4Net.Demo.OnlineStore.Bll.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

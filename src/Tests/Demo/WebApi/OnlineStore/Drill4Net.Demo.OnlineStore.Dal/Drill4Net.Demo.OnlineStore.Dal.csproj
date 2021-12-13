@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.OnlineStore.Dal\Drill4Net.Demo.OnlineStore.Dal.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Demo.OnlineStore.Dal</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Demo.OnlineStore.Dal</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Demo.OnlineStore.Bll.Contracts\Drill4Net.Demo.OnlineStore.Bll.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
