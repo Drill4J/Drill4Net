@@ -27,7 +27,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /********************************************************************************/
 
-        public void Start()
+        public void Init()
         {
             _informers = CreateInformers(Options.Directories, Options.Debug);
         }
