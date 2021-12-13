@@ -55,8 +55,8 @@ namespace Drill4Net.Agent.TestRunner.Core
             try
             {
                 //TODO: depending on the type of test and its launcher, create different test controllers
-                var cli = new RunCliController(infos, _rep.Options);
-                cli.Start();
+                var cli = new CliRunner();
+                cli.Start(infos, _rep.Options);
 
                 _logger.Debug("Finished");
             }
