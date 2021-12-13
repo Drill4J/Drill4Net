@@ -184,6 +184,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             {
                 var allRun = new RunAssemblyInfo
                 {
+                    Directory = _dirOptions.Path,
                     AssemblyName = _asmOptions.DefaultAssemblyName,
                     MustSequential = _asmOptions.DefaultParallelRestrict,
                 };

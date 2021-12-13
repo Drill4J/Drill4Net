@@ -4,7 +4,9 @@ namespace Drill4Net.Agent.TestRunner.Core
 {
     internal class RunAssemblyInfo
     {
+        internal string Directory { get; set; }
         internal string AssemblyName { get; set; }
+        internal string AssemblyPath => System.IO.Path.Combine(Directory, AssemblyName);
         internal bool MustSequential { get; set; }
 
         /// <summary>
@@ -16,7 +18,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{AssemblyName} -> tests: {Tests.Count} -> MustSequential: {MustSequential}";
+            return $"{AssemblyPath} -> tests: {Tests.Count} -> MustSequential: {MustSequential}";
         }
     }
 }

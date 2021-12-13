@@ -24,10 +24,12 @@ namespace Drill4Net.Agent.TestRunner.Core
 {
     //Swagger: http://localhost:8090/apidocs/index.html?url=./openapi.json
 
+    /// <summary>
+    /// Core runner for target's tests
+    /// </summary>
     public class Runner
     {
         private readonly TestRunnerRepository _rep;
-        //private readonly ManualResetEvent _initEvent = new(false);
         private readonly Logger _logger;
 
         /***********************************************************************************/
@@ -60,7 +62,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 foreach (var runInfo in infos)
                 {
                     var args = GetRunArguments(runInfo);
-                    var pids = RunTests(args); //the tests are run by CLI ("dotnet test ...")
+                    var pids = RunTests(args); //the tests are run by VSTest CLI ("dotnet test <dll> <params> ...")
                 }
 
                 _logger.Debug("Finished");
@@ -82,46 +84,46 @@ namespace Drill4Net.Agent.TestRunner.Core
             var asmInfos = info.RunAssemblyInfos;
             var res = new List<string>();
 
-            //foreach (var asmInfo in asmInfos.Values)
-            //{
-            //    var tests = asmInfo.Tests;
-            //    var asmPath = FileUtils.GetFullPath(Path.Combine(_rep.Options.Directory, asmInfo.AssemblyName), FileUtils.EntryDir);
+            foreach (var asmInfo in asmInfos.Values)
+            {
+                var tests = asmInfo.Tests;
+                var asmPath = FileUtils.GetFullPath(asmInfo.AssemblyPath, FileUtils.EntryDir);
 
-            //    // prefix "/C" - is for running in the CMD
-            //    var args = $"/C dotnet test \"{asmPath}\"";
-            //    if (tests?.Any() != true)
-            //    {
-            //        args = AddPostfixArgs(args, asmInfo);
-            //        res.Add(args);
-            //        continue;
-            //    }
-            //    //
-            //    args += " --filter \"";
-            //    _logger.Info($"Assembly: {asmPath} -> {tests.Count} tests");
-            //    for (int i = 0; i < tests.Count; i++)
-            //    {
-            //        string test = tests[i];
+                // prefix "/C" - is for running in the CMD
+                var args = $"/C dotnet test \"{asmPath}\"";
+                if (tests?.Any() != true)
+                {
+                    args = AddPostfixArgs(args, asmInfo);
+                    res.Add(args);
+                    continue;
+                }
+                //
+                args += " --filter \"";
+                _logger.Info($"Assembly: {asmPath} -> {tests.Count} tests");
+                for (int i = 0; i < tests.Count; i++)
+                {
+                    string test = tests[i];
 
-            //        // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest break
-            //        var ind = test.IndexOf("("); //after ( the parameters of case followed 
-            //        if (ind != -1)
-            //            test = test[..ind];
-            //        if(test.EndsWith(":")) //it can be so...
-            //            test = test[0..^1];
-            //        //
-            //        test = test.Replace(",", "%2C").Replace("\"", "\\\"").Replace("!", "\\!"); //need escaping
-            //        //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace
-            //        //TODO: = comparing with real namespaces
-            //        args += $"FullyQualifiedName~.{test}";
-            //        if (i < tests.Count - 1)
-            //            args += "|";
-            //        else
-            //            args += "\"";
-            //    }
+                    // test case -> just test name. Is it Guanito? No... SpecFlow's test cases contain bracket - so, VSTest break
+                    var ind = test.IndexOf("("); //after ( the parameters of case followed 
+                    if (ind != -1)
+                        test = test[..ind];
+                    if (test.EndsWith(":")) //it can be so...
+                        test = test[0..^1];
+                    //
+                    test = test.Replace(",", "%2C").Replace("\"", "\\\"").Replace("!", "\\!"); //need escaping
+                    //FullyQualifiedName is full type name - for exactly comparing, as =, we need name with namespace
+                    //TODO: = comparing with real namespaces
+                    args += $"FullyQualifiedName~.{test}";
+                    if (i < tests.Count - 1)
+                        args += "|";
+                    else
+                        args += "\"";
+                }
 
-            //    args = AddPostfixArgs(args, asmInfo);
-             //   res.Add(args);
-           // }
+                args = AddPostfixArgs(args, asmInfo);
+                res.Add(args);
+            }
             return res;
         }
 
