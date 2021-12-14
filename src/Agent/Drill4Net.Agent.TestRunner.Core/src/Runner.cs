@@ -56,7 +56,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             {
                 //TODO: depending on the type of test and its launcher, create different test controllers
                 var cli = new CliRunner();
-                cli.Start(infos, _rep.Options.DefaultParallelRestrict);
+                cli.Start(infos, _rep.Options.DefaultParallelRestrict, _rep.Options.DegreeOfParallelism);
 
                 _logger.Debug("Finished");
             }

@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /**********************************************************************/
 
-        public void Start(List<DirectoryRunInfo> infos, bool runParallelRestrict)
+        public void Start(List<DirectoryRunInfo> infos, bool runParallelRestrict, int degreeOfParallelism)
         {
             _logger.Debug("Starting...");
 
@@ -33,7 +33,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 var args = GetRunArguments(runInfo);
                 controller.AddInfo(runInfo, args);
             }
-            controller.Start(runParallelRestrict);
+            controller.Start(runParallelRestrict, degreeOfParallelism);
 
             _logger.Debug("Finished");
         }

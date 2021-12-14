@@ -20,6 +20,11 @@ namespace Drill4Net.Agent.TestRunner.Core
         public bool DefaultParallelRestrict { get; set; }
 
         /// <summary>
+        /// Degree of parallelism. Values 0 and 1 mean no parallelism on Run and Directory levels.
+        /// </summary>
+        public byte DegreeOfParallelism { get; set; }
+
+        /// <summary>
         /// Options exclusively for debug
         /// </summary>
         public TestRunnerDebugOptions Debug { get; set; }

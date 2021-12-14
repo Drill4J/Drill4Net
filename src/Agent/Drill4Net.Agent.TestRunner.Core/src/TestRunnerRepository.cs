@@ -35,7 +35,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal async Task<List<DirectoryRunInfo>> GetRunInfos()
         {
             var list = new List<DirectoryRunInfo>();
-            var targetInformes = _informers.DistinctBy(a => a.TargetName); //we need to collect test2Run data just by target
+            var targetInformes = Extensions.DistinctBy(_informers, a => a.TargetName); //we need to collect test2Run data just by target
             foreach (var trgInformer in targetInformes.AsParallel())
             {
                 DirectoryRunInfo runInfo = await trgInformer.GetRunInfo().ConfigureAwait(false);

@@ -33,10 +33,15 @@ namespace Drill4Net.Agent.TestRunner.Core
             _dirRunDatas.Add(dirRunInfo, argStrs);
         }
 
-        internal void Start(bool runParallelRestrict)
+        /// <summary>
+        /// Caclulate the VSTest CLI's groups, start and control them
+        /// </summary>
+        /// <param name="runParallelRestrict">Parallel execurion restriction on Run level - for all specified directories</param>
+        /// <param name="degreeOfParallelism">Degree of parallelism for "places" where it possibly</param>
+        internal void Start(bool runParallelRestrict, int degreeOfParallelism)
         {
             var groups = CalculateGroups(_dirRunDatas, runParallelRestrict);
-            RunGroups(groups);
+            RunGroups(groups, degreeOfParallelism);
         }
 
         /// <summary>
@@ -44,6 +49,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// </summary>
         /// <param name="dirRunDatas"></param>
         /// <param name="runParallelRestrict">Parallel execurion restriction on Run level - for all specified directories</param>
+        /// <param name="degreeOfParallelism">Degree of parallelism for "places" where it possibly</param>
         /// <returns></returns>
         internal List<List<string>> CalculateGroups(Dictionary<DirectoryRunInfo, List<string>> dirRunDatas,
             bool runParallelRestrict)
@@ -62,7 +68,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 var dirRunInfo = enumerator.Current.Key;
                 var argList = enumerator.Current.Value;
 
-                //parallel mode - current directory (on ASSEMBLIES level)
+                //parallel mode - current directory (for assemblies' run)
                 var dirParalRestrictOption = dirRunInfo.DirectoryOptions.DefaultParallelRestrict;
                 var dirParalRestrictActual = dirParalRestrictOption == true || (dirParalRestrictOption == null && runParallelRestrict);
 
@@ -92,30 +98,37 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <summary>
         /// It runs groups of CLI VSTest consoles and controls them with parallel options
         /// </summary>
-        /// <param name="groups"></param>
-        internal void RunGroups(List<List<string>> groups)
+        /// <param name="groups">Groups of CLI calls</param>
+        /// <param name="degreeOfParallelism">Degree of parallelism for "places" where it possibly</param>
+        internal void RunGroups(List<List<string>> groups, int degreeOfParallelism)
         {
             //groups run consoles sequentially among themselves
             //each separate group run consoles simultaneously
-            for (int i = 0; i < groups.Count; i++)
+            for (int grpInd = 0; grpInd < groups.Count; grpInd++)
             {
-                var group = groups[i];
-                var pids = new List<int>();
-                foreach (var args in group)
+                var group = groups[grpInd];
+                var chunks = group.Chunk(degreeOfParallelism).ToList();
+
+                for(var chInd = 0; chInd < chunks.Count; chInd++)
                 {
-                    //parallelization option for tests in assembly already is included in args
-                    //one CLI console - one assembly with tests
-                    var pid = RunTests(args); //the tests are run by VSTest CLI ("dotnet test <dll> <params> ...")
-                    if (pid == 0)
-                        continue;
-                    pids.Add(pid);
+                    var chunk = chunks[chInd];
+                    var pids = new List<int>();
+                    foreach (var args in chunk)
+                    {
+                        //parallelization option for tests in assembly already is included in args
+                        //one CLI console - one assembly with tests
+                        var pid = RunTests(args); //the tests are run by VSTest CLI ("dotnet test <dll> <params> ...")
+                        if (pid == 0)
+                            continue;
+                        pids.Add(pid);
+                    }
+
+                    if (grpInd == groups.Count - 1 && chInd == chunks.Count - 1)
+                        return; //no sense to wait LAST run
+
+                    // we must wait here until all CLI are finish
+                    WaitForFinishingProcesses(pids);
                 }
-
-                if (i == groups.Count - 1)
-                    return; //no sense to wait LAST run
-
-                // we must wait here until all CLI are finish
-                WaitForFinishingProcesses(pids);
             }
         }
 
