@@ -3,9 +3,9 @@
 namespace Drill4Net.Agent.TestRunner.Core
 {
     /// <summary>
-    /// Info about tests to run
+    /// Info about tests to run in some directory
     /// </summary>
-    internal class RunInfo
+    internal class DirectoryRunInfo
     {
         internal string Target { get; set; }
 

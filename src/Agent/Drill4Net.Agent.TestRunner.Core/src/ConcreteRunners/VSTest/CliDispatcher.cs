@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// </summary>
     internal class CliDispatcher
     {
-        private readonly Dictionary<RunInfo, List<string>> _runDatas;
+        private readonly Dictionary<DirectoryRunInfo, List<string>> _dirRunDatas;
         private readonly Logger _logger;
 
         /******************************************************************/
@@ -21,76 +21,98 @@ namespace Drill4Net.Agent.TestRunner.Core
         public CliDispatcher()
         {
             _logger = new TypedLogger<CliDispatcher>(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
-            _runDatas = new Dictionary<RunInfo, List<string>>();
+            _dirRunDatas = new Dictionary<DirectoryRunInfo, List<string>>();
         }
 
         /******************************************************************/
 
-        internal void AddInfo(RunInfo info, List<string> argStrs)
+        internal void AddInfo(DirectoryRunInfo dirRunInfo, List<string> argStrs)
         {
-            if (_runDatas.ContainsKey(info))
+            if (_dirRunDatas.ContainsKey(dirRunInfo))
                 return;
-            _runDatas.Add(info, argStrs);
+            _dirRunDatas.Add(dirRunInfo, argStrs);
         }
 
         internal void Start(bool runParallelRestrict)
         {
-            var groups = CalculateGroups(_runDatas, runParallelRestrict);
+            var groups = CalculateGroups(_dirRunDatas, runParallelRestrict);
             RunGroups(groups);
         }
 
         /// <summary>
         /// Calculate Run groups with argument lines and parallel execurion parameters
         /// </summary>
-        /// <param name="runDatas"></param>
+        /// <param name="dirRunDatas"></param>
         /// <param name="runParallelRestrict">Parallel execurion restriction on Run level - for all specified directories</param>
         /// <returns></returns>
-        internal List<List<(string Args, bool ParallelRestrict)>>
-            CalculateGroups(Dictionary<RunInfo, List<string>> runDatas, bool runParallelRestrict)
+        internal List<List<string>> CalculateGroups(Dictionary<DirectoryRunInfo, List<string>> dirRunDatas,
+            bool runParallelRestrict)
         {
-            var res = new List<List<(string, bool)>>();
-            var enumerator = runDatas.GetEnumerator(); //it is safe due possible parallel using AddInfo method
-            if (runParallelRestrict) //only sequential run on the whole Run level
+            Dictionary<string, List<string>> groups = new();
+            List<string> group = null; //CLI consoles with some parallelization option
+            if (!runParallelRestrict) //all directories can run tests in parallel THEMSELVES
             {
-
+                group = new();
+                groups.Add("default", group);
             }
-            else //parallel on the whole Run level
+            //
+            var enumerator = dirRunDatas.GetEnumerator(); //need safety due possible parallel using AddInfo method
+            while (enumerator.MoveNext())
             {
-                var group = new List<(string, bool)>();
-                res.Add(group);
-                while (enumerator.MoveNext())
+                var dirRunInfo = enumerator.Current.Key;
+                var argList = enumerator.Current.Value;
+
+                //parallel mode - current directory (on ASSEMBLIES level)
+                var dirParalRestrictOption = dirRunInfo.DirectoryOptions.DefaultParallelRestrict;
+                var dirParalRestrictActual = dirParalRestrictOption == true || (dirParalRestrictOption == null && runParallelRestrict);
+
+                if (runParallelRestrict || dirParalRestrictActual) //level: directories OR assemblies
                 {
-                    var runInfo = enumerator.Current.Key;
-                    var args = enumerator.Current.Value;
-                    foreach (var arg in args)
+                    var key = dirRunInfo.DirectoryOptions.Path;
+                    if (dirParalRestrictActual)
+                        key += "/" + dirRunInfo.AssemblyOptions.DefaultAssemblyName;
+
+                    if (groups.ContainsKey(key))
                     {
-                        var paralRestrict = runParallelRestrict || runInfo.DirectoryOptions.DefaultParallelRestrict;
-                        group.Add((arg, paralRestrict));
+                        group = groups[key];
+                    }
+                    else
+                    {
+                        group = new();
+                        groups.Add(key, group);
                     }
                 }
+
+                foreach (var arg in argList)
+                    group.Add(arg);
             }
-            return res;
+            return groups.Values.ToList();
         }
 
         /// <summary>
         /// It runs groups of CLI VSTest consoles and controls them with parallel options
         /// </summary>
         /// <param name="groups"></param>
-        internal void RunGroups(List<List<(string Args, bool ParallelRestrict)>> groups)
+        internal void RunGroups(List<List<string>> groups)
         {
-            //each separate group has parallel execution mode
-            foreach (var group in groups)
+            //groups run consoles sequentially among themselves
+            //each separate group run consoles simultaneously
+            for (int i = 0; i < groups.Count; i++)
             {
+                var group = groups[i];
                 var pids = new List<int>();
-                foreach (var console in group)
+                foreach (var args in group)
                 {
+                    //parallelization option for tests in assembly already is included in args
                     //one CLI console - one assembly with tests
-                    var args = console.Args; //parallelization option for tests in assembly already is included in args
                     var pid = RunTests(args); //the tests are run by VSTest CLI ("dotnet test <dll> <params> ...")
                     if (pid == 0)
                         continue;
                     pids.Add(pid);
                 }
+
+                if (i == groups.Count - 1)
+                    return; //no sense to wait LAST run
 
                 // we must wait here until all CLI are finish
                 WaitForFinishingProcesses(pids);
@@ -118,7 +140,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 }
                 if (pids.Count == 0)
                     return;
-                Task.Delay(1000);
+                Task.Delay(2000);
             }
         }
 

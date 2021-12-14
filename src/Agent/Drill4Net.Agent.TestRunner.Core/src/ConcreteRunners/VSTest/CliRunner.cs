@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /**********************************************************************/
 
-        public void Start(List<RunInfo> infos, bool runParallelRestrict)
+        public void Start(List<DirectoryRunInfo> infos, bool runParallelRestrict)
         {
             _logger.Debug("Starting...");
 
@@ -45,7 +45,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <returns>CLI strings to run tests, possibly for different assemblies or
         /// divided by chunks due too much long argument's length</returns>
         /// <exception cref="Exception"></exception>
-        internal List<string> GetRunArguments(RunInfo runInfo)
+        internal List<string> GetRunArguments(DirectoryRunInfo runInfo)
         {
             var asmInfos = runInfo.RunAssemblyInfos;
             var res = new List<string>();
