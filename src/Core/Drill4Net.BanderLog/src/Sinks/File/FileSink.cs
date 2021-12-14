@@ -105,7 +105,7 @@ namespace Drill4Net.BanderLog.Sinks.File
                     await Task.Delay(10).ConfigureAwait(false);
                 EndUpWriter();
             });
-            Task.WaitAll(task);
+            Task.WaitAll(new Task[] { task }, 5000);
         }
 
         /// <summary>

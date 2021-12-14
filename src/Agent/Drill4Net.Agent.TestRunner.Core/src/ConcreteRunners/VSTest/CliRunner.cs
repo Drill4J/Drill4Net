@@ -23,17 +23,17 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /**********************************************************************/
 
-        public void Start(List<RunInfo> infos, TestRunnerOptions opts)
+        public void Start(List<RunInfo> infos, bool runParallelRestrict)
         {
             _logger.Debug("Starting...");
 
-            var controller = new CliController(infos, opts);
+            var controller = new CliDispatcher();
             foreach (var runInfo in infos)
             {
                 var args = GetRunArguments(runInfo);
                 controller.AddInfo(runInfo, args);
             }
-            controller.Start();
+            controller.Start(runParallelRestrict);
 
             _logger.Debug("Finished");
         }
