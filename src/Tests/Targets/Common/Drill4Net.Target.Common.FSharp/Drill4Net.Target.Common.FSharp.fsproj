@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
+	<TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<LangVersion>latest</LangVersion>
 	<NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Common.FSharp</OutputPath>
     <DocumentationFile>..\..\..\..\..\doc\xml\Tests\Drill4Net.Target.Common.FSharp\Drill4Net.Target.Common.FSharp.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Common.FSharp</OutputPath>
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>

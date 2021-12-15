@@ -65,6 +65,6 @@ Versions: # what will be tested - by target moniker/assembly/class
     Targets:
         net48: #default assembly & class if empty
           BaseFolder: net48\
-        net5.0:
-          BaseFolder: net5.0\
+        net6.0:
+          BaseFolder: net6.0\
 Silent: false # no wait, no questions...

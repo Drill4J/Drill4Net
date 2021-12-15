@@ -15,8 +15,14 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /// <summary>
         /// The parallel execution is restricted by default (if no builds still exists in Drill service)
+        /// on Run level - for all specified directories
         /// </summary>
         public bool DefaultParallelRestrict { get; set; }
+
+        /// <summary>
+        /// Degree of parallelism. Values 0 and 1 mean no parallelism on Run and Directory levels.
+        /// </summary>
+        public byte DegreeOfParallelism { get; set; }
 
         /// <summary>
         /// Options exclusively for debug

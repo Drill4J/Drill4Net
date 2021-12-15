@@ -27,18 +27,18 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /********************************************************************************/
 
-        public void Start()
+        public void Init()
         {
             _informers = CreateInformers(Options.Directories, Options.Debug);
         }
 
-        internal async Task<List<RunInfo>> GetRunInfos()
+        internal async Task<List<DirectoryRunInfo>> GetRunInfos()
         {
-            var list = new List<RunInfo>();
-            var targetInformes = _informers.DistinctBy(a => a.TargetName); //we need to collect test2Run data just by target
+            var list = new List<DirectoryRunInfo>();
+            var targetInformes = Extensions.DistinctBy(_informers, a => a.TargetName); //we need to collect test2Run data just by target
             foreach (var trgInformer in targetInformes.AsParallel())
             {
-                RunInfo runInfo = await trgInformer.GetRunInfo().ConfigureAwait(false);
+                DirectoryRunInfo runInfo = await trgInformer.GetRunInfo().ConfigureAwait(false);
                 if (runInfo.RunType == RunningType.Nothing)
                 {
                     _logger.Info($"Nothing to run for [{trgInformer}]");
@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 foreach(var asmOpts in dirOpts.Assemblies)
                     list.Add(new TestInformer(dirOpts, asmOpts, dbgOpts));
             }
-            //we wait here until ALL agents are initialized (and manually registered in Dril admin!)
+            //we wait here until ALL agents are initialized (and manually registered in Drill admin!)
             return list;
         }
     }

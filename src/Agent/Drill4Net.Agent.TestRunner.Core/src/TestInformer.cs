@@ -86,7 +86,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             _initEvent.Set();
         }
 
-        internal async Task<RunInfo> GetRunInfo()
+        internal async Task<DirectoryRunInfo> GetRunInfo()
         {
             var isFake = _dbgOpts is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
@@ -94,7 +94,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             var runningType = await GetRunningType(isFake).ConfigureAwait(false);
             _logger.Info($"Running type: {runningType}");
 
-            var runInfo = new RunInfo
+            var runInfo = new DirectoryRunInfo
             {
                 Target = TargetName,
                 RunType = runningType,
@@ -179,13 +179,18 @@ namespace Drill4Net.Agent.TestRunner.Core
             #region All
             if (runInfo.RunType == RunningType.All)
             {
-                var allRun = new RunAssemblyInfo
+                var dir = _dirOptions.Path;
+                foreach (var asm in _dirOptions.Assemblies)
                 {
-                    OrigDirectory = _dirOptions.Path,
-                    AssemblyName = _asmOptions.DefaultAssemblyName,
-                    MustSequential = _asmOptions.DefaultParallelRestrict,
-                };
-                runInfo.RunAssemblyInfos.Add(allRun.OrigAssemblyPath, allRun);
+                    var asmName = asm.DefaultAssemblyName;
+                    var asmInfo = new RunAssemblyInfo
+                    {
+                        OrigDirectory = dir,
+                        AssemblyName = asmName,
+                        MustSequential = _asmOptions.DefaultParallelRestrict,
+                    };
+                    runInfo.RunAssemblyInfos.Add(Path.Combine(dir, asm.DefaultAssemblyName), asmInfo);
+                }
             }
             #endregion
             return runInfo;
@@ -294,7 +299,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{TargetName}: [{_dirOptions}] -> [{_asmOptions}]";
+            return $"{TargetName}: [{_dirOptions.Path}] -> [{_asmOptions}]";
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿Description: Run SpecFlow tests for IHS project v.2
 Type: TestRunner # type as hint
-DefaultParallelRestrict: true # level of the whole Run
+DefaultParallelRestrict: true # level of the whole Run - default value is false
 Directories:
    - Path: d:\Projects\IHS-bdd-2.Injected\ # actually directory for the injected tests
-     DefaultParallelRestrict: false # level of the assemblies on the current directory
+     DefaultParallelRestrict: false # level of the assemblies on the current directory. Missed value inherits the level-1
      Assemblies:
        - DefaultAssemblyName: Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
          DefaultParallelRestrict: true # level of the tests in current assembly - default value is false

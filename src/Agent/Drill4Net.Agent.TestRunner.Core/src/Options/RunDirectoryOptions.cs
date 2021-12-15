@@ -20,10 +20,10 @@ namespace Drill4Net.Agent.TestRunner.Core
         public List<RunAssemblyOptions> Assemblies { get; set; }
 
         /// <summary>
-        /// The parallel execution is restricted by default (if no builds still exists in Drill service)
-        /// on current directory level
+        /// The parallel execution is restricted on current directory level.
+        /// Missed value inherits value from the Run level in <see cref="TestRunnerOptions"/>
         /// </summary>
-        public bool DefaultParallelRestrict { get; set; }
+        public bool? DefaultParallelRestrict { get; set; }
 
         /***********************************************************************/
 

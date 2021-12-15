@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
 	<ApplicationIcon>rocket_business_startup_icon_188656.ico</ApplicationIcon>
   </PropertyGroup>

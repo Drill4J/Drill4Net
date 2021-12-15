@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Drill4Net.Serialization.Ping.Test</AssemblyName>
     <RootNamespace>Drill4Net.Serialization.Ping.Test</RootNamespace>
     <NoWin32Manifest>true</NoWin32Manifest>
