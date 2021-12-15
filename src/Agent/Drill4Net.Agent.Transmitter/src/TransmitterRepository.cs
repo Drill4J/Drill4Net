@@ -40,6 +40,7 @@ namespace Drill4Net.Agent.Transmitter
 
         public string MessagerConfigPath { get; }
 
+        private string _dir;
         private InjectedSolution _tree;
         private readonly ContextDispatcher _ctxDisp;
 
@@ -48,7 +49,8 @@ namespace Drill4Net.Agent.Transmitter
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
             //messager options
-            MessagerConfigPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            _dir = Path.GetDirectoryName(typeof(TransmitterRepository).Assembly.Location);
+            MessagerConfigPath = Path.Combine(_dir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
             if (!File.Exists(MessagerConfigPath))
             {
                 var err = $"Messager config path is not exists: [{MessagerConfigPath}]";
