@@ -67,7 +67,6 @@ namespace Drill4Net.Agent.Transmitter
 
             Log.Flush();
             _ctxDisp = new ContextDispatcher(Options.PluginDir, Subsystem); //IEngineContexters plugins
-            //CommonUtils.WriteTempLog($"TransmitterRepository created");
         }
 
         /*********************************************************************************************/

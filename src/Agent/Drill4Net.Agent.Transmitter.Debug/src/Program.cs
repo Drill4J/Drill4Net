@@ -23,8 +23,14 @@ namespace Drill4Net.Agent.Transmitter.Debug
             SetTitle();
 
             //what is loaded into the Target process and used by the Proxy class
-            var trans = DataTransmitter.Transmitter;
-            var sender = trans.ProbeSender;
+            //var trans = DataTransmitter.Transmitter;
+
+            var assemblyFile = "..\\..\\Drill4Net.Agent.Transmitter\\netstandard2.0\\Drill4Net.Agent.Transmitter.dll";
+            var assembly = Assembly.LoadFrom(assemblyFile);
+            var type = assembly.GetType("Drill4Net.Agent.Transmitter.DataTransmitter");
+            var methRegInfo = type.GetMethod("TransmitWithContext");
+
+            //var sender = trans.ProbeSender;
 
             const string ctx = "DBG";
             WriteMessage($"\nContext: {ctx}");
@@ -40,12 +46,14 @@ namespace Drill4Net.Agent.Transmitter.Debug
                     input = Guid.NewGuid().ToString();
                 WriteMessage($"Uid: {input}", COLOR_DATA);
 
-                var res = trans.SendProbe(input, ctx); //TODO: return normal Status object
+                //var res = trans.SendProbe(input, ctx); //TODO: return normal Status object
 
-                Console.WriteLine(res != 0
-                    ? $"Delivered message"
-                    : $"Delivery error: {sender.LastError}");
-                WriteMessage($"Res: {res}", sender.IsError ? COLOR_ERROR : COLOR_INFO);
+                methRegInfo.Invoke(null, new object[] { input, ctx });
+
+                //Console.WriteLine(res != 0
+                //    ? $"Delivered message"
+                //    : $"Delivery error: {sender.LastError}");
+                //WriteMessage($"Res: {res}", sender.IsError ? COLOR_ERROR : COLOR_INFO);
             }
             Console.ReadKey(true);
         }

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Drill4Net.Agent.Transmitter\Drill4Net.Agent.Transmitter.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
