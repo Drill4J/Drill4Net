@@ -253,6 +253,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{F1C75788
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Admin.Requester", "src\Admin\Drill4Net.Admin.Requester\Drill4Net.Admin.Requester.csproj", "{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net60", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net60\Drill4Net.Target.Tests.Net60.csproj", "{A5410C5E-78A9-4C42-A213-92BD3553BBF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -681,6 +683,12 @@ Global
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5410C5E-78A9-4C42-A213-92BD3553BBF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5410C5E-78A9-4C42-A213-92BD3553BBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5410C5E-78A9-4C42-A213-92BD3553BBF3}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{A5410C5E-78A9-4C42-A213-92BD3553BBF3}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{A5410C5E-78A9-4C42-A213-92BD3553BBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5410C5E-78A9-4C42-A213-92BD3553BBF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -794,6 +802,7 @@ Global
 		{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4} = {68682248-869A-474C-9B57-11E8B12CBEE5}
 		{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD} = {68682248-869A-474C-9B57-11E8B12CBEE5}
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E} = {F1C75788-70FA-477E-8C12-360DE73A02B8}
+		{A5410C5E-78A9-4C42-A213-92BD3553BBF3} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}
