@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Confluent.Kafka;
 using Drill4Net.Common;
 
@@ -18,7 +19,33 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         protected override void CreateProducers()
         {
+            CheckKafkaLibraries();
             _targetProducer = new ProducerBuilder<Null, byte[]>(_cfg).Build();
+        }
+
+        //as long as we use NetStadard, there will be a stupid but universal solution
+        //to copying dependencies, and it is not a wonderful native dll resolver from NET Core
+        internal void CheckKafkaLibraries()
+        {
+            var sourceDir = (_rep as ITargetedInfoSenderRepository).Directory;
+            var destDir = FileUtils.EntryDir;
+            CopyFileIfNeeded(sourceDir, destDir, "librdkafka.dll");
+            CopyFileIfNeeded(sourceDir, destDir, "librdkafkacpp.dll");
+            CopyFileIfNeeded(sourceDir, destDir, "libzstd.dll");
+            CopyFileIfNeeded(sourceDir, destDir, "msvcp120.dll");
+            CopyFileIfNeeded(sourceDir, destDir, "msvcr120.dll");
+            CopyFileIfNeeded(sourceDir, destDir, "zlib.dll");
+        }
+
+        internal void CopyFileIfNeeded(string sourceDir, string destDir, string fileName)
+        {
+            var sFile = Path.Combine(sourceDir, fileName);
+            if (!File.Exists(sFile))
+                return; // maybe it is normal
+            var dFile = Path.Combine(destDir, fileName);
+            if (File.Exists(dFile)) //it is exactly normal, but once again it is better not to overwrite
+                return;
+            File.Copy(sFile, dFile, true);
         }
 
         public int SendTargetInfo(byte[] info, string topic)

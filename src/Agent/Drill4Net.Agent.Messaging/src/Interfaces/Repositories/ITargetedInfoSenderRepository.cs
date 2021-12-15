@@ -2,6 +2,7 @@
 {
     public interface ITargetedInfoSenderRepository : IMessagerRepository
     {
+        string Directory { get; }
         byte[] GetTargetInfo();
     }
 }

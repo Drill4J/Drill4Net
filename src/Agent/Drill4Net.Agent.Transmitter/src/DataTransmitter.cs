@@ -101,7 +101,7 @@ namespace Drill4Net.Agent.Transmitter
             EmergencyLogDir = LoggerHelper.GetDefaultLogDir();
 
             //TODO: factory
-            TargetSender = new TargetInfoKafkaSender(rep);
+            TargetSender = new TargetInfoKafkaSender(rep); //it must be first due checking dependencies (e.g. Kafka libraries)
             ProbeSender = new ProbeKafkaSender(rep);
             CommandSender = new CommandKafkaSender(rep);
 

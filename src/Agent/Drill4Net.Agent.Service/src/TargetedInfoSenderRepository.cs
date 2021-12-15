@@ -6,6 +6,8 @@ namespace Drill4Net.Agent.Service
 {
     public class TargetedInfoSenderRepository : TargetedSenderRepository, ITargetedInfoSenderRepository
     {
+        public string Directory { get; }
+
         private readonly TargetInfo _targetInfo;
 
         /*******************************************************************************/
@@ -14,6 +16,7 @@ namespace Drill4Net.Agent.Service
             base(CoreConstants.SUBSYSTEM_AGENT_SERVER, targetInfo.SessionUid, targetInfo.TargetName ?? targetInfo.Solution?.Name,
                 targetInfo.TargetVersion ?? targetInfo.Solution?.ProductVersion, senderOptions)
         {
+            Directory = FileUtils.EntryDir;
             _targetInfo = targetInfo;
         }
 
