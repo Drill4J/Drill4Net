@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
 	<NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\..\..\build\bin\Debug\Drill4Net.Injector.Strategies.Blocks</OutputPath>
     <DocumentationFile>..\..\..\..\doc\xml\Drill4Net.Injector.Strategies.Blocks\Drill4Net.Injector.Strategies.Blocks.xml</DocumentationFile>
     <NoWarn>1591;NU1701</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\..\build\bin\Release\Drill4Net.Injector.Strategies.Blocks</OutputPath>
   </PropertyGroup>
 

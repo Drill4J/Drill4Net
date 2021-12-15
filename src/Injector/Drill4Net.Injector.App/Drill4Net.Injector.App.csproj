@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
 	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	<LangVersion>latest</LangVersion>
 	<ApplicationIcon>syringe-58824.ico</ApplicationIcon>
