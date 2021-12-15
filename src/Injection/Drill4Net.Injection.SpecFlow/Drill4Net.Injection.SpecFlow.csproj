@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecFlow" Version="3.9.22" />
+    <PackageReference Include="SpecFlow" Version="3.9.40" />
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 

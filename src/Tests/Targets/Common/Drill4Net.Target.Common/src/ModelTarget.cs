@@ -29,10 +29,10 @@ using Drill4Net.Target.Common.VB;
 //add this in project's csproj file: 
 //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-/*                                             *
- *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
- *   It's needed AS it IS !!!                  *
- *                                             */
+                                        /*                                             *
+                                         *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
+                                         *   It's needed AS it IS !!!                  *
+                                         *                                             */
 
 namespace Drill4Net.Target.Common
 {
