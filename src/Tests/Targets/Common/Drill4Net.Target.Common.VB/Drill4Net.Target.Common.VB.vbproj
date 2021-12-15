@@ -2,17 +2,18 @@
 
   <PropertyGroup>
     <RootNamespace>Drill4Net.Target.Common.VB</RootNamespace>
-	<TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
+	<TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
 	<NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
     <OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Common.VB\</OutputPath>
     <DocumentationFile></DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
     <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Common.VB\</OutputPath>
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>

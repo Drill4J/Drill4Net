@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netcoreapp2.2;net461;net48</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
 	<NoWarn>NU1701;NETSDK1138</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1591;1138</NoWarn>
   </PropertyGroup>
 
