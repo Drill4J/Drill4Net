@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 foreach(var asmOpts in dirOpts.Assemblies)
                     list.Add(new TestInformer(dirOpts, asmOpts, dbgOpts));
             }
-            //we wait here until ALL agents are initialized (and manually registered in Dril admin!)
+            //we wait here until ALL agents are initialized (and manually registered in Drill admin!)
             return list;
         }
     }

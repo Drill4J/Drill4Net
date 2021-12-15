@@ -13,6 +13,8 @@ Directories:
      Assemblies:
        - DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
          DefaultParallelRestrict: true
+       #- DefaultAssemblyName: <some else>.dll # another dll in the same folder
+       #  DefaultParallelRestrict: false
 Debug:
     Disabled: true
     IsFake: false # use fake data

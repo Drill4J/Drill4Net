@@ -179,13 +179,18 @@ namespace Drill4Net.Agent.TestRunner.Core
             #region All
             if (runInfo.RunType == RunningType.All)
             {
-                var allRun = new RunAssemblyInfo
+                var dir = _dirOptions.Path;
+                foreach (var asm in _dirOptions.Assemblies)
                 {
-                    OrigDirectory = _dirOptions.Path,
-                    AssemblyName = _asmOptions.DefaultAssemblyName,
-                    MustSequential = _asmOptions.DefaultParallelRestrict,
-                };
-                runInfo.RunAssemblyInfos.Add(allRun.OrigAssemblyPath, allRun);
+                    var asmName = asm.DefaultAssemblyName;
+                    var asmInfo = new RunAssemblyInfo
+                    {
+                        OrigDirectory = dir,
+                        AssemblyName = asmName,
+                        MustSequential = _asmOptions.DefaultParallelRestrict,
+                    };
+                    runInfo.RunAssemblyInfos.Add(Path.Combine(dir, asm.DefaultAssemblyName), asmInfo);
+                }
             }
             #endregion
             return runInfo;
@@ -294,7 +299,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{TargetName}: [{_dirOptions}] -> [{_asmOptions}]";
+            return $"{TargetName}: [{_dirOptions.Path}] -> [{_asmOptions}]";
         }
     }
 }
