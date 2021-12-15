@@ -3,12 +3,12 @@ Type: TestRunner # type as hint
 DefaultParallelRestrict: false # level-1: the whole Run - default value is false
 DegreeOfParallelism: 4 # 0 and 1 mean no parallelism on Run and Directory levels
 Directories:
-   - Path: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Injected\net5.0\
+   - Path: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Injected\net6.0\
      DefaultParallelRestrict: false # level-2 of the assemblies on the current directory. Missed value inherits the level-1
      Assemblies:
        - DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
          #DefaultParallelRestrict: false # level-3 of the tests inside assembly - default value is false
-   - Path: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Injected\net5.0\
+   - Path: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Injected\net6.0\
      DefaultParallelRestrict: false # level-3 of the assemblies on the current directory. Missed value inherits the level-1
      Assemblies:
        - DefaultAssemblyName: Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll # DEFAULT assembly to run tests if no builds still exists in Drill service

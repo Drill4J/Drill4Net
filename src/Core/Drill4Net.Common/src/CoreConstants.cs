@@ -17,6 +17,7 @@
         public const string SUBSYSTEM_AGENT_WORKER = "AgentWorker";
         #endregion
         #region Monikers
+        public const string MONIKER_NET60 = "net6.0";
         public const string MONIKER_NET50 = "net5.0";
 
         public const string MONIKER_CORE31 = "netcoreapp3.1";
