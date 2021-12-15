@@ -25,7 +25,7 @@ namespace Drill4Net.Common
 
         static FileUtils()
         {
-            ExecutingDir = GetExecutingDir() ?? GetProcessDir();
+            ExecutingDir = GetExecutingDir() ?? GetProcessDir(); //AppDomain.CurrentDomain.BaseDirectory;
             CallingDir = GetCallingDir() ?? ExecutingDir;
             EntryDir = GetEntryDir() ?? CallingDir;
         }

@@ -54,7 +54,7 @@ namespace Drill4Net.Agent.Transmitter.Debug
         private static void SetTitle()
         {
             var version = GetAppVersion();
-            var appName = Assembly.GetExecutingAssembly().GetName().Name;
+            var appName = AppDomain.CurrentDomain.FriendlyName;
             var title = $"{appName} {version}";
             Console.Title = title;
             WriteMessage(title, ConsoleColor.Cyan);
