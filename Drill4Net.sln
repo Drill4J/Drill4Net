@@ -281,6 +281,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Admin.Requester",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{56641BB1-5249-46F0-AF14-7FC39C3E7786}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Demo.OnlineStore.WebApi.Tests", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.WebApi.Tests\Drill4Net.Demo.OnlineStore.WebApi.Tests.csproj", "{7F538C58-5022-4297-95EE-397EE2B445D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -757,6 +759,12 @@ Global
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F538C58-5022-4297-95EE-397EE2B445D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F538C58-5022-4297-95EE-397EE2B445D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F538C58-5022-4297-95EE-397EE2B445D4}.Release_Benchmark|Any CPU.ActiveCfg = Release|Any CPU
+		{7F538C58-5022-4297-95EE-397EE2B445D4}.Release_Benchmark|Any CPU.Build.0 = Release|Any CPU
+		{7F538C58-5022-4297-95EE-397EE2B445D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F538C58-5022-4297-95EE-397EE2B445D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -884,6 +892,7 @@ Global
 		{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD} = {68682248-869A-474C-9B57-11E8B12CBEE5}
 		{CB3B5AC5-3497-4B90-953E-CDAD7839A62E} = {F1C75788-70FA-477E-8C12-360DE73A02B8}
 		{56641BB1-5249-46F0-AF14-7FC39C3E7786} = {96CD8524-95EB-4D61-9A20-A3D175F80C3E}
+		{7F538C58-5022-4297-95EE-397EE2B445D4} = {56641BB1-5249-46F0-AF14-7FC39C3E7786}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECA73881-E310-4BAF-AD49-B4956E04A2FF}

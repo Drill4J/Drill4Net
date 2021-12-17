@@ -29,7 +29,7 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
 
         /******************************************************************/
 
-        [HttpGet]
+        [HttpGet("{cartId}")]
         public CartDto GetCart(Guid cartId)
         {
             var cart = _cartDalService.GetCart(cartId);
@@ -44,14 +44,14 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
         }
 
         [HttpPut("{cartId}/items/{itemId}/add")]
-        public ActionResult AddToCart(Guid cartId, Guid itemId, int amount)
+        public ActionResult AddToCart(Guid cartId, Guid itemId, [FromBody] int amount)
         {
             _cartBllService.AddToCart(cartId, itemId, amount);
             return NoContent();
         }
 
         [HttpPut("{cartId}/items/{itemId}/change")]
-        public ActionResult ChangeCartItemAmount(Guid cartId, Guid itemId, int amount)
+        public ActionResult ChangeCartItemAmount(Guid cartId, Guid itemId, [FromBody] int amount)
 
         {
             _cartBllService.ChangeCartItemAmount(cartId, itemId, amount);

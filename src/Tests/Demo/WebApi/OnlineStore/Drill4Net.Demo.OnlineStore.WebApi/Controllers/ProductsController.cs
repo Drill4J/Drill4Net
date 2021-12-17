@@ -42,6 +42,12 @@ namespace Drill4Net.Demo.OnlineStore.WebApi.Controllers
             var products = _productDalService.GetFilteredProducts(category, namePart);
             return _mapper.Map<IEnumerable<ProductInfoDto>>(products);
         }
+        [HttpGet("{id}")]
+        public ProductDto GetProduct(Guid id)
+        {
+            var product = _productDalService.GetProduct(id);
+            return _mapper.Map<ProductDto>(product);
+        }
 
         [HttpPost]
         public ActionResult<ProductDto> CreateProduct(NewProductDto productDto)
