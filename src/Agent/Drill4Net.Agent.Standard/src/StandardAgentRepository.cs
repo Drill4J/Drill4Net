@@ -65,7 +65,6 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="cfgPath"></param>
         /// <param name="treePath"></param>
-        /// <param name="locatedInWorker">Is the Agent located in Agent Worker</param>
         public StandardAgentRepository(string cfgPath, string treePath) : base(cfgPath)
         {
             Init(ReadInjectedTree(treePath));
@@ -540,7 +539,7 @@ namespace Drill4Net.Agent.Standard
         public CoverageRegistrator GetOrCreateLocalCoverageRegistrator(string ctx)
         {
             if (string.IsNullOrWhiteSpace(ctx))
-                ctx = GetContextId(); //it is only for local Agent injected directly in Target's sys process
+                ctx = GetContextId(); //it is only for local Agent injected directly in Target's operation process
 
             CoverageRegistrator reg;
             if (_ctxToRegistrator.ContainsKey(ctx))

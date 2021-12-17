@@ -62,7 +62,7 @@ namespace Drill4Net.Agent.Standard
 
         /*****************************************************************************/
 
-        static StandardAgent() //it's needed for invocation from Target
+        static StandardAgent() //it's needed for direct invocation from Target to Agent
         {
             _entitiesLocker = new();
             _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT);
@@ -376,9 +376,9 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            //it is only for local Agent injected directly in Target's sys process
             if (StandardAgentInitParameters.LocatedInWorker)
                 return;
+            //it is only for local Agent injected directly in Target's sys process
             var ctx = Repository?.GetContextId();
             RegisterWithContext(data, ctx);
         }
@@ -420,12 +420,10 @@ namespace Drill4Net.Agent.Standard
 
                 _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
 
-                if (_writeProbesToFile)
-                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"[{ctx}] -> {probeUid}");
-
                 var res = Repository.RegisterCoverage(probeUid, ctx);
-                if (!res) //for debug
-                { }
+
+                if (_writeProbesToFile)
+                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"[{ctx}] -> {probeUid} -> {res}");
             }
             catch (Exception ex)
             {
