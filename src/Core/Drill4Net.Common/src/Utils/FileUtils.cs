@@ -122,7 +122,7 @@ namespace Drill4Net.Common
             if (string.IsNullOrWhiteSpace(path))
                 return path;
             baseDir = FixDirectorySeparator(baseDir);
-            path = FixPathSeparator(path);
+            path = FixFilePathSeparator(path);
             if (!Path.IsPathRooted(path))
                 path = Path.GetFullPath(Path.Combine(baseDir ?? EntryDir, path));
             return path;
@@ -134,10 +134,10 @@ namespace Drill4Net.Common
                 return path;
             if (!path.EndsWith("\\") && !path.EndsWith("/"))
                 path += Path.DirectorySeparatorChar;
-            return FixPathSeparator(path);
+            return FixFilePathSeparator(path);
         }
 
-        public static string FixPathSeparator(string path)
+        public static string FixFilePathSeparator(string path)
         {
             return path?.Replace('/', Path.DirectorySeparatorChar)?.Replace('\\', Path.DirectorySeparatorChar);
         }
