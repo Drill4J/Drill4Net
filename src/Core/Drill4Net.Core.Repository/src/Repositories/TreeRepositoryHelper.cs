@@ -67,7 +67,7 @@ namespace Drill4Net.Core.Repository
 
         public string GetTreeFileHintPath(string targetDir)
         {
-            return Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME);
+            return FileUtils.GetFullPath(Path.Combine(targetDir, CoreConstants.TREE_FILE_HINT_NAME));
         }
     }
 }

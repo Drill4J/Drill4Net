@@ -10,6 +10,10 @@ using Drill4Net.Agent.Messaging.Transport;
 
 namespace Drill4Net.Agent.Worker
 {
+    /// <summary>
+    /// Worker for processing target probes' data, converting them and sending to the Drill admin side
+    /// by <see cref="StandardAgent"/>, sending commands to the Transmitter in the target.
+    /// </summary>
     public class AgentWorker : IMessageReceiver
     {
         public event ErrorOccuredDelegate ErrorOccured;
