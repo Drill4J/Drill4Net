@@ -72,6 +72,7 @@ namespace Drill4Net.Agent.Service
             _debugOpts = _rep?.Options?.Debug;
             _isDebug = _debugOpts?.Disabled == false;
 
+            //var dirs = Directory.GetDirectories("/app/src"); //"/src/build/bin/Debug/Drill4Net.Agent.Worker/"
             _workerPath = FileUtils.GetFullPath(_rep.Options.WorkerPath, FileUtils.ExecutingDir);
             if (!File.Exists(_workerPath))
                 throw new Exception("Agent Worker's executable not found");

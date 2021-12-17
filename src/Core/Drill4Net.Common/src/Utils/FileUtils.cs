@@ -100,15 +100,14 @@ namespace Drill4Net.Common
         {
             if (string.IsNullOrWhiteSpace(str))
                 return false;
-            return str.Contains(":") || str.Contains("..") || str.Contains("/") || str.Contains("\\");
+            return str.Contains(":") || str.Contains("..") || str.Contains('/') ||
+                   str.Contains('\\') || str.Contains(Path.DirectorySeparatorChar);
         }
 
         public static bool IsSameDirectories(string dir1, string dir2)
         {
-            if (!dir1.EndsWith("\\"))
-                dir1 += "\\";
-            if (!dir2.EndsWith("\\"))
-                dir2 += "\\";
+            dir1 = FixDirectorySeparator(dir1);
+            dir2 = FixDirectorySeparator(dir2);
             return dir1.Equals(dir2, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -116,15 +115,31 @@ namespace Drill4Net.Common
         /// Gets the full path from relative one.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="basePath">The base path.</param>
+        /// <param name="baseDir">The base path.</param>
         /// <returns></returns>
-        public static string GetFullPath(string path, string basePath = null)
+        public static string GetFullPath(string path, string baseDir = null)
         {
             if (string.IsNullOrWhiteSpace(path))
                 return path;
+            baseDir = FixDirectorySeparator(baseDir);
+            path = FixPathSeparator(path);
             if (!Path.IsPathRooted(path))
-                path = Path.GetFullPath(Path.Combine(basePath ?? EntryDir, path));
+                path = Path.GetFullPath(Path.Combine(baseDir ?? EntryDir, path));
             return path;
+        }
+
+        public static string FixDirectorySeparator(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return path;
+            if (!path.EndsWith("\\") && !path.EndsWith("/"))
+                path += Path.DirectorySeparatorChar;
+            return FixPathSeparator(path);
+        }
+
+        public static string FixPathSeparator(string path)
+        {
+            return path?.Replace('/', Path.DirectorySeparatorChar)?.Replace('\\', Path.DirectorySeparatorChar);
         }
 
         public static string GetDirectoryName(string path)

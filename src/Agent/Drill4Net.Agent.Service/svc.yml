@@ -9,6 +9,7 @@ Receiver:
    #Topics: # additional topics
       # #- aaa
 WorkerPath: ..\..\Drill4Net.Agent.Worker\net6.0\Drill4Net.Agent.Worker.exe
+#WorkerPath: ./worker/Drill4Net.Agent.Worker.exe
 #Debug:
 #    Disabled: true
 #    DontStartWorker: false
