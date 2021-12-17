@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -14,7 +15,6 @@ using Drill4Net.Agent.Transport;
 using Drill4Net.Admin.Requester;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Abstract.Transfer;
-using System.Reflection;
 
 namespace Drill4Net.Agent.Standard
 {

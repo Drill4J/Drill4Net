@@ -138,6 +138,12 @@ namespace Drill4Net.Agent.Standard
                 //probe's data from the instrumented code on the RegisterStatic
 
                 _logger.Debug($"{nameof(StandardAgent)} is primarly initialized.");
+
+                if (!StandardAgentInitParameters.LocatedInWorker)
+                {
+                    _logger.Info("Wait for command to continue executing...");
+                    _initEvent.WaitOne();
+                }
             }
             catch (Exception ex)
             {
