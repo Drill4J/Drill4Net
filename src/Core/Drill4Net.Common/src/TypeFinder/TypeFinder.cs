@@ -25,26 +25,24 @@ namespace Drill4Net.Common
                 throw new Exception($"Directory does not exists: [{dir}]");
             //
             ConcurrentDictionary<string, string> asms = new();
-            return SearchBy(finderMode, dir, searchType, asms, filter);
+            return SearchBy(finderMode, dir, searchType, asms, filter).ToList();
         }
 
-        internal List<Type> SearchBy(TypeFinderMode finderMode, string dir, Type searchType, ConcurrentDictionary<string, string> asms,
+        internal IEnumerable<Type> SearchBy(TypeFinderMode finderMode, string dir, Type searchType, ConcurrentDictionary<string, string> asms,
             SourceFilterOptions filter)
         {
-            var list = new List<Type>();
+            var list = new ConcurrentBag<Type>();
             if (filter?.IsDirectoryNeed(dir) == false)
                 return list;
             var di = new DirectoryInfo(dir);
             if (filter?.IsFolderNeed(di.Parent.Name) == false)
                 return list;
 
-            //CommonUtils.WriteTempLog($"{nameof(TypeFinder)}|SearchBy|Dir: [{dir}]");
-
             //files
             var files = Directory.GetFiles(dir)
                 .Where(a => Path.GetExtension(a) == ".dll");
             Parallel.ForEach(files, (file) =>
-            //foreach (var file in files) //DEBUG!!!
+           //foreach (var file in files) //DEBUG!!!
             {
                 if (filter?.IsFileNeedByPath(file) == false)
                     return;
@@ -52,18 +50,23 @@ namespace Drill4Net.Common
                 if (filter?.IsFileNeed(Path.GetFileName(file)) == false)
                     return;
                     //continue;
+                //
                 var dirTypes = GetTypes(finderMode, file, searchType, asms, filter);
-                list.AddRange(dirTypes);
+                foreach(var type in dirTypes)
+                    list.Add(type);
             });
             //}
 
             //subdirectories
             var dirs = Directory.GetDirectories(dir);
             Parallel.ForEach(dirs, (curDir) =>
+            //foreach (var curDir in dirs) //DEBUG!!!
             {
                 var dirTypes = SearchBy(finderMode, curDir, searchType, asms, filter);
-                list.AddRange(dirTypes);
+                foreach (var type in dirTypes)
+                    list.Add(type);
             });
+            //}
 
             return list;
         }
@@ -72,14 +75,14 @@ namespace Drill4Net.Common
             SourceFilterOptions filter)
         {
             if (!asms.TryAdd(Path.GetFileName(asmPath), null))
-                return new List<Type>();
+                return new ConcurrentBag<Type>();
             //
             try
             {
                 //CommonUtils.WriteTempLog($"{nameof(TypeFinder)}|GetTypes|Asm: [{asmPath}]");
                 var assembly = Assembly.LoadFrom(asmPath);
                 var types = assembly.GetTypes().Where(a => a.IsPublic);
-                var list = new List<Type>();
+                var list = new ConcurrentBag<Type>();
                 Parallel.ForEach(types, (type) =>
                 //foreach (var type in types) //DEBUG
                 {
@@ -133,7 +136,7 @@ namespace Drill4Net.Common
             }
             catch
             {
-                return new List<Type>();
+                return new ConcurrentBag<Type>();
             }
         }
     }

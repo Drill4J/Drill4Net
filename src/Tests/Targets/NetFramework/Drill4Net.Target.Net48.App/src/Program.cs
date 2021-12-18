@@ -8,7 +8,7 @@ namespace Drill4Net.Target.Net48.App
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Press any key when you'll have started the session on Admin side (if needed)");
+            Console.WriteLine("Press any key when you'll have attached the debugger (if needed)");
             Console.ReadKey(true);
 
             try

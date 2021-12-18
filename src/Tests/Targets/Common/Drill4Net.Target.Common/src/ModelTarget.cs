@@ -9,30 +9,34 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Drill4Net.Common;
 using Drill4Net.Target.Common.VB;
 
 [assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Engine")]
 //[assembly: InternalsVisibleTo("Drill4Net.Target.Tests.Net50")]
 
-/*** INFO
- automatic version tagger including Git info - https://github.com/devlooped/GitInfo
- semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
- the most common format is v0.0 (or just 0.0 is enough)
- to change semVer it is nesseccary to create appropriate tag and push it to remote repository
- patches'(commits) count starts with 0 again after new tag pushing
- For file version format exactly is digit
-***/
-[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+            /* *
+             * Listen, listen, listen, and don't say you haven't heard!
+             * NEVER!!!! NEVER!!!! NEVER INCLUDE ANY DRILL4NET DEPENDENCIES TO THIS PROJECT (except specific common tests' ones)
+             * Because they will be injected and then conflict with depenedncies from Transmitter, Agents and so on in memory
+             * 
+             * */
+
+// automatic version tagger including Git info - https://github.com/devlooped/GitInfo
+// semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
+// the most common format is v0.0 (or just 0.0 is enough)
+// to change semVer it is nesseccary to create appropriate tag and push it to remote repository
+// patches'(commits) count starts with 0 again after new tag pushing
+// For file version format exactly is digit
+[assembly: AssemblyFileVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}")]
+[assembly: AssemblyInformationalVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}")]
 
 //add this in project's csproj file: 
 //<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-                                        /*                                             *
-                                         *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
-                                         *   It's needed AS it IS !!!                  *
-                                         *                                             */
+                                    /*                                             *
+                                     *   DON'T OPTIMIZE CODE BY REFACTORING !!!!   *
+                                     *   It's needed AS it IS !!!                  *
+                                     *                                             */
 
 namespace Drill4Net.Target.Common
 {

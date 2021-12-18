@@ -1,18 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Web;
-using System.Linq;
-using System.Threading;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Drill4Net.Common;
-using Drill4Net.BanderLog;
-using Drill4Net.Profiling.Tree;
-using Drill4Net.Agent.Abstract;
+﻿using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Abstract.Transfer;
+using Drill4Net.BanderLog;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.Common;
 using Drill4Net.Core.Repository;
+using Drill4Net.Profiling.Tree;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
 
 /*** INFO
  automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -54,7 +53,7 @@ namespace Drill4Net.Agent.Standard
         private static InitActiveScope _scope;
         private static bool _isFastInitializing;
         private static readonly object _entitiesLocker;
-        private readonly ManualResetEvent _initEvent;
+        private static readonly ManualResetEvent _initEvent = new(false);
 
         private static Logger _logger;
         private static FileSink _probeLogger;
@@ -70,19 +69,17 @@ namespace Drill4Net.Agent.Standard
             if (StandardAgentInitParameters.SkipCreatingSingleton)
                 return;
 
-            Agent = new StandardAgent();
+            var rep = new StandardAgentRepository();
+            Agent = new StandardAgent(rep);
             if (Agent == null)
             {
                 _logger.Fatal("Creation is failed");
                 throw new Exception($"{nameof(StandardAgent)}: creation is failed");
             }
-        }
 
-        /// <summary>
-        /// Create the Standard Agent with default Repository
-        /// </summary>
-        /// <param name="rep"></param>
-        public StandardAgent(): this(null) { }
+            _logger.Info("Wait for command to continue executing...");
+            _initEvent.WaitOne();
+        }
 
         /// <summary>
         /// Create the Standard Agent with specified Repository
@@ -90,8 +87,6 @@ namespace Drill4Net.Agent.Standard
         /// <param name="rep"></param>
         public StandardAgent(StandardAgentRepository rep)
         {
-            _initEvent = new(false);
-
             try
             {
                 _logger.Debug($"{nameof(StandardAgent)} is initializing...");
@@ -138,12 +133,6 @@ namespace Drill4Net.Agent.Standard
                 //probe's data from the instrumented code on the RegisterStatic
 
                 _logger.Debug($"{nameof(StandardAgent)} is primarly initialized.");
-
-                if (!StandardAgentInitParameters.LocatedInWorker)
-                {
-                    _logger.Info("Wait for command to continue executing...");
-                    _initEvent.WaitOne();
-                }
             }
             catch (Exception ex)
             {
@@ -179,17 +168,25 @@ namespace Drill4Net.Agent.Standard
             return true;
         }
 
-        //TODO: parameter with plugin name and checkikn if this plugin... test2code (guanito)
+        //TODO: parameter with plugin name and check if this plugin is test2code
         private void PluginLoaded()
         {
             if (_isFastInitializing)
                 Agent_Initialized();
         }
 
-        private void Agent_Initialized()
+        private async void Agent_Initialized()
         {
             if (IsInitialized)
                 return;
+
+            if (Repository.Options.CreateManualSession)
+            {
+                //_logger.Debug("Need to create manual session");
+                await Task.Delay(3000); //for admin side Busy status (guanito)
+                StartAutoSession(null, false);
+                await Task.Delay(5000); //GUANO!!! (by waiting OnStartSession it hasn't worked out yet - need good non-blocking waiting)
+            }
             //
             IsInitialized = true;
             RaiseInitilizedEvent(); //external delegates
@@ -353,7 +350,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public static void RegisterStatic(string data) //don't combine this signatute with next one
         {
-            Agent?.Register(data);
+            Agent.Register(data);
         }
 
         /// <summary>
@@ -364,7 +361,7 @@ namespace Drill4Net.Agent.Standard
         // ReSharper disable once MemberCanBePrivate.Global
         public static void RegisterWithContextStatic(string data, string ctx)
         {
-            Agent?.RegisterWithContext(data, ctx);
+            Agent.RegisterWithContext(data, ctx);
         }
         #endregion
         #region Object's register
@@ -379,7 +376,7 @@ namespace Drill4Net.Agent.Standard
             if (StandardAgentInitParameters.LocatedInWorker)
                 return;
             //it is only for local Agent injected directly in Target's sys process
-            var ctx = Repository?.GetContextId();
+            var ctx = Repository.GetContextId();
             RegisterWithContext(data, ctx);
         }
 
@@ -398,7 +395,7 @@ namespace Drill4Net.Agent.Standard
                 //yes, some needless probes of tests' infrastructure we can to lose
                 if (_isAutotests)
                 {
-                    if(_curAutoSession == null)
+                    if (_curAutoSession == null)
                         return;
                     if (ctx?.StartsWith(AgentConstants.CONTEXT_SYSTEM_PREFIX) == true)
                         return;
@@ -461,7 +458,7 @@ namespace Drill4Net.Agent.Standard
             TestCaseContext testCaseCtx;
             switch (type)
             {
-                case AgentCommandType.ASSEMBLY_TESTS_START: StartAutoSession(data); break;
+                case AgentCommandType.ASSEMBLY_TESTS_START: StartAutoSession(data, true); break;
                 case AgentCommandType.ASSEMBLY_TESTS_STOP: StopAutoSession(); break;
 
                 #region BDD features, test groups...
@@ -491,18 +488,19 @@ namespace Drill4Net.Agent.Standard
         /// Automatic command from Agent to Admin side to start the session (for autotests)
         /// </summary>
         /// <param name="metadata">Some info about session. It can be empty</param>
-        internal void StartAutoSession(string metadata)
+        /// <param name="isAutotests">Is it autotests' environment?</param>
+        internal void StartAutoSession(string metadata, bool isAutotests)
         {
             var session = GetAutoSessionName(metadata);
             _logger.Info($"Admin side session is starting: [{session}]");
 
-            _isAutotests = true;
+            _isAutotests = isAutotests;
             //an agent can serve only one target, so there is only one autotest session
             _curAutoSession = new StartSessionPayload
             {
                 SessionId = session,
                 TestName = null,
-                TestType = AgentConstants.TEST_AUTO,
+                TestType = isAutotests ? AgentConstants.TEST_AUTO : AgentConstants.TEST_MANUAL,
                 IsGlobal = false,
                 IsRealtime = true
             };
@@ -609,7 +607,7 @@ namespace Drill4Net.Agent.Standard
 
         private void BlockProbeProcessing()
         {
-            if(_autotestsSequentialRegistering)
+            if (_autotestsSequentialRegistering)
                 _initEvent.Reset();
         }
 

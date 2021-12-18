@@ -50,15 +50,11 @@ namespace Drill4Net.Agent.Abstract
             List<Type> ctxTypes;
             try
             {
-                //CommonUtils.WriteTempLog("Ready to get the plugins");
                 ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter), filter);
-                //CommonUtils.WriteTempLog($"Found plugins: {ctxTypes.Count}");
             }
             catch (Exception ex)
             {
-                var err = "Search for contexters' plugin is failed";
-                //CommonUtils.WriteTempLog($"{err}: {ex}");
-                _logger.Fatal(err, ex);
+                _logger.Fatal("Search for contexters' plugin is failed", ex);
                 Log.Flush();
                 throw;
             }
@@ -70,7 +66,6 @@ namespace Drill4Net.Agent.Abstract
                 var name = contexter.Name;
                 if (string.IsNullOrWhiteSpace(name))
                     continue;
-                //CommonUtils.WriteTempLog($"Creating: {name}");
                 //
                 try
                 {

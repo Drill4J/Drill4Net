@@ -20,6 +20,11 @@ namespace Drill4Net.Agent.Abstract
         public string PluginDir { get; set; }
 
         /// <summary>
+        /// If needed to automatic creation session on admin side
+        /// </summary>
+        public bool CreateManualSession { get; set; }
+
+        /// <summary>
         /// Auxiliary options for connector subsystem (Drill native librarry for websocket communications)
         /// </summary>
         public ConnectorAuxOptions Connector { get; set; }

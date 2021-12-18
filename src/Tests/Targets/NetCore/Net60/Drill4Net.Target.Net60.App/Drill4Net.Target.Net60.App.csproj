@@ -7,8 +7,21 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<OutputPath>..\..\..\..\..\..\build\bin\Debug\Tests\TargetApps\Drill4Net.Target.Net60.App</OutputPath>
+	<DocumentationFile></DocumentationFile>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Drill4Net.Target.Common\Drill4Net.Target.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="cfg.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

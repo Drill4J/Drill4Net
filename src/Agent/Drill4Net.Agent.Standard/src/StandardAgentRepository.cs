@@ -474,7 +474,6 @@ namespace Drill4Net.Agent.Standard
                 SendCoverageData(reg);
         }
 
-
         private void SendCoverageData(CoverageRegistrator reg)
         {
             var sessionUid = reg?.Session?.SessionId;
