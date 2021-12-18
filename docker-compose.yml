@@ -20,7 +20,7 @@ services:
       - 8091:8080
     environment:
       WAIT_HOSTS: drill-admin:8090
-      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-89/dist/Drill4J-test-to-code.js
+      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-92/dist/Drill4J-test-to-code.js
 
   # Kafka middleware
   zookeeper:

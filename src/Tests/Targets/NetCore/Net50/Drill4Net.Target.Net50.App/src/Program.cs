@@ -13,7 +13,7 @@ namespace Drill4Net.Target.Net50.App
 
             try
             {
-                await new ModelTarget().RunTests();
+                await new ModelTarget().RunTests().ConfigureAwait(false);
                 Console.WriteLine("\nDone.");
             }
             catch (Exception ex)
