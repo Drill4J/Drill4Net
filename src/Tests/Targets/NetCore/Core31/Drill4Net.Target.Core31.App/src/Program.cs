@@ -14,7 +14,6 @@ namespace Drill4Net.Target.Core31.App
             try
             {
                 await new ModelTarget().RunTests();
-                Console.WriteLine("\nDone.");
             }
             catch (Exception ex)
             {

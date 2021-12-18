@@ -7,7 +7,6 @@ Console.ReadKey(true);
 try
 {
     await new ModelTarget().RunTests();
-    Console.WriteLine("\nDone.");
 }
 catch (Exception ex)
 {

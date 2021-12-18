@@ -21,6 +21,7 @@ namespace Drill4Net.Agent.Abstract
 
         /// <summary>
         /// If needed to automatic creation session on admin side
+        /// (for example, for testing the class Drill4Net.Target.Common.ModelTarget/>)
         /// </summary>
         public bool CreateManualSession { get; set; }
 

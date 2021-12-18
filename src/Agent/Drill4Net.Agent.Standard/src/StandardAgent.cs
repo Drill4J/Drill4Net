@@ -182,10 +182,17 @@ namespace Drill4Net.Agent.Standard
 
             if (Repository.Options.CreateManualSession)
             {
-                //_logger.Debug("Need to create manual session");
-                await Task.Delay(3000); //for admin side Busy status (guanito)
+                //_logger.Debug("Need to create manual session"); //for some reason it blocker...
                 StartAutoSession(null, false);
-                await Task.Delay(5000); //GUANO!!! (by waiting OnStartSession it hasn't worked out yet - need good non-blocking waiting)
+
+                //wait (if scope on the admin side is living we won't get the event about started session)
+                var timeout = DateTime.Now.AddSeconds(5);
+                while (!_sessionStarted)
+                {
+                    if (DateTime.Now > timeout)
+                        break;
+                    await Task.Delay(50);
+                }
             }
             //
             IsInitialized = true;
@@ -265,11 +272,13 @@ namespace Drill4Net.Agent.Standard
         }
 
         #region Session
+        private bool _sessionStarted;
         private void OnStartSession(StartAgentSession info)
         {
             try
             {
                 RegisterStartedSession(info.Payload);
+                _sessionStarted = true;
             }
             catch (Exception ex)
             {

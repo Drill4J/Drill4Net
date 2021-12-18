@@ -4,9 +4,9 @@ using Drill4Net.Target.Common;
 
 namespace Drill4Net.Target.Net48.App
 {
-    class Program
+    static class Program
     {
-        public static async Task Main(string[] args)
+        public static async Task Main()
         {
             Console.WriteLine("Press any key when you'll have attached the debugger (if needed)");
             Console.ReadKey(true);
@@ -14,7 +14,6 @@ namespace Drill4Net.Target.Net48.App
             try
             {
                 await new ModelTarget().RunTests();
-                Console.WriteLine("\nDone.");
             }
             catch (Exception ex)
             {

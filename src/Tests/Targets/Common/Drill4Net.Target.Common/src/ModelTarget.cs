@@ -387,6 +387,9 @@ namespace Drill4Net.Target.Common
 
             //QA_IfElse_Random();
             #endregion
+
+            Console.WriteLine("\nDone.");
+            Console.WriteLine("\nPLEASE, if you are collecting samples in the admin panel, please do not close the application immediately - wait a few seconds!\n");
         }
 
         #region IF/ELSE
