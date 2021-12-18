@@ -7,3 +7,6 @@ TreePath: # where tree data about probes are located - if empty, system will try
 Admin:
   Url: localhost:8090
 PluginDir: ../../../ # path to the IEngineContexter's plugins
+Debug:
+  Disabled: true
+  WriteProbes: true # write trace probe data to the file probes.log in Log directory

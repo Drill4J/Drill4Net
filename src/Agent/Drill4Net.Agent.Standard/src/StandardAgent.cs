@@ -175,7 +175,9 @@ namespace Drill4Net.Agent.Standard
                 Agent_Initialized();
         }
 
+        #pragma warning disable AsyncFixer03 // Fire-and-forget async-void methods or delegates
         private async void Agent_Initialized()
+        #pragma warning restore AsyncFixer03 // Fire-and-forget async-void methods or delegates
         {
             if (IsInitialized)
                 return;
