@@ -484,7 +484,7 @@ namespace Drill4Net.Agent.Standard
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
                     testCaseCtx = Repository.GetTestCaseContext(data);
-                    RegisterTestInfoFinish(testCaseCtx);
+                    RegisterTestInfoFinish(testCaseCtx).Wait();
                     break;
                 default:
                     _logger.Warning($"Skipping command: [{type}] -> [{data}]");
@@ -522,12 +522,15 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Automatic command from Agent to Admin side to stop the session (for autotests)
         /// </summary>
-        internal void StopAutoSession()
+        internal async Task StopAutoSession()
         {
             var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
 
-            SendRemainedCoverage();
+            ReleaseProbeProcessing(); //any way
+            await Task.Delay(2000);
+            await SendRemainedCoverage();
+            _sessionStarted = false;
             _curAutoSession = null;
 
             //DON'T REMOVE THESE COMMENTED LINES: the scope will be removed as entity from Drill Admin... soon...
@@ -597,18 +600,18 @@ namespace Drill4Net.Agent.Standard
             ReleaseProbeProcessing();
         }
 
-        internal void RegisterTestInfoFinish(TestCaseContext testCtx)
+        internal async Task RegisterTestInfoFinish(TestCaseContext testCtx)
         {
             BlockProbeProcessing();
-            SendRemainedCoverage();
+            await SendRemainedCoverage();
             CoverageSender.RegisterTestCaseFinish(testCtx);
         }
 
-        private void SendRemainedCoverage()
+        private async Task SendRemainedCoverage()
         {
             if (_curAutoSession != null)
             {
-                Task.Delay(1500); // this is inefficient: TODO control by probe's context (=test) by dict
+                await Task.Delay(2500); // possibly this is inefficient: TODO control by probe's context (=test) by dict
                 Repository.SendCoverage(_curAutoSession.SessionId);
             }
         }

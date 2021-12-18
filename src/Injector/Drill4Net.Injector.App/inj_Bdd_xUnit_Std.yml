@@ -1,7 +1,7 @@
 ﻿Description: BDD SpecFlow + xUnit tests with Kafka
 Type: Injector #type as hint
 Target: # some metadata about target
-    Name: bdd-specflow-xUnit-kafka #optional injection name, if empty must be set in agent config
+    Name: bdd-specflow-xUnit-std #optional injection name, if empty must be set in agent config
     Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
 Source: # what and how processing
     Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit\
@@ -60,11 +60,4 @@ Logs: # logging for Injector
       Level: trace
 Debug:
     CrossPointInfo : true # cross-point information is included into injected probe data. By default is true if this section presents
-Versions: # what will be injected - by target moniker/assembly/class, can be empty, can be empty
-    Directory: ..\..\TargetApps\ #target dir relatively Test project
-    Targets:
-        net48: #default assembly & class if empty
-          BaseFolder: net48\
-        net6.0:
-          BaseFolder: net6.0\
 Silent: false # no wait, no questions...

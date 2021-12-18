@@ -2,7 +2,7 @@
 Type: agent-service # type as hint
 Servers: # list of Kafka servers
    - 'localhost:9093' # from host
-   - 'host.docker.internal:9093' # from Docker
+   #- 'host.docker.internal:9093' # from Docker
 Sender:
    #Topics: # additional topics
 Receiver:
