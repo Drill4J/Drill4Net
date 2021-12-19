@@ -257,12 +257,13 @@ namespace Drill4Net.Agent.Standard
                         //here many copies of target for different runtimes - we need only actual
                         var entryAsm = Assembly.GetEntryAssembly();
                         var asmDir = Path.GetDirectoryName(entryAsm.Location);
-                        var monikerDir = new DirectoryInfo(asmDir);
-                        var moniker = monikerDir.Name;
+                        var moniker = new DirectoryInfo(asmDir).Name;
                         _logger.Debug($"Entry moniker: {moniker}; asm: {entryAsm.FullName}; location=[{entryAsm.Location}]");
-                        var execVer = CommonUtils.GetAssemblyVersioning(entryAsm);
-                        if(!entryAsm.FullName.Contains("testhost"))
+                        if (!entryAsm.FullName.Contains("testhost"))
+                        {
+                            var execVer = CommonUtils.GetAssemblyVersioning(entryAsm);
                             _logger.Debug($"Actual version: {execVer}");
+                        }
                         //
                         InjectedDirectory targetDir = null;
                         foreach (var dir in rootDirs)
