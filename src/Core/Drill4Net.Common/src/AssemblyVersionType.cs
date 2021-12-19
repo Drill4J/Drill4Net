@@ -16,14 +16,14 @@
         NotIL = 1,
 
         /// <summary>
-        /// It's NetFramework version
-        /// </summary>
-        NetFramework = 2,
-
-        /// <summary>
         /// It's NetStandard version
         /// </summary>
-        NetStandard = 3,
+        NetStandard = 2,
+
+        /// <summary>
+        /// It's NetFramework version
+        /// </summary>
+        NetFramework = 3,
 
         /// <summary>
         /// It's .Net Core version

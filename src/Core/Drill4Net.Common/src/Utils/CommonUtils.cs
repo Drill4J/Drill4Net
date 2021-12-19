@@ -41,17 +41,26 @@ namespace Drill4Net.Common
         /// <returns></returns>
         public static AssemblyVersioning GetEntryTargetVersioning()
         {
-            return new AssemblyVersioning(GetAssemblyVersion(Assembly.GetEntryAssembly()));
+            return GetAssemblyVersioning(Assembly.GetEntryAssembly());
         }
 
         public static AssemblyVersioning GetCallingTargetVersioning()
         {
-            return new AssemblyVersioning(GetAssemblyVersion(Assembly.GetCallingAssembly()));
+            return GetAssemblyVersioning(Assembly.GetCallingAssembly());
         }
 
         public static AssemblyVersioning GetExecutingTargetVersioning()
         {
-            return new AssemblyVersioning(GetAssemblyVersion(Assembly.GetExecutingAssembly()));
+            return GetAssemblyVersioning(Assembly.GetExecutingAssembly());
+        }
+
+        /// <summary>
+        /// Get version for the specified assembly
+        /// </summary>
+        /// <returns></returns>
+        public static AssemblyVersioning GetAssemblyVersioning(Assembly asm)
+        {
+            return new AssemblyVersioning(GetAssemblyVersion(asm));
         }
         #endregion
         #region Assembly
@@ -62,6 +71,8 @@ namespace Drill4Net.Common
         /// <returns></returns>
         public static string GetAssemblyVersion(Assembly asm)
         {
+            if (asm == null)
+                throw new ArgumentNullException(nameof(asm));
             var fs = asm.DefinedTypes.FirstOrDefault(a => a.FullName?.Contains("-Target-Common-FSharp") == true);
             string versionS;
             if (fs != null)

@@ -120,8 +120,8 @@ namespace Drill4Net.Injector.Core
             Version = version;
 
             var ext = Path.GetExtension(filePath);
-            Skipped = version == null || version.Target == AssemblyVersionType.NotIL ||
-                (ext == ".exe" && version.Target == AssemblyVersionType.NetCore);
+            Skipped = version == null || version.FrameworkType == AssemblyVersionType.NotIL ||
+                (ext == ".exe" && version.FrameworkType == AssemblyVersionType.NetCore);
 
             TypeContexts = new Dictionary<string, TypeContext>();
             InjClasses = new Dictionary<string, InjectedType>();

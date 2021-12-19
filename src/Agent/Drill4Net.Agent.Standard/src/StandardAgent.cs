@@ -427,11 +427,15 @@ namespace Drill4Net.Agent.Standard
                 //var probe = ar[3];
 
                 _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
-
-                var res = Repository.RegisterCoverage(probeUid, ctx);
-
+                var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
+                //
                 if (_writeProbesToFile)
-                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, $"[{ctx}] -> {probeUid} -> {res}");
+                {
+                    var mess = $"[{ctx}] -> {probeUid} -> {res}";
+                    if (!res)
+                        mess += $": {warning}";
+                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, mess);
+                }
             }
             catch (Exception ex)
             {

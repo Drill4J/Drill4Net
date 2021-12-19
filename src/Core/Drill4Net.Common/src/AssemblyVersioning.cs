@@ -11,7 +11,7 @@ namespace Drill4Net.Common
         /// <summary>
         /// Type of the assembly's version
         /// </summary>
-        public AssemblyVersionType Target { get; set; }
+        public AssemblyVersionType FrameworkType { get; set; }
 
         /// <summary>
         /// The string representation of the assembly's version
@@ -31,7 +31,7 @@ namespace Drill4Net.Common
         /// <summary>
         /// Is it NetFramework or Net Core?
         /// </summary>
-        public bool IsNetFramework => Target == AssemblyVersionType.NetFramework;
+        public bool IsNetFramework => FrameworkType == AssemblyVersionType.NetFramework;
 
         /*************************************************************************/
 
@@ -49,7 +49,7 @@ namespace Drill4Net.Common
             if (ar.Length != 2)
                 throw new ArgumentException(nameof(rawVersion));
 
-            Target = ar[0] switch
+            FrameworkType = ar[0] switch
             {
                 ".NETCoreApp" => AssemblyVersionType.NetCore,
                 ".NETStandard" => AssemblyVersionType.NetStandard,
@@ -66,7 +66,7 @@ namespace Drill4Net.Common
 
         public override string ToString()
         {
-            return Target == AssemblyVersionType.Unknown ? Target.ToString() : $"{Target} {Version}";
+            return FrameworkType == AssemblyVersionType.Unknown ? FrameworkType.ToString() : $"{FrameworkType} {Version}";
         }
     }
 }

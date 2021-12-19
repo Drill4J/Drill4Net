@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Standard
         /// <value>
         /// The DTO of the Target type.
         /// </value>
-        public ConcurrentDictionary<string, ExecClassData> PointToType { get; }
+        public ConcurrentDictionary<string, ExecClassData> PointToTypes { get; }
 
         /// <summary>
         /// Gets the range of the indexes in method's instructions for the specified cross-point's Uid.
@@ -42,7 +42,7 @@ namespace Drill4Net.Agent.Standard
         /// <value>
         /// The range of the indexes in method's instructions
         /// </value>
-        public ConcurrentDictionary<string, (int Start, int End)> PointToRange { get; }
+        public ConcurrentDictionary<string, (int Start, int End)> PointToRanges { get; }
 
         /// <summary>
         /// Gets the injected classes in DTO form.
@@ -78,9 +78,9 @@ namespace Drill4Net.Agent.Standard
         public CoverageRegistrator(string context, StartSessionPayload session)
         {
             Context = context;
-            Session = session; // ?? throw new .....
-            PointToType = new ConcurrentDictionary<string, ExecClassData>();
-            PointToRange = new ConcurrentDictionary<string, (int, int)>();
+            Session = session; // can be null
+            PointToTypes = new ConcurrentDictionary<string, ExecClassData>();
+            PointToRanges = new ConcurrentDictionary<string, (int, int)>();
             Types = new HashSet<ExecClassData>();
             AffectedTypes = new HashSet<ExecClassData>();
         }
@@ -97,14 +97,14 @@ namespace Drill4Net.Agent.Standard
         public void BindPoint(string pointUid, ExecClassData typeData, int start, int end)
         {
             //link point to range
-            if (PointToRange.ContainsKey(pointUid))
+            if (PointToRanges.ContainsKey(pointUid))
                 return;
-            PointToRange.TryAdd(pointUid, (start, end));
+            PointToRanges.TryAdd(pointUid, (start, end));
 
             //link point (probe) to the class
-            if (PointToType.ContainsKey(pointUid))
+            if (PointToTypes.ContainsKey(pointUid))
                 return;
-            PointToType.TryAdd(pointUid, typeData);
+            PointToTypes.TryAdd(pointUid, typeData);
             
             //list of classes
             if (!Types.Contains(typeData))
@@ -121,20 +121,32 @@ namespace Drill4Net.Agent.Standard
         /// Register the coverage data by point Uid coming from Target side
         /// </summary>
         /// <param name="pointUid"></param>
-        public bool RegisterCoverage(string pointUid)
+        /// <param name="reason">REason for missed crosspoint</param>
+        /// <returns>Is point has been retrieved?</returns>
+        public bool RegisterCoverage(string pointUid, out string reason)
         {
             #region Checks
-            //hm... log?
-            if (!PointToRange.TryGetValue(pointUid, out (int Start, int End) range))
-                return false; //it's error
-            if (!PointToType.TryGetValue(pointUid, out var classData))
-                return false; //it's normal, but not the best (for the block coverage we not need "Enter" type of cross-points, another case is a possible error)
-
+            reason = null;
+            if (!PointToRanges.TryGetValue(pointUid, out (int Start, int End) range)) //it's error
+            {
+                reason = $"No point to range for: {pointUid}. PointToRanges.Count={PointToRanges.Count}";
+                return false;
+            }
+            //it's normal, but not the best (for the block coverage we not need "Enter" type of cross-points, another case is a possible error)
+            if (!PointToTypes.TryGetValue(pointUid, out var classData))
+            {
+                reason = $"No point to classData for: {pointUid} (it is just warning). PointToTypes.Count={PointToTypes.Count}";
+                return false;
+            }
+            //
             var probes = classData.probes;
             var start = range.Start;
             var end = range.End;
             if (start > end || start < 0 || start >= probes.Count || end < 0 || end >= probes.Count)
+            {
+                reason = $"Point range out of classData's start and end: {pointUid} > start={start}, end={end}, probes.Count={probes.Count} => {classData}";
                 return false; //it's error
+            }
             #endregion
 
             if (probes[start]) //already registered

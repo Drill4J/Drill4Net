@@ -75,7 +75,7 @@ namespace Drill4Net.Injector.Core
             var pdb = $"{asmCtx.SubjectName}.pdb";
             var isPdbExists = File.Exists(pdb);
             //TODO: +cfg? or by type of coverage/injection?
-            var needPdb = isPdbExists && (version.Target is AssemblyVersionType.NetCore or AssemblyVersionType.NetStandard);
+            var needPdb = isPdbExists && (version.FrameworkType is AssemblyVersionType.NetCore or AssemblyVersionType.NetStandard);
             if (needPdb)
             {
                 // netcore uses portable pdb, so we provide appropriate reader

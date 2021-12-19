@@ -136,7 +136,7 @@ namespace Drill4Net.Injector.Core
                 {
                     var dll = Path.Combine(Path.ChangeExtension(filePath, ".dll"));
                     var dllVer = versions.FirstOrDefault(a => a.Key == dll).Value;
-                    version = dllVer ?? new AssemblyVersioning() { Target = AssemblyVersionType.NetCore };
+                    version = dllVer ?? new AssemblyVersioning() { FrameworkType = AssemblyVersionType.NetCore };
                     FrameworkVersion = version;
                     versions.Add(filePath, version);
                     continue;
@@ -147,7 +147,7 @@ namespace Drill4Net.Injector.Core
 
                 if (IsNetCore == null && version != null) //no data yet
                 {
-                    switch (version.Target)
+                    switch (version.FrameworkType)
                     {
                         case AssemblyVersionType.NetCore:
                             FrameworkVersion = version;

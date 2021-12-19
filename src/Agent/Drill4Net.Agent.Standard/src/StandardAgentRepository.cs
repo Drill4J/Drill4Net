@@ -221,10 +221,12 @@ namespace Drill4Net.Agent.Standard
         internal IEnumerable<InjectedType> GetTypesByCallerVersion(InjectedSolution tree)
         {
             IEnumerable<InjectedType> injTypes = null;
+            var sysChecker = new TypeChecker();
 
             // check for different compiling target version 
             //we need only one for current runtime
             var rootDirs = tree.GetDirectories().ToList();
+            _logger.Debug($"Root dirs' count: {rootDirs.Count}");
             if (rootDirs.Count > 1)
             {
                 //TODO: refactor (optimize)!
@@ -232,7 +234,7 @@ namespace Drill4Net.Agent.Standard
                 var asmNameByDirs = (from dir in rootDirs
                                      select dir.GetAssemblies()
                                                .Select(a => a.Name)
-                                               .Where(a => a.EndsWith(".dll"))
+                                               .Where(a => a.EndsWith(".dll") && sysChecker.CheckByAssemblyPath(a))
                                                .ToList())
                                      .ToList();
                 if (asmNameByDirs[0].Count > 0)
@@ -248,18 +250,27 @@ namespace Drill4Net.Agent.Standard
                         multi = false;
                         break;
                     }
+                    _logger.Debug($"Framework's multi-target: {multi}");
+                    //
                     if (multi)
                     {
-                        //here many copies of target for different runtimes
-                        //we need only one
-                        var execVer = CommonUtils.GetEntryTargetVersioning();
+                        //here many copies of target for different runtimes - we need only actual
+                        var entryAsm = Assembly.GetEntryAssembly();
+                        var asmDir = Path.GetDirectoryName(entryAsm.Location);
+                        var monikerDir = new DirectoryInfo(asmDir);
+                        var moniker = monikerDir.Name;
+                        _logger.Debug($"Entry moniker: {moniker}; asm: {entryAsm.FullName}; location=[{entryAsm.Location}]");
+                        var execVer = CommonUtils.GetAssemblyVersioning(entryAsm);
+                        if(!entryAsm.FullName.Contains("testhost"))
+                            _logger.Debug($"Actual version: {execVer}");
+                        //
                         InjectedDirectory targetDir = null;
                         foreach (var dir in rootDirs)
                         {
-                            var asms = dir.GetAssemblies().ToList();
-                            if (asms[0].FrameworkVersion.Version != execVer.Version)
+                            if (new DirectoryInfo(dir.Path).Name != moniker)
                                 continue;
                             targetDir = dir;
+                            _logger.Debug($"Target dir: {dir}");
                             break;
                         }
                         injTypes = targetDir?.GetAllTypes();
@@ -411,18 +422,21 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="pointUid"></param>
         /// <param name="ctx"></param>
+        /// <param name="missReason"></param>
         /// <returns></returns>
-        public bool RegisterCoverage(string pointUid, string ctx)
+        public bool RegisterCoverage(string pointUid, string ctx, out string missReason)
         {
+            missReason = null;
+
             //global session
             var isGlobalReg = false;
             if (_globalRegistrator != null)
-                isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid);
+                isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid, out missReason);
 
             //local session
             var reg = GetOrCreateLocalCoverageRegistrator(ctx);
             if (reg != null)
-                return reg.RegisterCoverage(pointUid);
+                return reg.RegisterCoverage(pointUid, out missReason);
             else
                 return isGlobalReg;
         }
@@ -553,7 +567,10 @@ namespace Drill4Net.Agent.Standard
                 //TODO: do it properly! Need right binding ctx to session!
                 var session = TryGetLocalSession();
                 if (session == null)
+                {
+                    _logger.Warning($"No session for context [{ctx}]");
                     return null;
+                }
                 reg = CreateCoverageRegistrator(ctx, session);
                 _ctxToRegistrators.TryAdd(ctx, reg);
             }
