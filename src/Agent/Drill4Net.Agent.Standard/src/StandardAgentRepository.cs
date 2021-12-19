@@ -31,13 +31,13 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Any sesion is exists?
         /// </summary>
-        public bool IsAnySession => _ctxToSession.Count > 0;
+        public bool IsAnySession => _ctxToSessions.Count > 0;
 
-        private ConcurrentDictionary<string, string> _ctxToSession;
+        private ConcurrentDictionary<string, string> _ctxToSessions;
         private ConcurrentDictionary<string, List<string>> _sessionToCtxs;
-        private ConcurrentDictionary<string, StartSessionPayload> _sessionToObject;
-        private ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrator;
-        private ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecData;
+        private ConcurrentDictionary<string, StartSessionPayload> _sessionToObjects;
+        private ConcurrentDictionary<string, CoverageRegistrator> _ctxToRegistrators;
+        private ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>> _ctxToExecDatas;
 
         private CoverageRegistrator _globalRegistrator;
         private TreeConverter _converter;
@@ -91,15 +91,15 @@ namespace Drill4Net.Agent.Standard
             _logger.Debug("Creating...");
 
             //ctx maps
-            _ctxToSession = new ConcurrentDictionary<string, string>();
-            _ctxToRegistrator = new ConcurrentDictionary<string, CoverageRegistrator>();
+            _ctxToSessions = new ConcurrentDictionary<string, string>();
+            _ctxToRegistrators = new ConcurrentDictionary<string, CoverageRegistrator>();
 
             //session maps
             _sessionToCtxs = new ConcurrentDictionary<string, List<string>>();
-            _sessionToObject = new ConcurrentDictionary<string, StartSessionPayload>();
+            _sessionToObjects = new ConcurrentDictionary<string, StartSessionPayload>();
 
             // execution data by session ids
-            _ctxToExecData = new ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>>();
+            _ctxToExecDatas = new ConcurrentDictionary<string, ConcurrentDictionary<string, ExecClassData>>();
 
             _converter = new TreeConverter();
             _sendLocker = new object();
@@ -322,12 +322,12 @@ namespace Drill4Net.Agent.Standard
             if(string.IsNullOrWhiteSpace(ctxId))
                 ctxId = /*context ?? */GetContextId();
 
-            if (_ctxToSession.ContainsKey(ctxId)) //or recreate?!
+            if (_ctxToSessions.ContainsKey(ctxId)) //or recreate?!
                 return;
 
             var sessionUid = session.SessionId;
-            _sessionToObject.TryAdd(sessionUid, session);
-            _ctxToSession.TryAdd(ctxId, sessionUid);
+            _sessionToObjects.TryAdd(sessionUid, session);
+            _ctxToSessions.TryAdd(ctxId, sessionUid);
             _sessionToCtxs.TryAdd(sessionUid, new List<string> { ctxId });
 
             if (session.IsGlobal)
@@ -389,20 +389,20 @@ namespace Drill4Net.Agent.Standard
                 return;
             foreach (var ctxId in ctxList.AsParallel())
             {
-                _ctxToSession.TryRemove(ctxId, out var _);
-                _ctxToExecData.TryRemove(ctxId, out var _);
-                _ctxToRegistrator.TryRemove(ctxId, out var _);
+                _ctxToSessions.TryRemove(ctxId, out var _);
+                _ctxToExecDatas.TryRemove(ctxId, out var _);
+                _ctxToRegistrators.TryRemove(ctxId, out var _);
             }
-            _sessionToObject.TryRemove(sessionUid, out var _);
+            _sessionToObjects.TryRemove(sessionUid, out var _);
         }
 
         internal void ClearScopeData()
         {
-            _ctxToSession.Clear();
+            _ctxToSessions.Clear();
             _sessionToCtxs.Clear();
-            _ctxToExecData.Clear();
-            _ctxToRegistrator.Clear();
-            _sessionToObject.Clear();
+            _ctxToExecDatas.Clear();
+            _ctxToRegistrators.Clear();
+            _sessionToObjects.Clear();
         }
         #endregion
         #region Coverage data
@@ -417,7 +417,7 @@ namespace Drill4Net.Agent.Standard
             //global session
             var isGlobalReg = false;
             if (_globalRegistrator != null)
-                isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid); //always register
+                isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid);
 
             //local session
             var reg = GetOrCreateLocalCoverageRegistrator(ctx);
@@ -452,12 +452,12 @@ namespace Drill4Net.Agent.Standard
 
                 //clean old regs
                 var timeout = new TimeSpan(0, 1, 0);
-                var oldRegs = _ctxToRegistrator.Values.Where(a => a.AffectedProbeCount == 0 && (DateTime.Now - a.SentTime) > timeout).AsParallel();
+                var oldRegs = _ctxToRegistrators.Values.Where(a => a.AffectedProbeCount == 0 && (DateTime.Now - a.SentTime) > timeout).AsParallel();
                 foreach(var reg in oldRegs)
-                    _ctxToRegistrator.TryRemove(reg.Context, out _);
+                    _ctxToRegistrators.TryRemove(reg.Context, out _);
 
                 //send coverage
-                var regs = _ctxToRegistrator.Values.Where(a => a.AffectedProbeCount > 0).AsParallel();
+                var regs = _ctxToRegistrators.Values.Where(a => a.AffectedProbeCount > 0).AsParallel();
                 foreach (var reg in regs)
                 {
                     SendCoverageData(reg);
@@ -481,12 +481,13 @@ namespace Drill4Net.Agent.Standard
                 return;
             var execClasses = reg.AffectedTypes.ToList();
 
+            const int maxCount = 65535;
             switch (execClasses.Count)
             {
                 case 0:
                     return;
-                case > 65535: //Drill side's restriction
-                    //TODO: implement sending in cycle by chunk by 65535 probes (find out more from the engineers)
+                case > maxCount: //Drill side's restriction
+                    //TODO: implement sending in cycle by chunk by 65535 probes (find out more from the Drill engineers)
                     break;
                 default:
                     Communicator.Sender.SendCoverageData(sessionUid, execClasses);
@@ -512,7 +513,7 @@ namespace Drill4Net.Agent.Standard
 
         private void StopSendCycleIfNeeded()
         {
-            if(_ctxToRegistrator.Count == 0)
+            if(_ctxToRegistrators.Count == 0)
                 _sendTimer.Enabled = false;
         }
 
@@ -523,7 +524,7 @@ namespace Drill4Net.Agent.Standard
             var regs = new List<CoverageRegistrator>();
             foreach (var ctxId in ctxList)
             {
-                if (!_ctxToRegistrator.TryGetValue(ctxId, out var reg))
+                if (!_ctxToRegistrators.TryGetValue(ctxId, out var reg))
                     return null;
                 regs.Add(reg);
             }
@@ -538,23 +539,23 @@ namespace Drill4Net.Agent.Standard
         public CoverageRegistrator GetOrCreateLocalCoverageRegistrator(string ctx)
         {
             if (string.IsNullOrWhiteSpace(ctx))
-                ctx = GetContextId(); //it is only for local Agent injected directly in Target's operation process
+                ctx = GetContextId(); //it is only for local Agent injected directly in Target's OS process
 
             CoverageRegistrator reg;
-            if (_ctxToRegistrator.ContainsKey(ctx))
+            if (_ctxToRegistrators.ContainsKey(ctx))
             {
-                _ctxToRegistrator.TryGetValue(ctx, out reg);
+                _ctxToRegistrators.TryGetValue(ctx, out reg);
                 if (reg is { Session: null })
                     reg.Session = TryGetLocalSession();
             }
-            else  //create
+            else //create
             {
                 //TODO: do it properly! Need right binding ctx to session!
                 var session = TryGetLocalSession();
                 if (session == null)
                     return null;
                 reg = CreateCoverageRegistrator(ctx, session);
-                _ctxToRegistrator.TryAdd(ctx, reg);
+                _ctxToRegistrators.TryAdd(ctx, reg);
             }
             return reg;
         }
@@ -574,7 +575,7 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         private StartSessionPayload TryGetAutoSession()
         {
-            return _sessionToObject.Values
+            return _sessionToObjects.Values
                 .FirstOrDefault(a => a.TestType == AgentConstants.TEST_AUTO);
         }
 
@@ -584,9 +585,10 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         private StartSessionPayload TryGetManualSession()
         {
-            return _sessionToObject.Values
+            return _sessionToObjects.Values
                 .FirstOrDefault(a => a.TestType == AgentConstants.TEST_MANUAL &&
-                                    (_globalRegistrator == null || _globalRegistrator.Session != a));
+                                    //manual session in global mode not needed itself
+                                    (_globalRegistrator == null || _globalRegistrator.Session != a)); 
         }
 
         internal CoverageRegistrator CreateCoverageRegistrator(string context, StartSessionPayload session)

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Debug\Drill4Net.Injector.Plugins.SpecFlow</OutputPath>
+    <DocumentationFile>..\..\..\..\doc\xml\Drill4Net.Injector.Plugins.SpecFlow\Drill4Net.Injector.Plugins.SpecFlow.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Release\Drill4Net.Injector.Plugins.SpecFlow</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpecFlow" Version="3.9.40" />
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Agent\Drill4Net.Agent.Plugins.SpecFlow\Drill4Net.Agent.Plugins.SpecFlow.csproj" />
+    <ProjectReference Include="..\..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+    <ProjectReference Include="..\..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Debug\Drill4Net.Injection.Debug</OutputPath>
+    <DocumentationFile>..\..\..\..\doc\xml\Drill4Net.Injection.Debug\Drill4Net.Injection.Debug.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\..\build\bin\Release\Drill4Net.Injection.Debug</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Drill4Net.Injection\Drill4Net.Injection.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -25,7 +25,9 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public void Start(List<DirectoryRunInfo> infos, bool runParallelRestrict, int degreeOfParallelism)
         {
-            _logger.Debug("Starting...");
+            if (degreeOfParallelism < 1)
+                degreeOfParallelism = 1;
+            _logger.Debug($"Starting: degreeOfParallelism={degreeOfParallelism}");
 
             var controller = new CliDispatcher();
             foreach (var runInfo in infos)

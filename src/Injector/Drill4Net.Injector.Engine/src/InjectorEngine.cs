@@ -5,19 +5,19 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Drill4Net.BanderLog;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Injection.SpecFlow;
+using Drill4Net.Injector.Plugins.SpecFlow;
 
 /*** INFO
- automatic version tagger including Git info - https://github.com/devlooped/GitInfo
- semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
- the most common format is v0.0 (or just 0.0 is enough)
- to change semVer it is nesseccary to create appropriate tag and push it to remote repository
- patches'(commits) count starts with 0 again after new tag pushing
- For file version format exactly is digit
+     automatic version tagger including Git info - https://github.com/devlooped/GitInfo
+     semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
+     the most common format is v0.0 (or just 0.0 is enough)
+     to change semVer it is nesseccary to create appropriate tag and push it to remote repository
+     patches'(commits) count starts with 0 again after new tag pushing
+     For file version format exactly is digit
 ***/
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
 [assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]

@@ -18,7 +18,7 @@ using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Agent.Messaging.Transport.Kafka;
 
-[assembly: InternalsVisibleTo("Drill4Net.Agent.Transmitter.Debug")]
+[assembly: InternalsVisibleTo("Drill4Net.Agent.Plugins.Debug")]
 
 namespace Drill4Net.Agent.Transmitter
 {

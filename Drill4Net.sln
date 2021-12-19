@@ -24,11 +24,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Common", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection", "src\Injection\Drill4Net.Injection\Drill4Net.Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection", "src\Injector\Injection\Drill4Net.Injection\Drill4Net.Injection.csproj", "{2FBA8974-AAE8-43C1-AAD6-37C25E869F08}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Injection", "Injection", "{F224ACDF-5B60-47B3-98F7-15280126EF03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection.Debug", "src\Injection\Drill4Net.Injection.Debug\Drill4Net.Injection.Debug.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection.Debug", "src\Injector\Injection\Drill4Net.Injection.Debug\Drill4Net.Injection.Debug.csproj", "{25B407C4-144B-4C55-9CC8-D53B625FDD69}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{AD34A5D5-1235-4F55-A00F-8B307F7FF2EB}"
 EndProject
@@ -200,7 +200,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Compressor.Benchm
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BanderLog", "BanderLog", "{6174881C-2EAE-4BC3-A252-F2D85521E47A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injection.SpecFlow", "src\Injection\Drill4Net.Injection.SpecFlow\Drill4Net.Injection.SpecFlow.csproj", "{78B53C7D-6611-4191-91C4-94B659AE8FB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Plugins.SpecFlow", "src\Injector\Plugins\Drill4Net.Injector.Plugins.SpecFlow\Drill4Net.Injector.Plugins.SpecFlow.csproj", "{78B53C7D-6611-4191-91C4-94B659AE8FB9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Tests.Net461", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net461\Drill4Net.Target.Tests.Net461.csproj", "{75700430-5EE4-4368-ADE8-E1EDDDD46B2E}"
 EndProject
@@ -212,7 +212,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{023DAB8F-8554-4DF4-B7F6-65F118089B31}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.SpecFlow", "src\Agent\Drill4Net.Agent.Transmitter.SpecFlow\Drill4Net.Agent.Transmitter.SpecFlow.csproj", "{A7231FFA-33FF-42A3-A5FC-479ECBEB5594}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Plugins.SpecFlow", "src\Agent\Drill4Net.Agent.Plugins.SpecFlow\Drill4Net.Agent.Plugins.SpecFlow.csproj", "{A7231FFA-33FF-42A3-A5FC-479ECBEB5594}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.TestDataHelper", "src\Tests\UnitTests\Drill4Net.TestDataHelper\Drill4Net.TestDataHelper.csproj", "{48943230-DF15-484D-ACF5-93766893D43D}"
 EndProject
@@ -261,19 +261,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard.Un
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssemblyInstructionHelper", "AssemblyInstructionHelper", "{A5964FC8-67E3-4F05-ACE1-132AA92224DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AssemblyInstruction.Helper", "src\RnD\AssemblyInstructionHelper\Drill4Net.AssemblyInstruction.Helper.csproj", "{92484671-C1A5-451C-A732-C3475244ABAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AssemblyInstruction.Helper", "src\RnD\AsyncTest\AssemblyInstructionHelper\Drill4Net.AssemblyInstruction.Helper.csproj", "{92484671-C1A5-451C-A732-C3475244ABAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AssemblyInstruction.Helper.Debug", "src\RnD\AssemblyInstructionHelper.Debug\Drill4Net.AssemblyInstruction.Helper.Debug.csproj", "{0C21F98A-A570-457C-AF44-F611C2AE0B51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AssemblyInstruction.Helper.Debug", "src\RnD\AsyncTest\AssemblyInstructionHelper.Debug\Drill4Net.AssemblyInstruction.Helper.Debug.csproj", "{0C21F98A-A570-457C-AF44-F611C2AE0B51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AsyncTest", "src\RnD\AsyncTest\Drill4Net.AsyncTest.csproj", "{8A9BD652-E575-4BEF-801B-DE60A86D4900}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.AssemblyInstruction.AsyncTest", "src\RnD\AsyncTest\AssemblyInstructionHelper.AsyncTest\Drill4Net.AssemblyInstruction.AsyncTest.csproj", "{8A9BD652-E575-4BEF-801B-DE60A86D4900}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestGenerators", "TestGenerators", "{3D3544E8-2D7D-4EE1-BA6E-43FCFDCB19C0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestEngines", "TestEngines", "{68682248-869A-474C-9B57-11E8B12CBEE5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.xUnit", "src\Agent\Drill4Net.Agent.Transmitter.xUnit\Drill4Net.Agent.Transmitter.xUnit.csproj", "{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Plugins.xUnit", "src\Agent\Drill4Net.Agent.Plugins.xUnit\Drill4Net.Agent.Plugins.xUnit.csproj", "{FE7636F1-8D8F-4E6F-9EEB-02B064F0C3F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Transmitter.NUnit", "src\Agent\Drill4Net.Agent.Transmitter.NUnit\Drill4Net.Agent.Transmitter.NUnit.csproj", "{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Plugins.NUnit", "src\Agent\Drill4Net.Agent.Plugins.NUnit\Drill4Net.Agent.Plugins.NUnit.csproj", "{2EB9E8FB-D25D-4F3D-8F76-0630503BA4BD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{F1C75788-70FA-477E-8C12-360DE73A02B8}"
 EndProject
@@ -281,7 +281,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Admin.Requester",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Tests.Net60", "src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Net60\Drill4Net.Target.Tests.Net60.csproj", "{F7237ED9-86DE-4079-AD0E-C696B14E7A12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Target.Net60.App", "src\Tests\Targets\NetCore\Net60\Drill4Net.Target.Net60.App\Drill4Net.Target.Net60.App.csproj", "{44D31E4F-A7EB-4735-9583-48B0B62E7DC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Target.Net60.App", "src\Tests\Targets\NetCore\Net60\Drill4Net.Target.Net60.App\Drill4Net.Target.Net60.App.csproj", "{44D31E4F-A7EB-4735-9583-48B0B62E7DC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -784,6 +784,7 @@ Global
 		{7E40D044-DFE1-4DDD-A45F-74F820AE7B1D} = {DF4173DB-3EB9-4E59-A4FB-EC630048C286}
 		{15C3D733-AA9A-47B1-BDF3-92BFD40B69C1} = {77625A58-589A-4E69-B835-64A01A197D09}
 		{2FBA8974-AAE8-43C1-AAD6-37C25E869F08} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
+		{F224ACDF-5B60-47B3-98F7-15280126EF03} = {2FFDD626-2A70-425D-A6D7-5769E16CE0C5}
 		{25B407C4-144B-4C55-9CC8-D53B625FDD69} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
 		{AD34A5D5-1235-4F55-A00F-8B307F7FF2EB} = {C2C77100-B789-417D-A387-E2C4A668C15C}
 		{E7C38917-CCCA-42DE-9C0A-0D6E5A0E22B4} = {1D6CE589-D18D-4682-A950-003BAC9B7B04}
@@ -877,7 +878,7 @@ Global
 		{765F7192-8557-4FED-A9D2-4051C810D89C} = {21ED3A4F-4091-40D8-83DD-720078A3B0A3}
 		{F2B5DE11-AECD-4B21-B178-86CF5F30762E} = {53787CA4-6A0F-4A7D-9A68-93F390E4FBEF}
 		{02D7D9ED-3F9C-473C-8583-821D8B35E5A1} = {3219B97E-61DF-44FC-A994-9B893DA29E20}
-		{7A9F4452-032A-4E7C-9271-644A43ED07C1} = {F224ACDF-5B60-47B3-98F7-15280126EF03}
+		{7A9F4452-032A-4E7C-9271-644A43ED07C1} = {2FFDD626-2A70-425D-A6D7-5769E16CE0C5}
 		{1BD2D1CF-5189-4B32-BA03-E5B8FB5179AF} = {02D7D9ED-3F9C-473C-8583-821D8B35E5A1}
 		{96CD8524-95EB-4D61-9A20-A3D175F80C3E} = {4168DC9F-2512-45F5-B287-7157A2559306}
 		{59084217-8DBE-4FC4-A4D9-D0D222EC0B5B} = {0DF99DDD-78EB-4C55-A79B-0F1608155BF4}

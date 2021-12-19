@@ -187,7 +187,7 @@ namespace Drill4Net.Agent.Standard
                 //_logger.Debug("Need to create manual session"); //for some reason it blocker...
                 StartAutoSession(null, false);
 
-                //wait (if scope on the admin side is living we won't get the event about started session)
+                //wait (if session on the admin side is living we won't get the event about started one)
                 var timeout = DateTime.Now.AddSeconds(5);
                 while (!_sessionStarted)
                 {
