@@ -470,7 +470,7 @@ namespace Drill4Net.Agent.Standard
             switch (type)
             {
                 case AgentCommandType.ASSEMBLY_TESTS_START: StartAutoSession(data, true); break;
-                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopAutoSession(); break;
+                case AgentCommandType.ASSEMBLY_TESTS_STOP: StopAutoSession().Wait(); break;
 
                 #region BDD features, test groups...
                 //now, in fact, these are group of tests for one "test method" with many different cases
@@ -517,7 +517,7 @@ namespace Drill4Net.Agent.Standard
             };
             RegisterStartedSession(_curAutoSession);
 
-            CoverageSender.SendStartSessionCommand(session); //actually starting the session
+            CoverageSender.SendStartSessionCommand(session); //actually it starts the session
             _logger.Info($"Admin side session is started: [{session}]");
         }
 
@@ -531,7 +531,7 @@ namespace Drill4Net.Agent.Standard
 
             ReleaseProbeProcessing(); //any way
             await Task.Delay(2000);
-            await SendRemainedCoverage();
+            await SendRemainedCoverage().ConfigureAwait(false);
             _sessionStarted = false;
             _curAutoSession = null;
 

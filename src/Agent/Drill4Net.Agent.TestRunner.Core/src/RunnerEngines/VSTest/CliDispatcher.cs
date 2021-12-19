@@ -102,18 +102,15 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// <param name="degreeOfParallelism">Degree of parallelism for "places" where it possibly</param>
         internal void RunGroups(List<List<string>> groups, int degreeOfParallelism)
         {
+            if (degreeOfParallelism < 1)
+                degreeOfParallelism = 1;
+
             //groups run consoles sequentially among themselves
             //each separate group run consoles simultaneously
             for (int grpInd = 0; grpInd < groups.Count; grpInd++)
             {
                 var group = groups[grpInd];
-                if (degreeOfParallelism < 1)
-                    degreeOfParallelism = 1;
-
-                List<string[]> chunks = degreeOfParallelism == 1 ?
-                    new List<string[]> { group.ToArray() } :
-                    group.Chunk(degreeOfParallelism).ToList();
-
+                List<string[]> chunks = group.Chunk(degreeOfParallelism).ToList();
                 for(var chInd = 0; chInd < chunks.Count; chInd++)
                 {
                     var chunk = chunks[chInd];

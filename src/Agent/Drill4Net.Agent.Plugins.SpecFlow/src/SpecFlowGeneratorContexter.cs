@@ -49,7 +49,6 @@ namespace Drill4Net.Agent.Plugins.SpecFlow
         /// <param name="featureCtx"></param>
         /// <param name="scenarioCtx"></param>
         /// <param name="asmPath"></param>
-        /// <param name="callerMethod"></param>
         /// <returns></returns>
         public static string GetScenarioContext(FeatureContext featureCtx, ScenarioContext scenarioCtx, string asmPath)
         {

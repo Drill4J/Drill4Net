@@ -7,7 +7,7 @@ TreePath: # were tree data about probes are located - if empty, system will try 
 Admin:
   Url: localhost:8090
 PluginDir: ..\..\..\..\ # agent's plugins
-CreateManualSession: true # for some targets if needed to start manual session immediatelly
+CreateManualSession: true # if needed to start manual session immediatelly - for some targets 
 Connector: # parameters for the connector auxiliary subsystem (native Drill library), it can be missed
   LogDir: # if empty, will be used the current common log directory
   LogFile: connector.log #it can be presented as full file path (in this case LogDir will be ignored), it can be empty
