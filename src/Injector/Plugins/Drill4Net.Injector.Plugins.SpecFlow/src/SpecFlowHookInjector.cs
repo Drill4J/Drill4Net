@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using YamlDotNet.Serialization;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using YamlDotNet.Serialization;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
@@ -330,6 +330,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
         private void InjectTestsFinished(AssemblyDefinition assembly, TypeDefinition type, string proxyNs, bool isNetFX)
         {
             var module = type.Module;
+            var syslib = GetSysModule(isNetFX); //inner caching & disposing
 
             const string funcName = "Drill4NetTestsFinished";
             var funcDef = new MethodDefinition(funcName, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig, module.TypeSystem.Void);
@@ -345,7 +346,40 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             ilProc.Emit(OpCodes.Ldnull);
             ilProc.Emit(OpCodes.Call, m_DoCommand);
 
-            ilProc.Append(ilProc.Create(OpCodes.Ret));
+            //waiting 5 sec in circle by 100ms
+            // It is cycle, yeah. It is not one blocking call for 5 sec
+            // ...and it is not async Task.Delay 
+            var var0 = new VariableDefinition(assembly.MainModule.TypeSystem.Int32);
+            ilProc.Body.Variables.Add(var0);
+            var var1 = new VariableDefinition(assembly.MainModule.TypeSystem.Int32);
+            ilProc.Body.Variables.Add(var1);
+
+            ilProc.Emit(OpCodes.Ldc_I4_0);
+            ilProc.Emit(OpCodes.Stloc, var0);
+            var jmp = ilProc.Create(OpCodes.Ldloc_0); //IL_0011
+            ilProc.Emit(OpCodes.Br_S, jmp);
+            var jmp2 = ilProc.Create(OpCodes.Ldc_I4, 100); //IL_0005
+            ilProc.Append(jmp2);
+
+            //ilProc.Emit(OpCodes.Call, assembly.MainModule.ImportReference(TypeHelpers.ResolveMethod("System.Private.CoreLib", "System.Threading.Thread", "Sleep", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public, "", "System.Int32")));
+            var m_delayMeth = ImportSysMethodReference(syslib, module, "System.Threading", "Thread", "Sleep", true, typeof(int), typeof(void));
+            //var m_delayMeth = ImportSysMethodReference(syslib, module, "System.Threading.Tasks", "Task", "Delay", true, typeof(int), typeof(Task));
+            ilProc.Emit(OpCodes.Call, m_delayMeth);
+            //ilProc.Emit(OpCodes.Pop);
+
+            ilProc.Emit(OpCodes.Nop);
+            ilProc.Emit(OpCodes.Ldloc, var0);
+            ilProc.Emit(OpCodes.Ldc_I4_1);
+            ilProc.Emit(OpCodes.Add);
+            ilProc.Emit(OpCodes.Stloc, var0);
+            ilProc.Append(jmp);
+            ilProc.Emit(OpCodes.Ldc_I4, 50);
+            ilProc.Emit(OpCodes.Clt);
+            ilProc.Emit(OpCodes.Stloc, var1);
+            ilProc.Emit(OpCodes.Ldloc, var1);
+            ilProc.Emit(OpCodes.Brtrue_S, jmp2);
+
+            ilProc.Emit(OpCodes.Ret);
         }
 
         private void InjectContextDataInvoker(TypeDefinition classType, bool isNetFX)

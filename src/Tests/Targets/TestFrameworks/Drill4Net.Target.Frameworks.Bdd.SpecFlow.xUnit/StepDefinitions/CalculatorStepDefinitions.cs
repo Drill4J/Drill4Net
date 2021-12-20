@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Frameworks.Common;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.StepDefinitions
 {
@@ -21,6 +22,24 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.StepDefinitions
         }
 
         /************************************************************************************/
+
+        //it does not work for null substituting
+        //[BeforeScenario]
+        //public static void BeforeTestRun()
+        //{
+        //    Service.Instance.ValueRetrievers.Register(new NullValueRetriever("<null>"));
+        //}
+
+        //#pragma warning disable AsyncFixer01 // Unnecessary async/await usage
+        //[AfterTestRun(Order = 100_000)] //default is 10_000 (for injected hook)
+        //public static void AfterAll()
+        //{
+        //    //Task.Delay(5000);
+        //    //System.Threading.Thread.Sleep(5000);
+        //    for (var i = 0; i < 50; i++)
+        //        System.Threading.Thread.Sleep(100);
+        //}
+        //#pragma warning restore AsyncFixer01 // Unnecessary async/await usage
 
         [Given("the first number is (.*)")]
         public void GivenTheFirstNumberIs(int number)

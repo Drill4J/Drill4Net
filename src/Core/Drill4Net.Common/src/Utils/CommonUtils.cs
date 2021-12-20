@@ -35,6 +35,11 @@ namespace Drill4Net.Common
         }
 
         #region TargetVersioning
+        public static string GetApplicationRawVersion()
+        {
+            return AppContext.TargetFrameworkName;
+        }
+
         /// <summary>
         /// Get target version for the entry assembly of current process
         /// </summary>

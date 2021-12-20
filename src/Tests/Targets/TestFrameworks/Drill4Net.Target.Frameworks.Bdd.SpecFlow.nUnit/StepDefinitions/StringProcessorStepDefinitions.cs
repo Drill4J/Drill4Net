@@ -13,13 +13,6 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.StepDefinitions
 
         /***********************************************************************/
 
-        //it does not work for null substituting
-        //[BeforeScenario]
-        //public static void BeforeTestRun()
-        //{
-        //    Service.Instance.ValueRetrievers.Register(new NullValueRetriever("<null>"));
-        //}
-
         [Given("Input string is (.*)")]
         public void GivenContext(string inStr)
         {

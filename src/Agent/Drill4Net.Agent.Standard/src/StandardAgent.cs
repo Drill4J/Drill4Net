@@ -552,6 +552,7 @@ namespace Drill4Net.Agent.Standard
             //we need to finish test scope + force finish the session
             CoverageSender.SendFinishScopeAction();
             ReleaseProbeProcessing(); //excess probes aren't need
+            await Task.Delay(5000); // it is needed, kids
 
             _logger.Info($"Admin side session is stopped: [{session}]");
         }

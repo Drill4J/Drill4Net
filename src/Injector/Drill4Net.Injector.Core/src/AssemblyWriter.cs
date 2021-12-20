@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -36,9 +37,9 @@ namespace Drill4Net.Injector.Core
             {
                 var subjectName = Path.GetFileNameWithoutExtension(origFilePath);
                 var pdbPath = Path.Combine(destDir, subjectName + ".pdb");
-            #pragma warning disable DF0033 // Marks undisposed objects assinged to a property, originated from a method invocation.
+                #pragma warning disable DF0033 // Marks undisposed objects assinged to a property, originated from a method invocation.
                 writeParams.SymbolStream = File.Create(pdbPath);
-            #pragma warning restore DF0033 // Marks undisposed objects assinged to a property, originated from a method invocation.
+                #pragma warning restore DF0033 // Marks undisposed objects assinged to a property, originated from a method invocation.
                 writeParams.WriteSymbols = true;
                 // net core uses portable pdb
                 writeParams.SymbolWriterProvider = new PortablePdbWriterProvider(); //TODO: check it for NetFx (seems it need another type o provider)!
@@ -48,7 +49,7 @@ namespace Drill4Net.Injector.Core
             {
                 asmCtx.Definition.Write(modifiedPath, writeParams);
             }
-            catch
+            catch(Exception ex)
             {
                 //because after the error the content of the current file could have been erased - it will be old now
                 File.Copy(origFilePath, modifiedPath, true);
