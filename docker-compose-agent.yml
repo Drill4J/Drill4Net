@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  your_service:
+    build: # "context" and "dockerfile" fields have to be under "build"
+      context: .
+      dockerfile: ./src/Agent/Drill4Net.Agent.Service/Dockerfile
