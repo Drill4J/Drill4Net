@@ -348,7 +348,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
 
             //waiting 5 sec in circle by 100ms
             // It is cycle, yeah. It is not one blocking call for 5 sec
-            // ...and it is not async Task.Delay 
+            // ...and it is not async Task.Delay - TODO?
             var var0 = new VariableDefinition(assembly.MainModule.TypeSystem.Int32);
             ilProc.Body.Variables.Add(var0);
             var var1 = new VariableDefinition(assembly.MainModule.TypeSystem.Int32);
