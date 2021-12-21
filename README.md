@@ -11,5 +11,24 @@ docker-compose -f "docker-compose-agent.yml" up -d --build
 
 For Development:
 Run installer Visual Studio Community
-Choose platform ASP .Net and .Net. 
-Choose .NET SDK 4.6.1
+Choose workload 1) ASP .Net and web development and 2) .Net desktop development
+Choose individual component
+
+![image](https://user-images.githubusercontent.com/10828883/146935845-0c7d20fd-1169-4ce2-a8b7-065480da50ea.png)
+
+![image](https://user-images.githubusercontent.com/10828883/146935918-04b6d149-c729-43c0-8d28-25b3c24414a5.png)
+
+![image](https://user-images.githubusercontent.com/10828883/146935978-9b333d1d-3248-4395-aba5-605b50b4fc7c.png)
+
+![image](https://user-images.githubusercontent.com/10828883/146935999-72f72bcd-e63c-4462-8df4-7b4f841d4fa2.png)
+
+![image](https://user-images.githubusercontent.com/10828883/146936041-06d7d56d-5183-46e5-a102-75a7f1dd7c7c.png)
+
+
+or
+
+![image](https://user-images.githubusercontent.com/10828883/146936108-19ec64a2-8b7c-46c3-aada-49284fd8c87f.png)
+
+Configuring NuGet Package Sources:
+In Visual Studio, go to Tools > Options and then select Package Sources under the NuGet Package Manager.
+Choose the Add icon (+), edit the Name - nuget.org, and then https://api.nuget.org/v3/index.json in the Source Click Update after updating the feed link.
