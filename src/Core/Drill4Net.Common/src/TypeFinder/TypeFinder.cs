@@ -79,7 +79,6 @@ namespace Drill4Net.Common
             //
             try
             {
-                //CommonUtils.WriteTempLog($"{nameof(TypeFinder)}|GetTypes|Asm: [{asmPath}]");
                 var assembly = Assembly.LoadFrom(asmPath);
                 var types = assembly.GetTypes().Where(a => a.IsPublic);
                 var list = new ConcurrentBag<Type>();

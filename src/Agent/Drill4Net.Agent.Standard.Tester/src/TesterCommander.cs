@@ -151,8 +151,13 @@ namespace Drill4Net.Agent.Standard.Tester
             try
             {
                 _helper.WriteMessage($"Calling: {method.FullName}", TesterConstants.COLOR_TEXT);
+                //
                 var asmPath = Path.Combine(TreeInfo.TargetPath, method.AssemblyName);
-                var asm = Assembly.LoadFrom(asmPath);
+                var asms = AppDomain.CurrentDomain.GetAssemblies();
+                var asm = asms.FirstOrDefault(a => a.ManifestModule.Name == method.AssemblyName);
+                if(asm == null)
+                    asm = Assembly.LoadFrom(asmPath);
+                //
                 var typeName = method.BusinessType;
                 var type = asm.GetType(typeName);
                 methInfo = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.Instance);
