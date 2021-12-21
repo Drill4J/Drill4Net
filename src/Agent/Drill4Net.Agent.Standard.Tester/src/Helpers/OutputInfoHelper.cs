@@ -32,7 +32,7 @@ namespace Drill4Net.Agent.Standard.Tester
             }
 
             WriteMessage($"\n  Testing: ", TesterConstants.COLOR_TEXT_HIGHLITED);
-            WriteMessage($"  Folder : {treeInfo.Opts.TreeFolder}", TesterConstants.COLOR_INFO);
+            WriteMessage($"  Folder : {treeInfo.Opts.Moniker}", TesterConstants.COLOR_INFO);
             WriteMessage($"  Assemblies: {treeInfo.InjDirectory.GetAllAssemblies().Count()}", TesterConstants.COLOR_INFO);
             WriteMessage($"  Types: {treeInfo.InjDirectory.GetAllTypes().Count()}", TesterConstants.COLOR_INFO);
             WriteMessage($"  Unique public methods: {treeInfo.Methods.Count}", TesterConstants.COLOR_INFO);

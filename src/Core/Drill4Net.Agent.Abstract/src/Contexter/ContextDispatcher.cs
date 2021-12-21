@@ -35,7 +35,7 @@ namespace Drill4Net.Agent.Abstract
 
             _contextBindings = new();
 
-            //search plugin
+            //search the plugins
             var pluginator = new TypeFinder();
             var filter = new SourceFilterOptions
             {
@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Abstract
                 throw;
             }
 
-            //creating plugin
+            //creating the plugins
             _contexters = new List<AbstractEngineContexter>();
             foreach (var contexter in ctxTypes)
             {

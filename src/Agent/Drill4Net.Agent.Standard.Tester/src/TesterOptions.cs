@@ -11,7 +11,7 @@ namespace Drill4Net.Agent.Standard.Tester
         /// <summary>
         /// Current directory where Target's assemblies are located, mandatory field.
         /// </summary>
-        public string CurrentDirectory { get; set; }
+        public string Directory { get; set; }
 
         /// <summary>
         /// Inner folder in tree data, if tree contains data for several framework's versions.
@@ -19,7 +19,7 @@ namespace Drill4Net.Agent.Standard.Tester
         /// <value>
         /// The folder.
         /// </value>
-        public string TreeFolder { get; set; }
+        public string Moniker { get; set; }
 
         /// <summary>
         /// Directory where the tree data must be saved. The empty field means local directory

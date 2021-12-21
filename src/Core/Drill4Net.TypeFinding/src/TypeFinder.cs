@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -93,27 +92,26 @@ namespace Drill4Net.TypeFinding
                 using var assembly = _loader.LoadDefinition(asmPath);
                 var types = assembly.MainModule.Types.Where(a => a.IsPublic);
                 var list = new ConcurrentBag<Type>();
-                //Parallel.ForEach(types, (type) =>
-                foreach (var type in types) //DEBUG
+                Parallel.ForEach(types, (type) =>
+                //foreach (var type in types) //DEBUG
                 {
                     #region Check
                     if (_typeChecker.IsSystemType(type.FullName))
-                        //return;
-                        continue;
+                        return;
+                        //continue;
                     if (filter?.IsNamespaceNeed(type.Namespace) == false)
-                        //return;
-                        continue;
+                        return;
+                        //continue;
                     if (filter?.IsClassNeed(type.FullName) == false)
-                        //return;
-                        continue;
+                        return;
+                        //continue;
                     try
                     {
-                        var attrs = type.CustomAttributes;
-                        foreach (var attr in attrs)
+                        foreach (var attr in type.CustomAttributes)
                         {
                             if (filter?.IsAttributeNeed(attr.GetType().Name) == false)
-                                //return;
-                                continue;
+                                //continue;
+                                return;
                         }
                     }
                     catch { } //it is may be normal
@@ -140,8 +138,8 @@ namespace Drill4Net.TypeFinding
                         default:
                             throw new Exception($"Unknown search type: {finderMode}");
                     }
-                //});
-                }
+                });
+                //}
                 return list;
             }
             catch

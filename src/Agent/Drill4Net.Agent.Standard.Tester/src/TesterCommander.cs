@@ -31,14 +31,24 @@ namespace Drill4Net.Agent.Standard.Tester
             _helper.WriteMessage("Please wait for the init...", TesterConstants.COLOR_TEXT);
 
             TreeInfo.Opts = TesterOptionsHelper.GetOptions();
-            TreeInfo.TargetPath = TreeInfo.Opts.CurrentDirectory;
+            var moniker = TreeInfo.Opts.Moniker;
+            TreeInfo.TargetPath = TreeInfo.Opts.Directory;
+            if(!string.IsNullOrWhiteSpace(moniker))
+                TreeInfo.TargetPath = Path.Combine(TreeInfo.TargetPath, moniker);
 
             //tree's data (in fact, we can use the TestEngine's one)
             var rep = StandardAgent.Agent.Repository;
             TreeInfo.InjSolution = rep.ReadInjectedTree();
-            TreeInfo.InjDirectory = TreeInfo.InjSolution.GetDirectories().FirstOrDefault(a => a.Name == TreeInfo.Opts.TreeFolder);
+
+            //info about injected directory
+            var injDirs = TreeInfo.InjSolution.GetDirectories();
+            if (!string.IsNullOrWhiteSpace(moniker))
+                TreeInfo.InjDirectory = TreeInfo.InjSolution.GetDirectories().FirstOrDefault(a => a.Name == moniker);
+            else
+                TreeInfo.InjDirectory = injDirs.FirstOrDefault();
             if (TreeInfo.InjDirectory == null)
                 throw new Exception($"Directory in the Tree data not found: [{TreeInfo.TargetPath}]");
+
             TreeInfo.Points = TreeInfo.InjDirectory.GetAllPoints().ToList();
 
             //methods
@@ -154,7 +164,7 @@ namespace Drill4Net.Agent.Standard.Tester
                 //
                 var asmPath = Path.Combine(TreeInfo.TargetPath, method.AssemblyName);
                 var asms = AppDomain.CurrentDomain.GetAssemblies();
-                var asm = asms.FirstOrDefault(a => a.ManifestModule.Name == method.AssemblyName);
+                var asm = Array.Find(asms, a => a.ManifestModule.Name == method.AssemblyName);
                 if(asm == null)
                     asm = Assembly.LoadFrom(asmPath);
                 //
