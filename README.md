@@ -30,5 +30,7 @@ or
 ![image](https://user-images.githubusercontent.com/10828883/146936108-19ec64a2-8b7c-46c3-aada-49284fd8c87f.png)
 
 Configuring NuGet Package Sources:
+
 In Visual Studio, go to Tools > Options and then select Package Sources under the NuGet Package Manager.
+
 Choose the Add icon (+), edit the Name - nuget.org, and then https://api.nuget.org/v3/index.json in the Source Click Update after updating the feed link.
