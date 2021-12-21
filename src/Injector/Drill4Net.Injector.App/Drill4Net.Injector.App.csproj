@@ -69,10 +69,10 @@
     <None Update="inj_File.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="inj_IHS_bdd_Std.yml">
+    <None Update="inj_IHS_Std.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="inj_IHS_bdd_FILE.yml">
+    <None Update="inj_IHS_FILE.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="inj_IHS_Kafka.yml">
