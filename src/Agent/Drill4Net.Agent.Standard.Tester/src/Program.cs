@@ -18,11 +18,12 @@ namespace Drill4Net.Agent.Standard.Tester
             try
             {
                 new TesterInformer(helper).SetTitle();
-                await TesterStandartAgent.Init().ConfigureAwait(false);
+                var agent = new TesterStandartAgent(helper);
+                await agent.Init().ConfigureAwait(false);
                 helper.PrintTreeInfo(TesterStandartAgent.TreeInfo);
                 helper.PrintMenu();
 
-                TesterStandartAgent.Polling();
+                agent.Polling();
             }
             catch (Exception ex)
             {

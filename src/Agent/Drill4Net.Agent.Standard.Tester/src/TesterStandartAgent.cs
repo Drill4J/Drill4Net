@@ -11,22 +11,24 @@ namespace Drill4Net.Agent.Standard.Tester
     /// <summary>
     /// Standart Agent for the Tester app
     /// </summary>
-    internal static class TesterStandartAgent
+    internal class TesterStandartAgent
     {
         internal static TesterTreeInfo TreeInfo;
+        private readonly OutputInfoHelper _helper;
 
         /*************************************************************/
 
-        static TesterStandartAgent()
+        internal TesterStandartAgent(OutputInfoHelper helper)
         {
+            _helper = helper ?? throw new ArgumentNullException(nameof(helper));
             TreeInfo = new TesterTreeInfo();
         }
 
         /*************************************************************/
 
-        internal async static Task Init()
+        internal async Task Init()
         {
-            OutputInfoHelper.WriteMessage("Please wait for the init...", TesterConstants.COLOR_TEXT);
+            _helper.WriteMessage("Please wait for the init...", TesterConstants.COLOR_TEXT);
             await Task.Delay(3000).ConfigureAwait(false); //wait for the reading
 
             //StandardAgent.Init();
@@ -57,11 +59,11 @@ namespace Drill4Net.Agent.Standard.Tester
             await Task.Delay(3500).ConfigureAwait(false); //wait for the admin side init
         }
 
-        internal static void Polling()
+        internal void Polling()
         {
             while (true)
             {
-                OutputInfoHelper.WriteMessage("\nInput:");
+                _helper.WriteMessage("\nInput:");
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
@@ -73,7 +75,7 @@ namespace Drill4Net.Agent.Standard.Tester
                 }
                 catch (Exception ex)
                 {
-                    OutputInfoHelper.WriteMessage($"error -> {ex.Message}", TesterConstants.COLOR_ERROR);
+                    _helper.WriteMessage($"error -> {ex.Message}", TesterConstants.COLOR_ERROR);
                 }
             }
 
@@ -85,24 +87,24 @@ namespace Drill4Net.Agent.Standard.Tester
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
-        private static bool ProcessInput(string input)
+        private bool ProcessInput(string input)
         {
             input = input.Trim();
             return input switch
             {
-                "?" or "help" => OutputInfoHelper.PrintMenu(),
-                "tree" or "list" => OutputInfoHelper.PrintTree(TreeInfo.MethodSorted),
-                "save" => OutputInfoHelper.SaveTreeData(TreeInfo.MethodSorted, TreeInfo.Opts),
+                "?" or "help" => _helper.PrintMenu(),
+                "tree" or "list" => _helper.PrintTree(TreeInfo.MethodSorted),
+                "save" => _helper.SaveTreeData(TreeInfo.MethodSorted, TreeInfo.Opts),
                 _ => CallMethod(input)
             };
         }
 
-        private static bool CallMethod(string callData)
+        private bool CallMethod(string callData)
         {
             //get info
             if (string.IsNullOrWhiteSpace(callData))
             {
-                OutputInfoHelper.WriteMessage("No input", TesterConstants.COLOR_ERROR);
+                _helper.WriteMessage("No input", TesterConstants.COLOR_ERROR);
                 return false;
             }
             if (callData.Contains("await "))
@@ -119,7 +121,7 @@ namespace Drill4Net.Agent.Standard.Tester
             {
                 if (!TreeInfo.MethodByOrderNumber.ContainsKey(number))
                 {
-                    OutputInfoHelper.WriteMessage($"No such order number: {number}", TesterConstants.COLOR_ERROR);
+                    _helper.WriteMessage($"No such order number: {number}", TesterConstants.COLOR_ERROR);
                     return false;
                 }
                 name = TreeInfo.MethodByOrderNumber[number].Name;
@@ -128,7 +130,7 @@ namespace Drill4Net.Agent.Standard.Tester
             //by name
             if (!TreeInfo.Methods.ContainsKey(name))
             {
-                OutputInfoHelper.WriteMessage("No such method", TesterConstants.COLOR_ERROR);
+                _helper.WriteMessage("No such method", TesterConstants.COLOR_ERROR);
                 return false;
             }
 
@@ -149,7 +151,7 @@ namespace Drill4Net.Agent.Standard.Tester
             object target;
             try
             {
-                OutputInfoHelper.WriteMessage($"Calling: {method.FullName}", TesterConstants.COLOR_TEXT);
+                _helper.WriteMessage($"Calling: {method.FullName}", TesterConstants.COLOR_TEXT);
                 var asmPath = Path.Combine(TreeInfo.TargetPath, method.AssemblyName);
                 var asm = Assembly.LoadFrom(asmPath);
                 var typeName = method.BusinessType;
@@ -157,14 +159,14 @@ namespace Drill4Net.Agent.Standard.Tester
                 methInfo = type.GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.Instance);
                 if (methInfo == null)
                 {
-                    OutputInfoHelper.WriteMessage($"Method {name} not found", TesterConstants.COLOR_ERROR);
+                    _helper.WriteMessage($"Method {name} not found", TesterConstants.COLOR_ERROR);
                     return false;
                 }
                 target = Activator.CreateInstance(asm.FullName, typeName).Unwrap();
             }
             catch (Exception ex)
             {
-                OutputInfoHelper.WriteMessage($"Error of retrieving MethodInfo for [{method.FullName}] by reflection:\n{ex.Message}", TesterConstants.COLOR_ERROR);
+                _helper.WriteMessage($"Error of retrieving MethodInfo for [{method.FullName}] by reflection:\n{ex.Message}", TesterConstants.COLOR_ERROR);
                 return false;
             }
 
@@ -176,7 +178,7 @@ namespace Drill4Net.Agent.Standard.Tester
             }
             catch (Exception ex)
             {
-                OutputInfoHelper.WriteMessage($"Error of the method [{method.FullName}] calling: [{callData}]:\n{ex.Message}", TesterConstants.COLOR_ERROR);
+                _helper.WriteMessage($"Error of the method [{method.FullName}] calling: [{callData}]:\n{ex.Message}", TesterConstants.COLOR_ERROR);
                 return false;
             }
             return true;
