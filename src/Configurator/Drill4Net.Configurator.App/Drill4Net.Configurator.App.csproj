@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Configurator.App</OutputPath>
+	  <DocumentationFile>..\..\..\doc\xml\Drill4Net.Configurator.App\Drill4Net.Configurator.App.xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
-using Drill4Net.Profiling.Tree;
+using Drill4Net.Repository;
 using Drill4Net.Agent.Testing;
 using Drill4Net.Configuration;
-using Drill4Net.Core.Repository;
+using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Target.Tests.Engine
 {

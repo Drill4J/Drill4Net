@@ -9,7 +9,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
-using Drill4Net.Core.Repository;
+using Drill4Net.Repository;
 using Drill4Net.Admin.Requester;
 
 namespace Drill4Net.Agent.TestRunner.Core

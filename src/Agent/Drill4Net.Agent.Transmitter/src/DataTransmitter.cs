@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
-using Drill4Net.Core.Repository;
+using Drill4Net.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Messaging.Kafka;

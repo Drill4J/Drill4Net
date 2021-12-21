@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Drill4Net.Common;
-using Drill4Net.Core.Repository;
+using Drill4Net.Repository;
 
 namespace Drill4Net.Agent.Abstract
 {

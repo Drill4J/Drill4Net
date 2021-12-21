@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
-    <ProjectReference Include="..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Kafka\Drill4Net.Agent.Messaging.Kafka.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport.Kafka\Drill4Net.Agent.Messaging.Transport.Kafka.csproj" />
     <ProjectReference Include="..\Drill4Net.Agent.Messaging.Transport\Drill4Net.Agent.Messaging.Transport.csproj" />

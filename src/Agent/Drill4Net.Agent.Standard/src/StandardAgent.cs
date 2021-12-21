@@ -3,7 +3,7 @@ using Drill4Net.Agent.Abstract.Transfer;
 using Drill4Net.BanderLog;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Common;
-using Drill4Net.Core.Repository;
+using Drill4Net.Repository;
 using Drill4Net.Profiling.Tree;
 using System;
 using System.Collections.Generic;

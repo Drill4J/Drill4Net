@@ -25,7 +25,7 @@
    <ItemGroup>
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
      <ProjectReference Include="..\..\..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
-     <ProjectReference Include="..\..\..\..\Core\Drill4Net.Core.Repository\Drill4Net.Core.Repository.csproj" />
+     <ProjectReference Include="..\..\..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />
    </ItemGroup>
    <ItemGroup>
      <None Update="tests_cfg.yml">

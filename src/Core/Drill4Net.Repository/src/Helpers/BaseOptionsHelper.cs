@@ -4,7 +4,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
 
-namespace Drill4Net.Core.Repository
+namespace Drill4Net.Repository
 {
     /// <summary>
     /// Base generic options Helper

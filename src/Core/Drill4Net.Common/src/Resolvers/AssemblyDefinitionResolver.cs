@@ -1,5 +1,5 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Mono.Cecil;
 
 namespace Drill4Net.Common

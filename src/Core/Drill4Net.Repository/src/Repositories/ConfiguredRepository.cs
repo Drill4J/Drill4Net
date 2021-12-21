@@ -1,7 +1,7 @@
 ﻿using System;
 using Drill4Net.Configuration;
 
-namespace Drill4Net.Core.Repository
+namespace Drill4Net.Repository
 {
     /// <summary>
     /// Abstract repository for the injection options, retrieving strategy, directories and files, etc

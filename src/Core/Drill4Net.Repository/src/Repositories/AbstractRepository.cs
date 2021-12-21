@@ -8,7 +8,7 @@ using Drill4Net.BanderLog.Sinks;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.BanderLog.Sinks.Console;
 
-namespace Drill4Net.Core.Repository
+namespace Drill4Net.Repository
 {
     /// <summary>
     /// Root level of Repository's hieararchy

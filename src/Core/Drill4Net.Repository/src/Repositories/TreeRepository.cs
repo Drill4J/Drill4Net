@@ -5,7 +5,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Core.Repository
+namespace Drill4Net.Repository
 {
     /// <summary>
     /// Repository that can work with Target's tree <see cref="InjectedSolution"/> from file,

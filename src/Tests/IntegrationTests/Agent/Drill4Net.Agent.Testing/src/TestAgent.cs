@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Repository;
 using Drill4Net.Agent.Abstract;
-using Drill4Net.Core.Repository;
 using Drill4Net.Profiling.Tree;
 
 namespace Drill4Net.Agent.Testing

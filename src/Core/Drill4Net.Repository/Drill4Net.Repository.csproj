@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Core.Repository</OutputPath>
-    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Core.Repository\Drill4Net.Core.Repository.xml</DocumentationFile>
+    <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Repository</OutputPath>
+    <DocumentationFile>..\..\..\doc\xml\Drill4Net.Repository\Drill4Net.Repository.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Core.Repository</OutputPath>
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Repository</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

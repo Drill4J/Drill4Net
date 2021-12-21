@@ -42,10 +42,7 @@ namespace Drill4Net.Agent.Standard.Tester
 
             //info about injected directory
             var injDirs = TreeInfo.InjSolution.GetDirectories();
-            if (!string.IsNullOrWhiteSpace(moniker))
-                TreeInfo.InjDirectory = TreeInfo.InjSolution.GetDirectories().FirstOrDefault(a => a.Name == moniker);
-            else
-                TreeInfo.InjDirectory = injDirs.FirstOrDefault();
+            TreeInfo.InjDirectory = injDirs.FirstOrDefault(a => string.IsNullOrWhiteSpace(moniker) || a.Name == moniker);
             if (TreeInfo.InjDirectory == null)
                 throw new Exception($"Directory in the Tree data not found: [{TreeInfo.TargetPath}]");
 

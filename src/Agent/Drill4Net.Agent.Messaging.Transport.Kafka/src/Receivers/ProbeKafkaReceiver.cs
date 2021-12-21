@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using Confluent.Kafka;
 using Drill4Net.BanderLog;
-using Drill4Net.Core.Repository;
+using Drill4Net.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {

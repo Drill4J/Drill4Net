@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Repository;
 using Drill4Net.Injector.Core;
-using Drill4Net.Core.Repository;
 using Drill4Net.Injector.Engine;
 
 namespace Drill4Net.Injector.App
 {
-    class Program
+    internal class Program
     {
         private static Logger _logger;
         private const string LOG_PATH = @"logs\benchmarkLog.txt";

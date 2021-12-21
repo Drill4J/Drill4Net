@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Drill4Net.Core.Repository;
+using Drill4Net.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {

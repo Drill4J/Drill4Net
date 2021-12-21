@@ -3,7 +3,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Common;
 using Drill4Net.Profiling.Tree;
 
-namespace Drill4Net.Core.Repository
+namespace Drill4Net.Repository
 {
     public class TreeRepositoryHelper
     {
