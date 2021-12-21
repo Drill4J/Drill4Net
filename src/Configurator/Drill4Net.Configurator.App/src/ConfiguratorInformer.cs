@@ -1,18 +1,14 @@
-﻿using System;
-using Drill4Net.Common;
+﻿using Drill4Net.Common;
 
-namespace Drill4Net.Agent.Standard.Tester
+namespace Drill4Net.Configurator.App
 {
-    /// <summary>
-    /// Functions for setting Tester app up
-    /// </summary>
-    internal class TesterInformer
+    internal class ConfiguratorInformer
     {
-        private readonly TesterOutputHelper _helper;
+        private readonly ConfiguratorOutputHelper _helper;
 
         /*******************************************************************/
 
-        public TesterInformer(TesterOutputHelper helper)
+        public ConfiguratorInformer(ConfiguratorOutputHelper helper)
         {
             _helper = helper ?? throw new ArgumentNullException(nameof(helper));
         }

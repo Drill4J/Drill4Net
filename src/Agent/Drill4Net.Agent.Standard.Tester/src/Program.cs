@@ -14,7 +14,7 @@ namespace Drill4Net.Agent.Standard.Tester
     {
         public static async Task Main()
         {
-            var helper = new OutputInfoHelper();
+            var helper = new TesterOutputHelper();
             try
             {
                 new TesterInformer(helper).SetTitle();
@@ -23,7 +23,7 @@ namespace Drill4Net.Agent.Standard.Tester
                 helper.PrintTreeInfo(commander.TreeInfo);
                 helper.PrintMenu();
 
-                commander.Polling();
+                commander.Poll();
             }
             catch (Exception ex)
             {

@@ -12,4 +12,13 @@
 	  <DocumentationFile>..\..\..\doc\xml\Drill4Net.Configurator.App\Drill4Net.Configurator.App.xml</DocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GitInfo" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
+    <ProjectReference Include="..\Drill4Net.Configurator\Drill4Net.Configurator.csproj" />
+  </ItemGroup>
+
 </Project>

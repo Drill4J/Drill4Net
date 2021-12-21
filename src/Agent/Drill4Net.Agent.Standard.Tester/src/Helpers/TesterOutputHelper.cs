@@ -10,8 +10,26 @@ namespace Drill4Net.Agent.Standard.Tester
     /// <summary>
     /// Functions for outputting data
     /// </summary>
-    internal class OutputInfoHelper
+    internal class TesterOutputHelper
     {
+        internal bool PrintMenu()
+        {
+            const string mess = @"  *** First of all, start session on admin side...
+  *** Enter 'info' for the tree info.
+  *** Enter 'tree' or 'list' for the methods listing.
+  *** Enter 'save' to save method's tree to the CSV file.
+  *** Enter order number of method from the listing with arguments for real probe's executing, e.g. 37 true
+  *** Or input method name with arguments for such executing, e.g. IfElse_Consec_Full true,false
+      You can even enter it by C# syntax copied from the source code: IfElse_Consec_Full(true,false)
+      with or withot ; after this expression and even with leading await keyword.
+  *** Enter 'RunTests' to execute all methods of main target class (InjectTarget).
+  >>> Please, call the methods only for the InjectTarget type yet! 
+  *** Enter '?' or 'help' to print this menu.
+  *** Press q for exit.";
+            WriteMessage($"\n{mess}", TesterConstants.COLOR_TEXT_HIGHLITED);
+            return true;
+        }
+
         internal bool PrintTreeInfo(TesterTreeInfo treeInfo)
         {
             WriteMessage($"\n  Tree data:", TesterConstants.COLOR_TEXT_HIGHLITED);
@@ -38,24 +56,6 @@ namespace Drill4Net.Agent.Standard.Tester
             WriteMessage($"  Unique public methods: {treeInfo.Methods.Count}", TesterConstants.COLOR_INFO);
             WriteMessage($"  Total cross-points: {treeInfo.Points.Count}", TesterConstants.COLOR_INFO);
             //WriteMessage($"  Block size of cross-points: treeInfo.pointRange}", infoColor);
-            return true;
-        }
-
-        internal bool PrintMenu()
-        {
-            const string mess = @"  *** First of all, start session on admin side...
-  *** Enter 'info' for the tree info.
-  *** Enter 'tree' or 'list' for the methods listing.
-  *** Enter 'save' to save method's tree to the CSV file.
-  *** Enter order number of method from the listing with arguments for real probe's executing, e.g. 37 true
-  *** Or input method name with arguments for such executing, e.g. IfElse_Consec_Full true,false
-      You can even enter it by C# syntax copied from the source code: IfElse_Consec_Full(true,false)
-      with or withot ; after this expression and even with leading await keyword.
-  *** Enter 'RunTests' to execute all methods of main target class (InjectTarget).
-  >>> Please, call the methods only for the InjectTarget type yet! 
-  *** Enter '?' or 'help' to print this menu.
-  *** Press q for exit.";
-            WriteMessage($"\n{mess}", TesterConstants.COLOR_TEXT_HIGHLITED);
             return true;
         }
 

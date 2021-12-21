@@ -14,11 +14,11 @@ namespace Drill4Net.Agent.Standard.Tester
     internal class TesterCommander
     {
         internal TesterTreeInfo TreeInfo { get; }
-        private readonly OutputInfoHelper _helper;
+        private readonly TesterOutputHelper _helper;
 
         /*************************************************************/
 
-        internal TesterCommander(OutputInfoHelper helper)
+        internal TesterCommander(TesterOutputHelper helper)
         {
             _helper = helper ?? throw new ArgumentNullException(nameof(helper));
             TreeInfo = new TesterTreeInfo();
@@ -65,7 +65,7 @@ namespace Drill4Net.Agent.Standard.Tester
             await Task.Delay(5000); //wait for the admin side init
         }
 
-        internal void Polling()
+        internal void Poll()
         {
             while (true)
             {

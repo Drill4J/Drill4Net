@@ -31,7 +31,13 @@ namespace Drill4Net.Common
 
         public static string GetAppName()
         {
-            return Assembly.GetEntryAssembly().GetName().Name;
+            return AppDomain.CurrentDomain.FriendlyName;
+        }
+
+        public static string GetAppVersion()
+        {
+            var asm = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly() ?? Assembly.GetExecutingAssembly();
+            return FileUtils.GetProductVersion(asm.Location);
         }
 
         #region TargetVersioning
