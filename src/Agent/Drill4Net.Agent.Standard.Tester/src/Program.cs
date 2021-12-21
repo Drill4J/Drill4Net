@@ -10,16 +10,17 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
-    static class Program
+    internal static class Program
     {
         public static async Task Main()
         {
+            var helper = new OutputInfoHelper();
             try
             {
-                TesterConfiguration.SetTitle();
+                new TesterInformer(helper).SetTitle();
                 await TesterStandartAgent.Init().ConfigureAwait(false);
-                OutputInfoHelper.PrintTreeInfo(TesterStandartAgent.TreeInfo);
-                OutputInfoHelper.PrintMenu();
+                helper.PrintTreeInfo(TesterStandartAgent.TreeInfo);
+                helper.PrintMenu();
 
                 TesterStandartAgent.Polling();
             }
@@ -27,7 +28,7 @@ namespace Drill4Net.Agent.Standard.Tester
             {
                 Console.WriteLine(ex);
             }
-            OutputInfoHelper.WriteMessage("Done.", TesterConstants.COLOR_TEXT);
+            helper.WriteMessage("Done.", TesterConstants.COLOR_TEXT);
         }
     }
 }

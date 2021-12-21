@@ -7,18 +7,29 @@ namespace Drill4Net.Agent.Standard.Tester
     /// <summary>
     /// Functions for setting Tester app up
     /// </summary>
-    internal static class TesterConfiguration
+    internal class TesterInformer
     {
-        internal static void SetTitle()
+        private readonly OutputInfoHelper _helper;
+
+        /*******************************************************************/
+
+        public TesterInformer(OutputInfoHelper helper)
+        {
+            _helper = helper ?? throw new ArgumentNullException(nameof(helper));
+        }
+
+        /*******************************************************************/
+
+        internal void SetTitle()
         {
             var version = GetAppVersion();
             var appName = Assembly.GetExecutingAssembly().GetName().Name;
             var title = $"{appName} {version}";
             Console.Title = title;
-            OutputInfoHelper.WriteMessage(title, ConsoleColor.Cyan);
+            _helper.WriteMessage(title, ConsoleColor.Cyan);
         }
 
-        private static string GetAppVersion()
+        private string GetAppVersion()
         {
             var asm = Assembly.GetExecutingAssembly();
             return FileUtils.GetProductVersion(asm.Location);

@@ -42,8 +42,7 @@ namespace Drill4Net.Agent.Standard.Tester
                         case "System.Object":
                         case "System.String": obj = val; break;
                         default:
-                            OutputInfoHelper.WriteMessage($"Unknown type: [{type}] for data [{val}]", TesterConstants.COLOR_TEXT_WARNING);
-                            break;
+                            throw new Exception($"Unknown type: [{type}] for data [{val}]");
                     }
                 }
                 res[i] = obj;

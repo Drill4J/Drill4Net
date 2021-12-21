@@ -10,9 +10,9 @@ namespace Drill4Net.Agent.Standard.Tester
     /// <summary>
     /// Functions for outputting data
     /// </summary>
-    internal static class OutputInfoHelper
+    internal class OutputInfoHelper
     {
-        internal static bool PrintTreeInfo(TesterTreeInfo treeInfo)
+        internal bool PrintTreeInfo(TesterTreeInfo treeInfo)
         {
             WriteMessage($"\n  Tree data:", TesterConstants.COLOR_TEXT_HIGHLITED);
             WriteMessage($"  Name: {treeInfo.InjSolution.Name}", TesterConstants.COLOR_INFO);
@@ -41,7 +41,7 @@ namespace Drill4Net.Agent.Standard.Tester
             return true;
         }
 
-        internal static bool PrintMenu()
+        internal bool PrintMenu()
         {
             const string mess = @"  *** First of all, start session on admin side...
   *** Enter 'info' for the tree info.
@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Standard.Tester
             return true;
         }
 
-        internal static bool PrintTree(List<InjectedMethod> methodSorted)
+        internal bool PrintTree(List<InjectedMethod> methodSorted)
         {
             WriteMessage("\n   ***  METHOD'S TREE  ***", TesterConstants.COLOR_TEXT_HIGHLITED);
             var curAsm = "";
@@ -89,7 +89,7 @@ namespace Drill4Net.Agent.Standard.Tester
             return true;
         }
 
-        internal static bool SaveTreeData(List<InjectedMethod> methodSorted, TesterOptions opts)
+        internal bool SaveTreeData(List<InjectedMethod> methodSorted, TesterOptions opts)
         {
             //data
             var methCounter = 1;
@@ -115,7 +115,7 @@ namespace Drill4Net.Agent.Standard.Tester
             return true;
         }
 
-        internal static void WriteMessage(string mess, ConsoleColor color = TesterConstants.COLOR_DEFAULT)
+        internal void WriteMessage(string mess, ConsoleColor color = TesterConstants.COLOR_DEFAULT)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(mess);
