@@ -9,7 +9,6 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Injector.Core
 {
-
     /// <summary>
     /// Assembly reader for an <see cref="AssemblyContext"/> creation 
     /// </summary>
@@ -96,14 +95,10 @@ namespace Drill4Net.Injector.Core
             }
             #endregion
             #endregion
-            #region Reading
-            // read subject assembly with symbols
+
+            //reading
             _logger.Debug($"Reading: [{filePath}]");
-        #pragma warning disable DF0010 // Marks undisposed local variables.
-            var assembly = AssemblyDefinition.ReadAssembly(filePath, readerParams);
-        #pragma warning restore DF0010 // Marks undisposed local variables.
-            asmCtx.Definition = assembly;
-            #endregion
+            asmCtx.Definition = AssemblyDefinition.ReadAssembly(filePath, readerParams);
 
             return asmCtx;
         }

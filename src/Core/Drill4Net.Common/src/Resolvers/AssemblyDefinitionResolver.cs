@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Mono.Cecil;
 
 namespace Drill4Net.Common
@@ -10,7 +11,7 @@ namespace Drill4Net.Common
     public class AssemblyDefinitionResolver : BaseResolver, IAssemblyResolver
     {
         private readonly ReaderParameters _readerParams;
-        private static readonly Dictionary<string, AssemblyDefinition> _cache = new();
+        private static readonly ConcurrentDictionary<string, AssemblyDefinition> _cache = new();
 
         /********************************************************************************/
 
@@ -41,7 +42,7 @@ namespace Drill4Net.Common
             if (path == null)
                 return null;
             var def = AssemblyDefinition.ReadAssembly(path, _readerParams);
-            _cache.Add(name, def);
+            _cache.TryAdd(name, def);
             return def;
         }
 

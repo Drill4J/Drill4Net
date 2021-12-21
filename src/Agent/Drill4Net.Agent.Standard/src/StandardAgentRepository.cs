@@ -565,11 +565,11 @@ namespace Drill4Net.Agent.Standard
             }
             else //create
             {
-                //TODO: do it properly! Need right binding ctx to session!
+                //TODO: do it properly! Need right binding ctx to session?
                 var session = TryGetLocalSession();
                 if (session == null)
                 {
-                    _logger.Warning($"No session for context [{ctx}]");
+                    //_logger.Warning($"No session for context [{ctx}]");
                     return null;
                 }
                 reg = CreateCoverageRegistrator(ctx, session);

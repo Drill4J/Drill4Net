@@ -13,7 +13,7 @@ namespace Drill4Net.Agent.Standard.Tester
     /// </summary>
     internal class TesterCommander
     {
-        internal TesterTreeInfo TreeInfo;
+        internal TesterTreeInfo TreeInfo { get; }
         private readonly OutputInfoHelper _helper;
 
         /*************************************************************/

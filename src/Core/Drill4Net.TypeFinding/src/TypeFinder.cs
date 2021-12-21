@@ -5,18 +5,29 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using Drill4Net.Common;
 
-namespace Drill4Net.Common
+namespace Drill4Net.TypeFinding
 {
     /// <summary>
     /// Search some types in assemblies by filter
     /// </summary>
     public class TypeFinder
     {
+        private readonly LibraryLoader _loader = new();
         private readonly TypeChecker _typeChecker = new();
 
         /***********************************************************************/
 
+        /// <summary>
+        /// Get types by filters in specified directory and search type
+        /// </summary>
+        /// <param name="finderMode"></param>
+        /// <param name="dir"></param>
+        /// <param name="searchType"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public List<Type> GetBy(TypeFinderMode finderMode, string dir, Type searchType, SourceFilterOptions filter = null)
         {
             if (string.IsNullOrWhiteSpace(dir))
@@ -79,26 +90,26 @@ namespace Drill4Net.Common
             //
             try
             {
-                var assembly = Assembly.LoadFrom(asmPath);
-                var types = assembly.GetTypes().Where(a => a.IsPublic);
+                using var assembly = _loader.LoadDefinition(asmPath);
+                var types = assembly.MainModule.Types.Where(a => a.IsPublic);
                 var list = new ConcurrentBag<Type>();
-                Parallel.ForEach(types, (type) =>
-                //foreach (var type in types) //DEBUG
+                //Parallel.ForEach(types, (type) =>
+                foreach (var type in types) //DEBUG
                 {
                     #region Check
                     if (_typeChecker.IsSystemType(type.FullName))
-                        return;
-                        //continue;
+                        //return;
+                        continue;
                     if (filter?.IsNamespaceNeed(type.Namespace) == false)
-                        return;
-                        //continue;
+                        //return;
+                        continue;
                     if (filter?.IsClassNeed(type.FullName) == false)
-                        return;
-                        //continue;
+                        //return;
+                        continue;
                     try
                     {
-                        var attrs = type.GetCustomAttributes(true);
-                        foreach (Attribute attr in attrs)
+                        var attrs = type.CustomAttributes;
+                        foreach (var attr in attrs)
                         {
                             if (filter?.IsAttributeNeed(attr.GetType().Name) == false)
                                 //return;
@@ -111,26 +122,26 @@ namespace Drill4Net.Common
                     switch (finderMode)
                     {
                         case TypeFinderMode.ClassChildren:
-                            if (type.IsSubclassOf(searchType))
-                                list.Add(type);
+                            if (type.BaseType?.FullName == searchType.FullName) //only 1 level of inheritance...
+                                list.Add(_loader.LoadType(asmPath, type.FullName));
                             break;
                         case TypeFinderMode.Interface:
-                            var interfaces = type.GetInterfaces();
-                            var intrfs = Array.Find(interfaces, a => a.Name == searchType.Name);
+                            var interfaces = type.Interfaces;
+                            var intrfs = interfaces.Where(a => a.InterfaceType.Name == searchType.Name);
                             if (intrfs != null)
-                                list.Add(type);
+                                list.Add(_loader.LoadType(asmPath, searchType.FullName));
                             break;
                         case TypeFinderMode.Attribute:
-                            var attrs = type.GetCustomAttributes();
+                            var attrs = type.CustomAttributes;
                             var attr = attrs.FirstOrDefault(a => a.GetType().Name == searchType.Name);
                             if (attr != null)
-                                list.Add(type);
+                                list.Add(_loader.LoadType(asmPath, searchType.FullName));
                             break;
                         default:
                             throw new Exception($"Unknown search type: {finderMode}");
                     }
-                });
-                //}
+                //});
+                }
                 return list;
             }
             catch

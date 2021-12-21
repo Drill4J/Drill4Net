@@ -1,4 +1,4 @@
-﻿namespace Drill4Net.Common
+﻿namespace Drill4Net.TypeFinding
 {
     public enum TypeFinderMode
     {
