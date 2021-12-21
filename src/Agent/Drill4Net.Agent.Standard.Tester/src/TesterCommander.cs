@@ -11,14 +11,14 @@ namespace Drill4Net.Agent.Standard.Tester
     /// <summary>
     /// Standart Agent for the Tester app
     /// </summary>
-    internal class TesterStandartAgent
+    internal class TesterCommander
     {
-        internal static TesterTreeInfo TreeInfo;
+        internal TesterTreeInfo TreeInfo;
         private readonly OutputInfoHelper _helper;
 
         /*************************************************************/
 
-        internal TesterStandartAgent(OutputInfoHelper helper)
+        internal TesterCommander(OutputInfoHelper helper)
         {
             _helper = helper ?? throw new ArgumentNullException(nameof(helper));
             TreeInfo = new TesterTreeInfo();
@@ -29,9 +29,6 @@ namespace Drill4Net.Agent.Standard.Tester
         internal async Task Init()
         {
             _helper.WriteMessage("Please wait for the init...", TesterConstants.COLOR_TEXT);
-            await Task.Delay(3000).ConfigureAwait(false); //wait for the reading
-
-            //StandardAgent.Init();
 
             TreeInfo.Opts = TesterOptionsHelper.GetOptions();
             TreeInfo.TargetPath = TreeInfo.Opts.CurrentDirectory;
@@ -56,7 +53,9 @@ namespace Drill4Net.Agent.Standard.Tester
             TreeInfo.MethodSorted = MethodsHelper.GetSortedMethods(TreeInfo.Methods);
             TreeInfo.MethodByOrderNumber = MethodsHelper.GetMethodByOrderNumber(TreeInfo.MethodSorted);
 
-            await Task.Delay(3500).ConfigureAwait(false); //wait for the admin side init
+            await Task.Delay(1500); //wait for all logs from native dll (Connector)
+            _helper.WriteMessage("Let's wait a little longer...", TesterConstants.COLOR_TEXT);
+            await Task.Delay(5000); //wait for the admin side init
         }
 
         internal void Polling()
