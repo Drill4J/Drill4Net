@@ -9,7 +9,7 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Transmitter.Debug
 {
-    class Program
+    static class Program
     {
         private const ConsoleColor COLOR_INFO = ConsoleColor.Green;
         private const ConsoleColor COLOR_ERROR = ConsoleColor.Red;

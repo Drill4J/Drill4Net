@@ -15,13 +15,14 @@ namespace Drill4Net.Configurator.App
 
         /*******************************************************************/
 
-        internal void SetTitle()
+        internal string SetTitle()
         {
             var version = CommonUtils.GetAppVersion();
             var appName = CommonUtils.GetAppName();
             var title = $"{appName} {version}";
             Console.Title = title;
             _helper.WriteMessage(title, ConsoleColor.Cyan);
+            return title;
         }
     }
 }

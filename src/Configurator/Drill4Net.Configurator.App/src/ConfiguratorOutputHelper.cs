@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Drill4Net.Configurator.App
+﻿namespace Drill4Net.Configurator.App
 {
     internal class ConfiguratorOutputHelper
     {
         internal bool PrintMenu()
         {
             const string mess = @"  *** This is help for useful commands:
-  *** Enter 'info' for the tree info.
   *** Enter '?' or 'help' to print this menu.
+  *** Enter 'admin' for config connection to Drill service.
+  *** Enter 'target' to operate target's injection.
   *** Press q for exit.";
             WriteMessage($"\n{mess}", ConfiguratorAppConstants.COLOR_TEXT_HIGHLITED);
             return true;
