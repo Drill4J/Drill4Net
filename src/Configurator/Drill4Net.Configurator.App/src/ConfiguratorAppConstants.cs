@@ -2,10 +2,10 @@
 {
     internal static class ConfiguratorAppConstants
     {
-        internal const string CONFIG_NAME = "app.yml";
-
         #region Console colors
         internal const ConsoleColor COLOR_INFO = ConsoleColor.Cyan;
+        internal const ConsoleColor COLOR_QUESTION = ConsoleColor.Cyan;
+        //internal const ConsoleColor COLOR_ANSWER = ConsoleColor.Yellow;
         internal const ConsoleColor COLOR_ERROR = ConsoleColor.Red;
         internal const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
         internal const ConsoleColor COLOR_TEXT = ConsoleColor.White;

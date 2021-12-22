@@ -11,4 +11,8 @@
 	<DocumentationFile>..\..\..\doc\xml\Drill4Net.Configurator\Drill4Net.Configurator.xml</DocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj" />
+  </ItemGroup>
+
 </Project>

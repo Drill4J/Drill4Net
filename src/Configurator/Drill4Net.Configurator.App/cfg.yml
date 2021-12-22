@@ -1,0 +1,3 @@
+﻿Description: Config for Configurator App
+Type: Configurator # type as hint
+PluginDirectory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\

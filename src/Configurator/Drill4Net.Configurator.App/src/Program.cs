@@ -3,6 +3,7 @@ using System.Reflection;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
+using Drill4Net.Configurator;
 using Drill4Net.Configurator.App;
 using Drill4Net.BanderLog.Sinks.File;
 
@@ -22,16 +23,19 @@ namespace Drill4Net.Agent.Transmitter.Debug
 
         private static void Main(string[] args)
         {
-            var helper = new ConfiguratorOutputHelper();
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+
+            var outHelper = new ConfiguratorOutputHelper();
             try
             {
                 PrepareLogger();
-                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
-                _title = new ConfiguratorInformer(helper).SetTitle();
+                _title = new ConfiguratorInformer(outHelper).SetTitle();
                 _logger.Info($"Start: {_title}");
-                var iProc = new InputProcessor(helper);
+
+                var rep = new ConfiguratorRepository();
+                var iProc = new InputProcessor(rep, outHelper);
                 _logger.Debug("Starting the input processor...");
                 iProc.Start(args);
             }
@@ -39,13 +43,13 @@ namespace Drill4Net.Agent.Transmitter.Debug
             {
                 var err = ex.ToString();
                 _logger.Fatal(err);
-                helper.WriteMessage(err, ConfiguratorAppConstants.COLOR_ERROR);
+                outHelper.WriteMessage(err, ConfiguratorAppConstants.COLOR_ERROR);
             }
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            _logger?.Error($"FirstChanceException:\n{e}");
+            _logger?.Fatal($"FirstChanceException:\n{e}");
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)

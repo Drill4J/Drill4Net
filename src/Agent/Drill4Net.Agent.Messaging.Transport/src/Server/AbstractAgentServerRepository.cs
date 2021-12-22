@@ -1,6 +1,6 @@
 ﻿namespace Drill4Net.Agent.Messaging.Transport
 {
-    public abstract class AbstractAgentServerRepository : MessagingRepository<AgentServerOptions>
+    public abstract class AbstractAgentServerRepository : OptionsRepository<AgentServerOptions>
     {
         protected AbstractAgentServerRepository(string subsystem, string cfgPath = null) : base(subsystem, cfgPath)
         {
