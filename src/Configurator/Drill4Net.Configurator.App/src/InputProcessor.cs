@@ -77,8 +77,10 @@ namespace Drill4Net.Configurator.App
 
         internal bool ConfigAdmin()
         {
+            var opts = _rep.Options;
+
             string host;
-            var def = "localhost";
+            var def = opts.AdminHost;
             do
             {
                 host = AskQuestion("Drill service host", def);
@@ -86,20 +88,20 @@ namespace Drill4Net.Configurator.App
             while (!CheckStringAnswer(ref host, def, "The service host address cannot be empty"));
             //
             int port;
-            def = "8090";
-            string answer;
+            def = opts.AdminPort.ToString();
+            string portS;
             do
             {
-                answer = AskQuestion("Drill service port", def);
+                portS = AskQuestion("Drill service port", def);
             }
-            while (!CheckIntegerAnswer(answer, def, "The service port must be from 255 to 65535", 255, 65535, out port));
+            while (!CheckIntegerAnswer(portS, def, "The service port must be from 255 to 65535", 255, 65535, out port));
             //
             var url = $"{host}:{port}";
             _logger.Info($"Admin url: {url}");
 
             //
             string plugDir;
-            def = _rep.Options.PluginDirectory;
+            def = opts.PluginDirectory;
             do
             {
                 plugDir = AskQuestion("Agent plugin directory", def);
