@@ -13,6 +13,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Configuration\Drill4Net.Configuration.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />
+    <ProjectReference Include="..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
   </ItemGroup>
 
 </Project>

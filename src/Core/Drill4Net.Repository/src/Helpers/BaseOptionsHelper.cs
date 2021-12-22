@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using YamlDotNet.Serialization;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -12,6 +13,7 @@ namespace Drill4Net.Repository
     /// <typeparam name="TOpts"></typeparam>
     public class BaseOptionsHelper<TOpts> where TOpts : AbstractOptions, new()
     {
+        private readonly ISerializer _ser;
         private readonly IDeserializer _deser;
         private readonly Logger _logger;
 
@@ -23,6 +25,7 @@ namespace Drill4Net.Repository
         {
             _logger = new TypedLogger<BaseOptionsHelper<TOpts>>(subsystem);
 
+            _ser = new YamlDotNet.Serialization.Serializer();
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties() //TODO: from cfg only if permitted
                 .Build();
@@ -76,6 +79,25 @@ namespace Drill4Net.Repository
             PostProcess(opts);
             _logger.Debug("Config prepared.");
             return opts;
+        }
+
+        /// <summary>
+        /// Writes the options by specified file path.
+        /// </summary>
+        /// <param name="opts"></param>
+        /// <param name="path">The fike path.</param>
+        /// <returns></returns>
+        public void WriteOptions(AbstractOptions opts, string path)
+        {
+            if (opts == null)
+                throw new ArgumentNullException(nameof(opts));
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
+            //
+            _logger.Debug($"Writing config {opts.GetType().Name}: [{path}]");
+            var text = _ser.Serialize(opts);
+            File.WriteAllText(path, text);
+            _logger.Debug("Config is saved.");
         }
 
         /// <summary>

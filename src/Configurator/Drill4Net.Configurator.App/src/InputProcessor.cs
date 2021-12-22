@@ -1,5 +1,6 @@
 ﻿using System;
 using Drill4Net.BanderLog;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator.App
 {
@@ -38,7 +39,7 @@ namespace Drill4Net.Configurator.App
 
         internal void ProcessByArguments(string[] args)
         {
-       
+
         }
 
         internal void StartInteractive()
@@ -85,32 +86,6 @@ namespace Drill4Net.Configurator.App
             return true;
         }
 
-        internal bool ConfigMiddleware(ConfiguratorOptions opts)
-        {
-            string host;
-            var def = opts.MiddlewareHost;
-            do
-            {
-                host = AskQuestion("Kafka host", def);
-            }
-            while (!CheckStringAnswer(ref host, def, "The Kafka host address cannot be empty"));
-            //
-            int port;
-            def = opts.MiddlewarePort.ToString();
-            string portS;
-            do
-            {
-                portS = AskQuestion("Kafka port", def);
-            }
-            while (!CheckIntegerAnswer(portS, def, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
-            //
-            var url = $"{host}:{port}";
-            _logger.Info($"Kafka url: {url}");
-
-            //
-            return true;
-        }
-
         internal bool ConfigAdmin(ConfiguratorOptions opts)
         {
             string host;
@@ -132,7 +107,6 @@ namespace Drill4Net.Configurator.App
             //
             var url = $"{host}:{port}";
             _logger.Info($"Admin url: {url}");
-
             //
             string plugDir;
             def = opts.PluginDirectory;
@@ -142,7 +116,45 @@ namespace Drill4Net.Configurator.App
             }
             while (!CheckDirectoryAnswer(ref plugDir, def, true));
             _logger.Info($"Plugin dir: {plugDir}");
+            //
+            var agCfgPath = Path.Combine(opts.InstallDirectory, CoreConstants.CONFIG_NAME_DEFAULT);
+            var agentOpts = _rep.ReadAgentOptions(agCfgPath);
+            agentOpts.Admin.Url = url;
+            agentOpts.PluginDir = plugDir;
+            _rep.WriteAgentOptions(agentOpts, agCfgPath);
+            //
+            return true;
+        }
 
+        internal bool ConfigMiddleware(ConfiguratorOptions opts)
+        {
+            string host;
+            var def = opts.MiddlewareHost;
+            do
+            {
+                host = AskQuestion("Kafka host", def);
+            }
+            while (!CheckStringAnswer(ref host, def, "The Kafka host address cannot be empty"));
+            //
+            int port;
+            def = opts.MiddlewarePort.ToString();
+            string portS;
+            do
+            {
+                portS = AskQuestion("Kafka port", def);
+            }
+            while (!CheckIntegerAnswer(portS, def, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
+            //
+            var url = $"{host}:{port}";
+            _logger.Info($"Kafka url: {url}");
+            //
+            var transCfgPath = Path.Combine(opts.TransmitterDirectory, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            var transOpts = _rep.ReadMessagerOptions(transCfgPath); //Transmitter uses agent's options, too
+
+            transOpts.Servers.Clear();
+            transOpts.Servers.Add(url);
+
+            _rep.WriteMessagerOptions(transOpts, transCfgPath);
             //
             return true;
         }

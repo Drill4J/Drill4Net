@@ -1,8 +1,0 @@
-﻿Description: Config for Configurator App
-Type: Configurator # type as hint
-AdminHost: localhost # Drill admin
-AdminPort: 8090 # Drill admin
-MiddlewareHost: localhost # Kafka
-MiddlewarePort: 9093 # Kafka
-TransmitterDirectory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\ # located somewhere in the distribution of Drill4Net
-PluginDirectory: ..\..\..\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net

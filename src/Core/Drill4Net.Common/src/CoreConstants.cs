@@ -41,6 +41,8 @@
         /// </summary>
         public const string CONFIG_NAME_DEFAULT = "cfg.yml";
 
+        public const string CONFIG_NAME_APP = "app.yml";
+
         /// <summary>
         /// Config file name for the Tester subsystem
         /// </summary>

@@ -1,11 +1,11 @@
-﻿using Drill4Net.Agent.Messaging;
+﻿using Drill4Net.Configuration;
 
 namespace Drill4Net.Configurator
 {
     /// <summary>
     /// Default options for the Configurator
     /// </summary>
-    public class ConfiguratorOptions : MessagerOptions
+    public class ConfiguratorOptions : AbstractOptions
     {
         /// <summary>
         /// Default host address for the Drill Admin service
@@ -26,6 +26,11 @@ namespace Drill4Net.Configurator
         /// Default port for the middleware service (Kafka)
         /// </summary>
         public int MiddlewarePort { get; set; }
+
+        /// <summary>
+        /// Install directory of Drill4Net system
+        /// </summary>
+        public string? InstallDirectory { get; set; }
 
         /// <summary>
         /// Default directory for the Transmitter module

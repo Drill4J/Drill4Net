@@ -126,6 +126,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Adoption_cfg", "!!_Adopt
 	ProjectSection(SolutionItems) = preProject
 		IHS_v1.yml = IHS_v1.yml
 		IHS_v2.yml = IHS_v2.yml
+		svc.yml = svc.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standard", "Standard", "{5A5AB43E-890A-48AA-B426-8913AE372ADE}"

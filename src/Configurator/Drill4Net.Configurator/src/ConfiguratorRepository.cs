@@ -1,23 +1,64 @@
 ﻿using System.IO;
 using Drill4Net.Common;
 using Drill4Net.Repository;
+using Drill4Net.Injector.Core;
+using Drill4Net.Configuration;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.Agent.Messaging;
 
 namespace Drill4Net.Configurator
 {
     public class ConfiguratorRepository : AbstractRepository<ConfiguratorOptions>
     {
-        public ConfiguratorRepository(ConfiguratorOptions? opts = null) : base(CoreConstants.SUBSYSTEM_CONFIGURATOR, false)
+        public ConfiguratorRepository(): this(null) { }
+
+        public ConfiguratorRepository(ConfiguratorOptions? opts) : base(CoreConstants.SUBSYSTEM_CONFIGURATOR, false)
         {
-            Options = opts ?? GetOptionsByPath(Subsystem);
+            Options = opts ?? ReadOptions<ConfiguratorOptions>(Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_APP));
         }
 
-        /*******************************************************************************/
+        /***********************************************************************************/
 
-        public static ConfiguratorOptions GetOptionsByPath(string subsystem)
+        public AgentOptions ReadAgentOptions(string cfgPath)
         {
-            var optHelper = new BaseOptionsHelper<ConfiguratorOptions>(subsystem);
-            var cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_DEFAULT);
+            return ReadOptions<AgentOptions>(cfgPath);
+        }
+
+        public void WriteAgentOptions(AgentOptions opts, string cfgPath)
+        {
+            WriteOptions<AgentOptions>(opts, cfgPath);
+        }
+
+        public MessagerOptions ReadMessagerOptions(string cfgPath)
+        {
+            return ReadOptions<MessagerOptions>(cfgPath);
+        }
+
+        public void WriteMessagerOptions(MessagerOptions opts, string cfgPath)
+        {
+            WriteOptions<MessagerOptions>(opts, cfgPath);
+        }
+
+        public InjectorOptions ReadInjectorOptions(string cfgPath)
+        {
+            return ReadOptions<InjectorOptions>(cfgPath);
+        }
+
+        public void ReadInjectorOptions(InjectorOptions opts, string cfgPath)
+        {
+            WriteOptions<InjectorOptions>(opts, cfgPath);
+        }
+
+        public T ReadOptions<T>(string cfgPath) where T : AbstractOptions, new()
+        {
+            var optHelper = new BaseOptionsHelper<T>(Subsystem);
             return optHelper.ReadOptions(cfgPath);
+        }
+
+        public void WriteOptions<T>(T opts, string cfgPath) where T : AbstractOptions, new()
+        {
+            var optHelper = new BaseOptionsHelper<T>(Subsystem);
+            optHelper.WriteOptions(opts, cfgPath);
         }
     }
 }
