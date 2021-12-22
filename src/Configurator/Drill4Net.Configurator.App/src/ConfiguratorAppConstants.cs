@@ -13,7 +13,7 @@
         internal const ConsoleColor COLOR_TEXT_WARNING = ConsoleColor.DarkYellow;
         #endregion
         #region Commands
-        internal const string COMMAND_ADMIN = "admin";
+        internal const string COMMAND_SYS = "sys";
 
         internal const string COMMAND_TARGET = "target";
         internal const string COMMAND_TARGET_DELETE = "delete";

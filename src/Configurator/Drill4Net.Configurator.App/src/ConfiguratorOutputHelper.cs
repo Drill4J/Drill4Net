@@ -4,10 +4,10 @@
     {
         internal bool PrintMenu()
         {
-            const string mess = @"  *** This is help for useful commands:
+            const string mess = $@"  *** This is help for useful commands:
   *** Enter '?' or 'help' to print this menu.
-  *** Enter 'admin' for config connection to Drill service.
-  *** Enter 'target' to operate target's injection.
+  *** Enter '{ConfiguratorAppConstants.COMMAND_SYS}' for config connection to Drill service.
+  *** Enter '{ConfiguratorAppConstants.COMMAND_TARGET}' to operate target's injection.
   *** Press q for exit.";
             WriteLine($"\n{mess}", ConfiguratorAppConstants.COLOR_TEXT_HIGHLITED);
             return true;

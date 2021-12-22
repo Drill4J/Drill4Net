@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Drill4Net.BanderLog;
 
 namespace Drill4Net.Configurator.App
@@ -39,7 +38,7 @@ namespace Drill4Net.Configurator.App
 
         internal void ProcessByArguments(string[] args)
         {
-            
+       
         }
 
         internal void StartInteractive()
@@ -69,16 +68,50 @@ namespace Drill4Net.Configurator.App
             return input switch
             {
                 "?" or "help" => _outputHelper.PrintMenu(),
-                "admin" => ConfigAdmin(),
-                "new" => ConfigNewTarget(),
+                ConfiguratorAppConstants.COMMAND_SYS => ConfigSystem(),
+                ConfiguratorAppConstants.COMMAND_TARGET => ConfigNewTarget(),
                 _ => _outputHelper.PrintMenu(),
             };
         }
 
-        internal bool ConfigAdmin()
+        internal bool ConfigSystem()
         {
-            var opts = _rep.Options;
+            if (!ConfigAdmin(_rep.Options))
+                return false;
+            if(!ConfigMiddleware(_rep.Options))
+                return false;
+            _outputHelper.WriteLine("\nSystem options are retrieved", ConfiguratorAppConstants.COLOR_TEXT);
+            return true;
+        }
 
+        internal bool ConfigMiddleware(ConfiguratorOptions opts)
+        {
+            string host;
+            var def = opts.MiddlewareHost;
+            do
+            {
+                host = AskQuestion("Kafka host", def);
+            }
+            while (!CheckStringAnswer(ref host, def, "The Kafka host address cannot be empty"));
+            //
+            int port;
+            def = opts.MiddlewarePort.ToString();
+            string portS;
+            do
+            {
+                portS = AskQuestion("Kafka port", def);
+            }
+            while (!CheckIntegerAnswer(portS, def, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
+            //
+            var url = $"{host}:{port}";
+            _logger.Info($"Kafka url: {url}");
+
+            //
+            return true;
+        }
+
+        internal bool ConfigAdmin(ConfiguratorOptions opts)
+        {
             string host;
             var def = opts.AdminHost;
             do
@@ -110,7 +143,6 @@ namespace Drill4Net.Configurator.App
             _logger.Info($"Plugin dir: {plugDir}");
 
             //
-            _outputHelper.WriteLine("\nAdmin options are retrieved", ConfiguratorAppConstants.COLOR_TEXT);
             return true;
         }
 
