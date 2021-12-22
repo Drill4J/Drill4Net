@@ -68,13 +68,14 @@ namespace Drill4Net.Configurator.App
             return input switch
             {
                 "?" or "help" => _outputHelper.PrintMenu(),
-                ConfiguratorAppConstants.COMMAND_SYS => ConfigSystem(),
-                ConfiguratorAppConstants.COMMAND_TARGET => ConfigNewTarget(),
+                ConfiguratorAppConstants.COMMAND_SYS => SystemConfigure(),
+                ConfiguratorAppConstants.COMMAND_TARGET => TargetConfigure(),
+                ConfiguratorAppConstants.COMMAND_CI => CIConfigure(),
                 _ => _outputHelper.PrintMenu(),
             };
         }
 
-        internal bool ConfigSystem()
+        internal bool SystemConfigure()
         {
             if (!ConfigAdmin(_rep.Options))
                 return false;
@@ -146,7 +147,7 @@ namespace Drill4Net.Configurator.App
             return true;
         }
 
-        internal bool ConfigNewTarget()
+        internal bool TargetConfigure()
         {
             return false;
         }
@@ -201,6 +202,12 @@ namespace Drill4Net.Configurator.App
                 return true;
             }
             _outputHelper.WriteLine("Such directory does not exists.", ConfiguratorAppConstants.COLOR_TEXT_WARNING);
+            return false;
+        }
+
+        internal bool CIConfigure()
+        {
+            _outputHelper.WriteLine("\nSorry, CI operations don't implemented yet", ConfiguratorAppConstants.COLOR_TEXT);
             return false;
         }
     }

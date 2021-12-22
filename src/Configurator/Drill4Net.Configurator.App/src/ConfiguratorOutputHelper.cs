@@ -8,6 +8,7 @@
   *** Enter '?' or 'help' to print this menu.
   *** Enter '{ConfiguratorAppConstants.COMMAND_SYS}' for config connection to Drill service.
   *** Enter '{ConfiguratorAppConstants.COMMAND_TARGET}' to operate target's injection.
+  *** Enter '{ConfiguratorAppConstants.COMMAND_CI}' for some CI operations.
   *** Press q for exit.";
             WriteLine($"\n{mess}", ConfiguratorAppConstants.COLOR_TEXT_HIGHLITED);
             return true;
