@@ -11,7 +11,7 @@ docker-compose -f "docker-compose-agent.yml" up -d --build
 
 For Development:
 
-Run installer Visual Studio Community 2019
+Run installer Visual Studio Community 2019 - https://docs.microsoft.com/ru-ru/visualstudio/releases/2019/history
 
 Choose workload 1) ASP .Net and web development and 2) .Net desktop development
 
