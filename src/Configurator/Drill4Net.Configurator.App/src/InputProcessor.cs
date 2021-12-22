@@ -46,7 +46,7 @@ namespace Drill4Net.Configurator.App
         {
             while (true)
             {
-                _outputHelper.WriteMessage("\nCommand:", ConfiguratorAppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine("\nCommand:", ConfiguratorAppConstants.COLOR_TEXT);
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
@@ -58,7 +58,7 @@ namespace Drill4Net.Configurator.App
                 }
                 catch (Exception ex)
                 {
-                    _outputHelper.WriteMessage($"error -> {ex.Message}", ConfiguratorAppConstants.COLOR_ERROR);
+                    _outputHelper.WriteLine($"error -> {ex.Message}", ConfiguratorAppConstants.COLOR_ERROR);
                 }
             }
         }
@@ -77,28 +77,38 @@ namespace Drill4Net.Configurator.App
 
         internal bool ConfigAdmin()
         {
+            string host;
+            var def = "localhost";
+            do
+            {
+                host = AskQuestion("Drill service host", def);
+            }
+            while (!CheckStringAnswer(ref host, def, "The service host address cannot be empty"));
+            //
+            int port;
+            def = "8090";
             string answer;
             do
             {
-                answer = AskQuestion("Drill service host", "localhost");
+                answer = AskQuestion("Drill service port", def);
             }
-            while (!CheckStringAnswer(answer, "The service host address cannot be empty"));
-            int port;
-            do
-            {
-                answer = AskQuestion("Drill service port", "8090");
-            }
-            while (!CheckIntegerAnswer(answer, "The service port must be from 255 to 65535", 255, 65535, out port));
+            while (!CheckIntegerAnswer(answer, def, "The service port must be from 255 to 65535", 255, 65535, out port));
             //
-            var url = $"{answer}:{port}";
+            var url = $"{host}:{port}";
+            _logger.Info($"Admin url: {url}");
+
             //
             string plugDir;
+            def = _rep.Options.PluginDirectory;
             do
             {
-                plugDir = AskQuestion("Agent plugin directory", _rep.Options.PluginDirectory);
+                plugDir = AskQuestion("Agent plugin directory", def);
             }
-            while (!CheckDirectoryAnswer(plugDir, true));
+            while (!CheckDirectoryAnswer(ref plugDir, def, true));
+            _logger.Info($"Plugin dir: {plugDir}");
+
             //
+            _outputHelper.WriteLine("\nAdmin options are retrieved", ConfiguratorAppConstants.COLOR_TEXT);
             return true;
         }
 
@@ -109,33 +119,54 @@ namespace Drill4Net.Configurator.App
 
         private string AskQuestion(string question, string defValue)
         {
-            _outputHelper.WriteMessage($"{question} [{defValue}]: ", ConfiguratorAppConstants.COLOR_QUESTION);
+            _outputHelper.WriteLine($"\n{question} [{defValue}]: ", ConfiguratorAppConstants.COLOR_QUESTION);
             var answer = Console.ReadLine()?.Trim() ?? defValue;
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");
             return answer ?? defValue;
         }
 
-        private bool CheckStringAnswer(string answer, string mess, bool canBeNull = false)
+        private bool CheckStringAnswer(ref string answer, string defValue, string mess, bool canBeNull = false)
         {
+            var noInput = answer?.Length == 0; //""
+            if (noInput)
+                answer = defValue;
             if (canBeNull || !string.IsNullOrWhiteSpace(answer))
+            {
+                if (noInput)
+                    _outputHelper.Write(answer, true, ConfiguratorAppConstants.COLOR_ANSWER);
                 return true;
-            _outputHelper.WriteMessage(mess, ConfiguratorAppConstants.COLOR_TEXT_WARNING);
+            }
+            _outputHelper.WriteLine(mess, ConfiguratorAppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
-        private bool CheckIntegerAnswer(string answer, string mess, int min, int max, out int val)
+        private bool CheckIntegerAnswer(string answer, string defValue, string mess, int min, int max, out int val)
         {
+            var noInput = answer?.Length == 0; //""
+            if (noInput)
+                answer = defValue;
             if (int.TryParse(answer, out val) && val >= min && val <= max)
+            {
+                if (noInput)
+                    _outputHelper.Write(answer, true, ConfiguratorAppConstants.COLOR_ANSWER);
                 return true;
-            _outputHelper.WriteMessage(mess, ConfiguratorAppConstants.COLOR_TEXT_WARNING);
+            }
+            _outputHelper.WriteLine(mess, ConfiguratorAppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
-        private bool CheckDirectoryAnswer(string directory, bool mustExist = true)
+        private bool CheckDirectoryAnswer(ref string directory, string defValue, bool mustExist = true)
         {
+            var noInput = directory?.Length == 0; //""
+            if (noInput)
+                directory = defValue;
             if (!string.IsNullOrWhiteSpace(directory) && (!mustExist || (mustExist && Directory.Exists(directory))))
+            {
+                if(noInput)
+                    _outputHelper.Write(directory, true, ConfiguratorAppConstants.COLOR_ANSWER);
                 return true;
-            _outputHelper.WriteMessage("Such directory does not exists.", ConfiguratorAppConstants.COLOR_TEXT_WARNING);
+            }
+            _outputHelper.WriteLine("Such directory does not exists.", ConfiguratorAppConstants.COLOR_TEXT_WARNING);
             return false;
         }
     }

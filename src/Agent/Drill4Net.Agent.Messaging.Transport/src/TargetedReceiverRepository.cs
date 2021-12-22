@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
-    public class TargetedReceiverRepository : OptionsRepository<MessagerOptions>, ITargetedRepository
+    public class TargetedReceiverRepository : MessagingRepository<MessagerOptions>, ITargetedRepository
     {
         public Guid TargetSession { get; private set; }
         public string TargetName { get; private set; }

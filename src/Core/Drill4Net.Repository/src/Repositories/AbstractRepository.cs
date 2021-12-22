@@ -31,10 +31,10 @@ namespace Drill4Net.Repository
 
         /*********************************************************************************/
 
-        protected AbstractRepository(string subsystem)
+        protected AbstractRepository(string subsystem, bool createDefaultLogger = true)
         {
             Subsystem = subsystem;
-            CreateDefaultLogger = true;
+            CreateDefaultLogger = createDefaultLogger;
         }
 
         /*********************************************************************************/
@@ -89,7 +89,7 @@ namespace Drill4Net.Repository
 
         /*********************************************************************************/
 
-        protected AbstractRepository(string subsystem) : base(subsystem)
+        protected AbstractRepository(string subsystem, bool createDefaultLogger = true) : base(subsystem, createDefaultLogger)
         {
         }
 

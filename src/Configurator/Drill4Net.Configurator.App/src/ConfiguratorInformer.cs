@@ -21,7 +21,7 @@ namespace Drill4Net.Configurator.App
             var appName = CommonUtils.GetAppName();
             var title = $"{appName} {version}";
             Console.Title = title;
-            _helper.WriteMessage(title, ConsoleColor.Cyan);
+            _helper.WriteLine(title, ConsoleColor.Cyan);
             return title;
         }
     }
