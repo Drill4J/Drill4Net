@@ -233,10 +233,10 @@ Please make your choice";
                 answer = AskQuestion(versionQuestion, def);
                 if (IsQiut(answer))
                     return false;
-                if(!CheckIntegerAnswer(answer, def, "Please select from 1 to 3", 1, 3, out int choise))
+                if(!CheckIntegerAnswer(answer, def, "Please select from 1 to 3", 1, 3, out int choice))
                     continue;
                 //
-                switch (choise)
+                switch (choice)
                 {
                     case 1:
                         cfg.Target.Version = GetTargetVersonFromUser();
@@ -257,6 +257,49 @@ Please make your choice";
             }
 
             // Filter
+            const string filterQuestion = @"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
+We should process only the Target's ones. The system files the Injector can skip on its own (as a rule), but in the case of third-party libraries, this may be too difficult to do automatically. 
+If the target contains one shared root namespace (e.g. Drill4Net at beginning of Drill4Net.BanderLog), the better choice is to use the rules for type ""Namespace"" (in this case value is ""Drill4Net"").
+Hint: the values can be just strings or regular expressions (e.g. ""reg: ^Drill4Net\.([\w-]+\.)+[\w]*Tests$"").
+Hint: the test frameworks' assemblies (that do not contains user functionality) should be skipped.
+For more information, please read documentation.
+
+You can enter several rules in separate strings, e.g. first for files, then for classes, and so on. Separate several rules with a semicolon.
+Separate several entities in one rule with a comma. 
+You can use Include and Exclude rules. By default, a rule has Include type.
+
+To finish, just enter ""ok"" quotation marks.
+
+The filters are:
+  - By directory (full path). Examples:
+       DIR=d:\Projects\ABC\ - Include rule
+       ^DIR=d:\Projects\ABC\ - Exclude rule!
+       DIR=d:\Projects\ABC\,d:\Projects\123\ (two directories in one type's tag with comma)
+       DIR=d:\Projects\ABC\;DIR=d:\Projects\123\ (two directories in separate blocks with semicolon)
+  - By folder (just name). Example: 
+       FLD: ref
+  - By file (short name). Example: 
+       FILE: Drill4Net.Target.Common.dll
+  - By beginning of namespace (if value as string) or by regex.  Example:
+       NS: Drill4Net
+  - By class fullname (with namespace). Example:
+       TYPE: Drill4Net.Target.Common.ModelTarget
+  - By attribute of class. Example:
+       ATTR: Drill4Net.Target.SuperAttribute (it is full name of its type)
+
+Hint: to set up value for ""all entities of current rype"" use sign *. Example:
+       ^FLD: * (do not process any folders)
+
+Please create at least one filter rule";
+            _outputHelper.WriteLine($"\n{filterQuestion}: ", AppConstants.COLOR_QUESTION);
+
+            while (true)
+            {
+                answer = Console.ReadLine()?.Trim()?.ToLower();
+                if (answer == "ok")
+                    break;
+
+            }
 
             // Destination dir
 
@@ -276,7 +319,7 @@ Please make your choice";
                     return name;
                 name = AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version", null, false);
             }
-            while (!CheckFileAnswer(ref name, null, "The assembly name cannot be empty", false));
+            while (!CheckFileNameAnswer(ref name, null, "The assembly name cannot be empty", false));
             return name;
         }
 
@@ -388,7 +431,7 @@ Please make your choice";
             return false;
         }
 
-        private bool CheckFileAnswer(ref string filename, string defValue, string mess, bool canBeNull)
+        private bool CheckFileNameAnswer(ref string filename, string defValue, string mess, bool canBeNull)
         {
             if (!PrimaryCheckInput(ref filename, defValue, out bool noInput))
                 return false;
