@@ -259,7 +259,7 @@ Please make your choice";
             const string filterQuestion = $@"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
 We should process only the Target's ones. The system files the Injector can skip on its own (as a rule), but in the case of third-party libraries, this may be too difficult to do automatically. 
 If the target contains one shared root namespace (e.g. Drill4Net at beginning of Drill4Net.BanderLog), the better choice is to use the rules for type ""Namespace"" (in this case value is ""Drill4Net"").
-Hint: the values can be just strings or regular expressions (e.g. ""reg: ^Drill4Net\.([\w-]+\.)+[\w]*Tests$"").
+Hint: the values can be just strings or regular expressions (e.g. ""{CoreConstants.REGEX_FILTER_PREFIX} ^Drill4Net\.([\w-]+\.)+[\w]*Tests$"").
 Hint: the test frameworks' assemblies (that do not contains user functionality) should be skipped.
 For more information, please read documentation.
 
@@ -355,38 +355,26 @@ Please create at least one filter rule";
                 {
                     var isExclude = curVal?.StartsWith("^") == true;
                     SourceFilterParams pars = isExclude ? filter.Excludes : filter.Includes;
-                    var actualVal = isExclude ? curVal[1..] : curVal;
+                    var actualVal = (isExclude ? curVal[1..] : curVal)?.Trim();
                     switch (type.ToUpper())
                     {
                         case AppConstants.FILTER_TYPE_DIR:
-                            if (pars.Directories == null)
-                                pars.Directories = new();
-                            pars.Directories.Add(actualVal);
+                            (pars.Directories ??= new()).Add(actualVal);
                             break;
                         case AppConstants.FILTER_TYPE_FOLDER:
-                            if (pars.Folders == null)
-                                pars.Folders = new();
-                            pars.Folders.Add(actualVal);
+                            (pars.Folders ??= new()).Add(actualVal);
                             break;
                         case AppConstants.FILTER_TYPE_FILE:
-                            if (pars.Files == null)
-                                pars.Files = new();
-                            pars.Files.Add(actualVal);
+                            (pars.Files ??= new()).Add(actualVal);
                             break;
                         case AppConstants.FILTER_TYPE_NAMESPACE:
-                            if (pars.Namespaces == null)
-                                pars.Namespaces = new();
-                            pars.Namespaces.Add(actualVal);
+                            (pars.Namespaces ??= new()).Add(actualVal);
                             break;
                         case AppConstants.FILTER_TYPE_TYPE:
-                            if (pars.Classes == null)
-                                pars.Classes = new();
-                            pars.Classes.Add(actualVal);
+                            (pars.Classes ??= new()).Add(actualVal);
                             break;
                         case AppConstants.FILTER_TYPE_ATTRIBUTE:
-                            if (pars.Attributes == null)
-                                pars.Attributes = new();
-                            pars.Attributes.Add(actualVal);
+                            (pars.Attributes ??= new()).Add(actualVal);
                             break;
                         default:
                             error = $"Unknown filter type: {type}";
