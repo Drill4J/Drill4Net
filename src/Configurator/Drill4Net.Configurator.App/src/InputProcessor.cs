@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using Drill4Net.Common;
 using Drill4Net.BanderLog;
 
 namespace Drill4Net.Configurator.App
@@ -245,10 +246,8 @@ Please make your choice";
                         cfg.Target.VersionAssemblyName = GetVersionAssemblyName();
                         break;
                     case 3:
-                        // the version won't stored in tree file (metadata of target's injection) - so,
-                        // if the version will be missed ALSO in Agent's config (it is one more possibility
-                        // to pass this value to the Drill admin side), CI engineer is responsible
-                        // for passing the actual one to the Test Runner by argument.
+                        var mess = "The target's version won't stored in tree file (metadata of target's injection) - so, if the version will be missed ALSO in Agent's config (it is one more possibility to pass this value to the Drill admin side), CI engineer is responsible for passing the actual one to the Test Runner by argument.";
+                        _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
                         break;
                     default:
                         continue;
@@ -257,7 +256,7 @@ Please make your choice";
             }
 
             // Filter
-            const string filterQuestion = @"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
+            const string filterQuestion = $@"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
 We should process only the Target's ones. The system files the Injector can skip on its own (as a rule), but in the case of third-party libraries, this may be too difficult to do automatically. 
 If the target contains one shared root namespace (e.g. Drill4Net at beginning of Drill4Net.BanderLog), the better choice is to use the rules for type ""Namespace"" (in this case value is ""Drill4Net"").
 Hint: the values can be just strings or regular expressions (e.g. ""reg: ^Drill4Net\.([\w-]+\.)+[\w]*Tests$"").
@@ -268,27 +267,28 @@ You can enter several rules in separate strings, e.g. first for files, then for 
 Separate several entities in one rule with a comma. 
 You can use Include and Exclude rules. By default, a rule has Include type.
 
-To finish, just enter ""ok"" quotation marks.
+To finish, just enter ""ok"".
 
-The filters are:
+The filters:
   - By directory (full path). Examples:
-       DIR=d:\Projects\ABC\ - Include rule
-       ^DIR=d:\Projects\ABC\ - Exclude rule!
-       DIR=d:\Projects\ABC\,d:\Projects\123\ (two directories in one type's tag with comma)
-       DIR=d:\Projects\ABC\;DIR=d:\Projects\123\ (two directories in separate blocks with semicolon)
+       {AppConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\ - Include rule by default
+       {AppConstants.FILTER_TYPE_DIR}=^d:\Projects\ABC\ - Exclude rule (note the ^ sign at the beginning of the value)
+       {AppConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\,d:\Projects\123\ (two directories in one type's tag with comma)
+       {AppConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\;{AppConstants.FILTER_TYPE_DIR}=d:\Projects\123\ (two directories in separate blocks with semicolon)
   - By folder (just name). Example: 
-       FLD: ref
+       {AppConstants.FILTER_TYPE_FOLDER}: ref
   - By file (short name). Example: 
-       FILE: Drill4Net.Target.Common.dll
-  - By beginning of namespace (if value as string) or by regex.  Example:
-       NS: Drill4Net
+       {AppConstants.FILTER_TYPE_FILE}: Drill4Net.Target.Common.dll
+  - By namespace (by beginning if value is presented as string, or by regex). Example:
+       {AppConstants.FILTER_TYPE_NAMESPACE}: Drill4Net
   - By class fullname (with namespace). Example:
-       TYPE: Drill4Net.Target.Common.ModelTarget
+       {AppConstants.FILTER_TYPE_TYPE}: Drill4Net.Target.Common.ModelTarget
   - By attribute of class. Example:
-       ATTR: Drill4Net.Target.SuperAttribute (it is full name of its type)
+       {AppConstants.FILTER_TYPE_ATTRIBUTE}: Drill4Net.Target.SuperAttribute (it is full name of its type)
 
-Hint: to set up value for ""all entities of current rype"" use sign *. Example:
-       ^FLD: * (do not process any folders)
+Hint: the regex must be located only in a sole filter tag (one expression in one tag).
+Hint: to set up value for ""all entities of current filter type"" use sign *. Example:
+       {AppConstants.FILTER_TYPE_FOLDER}: ^* (do not process any folders)
 
 Please create at least one filter rule";
             _outputHelper.WriteLine($"\n{filterQuestion}: ", AppConstants.COLOR_QUESTION);
@@ -296,9 +296,10 @@ Please create at least one filter rule";
             while (true)
             {
                 answer = Console.ReadLine()?.Trim()?.ToLower();
-                if (answer == "ok")
+                if (answer.Replace("\"", null) == "ok")
                     break;
-
+                if(!AddFilterRules(answer, cfg.Source.Filter, out string err))
+                    _outputHelper.WriteLine(err, AppConstants.COLOR_ERROR);
             }
 
             // Destination dir
@@ -308,6 +309,92 @@ Please create at least one filter rule";
             // Logs ?
 
             return false;
+        }
+
+        internal bool AddFilterRules(string input, SourceFilterOptions filter, out string error)
+        {
+            error = null;
+            #region Check
+            if (filter == null)
+                throw new ArgumentNullException(nameof(filter));
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                error = "Rule cannot be empty";
+                return false;
+            }
+            input = input.Trim();
+            #endregion
+
+            //rules
+            List<string> rules;
+            if (input.Contains(';'))
+                rules = input.Split(";").ToList();
+            else
+                rules = new() { input };
+            //
+            foreach (var rule in rules)
+            {
+                if (!rule.Contains('='))
+                {
+                    error = "Rule must contain the sign = between its type and value";
+                    return false;
+                }
+                var ar = rule.Split("=");
+                var type = ar[0];
+
+                //get rules' values
+                var val = ar[1];
+                List<string> vals;
+                if (val.Contains(','))
+                    vals = val.Split(",").ToList();
+                else
+                    vals = new() { val };
+
+                // add the rules' values
+                foreach (var curVal in vals)
+                {
+                    var isExclude = curVal?.StartsWith("^") == true;
+                    SourceFilterParams pars = isExclude ? filter.Excludes : filter.Includes;
+                    var actualVal = isExclude ? curVal[1..] : curVal;
+                    switch (type.ToUpper())
+                    {
+                        case AppConstants.FILTER_TYPE_DIR:
+                            if (pars.Directories == null)
+                                pars.Directories = new();
+                            pars.Directories.Add(actualVal);
+                            break;
+                        case AppConstants.FILTER_TYPE_FOLDER:
+                            if (pars.Folders == null)
+                                pars.Folders = new();
+                            pars.Folders.Add(actualVal);
+                            break;
+                        case AppConstants.FILTER_TYPE_FILE:
+                            if (pars.Files == null)
+                                pars.Files = new();
+                            pars.Files.Add(actualVal);
+                            break;
+                        case AppConstants.FILTER_TYPE_NAMESPACE:
+                            if (pars.Namespaces == null)
+                                pars.Namespaces = new();
+                            pars.Namespaces.Add(actualVal);
+                            break;
+                        case AppConstants.FILTER_TYPE_TYPE:
+                            if (pars.Classes == null)
+                                pars.Classes = new();
+                            pars.Classes.Add(actualVal);
+                            break;
+                        case AppConstants.FILTER_TYPE_ATTRIBUTE:
+                            if (pars.Attributes == null)
+                                pars.Attributes = new();
+                            pars.Attributes.Add(actualVal);
+                            break;
+                        default:
+                            error = $"Unknown filter type: {type}";
+                            return false;
+                    }
+                }
+            }
+            return true;
         }
 
         private string GetVersionAssemblyName()

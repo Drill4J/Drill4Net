@@ -28,6 +28,14 @@
         internal const string COMMAND_EDIT = "edit";
         internal const string COMMAND_VIEW = "view";
         #endregion
+        #region Filter types
+        internal const string FILTER_TYPE_DIR = "DIR";
+        internal const string FILTER_TYPE_FOLDER = "FLD";
+        internal const string FILTER_TYPE_FILE = "FILE";
+        internal const string FILTER_TYPE_TYPE = "TYPE";
+        internal const string FILTER_TYPE_NAMESPACE = "NS";
+        internal const string FILTER_TYPE_ATTRIBUTE = "ATTR";
+        #endregion
 
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
         internal const string MESSAGE_PROPERTIES_EDIT_WARNING = "Please note that only some basic settings can be changed now. You can read and edit the full list of properties in the corresponding configuration files.";
