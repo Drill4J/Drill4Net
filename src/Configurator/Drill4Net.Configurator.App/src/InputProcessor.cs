@@ -75,6 +75,7 @@ namespace Drill4Net.Configurator.App
             };
         }
 
+        #region System
         internal bool SystemConfigure()
         {
             SystemConfiguration cfg = new();
@@ -174,12 +175,22 @@ namespace Drill4Net.Configurator.App
             _logger.Info($"Kafka url: {cfg.MiddlewareUrl}");
             return true;
         }
-
+        #endregion
+        #region Target
         internal bool TargetConfigure()
         {
+
             return false;
         }
-
+        #endregion
+        #region CI
+        internal bool CIConfigure()
+        {
+            _outputHelper.WriteLine("\nSorry, CI operations don't implemented yet", AppConstants.COLOR_TEXT);
+            return false;
+        }
+        #endregion
+        #region Common
         private string AskQuestion(string question, string defValue)
         {
             _outputHelper.WriteLine($"\n{question} [{defValue}]: ", AppConstants.COLOR_QUESTION);
@@ -250,11 +261,6 @@ namespace Drill4Net.Configurator.App
                 return true;
             return string.Equals(s, AppConstants.COMMAND_YES, StringComparison.OrdinalIgnoreCase);
         }
-
-        internal bool CIConfigure()
-        {
-            _outputHelper.WriteLine("\nSorry, CI operations don't implemented yet", AppConstants.COLOR_TEXT);
-            return false;
-        }
+        #endregion
     }
 }

@@ -3,6 +3,7 @@ Type: Injector #type as hint
 Target: # some metadata about target
     Name: console-testing-target-file #optional injection name, if empty must be set in agent config
     Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
+    VersionAssemblyName: # Name of main Product assembly - if the version is empty, you can specify with the automatic changing version
 Source: # what and how processing
     Directory: ..\..\Tests\TargetApps\
     Filter: # mask for search files, namespaces, classes...

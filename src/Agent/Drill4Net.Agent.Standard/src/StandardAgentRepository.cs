@@ -109,9 +109,10 @@ namespace Drill4Net.Agent.Standard
                 tree = ReadInjectedTree();
             _injTypes = GetTypesByCallerVersion(tree);
 
-            TargetName = Options.Target?.Name ?? tree.Name;
-            TargetVersion = Options.Target?.Version ??
-                            tree.SearchProductVersion() ??
+            var target = Options.Target;
+            TargetName = target?.Name ?? tree.Name;
+            TargetVersion = target?.Version ??
+                            tree.SearchProductVersion(target?.VersionAssemblyName) ??
                             (StandardAgentInitParameters.LocatedInWorker ? "0.0.0.0-unknown" : FileUtils.GetProductVersion(Assembly.GetCallingAssembly())); //for Agents injected directly to Target
 
             _logger.Info($"Target: [{TargetName}], version: {TargetVersion}");

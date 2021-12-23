@@ -65,7 +65,8 @@ namespace Drill4Net.Agent.Transmitter
             _tree = ReadInjectedTree(); //TODO: remove "not current version framework" data from the tree
 
             TargetName = Options.Target?.Name ?? _tree.Name ?? TrySearchTargetName(); //don't relocate TrySearchTargetName method to the InjectedSolution, it's local specific
-            TargetVersion = Options.Target?.Version ?? _tree.SearchProductVersion() ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
+            var target = Options.Target;
+            TargetVersion = target?.Version ?? _tree.SearchProductVersion(target?.VersionAssemblyName) ?? FileUtils.GetProductVersion(Assembly.GetCallingAssembly()); //but Calling/EntryDir is BAD! It's version of Test Framework for tests
             TargetSession = GetSession();
 
             Log.Flush();
@@ -105,9 +106,10 @@ namespace Drill4Net.Agent.Transmitter
         /// <returns></returns>
         internal string TrySearchTargetName()
         {
-            string entryType = Assembly.GetEntryAssembly()?.EntryPoint?.DeclaringType?.FullName;
+            var entryType = Assembly.GetEntryAssembly()?.EntryPoint?.DeclaringType?.FullName;
             if (entryType == null) // over-reinsurance
-                entryType =_tree.GetAssemblies().First().GetAllTypes().First(a => !a.IsCompilerGenerated)?.BusinessType ?? "unknown";
+                //TODO: implenet more effective algorithm for first assembly
+                entryType = _tree.GetAllAssemblies().First().GetAllTypes().First(a => !a.IsCompilerGenerated)?.BusinessType ?? "unknown";
             return $"$_{entryType.Replace(".", "-")}";
         }
 

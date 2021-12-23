@@ -72,11 +72,20 @@ namespace Drill4Net.Profiling.Tree
         /// to get the version from processed assemblies.
         /// </summary>
         /// <returns></returns>
-        public string SearchProductVersion()
+        public string SearchProductVersion(string productAssemblyName = null)
         {
             if(!string.IsNullOrWhiteSpace(ProductVersion))
                 return ProductVersion;
-            var asms = GetAssemblies().Where(a => a.ProductVersion != "0.0.0.0");
+            var asms = GetAllAssemblies().Where(a => a.ProductVersion != "0.0.0.0");
+            if (!string.IsNullOrWhiteSpace(productAssemblyName))
+            {
+                var productAsm = asms.FirstOrDefault(a => a.Name.Equals(productAssemblyName, StringComparison.CurrentCultureIgnoreCase));
+                if (productAsm != null)
+                {
+                    return productAsm.ProductVersion;
+                }
+            }
+            //
             var entryAsmVersion = asms.FirstOrDefault(a => a.HasEntryPoint)?.ProductVersion;
             if(entryAsmVersion != null)
                 return entryAsmVersion;
