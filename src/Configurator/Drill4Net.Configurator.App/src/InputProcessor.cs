@@ -217,18 +217,44 @@ namespace Drill4Net.Configurator.App
             cfg.Target.Name = name;
 
             // Description
-            string desc = null;
-            def = null;
-            do
-            {
-                if (IsQiut(desc))
-                    return false;
-                desc = AskQuestion("Target's description", def);
-            }
-            while (!CheckStringAnswer(ref desc, def, null, true));
-            cfg.Description = desc;
+            cfg.Description = AskQuestion("Target's description", null);
 
             // Version
+            def = "1";
+            string answer;
+            const string versionQuestion = @"Type of retrieving the target build's version:
+  1. I set the specific version now. It will be stored in metadata file for this target's build during the injection.
+  2. The version will be retrieved from compiled assembly, I will specify the file name. It will be stored in metadata file, too.
+  3. The version will be passed through the CI pipeline using the Test Runner argument (in the case of autotests).
+
+Please make your choice";
+            while (true)
+            {
+                answer = AskQuestion(versionQuestion, def);
+                if (IsQiut(answer))
+                    return false;
+                if(!CheckIntegerAnswer(answer, def, "Please select from 1 to 3", 1, 3, out int choise))
+                    continue;
+                //
+                switch (choise)
+                {
+                    case 1:
+                        cfg.Target.Version = GetTargetVersonFromUser();
+                        break;
+                    case 2:
+                        cfg.Target.VersionAssemblyName = GetVersionAssemblyName();
+                        break;
+                    case 3:
+                        // the version won't stored in tree file (metadata of target's injection) - so,
+                        // if the version will be missed ALSO in Agent's config (it is one more possibility
+                        // to pass this value to the Drill admin side), CI engineer is responsible
+                        // for passing the actual one to the Test Runner by argument.
+                        break;
+                    default:
+                        continue;
+                }
+                break;
+            }
 
             // Filter
 
@@ -239,6 +265,34 @@ namespace Drill4Net.Configurator.App
             // Logs ?
 
             return false;
+        }
+
+        private string GetVersionAssemblyName()
+        {
+            string name = null;
+            do
+            {
+                if (IsQiut(name))
+                    return name;
+                name = AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version", null, false);
+            }
+            while (!CheckFileAnswer(ref name, null, "The assembly name cannot be empty", false));
+            return name;
+        }
+
+        internal string GetTargetVersonFromUser()
+        {
+            while (true)
+            {
+                string version = AskQuestion("Target' version (SemVer format)", null, false);
+                //version = "0.8.240"; // "0.8.240-main+2befca57f1"
+                var pattern = new Regex(@"\d+(\.\d+)+([-](\p{L})+)?([+]([0-9a-zA-Z])+)?");
+                var isMatch = pattern.IsMatch(version);
+                if (isMatch)
+                    return version;
+                _outputHelper.WriteLine("The version format is incorrect. It must be something like that: 0.8.240, or 0.8.240-main, or even 0.8.240-main+2befca57f1",
+                    AppConstants.COLOR_TEXT_WARNING);
+            }
         }
 
         internal string GetDefaultTargetName(string sourceDir)
@@ -332,6 +386,26 @@ namespace Drill4Net.Configurator.App
             }
             _outputHelper.WriteLine("Such directory does not exists.", AppConstants.COLOR_TEXT_WARNING);
             return false;
+        }
+
+        private bool CheckFileAnswer(ref string filename, string defValue, string mess, bool canBeNull)
+        {
+            if (!PrimaryCheckInput(ref filename, defValue, out bool noInput))
+                return false;
+            if (!canBeNull && string.IsNullOrWhiteSpace(filename))
+            {
+                _outputHelper.Write("Filename cannot be empty", true, AppConstants.COLOR_TEXT_WARNING);
+                return false;
+            }
+            if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            {
+                _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
+                return false;
+            }
+            if (noInput)
+                _outputHelper.Write(filename, true, AppConstants.COLOR_ANSWER);
+            return true;
+
         }
 
         private bool PrimaryCheckInput(ref string answer, string defValue, out bool noInput)
