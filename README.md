@@ -37,3 +37,8 @@ Configuring NuGet Package Sources:
 In Visual Studio, go to Tools > Options and then select Package Sources under the NuGet Package Manager.
 
 Choose the Add icon (+), edit the Name - nuget.org, and then https://api.nuget.org/v3/index.json in the Source Click Update after updating the feed link.
+
+
+https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-6.0.101-windows-x64-installer
+
+This release is only compatible with Visual Studio 2022 (v17.0). 
