@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using System.Text.RegularExpressions;
 using Drill4Net.BanderLog;
 
 namespace Drill4Net.Configurator.App
@@ -85,6 +87,7 @@ namespace Drill4Net.Configurator.App
                 return false;
 
             //TODO: view list of all properties
+
             //need to save?
             _outputHelper.WriteLine("\nSave the system configuration? [y]:", AppConstants.COLOR_QUESTION);
             var answer = Console.ReadLine()?.Trim();
@@ -180,8 +183,89 @@ namespace Drill4Net.Configurator.App
         #region Target
         internal bool TargetConfigure()
         {
-            
+            //model Injector config
+            var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, AppConstants.CONFIG_INJECTOR_MODEL);
+            if (!File.Exists(modelCfgPath))
+            {
+                _outputHelper.WriteLine($"Model Injector's config not found: [{modelCfgPath}]", AppConstants.COLOR_ERROR);
+                return false;
+            }
+            var cfg = _rep.ReadInjectorOptions(modelCfgPath);
+
+            // Source dir
+            string sourceDir = null;
+            string def = null;
+            do
+            {
+                if (IsQiut(sourceDir))
+                    return false;
+                sourceDir = AskQuestion("Target directory (compiled assemblies)", def, false);
+            }
+            while (!CheckDirectoryAnswer(ref sourceDir, def, true));
+            cfg.Source.Directory = sourceDir;
+
+            // Name
+            string name = null;
+            def = GetDefaultTargetName(sourceDir);
+            do
+            {
+                if (IsQiut(name))
+                    return false;
+                name = AskQuestion("Target's name (as Agent ID). It must be the same for the Product and its different builds", def);
+            }
+            while (!CheckStringAnswer(ref name, def, "Target's name cannot be empty", false));
+            cfg.Target.Name = name;
+
+            // Description
+            string desc = null;
+            def = null;
+            do
+            {
+                if (IsQiut(desc))
+                    return false;
+                desc = AskQuestion("Target's description", def);
+            }
+            while (!CheckStringAnswer(ref desc, def, null, true));
+            cfg.Description = desc;
+
+            // Version
+
+            // Filter
+
+            // Destination dir
+
+            // Transmitter dir
+
+            // Logs ?
+
             return false;
+        }
+
+        internal string GetDefaultTargetName(string sourceDir)
+        {
+            if (string.IsNullOrWhiteSpace(sourceDir))
+                throw new ArgumentNullException(nameof(sourceDir));
+            var name = ReplaceSpecialSymbolsForTargetName(new DirectoryInfo(sourceDir).Name);
+
+            //split name by "-" for Camel notation
+            var sb = new StringBuilder();
+            for (int i = 0; i < name.Length; i++)
+            {
+                var ch = name[i];
+                if (char.IsUpper(ch) && i > 0 && name[i-1] != '-')
+                    sb.Append('-');
+                sb.Append(ch);
+            }
+            return sb.ToString().ToLower();
+        }
+
+        internal string ReplaceSpecialSymbolsForTargetName(string name)
+        {
+            name = name.Replace(" ", "-");
+            name = Regex.Replace(name, @"[^\w\d]", "-");
+            while(name.Contains("--")) //Guanito - TODO: regex
+                name = name.Replace("--", "-");
+            return name;
         }
         #endregion
         #region CI
@@ -192,9 +276,11 @@ namespace Drill4Net.Configurator.App
         }
         #endregion
         #region Common
-        private string AskQuestion(string question, string defValue)
+        private string AskQuestion(string question, string defValue, bool showDefVal = true)
         {
-            _outputHelper.WriteLine($"\n{question} [{defValue}]: ", AppConstants.COLOR_QUESTION);
+            if (showDefVal)
+                question = $"{question} [{defValue}]";
+            _outputHelper.WriteLine($"\n{question}: ", AppConstants.COLOR_QUESTION);
             var answer = Console.ReadLine()?.Trim() ?? defValue;
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");
             return answer ?? defValue;
@@ -233,7 +319,12 @@ namespace Drill4Net.Configurator.App
         {
             if (!PrimaryCheckInput(ref directory, defValue, out bool noInput))
                 return false;
-            if (!string.IsNullOrWhiteSpace(directory) && (!mustExist || (mustExist && Directory.Exists(directory))))
+            if (mustExist && string.IsNullOrWhiteSpace(directory))
+            {
+                _outputHelper.Write("Directory cannot be empty and must exist", true, AppConstants.COLOR_TEXT_WARNING);
+                return false;
+            }
+            if (!mustExist || (mustExist && Directory.Exists(directory)))
             {
                 if(noInput)
                     _outputHelper.Write(directory, true, AppConstants.COLOR_ANSWER);
