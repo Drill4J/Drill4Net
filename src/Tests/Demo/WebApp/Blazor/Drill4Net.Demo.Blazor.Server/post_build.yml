@@ -17,7 +17,7 @@ Source: # what and how processing
         Folders:
           - ref
 Destination: # where copying injected assemblies
-    Directory: # or full directory...
+    Directory: # Or a specific directory (absolute or relative to the Injector)...
     FolderPostfix: Injected.Demo #...or prefix to source dir
 Profiler: # data collector/processor in separate assembly
     Name: Test agent # name exactly for agent subsystem

@@ -21,7 +21,7 @@ Source: # what and how processing
         Files:
           - Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll
 Destination: # where copying injected assemblies
-    Directory: # or full directory...
+    Directory: # Or a specific directory (absolute or relative to the Injector)...
     FolderPostfix: Injected #...or prefix to source dir
 Proxy: # the injecting for transfer data to profiler
     Class: ProfilerProxy

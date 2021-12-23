@@ -86,14 +86,15 @@ namespace Drill4Net.Configurator.App
 
             //TODO: view list of all properties
             //need to save?
-            _outputHelper.WriteLine($"\nSave the system configuration? [y]:", AppConstants.COLOR_QUESTION);
+            _outputHelper.WriteLine("\nSave the system configuration? [y]:", AppConstants.COLOR_QUESTION);
             var answer = Console.ReadLine()?.Trim();
             var yes = IsYes(answer);
             if (yes)
             {
                 _outputHelper.Write("YES", true, AppConstants.COLOR_DEFAULT);
                 _rep.SaveSystemConfiguration(cfg);
-                _outputHelper.WriteLine("System options are saved. You can read and edit the full list of properties in the corresponding configuration files.", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine($"System options are saved. {AppConstants.MESSAGE_PROPERTIES_EDIT_WARNING}",
+                    AppConstants.COLOR_TEXT);
             }
             else
             {
@@ -179,7 +180,7 @@ namespace Drill4Net.Configurator.App
         #region Target
         internal bool TargetConfigure()
         {
-
+            
             return false;
         }
         #endregion

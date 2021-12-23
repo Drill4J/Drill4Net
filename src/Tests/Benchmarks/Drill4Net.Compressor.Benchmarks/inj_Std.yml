@@ -18,7 +18,7 @@ Source: # what and how processing
         Folders:
           - ref # folder's name
 Destination: # where copying injected assemblies
-    Directory: # or full directory...
+    Directory: # Or a specific directory (absolute or relative to the Injector)...
     FolderPostfix: Injected #...or prefix to source dir
 Proxy: # the injecting for transfer data to profiler
   Class: ProfilerProxy

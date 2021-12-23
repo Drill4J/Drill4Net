@@ -5,7 +5,7 @@ Target: # some metadata about target
     Version:  # version of whole Product, can be empty and can be overridden by Agent's configs
     VersionAssemblyName: # Name of main Product assembly - if the version is empty, you can specify with the automatic changing version
 Source: # what and how processing
-    Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit\
+    Directory: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit\ # relative path resolved relative to the Injector
     Filter: # mask for search files, namespaces, classes...
       Includes:
         Directories:
@@ -18,7 +18,7 @@ Source: # what and how processing
         Files:
           - Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.dll
 Destination: # where copying injected assemblies
-    Directory: # or full directory...
+    Directory: # Or a specific directory (absolute or relative to the Injector)...
     FolderPostfix: Injected #...or prefix to source dir
 Proxy: # the injecting for transfer data to profiler
     Class: ProfilerProxy
