@@ -19,6 +19,25 @@ namespace Drill4Net.Configurator
 
         /***********************************************************************************/
 
+        public void SaveSystemOptions(SystemOptions opts)
+        {
+            //Agent's options
+            var agCfgPath = Path.Combine(Options.InstallDirectory, CoreConstants.CONFIG_NAME_DEFAULT);
+            var agentOpts = ReadAgentOptions(agCfgPath);
+            agentOpts.Admin.Url = opts.AdminUrl;
+            agentOpts.PluginDir = opts.AgentPluginDirectory;
+            WriteAgentOptions(agentOpts, agCfgPath);
+
+            // Transmitter opts
+            var transCfgPath = Path.Combine(Options.TransmitterDirectory, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            var transOpts = ReadMessagerOptions(transCfgPath);
+
+            transOpts.Servers.Clear();
+            transOpts.Servers.Add(opts.MiddlewareUrl);
+
+            WriteMessagerOptions(transOpts, transCfgPath);
+        }
+
         public AgentOptions ReadAgentOptions(string cfgPath)
         {
             return ReadOptions<AgentOptions>(cfgPath);

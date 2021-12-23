@@ -43,7 +43,7 @@ namespace Drill4Net.Agent.Transmitter.Debug
             {
                 var err = ex.ToString();
                 _logger.Fatal(err);
-                outHelper.WriteLine(err, ConfiguratorAppConstants.COLOR_ERROR);
+                outHelper.WriteLine(err, AppConstants.COLOR_ERROR);
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Drill4Net.BanderLog;
-using Drill4Net.Common;
 
 namespace Drill4Net.Configurator.App
 {
@@ -46,11 +45,11 @@ namespace Drill4Net.Configurator.App
         {
             while (true)
             {
-                _outputHelper.WriteLine("\nCommand:", ConfiguratorAppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine("\nCommand:", AppConstants.COLOR_TEXT);
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
-                if (string.Equals(input, ConfiguratorAppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(input, AppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase))
                     return;
                 try
                 {
@@ -58,7 +57,7 @@ namespace Drill4Net.Configurator.App
                 }
                 catch (Exception ex)
                 {
-                    _outputHelper.WriteLine($"error -> {ex.Message}", ConfiguratorAppConstants.COLOR_ERROR);
+                    _outputHelper.WriteLine($"error -> {ex.Message}", AppConstants.COLOR_ERROR);
                 }
             }
         }
@@ -69,25 +68,42 @@ namespace Drill4Net.Configurator.App
             return input switch
             {
                 "?" or "help" => _outputHelper.PrintMenu(),
-                ConfiguratorAppConstants.COMMAND_SYS => SystemConfigure(),
-                ConfiguratorAppConstants.COMMAND_TARGET => TargetConfigure(),
-                ConfiguratorAppConstants.COMMAND_CI => CIConfigure(),
+                AppConstants.COMMAND_SYS => SystemConfigure(),
+                AppConstants.COMMAND_TARGET => TargetConfigure(),
+                AppConstants.COMMAND_CI => CIConfigure(),
                 _ => _outputHelper.PrintMenu(),
             };
         }
 
         internal bool SystemConfigure()
         {
-            if (!ConfigAdmin(_rep.Options))
+            SystemOptions outOpts = new();
+            if (!ConfigAdmin(_rep.Options, outOpts))
                 return false;
-            if(!ConfigMiddleware(_rep.Options))
+            if(!ConfigMiddleware(_rep.Options, outOpts))
                 return false;
-            _outputHelper.WriteLine("\nSystem options are retrieved", ConfiguratorAppConstants.COLOR_TEXT);
-            return true;
+
+            //TODO: view list of all properties
+            //need to save?
+            _outputHelper.WriteLine($"\nSave the system configuration? [y]:", AppConstants.COLOR_QUESTION);
+            var answer = Console.ReadLine()?.Trim();
+            var yes = IsYes(answer);
+            if (yes)
+            {
+                _outputHelper.Write("YES", true, AppConstants.COLOR_DEFAULT);
+                _rep.SaveSystemOptions(outOpts);
+                _outputHelper.WriteLine("System options are saved. You can read and edit the full list of properties in the corresponding configuration files.", AppConstants.COLOR_TEXT);
+            }
+            else
+            {
+                _outputHelper.Write("NO", true, AppConstants.COLOR_TEXT_WARNING);
+            }
+            return yes;
         }
 
-        internal bool ConfigAdmin(ConfiguratorOptions opts)
+        internal bool ConfigAdmin(ConfiguratorOptions opts, SystemOptions outOpts)
         {
+            //Drill host
             string host = null;
             var def = opts.AdminHost;
             do
@@ -97,7 +113,8 @@ namespace Drill4Net.Configurator.App
                 host = AskQuestion("Drill service host", def);
             }
             while (!CheckStringAnswer(ref host, def, "The service host address cannot be empty"));
-            //
+            
+            // Drill port
             int port;
             def = opts.AdminPort.ToString();
             string portS = null;
@@ -109,9 +126,10 @@ namespace Drill4Net.Configurator.App
             }
             while (!CheckIntegerAnswer(portS, def, "The service port must be from 255 to 65535", 255, 65535, out port));
             //
-            var url = $"{host}:{port}";
-            _logger.Info($"Admin url: {url}");
-            //
+            outOpts.AdminUrl = $"{host}:{port}";
+            _logger.Info($"Admin url: {outOpts.AdminUrl }");
+            
+            // agent's plugin dir
             string plugDir = null;
             def = opts.PluginDirectory;
             do
@@ -121,19 +139,15 @@ namespace Drill4Net.Configurator.App
                 plugDir = AskQuestion("Agent plugin directory", def);
             }
             while (!CheckDirectoryAnswer(ref plugDir, def, true));
+            outOpts.AgentPluginDirectory = plugDir;
             _logger.Info($"Plugin dir: {plugDir}");
-            //
-            var agCfgPath = Path.Combine(opts.InstallDirectory, CoreConstants.CONFIG_NAME_DEFAULT);
-            var agentOpts = _rep.ReadAgentOptions(agCfgPath);
-            agentOpts.Admin.Url = url;
-            agentOpts.PluginDir = plugDir;
-            _rep.WriteAgentOptions(agentOpts, agCfgPath);
             //
             return true;
         }
 
-        internal bool ConfigMiddleware(ConfiguratorOptions opts)
+        internal bool ConfigMiddleware(ConfiguratorOptions opts, SystemOptions outOpts)
         {
+            // Kafka host
             string host = null;
             var def = opts.MiddlewareHost;
             do
@@ -143,7 +157,8 @@ namespace Drill4Net.Configurator.App
                 host = AskQuestion("Kafka host", def);
             }
             while (!CheckStringAnswer(ref host, def, "The Kafka host address cannot be empty"));
-            //
+            
+            // Kafka port
             int port;
             def = opts.MiddlewarePort.ToString();
             string portS = null;
@@ -155,17 +170,8 @@ namespace Drill4Net.Configurator.App
             }
             while (!CheckIntegerAnswer(portS, def, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
             //
-            var url = $"{host}:{port}";
-            _logger.Info($"Kafka url: {url}");
-            //
-            var transCfgPath = Path.Combine(opts.TransmitterDirectory, CoreConstants.CONFIG_NAME_MIDDLEWARE);
-            var transOpts = _rep.ReadMessagerOptions(transCfgPath);
-
-            transOpts.Servers.Clear();
-            transOpts.Servers.Add(url);
-
-            _rep.WriteMessagerOptions(transOpts, transCfgPath);
-            //
+            outOpts.MiddlewareUrl = $"{host}:{port}";
+            _logger.Info($"Kafka url: {outOpts.MiddlewareUrl}");
             return true;
         }
 
@@ -176,7 +182,7 @@ namespace Drill4Net.Configurator.App
 
         private string AskQuestion(string question, string defValue)
         {
-            _outputHelper.WriteLine($"\n{question} [{defValue}]: ", ConfiguratorAppConstants.COLOR_QUESTION);
+            _outputHelper.WriteLine($"\n{question} [{defValue}]: ", AppConstants.COLOR_QUESTION);
             var answer = Console.ReadLine()?.Trim() ?? defValue;
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");
             return answer ?? defValue;
@@ -189,10 +195,10 @@ namespace Drill4Net.Configurator.App
             if (canBeNull || !string.IsNullOrWhiteSpace(answer))
             {
                 if (noInput)
-                    _outputHelper.Write(answer, true, ConfiguratorAppConstants.COLOR_ANSWER);
+                    _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER);
                 return true;
             }
-            _outputHelper.WriteLine(mess, ConfiguratorAppConstants.COLOR_TEXT_WARNING);
+            _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
@@ -204,10 +210,10 @@ namespace Drill4Net.Configurator.App
             if (int.TryParse(answer, out val) && val >= min && val <= max)
             {
                 if (noInput)
-                    _outputHelper.Write(answer, true, ConfiguratorAppConstants.COLOR_ANSWER);
+                    _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER);
                 return true;
             }
-            _outputHelper.WriteLine(mess, ConfiguratorAppConstants.COLOR_TEXT_WARNING);
+            _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
@@ -218,10 +224,10 @@ namespace Drill4Net.Configurator.App
             if (!string.IsNullOrWhiteSpace(directory) && (!mustExist || (mustExist && Directory.Exists(directory))))
             {
                 if(noInput)
-                    _outputHelper.Write(directory, true, ConfiguratorAppConstants.COLOR_ANSWER);
+                    _outputHelper.Write(directory, true, AppConstants.COLOR_ANSWER);
                 return true;
             }
-            _outputHelper.WriteLine("Such directory does not exists.", ConfiguratorAppConstants.COLOR_TEXT_WARNING);
+            _outputHelper.WriteLine("Such directory does not exists.", AppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
@@ -235,12 +241,19 @@ namespace Drill4Net.Configurator.App
 
         private bool IsQiut(string s)
         {
-            return string.Equals(s, ConfiguratorAppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(s, AppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool IsYes(string s, bool noInputIsYes = true)
+        {
+            if (s == "" && noInputIsYes)
+                return true;
+            return string.Equals(s, AppConstants.COMMAND_YES, StringComparison.OrdinalIgnoreCase);
         }
 
         internal bool CIConfigure()
         {
-            _outputHelper.WriteLine("\nSorry, CI operations don't implemented yet", ConfiguratorAppConstants.COLOR_TEXT);
+            _outputHelper.WriteLine("\nSorry, CI operations don't implemented yet", AppConstants.COLOR_TEXT);
             return false;
         }
     }
