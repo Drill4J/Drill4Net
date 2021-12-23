@@ -77,10 +77,10 @@ namespace Drill4Net.Configurator.App
 
         internal bool SystemConfigure()
         {
-            SystemOptions outOpts = new();
-            if (!ConfigAdmin(_rep.Options, outOpts))
+            SystemConfiguration cfg = new();
+            if (!ConfigAdmin(_rep.Options, cfg))
                 return false;
-            if(!ConfigMiddleware(_rep.Options, outOpts))
+            if(!ConfigMiddleware(_rep.Options, cfg))
                 return false;
 
             //TODO: view list of all properties
@@ -91,7 +91,7 @@ namespace Drill4Net.Configurator.App
             if (yes)
             {
                 _outputHelper.Write("YES", true, AppConstants.COLOR_DEFAULT);
-                _rep.SaveSystemOptions(outOpts);
+                _rep.SaveSystemConfiguration(cfg);
                 _outputHelper.WriteLine("System options are saved. You can read and edit the full list of properties in the corresponding configuration files.", AppConstants.COLOR_TEXT);
             }
             else
@@ -101,7 +101,7 @@ namespace Drill4Net.Configurator.App
             return yes;
         }
 
-        internal bool ConfigAdmin(ConfiguratorOptions opts, SystemOptions outOpts)
+        internal bool ConfigAdmin(ConfiguratorOptions opts, SystemConfiguration cfg)
         {
             //Drill host
             string host = null;
@@ -126,8 +126,8 @@ namespace Drill4Net.Configurator.App
             }
             while (!CheckIntegerAnswer(portS, def, "The service port must be from 255 to 65535", 255, 65535, out port));
             //
-            outOpts.AdminUrl = $"{host}:{port}";
-            _logger.Info($"Admin url: {outOpts.AdminUrl }");
+            cfg.AdminUrl = $"{host}:{port}";
+            _logger.Info($"Admin url: {cfg.AdminUrl }");
             
             // agent's plugin dir
             string plugDir = null;
@@ -139,13 +139,13 @@ namespace Drill4Net.Configurator.App
                 plugDir = AskQuestion("Agent plugin directory", def);
             }
             while (!CheckDirectoryAnswer(ref plugDir, def, true));
-            outOpts.AgentPluginDirectory = plugDir;
+            cfg.AgentPluginDirectory = plugDir;
             _logger.Info($"Plugin dir: {plugDir}");
             //
             return true;
         }
 
-        internal bool ConfigMiddleware(ConfiguratorOptions opts, SystemOptions outOpts)
+        internal bool ConfigMiddleware(ConfiguratorOptions opts, SystemConfiguration cfg)
         {
             // Kafka host
             string host = null;
@@ -170,8 +170,8 @@ namespace Drill4Net.Configurator.App
             }
             while (!CheckIntegerAnswer(portS, def, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
             //
-            outOpts.MiddlewareUrl = $"{host}:{port}";
-            _logger.Info($"Kafka url: {outOpts.MiddlewareUrl}");
+            cfg.MiddlewareUrl = $"{host}:{port}";
+            _logger.Info($"Kafka url: {cfg.MiddlewareUrl}");
             return true;
         }
 
