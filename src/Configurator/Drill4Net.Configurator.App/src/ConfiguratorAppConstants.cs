@@ -20,6 +20,7 @@
         internal const string COMMAND_TARGET_DELETE = "delete";
         internal const string COMMAND_TARGET_ACTIVATE = "activate";
 
+        internal const string COMMAND_QUIT = "q";
         internal const string COMMAND_NEW = "new";
         internal const string COMMAND_EDIT = "edit";
         internal const string COMMAND_VIEW = "view";

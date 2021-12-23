@@ -50,7 +50,7 @@ namespace Drill4Net.Configurator.App
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
-                if (input == "q" || input == "Q")
+                if (string.Equals(input, ConfiguratorAppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase))
                     return;
                 try
                 {
@@ -88,19 +88,23 @@ namespace Drill4Net.Configurator.App
 
         internal bool ConfigAdmin(ConfiguratorOptions opts)
         {
-            string host;
+            string host = null;
             var def = opts.AdminHost;
             do
             {
+                if (IsQiut(host))
+                    return false;
                 host = AskQuestion("Drill service host", def);
             }
             while (!CheckStringAnswer(ref host, def, "The service host address cannot be empty"));
             //
             int port;
             def = opts.AdminPort.ToString();
-            string portS;
+            string portS = null;
             do
             {
+                if (IsQiut(portS))
+                    return false;
                 portS = AskQuestion("Drill service port", def);
             }
             while (!CheckIntegerAnswer(portS, def, "The service port must be from 255 to 65535", 255, 65535, out port));
@@ -108,10 +112,12 @@ namespace Drill4Net.Configurator.App
             var url = $"{host}:{port}";
             _logger.Info($"Admin url: {url}");
             //
-            string plugDir;
+            string plugDir = null;
             def = opts.PluginDirectory;
             do
             {
+                if (IsQiut(plugDir))
+                    return false;
                 plugDir = AskQuestion("Agent plugin directory", def);
             }
             while (!CheckDirectoryAnswer(ref plugDir, def, true));
@@ -128,19 +134,23 @@ namespace Drill4Net.Configurator.App
 
         internal bool ConfigMiddleware(ConfiguratorOptions opts)
         {
-            string host;
+            string host = null;
             var def = opts.MiddlewareHost;
             do
             {
+                if(IsQiut(host))
+                    return false;
                 host = AskQuestion("Kafka host", def);
             }
             while (!CheckStringAnswer(ref host, def, "The Kafka host address cannot be empty"));
             //
             int port;
             def = opts.MiddlewarePort.ToString();
-            string portS;
+            string portS = null;
             do
             {
+                if (IsQiut(portS))
+                    return false;
                 portS = AskQuestion("Kafka port", def);
             }
             while (!CheckIntegerAnswer(portS, def, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
@@ -149,7 +159,7 @@ namespace Drill4Net.Configurator.App
             _logger.Info($"Kafka url: {url}");
             //
             var transCfgPath = Path.Combine(opts.TransmitterDirectory, CoreConstants.CONFIG_NAME_MIDDLEWARE);
-            var transOpts = _rep.ReadMessagerOptions(transCfgPath); //Transmitter uses agent's options, too
+            var transOpts = _rep.ReadMessagerOptions(transCfgPath);
 
             transOpts.Servers.Clear();
             transOpts.Servers.Add(url);
@@ -174,9 +184,8 @@ namespace Drill4Net.Configurator.App
 
         private bool CheckStringAnswer(ref string answer, string defValue, string mess, bool canBeNull = false)
         {
-            var noInput = answer?.Length == 0; //""
-            if (noInput)
-                answer = defValue;
+            if (!PrimaryCheckInput(ref answer, defValue, out bool noInput))
+                return false;
             if (canBeNull || !string.IsNullOrWhiteSpace(answer))
             {
                 if (noInput)
@@ -189,9 +198,9 @@ namespace Drill4Net.Configurator.App
 
         private bool CheckIntegerAnswer(string answer, string defValue, string mess, int min, int max, out int val)
         {
-            var noInput = answer?.Length == 0; //""
-            if (noInput)
-                answer = defValue;
+            val = 0;
+            if(!PrimaryCheckInput(ref answer, defValue, out bool noInput))
+                return false;
             if (int.TryParse(answer, out val) && val >= min && val <= max)
             {
                 if (noInput)
@@ -204,9 +213,8 @@ namespace Drill4Net.Configurator.App
 
         private bool CheckDirectoryAnswer(ref string directory, string defValue, bool mustExist = true)
         {
-            var noInput = directory?.Length == 0; //""
-            if (noInput)
-                directory = defValue;
+            if (!PrimaryCheckInput(ref directory, defValue, out bool noInput))
+                return false;
             if (!string.IsNullOrWhiteSpace(directory) && (!mustExist || (mustExist && Directory.Exists(directory))))
             {
                 if(noInput)
@@ -215,6 +223,19 @@ namespace Drill4Net.Configurator.App
             }
             _outputHelper.WriteLine("Such directory does not exists.", ConfiguratorAppConstants.COLOR_TEXT_WARNING);
             return false;
+        }
+
+        private bool PrimaryCheckInput(ref string answer, string defValue, out bool noInput)
+        {
+            noInput = answer?.Length == 0; //""
+            if (noInput)
+                answer = defValue;
+            return !IsQiut(answer);
+        }
+
+        private bool IsQiut(string s)
+        {
+            return string.Equals(s, ConfiguratorAppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase);
         }
 
         internal bool CIConfigure()
