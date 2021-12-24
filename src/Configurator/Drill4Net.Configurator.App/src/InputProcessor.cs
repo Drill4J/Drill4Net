@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Repository;
+using Drill4Net.Configuration;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator.App
 {
@@ -114,7 +118,7 @@ namespace Drill4Net.Configurator.App
             var def = opts.AdminHost;
             do
             {
-                if (IsQiut(host))
+                if (IsQuit(host))
                     return false;
                 host = AskQuestion("Drill service host", def);
             }
@@ -126,7 +130,7 @@ namespace Drill4Net.Configurator.App
             string portS = null;
             do
             {
-                if (IsQiut(portS))
+                if (IsQuit(portS))
                     return false;
                 portS = AskQuestion("Drill service port", def);
             }
@@ -140,7 +144,7 @@ namespace Drill4Net.Configurator.App
             def = opts.PluginDirectory;
             do
             {
-                if (IsQiut(plugDir))
+                if (IsQuit(plugDir))
                     return false;
                 plugDir = AskQuestion("Agent plugin directory", def);
             }
@@ -158,7 +162,7 @@ namespace Drill4Net.Configurator.App
             var def = opts.MiddlewareHost;
             do
             {
-                if(IsQiut(host))
+                if(IsQuit(host))
                     return false;
                 host = AskQuestion("Kafka host", def);
             }
@@ -170,7 +174,7 @@ namespace Drill4Net.Configurator.App
             string portS = null;
             do
             {
-                if (IsQiut(portS))
+                if (IsQuit(portS))
                     return false;
                 portS = AskQuestion("Kafka port", def);
             }
@@ -198,7 +202,7 @@ namespace Drill4Net.Configurator.App
             string def = null;
             do
             {
-                if (IsQiut(sourceDir))
+                if (IsQuit(sourceDir))
                     return false;
                 sourceDir = AskQuestion("Target's directory (compiled assemblies). It can be full or relative (for the Injector program)", def, false);
             }
@@ -210,7 +214,7 @@ namespace Drill4Net.Configurator.App
             def = GetDefaultTargetName(sourceDir);
             do
             {
-                if (IsQiut(name))
+                if (IsQuit(name))
                     return false;
                 name = AskQuestion("Target's name (as Agent ID). It must be the same for the Product and its different builds", def);
             }
@@ -233,7 +237,7 @@ Please make your choice";
             while (true)
             {
                 answer = AskQuestion(versionQuestion, def);
-                if (IsQiut(answer))
+                if (IsQuit(answer))
                     return false;
                 if(!CheckIntegerAnswer(answer, def, "Please select from 1 to 3", 1, 3, out int choice))
                     continue;
@@ -285,7 +289,7 @@ The filters:
        {AppConstants.FILTER_TYPE_NAMESPACE}: reg: ^Drill4Net\.([\w-]+\.)+[\w]*Tests$
   - By class fullname (with namespace). Example:
        {AppConstants.FILTER_TYPE_TYPE}: Drill4Net.Target.Common.ModelTarget
-  - By attribute of class. Example:
+  - By attribute of type. Example:
        {AppConstants.FILTER_TYPE_ATTRIBUTE}: Drill4Net.Target.SuperAttribute (it is full name of its type)
 
 Hint: the regex must be located only in a sole filter tag (one expression in one tag).
@@ -314,7 +318,7 @@ Please make your choice";
             while (true)
             {
                 answer = AskQuestion(destQuestion, def);
-                if (IsQiut(answer))
+                if (IsQuit(answer))
                     return false;
                 if (!CheckIntegerAnswer(answer, def, "Please select from 1 to 2", 1, 2, out int choice))
                     continue;
@@ -323,13 +327,13 @@ Please make your choice";
                 {
                     case 1:
                         var postfix = AskDestinationPostfix();
-                        if (postfix == null)
+                        if (IsQuit(postfix))
                             return false;
                         cfg.Destination.FolderPostfix = postfix;
                         break;
                     case 2:
-                        var destDir = AskDestinationDir();
-                        if (destDir == null)
+                        var destDir = AskDirectory("Destination's directory (processed assemblies). It may not exist yet", null, false, false);
+                        if (IsQuit(destDir))
                             return false;
                         cfg.Destination.Directory = destDir;
                         break;
@@ -340,25 +344,13 @@ Please make your choice";
             }
             #endregion
 
-            // Transmitter dir
+            // Logs
+            if (!AddLogFile(cfg, "Injector"))
+                return false;
+            //
 
-            // Logs ?
-
-            return false;
-        }
-
-        private string AskDestinationDir()
-        {
-            string destDir = null;
-            string def = null;
-            do
-            {
-                if (IsQiut(destDir))
-                    return null;
-                destDir = AskQuestion("Destination's directory (processed assemblies). It may not exist yet", def, false);
-            }
-            while (!CheckDirectoryAnswer(ref destDir, def, false));
-            return destDir;
+            //
+            return true;
         }
 
         private string AskDestinationPostfix()
@@ -367,7 +359,7 @@ Please make your choice";
             string def = "Injected";
             do
             {
-                if (IsQiut(postfix))
+                if (IsQuit(postfix))
                     return null;
                 postfix = AskQuestion("Postfix to original directory", def);
             }
@@ -455,7 +447,7 @@ Please make your choice";
             string name = null;
             do
             {
-                if (IsQiut(name))
+                if (IsQuit(name))
                     return name;
                 name = AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version", null, false);
             }
@@ -520,14 +512,94 @@ Please make your choice";
             _outputHelper.WriteLine($"\n{question}: ", AppConstants.COLOR_QUESTION);
             var answer = Console.ReadLine()?.Trim() ?? defValue;
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");
-            return answer ?? defValue;
+            return answer == "" ? defValue : answer;
         }
 
-        private bool CheckStringAnswer(ref string answer, string defValue, string mess, bool canBeNull = false)
+        private string AskDirectory(string question, string defValue, bool mustExists, bool showDefVal = true)
+        {
+            string destDir = null;
+            do
+            {
+                if (IsQuit(destDir))
+                    return destDir;
+                destDir = AskQuestion(question, defValue, showDefVal);
+            }
+            while (!CheckDirectoryAnswer(ref destDir, defValue, mustExists));
+            return destDir;
+        }
+
+        private string AskFilePath(string question, string defValue, bool mustExists, bool showDefVal = true)
+        {
+            string filePath = null;
+            while(true)
+            {
+                if (IsQuit(filePath))
+                    return filePath;
+                filePath = AskQuestion(question, defValue, showDefVal);
+                string answer = filePath;
+                if (!CheckStringAnswer(ref answer, null, "File path cannot be empty", true))
+                    continue;
+                var dir = Path.GetDirectoryName(filePath);
+                if (!CheckDirectoryAnswer(ref dir, defValue, mustExists))
+                    continue;
+                var fileName = Path.GetFileName(filePath);
+                if (!CheckFileNameAnswer(ref fileName, defValue, null, !mustExists))
+                    continue;
+                break;
+            }
+            return filePath;
+        }
+
+        /// <summary>
+        /// Add file log options to the config.
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="programName">Name of program</param>
+        /// <returns>If false, it is the need to exit from this setup.</returns>
+        private bool AddLogFile(InjectorOptions cfg, string programName = "program")
+        {
+            var answer = AskQuestion($"The {programName} logs will be output to the its console and to a file in the its {LoggerHelper.LOG_FOLDER} folder. Add an additional parallel log file?", "n");
+            if (IsYes(answer))
+            {
+                var logPath = AskFilePath("File path", null, false, false);
+                if (IsQuit(logPath))
+                    return false;
+                //
+                var logLevel = LogLevel.Debug;
+                while (true)
+                {
+                    //log level
+                    var logTypeS = AskQuestion("Set the log level", logLevel.ToString());
+                    if (IsQuit(logPath))
+                        return false;
+                    logTypeS = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(logTypeS);
+                    if (Enum.TryParse(typeof(LogLevel), logTypeS, out object logType))
+                    {
+                        logLevel = (LogLevel)logType;
+                        break;
+                    }
+                    _outputHelper.WriteLine($"Unknown type of log level: {logTypeS}", AppConstants.COLOR_TEXT_WARNING);
+                }
+                //
+                if (cfg.Logs == null)
+                    cfg.Logs = new();
+                var logData = new LogData()
+                {
+                    Disabled = false,
+                    Type = LogSinkType.File,
+                    Path = logPath,
+                    Level = logLevel,
+                };
+                cfg.Logs.Add(logData);
+            }
+            return true;
+        }
+
+        private bool CheckStringAnswer(ref string answer, string defValue, string mess, bool canBeEmpty = false)
         {
             if (!PrimaryCheckInput(ref answer, defValue, out bool noInput))
                 return false;
-            if (canBeNull || !string.IsNullOrWhiteSpace(answer))
+            if (canBeEmpty || !string.IsNullOrWhiteSpace(answer))
             {
                 if (noInput)
                     _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER);
@@ -565,7 +637,7 @@ Please make your choice";
             {
                 if (directory?.IndexOfAny(Path.GetInvalidPathChars()) != -1)
                 {
-                    _outputHelper.WriteLine("The directory contains invalid characters.", AppConstants.COLOR_TEXT_WARNING);
+                    _outputHelper.WriteLine("The directory is invalid.", AppConstants.COLOR_TEXT_WARNING);
                     return false;
                 }
                 //TODO: check for proper dir path itself (cross-platform!)
@@ -574,21 +646,23 @@ Please make your choice";
                     _outputHelper.Write(directory, true, AppConstants.COLOR_ANSWER);
                 return true;
             }
-            _outputHelper.WriteLine("Such directory does not exists.", AppConstants.COLOR_TEXT_WARNING);
+            _outputHelper.WriteLine("Directory does not exists.", AppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
-        private bool CheckFileNameAnswer(ref string filename, string defValue, string mess, bool canBeNull)
+        private bool CheckFileNameAnswer(ref string filename, string defValue, string mess, bool canBeEmpty)
         {
             if (!PrimaryCheckInput(ref filename, defValue, out bool noInput))
                 return false;
-            if (!canBeNull && string.IsNullOrWhiteSpace(filename))
+            if (!canBeEmpty && string.IsNullOrWhiteSpace(filename))
             {
                 _outputHelper.Write("Filename cannot be empty", true, AppConstants.COLOR_TEXT_WARNING);
                 return false;
             }
             if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
             {
+                if (string.IsNullOrWhiteSpace(mess))
+                    mess = "File name contains invalid symbols";
                 _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
                 return false;
             }
@@ -603,10 +677,10 @@ Please make your choice";
             noInput = answer?.Length == 0; //""
             if (noInput)
                 answer = defValue;
-            return !IsQiut(answer);
+            return !IsQuit(answer);
         }
 
-        private bool IsQiut(string s)
+        private bool IsQuit(string s)
         {
             return string.Equals(s, AppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase);
         }
