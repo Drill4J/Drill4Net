@@ -184,7 +184,7 @@ namespace Drill4Net.Configurator.App
         #region Target
         internal bool TargetConfigure()
         {
-            //model Injector config
+            #region Init Injector config
             var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, AppConstants.CONFIG_INJECTOR_MODEL);
             if (!File.Exists(modelCfgPath))
             {
@@ -192,20 +192,20 @@ namespace Drill4Net.Configurator.App
                 return false;
             }
             var cfg = _rep.ReadInjectorOptions(modelCfgPath);
-
-            // Source dir
+            #endregion
+            #region Source dir
             string sourceDir = null;
             string def = null;
             do
             {
                 if (IsQiut(sourceDir))
                     return false;
-                sourceDir = AskQuestion("Target directory (compiled assemblies)", def, false);
+                sourceDir = AskQuestion("Target's directory (compiled assemblies). It can be full or relative (for the Injector program)", def, false);
             }
             while (!CheckDirectoryAnswer(ref sourceDir, def, true));
             cfg.Source.Directory = sourceDir;
-
-            // Name
+            #endregion
+            #region Name
             string name = null;
             def = GetDefaultTargetName(sourceDir);
             do
@@ -216,11 +216,12 @@ namespace Drill4Net.Configurator.App
             }
             while (!CheckStringAnswer(ref name, def, "Target's name cannot be empty", false));
             cfg.Target.Name = name;
+            #endregion
 
             // Description
             cfg.Description = AskQuestion("Target's description", null);
 
-            // Version
+            #region Version
             def = "1";
             string answer;
             const string versionQuestion = @"Type of retrieving the target build's version:
@@ -240,10 +241,10 @@ Please make your choice";
                 switch (choice)
                 {
                     case 1:
-                        cfg.Target.Version = GetTargetVersonFromUser();
+                        cfg.Target.Version = AskTargetVersonFromUser();
                         break;
                     case 2:
-                        cfg.Target.VersionAssemblyName = GetVersionAssemblyName();
+                        cfg.Target.VersionAssemblyName = AskVersionAssemblyName();
                         break;
                     case 3:
                         var mess = "The target's version won't stored in tree file (metadata of target's injection) - so, if the version will be missed ALSO in Agent's config (it is one more possibility to pass this value to the Drill admin side), CI engineer is responsible for passing the actual one to the Test Runner by argument.";
@@ -254,8 +255,8 @@ Please make your choice";
                 }
                 break;
             }
-
-            // Filter
+            #endregion
+            #region Filter
             const string filterQuestion = $@"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
 We should process only the Target's ones. The system files the Injector can skip on its own (as a rule), but in the case of third-party libraries, this may be too difficult to do automatically. 
 If the target contains one shared root namespace (e.g. Drill4Net at beginning of Drill4Net.BanderLog), the better choice is to use the rules for type ""Namespace"" (in this case value is ""Drill4Net"").
@@ -265,7 +266,7 @@ For more information, please read documentation.
 
 You can enter several rules in separate strings, e.g. first for files, then for classes, and so on. Separate several rules with a semicolon.
 Separate several entities in one rule with a comma. 
-You can use Include and Exclude rules. By default, a rule has Include type.
+You can use Include and Exclude rules at the same time. By default, a rule has Include type.
 
 To finish, just enter ""ok"".
 
@@ -279,8 +280,9 @@ The filters:
        {AppConstants.FILTER_TYPE_FOLDER}: ref
   - By file (short name). Example: 
        {AppConstants.FILTER_TYPE_FILE}: Drill4Net.Target.Common.dll
-  - By namespace (by beginning if value is presented as string, or by regex). Example:
+  - By namespace (by beginning if value is presented as string, or by regex). Examples:
        {AppConstants.FILTER_TYPE_NAMESPACE}: Drill4Net
+       {AppConstants.FILTER_TYPE_NAMESPACE}: reg: ^Drill4Net\.([\w-]+\.)+[\w]*Tests$
   - By class fullname (with namespace). Example:
        {AppConstants.FILTER_TYPE_TYPE}: Drill4Net.Target.Common.ModelTarget
   - By attribute of class. Example:
@@ -301,14 +303,76 @@ Please create at least one filter rule";
                 if(!AddFilterRules(answer, cfg.Source.Filter, out string err))
                     _outputHelper.WriteLine(err, AppConstants.COLOR_ERROR);
             }
+            #endregion
+            #region Destination dir
+            def = "1";
+            const string destQuestion = @"Configure destination directory for the instrumented target by:
+  1. Just postfix for the original target's directory, which will be located after it and the point. The folders will be located side by side.
+  2. Arbitrary path to the processed folder. It can be full or relative (for the Injector program).
 
-            // Destination dir
+Please make your choice";
+            while (true)
+            {
+                answer = AskQuestion(destQuestion, def);
+                if (IsQiut(answer))
+                    return false;
+                if (!CheckIntegerAnswer(answer, def, "Please select from 1 to 2", 1, 2, out int choice))
+                    continue;
+                //
+                switch (choice)
+                {
+                    case 1:
+                        var postfix = AskDestinationPostfix();
+                        if (postfix == null)
+                            return false;
+                        cfg.Destination.FolderPostfix = postfix;
+                        break;
+                    case 2:
+                        var destDir = AskDestinationDir();
+                        if (destDir == null)
+                            return false;
+                        cfg.Destination.Directory = destDir;
+                        break;
+                    default:
+                        continue;
+                }
+                break;
+            }
+            #endregion
 
             // Transmitter dir
 
             // Logs ?
 
             return false;
+        }
+
+        private string AskDestinationDir()
+        {
+            string destDir = null;
+            string def = null;
+            do
+            {
+                if (IsQiut(destDir))
+                    return null;
+                destDir = AskQuestion("Destination's directory (processed assemblies). It may not exist yet", def, false);
+            }
+            while (!CheckDirectoryAnswer(ref destDir, def, false));
+            return destDir;
+        }
+
+        private string AskDestinationPostfix()
+        {
+            string postfix = null;
+            string def = "Injected";
+            do
+            {
+                if (IsQiut(postfix))
+                    return null;
+                postfix = AskQuestion("Postfix to original directory", def);
+            }
+            while (!CheckStringAnswer(ref postfix, def, "Postfix cannot be empty."));
+            return postfix;
         }
 
         internal bool AddFilterRules(string input, SourceFilterOptions filter, out string error)
@@ -381,11 +445,12 @@ Please create at least one filter rule";
                             return false;
                     }
                 }
+                //TODO: remove duplicates
             }
             return true;
         }
 
-        private string GetVersionAssemblyName()
+        private string AskVersionAssemblyName()
         {
             string name = null;
             do
@@ -398,7 +463,7 @@ Please create at least one filter rule";
             return name;
         }
 
-        internal string GetTargetVersonFromUser()
+        internal string AskTargetVersonFromUser()
         {
             while (true)
             {
@@ -498,7 +563,14 @@ Please create at least one filter rule";
             }
             if (!mustExist || (mustExist && Directory.Exists(directory)))
             {
-                if(noInput)
+                if (directory?.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                {
+                    _outputHelper.WriteLine("The directory contains invalid characters.", AppConstants.COLOR_TEXT_WARNING);
+                    return false;
+                }
+                //TODO: check for proper dir path itself (cross-platform!)
+                //
+                if (noInput)
                     _outputHelper.Write(directory, true, AppConstants.COLOR_ANSWER);
                 return true;
             }
