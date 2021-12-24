@@ -40,3 +40,5 @@ In Visual Studio, go to Tools > Options and then select Package Sources under th
 
 Choose the Add icon (+), edit the Name - nuget.org, and then https://api.nuget.org/v3/index.json in the Source Click Update after updating the feed link.
 
+
+Rebuild, after Build.
