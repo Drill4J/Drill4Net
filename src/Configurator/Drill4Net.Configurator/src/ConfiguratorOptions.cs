@@ -33,6 +33,16 @@ namespace Drill4Net.Configurator
         public string? InstallDirectory { get; set; }
 
         /// <summary>
+        /// Default directory for the Injector module
+        /// </summary>
+        public string? InjectorDirectory { get; set; }
+
+        /// <summary>
+        /// Default directory for the Test Runner module
+        /// </summary>
+        public string? TestRunnerDirectory { get; set; }
+
+        /// <summary>
         /// Default directory for the Transmitter module
         /// </summary>
         public string? TransmitterDirectory { get; set; }

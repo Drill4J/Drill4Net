@@ -76,7 +76,7 @@ namespace Drill4Net.Configurator.App
             {
                 "?" or "help" => _outputHelper.PrintMenu(),
                 AppConstants.COMMAND_SYS => SystemConfigure(),
-                AppConstants.COMMAND_TARGET => TargetConfigure(),
+                AppConstants.COMMAND_TARGET => TargetConfigure(_rep.Options),
                 AppConstants.COMMAND_CI => CIConfigure(),
                 _ => _outputHelper.PrintMenu(),
             };
@@ -118,23 +118,21 @@ namespace Drill4Net.Configurator.App
             var def = opts.AdminHost;
             do
             {
-                if (IsQuit(host))
+                if (!AskQuestion("Drill service host", out host, def))
                     return false;
-                host = AskQuestion("Drill service host", def);
             }
-            while (!CheckStringAnswer(ref host, def, "The service host address cannot be empty"));
+            while (!CheckStringAnswer(ref host, "The service host address cannot be empty"));
             
             // Drill port
             int port;
             def = opts.AdminPort.ToString();
-            string portS = null;
+            string portS;
             do
             {
-                if (IsQuit(portS))
+                if (!AskQuestion("Drill service port", out portS, def))
                     return false;
-                portS = AskQuestion("Drill service port", def);
             }
-            while (!CheckIntegerAnswer(portS, def, "The service port must be from 255 to 65535", 255, 65535, out port));
+            while (!CheckIntegerAnswer(portS, "The service port must be from 255 to 65535", 255, 65535, out port));
             //
             cfg.AdminUrl = $"{host}:{port}";
             _logger.Info($"Admin url: {cfg.AdminUrl }");
@@ -144,11 +142,10 @@ namespace Drill4Net.Configurator.App
             def = opts.PluginDirectory;
             do
             {
-                if (IsQuit(plugDir))
+                if (!AskQuestion("Agent plugin directory", out plugDir, def))
                     return false;
-                plugDir = AskQuestion("Agent plugin directory", def);
             }
-            while (!CheckDirectoryAnswer(ref plugDir, def, true));
+            while (!CheckDirectoryAnswer(ref plugDir, true));
             cfg.AgentPluginDirectory = plugDir;
             _logger.Info($"Plugin dir: {plugDir}");
             //
@@ -162,23 +159,21 @@ namespace Drill4Net.Configurator.App
             var def = opts.MiddlewareHost;
             do
             {
-                if(IsQuit(host))
+                if (!AskQuestion("Kafka host", out host, def))
                     return false;
-                host = AskQuestion("Kafka host", def);
             }
-            while (!CheckStringAnswer(ref host, def, "The Kafka host address cannot be empty"));
+            while (!CheckStringAnswer(ref host, "The Kafka host address cannot be empty"));
             
             // Kafka port
             int port;
             def = opts.MiddlewarePort.ToString();
-            string portS = null;
+            string portS;
             do
             {
-                if (IsQuit(portS))
+                if (!AskQuestion("Kafka port", out portS, def))
                     return false;
-                portS = AskQuestion("Kafka port", def);
             }
-            while (!CheckIntegerAnswer(portS, def, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
+            while (!CheckIntegerAnswer(portS, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
             //
             cfg.MiddlewareUrl = $"{host}:{port}";
             _logger.Info($"Kafka url: {cfg.MiddlewareUrl}");
@@ -186,7 +181,7 @@ namespace Drill4Net.Configurator.App
         }
         #endregion
         #region Target
-        internal bool TargetConfigure()
+        internal bool TargetConfigure(ConfiguratorOptions opts)
         {
             #region Init Injector config
             var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, AppConstants.CONFIG_INJECTOR_MODEL);
@@ -202,11 +197,11 @@ namespace Drill4Net.Configurator.App
             string def = null;
             do
             {
-                if (IsQuit(sourceDir))
+                if (!AskQuestion("Target's directory (compiled assemblies). It can be full or relative (for the Injector program)",
+                    out sourceDir, def, false))
                     return false;
-                sourceDir = AskQuestion("Target's directory (compiled assemblies). It can be full or relative (for the Injector program)", def, false);
             }
-            while (!CheckDirectoryAnswer(ref sourceDir, def, true));
+            while (!CheckDirectoryAnswer(ref sourceDir, true));
             cfg.Source.Directory = sourceDir;
             #endregion
             #region Name
@@ -214,16 +209,17 @@ namespace Drill4Net.Configurator.App
             def = GetDefaultTargetName(sourceDir);
             do
             {
-                if (IsQuit(name))
+                if (!AskQuestion("Target's name (as Agent ID). It must be the same for the Product and its different builds", out name, def))
                     return false;
-                name = AskQuestion("Target's name (as Agent ID). It must be the same for the Product and its different builds", def);
             }
-            while (!CheckStringAnswer(ref name, def, "Target's name cannot be empty", false));
+            while (!CheckStringAnswer(ref name, "Target's name cannot be empty", false));
             cfg.Target.Name = name;
             #endregion
 
             // Description
-            cfg.Description = AskQuestion("Target's description", null);
+            if (!AskQuestion("Target's description", out string desc, null))
+                return false;
+            cfg.Description = desc;
 
             #region Version
             def = "1";
@@ -236,19 +232,22 @@ namespace Drill4Net.Configurator.App
 Please make your choice";
             while (true)
             {
-                answer = AskQuestion(versionQuestion, def);
-                if (IsQuit(answer))
+                if (!AskQuestion(versionQuestion, out answer, def))
                     return false;
-                if(!CheckIntegerAnswer(answer, def, "Please select from 1 to 3", 1, 3, out int choice))
+                if(!CheckIntegerAnswer(answer, "Please select from 1 to 3", 1, 3, out int choice))
                     continue;
                 //
                 switch (choice)
                 {
                     case 1:
-                        cfg.Target.Version = AskTargetVersonFromUser();
+                        if (!AskTargetVersonFromUser(out string version))
+                            return false;
+                        cfg.Target.Version = version;
                         break;
                     case 2:
-                        cfg.Target.VersionAssemblyName = AskVersionAssemblyName();
+                        if(!AskVersionAssemblyName(out var asmName))
+                            return false;
+                        cfg.Target.VersionAssemblyName = asmName;
                         break;
                     case 3:
                         var mess = "The target's version won't stored in tree file (metadata of target's injection) - so, if the version will be missed ALSO in Agent's config (it is one more possibility to pass this value to the Drill admin side), CI engineer is responsible for passing the actual one to the Test Runner by argument.";
@@ -317,10 +316,9 @@ Please create at least one filter rule";
 Please make your choice";
             while (true)
             {
-                answer = AskQuestion(destQuestion, def);
-                if (IsQuit(answer))
+                if (!AskQuestion(destQuestion, out answer, def))
                     return false;
-                if (!CheckIntegerAnswer(answer, def, "Please select from 1 to 2", 1, 2, out int choice))
+                if (!CheckIntegerAnswer(answer, "Please select from 1 to 2", 1, 2, out int choice))
                     continue;
                 //
                 switch (choice)
@@ -332,8 +330,7 @@ Please make your choice";
                         cfg.Destination.FolderPostfix = postfix;
                         break;
                     case 2:
-                        var destDir = AskDirectory("Destination's directory (processed assemblies). It may not exist yet", null, false, false);
-                        if (IsQuit(destDir))
+                        if(!AskDirectory("Destination's directory (processed assemblies). It may not exist yet", out var destDir, null, false, false))
                             return false;
                         cfg.Destination.Directory = destDir;
                         break;
@@ -347,7 +344,33 @@ Please make your choice";
             // Logs
             if (!AddLogFile(cfg, "Injector"))
                 return false;
-            //
+            
+            // save config
+            var injDir = opts.InjectorDirectory;
+            if (string.IsNullOrEmpty(injDir))
+                injDir = @"..\injector";
+            while (true)
+            {
+                if (!AskQuestion("Name of the Injector's config", out name, "cfg.yml"))
+                    return false;
+                if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
+                    continue;
+                var injCfgPath = Path.Combine(injDir, name);
+                if (File.Exists(injCfgPath))
+                {
+                    if (!AskQuestion("Such name already exists. Replace?", out answer, "n"))
+                        return false;
+                    if (IsYes(answer))
+                    {
+                        _rep.WriteInjectorOptions(cfg, injCfgPath);
+                        _outputHelper.WriteLine($"You can check the settings: {injCfgPath}", AppConstants.COLOR_TEXT);
+                    }
+                    break;
+                }
+            }
+            
+            // activating the config
+
 
             //
             return true;
@@ -356,14 +379,13 @@ Please make your choice";
         private string AskDestinationPostfix()
         {
             string postfix = null;
-            string def = "Injected";
+            var def = "Injected";
             do
             {
-                if (IsQuit(postfix))
-                    return null;
-                postfix = AskQuestion("Postfix to original directory", def);
+                if (!AskQuestion("Postfix to original directory", out postfix, def))
+                    return def;
             }
-            while (!CheckStringAnswer(ref postfix, def, "Postfix cannot be empty."));
+            while (!CheckStringAnswer(ref postfix, "Postfix cannot be empty."));
             return postfix;
         }
 
@@ -442,29 +464,29 @@ Please make your choice";
             return true;
         }
 
-        private string AskVersionAssemblyName()
+        private bool AskVersionAssemblyName(out string name)
         {
-            string name = null;
+            name = null;
             do
             {
-                if (IsQuit(name))
-                    return name;
-                name = AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version", null, false);
+                if (!AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version", out name, null, false))
+                    return false;
             }
-            while (!CheckFileNameAnswer(ref name, null, "The assembly name cannot be empty", false));
-            return name;
+            while (!CheckFileNameAnswer(ref name, "The assembly name cannot be empty", false));
+            return true;
         }
 
-        internal string AskTargetVersonFromUser()
+        internal bool AskTargetVersonFromUser(out string version)
         {
             while (true)
             {
-                string version = AskQuestion("Target' version (SemVer format)", null, false);
+                if (!AskQuestion("Target' version (SemVer format)", out version, null, false))
+                    return false;
                 //version = "0.8.240"; // "0.8.240-main+2befca57f1"
                 var pattern = new Regex(@"\d+(\.\d+)+([-](\p{L})+)?([+]([0-9a-zA-Z])+)?");
                 var isMatch = pattern.IsMatch(version);
                 if (isMatch)
-                    return version;
+                    return true;
                 _outputHelper.WriteLine("The version format is incorrect. It must be something like that: 0.8.240, or 0.8.240-main, or even 0.8.240-main+2befca57f1",
                     AppConstants.COLOR_TEXT_WARNING);
             }
@@ -505,49 +527,71 @@ Please make your choice";
         }
         #endregion
         #region Common
-        private string AskQuestion(string question, string defValue, bool showDefVal = true)
+        /// <summary>
+        /// Ask the question and get the value.
+        /// </summary>
+        /// <param name="question">The question for user</param>
+        /// <param name="answer">The answer with default, if empty input is getted</param>
+        /// <param name="defValue">The default value</param>
+        /// <param name="showDefVal">Do it need to output the default value</param>
+        /// <returns>False, if user want to quit from the current setup</returns>
+        private bool AskQuestion(string question, out string answer, string defValue, bool showDefVal = true)
         {
+            if (string.IsNullOrWhiteSpace(question))
+                question = "?";
+            if (question.EndsWith(":"))
+                question = question[1..];
+            question = $"\n{question.Trim()}";
             if (showDefVal)
-                question = $"{question} [{defValue}]";
-            _outputHelper.WriteLine($"\n{question}: ", AppConstants.COLOR_QUESTION);
-            var answer = Console.ReadLine()?.Trim() ?? defValue;
+                question = $"{question}: [{defValue}]";
+            else
+                question += ":";
+            //
+            _outputHelper.WriteLine(question, AppConstants.COLOR_QUESTION);
+            answer = Console.ReadLine()?.Trim();
+            if (IsQuit(answer))
+                return false;
+            //
+            var empty = answer?.Length == 0;
+            if (empty)
+            {
+                answer = defValue;
+                _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER);
+            }
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");
-            return answer == "" ? defValue : answer;
+            return true;
         }
 
-        private string AskDirectory(string question, string defValue, bool mustExists, bool showDefVal = true)
+        private bool AskDirectory(string question, out string destDir, string defValue, bool mustExists, bool showDefVal = true)
         {
-            string destDir = null;
+            destDir = null;
             do
             {
-                if (IsQuit(destDir))
-                    return destDir;
-                destDir = AskQuestion(question, defValue, showDefVal);
+                if (!AskQuestion(question, out destDir, defValue, showDefVal))
+                    return false;
             }
-            while (!CheckDirectoryAnswer(ref destDir, defValue, mustExists));
-            return destDir;
+            while (!CheckDirectoryAnswer(ref destDir, mustExists));
+            return true;
         }
 
-        private string AskFilePath(string question, string defValue, bool mustExists, bool showDefVal = true)
+        private bool AskFilePath(string question, out string filePath, string defValue, bool mustExists, bool showDefVal = true)
         {
-            string filePath = null;
             while(true)
             {
-                if (IsQuit(filePath))
-                    return filePath;
-                filePath = AskQuestion(question, defValue, showDefVal);
+                if (!AskQuestion(question, out filePath, defValue, showDefVal))
+                    return false;
                 string answer = filePath;
-                if (!CheckStringAnswer(ref answer, null, "File path cannot be empty", true))
+                if (!CheckStringAnswer(ref answer, "File path cannot be empty", true))
                     continue;
                 var dir = Path.GetDirectoryName(filePath);
-                if (!CheckDirectoryAnswer(ref dir, defValue, mustExists))
+                if (!CheckDirectoryAnswer(ref dir, mustExists))
                     continue;
                 var fileName = Path.GetFileName(filePath);
-                if (!CheckFileNameAnswer(ref fileName, defValue, null, !mustExists))
+                if (!CheckFileNameAnswer(ref fileName, null, !mustExists))
                     continue;
                 break;
             }
-            return filePath;
+            return true;
         }
 
         /// <summary>
@@ -558,19 +602,18 @@ Please make your choice";
         /// <returns>If false, it is the need to exit from this setup.</returns>
         private bool AddLogFile(InjectorOptions cfg, string programName = "program")
         {
-            var answer = AskQuestion($"The {programName} logs will be output to the its console and to a file in the its {LoggerHelper.LOG_FOLDER} folder. Add an additional parallel log file?", "n");
+            if (!AskQuestion($"The {programName} logs will be output to the its console and to a file in the its {LoggerHelper.LOG_FOLDER} folder. Add an additional parallel log file?", out var answer, "n"))
+                return false;
             if (IsYes(answer))
             {
-                var logPath = AskFilePath("File path", null, false, false);
-                if (IsQuit(logPath))
+                if (!AskFilePath("File path", out var logPath, null, false, false))
                     return false;
                 //
                 var logLevel = LogLevel.Debug;
                 while (true)
                 {
                     //log level
-                    var logTypeS = AskQuestion("Set the log level", logLevel.ToString());
-                    if (IsQuit(logPath))
+                    if (!AskQuestion("Set the log level", out var logTypeS, logLevel.ToString()))
                         return false;
                     logTypeS = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(logTypeS);
                     if (Enum.TryParse(typeof(LogLevel), logTypeS, out object logType))
@@ -595,39 +638,24 @@ Please make your choice";
             return true;
         }
 
-        private bool CheckStringAnswer(ref string answer, string defValue, string mess, bool canBeEmpty = false)
+        private bool CheckStringAnswer(ref string answer, string mess, bool canBeEmpty = false)
         {
-            if (!PrimaryCheckInput(ref answer, defValue, out bool noInput))
-                return false;
             if (canBeEmpty || !string.IsNullOrWhiteSpace(answer))
-            {
-                if (noInput)
-                    _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER);
                 return true;
-            }
             _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
-        private bool CheckIntegerAnswer(string answer, string defValue, string mess, int min, int max, out int val)
+        private bool CheckIntegerAnswer(string answer, string mess, int min, int max, out int val)
         {
-            val = 0;
-            if(!PrimaryCheckInput(ref answer, defValue, out bool noInput))
-                return false;
             if (int.TryParse(answer, out val) && val >= min && val <= max)
-            {
-                if (noInput)
-                    _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER);
                 return true;
-            }
             _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
-        private bool CheckDirectoryAnswer(ref string directory, string defValue, bool mustExist = true)
+        private bool CheckDirectoryAnswer(ref string directory, bool mustExist = true)
         {
-            if (!PrimaryCheckInput(ref directory, defValue, out bool noInput))
-                return false;
             if (mustExist && string.IsNullOrWhiteSpace(directory))
             {
                 _outputHelper.Write("Directory cannot be empty and must exist", true, AppConstants.COLOR_TEXT_WARNING);
@@ -640,20 +668,16 @@ Please make your choice";
                     _outputHelper.WriteLine("The directory is invalid.", AppConstants.COLOR_TEXT_WARNING);
                     return false;
                 }
+
                 //TODO: check for proper dir path itself (cross-platform!)
-                //
-                if (noInput)
-                    _outputHelper.Write(directory, true, AppConstants.COLOR_ANSWER);
                 return true;
             }
             _outputHelper.WriteLine("Directory does not exists.", AppConstants.COLOR_TEXT_WARNING);
             return false;
         }
 
-        private bool CheckFileNameAnswer(ref string filename, string defValue, string mess, bool canBeEmpty)
+        private bool CheckFileNameAnswer(ref string filename, string mess, bool canBeEmpty)
         {
-            if (!PrimaryCheckInput(ref filename, defValue, out bool noInput))
-                return false;
             if (!canBeEmpty && string.IsNullOrWhiteSpace(filename))
             {
                 _outputHelper.Write("Filename cannot be empty", true, AppConstants.COLOR_TEXT_WARNING);
@@ -666,18 +690,7 @@ Please make your choice";
                 _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
                 return false;
             }
-            if (noInput)
-                _outputHelper.Write(filename, true, AppConstants.COLOR_ANSWER);
             return true;
-
-        }
-
-        private bool PrimaryCheckInput(ref string answer, string defValue, out bool noInput)
-        {
-            noInput = answer?.Length == 0; //""
-            if (noInput)
-                answer = defValue;
-            return !IsQuit(answer);
         }
 
         private bool IsQuit(string s)
