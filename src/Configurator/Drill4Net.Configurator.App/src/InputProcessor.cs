@@ -179,6 +179,11 @@ namespace Drill4Net.Configurator.App
             //
             cfg.MiddlewareUrl = $"{host}:{port}";
             _logger.Info($"Kafka url: {cfg.MiddlewareUrl}");
+
+            // Logs
+            if (!AddLogFile(cfg.Logs, "Drill system"))
+                return false;
+
             return true;
         }
         #endregion
@@ -343,7 +348,9 @@ Please make your choice";
             #endregion
 
             // Logs
-            if (!AddLogFile(cfg, "Injector"))
+            if (cfg.Logs == null)
+                cfg.Logs = new();
+            if (!AddLogFile(cfg.Logs, CoreConstants.SUBSYSTEM_INJECTOR))
                 return false;
 
             #region Save config
@@ -380,9 +387,7 @@ Please make your choice";
                 // activating the config
                 (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(injDir, injCfgPath);
                 if (needActivate)
-                {
-                    _optHelper.WriteRedirectData(new RedirectData { Path = injCfgPath }, redirectCfgPath);
-                }
+                    SaveRedirectFile(injCfgPath, redirectCfgPath);
             }
             #endregion
 
@@ -414,6 +419,11 @@ Please make your choice";
                 needActivate = !isDefName;
             }
             return (needActivate, redirectCfgPath);
+        }
+
+        internal void SaveRedirectFile(string actualPath, string redirectCfgPath)
+        {
+            _optHelper.WriteRedirectData(new RedirectData { Path = actualPath }, redirectCfgPath);
         }
 
         private bool AskDestinationPostfix(out string postfix)
@@ -636,10 +646,10 @@ Please make your choice";
         /// <summary>
         /// Add file log options to the config.
         /// </summary>
-        /// <param name="cfg"></param>
+        /// <param name="logs"></param>
         /// <param name="programName">Name of program</param>
         /// <returns>If false, it is the need to exit from this setup.</returns>
-        private bool AddLogFile(InjectorOptions cfg, string programName = "program")
+        private bool AddLogFile(List<LogData> logs, string programName = "program")
         {
             if (!AskQuestion($"The {programName} logs will be output to the its console and to a file in the its {LoggerHelper.LOG_FOLDER} folder. Add an additional parallel log file?", out var answer, "n"))
                 return false;
@@ -663,8 +673,6 @@ Please make your choice";
                     _outputHelper.WriteLine($"Unknown type of log level: {logTypeS}", AppConstants.COLOR_TEXT_WARNING);
                 }
                 //
-                if (cfg.Logs == null)
-                    cfg.Logs = new();
                 var logData = new LogData()
                 {
                     Disabled = false,
@@ -672,7 +680,7 @@ Please make your choice";
                     Path = logPath,
                     Level = logLevel,
                 };
-                cfg.Logs.Add(logData);
+                logs.Add(logData);
             }
             return true;
         }
