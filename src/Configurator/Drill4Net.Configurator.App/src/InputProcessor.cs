@@ -351,12 +351,11 @@ Please make your choice";
             if (string.IsNullOrEmpty(injDir))
                 injDir = @"..\injector";
 
-            var defCfg = CoreConstants.CONFIG_NAME_DEFAULT;
             string injCfgPath;
             var needSave = true;
             while (true)
             {
-                if (!AskQuestion("Name of the Injector's config", out name, defCfg))
+                if (!AskQuestion("Name of the Injector's config", out name, CoreConstants.CONFIG_NAME_DEFAULT))
                     return false;
                 if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
                     continue;
@@ -372,30 +371,28 @@ Please make your choice";
                 }
                 break;
             }
+            //
             if(needSave)
             {
                 _rep.WriteInjectorOptions(cfg, injCfgPath);
-                _outputHelper.WriteLine($"You can check the settings: {injCfgPath}", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine($"You can check the Injector's settings: {injCfgPath}", AppConstants.COLOR_TEXT);
 
-                #region Activating the config
-                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfig(injDir, injCfgPath);
+                // activating the config
+                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(injDir, injCfgPath);
                 if (needActivate)
                 {
                     _optHelper.WriteRedirectData(new RedirectData { Path = injCfgPath }, redirectCfgPath);
                 }
-                #endregion
             }
             #endregion
 
-            //
             return true;
         }
 
-        internal (bool, string) IsNeedAcivateConfig(string appDir, string curPath)
+        internal (bool, string) IsNeedAcivateConfigFor(string appDir, string curCfgPath)
         {
-
             var redirectCfgPath = _optHelper.CreateRedirectConfigPath(appDir);
-            var name = Path.GetFileName(curPath);
+            var name = Path.GetFileName(curCfgPath);
             var isDefName = name.Equals(CoreConstants.CONFIG_NAME_DEFAULT, StringComparison.InvariantCultureIgnoreCase);
             bool needActivate;
             if (File.Exists(redirectCfgPath))
@@ -409,7 +406,7 @@ Please make your choice";
                 {
                     var actualPath = redirData.Path;
                     needActivate = string.IsNullOrWhiteSpace(actualPath) ||
-                        !actualPath.Equals(curPath, StringComparison.InvariantCultureIgnoreCase);
+                        !actualPath.Equals(curCfgPath, StringComparison.InvariantCultureIgnoreCase);
                 }
             }
             else //no redirect-file

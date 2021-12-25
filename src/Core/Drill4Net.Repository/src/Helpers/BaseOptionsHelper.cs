@@ -7,6 +7,9 @@ using Drill4Net.Configuration;
 
 namespace Drill4Net.Repository
 {
+    /// <summary>
+    /// Base options' helper
+    /// </summary>
     public class BaseOptionsHelper
     {
         protected readonly ISerializer _ser;
