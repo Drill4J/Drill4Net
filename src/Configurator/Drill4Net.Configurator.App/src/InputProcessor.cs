@@ -14,7 +14,7 @@ namespace Drill4Net.Configurator.App
     {
         private readonly ConfiguratorRepository _rep;
         private readonly ConfiguratorOutputHelper _outputHelper;
-        private BaseOptionsHelper _optHelper;
+        private readonly BaseOptionsHelper _optHelper;
         private readonly Logger _logger;
 
         /**********************************************************************/
@@ -88,6 +88,8 @@ namespace Drill4Net.Configurator.App
         #region System
         internal bool SystemConfigure()
         {
+            _logger.Info("Start to system configure");
+
             SystemConfiguration cfg = new();
             if (!ConfigAdmin(_rep.Options, cfg))
                 return false;
@@ -191,6 +193,8 @@ namespace Drill4Net.Configurator.App
         #region Target
         internal bool TargetConfigure(ConfiguratorOptions opts)
         {
+            _logger.Info("Start to target configure");
+
             #region Init Injector config
             var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, AppConstants.CONFIG_INJECTOR_MODEL);
             if (!File.Exists(modelCfgPath))
@@ -362,38 +366,6 @@ Please make your choice";
             return SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, injDir);
         }
 
-        internal (bool, string) IsNeedAcivateConfigFor(string appDir, string curCfgPath)
-        {
-            var redirectCfgPath = _optHelper.CreateRedirectConfigPath(appDir);
-            var name = Path.GetFileName(curCfgPath);
-            var isDefName = name.Equals(CoreConstants.CONFIG_NAME_DEFAULT, StringComparison.InvariantCultureIgnoreCase);
-            bool needActivate;
-            if (File.Exists(redirectCfgPath))
-            {
-                var redirData = _optHelper.ReadRedirectData(redirectCfgPath);
-                if (redirData == null)
-                {
-                    needActivate = true;
-                }
-                else
-                {
-                    var actualPath = redirData.Path;
-                    needActivate = string.IsNullOrWhiteSpace(actualPath) ||
-                        !actualPath.Equals(curCfgPath, StringComparison.InvariantCultureIgnoreCase);
-                }
-            }
-            else //no redirect-file
-            {
-                needActivate = !isDefName;
-            }
-            return (needActivate, redirectCfgPath);
-        }
-
-        internal void SaveRedirectFile(string actualPath, string redirectCfgPath)
-        {
-            _optHelper.WriteRedirectData(new RedirectData { Path = actualPath }, redirectCfgPath);
-        }
-
         private bool AskDestinationPostfix(out string postfix)
         {
             var def = "Injected";
@@ -539,6 +511,8 @@ Please make your choice";
         #region Runner
         private bool RunnerConfigure(ConfiguratorOptions opts)
         {
+            _logger.Info("Start to Test Runner configure");
+
             var modelCfgPath = Path.Combine(opts.InstallDirectory, "test_runner.yml");
             var cfg = _rep.ReadTestRunnerOptions(modelCfgPath);
 
@@ -636,6 +610,99 @@ Specify at least one tests' assembly.";
         }
         #endregion
         #region Common
+        #region Saving config
+        internal bool SaveConfig<T>(string appName, T cfg, string dir) where T : AbstractOptions, new()
+        {
+            string cfgPath;
+            var needSave = true;
+            while (true)
+            {
+                if (!AskQuestion($"Name of the {appName}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
+                    return false;
+                if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
+                    continue;
+                if (!Path.HasExtension(name))
+                    name += ".yml";
+                cfgPath = Path.Combine(dir, name);
+
+                if (File.Exists(cfgPath))
+                {
+                    if (!AskQuestion("Such name already exists. Replace?", out var answer, "n"))
+                        return false;
+                    needSave = IsYes(answer);
+                }
+                break;
+            }
+            //
+            if (needSave)
+            {
+                try
+                {
+                    _rep.WriteOptions<T>(cfg, cfgPath);
+                }
+                catch (Exception ex)
+                {
+                    var er = $"Config for {appName} is not saved:\n{ex}";
+                    _logger.Error(er);
+                    _outputHelper.WriteLine(er, AppConstants.COLOR_ERROR);
+                    return false;
+                }
+                _logger.Info($"Config for {appName} saved to [{cfgPath}]");
+                _outputHelper.WriteLine($"You can check the {appName}'s settings: {cfgPath}", AppConstants.COLOR_TEXT);
+
+                // activating the config
+                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
+                if (needActivate)
+                    return SaveRedirectFile(appName, cfgPath, redirectCfgPath);
+            }
+            return true;
+        }
+
+        internal (bool, string) IsNeedAcivateConfigFor(string appDir, string curCfgPath)
+        {
+            var redirectCfgPath = _optHelper.CreateRedirectConfigPath(appDir);
+            var name = Path.GetFileName(curCfgPath);
+            var isDefName = name.Equals(CoreConstants.CONFIG_NAME_DEFAULT, StringComparison.InvariantCultureIgnoreCase);
+            bool needActivate;
+            if (File.Exists(redirectCfgPath))
+            {
+                var redirData = _optHelper.ReadRedirectData(redirectCfgPath);
+                if (redirData == null)
+                {
+                    needActivate = true;
+                }
+                else
+                {
+                    var actualPath = redirData.Path;
+                    needActivate = string.IsNullOrWhiteSpace(actualPath) ||
+                        !actualPath.Equals(curCfgPath, StringComparison.InvariantCultureIgnoreCase);
+                }
+            }
+            else //no redirect-file
+            {
+                needActivate = !isDefName;
+            }
+            return (needActivate, redirectCfgPath);
+        }
+
+        internal bool SaveRedirectFile(string appName, string actualPath, string redirectCfgPath)
+        {
+            try
+            {
+                _optHelper.WriteRedirectData(new RedirectData { Path = actualPath }, redirectCfgPath);
+                _logger.Info($"Redirect config for {appName} saved to [{redirectCfgPath}]");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var er = $"Redirect config for {appName} is not saved:\n{ex}";
+                _logger.Error(er);
+                _outputHelper.WriteLine(er, AppConstants.COLOR_ERROR);
+                return false;
+            }
+        }
+        #endregion
+
         /// <summary>
         /// Ask the question and get the value.
         /// </summary>
@@ -810,42 +877,6 @@ Specify at least one tests' assembly.";
                     mess = "File name contains invalid symbols";
                 _outputHelper.WriteLine(mess, AppConstants.COLOR_TEXT_WARNING);
                 return false;
-            }
-            return true;
-        }
-
-        internal bool SaveConfig<T>(string appName, T cfg, string dir) where T: AbstractOptions, new()
-        {
-            string cfgPath;
-            var needSave = true;
-            while (true)
-            {
-                if (!AskQuestion($"Name of the {appName}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
-                    return false;
-                if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
-                    continue;
-                if (!Path.HasExtension(name))
-                    name += ".yml";
-                cfgPath = Path.Combine(dir, name);
-
-                if (File.Exists(cfgPath))
-                {
-                    if (!AskQuestion("Such name already exists. Replace?", out var answer, "n"))
-                        return false;
-                    needSave = IsYes(answer);
-                }
-                break;
-            }
-            //
-            if (needSave)
-            {
-                _rep.WriteOptions<T>(cfg, cfgPath);
-                _outputHelper.WriteLine($"You can check the {appName}'s settings: {cfgPath}", AppConstants.COLOR_TEXT);
-
-                // activating the config
-                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
-                if (needActivate)
-                    SaveRedirectFile(cfgPath, redirectCfgPath);
             }
             return true;
         }
