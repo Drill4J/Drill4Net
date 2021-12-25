@@ -7,23 +7,17 @@ using Drill4Net.Configuration;
 
 namespace Drill4Net.Repository
 {
-    /// <summary>
-    /// Base generic options Helper
-    /// </summary>
-    /// <typeparam name="TOpts"></typeparam>
-    public class BaseOptionsHelper<TOpts> where TOpts : AbstractOptions, new()
+    public class BaseOptionsHelper
     {
-        private readonly ISerializer _ser;
-        private readonly IDeserializer _deser;
-        private readonly Logger _logger;
+        protected readonly ISerializer _ser;
+        protected readonly IDeserializer _deser;
+        protected readonly Logger _logger;
 
         /********************************************************************/
 
-        public BaseOptionsHelper() : this(null) { }
-
         public BaseOptionsHelper(string subsystem)
         {
-            _logger = new TypedLogger<BaseOptionsHelper<TOpts>>(subsystem);
+            _logger = new TypedLogger<BaseOptionsHelper>(subsystem);
 
             _ser = new YamlDotNet.Serialization.Serializer();
             _deser = new DeserializerBuilder()
@@ -44,23 +38,67 @@ namespace Drill4Net.Repository
         /// <returns></returns>
         public string GetActualConfigPath(string dir, string configDefaultName = null)
         {
-            if(string.IsNullOrWhiteSpace(dir))
-                dir = FileUtils.EntryDir;
-            var redirectPath = Path.Combine(dir, CoreConstants.CONFIG_NAME_REDIRECT); //possible redirect
+            var redirectCfgPath = CreateRedirectConfigPath(dir); //possible redirect
             var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_NAME_DEFAULT : configDefaultName;
-            if (!File.Exists(redirectPath))
+            if (!File.Exists(redirectCfgPath))
                 return Path.Combine(dir, defName);
-            Deserializer deser = new();
-            var cfg = File.ReadAllText(redirectPath);
-            var redirect = deser.Deserialize<RedirectData>(cfg);
-            var path = redirect?.Path;
-            if (!path.EndsWith(".yml"))
-                path += ".yml";
-            var actualPath = FileUtils.GetFullPath(path);
+            //
+            var redirect = ReadRedirectData(redirectCfgPath);
+            var actualPath = redirect?.Path;
+            if (actualPath == null)
+                throw new Exception($"Redirect file is wrong: [{redirectCfgPath}]");
+            //
+            if (!actualPath.EndsWith(".yml"))
+                actualPath += ".yml";
+            actualPath = FileUtils.GetFullPath(actualPath);
             _logger.Info($"Actual config path is defined: [{actualPath}]");
             Log.Flush();
             return actualPath;
         }
+
+        public string CreateRedirectConfigPath(string dir)
+        {
+            if (string.IsNullOrWhiteSpace(dir))
+                dir = FileUtils.EntryDir;
+            return Path.Combine(dir, CoreConstants.CONFIG_NAME_REDIRECT);
+        }
+
+        public RedirectData ReadRedirectData(string redirectCfgPath)
+        {
+            if (string.IsNullOrWhiteSpace(redirectCfgPath))
+                throw new ArgumentNullException(nameof(redirectCfgPath));
+            //
+            var cfg = File.ReadAllText(redirectCfgPath);
+            return _deser.Deserialize<RedirectData>(cfg);
+        }
+
+        public void WriteRedirectData(RedirectData data, string redirectCfgPath)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            if (string.IsNullOrWhiteSpace(redirectCfgPath))
+                throw new ArgumentNullException(nameof(redirectCfgPath));
+            //
+            var text = _ser.Serialize(data);
+            File.WriteAllText(redirectCfgPath, text);
+        }
+    }
+
+    /***************************************************************************************************/
+
+    /// <summary>
+    /// Base generic options Helper
+    /// </summary>
+    /// <typeparam name="TOpts"></typeparam>
+    public class BaseOptionsHelper<TOpts> : BaseOptionsHelper where TOpts : AbstractOptions, new()
+    {
+        public BaseOptionsHelper() : this(null) { }
+
+        public BaseOptionsHelper(string subsystem): base(subsystem)
+        {
+        }
+
+        /***********************************************************************/
 
         /// <summary>
         /// Reads the options by specified file path.

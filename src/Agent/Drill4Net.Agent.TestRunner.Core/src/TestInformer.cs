@@ -30,6 +30,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         private readonly StandardAgent _agent;
 
         private readonly AdminRequester _requester;
+        private const string Subsystem = CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER;
         private readonly ManualResetEvent _initEvent = new(false);
         private readonly Logger _logger;
 
@@ -42,7 +43,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             _dbgOpts = dbgOpts;
             if (string.IsNullOrWhiteSpace(asmOptions.DefaultAssemblyName))
                 throw new Exception("Assembly name is empty");
-            _logger = new TypedLogger<TestInformer>(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
+            _logger = new TypedLogger<TestInformer>(Subsystem);
             //
             _agentRep = CreateAgentRepository();
             TargetName = _agentRep.TargetName;
@@ -67,10 +68,10 @@ namespace Drill4Net.Agent.TestRunner.Core
             var dir = _dirOptions.Path;
 
             //we need to give the concrete path to the agent config from target's directory
-            var optsHelper = new BaseOptionsHelper<AgentOptions>();
+            var optsHelper = new BaseOptionsHelper(Subsystem);
             var agentCfgPath = optsHelper.GetActualConfigPath(dir);
 
-            var helper = new TreeRepositoryHelper(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
+            var helper = new TreeRepositoryHelper(Subsystem);
             var treePath = helper.CalculateTreeFilePath(dir);
             return new StandardAgentRepository(agentCfgPath, treePath);
         }

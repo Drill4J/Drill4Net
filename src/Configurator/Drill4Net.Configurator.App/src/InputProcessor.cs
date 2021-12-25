@@ -14,6 +14,7 @@ namespace Drill4Net.Configurator.App
     {
         private readonly ConfiguratorRepository _rep;
         private readonly ConfiguratorOutputHelper _outputHelper;
+        private BaseOptionsHelper _optHelper;
         private readonly Logger _logger;
 
         /**********************************************************************/
@@ -23,6 +24,7 @@ namespace Drill4Net.Configurator.App
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
             _logger = new TypedLogger<InputProcessor>(rep.Subsystem);
+            _optHelper = new(_rep.Subsystem);
         }
 
         /**********************************************************************/
@@ -324,8 +326,7 @@ Please make your choice";
                 switch (choice)
                 {
                     case 1:
-                        var postfix = AskDestinationPostfix();
-                        if (IsQuit(postfix))
+                        if (!AskDestinationPostfix(out var postfix))
                             return false;
                         cfg.Destination.FolderPostfix = postfix;
                         break;
@@ -344,49 +345,145 @@ Please make your choice";
             // Logs
             if (!AddLogFile(cfg, "Injector"))
                 return false;
-            
-            // save config
+
+            #region Save config
             var injDir = opts.InjectorDirectory;
             if (string.IsNullOrEmpty(injDir))
                 injDir = @"..\injector";
+
+            var defCfg = CoreConstants.CONFIG_NAME_DEFAULT;
+            string injCfgPath;
+            var needSave = true;
             while (true)
             {
-                if (!AskQuestion("Name of the Injector's config", out name, "cfg.yml"))
+                if (!AskQuestion("Name of the Injector's config", out name, defCfg))
                     return false;
                 if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
                     continue;
-                var injCfgPath = Path.Combine(injDir, name);
+                if (!Path.HasExtension(name))
+                    name += ".yml";
+                injCfgPath = Path.Combine(injDir, name);
+
                 if (File.Exists(injCfgPath))
                 {
                     if (!AskQuestion("Such name already exists. Replace?", out answer, "n"))
                         return false;
-                    if (IsYes(answer))
-                    {
-                        _rep.WriteInjectorOptions(cfg, injCfgPath);
-                        _outputHelper.WriteLine($"You can check the settings: {injCfgPath}", AppConstants.COLOR_TEXT);
-                    }
-                    break;
+                    needSave = IsYes(answer);
                 }
+                break;
             }
-            
-            // activating the config
+            if(needSave)
+            {
+                _rep.WriteInjectorOptions(cfg, injCfgPath);
+                _outputHelper.WriteLine($"You can check the settings: {injCfgPath}", AppConstants.COLOR_TEXT);
 
+                #region Activating the config
+                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfig(injDir, injCfgPath);
+                if (needActivate)
+                {
+                    _optHelper.WriteRedirectData(new RedirectData { Path = injCfgPath }, redirectCfgPath);
+                }
+                #endregion
+            }
+            #endregion
 
             //
             return true;
         }
 
-        private string AskDestinationPostfix()
+        internal (bool, string) IsNeedAcivateConfig(string appDir, string curPath)
         {
-            string postfix = null;
+
+            var redirectCfgPath = _optHelper.CreateRedirectConfigPath(appDir);
+            var name = Path.GetFileName(curPath);
+            var isDefName = name.Equals(CoreConstants.CONFIG_NAME_DEFAULT, StringComparison.InvariantCultureIgnoreCase);
+            bool needActivate;
+            if (File.Exists(redirectCfgPath))
+            {
+                var redirData = _optHelper.ReadRedirectData(redirectCfgPath);
+                if (redirData == null)
+                {
+                    needActivate = true;
+                }
+                else
+                {
+                    var actualPath = redirData.Path;
+                    needActivate = string.IsNullOrWhiteSpace(actualPath) ||
+                        !actualPath.Equals(curPath, StringComparison.InvariantCultureIgnoreCase);
+                }
+            }
+            else //no redirect-file
+            {
+                needActivate = !isDefName;
+            }
+            return (needActivate, redirectCfgPath);
+        }
+
+        private bool AskDestinationPostfix(out string postfix)
+        {
             var def = "Injected";
             do
             {
                 if (!AskQuestion("Postfix to original directory", out postfix, def))
-                    return def;
+                    return false;
             }
             while (!CheckStringAnswer(ref postfix, "Postfix cannot be empty."));
-            return postfix;
+            return true;
+        }
+
+        private bool AskVersionAssemblyName(out string name)
+        {
+            name = null;
+            do
+            {
+                if (!AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version", out name, null, false))
+                    return false;
+            }
+            while (!CheckFileNameAnswer(ref name, "The assembly name cannot be empty", false));
+            return true;
+        }
+
+        internal bool AskTargetVersonFromUser(out string version)
+        {
+            while (true)
+            {
+                if (!AskQuestion("Target's version (SemVer format)", out version, null, false))
+                    return false;
+                //version = "0.8.240"; // "0.8.240-main+2befca57f1"
+                var pattern = new Regex(@"\d+(\.\d+)+([-](\p{L})+)?([+]([0-9a-zA-Z])+)?");
+                var isMatch = pattern.IsMatch(version);
+                if (isMatch)
+                    return true;
+                _outputHelper.WriteLine("The version format is incorrect. It must be something like that: 0.8.240, or 0.8.240-main, or even 0.8.240-main+2befca57f1",
+                    AppConstants.COLOR_TEXT_WARNING);
+            }
+        }
+
+        internal string GetDefaultTargetName(string sourceDir)
+        {
+            if (string.IsNullOrWhiteSpace(sourceDir))
+                throw new ArgumentNullException(nameof(sourceDir));
+            var name = ReplaceSpecialSymbolsForTargetName(new DirectoryInfo(sourceDir).Name);
+
+            //split name by "-" for Camel notation
+            var sb = new StringBuilder();
+            for (int i = 0; i < name.Length; i++)
+            {
+                var ch = name[i];
+                if (char.IsUpper(ch) && i > 0 && name[i-1] != '-')
+                    sb.Append('-');
+                sb.Append(ch);
+            }
+            return sb.ToString().ToLower();
+        }
+
+        internal string ReplaceSpecialSymbolsForTargetName(string name)
+        {
+            name = name.Replace(" ", "-");
+            name = Regex.Replace(name, @"[^\w\d]", "-");
+            while(name.Contains("--")) //Guanito - TODO: regex
+                name = name.Replace("--", "-");
+            return name;
         }
 
         internal bool AddFilterRules(string input, SourceFilterOptions filter, out string error)
@@ -462,61 +559,6 @@ Please make your choice";
                 //TODO: remove duplicates
             }
             return true;
-        }
-
-        private bool AskVersionAssemblyName(out string name)
-        {
-            name = null;
-            do
-            {
-                if (!AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version", out name, null, false))
-                    return false;
-            }
-            while (!CheckFileNameAnswer(ref name, "The assembly name cannot be empty", false));
-            return true;
-        }
-
-        internal bool AskTargetVersonFromUser(out string version)
-        {
-            while (true)
-            {
-                if (!AskQuestion("Target' version (SemVer format)", out version, null, false))
-                    return false;
-                //version = "0.8.240"; // "0.8.240-main+2befca57f1"
-                var pattern = new Regex(@"\d+(\.\d+)+([-](\p{L})+)?([+]([0-9a-zA-Z])+)?");
-                var isMatch = pattern.IsMatch(version);
-                if (isMatch)
-                    return true;
-                _outputHelper.WriteLine("The version format is incorrect. It must be something like that: 0.8.240, or 0.8.240-main, or even 0.8.240-main+2befca57f1",
-                    AppConstants.COLOR_TEXT_WARNING);
-            }
-        }
-
-        internal string GetDefaultTargetName(string sourceDir)
-        {
-            if (string.IsNullOrWhiteSpace(sourceDir))
-                throw new ArgumentNullException(nameof(sourceDir));
-            var name = ReplaceSpecialSymbolsForTargetName(new DirectoryInfo(sourceDir).Name);
-
-            //split name by "-" for Camel notation
-            var sb = new StringBuilder();
-            for (int i = 0; i < name.Length; i++)
-            {
-                var ch = name[i];
-                if (char.IsUpper(ch) && i > 0 && name[i-1] != '-')
-                    sb.Append('-');
-                sb.Append(ch);
-            }
-            return sb.ToString().ToLower();
-        }
-
-        internal string ReplaceSpecialSymbolsForTargetName(string name)
-        {
-            name = name.Replace(" ", "-");
-            name = Regex.Replace(name, @"[^\w\d]", "-");
-            while(name.Contains("--")) //Guanito - TODO: regex
-                name = name.Replace("--", "-");
-            return name;
         }
         #endregion
         #region CI

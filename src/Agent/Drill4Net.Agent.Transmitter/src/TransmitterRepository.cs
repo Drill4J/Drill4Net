@@ -77,7 +77,7 @@ namespace Drill4Net.Agent.Transmitter
 
         private MessagerOptions GetMessagerOptions()
         {
-            var optHelper = new BaseOptionsHelper<MessagerOptions>();
+            var optHelper = new BaseOptionsHelper<MessagerOptions>(Subsystem);
             return optHelper.ReadOptions(MessagerConfigPath);
         }
 

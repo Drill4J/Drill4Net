@@ -29,7 +29,10 @@ namespace Drill4Net.Configurator
             WriteAgentOptions(agentOpts, agCfgPath);
 
             // Transmitter opts
-            var transCfgPath = Path.Combine(Options.TransmitterDirectory, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            var transDir = Options.TransmitterDirectory;
+            if (string.IsNullOrEmpty(transDir))
+                transDir = @"..\transmitter";
+            var transCfgPath = Path.Combine(transDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
             var transOpts = ReadMessagerOptions(transCfgPath);
 
             transOpts.Servers.Clear();
