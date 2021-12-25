@@ -28,5 +28,35 @@ namespace Drill4Net.Common
                 }
             }
         }
+
+        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int cnt)
+        {
+            var res = new List<IEnumerable<T>>();
+            if (cnt < 2)
+            {
+                res.Add(source);
+                return res;
+            }
+            var en = source.GetEnumerator();
+            while(true)
+            {
+                List<T> group = new();
+                res.Add(group);
+                bool needFinish = false;
+                for (var i = 0; i < cnt; i++)
+                {
+                    if (!en.MoveNext())
+                    {
+                        needFinish = true;
+                        break;
+                    }
+                    var el = en.Current;
+                    group.Add(el);
+                }
+                if (needFinish)
+                    break;
+            }
+            return res;
+        }
     }
 }

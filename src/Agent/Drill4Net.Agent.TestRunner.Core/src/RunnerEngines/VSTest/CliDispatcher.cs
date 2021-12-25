@@ -110,7 +110,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             for (int grpInd = 0; grpInd < groups.Count; grpInd++)
             {
                 var group = groups[grpInd];
-                List<string[]> chunks = group.Chunk(degreeOfParallelism).ToList();
+                var chunks = Extensions.Chunk(group, degreeOfParallelism).ToList();
                 for(var chInd = 0; chInd < chunks.Count; chInd++)
                 {
                     var chunk = chunks[chInd];

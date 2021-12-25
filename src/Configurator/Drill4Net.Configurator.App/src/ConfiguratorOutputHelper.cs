@@ -5,11 +5,12 @@
         internal bool PrintMenu()
         {
             const string mess = $@"  *** This is help for useful commands:
-  *** Enter '?' or 'help' to print this menu.
-  *** Enter '{AppConstants.COMMAND_SYS}' for config connection to Drill service.
-  *** Enter '{AppConstants.COMMAND_TARGET}' to operate target's injection.
-  *** Enter '{AppConstants.COMMAND_CI}' for some CI operations.
-  *** Press q for exit.";
+  *** '?' or 'help' to print this menu.
+  *** '{AppConstants.COMMAND_SYS}' to configure the system settings.
+  *** '{AppConstants.COMMAND_TARGET}' to operate target's injection.
+  *** '{AppConstants.COMMAND_RUNNER}' to configure the Test Runner for the target.
+  *** '{AppConstants.COMMAND_CI}' for some CI operations.
+  *** 'q' to exit.";
             WriteLine($"\n{mess}", AppConstants.COLOR_TEXT_HIGHLITED);
             return true;
         }

@@ -6,7 +6,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Configuration;
-using Drill4Net.Injector.Core;
+using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator.App
 {
@@ -79,6 +79,7 @@ namespace Drill4Net.Configurator.App
                 "?" or "help" => _outputHelper.PrintMenu(),
                 AppConstants.COMMAND_SYS => SystemConfigure(),
                 AppConstants.COMMAND_TARGET => TargetConfigure(_rep.Options),
+                AppConstants.COMMAND_RUNNER => RunnerConfigure(_rep.Options),
                 AppConstants.COMMAND_CI => CIConfigure(),
                 _ => _outputHelper.PrintMenu(),
             };
@@ -224,7 +225,7 @@ namespace Drill4Net.Configurator.App
             #endregion
 
             // Description
-            if (!AskQuestion("Target's description", out string desc, null))
+            if (!AskQuestion("Target's description", out string desc, null, false))
                 return false;
             cfg.Description = desc;
 
@@ -267,7 +268,7 @@ Please make your choice";
             }
             #endregion
             #region Filter
-            const string filterQuestion = $@"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
+            const string filterHint = $@"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
 We should process only the Target's ones. The system files the Injector can skip on its own (as a rule), but in the case of third-party libraries, this may be too difficult to do automatically. 
 If the target contains one shared root namespace (e.g. Drill4Net at beginning of Drill4Net.BanderLog), the better choice is to use the rules for type ""Namespace"" (in this case value is ""Drill4Net"").
 Hint: the values can be just strings or regular expressions (e.g. ""{CoreConstants.REGEX_FILTER_PREFIX} ^Drill4Net\.([\w-]+\.)+[\w]*Tests$"").
@@ -278,7 +279,7 @@ You can enter several rules in separate strings, e.g. first for files, then for 
 Separate several entities in one rule with a comma. 
 You can use Include and Exclude rules at the same time. By default, a rule has Include type.
 
-To finish, just enter ""ok"".
+To finish, just enter ""{AppConstants.COMMAND_OK}"".
 
 The filters:
   - By directory (full path). Examples:
@@ -303,12 +304,12 @@ Hint: to set up value for ""all entities of current filter type"" use sign *. Ex
        {AppConstants.FILTER_TYPE_FOLDER}: ^* (do not process any folders)
 
 Please create at least one filter rule";
-            _outputHelper.WriteLine($"\n{filterQuestion}: ", AppConstants.COLOR_QUESTION);
+            _outputHelper.WriteLine($"\n{filterHint}: ", AppConstants.COLOR_QUESTION);
 
             while (true)
             {
                 answer = Console.ReadLine()?.Trim()?.ToLower();
-                if (answer.Replace("\"", null) == "ok")
+                if (IsOk(answer))
                     break;
                 if(!AddFilterRules(answer, cfg.Source.Filter, out string err))
                     _outputHelper.WriteLine(err, AppConstants.COLOR_ERROR);
@@ -353,45 +354,12 @@ Please make your choice";
             if (!AddLogFile(cfg.Logs, CoreConstants.SUBSYSTEM_INJECTOR))
                 return false;
 
-            #region Save config
+            // save config
             var injDir = opts.InjectorDirectory;
             if (string.IsNullOrEmpty(injDir))
                 injDir = @"..\injector";
 
-            string injCfgPath;
-            var needSave = true;
-            while (true)
-            {
-                if (!AskQuestion("Name of the Injector's config", out name, CoreConstants.CONFIG_NAME_DEFAULT))
-                    return false;
-                if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
-                    continue;
-                if (!Path.HasExtension(name))
-                    name += ".yml";
-                injCfgPath = Path.Combine(injDir, name);
-
-                if (File.Exists(injCfgPath))
-                {
-                    if (!AskQuestion("Such name already exists. Replace?", out answer, "n"))
-                        return false;
-                    needSave = IsYes(answer);
-                }
-                break;
-            }
-            //
-            if(needSave)
-            {
-                _rep.WriteInjectorOptions(cfg, injCfgPath);
-                _outputHelper.WriteLine($"You can check the Injector's settings: {injCfgPath}", AppConstants.COLOR_TEXT);
-
-                // activating the config
-                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(injDir, injCfgPath);
-                if (needActivate)
-                    SaveRedirectFile(injCfgPath, redirectCfgPath);
-            }
-            #endregion
-
-            return true;
+            return SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, injDir);
         }
 
         internal (bool, string) IsNeedAcivateConfigFor(string appDir, string curCfgPath)
@@ -568,6 +536,98 @@ Please make your choice";
             return true;
         }
         #endregion
+        #region Runner
+        private bool RunnerConfigure(ConfiguratorOptions opts)
+        {
+            var modelCfgPath = Path.Combine(opts.InstallDirectory, "test_runner.yml");
+            var cfg = _rep.ReadTestRunnerOptions(modelCfgPath);
+
+            //desc
+            if (!AskQuestion("Run's description", out string desc, null, false))
+                return false;
+            cfg.Description = desc;
+
+            // DegreeOfParallelism
+            int degree;
+            var defDegree = Environment.ProcessorCount;
+            string degreeS;
+            do
+            {
+                if (!AskQuestion("Degree of parallelism (default)", out degreeS, defDegree.ToString()))
+                    return false;
+            }
+            while (!CheckIntegerAnswer(degreeS, $"The service port must be from 2 to {defDegree}", 2, defDegree, out degree));
+            cfg.DegreeOfParallelism = (byte)degree;
+
+            // parallel restrict
+            if (!AskQuestion("Does it need to limit the parallel execution of tests in this run by DEFAULT?", out string answer, "n"))
+                return false;
+            var runParalellRestrict = IsYes(answer);
+            cfg.DefaultParallelRestrict = runParalellRestrict;
+
+            const string asmHint = $@"Now you need to specify one or more tests' assemblies to run their tests. They can be located either in one folder or in several.
+To finish, just enter ""{AppConstants.COMMAND_OK}"".
+Specify at least one tests' assembly.";
+            _outputHelper.WriteLine($"\n{asmHint}", AppConstants.COLOR_QUESTION);
+
+            if (cfg.Directories == null)
+                cfg.Directories = new();
+            if (!AddTestDirectories(cfg.Directories, runParalellRestrict, out string err))
+                    _outputHelper.WriteLine(err, AppConstants.COLOR_ERROR);
+            if (cfg.Directories.Count == 0)
+                return false;
+
+            // save the options
+            return SaveConfig(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, cfg, opts.TestRunnerDirectory);
+        }
+
+        private bool AddTestDirectories(IList<RunDirectoryOptions> directories, bool runDefaultParalelRestrint, out string err)
+        {
+            err = null;
+            while (true)
+            {
+                var question = directories.Count == 0 ? "Tests' directory" : "One more tests' directory";
+                if (!AskDirectory(question, out var dir, null, false, false))
+                    return false;
+                if (IsOk(dir))
+                    break;
+                if (!AskQuestion("Does it need to limit the parallel execution of tests in this FOLDER by DEFAULT? It contains Xunit 2.x tests?",
+                    out string answer, runDefaultParalelRestrint ? "y" : "n"))
+                    return false;
+                var dirParalellRestrict = IsYes(answer);
+                //
+                var dirRun = new RunDirectoryOptions
+                {
+                    Path = dir,
+                    DefaultParallelRestrict = dirParalellRestrict,
+                    Assemblies = new(),
+                };
+                //
+                while (true)
+                {
+                    question = dirRun.Assemblies.Count == 0 ? "Tests' assembly name" : "One more tests' assembly name";
+                    if (!AskFileName(question, out var asmName, null, false))
+                        return false;
+                    if (IsOk(asmName))
+                        break;
+                    if (!AskQuestion("Does it need to limit the parallel execution of tests in this ASSEMBLY? It contains Xunit 2.x tests?",
+                        out answer, dirParalellRestrict ? "y" : "n"))
+                        return false;
+                    var asmParallelRestrict = IsYes(answer);
+
+                    var asmRun = new RunAssemblyOptions
+                    {
+                        DefaultAssemblyName = asmName,
+                        DefaultParallelRestrict = asmParallelRestrict,
+                    };
+                    dirRun.Assemblies.Add(asmRun);
+                }
+
+                directories.Add(dirRun);
+            }
+            return true;
+        }
+        #endregion
         #region CI
         internal bool CIConfigure()
         {
@@ -637,6 +697,20 @@ Please make your choice";
                     continue;
                 var fileName = Path.GetFileName(filePath);
                 if (!CheckFileNameAnswer(ref fileName, null, !mustExists))
+                    continue;
+                break;
+            }
+            return true;
+        }
+
+        private bool AskFileName(string question, out string fileName, string defValue, bool showDefVal = true)
+        {
+            fileName = null;
+            while (true)
+            {
+                if (!AskQuestion(question, out fileName, defValue, showDefVal))
+                    return false;
+                if (!CheckFileNameAnswer(ref fileName, "File name cannot be empty", false))
                     continue;
                 break;
             }
@@ -740,9 +814,50 @@ Please make your choice";
             return true;
         }
 
+        internal bool SaveConfig<T>(string appName, T cfg, string dir) where T: AbstractOptions, new()
+        {
+            string cfgPath;
+            var needSave = true;
+            while (true)
+            {
+                if (!AskQuestion($"Name of the {appName}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
+                    return false;
+                if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
+                    continue;
+                if (!Path.HasExtension(name))
+                    name += ".yml";
+                cfgPath = Path.Combine(dir, name);
+
+                if (File.Exists(cfgPath))
+                {
+                    if (!AskQuestion("Such name already exists. Replace?", out var answer, "n"))
+                        return false;
+                    needSave = IsYes(answer);
+                }
+                break;
+            }
+            //
+            if (needSave)
+            {
+                _rep.WriteOptions<T>(cfg, cfgPath);
+                _outputHelper.WriteLine($"You can check the {appName}'s settings: {cfgPath}", AppConstants.COLOR_TEXT);
+
+                // activating the config
+                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
+                if (needActivate)
+                    SaveRedirectFile(cfgPath, redirectCfgPath);
+            }
+            return true;
+        }
+
         private bool IsQuit(string s)
         {
             return string.Equals(s, AppConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool IsOk(string s)
+        {
+            return s.Replace("\"", null).Equals(AppConstants.COMMAND_OK, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private bool IsYes(string s, bool noInputIsYes = true)

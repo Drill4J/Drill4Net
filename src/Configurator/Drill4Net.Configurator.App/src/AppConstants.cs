@@ -14,12 +14,14 @@
         #endregion
         #region Commands
         internal const string COMMAND_QUIT = "q";
+        internal const string COMMAND_OK = "ok";
         internal const string COMMAND_YES = "y";
         internal const string COMMAND_NO = "n";
 
         internal const string COMMAND_SYS = "sys";
         internal const string COMMAND_CI = "ci";
         internal const string COMMAND_TARGET = "trg";
+        internal const string COMMAND_RUNNER = "runner";
 
         internal const string COMMAND_DELETE = "delete";
         internal const string COMMAND_ACTIVATE = "activate";

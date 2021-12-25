@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj" />
+    <ProjectReference Include="..\..\Agent\Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Configuration\Drill4Net.Configuration.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />

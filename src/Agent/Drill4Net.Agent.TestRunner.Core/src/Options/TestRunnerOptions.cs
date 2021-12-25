@@ -33,6 +33,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
+            Directories = new();
             return $"Directories: {Directories.Count}, DefaultParallelRestrict: {DefaultParallelRestrict}";
         }
     }

@@ -266,36 +266,41 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal async virtual Task<TestToRunResponse> GetFakeTestToRun()
         #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            TestToRunResponse tests = new();
+            //TODO: create the tests in object directly, don't use deserilization here (ot use JsonNet)
+
             //FAKE TEST !!!
             //these tests we have to run
-            const string forRun = @"
-            {
-                ""byType"":{
-                ""AUTO"":[
-                    {
-                    ""name"":""PublishersArray"",
-                    ""metadata"":{
-                             ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
-                             ""QualifiedName"":""PublishersArray"",
-                            }
-                    },
-                    {
-                    ""name"":""BookStateUpdateFails"",
-                    ""metadata"":{
-                            ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
-                            ""QualifiedName"":""BookStateUpdateFails"",
-                           }
-                     }
-                ]
-                },
-                ""totalCount"":2
-            }";
-            var opts = new System.Text.Json.JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = true,
-                AllowTrailingCommas = true,
-            };
-            return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
+            //const string forRun = @"
+            //{
+            //    ""byType"":{
+            //    ""AUTO"":[
+            //        {
+            //        ""name"":""PublishersArray"",
+            //        ""metadata"":{
+            //                 ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
+            //                 ""QualifiedName"":""PublishersArray"",
+            //                }
+            //        },
+            //        {
+            //        ""name"":""BookStateUpdateFails"",
+            //        ""metadata"":{
+            //                ""AssemblyPath"":""d:\\Projects\\IHS-bdd.Injected\\Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll"",
+            //                ""QualifiedName"":""BookStateUpdateFails"",
+            //               }
+            //         }
+            //    ]
+            //    },
+            //    ""totalCount"":2
+            //}";
+            //var opts = new System.Text.Json.JsonSerializerOptions()
+            //{
+            //    PropertyNameCaseInsensitive = true,
+            //    AllowTrailingCommas = true,
+            //};
+            //return System.Text.Json.JsonSerializer.Deserialize<TestToRunResponse>(forRun, opts);
+
+            return tests;
         }
 
         public override string ToString()

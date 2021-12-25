@@ -5,6 +5,7 @@ using Drill4Net.Injector.Core;
 using Drill4Net.Configuration;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Messaging;
+using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -74,6 +75,11 @@ namespace Drill4Net.Configurator
         public void ReadInjectorOptions(InjectorOptions opts, string cfgPath)
         {
             WriteOptions<InjectorOptions>(opts, cfgPath);
+        }
+
+        public TestRunnerOptions ReadTestRunnerOptions(string cfgPath)
+        {
+            return ReadOptions<TestRunnerOptions>(cfgPath);
         }
 
         public T ReadOptions<T>(string cfgPath) where T : AbstractOptions, new()
