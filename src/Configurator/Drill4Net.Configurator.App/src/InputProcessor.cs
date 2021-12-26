@@ -681,7 +681,10 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             }
             #endregion
             #region Inject the CI operations
-
+            var selected = new List<string>();
+            foreach (var num in nums)
+                selected.Add($"{dir}{projects[num - 1]}");
+            ide.InjectCI(selected);
             #endregion
             //
             return true;
