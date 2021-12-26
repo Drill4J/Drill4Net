@@ -652,8 +652,10 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
 
             // select the projects
             int[] nums;
+            var selected = new List<string>();
             while (true)
             {
+                selected.Clear();
                 if (!AskQuestion($"Select project numbers to inject CI operations into them (comma-separated digits from 1 to {projects.Count})", out var answer, null, false))
                     return false;
                 if(string.IsNullOrWhiteSpace(answer))
@@ -677,16 +679,25 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                     _outputHelper.WriteLine("Out of range, pleae repeat", AppConstants.COLOR_TEXT_WARNING);
                     continue;
                 }
-                break;
+                //
+                foreach (var num in nums)
+                    selected.Add($"{dir}{projects[num - 1]}");
+
+                _outputHelper.WriteLine("\nYou have selected these:", AppConstants.COLOR_TEXT);
+                foreach (var prj in selected)
+                {
+                    _outputHelper.WriteLine(prj, AppConstants.COLOR_TEXT);
+                }
+                if (!AskQuestion("That's right?", out answer, "y"))
+                    return false;
+                if(IsYes(answer))
+                    break;
             }
             #endregion
-            #region Inject the CI operations
-            var selected = new List<string>();
-            foreach (var num in nums)
-                selected.Add($"{dir}{projects[num - 1]}");
+
             ide.InjectCI(selected);
-            #endregion
-            //
+            _outputHelper.WriteLine("\nCI operations are injected.", AppConstants.COLOR_INFO);
+
             return true;
         }
         #endregion
