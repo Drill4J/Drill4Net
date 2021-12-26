@@ -55,6 +55,7 @@ namespace Drill4Net.Configurator.App
             while (true)
             {
                 _outputHelper.WriteLine("\nCommand:", AppConstants.COLOR_TEXT);
+                _outputHelper.Write(">>", false, AppConstants.COLOR_DEFAULT);
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
@@ -605,8 +606,85 @@ Specify at least one tests' assembly.";
         #region CI
         internal bool CIConfigure()
         {
-            _outputHelper.WriteLine("\nSorry, CI operations don't implemented yet", AppConstants.COLOR_TEXT);
-            return false;
+            var ide = new IdeConfigurator();
+
+            #region Search the projects
+            var def = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), @"source\repos\");
+            var dirExists = Directory.Exists(def);
+            if (!dirExists)
+                def = null;
+            string dir;
+            IList<string> projects;
+            while (true)
+            {
+                if (!AskDirectory(@"This is CI block commands. At the moment, integration is implemented only for IDEs (Visual Studio, Rider, etc). 
+Please, specifiy the directory of one or more solutions with .NET source code projects", out dir, def, true, dirExists))
+                    return false;
+
+                try
+                {
+                    projects = ide.GetProjects(dir);
+                    var len = dir.Length;
+                    projects = projects.Select(a => a.Substring(len)).OrderBy(x => x).ToList();
+                    if (!projects.Any())
+                    {
+                        _outputHelper.WriteLine("No projects detected.", AppConstants.COLOR_TEXT_WARNING);
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var er = ex.ToString();
+                    _logger.Error(er);
+                    _outputHelper.WriteLine($"Error: {er}", AppConstants.COLOR_ERROR);
+                    continue;
+                }
+                break;
+            }
+            #endregion
+            #region Select the projects
+            _outputHelper.WriteLine("\nThe found projects are:", AppConstants.COLOR_INFO);
+            for (int i = 0; i < projects.Count; i++)
+            {
+                string prj = projects[i];
+                _outputHelper.WriteLine($"{i+1}. {prj}", AppConstants.COLOR_TEXT);
+            }
+
+            // select the projects
+            int[] nums;
+            while (true)
+            {
+                if (!AskQuestion($"Select project numbers to inject CI operations into them (comma-separated digits from 1 to {projects.Count})", out var answer, null, false))
+                    return false;
+                if(string.IsNullOrWhiteSpace(answer))
+                {
+                    _outputHelper.WriteLine("Input cannot be empty", AppConstants.COLOR_TEXT_WARNING);
+                    continue;
+                }
+                //
+                try
+                {
+                    nums = answer.Split(',').Select(a => a.Trim()).Select(a => Convert.ToInt32(a)).ToArray();
+                }
+                catch
+                {
+                    _outputHelper.WriteLine("Wrong input", AppConstants.COLOR_TEXT_WARNING);
+                    continue;
+                }
+                //
+                if (nums.Min() < 1 || nums.Max() > projects.Count)
+                {
+                    _outputHelper.WriteLine("Out of range, pleae repeat", AppConstants.COLOR_TEXT_WARNING);
+                    continue;
+                }
+                break;
+            }
+            #endregion
+            #region Inject the CI operations
+
+            #endregion
+            //
+            return true;
         }
         #endregion
         #region Common
@@ -724,6 +802,7 @@ Specify at least one tests' assembly.";
                 question += ":";
             //
             _outputHelper.WriteLine(question, AppConstants.COLOR_QUESTION);
+            _outputHelper.Write(">>", false, AppConstants.COLOR_DEFAULT);
             answer = Console.ReadLine()?.Trim();
             if (IsQuit(answer))
                 return false;
