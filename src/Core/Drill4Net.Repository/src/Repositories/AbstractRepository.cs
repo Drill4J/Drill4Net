@@ -39,18 +39,10 @@ namespace Drill4Net.Repository
 
         /*********************************************************************************/
 
-        #region Arguments
         public static string GetArgumentConfigPath(CliParser cliParser, string defaultPath = null)
         {
-            return GetArgument(cliParser, CoreConstants.ARGUMENT_CONFIG_PATH, defaultPath);
+            return cliParser.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH) ?? defaultPath;
         }
-
-        public static string GetArgument(CliParser cliParser, string parameter, string @default = null)
-        {
-            var cfgArg = cliParser.GetParameter(parameter);
-            return cfgArg == null ? @default : cfgArg;
-        }
-        #endregion
 
         /// <summary>
         /// Prepares the initialize logger (it is usually for simple emergency logging).

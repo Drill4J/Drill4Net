@@ -27,7 +27,7 @@ namespace Drill4Net.Repository
         protected TreeRepository(string subsystem, CliParser cliParser) : base(subsystem, cliParser)
         {
             Init();
-            TargetVersionFromArgs = GetArgumentTargetVersion(cliParser);
+            TargetVersionFromArgs = cliParser.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
             if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
                 Options.Target.Version = TargetVersionFromArgs;
         }
@@ -48,11 +48,6 @@ namespace Drill4Net.Repository
         {
             _logger = new TypedLogger<TreeRepository<TOptions, THelper>>(Subsystem);
             _helper = new TreeRepositoryHelper(Subsystem);
-        }
-
-        protected string GetArgumentTargetVersion(CliParser cliParser)
-        {
-            return GetArgument(cliParser, CoreConstants.ARGUMENT_TARGET_VERSION, null);
         }
 
         #region Injected Tree
