@@ -29,10 +29,10 @@ namespace Drill4Net.Configurator.App
 
         /**********************************************************************/
 
-        public void Start(string[] args)
+        public void Start(CliParser cliParser)
         {
             //_outputHelper.WriteMessage("Configurator is initializing...", ConfiguratorAppConstants.COLOR_TEXT);
-            if (args == null || args.Length == 0) //interactive poller
+            if (cliParser.Arguments.Count == 0) //interactive poller
             {
                 _logger.Info("Interactive mode");
                 _outputHelper.PrintMenu();
@@ -41,11 +41,11 @@ namespace Drill4Net.Configurator.App
             else //automatic processing by arguments
             {
                 _logger.Info("Automatic mode");
-                ProcessByArguments(args);
+                ProcessByArguments(cliParser);
             }
         }
 
-        internal void ProcessByArguments(string[] args)
+        internal void ProcessByArguments(CliParser cliParser)
         {
 
         }

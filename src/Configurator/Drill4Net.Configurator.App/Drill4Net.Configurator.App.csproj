@@ -5,12 +5,18 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <LangVersion>latest</LangVersion>
+	  <ApplicationIcon>1486504823-lab.ico</ApplicationIcon>
+	  <AssemblyName>d4n</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <OutputPath>..\..\..\build\bin\Debug\Drill4Net.Configurator.App</OutputPath>
 	  <DocumentationFile>..\..\..\doc\xml\Drill4Net.Configurator.App\Drill4Net.Configurator.App.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="1486504823-lab.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="GitInfo" Version="2.2.0" />
