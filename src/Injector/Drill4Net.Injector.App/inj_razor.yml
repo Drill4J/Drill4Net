@@ -1,5 +1,5 @@
 ﻿Description: Manual debugging of Injector App (Standard agent) on Razor app
-Type: Injector #type as hint
+Type: Injector # type as hint
 Target:
     Name: razor-app
     Version:  # version of whole Product, can be empty and can be overridden by Agent's configs

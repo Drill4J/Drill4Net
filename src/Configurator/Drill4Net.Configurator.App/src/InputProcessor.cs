@@ -31,7 +31,6 @@ namespace Drill4Net.Configurator.App
 
         public void Start(CliParser cliParser)
         {
-            //_outputHelper.WriteMessage("Configurator is initializing...", ConfiguratorAppConstants.COLOR_TEXT);
             if (cliParser.Arguments.Count == 0) //interactive poller
             {
                 _logger.Info("Interactive mode");

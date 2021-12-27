@@ -1,5 +1,5 @@
 ﻿Description: Debugging of Injector App (Kafka middleware) on Standard Target
-Type: Injector #type as hint
+Type: Injector # type as hint
 Target: # some metadata about target
     Name: console-testing-target-kafka # optional injection name
     Version: # 0.0.999 # version of whole Product, can be empty and can be overridden by Agent's configs
