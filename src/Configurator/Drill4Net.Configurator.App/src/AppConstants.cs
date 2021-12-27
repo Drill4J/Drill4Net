@@ -39,6 +39,7 @@
         internal const string FILTER_TYPE_ATTRIBUTE = "ATTR";
         #endregion
 
+        internal const string TERMINAL_SIGN = ">>";
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
         internal const string MESSAGE_PROPERTIES_EDIT_WARNING = "Please note that only some basic settings can be changed now. You can read and edit the full list of properties in the corresponding configuration files.";
     }

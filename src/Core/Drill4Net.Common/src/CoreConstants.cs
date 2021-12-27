@@ -61,6 +61,8 @@
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
+        public const string ARGUMENT_SOURCE_PATH = "source_path";
+        public const string ARGUMENT_DESTINATION_PATH = "dest_path";
         public const string ARGUMENT_TARGET_VERSION = "version";
 
         /// <summary>

@@ -55,7 +55,7 @@ namespace Drill4Net.Configurator.App
             while (true)
             {
                 _outputHelper.WriteLine("\nCommand:", AppConstants.COLOR_TEXT);
-                _outputHelper.Write(">>", false, AppConstants.COLOR_DEFAULT);
+                _outputHelper.Write(AppConstants.TERMINAL_SIGN, false, AppConstants.COLOR_DEFAULT);
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
@@ -816,7 +816,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 question += ":";
             //
             _outputHelper.WriteLine(question, AppConstants.COLOR_QUESTION);
-            _outputHelper.Write(">>", false, AppConstants.COLOR_DEFAULT);
+            _outputHelper.Write(AppConstants.TERMINAL_SIGN, false, AppConstants.COLOR_DEFAULT);
             answer = Console.ReadLine()?.Trim();
             if (IsQuit(answer))
                 return false;

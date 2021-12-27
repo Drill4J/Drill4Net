@@ -31,11 +31,11 @@ namespace Drill4Net.Injector.Engine
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
-        /// <param name="args">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(string[] args): base(_subsystem, args)
+        /// <param name="cliParser">Input arguments from console, including path to config, etc</param>
+        public InjectorRepository(CliParser cliParser): base(_subsystem, cliParser)
         {
             CreateLogger();
-            _optHelper.Clarify(args, Options);
+            _optHelper.Clarify(cliParser, Options);
         }
 
         /// <summary>

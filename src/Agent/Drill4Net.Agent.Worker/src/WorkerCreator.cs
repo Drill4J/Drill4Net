@@ -11,14 +11,16 @@ namespace Drill4Net.Agent.Worker
 {
     public class WorkerCreator
     {
-        private readonly string[] _args;
+        private readonly CliParser _cliParser;
         private readonly Logger _logger;
 
         /**************************************************************************/
 
         public WorkerCreator(string[] appArgs)
         {
-            _args = appArgs ?? throw new ArgumentNullException(nameof(appArgs));
+            if (appArgs == null)
+                throw new ArgumentNullException(nameof(appArgs));
+            _cliParser = new CliParser(appArgs, false);
             _logger = new TypedLogger<WorkerCreator>(CoreConstants.SUBSYSTEM_AGENT_WORKER);
         }
 
@@ -44,10 +46,10 @@ namespace Drill4Net.Agent.Worker
         internal virtual TargetedReceiverRepository GetRepository()
         {
             #region Get options
-            var (cfgPath, opts) = GetBaseOptions(_args);
-            var targetSession = GetTargetSession(_args);
-            var targetName = GetTargetName(_args);
-            var targetVersion = GetTargetVersion(_args);
+            var (cfgPath, opts) = GetBaseOptions();
+            var targetSession = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
+            var targetName = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_NAME);
+            var targetVersion = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_VERSION);
             _logger.Info($"Parameters: session={targetSession};name={targetName};version={targetVersion}");
 
             if (opts.Sender == null)
@@ -99,24 +101,9 @@ namespace Drill4Net.Agent.Worker
             return new CommandKafkaSender(targRep);
         }
 
-        private string GetTargetSession(string[] args)
+        internal virtual (string cfgPath, MessagerOptions opts) GetBaseOptions()
         {
-            return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
-        }
-
-        private string GetTargetName(string[] args)
-        {
-            return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_NAME);
-        }
-
-        private string GetTargetVersion(string[] args)
-        {
-            return AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_TARGET_VERSION);
-        }
-
-        internal virtual (string cfgPath, MessagerOptions opts) GetBaseOptions(string[] args)
-        {
-            var cfgPathArg = AbstractRepository.GetArgument(args, MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
+            var cfgPathArg = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
             _logger.Debug($"Config path from argumants: [{cfgPathArg}]");
 
             var opts = TargetedReceiverRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);

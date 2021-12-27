@@ -21,13 +21,14 @@ namespace Drill4Net.Injector.App
         {
             AbstractRepository.PrepareEmergencyLogger();
             //program name... yep, from namespace
-            var name = typeof(Program).Namespace + " " + FileUtils.GetProductVersion(typeof(InjectorRepository));
+            var name = $"{typeof(Program).Namespace} {FileUtils.GetProductVersion(typeof(InjectorRepository))}";
             Log.Info($"{name} is starting"); //using emergency logger by simple static call
 
             IInjectorRepository rep = null;
             try
             {
-                rep = new InjectorRepository(args);
+                var cliParser = new CliParser(args, false);
+                rep = new InjectorRepository(cliParser);
                 _logger = new TypedLogger<Program>(rep.Subsystem); //real typed logger from cfg
 
                 //_logger.Debug("Arguments: {@Args}", args);
@@ -42,6 +43,7 @@ namespace Drill4Net.Injector.App
                 await injector.Process()
                     .ConfigureAwait(false);
 #if DEBUG
+                #region Benchmark
                 watcher.Stop();
 
                 Console.WriteLine("");
@@ -53,6 +55,7 @@ namespace Drill4Net.Injector.App
                     duration.ToString());
 
                 _logger.Info("Done.");
+                #endregion
 #endif
             }
             catch (Exception ex)

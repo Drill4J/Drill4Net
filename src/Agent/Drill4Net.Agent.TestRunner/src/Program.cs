@@ -19,7 +19,8 @@ namespace Drill4Net.Agent.TestRunner
 
             try
             {
-                var rep = new TestRunnerRepository();
+                string cfgPath = args.Length > 0 ? args[0] : null;
+                var rep = new TestRunnerRepository(cfgPath);
                 _logger = new TypedLogger<Program>(rep.Subsystem);
                 var runner = new Runner(rep);
                 await runner.Run().ConfigureAwait(false);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Drill4Net.Common;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Repository
@@ -24,7 +25,7 @@ namespace Drill4Net.Repository
 
         /**********************************************************************************/
 
-        protected ConfiguredRepository(string subsystem, string[] args) : this(subsystem, GetArgumentConfigPath(args))
+        protected ConfiguredRepository(string subsystem, CliParser cliParser) : this(subsystem, GetArgumentConfigPath(cliParser))
         {
         }
 

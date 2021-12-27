@@ -24,10 +24,10 @@ namespace Drill4Net.Repository
 
         /*****************************************************************************************/
 
-        protected TreeRepository(string subsystem, string[] args) : base(subsystem, args)
+        protected TreeRepository(string subsystem, CliParser cliParser) : base(subsystem, cliParser)
         {
             Init();
-            TargetVersionFromArgs = GetArgumentTargetVersion(args);
+            TargetVersionFromArgs = GetArgumentTargetVersion(cliParser);
             if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
                 Options.Target.Version = TargetVersionFromArgs;
         }
@@ -50,9 +50,9 @@ namespace Drill4Net.Repository
             _helper = new TreeRepositoryHelper(Subsystem);
         }
 
-        protected string GetArgumentTargetVersion(string[] args)
+        protected string GetArgumentTargetVersion(CliParser cliParser)
         {
-            return GetArgument(args, CoreConstants.ARGUMENT_TARGET_VERSION, null);
+            return GetArgument(cliParser, CoreConstants.ARGUMENT_TARGET_VERSION, null);
         }
 
         #region Injected Tree

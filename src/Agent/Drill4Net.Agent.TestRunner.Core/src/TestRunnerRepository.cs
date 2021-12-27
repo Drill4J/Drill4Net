@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /********************************************************************************/
 
-        public TestRunnerRepository(): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, string.Empty)
+        public TestRunnerRepository(string cfgPath = null): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, cfgPath)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
             if (Options.Directories?.Any() != true)

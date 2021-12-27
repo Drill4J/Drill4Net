@@ -73,28 +73,41 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="args">The input arguments.</param>
         /// <param name="opts">The current options.</param>
-        public void Clarify(string[] args, InjectorOptions opts)
-        {
-            ClarifySourceDirectory(args, opts);
-            ClarifyDestinationDirectory(args, opts);
-        }
-
-        internal void ClarifySourceDirectory(string[] args, InjectorOptions opts)
+        public void Clarify(CliParser cliParser, InjectorOptions opts)
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
+            if (cliParser == null)
+                throw new ArgumentNullException(nameof(cliParser));
             //
-            var sourceDir = args?.Length > 1 ? PotentialPath(args[0]) : null;
+            ClarifySourceDirectory(cliParser, opts);
+            ClarifyDestinationDirectory(cliParser, opts);
+        }
+
+        internal void ClarifySourceDirectory(CliParser cliParser, InjectorOptions opts)
+        {
+            var sourceDir = cliParser.GetParameter(CoreConstants.ARGUMENT_SOURCE_PATH);
+            if (sourceDir == null)
+            {
+                var aloners = cliParser.GetAloners();
+                sourceDir = aloners.Count > 1 ?
+                PotentialPath(cliParser.Arguments[0].Name) : //just the first parameter!
+                null;
+            }
             if (!string.IsNullOrWhiteSpace(sourceDir))
                 opts.Source.Directory = FileUtils.GetDirectoryName(sourceDir);
         }
 
-        internal void ClarifyDestinationDirectory(string[] args, InjectorOptions opts)
+        internal void ClarifyDestinationDirectory(CliParser cliParser, InjectorOptions opts)
         {
-            if (opts == null)
-                throw new ArgumentNullException(nameof(opts));
-            //
-            var destDir = args?.Length > 1 ? PotentialPath(args?[1]) : null;
+            var destDir = cliParser.GetParameter(CoreConstants.ARGUMENT_DESTINATION_PATH);
+            if (destDir == null)
+            {
+                var aloners = cliParser.GetAloners();
+                destDir = aloners.Count > 1 ?
+                    PotentialPath(cliParser.Arguments[1].Name) : //just the second parameter
+                    null;
+            }
             if (!string.IsNullOrWhiteSpace(destDir))
                 SetDestinationDirectory(opts, destDir);
         }

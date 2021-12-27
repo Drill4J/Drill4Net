@@ -10,7 +10,7 @@
     },
     "VersionFromArgs": {
       "commandName": "Project",
-      "commandLineArgs": "-version=0.Z.0"
+      "commandLineArgs": "silent -cfg_path=d:\\Projects\\EPM-D4J\\Drill4Net\\src\\Tests\\IntegrationTests\\Engine\\Drill4Net.Target.Tests.Engine\\post_build_cfg.yml "
     }
   }
 }

@@ -40,20 +40,15 @@ namespace Drill4Net.Repository
         /*********************************************************************************/
 
         #region Arguments
-        public static string GetArgument(string[] args, string parameter, string @default = null)
+        public static string GetArgumentConfigPath(CliParser cliParser, string defaultPath = null)
         {
-            var cfgArg = GetArgumentPair(args, parameter);
-            return cfgArg?.Contains("=") != true ? @default : cfgArg.Split('=')[1];
+            return GetArgument(cliParser, CoreConstants.ARGUMENT_CONFIG_PATH, defaultPath);
         }
 
-        public static string GetArgumentConfigPath(string[] args, string defaultPath = null)
+        public static string GetArgument(CliParser cliParser, string parameter, string @default = null)
         {
-            return GetArgument(args, CoreConstants.ARGUMENT_CONFIG_PATH, defaultPath);
-        }
-
-        internal static string GetArgumentPair(string[] args, string arg)
-        {
-            return args?.FirstOrDefault(a => a.StartsWith($"-{arg}="));
+            var cfgArg = cliParser.GetParameter(parameter);
+            return cfgArg == null ? @default : cfgArg;
         }
         #endregion
 
