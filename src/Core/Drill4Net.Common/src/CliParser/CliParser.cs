@@ -183,6 +183,10 @@ namespace Drill4Net.Common
                 return _argByNames.ContainsKey(name) ? _argByNames[name] : null;
         }
 
+        /// <summary>
+        /// Get the alone values (parameters without their names and without prefix "-" or "--")
+        /// </summary>
+        /// <returns></returns>
         public List<CliArgument> GetAloners() => Arguments.Where(a => a.Type == CliArgumentType.OnlyValue).ToList();
 
         private void AddSwitch(string name)

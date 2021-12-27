@@ -18,6 +18,10 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /********************************************************************************/
 
+        public TestRunnerRepository(CliParser cliParser): this(GetConfigPath(cliParser))
+        {
+        }
+
         public TestRunnerRepository(string cfgPath = null): base(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, cfgPath)
         {
             _logger = new TypedLogger<TestRunnerRepository>(Subsystem);
@@ -32,10 +36,23 @@ namespace Drill4Net.Agent.TestRunner.Core
             _informers = CreateInformers(Options.Directories, Options.Debug);
         }
 
+        private static string GetConfigPath(CliParser cliParser)
+        {
+            var cfgPath = cliParser.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
+            if (cfgPath == null)
+            {
+                var aloners = cliParser.GetAloners();
+                if (aloners.Count > 0)
+                    cfgPath = aloners[0].Value;
+            }
+            return cfgPath;
+
+        }
+
         internal async Task<List<DirectoryRunInfo>> GetRunInfos()
         {
             var list = new List<DirectoryRunInfo>();
-            var targetInformes = Extensions.DistinctBy(_informers, a => a.TargetName); //we need to collect test2Run data just by target
+            var targetInformes = _informers.DistinctBy(a => a.TargetName); //we need to collect test2Run data just by target
             foreach (var trgInformer in targetInformes.AsParallel())
             {
                 DirectoryRunInfo runInfo = await trgInformer.GetRunInfo().ConfigureAwait(false);

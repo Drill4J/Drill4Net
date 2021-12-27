@@ -67,15 +67,15 @@ namespace Drill4Net.Configurator
             return ReadOptions<InjectorOptions>(cfgPath);
         }
 
-        public void WriteInjectorOptions(InjectorOptions opts, string cfgPath)
-        {
-            WriteOptions<InjectorOptions>(opts, cfgPath);
-        }
+        //public void WriteInjectorOptions(InjectorOptions opts, string cfgPath)
+        //{
+        //    WriteOptions<InjectorOptions>(opts, cfgPath);
+        //}
 
-        public void ReadInjectorOptions(InjectorOptions opts, string cfgPath)
-        {
-            WriteOptions<InjectorOptions>(opts, cfgPath);
-        }
+        //public void ReadInjectorOptions(InjectorOptions opts, string cfgPath)
+        //{
+        //    WriteOptions<InjectorOptions>(opts, cfgPath);
+        //}
 
         public TestRunnerOptions ReadTestRunnerOptions(string cfgPath)
         {

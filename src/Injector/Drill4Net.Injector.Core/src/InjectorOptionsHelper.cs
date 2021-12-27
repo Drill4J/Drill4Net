@@ -91,7 +91,7 @@ namespace Drill4Net.Injector.Core
             {
                 var aloners = cliParser.GetAloners();
                 sourceDir = aloners.Count > 1 ?
-                PotentialPath(cliParser.Arguments[0].Name) : //just the first parameter!
+                PotentialPath(cliParser.Arguments[0].Value) : //just the first parameter!
                 null;
             }
             if (!string.IsNullOrWhiteSpace(sourceDir))
@@ -105,7 +105,7 @@ namespace Drill4Net.Injector.Core
             {
                 var aloners = cliParser.GetAloners();
                 destDir = aloners.Count > 1 ?
-                    PotentialPath(cliParser.Arguments[1].Name) : //just the second parameter
+                    PotentialPath(cliParser.Arguments[1].Value) : //just the second parameter
                     null;
             }
             if (!string.IsNullOrWhiteSpace(destDir))
