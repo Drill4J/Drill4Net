@@ -46,6 +46,7 @@ namespace Drill4Net.Configurator.App
 
         internal void ProcessByArguments(CliParser cliParser)
         {
+            var e2eCfgPath = cliParser.GetParameter(ConfiguratorConstants.ARGUMENT_CONFIG_END2END_PATH);
 
         }
 

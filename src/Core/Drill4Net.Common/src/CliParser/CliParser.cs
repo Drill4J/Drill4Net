@@ -78,7 +78,7 @@ namespace Drill4Net.Common
             //   /param4=happy -param5 '--=nice=--'
             foreach (string raw in args)
             {
-                var isAloner = !raw.StartsWith("-");
+                var isAloner = !raw.StartsWith("-") && !raw.Contains("=");
 
                 // Look for new parameters (-,/ or --) and a
                 // possible enclosed value (=,:)

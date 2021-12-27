@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Drill4Net.Configurator.App": {
+      "commandName": "Project"
+    },
+    "ArgsEnd2EndCfg": {
+      "commandName": "Project",
+      "commandLineArgs": "-e2e_cfg_path=\".\\\\\""
+    }
+  }
+}
