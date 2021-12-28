@@ -73,39 +73,39 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="args">The input arguments.</param>
         /// <param name="opts">The current options.</param>
-        public void Clarify(CliParser cliParser, InjectorOptions opts)
+        public void Clarify(CliDescriptor cliDescriptor, InjectorOptions opts)
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
-            if (cliParser == null)
-                throw new ArgumentNullException(nameof(cliParser));
+            if (cliDescriptor == null)
+                throw new ArgumentNullException(nameof(cliDescriptor));
             //
-            ClarifySourceDirectory(cliParser, opts);
-            ClarifyDestinationDirectory(cliParser, opts);
+            ClarifySourceDirectory(cliDescriptor, opts);
+            ClarifyDestinationDirectory(cliDescriptor, opts);
         }
 
-        internal void ClarifySourceDirectory(CliParser cliParser, InjectorOptions opts)
+        internal void ClarifySourceDirectory(CliDescriptor cliDescriptor, InjectorOptions opts)
         {
-            var sourceDir = cliParser.GetParameter(CoreConstants.ARGUMENT_SOURCE_PATH);
+            var sourceDir = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_SOURCE_PATH);
             if (sourceDir == null)
             {
-                var aloners = cliParser.GetAloners();
+                var aloners = cliDescriptor.GetAloners();
                 sourceDir = aloners.Count > 1 ?
-                PotentialPath(cliParser.Arguments[0].Value) : //just the first parameter!
+                PotentialPath(cliDescriptor.Arguments[0].Value) : //just the first parameter!
                 null;
             }
             if (!string.IsNullOrWhiteSpace(sourceDir))
                 opts.Source.Directory = FileUtils.GetDirectoryName(sourceDir);
         }
 
-        internal void ClarifyDestinationDirectory(CliParser cliParser, InjectorOptions opts)
+        internal void ClarifyDestinationDirectory(CliDescriptor cliDescriptor, InjectorOptions opts)
         {
-            var destDir = cliParser.GetParameter(CoreConstants.ARGUMENT_DESTINATION_PATH);
+            var destDir = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_DESTINATION_PATH);
             if (destDir == null)
             {
-                var aloners = cliParser.GetAloners();
+                var aloners = cliDescriptor.GetAloners();
                 destDir = aloners.Count > 1 ?
-                    PotentialPath(cliParser.Arguments[1].Value) : //just the second parameter
+                    PotentialPath(cliDescriptor.Arguments[1].Value) : //just the second parameter
                     null;
             }
             if (!string.IsNullOrWhiteSpace(destDir))

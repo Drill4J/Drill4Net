@@ -24,10 +24,10 @@ namespace Drill4Net.Repository
 
         /*****************************************************************************************/
 
-        protected TreeRepository(string subsystem, CliParser cliParser) : base(subsystem, cliParser)
+        protected TreeRepository(string subsystem, CliDescriptor cliDescriptor) : base(subsystem, cliDescriptor)
         {
             Init();
-            TargetVersionFromArgs = cliParser.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
+            TargetVersionFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
             if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
                 Options.Target.Version = TargetVersionFromArgs;
         }

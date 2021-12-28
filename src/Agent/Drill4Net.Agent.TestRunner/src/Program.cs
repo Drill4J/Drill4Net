@@ -20,8 +20,8 @@ namespace Drill4Net.Agent.TestRunner
 
             try
             {
-                var cliParser = new CliParser(args, false);
-                var rep = new TestRunnerRepository(cliParser);
+                var cliDescriptor = new CliDescriptor(args, false);
+                var rep = new TestRunnerRepository(cliDescriptor);
                 _logger = new TypedLogger<Program>(rep.Subsystem);
                 var runner = new Runner(rep);
                 await runner.Run().ConfigureAwait(false);

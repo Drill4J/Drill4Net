@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /********************************************************************************/
 
-        public TestRunnerRepository(CliParser cliParser): this(GetConfigPath(cliParser))
+        public TestRunnerRepository(CliDescriptor cliDescriptor): this(GetConfigPath(cliDescriptor))
         {
         }
 
@@ -36,12 +36,12 @@ namespace Drill4Net.Agent.TestRunner.Core
             _informers = CreateInformers(Options.Directories, Options.Debug);
         }
 
-        private static string GetConfigPath(CliParser cliParser)
+        private static string GetConfigPath(CliDescriptor cliDescriptor)
         {
-            var cfgPath = cliParser.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
+            var cfgPath = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
             if (cfgPath == null)
             {
-                var aloners = cliParser.GetAloners();
+                var aloners = cliDescriptor.GetAloners();
                 if (aloners.Count > 0)
                     cfgPath = aloners[0].Value;
             }

@@ -25,7 +25,7 @@ namespace Drill4Net.Repository
 
         /**********************************************************************************/
 
-        protected ConfiguredRepository(string subsystem, CliParser cliParser) : this(subsystem, GetArgumentConfigPath(cliParser))
+        protected ConfiguredRepository(string subsystem, CliDescriptor cliDescriptor) : this(subsystem, GetArgumentConfigPath(cliDescriptor))
         {
         }
 

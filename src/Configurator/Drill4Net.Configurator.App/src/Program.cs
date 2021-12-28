@@ -35,11 +35,11 @@ namespace Drill4Net.Agent.Transmitter.Debug
                 _logger.Info($"Start: {_title}");
                 _logger.Info($"Arguments: [{string.Join(", ", args)}]");
 
-                var cliParser = new CliParser(args, true);
+                var cliDescriptor = new CliDescriptor(args, true);
                 var rep = new ConfiguratorRepository();
                 var iProc = new InputProcessor(rep, outHelper);
                 _logger.Debug("Starting the input processor...");
-                iProc.Start(cliParser);
+                iProc.Start(cliDescriptor);
             }
             catch (Exception ex)
             {

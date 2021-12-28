@@ -3,9 +3,9 @@
     "Drill4Net.Configurator.App": {
       "commandName": "Project"
     },
-    "ArgsEnd2EndCfg": {
+    "ArgsCiCfg": {
       "commandName": "Project",
-      "commandLineArgs": "-ci_cfg_path=\".\\\\\""
+      "commandLineArgs": "-ci_cfg_path=.\\ci_example.yml"
     }
   }
 }

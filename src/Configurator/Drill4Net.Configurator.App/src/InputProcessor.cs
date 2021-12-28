@@ -12,6 +12,8 @@ namespace Drill4Net.Configurator.App
 {
     internal class InputProcessor
     {
+        public bool IsInteractive { get; private set; }
+
         private readonly ConfiguratorRepository _rep;
         private readonly ConfiguratorOutputHelper _outputHelper;
         private readonly BaseOptionsHelper _optHelper;
@@ -29,9 +31,10 @@ namespace Drill4Net.Configurator.App
 
         /**********************************************************************/
 
-        public void Start(CliParser cliParser)
+        public void Start(CliDescriptor cliDescriptor)
         {
-            if (cliParser.Arguments.Count == 0) //interactive poller
+            IsInteractive = cliDescriptor.Arguments.Count == 0;
+            if (IsInteractive) //interactive mode
             {
                 _logger.Info("Interactive mode");
                 _outputHelper.PrintMenu();
@@ -40,13 +43,21 @@ namespace Drill4Net.Configurator.App
             else //automatic processing by arguments
             {
                 _logger.Info("Automatic mode");
-                ProcessByArguments(cliParser);
+                ProcessByArguments(cliDescriptor);
             }
         }
 
-        internal void ProcessByArguments(CliParser cliParser)
+        internal void ProcessByArguments(CliDescriptor cliDescriptor)
         {
-            var e2eCfgPath = cliParser.GetParameter(ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH);
+            //TODO: parse the command
+
+            //CI command
+            var ciCfgPath = cliDescriptor.GetParameter(ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH);
+            if (ciCfgPath != null)
+            {
+                var opts = _rep.ReadCiOptions(ciCfgPath);
+
+            }
 
         }
 
@@ -605,23 +616,49 @@ Specify at least one tests' assembly.";
         #region CI
         internal bool CiConfigure()
         {
-            if (!ConfigureCiConfig())
+            if (!ConfigureCiConfig(out var ciCfgPath))
                 return false;
-            return InjectCiToIde();
+            return InjectCiToProjects(ciCfgPath);
         }
 
-        private bool ConfigureCiConfig()
+        private bool ConfigureCiConfig(out string ciCfgPath)
         {
+            ciCfgPath = null;
+
+            //asking
             if (!AskDirectory("Directory for the injections' configs (they will all be used)", out var dir, null, true, false))
                 return false;
             if (!AskDegreeOfParallelism("The degree of parallelism on level those configs", out var degree))
                 return false;
             if (!AskFilePath("Test Runner's config path to run the injected targets", out var runCfgPath, null, true, false))
                 return false;
+            var defCfgPath = Path.Combine(dir, "ci.yml");
+            if (!AskFilePath("Config path for this CI run", out ciCfgPath, defCfgPath, false, true))
+                return false;
+
+            //setting
+            var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, "ci.yml");
+            CiOptions opts;
+            if (File.Exists(modelCfgPath))
+                opts = _rep.ReadCiOptions(modelCfgPath, false);
+            else
+                opts = new();
+            
+            opts.Injection = new BatchInjectionOptions
+            {
+                ConfigDir = dir,
+                DegreeOfParallelism = degree
+            };
+            opts.TestRunnerConfigPath = runCfgPath;
+
+            //saving
+            _rep.WriteCiOptions(opts, ciCfgPath);
+            _outputHelper.WriteLine("\nConfig saved.", AppConstants.COLOR_TEXT);
+
             return true;
         }
 
-        internal bool InjectCiToIde()
+        internal bool InjectCiToProjects(string ciCfgPath = null)
         {
             var ide = new IdeConfigurator();
 
@@ -634,7 +671,7 @@ Specify at least one tests' assembly.";
             IList<string> projects;
             while (true)
             {
-                if (!AskDirectory(@"This is CI block commands. At the moment, integration is implemented only for IDEs (Visual Studio, Rider, etc). 
+                if (!AskDirectory(@"This is CI integration questions. At the moment, integration is implemented only for IDEs (Visual Studio, Rider, etc). 
 Please, specifiy the directory of one or more solutions with .NET source code projects", out dir, def, true, dirExists))
                     return false;
 
@@ -711,9 +748,16 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                     break;
             }
             #endregion
+            #region Config
+            if (string.IsNullOrWhiteSpace(ciCfgPath))
+            {
+                if (!AskFilePath("Config path for this CI run", out ciCfgPath, null, true, false))
+                    return false;
+            }
+            #endregion
 
-            ide.InjectCI(selected);
-            _outputHelper.WriteLine("\nCI operations are injected.", AppConstants.COLOR_INFO);
+            ide.InjectCI(selected, ciCfgPath);
+            _outputHelper.WriteLine("\nCI operation is created and injected.", AppConstants.COLOR_TEXT);
 
             return true;
         }

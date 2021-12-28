@@ -39,9 +39,9 @@ namespace Drill4Net.Repository
 
         /*********************************************************************************/
 
-        public static string GetArgumentConfigPath(CliParser cliParser, string defaultPath = null)
+        public static string GetArgumentConfigPath(CliDescriptor cliDescriptor, string defaultPath = null)
         {
-            return cliParser.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH) ?? defaultPath;
+            return cliDescriptor.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH) ?? defaultPath;
         }
 
         /// <summary>

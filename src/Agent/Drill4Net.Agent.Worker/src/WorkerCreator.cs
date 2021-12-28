@@ -1,7 +1,6 @@
 ﻿using System;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
-using Drill4Net.Repository;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
@@ -11,7 +10,7 @@ namespace Drill4Net.Agent.Worker
 {
     public class WorkerCreator
     {
-        private readonly CliParser _cliParser;
+        private readonly CliDescriptor _cliDescriptor;
         private readonly Logger _logger;
 
         /**************************************************************************/
@@ -20,7 +19,7 @@ namespace Drill4Net.Agent.Worker
         {
             if (appArgs == null)
                 throw new ArgumentNullException(nameof(appArgs));
-            _cliParser = new CliParser(appArgs, false);
+            _cliDescriptor = new CliDescriptor(appArgs, false);
             _logger = new TypedLogger<WorkerCreator>(CoreConstants.SUBSYSTEM_AGENT_WORKER);
         }
 
@@ -47,9 +46,9 @@ namespace Drill4Net.Agent.Worker
         {
             #region Get options
             var (cfgPath, opts) = GetBaseOptions();
-            var targetSession = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
-            var targetName = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_NAME);
-            var targetVersion = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_VERSION);
+            var targetSession = _cliDescriptor.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_SESSION);
+            var targetName = _cliDescriptor.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_NAME);
+            var targetVersion = _cliDescriptor.GetParameter(MessagingTransportConstants.ARGUMENT_TARGET_VERSION);
             _logger.Info($"Parameters: session={targetSession};name={targetName};version={targetVersion}");
 
             if (opts.Sender == null)
@@ -103,7 +102,7 @@ namespace Drill4Net.Agent.Worker
 
         internal virtual (string cfgPath, MessagerOptions opts) GetBaseOptions()
         {
-            var cfgPathArg = _cliParser.GetParameter(MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
+            var cfgPathArg = _cliDescriptor.GetParameter(MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
             _logger.Debug($"Config path from argumants: [{cfgPathArg}]");
 
             var opts = TargetedReceiverRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);

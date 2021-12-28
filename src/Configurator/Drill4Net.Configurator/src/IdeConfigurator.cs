@@ -51,7 +51,7 @@ namespace Drill4Net.Configurator
                 GetProjects(curDir, mask, ref projects);
         }
 
-        public void InjectCI(IEnumerable<string> paths)
+        public void InjectCI(IEnumerable<string> paths, string ciCfgPath)
         {
             foreach (var path in paths)
             {

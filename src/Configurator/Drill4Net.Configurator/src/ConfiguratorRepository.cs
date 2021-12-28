@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Drill4Net.Common;
 using Drill4Net.Repository;
 using Drill4Net.Injector.Core;
@@ -67,15 +68,29 @@ namespace Drill4Net.Configurator
             return ReadOptions<InjectorOptions>(cfgPath);
         }
 
-        //public void WriteInjectorOptions(InjectorOptions opts, string cfgPath)
-        //{
-        //    WriteOptions<InjectorOptions>(opts, cfgPath);
-        //}
+        public CiOptions ReadCiOptions(string cfgPath, bool validate = true)
+        {
+            var opts = ReadOptions<CiOptions>(cfgPath);
 
-        //public void ReadInjectorOptions(InjectorOptions opts, string cfgPath)
-        //{
-        //    WriteOptions<InjectorOptions>(opts, cfgPath);
-        //}
+            //validate
+            if (validate)
+            {
+                var cfgDirs = opts.Injection?.ConfigDir;
+                if (string.IsNullOrWhiteSpace(cfgDirs) || !Directory.Exists(cfgDirs))
+                    throw new ArgumentException("The directory for injector's configs does not exist");
+
+                var runnerCfg = opts.TestRunnerConfigPath;
+                if (string.IsNullOrWhiteSpace(runnerCfg) || !File.Exists(runnerCfg))
+                    throw new ArgumentException("The Test Runner's config does not exist");
+            }
+            //
+            return opts;
+        }
+
+        public void WriteCiOptions(CiOptions opts, string cfgPath)
+        {
+            WriteOptions<CiOptions>(opts, cfgPath);
+        }
 
         public TestRunnerOptions ReadTestRunnerOptions(string cfgPath)
         {

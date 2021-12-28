@@ -27,8 +27,8 @@ namespace Drill4Net.Injector.App
             IInjectorRepository rep = null;
             try
             {
-                var cliParser = new CliParser(args, false);
-                rep = new InjectorRepository(cliParser);
+                var cliDescriptor = new CliDescriptor(args, false);
+                rep = new InjectorRepository(cliDescriptor);
                 _logger = new TypedLogger<Program>(rep.Subsystem); //real typed logger from cfg
 
                 //_logger.Debug("Arguments: {@Args}", args);

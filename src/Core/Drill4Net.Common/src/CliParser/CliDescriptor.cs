@@ -8,7 +8,7 @@ namespace Drill4Net.Common
     /// <summary>
     /// Arguments class for CLI
     /// </summary>
-    public class CliParser
+    public class CliDescriptor
     {
         /// <summary>
         /// ID for this command
@@ -27,8 +27,9 @@ namespace Drill4Net.Common
         public List<string> Contexts { get; }
 
         /// <summary>
-        ///If true, then there is no context and command, and only
-        ///application arguments are specified from the first parameter
+        ///If false, then there is no context and command, and only
+        ///application arguments are specified from the first parameter.
+        ///The command in this case is implicit: it is the run of the App itself
         /// </summary>
         public bool WithCommand { get; }
 
@@ -55,7 +56,7 @@ namespace Drill4Net.Common
 
         /***********************************************************************/
 
-        public CliParser(string[] args, bool withCommand)
+        public CliDescriptor(string[] args, bool withCommand)
         {
             WithCommand = withCommand;
             Arguments = new();
