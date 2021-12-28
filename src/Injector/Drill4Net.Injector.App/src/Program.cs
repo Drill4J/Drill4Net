@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.App
             AbstractRepository.PrepareEmergencyLogger();
             //program name... yep, from namespace
             var name = $"{typeof(Program).Namespace} {FileUtils.GetProductVersion(typeof(InjectorRepository))}";
-            Log.Info($"{name} is starting"); //using emergency logger by simple static call
+            Log.Info($"{name} is starting"); //use emergency logger with simple static call until normal logger is created
 
             IInjectorRepository rep = null;
             try

@@ -5,7 +5,7 @@
     },
     "ArgsEnd2EndCfg": {
       "commandName": "Project",
-      "commandLineArgs": "-e2e_cfg_path=\".\\\\\""
+      "commandLineArgs": "-ci_cfg_path=\".\\\\\""
     }
   }
 }

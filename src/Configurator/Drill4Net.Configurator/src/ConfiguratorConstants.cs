@@ -1,7 +1,10 @@
 ﻿namespace Drill4Net.Configurator
 {
-    public class ConfiguratorConstants
+    /// <summary>
+    /// Constants for Configurator
+    /// </summary>
+    public static class ConfiguratorConstants
     {
-        public const string ARGUMENT_CONFIG_END2END_PATH = "e2e_cfg_path";
+        public const string ARGUMENT_CONFIG_CI_PATH = "ci_cfg_path";
     }
 }

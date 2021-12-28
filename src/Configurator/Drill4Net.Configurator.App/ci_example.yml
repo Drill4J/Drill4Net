@@ -1,6 +1,6 @@
 ﻿Description: Example configuration for the end2end workflow - it runs batch injections of some targets and then tests using TestRunner
 Type: CI # type as hint
 Injection:
-   ConfigDir: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\debug_end2end\ # Directory with the injector configs to be used (all in the folder)
+   ConfigDir: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\debug_ci\set_1\inj_cfg\ # Directory with the injector configs to be used (all in the folder)
    DegreeOfParallelism: 4 # this applies to the processing of targets by Injectors themselves, default is number of CPU cores
-TestRunnerConfigPath: ..\..\Drill4Net.Agent.TestRunner\net6.0\ # The path to the TestRunner config used to run tests in injected targets
+TestRunnerConfigPath: ..\..\Drill4Net.Agent.TestRunner\net6.0\run_SpecFlow_several.yml # The path to the TestRunner config used to run tests in injected targets

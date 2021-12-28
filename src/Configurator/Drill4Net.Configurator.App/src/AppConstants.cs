@@ -22,6 +22,7 @@
         internal const string COMMAND_CI = "ci";
         internal const string COMMAND_TARGET = "trg";
         internal const string COMMAND_RUNNER = "runner";
+        internal const string COMMAND_START = "start";
 
         internal const string COMMAND_DELETE = "delete";
         internal const string COMMAND_ACTIVATE = "activate";

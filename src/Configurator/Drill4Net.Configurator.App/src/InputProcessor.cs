@@ -46,7 +46,7 @@ namespace Drill4Net.Configurator.App
 
         internal void ProcessByArguments(CliParser cliParser)
         {
-            var e2eCfgPath = cliParser.GetParameter(ConfiguratorConstants.ARGUMENT_CONFIG_END2END_PATH);
+            var e2eCfgPath = cliParser.GetParameter(ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH);
 
         }
 
@@ -78,10 +78,16 @@ namespace Drill4Net.Configurator.App
             return input switch
             {
                 "?" or "help" => _outputHelper.PrintMenu(),
+
+                //configuring
                 AppConstants.COMMAND_SYS => SystemConfigure(),
                 AppConstants.COMMAND_TARGET => TargetConfigure(_rep.Options),
                 AppConstants.COMMAND_RUNNER => RunnerConfigure(_rep.Options),
-                AppConstants.COMMAND_CI => CIConfigure(),
+                AppConstants.COMMAND_CI => CiConfigure(),
+
+                //commands
+                AppConstants.COMMAND_START => StartCI(),
+
                 _ => _outputHelper.PrintMenu(),
             };
         }
@@ -523,15 +529,8 @@ Please make your choice";
             cfg.Description = desc;
 
             // DegreeOfParallelism
-            int degree;
-            var defDegree = Environment.ProcessorCount;
-            string degreeS;
-            do
-            {
-                if (!AskQuestion("Degree of parallelism (default)", out degreeS, defDegree.ToString()))
-                    return false;
-            }
-            while (!CheckIntegerAnswer(degreeS, $"The service port must be from 2 to {defDegree}", 2, defDegree, out degree));
+            if (!AskDegreeOfParallelism("Degree of parallelism (default)", out var degree))
+                return false;
             cfg.DegreeOfParallelism = (byte)degree;
 
             // parallel restrict
@@ -604,7 +603,25 @@ Specify at least one tests' assembly.";
         }
         #endregion
         #region CI
-        internal bool CIConfigure()
+        internal bool CiConfigure()
+        {
+            if (!ConfigureCiConfig())
+                return false;
+            return InjectCiToIde();
+        }
+
+        private bool ConfigureCiConfig()
+        {
+            if (!AskDirectory("Directory for the injections' configs (they will all be used)", out var dir, null, true, false))
+                return false;
+            if (!AskDegreeOfParallelism("The degree of parallelism on level those configs", out var degree))
+                return false;
+            if (!AskFilePath("Test Runner's config path to run the injected targets", out var runCfgPath, null, true, false))
+                return false;
+            return true;
+        }
+
+        internal bool InjectCiToIde()
         {
             var ide = new IdeConfigurator();
 
@@ -647,7 +664,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             for (int i = 0; i < projects.Count; i++)
             {
                 string prj = projects[i];
-                _outputHelper.WriteLine($"{i+1}. {prj}", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine($"{i + 1}. {prj}", AppConstants.COLOR_TEXT);
             }
 
             // select the projects
@@ -658,7 +675,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 selected.Clear();
                 if (!AskQuestion($"Select project numbers to inject CI operations into them (comma-separated digits from 1 to {projects.Count})", out var answer, null, false))
                     return false;
-                if(string.IsNullOrWhiteSpace(answer))
+                if (string.IsNullOrWhiteSpace(answer))
                 {
                     _outputHelper.WriteLine("Input cannot be empty", AppConstants.COLOR_TEXT_WARNING);
                     continue;
@@ -690,7 +707,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 }
                 if (!AskQuestion("That's right?", out answer, "y"))
                     return false;
-                if(IsYes(answer))
+                if (IsYes(answer))
                     break;
             }
             #endregion
@@ -825,7 +842,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             if (empty)
             {
                 answer = defValue;
-                _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER);
+                _outputHelper.Write(answer, true, AppConstants.COLOR_ANSWER, true);
             }
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");
             return true;
@@ -874,6 +891,20 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                     continue;
                 break;
             }
+            return true;
+        }
+
+        private bool AskDegreeOfParallelism(string mess, out int degree)
+        {
+            degree = 1;
+            var defDegree = Environment.ProcessorCount;
+            string degreeS;
+            do
+            {
+                if (!AskQuestion(mess, out degreeS, defDegree.ToString()))
+                    return false;
+            }
+            while (!CheckIntegerAnswer(degreeS, $"The degree of parallelism must be from 2 to {defDegree}", 2, defDegree, out degree));
             return true;
         }
 
@@ -939,7 +970,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
         {
             if (mustExist && string.IsNullOrWhiteSpace(directory))
             {
-                _outputHelper.Write("Directory cannot be empty and must exist", true, AppConstants.COLOR_TEXT_WARNING);
+                _outputHelper.Write("Directory cannot be empty and must exist\n", false, AppConstants.COLOR_TEXT_WARNING);
                 return false;
             }
             if (!mustExist || (mustExist && Directory.Exists(directory)))
@@ -961,7 +992,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
         {
             if (!canBeEmpty && string.IsNullOrWhiteSpace(filename))
             {
-                _outputHelper.Write("Filename cannot be empty", true, AppConstants.COLOR_TEXT_WARNING);
+                _outputHelper.Write("Filename cannot be empty", false, AppConstants.COLOR_TEXT_WARNING);
                 return false;
             }
             if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
@@ -989,6 +1020,12 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             if (s == "" && noInputIsYes)
                 return true;
             return string.Equals(s, AppConstants.COMMAND_YES, StringComparison.OrdinalIgnoreCase);
+        }
+        #endregion
+        #region Start E2E    
+        private bool StartCI()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }
