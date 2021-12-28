@@ -633,7 +633,7 @@ Specify at least one tests' assembly.";
             if (!AskFilePath("Test Runner's config path to run the injected targets", out var runCfgPath, null, true, false))
                 return false;
             var defCfgPath = Path.Combine(dir, "ci.yml");
-            if (!AskFilePath("Config path for this CI run", out ciCfgPath, defCfgPath, false, true))
+            if (!AskFilePath("Config path for this CI run will be saved to", out ciCfgPath, defCfgPath, false, true))
                 return false;
 
             //setting
@@ -653,7 +653,7 @@ Specify at least one tests' assembly.";
 
             //saving
             _rep.WriteCiOptions(opts, ciCfgPath);
-            _outputHelper.WriteLine("\nConfig saved.", AppConstants.COLOR_TEXT);
+            _outputHelper.WriteLine("\nConfig was saved.", AppConstants.COLOR_TEXT);
 
             return true;
         }
@@ -737,12 +737,12 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 foreach (var num in nums)
                     selected.Add($"{dir}{projects[num - 1]}");
 
-                _outputHelper.WriteLine("\nYou have selected these:", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine("\nYou have selected these:", AppConstants.COLOR_INFO);
                 foreach (var prj in selected)
                 {
                     _outputHelper.WriteLine(prj, AppConstants.COLOR_TEXT);
                 }
-                if (!AskQuestion("That's right?", out answer, "y"))
+                if (!AskQuestion("Is that right?", out answer, "y"))
                     return false;
                 if (IsYes(answer))
                     break;
@@ -751,15 +751,24 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             #region Config
             if (string.IsNullOrWhiteSpace(ciCfgPath))
             {
-                if (!AskFilePath("Config path for this CI run", out ciCfgPath, null, true, false))
+                if (!AskFilePath("Config path for this CI run will read from", out ciCfgPath, null, true, false))
                     return false;
             }
             #endregion
-
-            ide.InjectCI(selected, ciCfgPath);
-            var ending = selected.Count > 1 ? $"s: {selected.Count}" : null;
-            _outputHelper.WriteLine($"\nCI operation is created and injected to the project{ending}.", AppConstants.COLOR_TEXT);
-
+            #region Injecting
+            if (selected.Count > 0)
+            {
+                ide.InjectCI(selected, ciCfgPath, out var errors);
+                if (errors.Count > 0)
+                {
+                    _outputHelper.WriteLine("\nErrors occurred during processing:", AppConstants.COLOR_TEXT_WARNING);
+                    foreach (var error in errors)
+                        _outputHelper.WriteLine($"{error}", AppConstants.COLOR_ERROR);
+                }
+                var ending = selected.Count > 1 ? $"s: {selected.Count - errors.Count}/{selected.Count}" : null;
+                _outputHelper.WriteLine($"\nCI operation is created and injected to the project{ending}.", AppConstants.COLOR_TEXT);
+            }
+            #endregion
             return true;
         }
         #endregion

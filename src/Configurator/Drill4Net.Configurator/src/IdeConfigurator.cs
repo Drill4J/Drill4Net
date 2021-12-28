@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using Drill4Net.Common;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Configurator
 {
@@ -11,12 +11,14 @@ namespace Drill4Net.Configurator
     public class IdeConfigurator
     {
         private readonly ConfiguratorRepository _rep;
+        private static Logger _logger;
 
         /*******************************************************************/
 
         public IdeConfigurator(ConfiguratorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+            _logger = new TypedLogger<IdeConfigurator>(rep.Subsystem);
         }
 
         /*******************************************************************/
@@ -63,16 +65,100 @@ namespace Drill4Net.Configurator
                 GetProjects(curDir, mask, ref projects);
         }
 
-        public void InjectCI(IEnumerable<string> paths, string ciCfgPath)
+        public void InjectCI(IEnumerable<string> paths, string ciCfgPath, out List<string> errors)
         {
             if(string.IsNullOrWhiteSpace(ciCfgPath))
                 throw new ArgumentNullException(nameof(ciCfgPath));
             //
+            errors = new();
             var command = @$"""{_rep.GetAppPath()}"" -{ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH}=""{ciCfgPath}""";
             foreach (var path in paths)
             {
-                
+                var res = InjectCiCommandTo(path, command, out var error);
+                if (!res)
+                {
+                    errors.Add(error);
+                    _logger.Error(error);
+                }
+                else
+                    _logger.Info($"CI Command injected into the project file: [{path}]");
             }
+        }
+
+        internal bool InjectCiCommandTo(string prjPath, string command, out string error)
+        {
+            #region Checks
+            error = null;
+            if (string.IsNullOrWhiteSpace(prjPath))
+            {
+                error = "The project parh is empty";
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(command))
+            {
+                error = "The command for the injecting is empty";
+                return false;
+            }
+            if(!File.Exists(prjPath))
+            {
+                error = $"The project file does not exist: [{prjPath}]";
+                return false;
+            }
+            #endregion
+
+            command = command.Replace(@"""", "&quot");
+
+            var text = File.ReadAllText(prjPath);
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                error = $"The project file is empty in [{prjPath}]";
+                return false;
+            }
+
+            const string search = @"<Target Name=""PostBuild"" AfterTargets=""PostBuildEvent"">";
+            //but changed in-place spaces are not taken into account here ((
+            var ind = text.IndexOf(search, StringComparison.InvariantCultureIgnoreCase);
+            if (ind > -1)
+            {
+                //we have to inject our event as last one
+                var lastTag = "</Target>";
+                var ind2 = text.IndexOf(lastTag, ind, StringComparison.InvariantCultureIgnoreCase);
+                if (ind2 == -1)
+                {
+                    error = $"The project structure for PostBuild is present, but incorrect: [{prjPath}]";
+                    return false;
+                }
+                ind2--;
+                text = text.Insert(ind2, $"    <Exec Command=\"{command}\" />\n");
+            }
+            else
+            {
+                var fullBlock = $@"
+  <Target Name=""PostBuild"" AfterTargets=""PostBuildEvent"">
+    <Exec Command=""{command}"" />
+  </Target>";
+                var ind2 = text.IndexOf("</Project>", 100, StringComparison.InvariantCultureIgnoreCase);
+                if (ind2 == -1)
+                {
+                    error = $"The project structure for PostBuild is incorrect: [{prjPath}]";
+                    return false;
+                }
+                ind2--;
+                text = text.Insert(ind2, $"{fullBlock}\n");
+            }
+
+            //save
+            try
+            {
+                File.WriteAllText(prjPath, text);
+            }
+            catch (Exception ex)
+            {
+                error = ex.ToString();
+                return false;
+            }
+
+            return true;
         }
     }
 }
