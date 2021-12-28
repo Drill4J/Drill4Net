@@ -21,6 +21,11 @@ namespace Drill4Net.Configurator
 
         /***********************************************************************************/
 
+        public string GetAppPath()
+        {
+            return Path.Combine(FileUtils.EntryDir, "dfn.exe");
+        }
+
         public void SaveSystemConfiguration(SystemConfiguration cfg)
         {
             //Agent's options

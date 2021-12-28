@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -9,6 +10,17 @@ namespace Drill4Net.Configurator
     /// </summary>
     public class IdeConfigurator
     {
+        private readonly ConfiguratorRepository _rep;
+
+        /*******************************************************************/
+
+        public IdeConfigurator(ConfiguratorRepository rep)
+        {
+            _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+        }
+
+        /*******************************************************************/
+
         /// <summary>
         /// Find the .NET source code projects.
         /// </summary>
@@ -53,6 +65,10 @@ namespace Drill4Net.Configurator
 
         public void InjectCI(IEnumerable<string> paths, string ciCfgPath)
         {
+            if(string.IsNullOrWhiteSpace(ciCfgPath))
+                throw new ArgumentNullException(nameof(ciCfgPath));
+            //
+            var command = @$"""{_rep.GetAppPath()}"" -{ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH}=""{ciCfgPath}""";
             foreach (var path in paths)
             {
                 

@@ -660,7 +660,7 @@ Specify at least one tests' assembly.";
 
         internal bool InjectCiToProjects(string ciCfgPath = null)
         {
-            var ide = new IdeConfigurator();
+            var ide = new IdeConfigurator(_rep);
 
             #region Search the projects
             var def = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), @"source\repos\");
@@ -757,7 +757,8 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             #endregion
 
             ide.InjectCI(selected, ciCfgPath);
-            _outputHelper.WriteLine("\nCI operation is created and injected.", AppConstants.COLOR_TEXT);
+            var ending = selected.Count > 1 ? $"s: {selected.Count}" : null;
+            _outputHelper.WriteLine($"\nCI operation is created and injected to the project{ending}.", AppConstants.COLOR_TEXT);
 
             return true;
         }
@@ -1066,7 +1067,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             return string.Equals(s, AppConstants.COMMAND_YES, StringComparison.OrdinalIgnoreCase);
         }
         #endregion
-        #region Start E2E    
+        #region Start CI workflow    
         private bool StartCI()
         {
             throw new NotImplementedException();
