@@ -44,10 +44,12 @@ namespace Drill4Net.Repository
             if (string.IsNullOrWhiteSpace(dir))
                 dir = FileUtils.EntryDir;
             var redirectCfgPath = CalcRedirectConfigPath(dir); //possible redirect
-            var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_NAME_DEFAULT : configDefaultName;
             if (!File.Exists(redirectCfgPath))
+            {
+                var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_NAME_DEFAULT : configDefaultName;
                 return Path.Combine(dir, defName);
-            //
+            }
+            // redirect exists
             var redirect = ReadRedirectData(redirectCfgPath);
             var actualPath = redirect?.Path;
             if (actualPath == null)

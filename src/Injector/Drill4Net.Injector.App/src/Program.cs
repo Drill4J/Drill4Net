@@ -32,7 +32,7 @@ namespace Drill4Net.Injector.App
             try
             {
                 _logger = new TypedLogger<Program>(CoreConstants.SUBSYSTEM_INJECTOR); //real typed logger from cfg
-                _logger.Debug(args);
+                _logger.Debug($"Arguments: [{string.Join(" ", args)}]");
                 _cliDescriptor = new CliDescriptor(args, false);
 
                 //silent
