@@ -823,7 +823,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
 
         internal (bool, string) IsNeedAcivateConfigFor(string appDir, string curCfgPath)
         {
-            var redirectCfgPath = _optHelper.CreateRedirectConfigPath(appDir);
+            var redirectCfgPath = _optHelper.CalcRedirectConfigPath(appDir);
             var name = Path.GetFileName(curCfgPath);
             var isDefName = name.Equals(CoreConstants.CONFIG_NAME_DEFAULT, StringComparison.InvariantCultureIgnoreCase);
             bool needActivate;

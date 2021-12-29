@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
-using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
 
 namespace Drill4Net.Injector.App
@@ -58,10 +57,7 @@ namespace Drill4Net.Injector.App
 
                     //run in parallel
                     var parOpts = new ParallelOptions { MaxDegreeOfParallelism = degreeParallel };
-                    Parallel.ForEach(configs, parOpts, (cfgPath) =>
-                    {
-                        Process(cfgPath);
-                    });
+                    Parallel.ForEach(configs, parOpts, (cfgPath) => Process(cfgPath));
                 }
                 else //manual start
                 {
@@ -102,7 +98,6 @@ namespace Drill4Net.Injector.App
             _logger.Debug(rep.Options);
 
             var injector = new InjectorEngine(rep);
-
             return injector.Process(); //the magic is here
         }
     }

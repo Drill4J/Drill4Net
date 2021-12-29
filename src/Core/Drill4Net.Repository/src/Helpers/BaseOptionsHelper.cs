@@ -41,7 +41,9 @@ namespace Drill4Net.Repository
         /// <returns></returns>
         public string GetActualConfigPath(string dir, string configDefaultName = null)
         {
-            var redirectCfgPath = CreateRedirectConfigPath(dir); //possible redirect
+            if (string.IsNullOrWhiteSpace(dir))
+                dir = FileUtils.EntryDir;
+            var redirectCfgPath = CalcRedirectConfigPath(dir); //possible redirect
             var defName = string.IsNullOrWhiteSpace(configDefaultName) ? CoreConstants.CONFIG_NAME_DEFAULT : configDefaultName;
             if (!File.Exists(redirectCfgPath))
                 return Path.Combine(dir, defName);
@@ -59,7 +61,7 @@ namespace Drill4Net.Repository
             return actualPath;
         }
 
-        public string CreateRedirectConfigPath(string dir)
+        public string CalcRedirectConfigPath(string dir)
         {
             if (string.IsNullOrWhiteSpace(dir))
                 dir = FileUtils.EntryDir;
