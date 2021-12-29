@@ -4,14 +4,16 @@
     {
         internal bool PrintMenu()
         {
-            const string mess = $@"  *** This is help for useful commands:
-  *** '?' or 'help' to print this menu.
-  *** '{AppConstants.COMMAND_SYS}' to configure the system settings.
-  *** '{AppConstants.COMMAND_TARGET}' to operate target's injection.
-  *** '{AppConstants.COMMAND_RUNNER}' to configure the Test Runner for the target.
-  *** '{AppConstants.COMMAND_CI}' for some CI operations.
-  *** '{AppConstants.COMMAND_START}' to start full cycle (target injection + tests' running).
-  *** 'q' to exit.";
+            const string mess = $@"  === Please, type:
+  >>> '?' or 'help' to print this menu.
+  --- Configurations:
+  >>> '{AppConstants.COMMAND_SYS}' for the system settings.
+  >>> '{AppConstants.COMMAND_TARGET}' for target's injection.
+  >>> '{AppConstants.COMMAND_RUNNER}' for the Test Runner.
+  >>> '{AppConstants.COMMAND_CI}' for some CI operations.
+  --- Actions:
+  >>> '{AppConstants.COMMAND_START}' to start full cycle (target injection + tests' running).
+  >>> 'q' to exit.";
             WriteLine($"\n{mess}", AppConstants.COLOR_TEXT_HIGHLITED);
             return true;
         }

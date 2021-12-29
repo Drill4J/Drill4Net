@@ -11,7 +11,7 @@ namespace Drill4Net.Configurator
     public class IdeConfigurator
     {
         private readonly ConfiguratorRepository _rep;
-        private static Logger _logger;
+        private readonly Logger _logger;
 
         /*******************************************************************/
 
@@ -121,7 +121,7 @@ namespace Drill4Net.Configurator
             if (ind > -1)
             {
                 //we have to inject our event as last one
-                var lastTag = "</Target>";
+                const string lastTag = "</Target>";
                 var ind2 = text.IndexOf(lastTag, ind, StringComparison.InvariantCultureIgnoreCase);
                 if (ind2 == -1)
                 {

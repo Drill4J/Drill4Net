@@ -103,7 +103,9 @@ namespace Drill4Net.Agent.Worker
         internal virtual (string cfgPath, MessagerOptions opts) GetBaseOptions()
         {
             var cfgPathArg = _cliDescriptor.GetParameter(MessagingTransportConstants.ARGUMENT_CONFIG_PATH);
-            _logger.Debug($"Config path from argumants: [{cfgPathArg}]");
+            _logger.Debug($"Config path from arguments: [{cfgPathArg}]");
+            if (cfgPathArg == null)
+                throw new InvalidOperationException("The path to the config file is not obtained from the command line arguments.");
 
             var opts = TargetedReceiverRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);
             if (opts == null)

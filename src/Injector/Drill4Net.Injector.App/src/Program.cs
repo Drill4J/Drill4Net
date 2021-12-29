@@ -12,6 +12,7 @@ namespace Drill4Net.Injector.App
 {
     internal class Program
     {
+        private static CliDescriptor _cliDescriptor;
         private static Logger _logger;
         private const string LOG_PATH = @"logs\benchmarkLog.txt";
 
@@ -20,28 +21,52 @@ namespace Drill4Net.Injector.App
         static async Task Main(string[] args)
         {
             AbstractRepository.PrepareEmergencyLogger();
+
             //program name... yep, from namespace
             var name = $"{typeof(Program).Namespace} {FileUtils.GetProductVersion(typeof(InjectorRepository))}";
             Log.Info($"{name} is starting"); //use emergency logger with simple static call until normal logger is created
 
-            IInjectorRepository rep = null;
+            bool silent = false;
+#if DEBUG
+            var watcher = Stopwatch.StartNew();
+#endif
             try
             {
-                var cliDescriptor = new CliDescriptor(args, false);
-                rep = new InjectorRepository(cliDescriptor);
-                _logger = new TypedLogger<Program>(rep.Subsystem); //real typed logger from cfg
-
-                //_logger.Debug("Arguments: {@Args}", args);
-                //_logger.Debug("Options: {@Options}", rep.Options);
+                _logger = new TypedLogger<Program>(CoreConstants.SUBSYSTEM_INJECTOR); //real typed logger from cfg
                 _logger.Debug(args);
-                _logger.Debug(rep.Options);
+                _cliDescriptor = new CliDescriptor(args, false);
 
-                var injector = new InjectorEngine(rep);
-#if DEBUG
-                var watcher = Stopwatch.StartNew();
-#endif
-                await injector.Process()
-                    .ConfigureAwait(false);
+                //silent
+                var silentArg = _cliDescriptor.GetParameter(CoreConstants.ARGUMENT_SILENT);
+                silent = silentArg != null;
+
+                // degreeParallel
+                var degreeParallelArg = _cliDescriptor.GetParameter(CoreConstants.ARGUMENT_DEGREE_PARALLELISM);
+                var degreeParallel = degreeParallelArg == null ? Environment.ProcessorCount : Convert.ToInt32(degreeParallelArg);
+
+                //loop count
+                var loops = 1;
+                var cfgDirArg = _cliDescriptor.GetParameter(CoreConstants.ARGUMENT_CONFIG_DIR);
+                if (cfgDirArg != null) //start by arguments in CLI for multiple target's configs
+                {
+                    if (!Directory.Exists(cfgDirArg))
+                        throw new ArgumentException($"Directory from CLI arguments does not exist: [{cfgDirArg}]");
+                    var configs = Directory.GetFiles(cfgDirArg, "*.yml");
+                    loops = configs.Length;
+                    if (loops == 0)
+                        throw new ArgumentException($"Configs not found for injections in: [{cfgDirArg}]");
+
+                    //run in parallel
+                    var parOpts = new ParallelOptions { MaxDegreeOfParallelism = degreeParallel };
+                    Parallel.ForEach(configs, parOpts, (cfgPath) =>
+                    {
+                        Process(cfgPath);
+                    });
+                }
+                else //manual start
+                {
+                    await Process().ConfigureAwait(false);
+                }
 #if DEBUG
                 #region Benchmark
                 watcher.Stop();
@@ -67,8 +92,18 @@ namespace Drill4Net.Injector.App
             }
 
             Log.Shutdown();
-            if (rep?.Options?.Silent == false)
+            if (!silent)
                 Console.ReadKey(true);
+        }
+
+        internal static Task Process(string cfgPath = null)
+        {
+            var rep = cfgPath == null ? new InjectorRepository(_cliDescriptor) : new InjectorRepository(cfgPath);
+            _logger.Debug(rep.Options);
+
+            var injector = new InjectorEngine(rep);
+
+            return injector.Process(); //the magic is here
         }
     }
 }
