@@ -1,11 +1,3 @@
-Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop)
-
-Run docker-compose with admin and kafka
-
-```
-docker-compose docker-compose.yml up -d
-```
-
 
 For Development:
 
@@ -91,6 +83,21 @@ Configuring NuGet Package Sources:
 In Visual Studio, go to Tools > Options and then select Package Sources under the NuGet Package Manager.
 
 Choose the Add icon (+), edit the Name - nuget.org, and then https://api.nuget.org/v3/index.json in the Source Click Update after updating the feed link.
+
+Close Visual Studio
+
+Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+Run docker-compose with admin and kafka
+
+```
+docker-compose docker-compose.yml up -d
+```
+
+
+Start Visual Studio
+
+
 
 Change svc.yml to:
 
