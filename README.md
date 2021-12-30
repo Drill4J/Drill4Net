@@ -78,7 +78,8 @@ Development activities:
 - F# language support for web projects
 - IntelliCode
 
-
+Press "Not now, may be later"
+Clone this repository.
 
 Configuring NuGet Package Sources:
 
