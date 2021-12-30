@@ -105,8 +105,8 @@ Change svc.yml to:
 ...
 Type: agent-service # type as hint
 Servers: # list of Kafka servers
-   - 'localhost:9093' # from host
-   #- 'host.docker.internal:9093' # from Docker
+   #- 'localhost:9093' # from host
+   - 'host.docker.internal:9093' # from Docker
 ...
 ```
 
