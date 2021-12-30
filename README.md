@@ -110,6 +110,8 @@ Servers: # list of Kafka servers
 ...
 ```
 
+Enter to Drill4Net.sln
+
 Press Build
 
 Choose Drill4Net.Agent.Service
