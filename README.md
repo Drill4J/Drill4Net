@@ -112,6 +112,8 @@ Servers: # list of Kafka servers
 
 Enter to Drill4Net.sln
 
+Wait Ready in status line (below)
+
 Press Build
 
 Choose Drill4Net.Agent.Service
