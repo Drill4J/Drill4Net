@@ -1,5 +1,5 @@
 
-For Development:
+## Start Drill4Net.Agent.Service in Docker and connect to Kafka in Docker
 
 Use Visual Studio Community 2022 because Targeting .NET 6.0 in Visual Studio 2019 is not supported.
 
@@ -116,8 +116,10 @@ Press Build - Build Solution
 
 Choose Drill4Net.Agent.Service
 
-Choose Docker
+Choose and start profile Docker
 
-Press Docker
 
- 
+## Debug Docker build when build without Visual Studio
+```
+DOCKER_BUILDKIT=0 docker-compose -f docker-compose-agent.yml build --no-cache
+```
