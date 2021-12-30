@@ -4,9 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <LangVersion>latest</LangVersion>
-	  <ApplicationIcon>1486504823-lab.ico</ApplicationIcon>
-	  <AssemblyName>d4n</AssemblyName>
+	<LangVersion>latest</LangVersion>
+	<ApplicationIcon>1486504823-lab.ico</ApplicationIcon>
+	<AssemblyName>d4n</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

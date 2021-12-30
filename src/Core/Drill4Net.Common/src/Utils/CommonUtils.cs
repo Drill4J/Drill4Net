@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
@@ -255,6 +256,46 @@ namespace Drill4Net.Common
             return (prefix, lastGroup);
         }
         #endregion
+
+        public static (bool res, int pid) StartProgramm(string subsystem, string path, string args, out string error, bool createNoWindow = false)
+        {
+            error = "";
+            path = FileUtils.GetFullPath(path);
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = path,
+                    Arguments = args,
+                    WorkingDirectory = Path.GetDirectoryName(path),
+                    CreateNoWindow = createNoWindow, //true for real using
+                    //UseShellExecute = false, //false for real using
+                }
+            };
+            var res = process.Start();
+            if (!res)
+            {
+                error = $"Program {subsystem} -> pid={process.Id} is not started";
+                return (false, 0);
+            }
+            return (true, process.Id);
+        }
+
+        public static async Task WaitForProcessExit(int pid)
+        {
+            //yes, it is really simpler then using mutex (or even event of Process)
+            while (true)
+            {
+                try
+                {
+                    var prc = Process.GetProcessById(pid);
+                    if (prc?.HasExited != false)
+                        break;
+                    await Task.Delay(200);
+                }
+                catch { return; }
+            }
+        }
 
         public static string GetPreciseTime()
         {
