@@ -16,7 +16,7 @@ Choose workload:
 1) ASP .Net and web development
 2) .Net desktop development
 
-Choose individual component
+Choose individual component (Add components)
 
 .NET:
 
