@@ -1,13 +1,7 @@
 
 For Development:
 
-Use Visual Studio Community 2022 because:
-
-```
-C:\Program Files\dotnet\sdk\6.0.101\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.DefaultItems.targets(134,5): warning NETSDK1182: Targeting .NET 6.0 in Visual Studio 2019 is not supported.
-```
-
-
+Use Visual Studio Community 2022 because Targeting .NET 6.0 in Visual Studio 2019 is not supported.
 
 Run installer Visual Studio Community 2022 - https://docs.microsoft.com/ru-ru/visualstudio/releases/2022/release-notes
 
