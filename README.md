@@ -110,6 +110,10 @@ Wait Ready in status line (below)
 
 Press Build - Build Solution
 
+Press Build - Clean Solution
+
+Press Build - Build Solution
+
 Choose Drill4Net.Agent.Service
 
 Choose Docker
