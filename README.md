@@ -91,15 +91,13 @@ Close Visual Studio
 
 Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-Run docker-compose with admin and kafka
+Run docker-compose with admin and kafka in PowerShell
 
 ```
-docker-compose docker-compose.yml up -d
+docker-compose up -d
 ```
-
 
 Start Visual Studio
-
 
 
 Change svc.yml to:
