@@ -66,7 +66,6 @@ Compilers, build tools, and runtimes:
 Debuging and testing:
 
 - .NET Debugging with WSL
-
 - .NET profiling tools
 
 Development activities:
@@ -91,7 +90,7 @@ Close Visual Studio
 
 Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-Run docker-compose with admin and kafka in PowerShell
+Run docker-compose with admin and kafka in PowerShell or git-bash
 
 ```
 docker-compose up -d
