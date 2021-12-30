@@ -120,3 +120,6 @@ Choose and start profile Docker
 
 
 ## Debug Docker build when build without Visual Studio
+```
+DOCKER_BUILDKIT=0  docker build -t 1 . --no-cache
+```
