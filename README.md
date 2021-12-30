@@ -1,4 +1,4 @@
-Install and start Docker Desktop
+Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
 Run docker-compose with admin and kafka
 
