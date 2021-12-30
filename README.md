@@ -114,7 +114,7 @@ Enter to Drill4Net.sln
 
 Wait Ready in status line (below)
 
-Press Build
+Press Build - Build Solution
 
 Choose Drill4Net.Agent.Service
 
