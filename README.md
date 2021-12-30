@@ -26,6 +26,8 @@ Choose individual component
 - .NET Core 3.1 Runtime
 - .NET Framework 4.6.1 SDK
 - .NET Framework 4.6.1 targeting pack
+- .NET Framework 4.6.2 SDK
+- .NET Framework 4.6.2 targeting pack
 - .NET Framework 4.7 SDK
 - .NET Framework 4.7 targeting pack
 - .NET Framework 4.7.1 SDK
