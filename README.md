@@ -116,8 +116,4 @@ Press Build - Build Solution
 
 Choose Drill4Net.Agent.Service
 
-Choose Docker
-
-Press Docker
-
- 
+Choose and start profile Docker
