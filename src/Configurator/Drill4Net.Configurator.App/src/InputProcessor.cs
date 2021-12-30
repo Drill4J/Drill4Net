@@ -7,6 +7,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Configuration;
 using Drill4Net.Agent.TestRunner.Core;
+using System.Diagnostics;
 
 namespace Drill4Net.Configurator.App
 {
@@ -31,7 +32,7 @@ namespace Drill4Net.Configurator.App
 
         /**********************************************************************/
 
-        public void Start(CliDescriptor cliDescriptor)
+        public async Task Start(CliDescriptor cliDescriptor)
         {
             IsInteractive = cliDescriptor.Arguments.Count == 0;
             if (IsInteractive) //interactive mode
@@ -43,29 +44,41 @@ namespace Drill4Net.Configurator.App
             else //automatic processing by arguments
             {
                 _logger.Info("Automatic mode");
-                ProcessByArguments(cliDescriptor);
+                await ProcessByArguments(cliDescriptor);
             }
         }
 
-        internal void ProcessByArguments(CliDescriptor cliDescriptor)
+        internal async Task ProcessByArguments(CliDescriptor cliDescriptor)
         {
             //TODO: parse the command
 
-            //CI command
+            //CI command - TODO: own typed command class
             var ciCfgPath = cliDescriptor.GetParameter(ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH);
             if (ciCfgPath != null)
             {
                 var opts = _rep.ReadCiOptions(ciCfgPath);
-
+                var (res, err) = await StartCi(opts).ConfigureAwait(false);
+                if (res)
+                {
+                    const string mess = "CI workflow is done.";
+                    if(IsInteractive)
+                        _outputHelper.WriteLine(mess, AppConstants.COLOR_MESSAGE);
+                    _logger.Info(mess);
+                }
+                else
+                {
+                    if (IsInteractive)
+                        _outputHelper.WriteLine(err, AppConstants.COLOR_ERROR);
+                    _logger.Error(err);
+                }
             }
-
         }
 
         internal void StartInteractive()
         {
             while (true)
             {
-                _outputHelper.WriteLine("\nCommand:", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine("\nCommand:", AppConstants.COLOR_MESSAGE);
                 _outputHelper.Write(AppConstants.TERMINAL_SIGN, false, AppConstants.COLOR_DEFAULT);
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
@@ -97,7 +110,7 @@ namespace Drill4Net.Configurator.App
                 AppConstants.COMMAND_CI => CiConfigure(),
 
                 //commands
-                AppConstants.COMMAND_START => StartCI(),
+                AppConstants.COMMAND_START => CiProcess(),
 
                 _ => _outputHelper.PrintMenu(),
             };
@@ -125,7 +138,7 @@ namespace Drill4Net.Configurator.App
                 _outputHelper.Write("YES", true, AppConstants.COLOR_DEFAULT);
                 _rep.SaveSystemConfiguration(cfg);
                 _outputHelper.WriteLine($"System options are saved. {AppConstants.MESSAGE_PROPERTIES_EDIT_WARNING}",
-                    AppConstants.COLOR_TEXT);
+                    AppConstants.COLOR_MESSAGE);
             }
             else
             {
@@ -653,7 +666,7 @@ Specify at least one tests' assembly.";
 
             //saving
             _rep.WriteCiOptions(opts, ciCfgPath);
-            _outputHelper.WriteLine("\nConfig was saved.", AppConstants.COLOR_TEXT);
+            _outputHelper.WriteLine("\nConfig was saved.", AppConstants.COLOR_MESSAGE);
 
             return true;
         }
@@ -701,7 +714,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             for (int i = 0; i < projects.Count; i++)
             {
                 string prj = projects[i];
-                _outputHelper.WriteLine($"{i + 1}. {prj}", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine($"{i + 1}. {prj}", AppConstants.COLOR_MESSAGE);
             }
 
             // select the projects
@@ -740,7 +753,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 _outputHelper.WriteLine("\nYou have selected these:", AppConstants.COLOR_INFO);
                 foreach (var prj in selected)
                 {
-                    _outputHelper.WriteLine(prj, AppConstants.COLOR_TEXT);
+                    _outputHelper.WriteLine(prj, AppConstants.COLOR_MESSAGE);
                 }
                 if (!AskQuestion("Is that right?", out answer, "y"))
                     return false;
@@ -766,7 +779,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                         _outputHelper.WriteLine($"{error}", AppConstants.COLOR_ERROR);
                 }
                 var ending = selected.Count > 1 ? $"s: {selected.Count - errors.Count}/{selected.Count}" : null;
-                _outputHelper.WriteLine($"\nCI operation is created and injected to the project{ending}.", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine($"\nCI operation is created and injected to the project{ending}.", AppConstants.COLOR_MESSAGE);
             }
             #endregion
             return true;
@@ -811,7 +824,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                     return false;
                 }
                 _logger.Info($"Config for {appName} saved to [{cfgPath}]");
-                _outputHelper.WriteLine($"You can check the {appName}'s settings: {cfgPath}", AppConstants.COLOR_TEXT);
+                _outputHelper.WriteLine($"You can check the {appName}'s settings: {cfgPath}", AppConstants.COLOR_MESSAGE);
 
                 // activating the config
                 (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
@@ -1077,9 +1090,117 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
         }
         #endregion
         #region Start CI workflow    
-        private bool StartCI()
+        private bool CiProcess()
         {
+            //var ciOpts = ....
+            //ProcessCi(ciOpts);
             throw new NotImplementedException();
+        }
+
+        private async Task<(bool res, string error)> StartCi(CiOptions opts)
+        {
+            #region Checks
+            if (opts == null)
+                return (false, "The options' object is empty");
+
+            var cfgsDir = opts.Injection?.ConfigDir;
+            if (string.IsNullOrWhiteSpace(cfgsDir))
+                return (false, "The directory of Injector's configs is empty");
+            if (!Directory.Exists(cfgsDir))
+                return (false, "The directory of Injector's configs not found");
+
+            var runCfgPath = opts.TestRunnerConfigPath;
+            if (string.IsNullOrWhiteSpace(runCfgPath))
+                return (false, "The Test Runner config's path is empty");
+            if (!File.Exists(runCfgPath))
+                return (false, "The Test Runner config's not found");
+            #endregion
+
+            //degreeParallel
+            int degreeParallel;
+            if(opts.Injection.DegreeOfParallelism == null)
+                degreeParallel = Environment.ProcessorCount;
+            else
+                degreeParallel = Convert.ToInt32(opts.Injection.DegreeOfParallelism);
+
+            // Injector
+            var (res, err) = await InjectorProcess(cfgsDir, degreeParallel);
+            if (!res)
+                return (false, err);
+
+            // Test Runner
+            (res, err) = await TestRunnerProcess(runCfgPath);
+            if (!res)
+                return (false, err);
+
+            return (true, null);
+        }
+
+        private async Task<(bool res, string error)> InjectorProcess(string cfgsDir, int degreefParallelism)
+        {
+            var args = $"-{CoreConstants.ARGUMENT_SILENT} -{CoreConstants.ARGUMENT_DEGREE_PARALLELISM}={degreefParallelism} -{CoreConstants.ARGUMENT_CONFIG_DIR}=\"{cfgsDir}\"";
+            var path = Path.Combine(_rep.Options.InjectorDirectory, "Drill4Net.Injector.App.exe");
+            var (res, pid) = StartProgramm(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
+            if (!res)
+                return (false, err);
+
+            //wait
+            await WaitForExternalProgramToExit(pid);
+            return (true, null);
+        }
+
+        private async Task<(bool res, string error)> TestRunnerProcess(string testRunnerCfgPath)
+        {
+            var args = $"-{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
+            var path = Path.Combine(_rep.Options.TestRunnerDirectory, "Drill4Net.Agent.TestRunner.exe");
+            var (res, pid) = StartProgramm(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, path, args, out var err);
+            if (!res)
+                return (false, err);
+ 
+            //wait
+            await WaitForExternalProgramToExit(pid);
+            return (true, null);
+        }
+
+        private (bool res, int pid) StartProgramm(string subsystem, string path, string args, out string error)
+        {
+            error = null;
+            _logger.Debug($"{subsystem}: [{args}]");
+            path = FileUtils.GetFullPath(path);
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = path,
+                    Arguments = args,
+                    WorkingDirectory = Path.GetDirectoryName(path),
+                    CreateNoWindow = false, //true for real using
+                    UseShellExecute = false, //false for real using
+                }
+            };
+            var res = process.Start();
+            if (!res)
+            {
+                error = $"Program {subsystem} -> pid={process.Id} is not started";
+                return (false, 0);
+            }
+            return (true, process.Id);
+        }
+
+        private async Task WaitForExternalProgramToExit(int pid)
+        {
+            //yes, it is really simpler then using mutex (or even event of Process)
+            while (true)
+            {
+                try
+                {
+                    var prc = Process.GetProcessById(pid);
+                    if (prc?.HasExited != false)
+                        break;
+                    await Task.Delay(200);
+                }
+                catch { return; }
+            }
         }
         #endregion
     }

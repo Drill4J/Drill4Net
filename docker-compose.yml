@@ -4,7 +4,7 @@ services:
 
   # Drill Admin
   drill-admin:
-    image: drill4j/admin:0.8.0-39
+    image: drill4j/admin:0.8.0-40
     environment:
       - TEST2CODE_PLUGIN_VERSION=0.8.0-40
       - LOG_LEVEL=DEBUG
@@ -14,7 +14,7 @@ services:
       - 5006:5006
       
   admin-ui:
-    image: drill4j/admin-ui-root-config:0.1.0-96
+    image: drill4j/admin-ui-root-config:0.1.0-101
     restart: always
     ports:
       - 8091:8080

@@ -4,8 +4,13 @@ AdminHost: localhost # Drill admin
 AdminPort: 8090 # Drill admin
 MiddlewareHost: localhost # Kafka
 MiddlewarePort: 9093 # Kafka
+#InstallDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\install\
+#InjectorDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\apps\injector\
+#TestRunnerDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\apps\test_runner\
+#TransmitterDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\components\transmitter\ # located somewhere in the distribution of Drill4Net
+#PluginDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\components\transmitter_plugins\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net
 InstallDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\install\
-InjectorDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\apps\injector\
-TestRunnerDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\apps\test_runner\
-TransmitterDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\components\transmitter\ # located somewhere in the distribution of Drill4Net
-PluginDirectory: d:\Projects\EPM-D4J\Distributions\Drill4Net_debug\components\transmitter_plugins\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net
+InjectorDirectory: ..\..\Drill4Net.Injector.App\net6.0\
+TestRunnerDirectory: ..\..\Drill4Net.Agent.TestRunner\net6.0\
+TransmitterDirectory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\ # located somewhere in the distribution of Drill4Net
+PluginDirectory: ..\..\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net

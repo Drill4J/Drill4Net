@@ -132,13 +132,6 @@ namespace Drill4Net.Agent.Service
             IsStarted = false;
         }
 
-        internal void ClearAllTopics()
-        {
-            var topics = _admin.GetAllTopics()
-                .Where(a => a.StartsWith(MessagingConstants.TOPIC_PREFIX));
-            _admin.DeleteTopics(topics);
-        }
-
         private void PingReceiver_PingReceived(string targetSession, StringDictionary data)
         {
             if (!Guid.TryParse(targetSession, out Guid session)) //log carefully
@@ -336,6 +329,13 @@ namespace Drill4Net.Agent.Service
             ErrorOccured?.Invoke(source, isFatal, isLocal, message);
         }
         #endregion
+
+        internal void ClearAllTopics()
+        {
+            var topics = _admin.GetAllTopics()
+                .Where(a => a.StartsWith(MessagingConstants.TOPIC_PREFIX));
+            _admin.DeleteTopics(topics);
+        }
 
         internal virtual DateTime GetTime()
         {

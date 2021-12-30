@@ -61,11 +61,11 @@
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
 
         public const string ARGUMENT_SILENT = "silent";
+        public const string ARGUMENT_TARGET_VERSION = "version";
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
         public const string ARGUMENT_CONFIG_DIR = "cfg_dir";
         public const string ARGUMENT_SOURCE_PATH = "source_path";
         public const string ARGUMENT_DESTINATION_PATH = "dest_path";
-        public const string ARGUMENT_TARGET_VERSION = "version";
         public const string ARGUMENT_DEGREE_PARALLELISM = "degree_parallelism";
 
         /// <summary>

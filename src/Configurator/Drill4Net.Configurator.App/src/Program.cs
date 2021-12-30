@@ -21,7 +21,7 @@ namespace Drill4Net.Agent.Transmitter.Debug
 
         /*********************************************************************/
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
@@ -39,7 +39,7 @@ namespace Drill4Net.Agent.Transmitter.Debug
                 var rep = new ConfiguratorRepository();
                 var iProc = new InputProcessor(rep, outHelper);
                 _logger.Debug("Starting the input processor...");
-                iProc.Start(cliDescriptor);
+                await iProc.Start(cliDescriptor);
             }
             catch (Exception ex)
             {

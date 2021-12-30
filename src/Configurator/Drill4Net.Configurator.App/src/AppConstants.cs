@@ -8,7 +8,7 @@
         internal const ConsoleColor COLOR_ANSWER = ConsoleColor.Yellow;
         internal const ConsoleColor COLOR_ERROR = ConsoleColor.Red;
         internal const ConsoleColor COLOR_DEFAULT = ConsoleColor.Green;
-        internal const ConsoleColor COLOR_TEXT = ConsoleColor.White;
+        internal const ConsoleColor COLOR_MESSAGE = ConsoleColor.White;
         internal const ConsoleColor COLOR_TEXT_HIGHLITED = ConsoleColor.Yellow;
         internal const ConsoleColor COLOR_TEXT_WARNING = ConsoleColor.DarkYellow;
         #endregion
