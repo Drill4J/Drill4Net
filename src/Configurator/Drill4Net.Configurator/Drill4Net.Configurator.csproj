@@ -21,9 +21,4 @@
     <ProjectReference Include="..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="src\Commands\TestRunner\" />
-    <Folder Include="src\Commands\Target\" />
-  </ItemGroup>
-
 </Project>

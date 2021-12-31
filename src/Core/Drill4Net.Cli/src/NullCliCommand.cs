@@ -5,7 +5,7 @@
     {
         public override Task<bool> Process()
         {
-            RaiseError("The command is not found", true);
+            RaiseError("The command is not found");
             return Task.FromResult(false);
         }
     }

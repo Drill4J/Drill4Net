@@ -1,21 +1,27 @@
-﻿namespace Drill4Net.Configurator.App
+﻿using Drill4Net.Cli;
+
+namespace Drill4Net.Configurator.App
 {
     internal class ConfiguratorOutputHelper
     {
-        internal bool PrintMenu()
+        internal void WriteLine(string mess, CliMessageType messType)
         {
-            const string mess = $@"  === Please, type:
-  >>> '?' or 'help' to print this menu.
-  --- Configurations:
-  >>> '{AppConstants.COMMAND_SYS}' for the system settings.
-  >>> '{AppConstants.COMMAND_TARGET}' for target's injection.
-  >>> '{AppConstants.COMMAND_RUNNER}' for the Test Runner.
-  >>> '{AppConstants.COMMAND_CI}' for CI settings.
-  --- Actions:
-  >>> '{AppConstants.COMMAND_START}' to start full cycle (target injection + tests' running).
-  >>> 'q' to exit.";
-            WriteLine($"\n{mess}", AppConstants.COLOR_TEXT_HIGHLITED);
-            return true;
+            WriteLine(mess, ConvertMessageType(messType));
+        }
+
+        internal ConsoleColor ConvertMessageType(CliMessageType messType)
+        {
+            return messType switch
+            {
+                CliMessageType.Input_Default => AppConstants.COLOR_INPUT,
+                CliMessageType.Info => AppConstants.COLOR_INFO,
+                CliMessageType.Message => AppConstants.COLOR_MESSAGE,
+                CliMessageType.Help => AppConstants.COLOR_INPUT,
+                CliMessageType.Question => AppConstants.COLOR_QUESTION,
+                CliMessageType.Warning => AppConstants.COLOR_WARNING,
+                CliMessageType.Error => AppConstants.COLOR_ERROR,
+                _ => AppConstants.COLOR_DEFAULT,
+            };
         }
 
         internal void WriteLine(string mess, ConsoleColor color = AppConstants.COLOR_DEFAULT)
@@ -23,6 +29,11 @@
             Console.ForegroundColor = color;
             Console.WriteLine(mess);
             Console.ForegroundColor = AppConstants.COLOR_DEFAULT;
+        }
+
+        internal void Write(string mess, bool prevLine = false, CliMessageType messType = CliMessageType.Info, bool eraseInvitation = false)
+        {
+            Write(mess, prevLine, ConvertMessageType(messType), eraseInvitation);
         }
 
         internal void Write(string mess, bool prevLine = false, ConsoleColor color = AppConstants.COLOR_DEFAULT, bool eraseInvitation = false)

@@ -127,13 +127,13 @@ namespace Drill4Net.TypeFinding
                             var interfaces = type.Interfaces;
                             var intrfs = interfaces.Where(a => a.InterfaceType.Name == searchType.Name);
                             if (intrfs != null)
-                                list.Add(_loader.LoadType(asmPath, searchType.FullName));
+                                list.Add(_loader.LoadType(asmPath, type.FullName));
                             break;
                         case TypeFinderMode.Attribute:
                             var attrs = type.CustomAttributes;
-                            var attr = attrs.FirstOrDefault(a => a.GetType().Name == searchType.Name);
+                            var attr = attrs.FirstOrDefault(a => a.AttributeType.Name == searchType.Name);
                             if (attr != null)
-                                list.Add(_loader.LoadType(asmPath, searchType.FullName));
+                                list.Add(_loader.LoadType(asmPath, type.FullName));
                             break;
                         default:
                             throw new Exception($"Unknown search type: {finderMode}");

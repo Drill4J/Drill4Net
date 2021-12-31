@@ -15,7 +15,7 @@ namespace Drill4Net.Configurator
         /// <summary>
         /// Dictionary fo Configurator's commands, where key is commandId
         /// </summary>
-        public Dictionary<string, AbstractConfiguratorCommand> Commands { get; }
+        public Dictionary<string, AbstractCliCommand> Commands { get; }
 
         private readonly ConfiguratorRepository _rep;
         private readonly Logger _logger;
@@ -31,9 +31,9 @@ namespace Drill4Net.Configurator
 
         /***********************************************************************************/
 
-        internal Dictionary<string, AbstractConfiguratorCommand> SearchCommands()
+        internal Dictionary<string, AbstractCliCommand> SearchCommands()
         {
-            var res = new Dictionary<string, AbstractConfiguratorCommand>();
+            var res = new Dictionary<string, AbstractCliCommand>();
 
             //search the plugins
             var pluginator = new TypeFinder();
@@ -51,7 +51,7 @@ namespace Drill4Net.Configurator
             try
             {
                 //search in local dir
-                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, FileUtils.EntryDir, typeof(AbstractConfiguratorCommand), filter);
+                ctxTypes = pluginator.GetBy(TypeFinderMode.Attribute, FileUtils.EntryDir, typeof(CliCommandAttribute), filter);
             }
             catch (Exception ex)
             {
@@ -69,7 +69,13 @@ namespace Drill4Net.Configurator
                 //
                 try
                 {
-                    if (Activator.CreateInstance(type, new object[] { _rep }) is not AbstractConfiguratorCommand cmd)
+                    AbstractCliCommand? cmd = null;
+                    if(type.IsSubclassOf(typeof(AbstractConfiguratorCommand)))
+                        cmd = (AbstractConfiguratorCommand)Activator.CreateInstance(type, new object[] { _rep });
+                    else
+                    if (type.BaseType?.FullName == typeof(AbstractCliCommand).FullName)
+                        cmd = (AbstractCliCommand)Activator.CreateInstance(type);
+                    if (cmd == null)
                         continue;
                     //
                     var id = cmd.ContextId;
