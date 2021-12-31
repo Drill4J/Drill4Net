@@ -1,18 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Drill4Net.Cli;
 using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    public class CiCommand : AbstractCliCommand
+    [CliCommandAttribute("CI")]
+    public class CiCommand : AbstractCongifuratorCommand
     {
-        public CiCommand(List<CliArgument> arguments, ConfiguratorRepository rep):
-            base(ConfiguratorConstants.COMMAND_CI_ID, arguments, rep)
+        public CiCommand(ConfiguratorRepository rep): base(rep)
         {
-            if (_rep == null)
-                throw new ArgumentNullException(nameof(rep));
         }
 
         /******************************************************************/

@@ -1,4 +1,5 @@
 ﻿using System;
+using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging;

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace Drill4Net.Common
+namespace Drill4Net.Cli
 {
     /// <summary>
     /// Arguments class for CLI
@@ -51,7 +48,7 @@ namespace Drill4Net.Common
             }
         }
 
-        private CliArgument _switch;
+        private CliArgument? _switch;
         private readonly Dictionary<string, string> _argByNames;
 
         /***********************************************************************/
@@ -68,7 +65,7 @@ namespace Drill4Net.Common
             Regex remover = new(@"^['""]?(.*?)['""]?$",
                 RegexOptions.Compiled);
 
-            string parameter = null;
+            string? parameter = null;
             string[] parts;
             int noCommandParameter = 0;
 
@@ -145,14 +142,7 @@ namespace Drill4Net.Common
             Optimize();
 
             // contexts' ID
-            var ordered = Contexts.Select(x => x.ToUpper()).OrderBy(a => a);
-            if (ordered.Any())
-            {
-                string id = null;
-                foreach (var part in ordered)
-                    id += part + "_";
-                CommandId = id.Substring(0, id.Length - 1);
-            }
+            CommandId = CliCommandAttribute.CreateId(Contexts);
         }
 
         /***********************************************************************/
@@ -176,7 +166,7 @@ namespace Drill4Net.Common
         /// <param name="name">Name of the parameter</param>
         /// <param name="isSwitch">Is it CLI switch (one char, e.g. for 'a' in string "-abc" -> is it setted)?</param>
         /// <returns>Value of the parameter. For switches it will be strings "true" or "false"</returns>
-        public string GetParameter(string name, bool isSwitch = false)
+        public string? GetParameter(string name, bool isSwitch = false)
         {
             if (isSwitch)
                 return IsSwitchSet(name[0]) ? "true" : "false";

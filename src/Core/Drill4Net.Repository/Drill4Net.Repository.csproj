@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
+    <ProjectReference Include="..\Drill4Net.Cli\Drill4Net.Cli.csproj" />
     <ProjectReference Include="..\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
   </ItemGroup>
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Injector.Core;
 using Drill4Net.Configuration;
@@ -12,10 +14,15 @@ namespace Drill4Net.Configurator
 {
     public class ConfiguratorRepository : AbstractRepository<ConfiguratorOptions>
     {
+        private readonly Logger _logger;
+
+        /***********************************************************************************/
+
         public ConfiguratorRepository(): this(null) { }
 
         public ConfiguratorRepository(ConfiguratorOptions? opts) : base(CoreConstants.SUBSYSTEM_CONFIGURATOR, false)
         {
+            _logger = new TypedLogger<ConfiguratorRepository>(Subsystem);
             Options = opts ?? ReadOptions<ConfiguratorOptions>(Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_APP));
         }
 

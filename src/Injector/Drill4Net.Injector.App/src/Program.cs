@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
@@ -13,7 +14,6 @@ namespace Drill4Net.Injector.App
     internal class Program
     {
         private static CliDescriptor _cliDescriptor;
-        private static Mutex _mutex;
         private static Logger _logger;
 
         /**************************************************************************/

@@ -15,9 +15,15 @@
     <ProjectReference Include="..\..\Agent\Drill4Net.Agent.Messaging\Drill4Net.Agent.Messaging.csproj" />
     <ProjectReference Include="..\..\Agent\Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Agent.Abstract\Drill4Net.Agent.Abstract.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.Cli\Drill4Net.Cli.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Configuration\Drill4Net.Configuration.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />
     <ProjectReference Include="..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Commands\TestRunner\" />
+    <Folder Include="src\Commands\Target\" />
   </ItemGroup>
 
 </Project>

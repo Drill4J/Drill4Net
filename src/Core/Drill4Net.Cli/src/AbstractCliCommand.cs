@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Reflection;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
-using System.Threading.Tasks;
 
-namespace Drill4Net.Configurator
+namespace Drill4Net.Cli
 {
     public delegate void MessageDeliveredDelegate(string message, bool isError, bool isFatal, string? source = null);
 
@@ -20,26 +17,34 @@ namespace Drill4Net.Configurator
 
         public string ContextId { get; }
 
-        public CliArgument? SwitchArgument { get; }
+        public CliArgument? SwitchArgument { get; private set; }
 
-        protected readonly ConfiguratorRepository? _rep;
-        protected readonly List<CliArgument> _arguments;
+        protected List<CliArgument> _arguments;
         protected readonly Logger _logger;
 
         /********************************************************************/
 
-        protected AbstractCliCommand(string contextId, List<CliArgument> arguments, ConfiguratorRepository? rep = null)
+        protected AbstractCliCommand()
         {
-            _rep = rep;
-            if (string.IsNullOrWhiteSpace(contextId))
-                throw new ArgumentNullException(nameof(contextId));
-            _arguments = arguments;
+            ContextId = SearchCommandIdByAttribute();
+            _arguments = new();
             _logger = new TypedLogger<AbstractCliCommand>(CoreConstants.SUBSYSTEM_CONFIGURATOR);
-            SwitchArgument = arguments?.FirstOrDefault(a => a.Type == CliArgumentType.Switch);
-            ContextId = contextId;
         }
 
         /********************************************************************/
+
+        public void Init(List<CliArgument> arguments)
+        {
+            _arguments = arguments;
+            SwitchArgument = arguments?.FirstOrDefault(a => a.Type == CliArgumentType.Switch);
+        }
+
+        protected string SearchCommandIdByAttribute()
+        {
+            var attrs = GetType().GetCustomAttributes();
+            var attr = (CliCommandAttribute)attrs.First(a => a.GetType().Name == nameof(CliCommandAttribute));
+            return attr.Id;
+        }
 
         public abstract Task<bool> Process();
 

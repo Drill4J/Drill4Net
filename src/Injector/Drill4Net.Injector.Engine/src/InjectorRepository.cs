@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injection;

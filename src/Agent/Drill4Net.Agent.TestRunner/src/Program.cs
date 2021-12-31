@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Drill4Net.Common;
+using Drill4Net.Cli;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Agent.TestRunner.Core;

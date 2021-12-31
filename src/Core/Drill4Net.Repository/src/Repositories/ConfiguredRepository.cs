@@ -1,5 +1,5 @@
 ﻿using System;
-using Drill4Net.Common;
+using Drill4Net.Cli;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Repository

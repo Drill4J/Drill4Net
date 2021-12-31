@@ -70,6 +70,8 @@ namespace Drill4Net.Agent.Abstract
                 try
                 {
                     var plug = Activator.CreateInstance(contexter) as AbstractEngineContexter;
+                    if (plug == null)
+                        continue;
                     _contexters.Add(plug);
                     _logger.Info($"Plugin added: [{name}]");
                 }

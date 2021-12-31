@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Reflection;
+using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
+using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
@@ -14,6 +14,8 @@ namespace Drill4Net.Configurator.App
     internal class InputProcessor
     {
         public bool IsInteractive { get; private set; }
+
+
 
         private readonly ConfiguratorRepository _rep;
         private readonly ConfiguratorOutputHelper _outputHelper;
@@ -54,7 +56,8 @@ namespace Drill4Net.Configurator.App
             //TODO: parse the command
 
             //CI command
-            var ciCmd = new CiCommand(cliDescriptor.Arguments, _rep);
+            var ciCmd = new CiCommand(_rep);
+            ciCmd.Init(cliDescriptor.Arguments);
             ciCmd.MessageDelivered += Command_MessageDelivered;
             await ciCmd.Process()
                 .ConfigureAwait(false);
