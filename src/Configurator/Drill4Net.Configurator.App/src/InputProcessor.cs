@@ -41,7 +41,8 @@ namespace Drill4Net.Configurator.App
             {
                 _logger.Info("Interactive mode");
                 _outputHelper.PrintMenu();
-                StartInteractive();
+                await StartInteractive()
+                    .ConfigureAwait(false);
             }
             else //automatic processing by arguments
             {
