@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using Drill4Net.BanderLog;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -71,7 +72,7 @@ namespace Drill4Net.Configurator
                 throw new ArgumentNullException(nameof(ciCfgPath));
             //
             errors = new();
-            var command = @$"""{_rep.GetAppPath()}"" -{ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH}=""{ciCfgPath}""";
+            var command = @$"""{_rep.GetAppPath()}"" -{CoreConstants.ARGUMENT_CONFIG_PATH}=""{ciCfgPath}""";
             foreach (var path in paths)
             {
                 var res = InjectCiCommandTo(path, command, out var error);

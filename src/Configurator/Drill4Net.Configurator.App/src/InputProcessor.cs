@@ -34,9 +34,9 @@ namespace Drill4Net.Configurator.App
 
         /**********************************************************************/
 
-        public async Task Start(CliDescriptor cliDescriptor)
+        public async Task Start(CliDescriptor cliDesc)
         {
-            IsInteractive = cliDescriptor.Arguments.Count == 0;
+            IsInteractive = cliDesc.Arguments.Count == 0;
             if (IsInteractive) //interactive mode
             {
                 _logger.Info("Interactive mode");
@@ -46,22 +46,57 @@ namespace Drill4Net.Configurator.App
             else //automatic processing by arguments
             {
                 _logger.Info("Automatic mode");
-                await ProcessByArguments(cliDescriptor)
+                await ProcessByArguments(cliDesc)
                     .ConfigureAwait(false);
             }
         }
 
-        internal async Task ProcessByArguments(CliDescriptor cliDescriptor)
+        private async Task<bool> ProcessInput(string input)
         {
-            //TODO: parse the command
+            input = input.Trim();
+            return input switch
+            {
+                "?" or "help" => _outputHelper.PrintMenu(),
 
-            //CI command
-            var ciCmd = new CiCommand(_rep);
-            ciCmd.Init(cliDescriptor.Arguments);
-            ciCmd.MessageDelivered += Command_MessageDelivered;
-            await ciCmd.Process()
+                AppConstants.COMMAND_SYS => SystemConfigure(),
+                AppConstants.COMMAND_TARGET => TargetConfigure(_rep.Options),
+                AppConstants.COMMAND_RUNNER => RunnerConfigure(_rep.Options),
+                AppConstants.COMMAND_CI => CiConfigure(),
+
+                _ => await ProcessCommand(input)
+                       .ConfigureAwait(false),
+            };
+        }
+
+        internal Task ProcessByArguments(CliDescriptor cliDesc)
+        {
+            var cmd = _cmdRep.GetCommand(cliDesc.CommandId);
+            return ProcessCommand(cmd, cliDesc.Arguments);
+        }
+
+        internal async Task ProcessCommand(AbstractCliCommand cmd, List<CliArgument> args)
+        {
+            cmd.Init(args);
+            cmd.MessageDelivered += Command_MessageDelivered;
+            await cmd.Process()
                 .ConfigureAwait(false);
-            ciCmd.MessageDelivered -= Command_MessageDelivered;
+            cmd.MessageDelivered -= Command_MessageDelivered;
+        }
+
+        private async Task<bool> ProcessCommand(string input)
+        {
+            var cmdDesc = new CliDescriptor(input, true);
+            var cmd = _cmdRep.GetCommand(cmdDesc.CommandId);
+            if (cmd.GetType().Name != nameof(NullCliCommand))
+            {
+                await ProcessCommand(cmd, cmdDesc.Arguments)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                _outputHelper.PrintMenu();
+            }
+            return true;
         }
 
         private void Command_MessageDelivered(string source, string message, bool isError, bool isFatal)
@@ -71,7 +106,7 @@ namespace Drill4Net.Configurator.App
                 _outputHelper.WriteLine(message, color);
         }
 
-        internal void StartInteractive()
+        internal async Task StartInteractive()
         {
             while (true)
             {
@@ -84,33 +119,14 @@ namespace Drill4Net.Configurator.App
                     return;
                 try
                 {
-                    ProcessInput(input);
+                    await ProcessInput(input)
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     _outputHelper.WriteLine($"error -> {ex.Message}", AppConstants.COLOR_ERROR);
                 }
             }
-        }
-
-        private bool ProcessInput(string input)
-        {
-            input = input.Trim();
-            return input switch
-            {
-                "?" or "help" => _outputHelper.PrintMenu(),
-
-                //configuring
-                AppConstants.COMMAND_SYS => SystemConfigure(),
-                AppConstants.COMMAND_TARGET => TargetConfigure(_rep.Options),
-                AppConstants.COMMAND_RUNNER => RunnerConfigure(_rep.Options),
-                AppConstants.COMMAND_CI => CiConfigure(),
-
-                //commands
-                AppConstants.COMMAND_START => CiProcess(),
-
-                _ => _outputHelper.PrintMenu(),
-            };
         }
 
         #region System
@@ -1084,14 +1100,6 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             if (s == "" && noInputIsYes)
                 return true;
             return string.Equals(s, AppConstants.COMMAND_YES, StringComparison.OrdinalIgnoreCase);
-        }
-        #endregion
-        #region Start CI workflow    
-        private bool CiProcess()
-        {
-            //var ciOpts = ....
-            //ProcessCi(ciOpts);
-            throw new NotImplementedException();
         }
         #endregion
     }

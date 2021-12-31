@@ -6,10 +6,10 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute("CI")]
-    public class CiCommand : AbstractCongifuratorCommand
+    [CliCommandAttribute("CI_START")]
+    public class CiStartCommand : AbstractConfiguratorCommand
     {
-        public CiCommand(ConfiguratorRepository rep): base(rep)
+        public CiStartCommand(ConfiguratorRepository rep): base(rep)
         {
         }
 
@@ -17,7 +17,7 @@ namespace Drill4Net.Configurator
 
         public override async Task<bool> Process()
         {
-            var ciCfgPath = GetParamVal(ConfiguratorConstants.ARGUMENT_CONFIG_CI_PATH);
+            var ciCfgPath = GetParamVal(CoreConstants.ARGUMENT_CONFIG_PATH);
             if (ciCfgPath != null)
             {
                 var opts = _rep.ReadCiOptions(ciCfgPath);

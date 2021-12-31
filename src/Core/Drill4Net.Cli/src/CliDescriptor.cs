@@ -10,7 +10,7 @@ namespace Drill4Net.Cli
         /// <summary>
         /// ID for this command
         /// </summary>
-        public string CommandId { get; }
+        public string CommandId { get; private set; } = "";
 
         /// <summary>
         /// If <see cref="WithCommand"/> if true. List of "contexts" may contains some 
@@ -21,19 +21,19 @@ namespace Drill4Net.Cli
         /// of "target" and "config", and "name" is argument for "add" with value "abc.yml",
         /// and "-Td" are two switches: "T" and "d".
         /// </summary>
-        public List<string> Contexts { get; }
+        public List<string> Contexts { get; } = new();
 
         /// <summary>
         ///If false, then there is no context and command, and only
         ///application arguments are specified from the first parameter.
         ///The command in this case is implicit: it is the run of the App itself
         /// </summary>
-        public bool WithCommand { get; }
+        public bool WithCommand { get; private set; }
 
         /// <summary>
         /// List of arguments for the command (which located in <see cref="Contexts"/> among others contexts' tags).
         /// </summary>
-        public List<CliArgument> Arguments { get; }
+        public List<CliArgument> Arguments { get; } = new();
 
         /// <summary>
         /// Get parameter value by its name (switches are not included)
@@ -49,16 +49,32 @@ namespace Drill4Net.Cli
         }
 
         private CliArgument? _switch;
-        private readonly Dictionary<string, string> _argByNames;
+        private readonly Dictionary<string, string> _argByNames = new();
 
         /***********************************************************************/
 
+        public CliDescriptor(string args, bool withCommand)
+        {
+            var argsAr = Parse(args);
+            Setup(argsAr, withCommand);
+        }
+
         public CliDescriptor(string[] args, bool withCommand)
         {
+            Setup(args, withCommand);
+        }
+
+        /***********************************************************************/
+
+        internal string[] Parse(string args)
+        {
+            return new string[0];
+            throw new NotImplementedException();
+        }
+
+        private void Setup(string[] args, bool withCommand)
+        {
             WithCommand = withCommand;
-            Arguments = new();
-            Contexts = new();
-            _argByNames = new();
 
             Regex splitter = new(@"^-{1,2}|^/|=|:",
                 RegexOptions.Compiled);
@@ -144,8 +160,6 @@ namespace Drill4Net.Cli
             // contexts' ID
             CommandId = CliCommandAttribute.CreateId(Contexts);
         }
-
-        /***********************************************************************/
 
         public bool IsSwitchSet(char sw)
         {

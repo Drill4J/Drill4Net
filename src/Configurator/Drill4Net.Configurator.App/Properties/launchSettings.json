@@ -5,7 +5,7 @@
     },
     "ArgsCiCfg": {
       "commandName": "Project",
-      "commandLineArgs": "-ci_cfg_path=.\\ci_example.yml"
+      "commandLineArgs": "ci -cfg_path=.\\ci_example.yml"
     }
   }
 }

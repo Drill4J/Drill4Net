@@ -7,9 +7,15 @@ using Drill4Net.TypeFinding;
 
 namespace Drill4Net.Configurator
 {
+    /// <summary>
+    /// Repository for Configurator's <see cref="AbstractConfiguratorCommand"/>
+    /// </summary>
     public class CliCommandRepository
     {
-        public List<AbstractCongifuratorCommand> Commands { get; }
+        /// <summary>
+        /// Dictionary fo Configurator's commands, where key is commandId
+        /// </summary>
+        public Dictionary<string, AbstractConfiguratorCommand> Commands { get; }
 
         private readonly ConfiguratorRepository _rep;
         private readonly Logger _logger;
@@ -25,9 +31,9 @@ namespace Drill4Net.Configurator
 
         /***********************************************************************************/
 
-        internal List<AbstractCongifuratorCommand> SearchCommands()
+        internal Dictionary<string, AbstractConfiguratorCommand> SearchCommands()
         {
-            var res = new List<AbstractCongifuratorCommand>();
+            var res = new Dictionary<string, AbstractConfiguratorCommand>();
 
             //search the plugins
             var pluginator = new TypeFinder();
@@ -45,7 +51,7 @@ namespace Drill4Net.Configurator
             try
             {
                 //search in local dir
-                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, FileUtils.EntryDir, typeof(AbstractCongifuratorCommand), filter);
+                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, FileUtils.EntryDir, typeof(AbstractConfiguratorCommand), filter);
             }
             catch (Exception ex)
             {
@@ -63,9 +69,16 @@ namespace Drill4Net.Configurator
                 //
                 try
                 {
-                    if (Activator.CreateInstance(type, /*System.Reflection.BindingFlags.NonPublic,*/ new object[] { _rep }) is not AbstractCongifuratorCommand cmd)
+                    if (Activator.CreateInstance(type, new object[] { _rep }) is not AbstractConfiguratorCommand cmd)
                         continue;
-                    res.Add(cmd);
+                    //
+                    var id = cmd.ContextId;
+                    if (res.ContainsKey(id))
+                    {
+                        _logger.Warning($"Command already added: [{name}]");
+                        continue;
+                    }
+                    res.Add(id, cmd);
                     _logger.Info($"Command added: [{name}]");
                 }
                 catch (Exception ex)
@@ -76,5 +89,13 @@ namespace Drill4Net.Configurator
             return res;
         }
 
+        public AbstractCliCommand GetCommand(string id)
+        {
+            if(string.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException(nameof(id));
+            if (!Commands.ContainsKey(id))
+                return new NullCliCommand();
+            return Commands[id];
+        }
     }
 }

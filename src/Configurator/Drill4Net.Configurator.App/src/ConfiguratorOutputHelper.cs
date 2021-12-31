@@ -10,7 +10,7 @@
   >>> '{AppConstants.COMMAND_SYS}' for the system settings.
   >>> '{AppConstants.COMMAND_TARGET}' for target's injection.
   >>> '{AppConstants.COMMAND_RUNNER}' for the Test Runner.
-  >>> '{AppConstants.COMMAND_CI}' for some CI operations.
+  >>> '{AppConstants.COMMAND_CI}' for CI settings.
   --- Actions:
   >>> '{AppConstants.COMMAND_START}' to start full cycle (target injection + tests' running).
   >>> 'q' to exit.";
