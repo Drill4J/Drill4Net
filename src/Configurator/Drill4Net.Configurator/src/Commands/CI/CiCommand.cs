@@ -25,12 +25,12 @@ namespace Drill4Net.Configurator
                 if (res)
                 {
                     const string mess = "CI workflow is done.";
-                    RaiseMessageDelivered(mess);
+                    RaiseMessage(mess);
                     _logger.Info(mess);
                 }
                 else
                 {
-                    RaiseMessageDelivered(err);
+                    RaiseMessage(err);
                     _logger.Error(err);
                 }
             }
@@ -75,7 +75,7 @@ namespace Drill4Net.Configurator
             if (!res)
                 return (false, err);
 
-            return (true, null);
+            return (true, "");
         }
 
         private async Task<(bool res, string error)> InjectorProcess(string cfgsDir, int degreefParallelism)

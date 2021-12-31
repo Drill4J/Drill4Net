@@ -15,9 +15,8 @@ namespace Drill4Net.Configurator.App
     {
         public bool IsInteractive { get; private set; }
 
-
-
         private readonly ConfiguratorRepository _rep;
+        private readonly CliCommandRepository _cmdRep;
         private readonly ConfiguratorOutputHelper _outputHelper;
         private readonly BaseOptionsHelper _optHelper;
         private readonly Logger _logger;
@@ -30,6 +29,7 @@ namespace Drill4Net.Configurator.App
             _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
             _logger = new TypedLogger<InputProcessor>(rep.Subsystem);
             _optHelper = new(_rep.Subsystem);
+            _cmdRep = new(rep);
         }
 
         /**********************************************************************/
@@ -64,7 +64,7 @@ namespace Drill4Net.Configurator.App
             ciCmd.MessageDelivered -= Command_MessageDelivered;
         }
 
-        private void Command_MessageDelivered(string message, bool isError, bool isFatal, string source = null)
+        private void Command_MessageDelivered(string source, string message, bool isError, bool isFatal)
         {
             var color = isError ? AppConstants.COLOR_ERROR : AppConstants.COLOR_MESSAGE;
             if (IsInteractive)

@@ -9,7 +9,7 @@ namespace Drill4Net.Configurator
 {
     public class CliCommandRepository
     {
-        public List<AbstractCliCommand> Commands { get; }
+        public List<AbstractCongifuratorCommand> Commands { get; }
 
         private readonly ConfiguratorRepository _rep;
         private readonly Logger _logger;
@@ -19,15 +19,15 @@ namespace Drill4Net.Configurator
         public CliCommandRepository(ConfiguratorRepository rep)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            Commands = SearchCommands();
             _logger = new TypedLogger<CliCommandRepository>(rep.Subsystem);
+            Commands = SearchCommands();
         }
 
         /***********************************************************************************/
 
-        internal List<AbstractCliCommand> SearchCommands()
+        internal List<AbstractCongifuratorCommand> SearchCommands()
         {
-            var res = new List<AbstractCliCommand>();
+            var res = new List<AbstractCongifuratorCommand>();
 
             //search the plugins
             var pluginator = new TypeFinder();
@@ -45,7 +45,7 @@ namespace Drill4Net.Configurator
             try
             {
                 //search in local dir
-                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, FileUtils.EntryDir, typeof(AbstractCliCommand), filter);
+                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, FileUtils.EntryDir, typeof(AbstractCongifuratorCommand), filter);
             }
             catch (Exception ex)
             {
@@ -63,9 +63,9 @@ namespace Drill4Net.Configurator
                 //
                 try
                 {
-                    if (Activator.CreateInstance(type, new object[] { _rep }) is not AbstractCliCommand obj)
+                    if (Activator.CreateInstance(type, /*System.Reflection.BindingFlags.NonPublic,*/ new object[] { _rep }) is not AbstractCongifuratorCommand cmd)
                         continue;
-                    res.Add(obj);
+                    res.Add(cmd);
                     _logger.Info($"Command added: [{name}]");
                 }
                 catch (Exception ex)
