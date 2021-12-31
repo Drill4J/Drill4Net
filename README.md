@@ -123,3 +123,7 @@ Choose and start profile Docker
 ```
 DOCKER_BUILDKIT=0 docker-compose -f docker-compose-agent.yml build --no-cache
 ```
+
+
+Remove `.env from .dockerignore`
+Use src/Agent/Drill4Net.Agent.Service/Dockerfile-new
