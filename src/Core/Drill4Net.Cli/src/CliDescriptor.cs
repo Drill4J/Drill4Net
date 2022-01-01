@@ -55,6 +55,18 @@ namespace Drill4Net.Cli
 
         public CliDescriptor(string args, bool withCommand)
         {
+            //test TODO: unit tests
+            //var a1 = Parse("ci cfg add");
+            //var a2 = Parse(@"ci cfg -n ""abc dfe """);
+            //var a3 = Parse(@"ci cfg --name =""abc dfe """);
+            //var a4 = Parse(@"ci cfg --name = ""abc dfe "" --version = ""1.2.3.4""");
+            //var a5 = Parse(@"-n= ""abc dfe "" -Sw");
+            //var a6 = Parse(@"cmd -n= ""abc dfe "" -Sw pos1 pos2");
+            //var a7 = Parse(@"cmd -n= ""abc dfe "" -Sw -- pos1 pos2");
+            //var a8 = Parse(@" -s --degree_parallelism = 4 --cfg_dir = ""d:\Projects\EPM - D4J\"" ");
+            //var a9 = Parse(@" -s --cfg_dir = ""d:\Projects\EPM - D4J\"" --degree_parallelism = 4 ");
+
+            //real
             var argsAr = Parse(args);
             Setup(argsAr, withCommand);
         }
@@ -66,10 +78,62 @@ namespace Drill4Net.Cli
 
         /***********************************************************************/
 
+        /// <summary>
+        /// Parse the complete string with some CLI arguments: command, switches, options, etc
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>An array of separated arguments, as they are usually passed to the program from the complete command line</returns>
         internal string[] Parse(string args)
         {
-            return new string[0];
-            throw new NotImplementedException();
+            //https://docopt.org/
+            var argList = new List<string>();
+
+            var inQuotas = false;
+            var block = string.Empty;
+            var lastInd = args.Length - 1;
+            for (int i = 0; i <= lastInd; i++)
+            {
+                char ch = args[i];
+
+                if (ch == '"')
+                    inQuotas = !inQuotas;
+                if (inQuotas)
+                {
+                    block += ch;
+                    continue;
+                }
+                if (ch == ' ')
+                {
+                    if(i < lastInd)
+                    {
+                        var nextChar = args[i + 1];
+                        if (nextChar == ' ' || nextChar == '=')
+                            continue;
+                        if (nextChar == '"')
+                        {
+                            if(!block.EndsWith("="))
+                                block += '=';
+                            continue;
+                        }
+                    }
+                    if(i > 0 && args[i - 1] == '=')
+                        continue;
+                    //
+                    block = block.Trim();
+                    if(block != string.Empty)
+                        argList.Add(block);
+                    block = string.Empty;
+                }
+                else
+                {
+                    block += ch;
+                }
+            }
+            //
+            block = block.Trim();
+            if (block != string.Empty)
+                argList.Add(block);
+            return argList.ToArray();
         }
 
         private void Setup(string[] args, bool withCommand)

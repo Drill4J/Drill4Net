@@ -13,10 +13,6 @@
         internal const ConsoleColor COLOR_WARNING = ConsoleColor.DarkYellow;
         #endregion
 
-
-
         internal const string TERMINAL_SIGN = ">>";
-
-
     }
 }
