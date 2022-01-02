@@ -65,6 +65,12 @@ namespace Drill4Net.Cli
             //var a7 = Parse(@"cmd -n= ""abc dfe "" -Sw -- pos1 pos2");
             //var a8 = Parse(@" -s --degree_parallelism = 4 --cfg_dir = ""d:\Projects\EPM - D4J\"" ");
             //var a9 = Parse(@" -s --cfg_dir = ""d:\Projects\EPM - D4J\"" --degree_parallelism = 4 ");
+            //var a10 = Parse("c1 c2 --aaa 123 -jhcg");
+            //var a11 = Parse(@"c1 c2 --aaa ""123"" -jhcg");
+            //var a12 = Parse(@"c1 c2 --aaa= ""123"" -jhcg");
+            //var a13 = Parse("c1 c2 -abc=1 "); //improper expression because it is switch, and must be corrected as full name parameter
+            //var a14 = Parse("c1 c2 -abc 1 ");
+            //Setup(a14, true);
 
             //real
             var argsAr = Parse(args);
@@ -89,6 +95,7 @@ namespace Drill4Net.Cli
             var argList = new List<string>();
 
             var inQuotas = false;
+            var glued = false;
             var block = string.Empty;
             var lastInd = args.Length - 1;
             for (int i = 0; i <= lastInd; i++)
@@ -102,6 +109,13 @@ namespace Drill4Net.Cli
                     block += ch;
                     continue;
                 }
+                if (ch == '=')
+                {
+                    glued = true;
+                    //input contains improper expression (-aaa=1), and must be corrected as full name parameter
+                    if (!block.StartsWith("--"))
+                        block = "-" + block;
+                }
                 if (ch == ' ')
                 {
                     if(i < lastInd)
@@ -109,10 +123,13 @@ namespace Drill4Net.Cli
                         var nextChar = args[i + 1];
                         if (nextChar == ' ' || nextChar == '=')
                             continue;
-                        if (nextChar == '"')
+                        if (!glued && (nextChar == '"' || block.StartsWith("--")))
                         {
-                            if(!block.EndsWith("="))
+                            if (!block.EndsWith("="))
+                            {
                                 block += '=';
+                                glued = true;
+                            }
                             continue;
                         }
                     }
@@ -123,6 +140,7 @@ namespace Drill4Net.Cli
                     if(block != string.Empty)
                         argList.Add(block);
                     block = string.Empty;
+                    glued = false;
                 }
                 else
                 {
@@ -148,6 +166,8 @@ namespace Drill4Net.Cli
             string? parameter = null;
             string[] parts;
             int noCommandParameter = 0;
+            bool wasOptions = false;
+            bool isSwicth = false;
 
             // Valid parameters forms:
             // {-,/,--}param{ ,=,:}((",')value(",'))
@@ -156,6 +176,8 @@ namespace Drill4Net.Cli
             //   /param4=happy -param5 '--=nice=--'
             foreach (string raw in args)
             {
+                if (raw.StartsWith("-"))
+                    wasOptions = true;
                 var isAloner = !raw.StartsWith("-") && !raw.Contains("=");
 
                 // Look for new parameters (-,/ or --) and a
@@ -178,7 +200,7 @@ namespace Drill4Net.Cli
                         }
 
                         // it is raw command/contexts
-                        if (withCommand)
+                        if (!wasOptions && withCommand)
                             Contexts.Add(raw);
                         else
                             AddParameter($"Parameter{noCommandParameter++}", raw, isAloner);
@@ -187,12 +209,20 @@ namespace Drill4Net.Cli
 
                     // Found just a parameter
                     case 2:
-                        // The last parameter is still waiting. 
-                        // With no value, set it to true.
-                        if (parameter != null)
-                            AddSwitch(parameter);
-
-                        parameter = parts[1];
+                        var isSwitch = wasOptions && !raw.StartsWith("--");
+                        if (isSwitch)
+                        {
+                            AddSwitch(parts[1]);
+                            parameter = null;
+                        }
+                        else
+                        {
+                            // The last parameter is still waiting. 
+                            // With no value, set it to true.
+                            if (parameter != null)
+                                AddSwitch(parameter);
+                            parameter = parts[1];
+                        }
                         break;
 
                     // Parameter with enclosed value

@@ -37,7 +37,7 @@ namespace Drill4Net.Configurator.src.Commands.CI
             }
             else
             {
-                RaiseWarning("NO", true);
+                RaiseWarning("NO", MessageState.NewLine);
             }
             return Task.FromResult(yes);
         }

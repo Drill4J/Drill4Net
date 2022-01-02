@@ -3,12 +3,12 @@
     public enum CliArgumentType
     {
         /// <summary>
-        /// Is it normal parameter name and its value?
+        /// Is it normal parameter name and its value (option)?
         /// </summary>
         NameAndValue,
 
         /// <summary>
-        /// Is it alone parameter's value (not switch because without prefixes "/", "-", "--")?
+        /// Is it positional (alone) parameter's value (not switch because it has no prefixes "/", "-", "--")?
         /// </summary>
         OnlyValue,
 

@@ -21,6 +21,8 @@ namespace Drill4Net.Configurator
         {
             _logger.Info("Start to Test Runner configure");
 
+            RaiseMessage("\nDescribe the configuration of a specific tests: what and how Test Runner should be used.");
+
             var opts = _rep.Options;
             var modelCfgPath = Path.Combine(opts.InstallDirectory, "test_runner.yml");
             var cfg = _rep.ReadTestRunnerOptions(modelCfgPath);

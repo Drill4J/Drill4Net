@@ -82,6 +82,7 @@ namespace Drill4Net.Configurator.App
         {
             try
             {
+                //input = "c1 c2 -abc 1 "; // TEST !!!
                 var cmdDesc = new CliDescriptor(input, true);
                 var cmd = _cmdRep.GetCommand(cmdDesc.CommandId);
                 await ProcessCommand(cmd, cmdDesc.Arguments)
@@ -104,24 +105,32 @@ namespace Drill4Net.Configurator.App
             cmd.MessageDelivered -= Command_MessageDelivered;
         }
 
-        private void Command_MessageDelivered(string source, string message, CliMessageType messType = CliMessageType.Annotation, bool newLine = true)
+        private void Command_MessageDelivered(string source, string message, CliMessageType messType = CliMessageType.Annotation,
+            MessageState state = MessageState.NewLine)
         {
+            if (message == "")
+                return;
             var color = _outputHelper.ConvertMessageType(messType);
             if (IsInteractive)
             {
                 switch (messType)
                 {
-                    //case CliMessageType.Question:
-                    //    _outputHelper.Write(AppConstants.TERMINAL_SIGN, false, AppConstants.COLOR_DEFAULT);
-                    //    break;
                     case CliMessageType.Input_Default:
-                        _outputHelper.Write(message, true, AppConstants.COLOR_INPUT_DEFAULT, true);
+                        _outputHelper.Write(message + "\n", true, AppConstants.COLOR_INPUT_DEFAULT, true);
                         break;
                     default:
-                        if (newLine)
-                            _outputHelper.WriteLine(message, color);
-                        else
-                            _outputHelper.Write(message, false, color);
+                        switch (state)
+                        {
+                            case MessageState.CurrentLine:
+                                _outputHelper.Write(message, false, color);
+                                break;
+                            case MessageState.PrevLine:
+                                _outputHelper.Write(message, true, color);
+                                break;
+                            default:
+                                _outputHelper.WriteLine(message, color);
+                                break;
+                        }
                         break;
                 }
             }

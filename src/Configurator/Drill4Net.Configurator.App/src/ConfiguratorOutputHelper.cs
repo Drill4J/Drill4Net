@@ -31,7 +31,7 @@ namespace Drill4Net.Configurator.App
             Console.ForegroundColor = AppConstants.COLOR_DEFAULT;
         }
 
-        internal void Write(string mess, bool prevLine = false, CliMessageType messType = CliMessageType.Annotation, bool eraseInvitation = false)
+        internal void Write(string mess, bool prevLine = false, CliMessageType messType = CliMessageType.Default, bool eraseInvitation = false)
         {
             Write(mess, prevLine, ConvertMessageType(messType), eraseInvitation);
         }
@@ -52,8 +52,8 @@ namespace Drill4Net.Configurator.App
                 }
             }
             Console.Write(mess);
-            if (prevLine)
-                Console.SetCursorPosition(0, Console.CursorTop + 1);
+            //if (prevLine)
+                //Console.SetCursorPosition(0, Console.CursorTop + 1);
             Console.ForegroundColor = AppConstants.COLOR_DEFAULT;
         }
     }

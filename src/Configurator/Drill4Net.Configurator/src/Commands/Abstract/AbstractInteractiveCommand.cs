@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 using Drill4Net.Repository;
@@ -275,7 +276,7 @@ namespace Drill4Net.Configurator
         {
             if (mustExist && string.IsNullOrWhiteSpace(directory))
             {
-                RaiseWarning("Directory cannot be empty and must exist\n", false);
+                RaiseWarning("Directory cannot be empty and must exist\n", MessageState.PrevLine);
                 return false;
             }
             if (!mustExist || (mustExist && Directory.Exists(directory)))
@@ -297,7 +298,7 @@ namespace Drill4Net.Configurator
         {
             if (!canBeEmpty && string.IsNullOrWhiteSpace(filename))
             {
-                RaiseWarning("Filename cannot be empty", false);
+                RaiseWarning("Filename cannot be empty", MessageState.PrevLine);
                 return false;
             }
             if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
