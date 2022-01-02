@@ -31,7 +31,7 @@ namespace Drill4Net.Configurator.src.Commands.CI
             var yes = IsYes(answer);
             if (yes)
             {
-                RaiseMessage("YES", CliMessageType.Input_Default);
+                RaiseMessage("YES", CliMessageType.EmptyInput);
                 _rep.SaveSystemConfiguration(cfg);
                 RaiseMessage($"\nSystem options are saved. {ConfiguratorConstants.MESSAGE_PROPERTIES_EDIT_WARNING}", CliMessageType.Info);
             }

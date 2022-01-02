@@ -119,7 +119,7 @@ namespace Drill4Net.Configurator.App
             {
                 switch (messType)
                 {
-                    case CliMessageType.Input_Default:
+                    case CliMessageType.EmptyInput:
                         _outputHelper.Write(message + "\n", true, AppConstants.COLOR_INPUT_DEFAULT, true);
                         break;
                     default:

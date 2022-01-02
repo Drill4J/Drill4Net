@@ -17,7 +17,7 @@
         /// <summary>
         /// The user's input is empty (it can be default)
         /// </summary>
-        Input_Default,
+        EmptyInput,
 
         /// <summary>
         /// Info from programm to user after action

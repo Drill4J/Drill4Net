@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Repository;
 
 namespace Drill4Net.Configurator
 {
@@ -19,13 +20,19 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var configs = GetConfigs(_rep.Options.InjectorDirectory ?? "")
+            var dir = _rep.Options.InjectorDirectory ?? "";
+            var configs = GetConfigs(dir)
                 .OrderBy(a => a).ToArray();
+            var actualCfg = new BaseOptionsHelper(_rep.Subsystem)
+                .GetActualConfigPath(dir);
             for (int i = 0; i < configs.Length; i++)
             {
                 string? file = configs[i];
+                var isActual = file.Equals(actualCfg, StringComparison.InvariantCultureIgnoreCase);
+                var a1 = isActual ? "[" : "";
+                var a2 = isActual ? "]" : "";
                 var name = Path.GetFileNameWithoutExtension(file);
-                RaiseMessage($"{i+1}. {name}", CliMessageType.Info);
+                RaiseMessage($"{a1}{i+1}{a2}. {name}", CliMessageType.Info);
             }
             return Task.FromResult(true);
         }
@@ -44,8 +51,8 @@ namespace Drill4Net.Configurator
                 try
                 {
                     var cfg = _rep.ReadInjectorOptions(file);
-                    if(cfg != null && cfg.Type == CoreConstants.SUBSYSTEM_INJECTOR)
-                        res.Add(file);
+                    if(cfg?.Type == CoreConstants.SUBSYSTEM_INJECTOR)
+                        res.Add(FileUtils.GetFullPath(file, dir));
                 }
                 catch { }
             }

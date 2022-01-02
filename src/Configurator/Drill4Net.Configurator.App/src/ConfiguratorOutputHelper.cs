@@ -16,7 +16,7 @@ namespace Drill4Net.Configurator.App
                 CliMessageType.Help => AppConstants.COLOR_HELP,
                 CliMessageType.Question => AppConstants.COLOR_QUESTION,
                 CliMessageType.Annotation => AppConstants.COLOR_ANNOTATION,
-                CliMessageType.Input_Default => AppConstants.COLOR_INPUT_DEFAULT,
+                CliMessageType.EmptyInput => AppConstants.COLOR_INPUT_DEFAULT,
                 CliMessageType.Info => AppConstants.COLOR_INFO,
                 CliMessageType.Warning => AppConstants.COLOR_WARNING,
                 CliMessageType.Error => AppConstants.COLOR_ERROR,

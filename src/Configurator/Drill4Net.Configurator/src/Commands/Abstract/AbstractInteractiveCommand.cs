@@ -148,7 +148,7 @@ namespace Drill4Net.Configurator
             if (empty)
             {
                 answer = defValue ?? "";
-                RaiseMessage(answer, CliMessageType.Input_Default);
+                RaiseMessage(answer, CliMessageType.EmptyInput);
             }
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");
             return true;
