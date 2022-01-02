@@ -101,8 +101,10 @@ Please make your choice";
             }
             #endregion
             #region Filter
-            const string filterHint = $@"Now you need to set up some rules for injected entities: files, namespaces, classes, folders, etc.
-We should process only the Target's ones. The system files the Injector can skip on its own (as a rule), but in the case of third-party libraries, this may be too difficult to do automatically. 
+            const string filterMess = "\nNow you need to set up some rules for injected entities: folders, files, namespaces, classes, etc.\n";
+            RaiseMessage(filterMess, CliMessageType.Annotation);
+
+            const string filterHint = $@"We should process only the Target's ones. The system files the Injector can skip on its own (as a rule), but in the case of third-party libraries, this may be too difficult to do automatically. 
 If the target contains one shared root namespace (e.g. Drill4Net at beginning of Drill4Net.BanderLog), the better choice is to use the rules for type ""Namespace"" (in this case value is ""Drill4Net"").
 Hint: the values can be just strings or regular expressions (e.g. ""{CoreConstants.REGEX_FILTER_PREFIX} ^Drill4Net\.([\w-]+\.)+[\w]*Tests$"").
 Hint: the test frameworks' assemblies (that do not contains user functionality) should be skipped.
@@ -134,10 +136,11 @@ The filters:
 
 Hint: the regex must be located only in a sole filter tag (one expression in one tag).
 Hint: to set up value for ""all entities of current filter type"" use sign *. Example:
-       {ConfiguratorConstants.FILTER_TYPE_FOLDER}: ^* (do not process any folders)
+       {ConfiguratorConstants.FILTER_TYPE_FOLDER}: ^* (do not process any folders)";
+            RaiseMessage(filterHint, CliMessageType.Help);
 
-Please create at least one filter rule";
-            RaiseQuestion($"\n{filterHint}: ");
+            var filterQuestion = "Please create at least one filter rule";
+            RaiseQuestion($"\n{filterQuestion}: ");
 
             while (true)
             {

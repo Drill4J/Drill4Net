@@ -298,7 +298,7 @@ namespace Drill4Net.Configurator
         {
             if (!canBeEmpty && string.IsNullOrWhiteSpace(filename))
             {
-                RaiseWarning("Filename cannot be empty", MessageState.PrevLine);
+                RaiseWarning("Filename cannot be empty\n", MessageState.PrevLine);
                 return false;
             }
             if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
