@@ -16,11 +16,11 @@ namespace Drill4Net.Configurator
 
         /************************************************************************/
 
-        public async override Task<bool> Process()
+        public override Task<bool> Process()
         {
             if (!ConfigureCiConfig(out var ciCfgPath))
-                return false;
-            return InjectCiToProjects(ciCfgPath);
+                return Task.FromResult(false);
+            return Task.FromResult(InjectCiToProjects(ciCfgPath));
         }
 
         private bool ConfigureCiConfig(out string ciCfgPath)
