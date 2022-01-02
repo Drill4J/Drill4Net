@@ -103,7 +103,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             for (int i = 0; i < projects.Count; i++)
             {
                 string prj = projects[i];
-                RaiseMessage($"{i + 1}. {prj}", CliMessageType.Message);
+                RaiseMessage($"{i + 1}. {prj}", CliMessageType.Info);
             }
 
             // select the projects
@@ -142,7 +142,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 RaiseMessage("\nYou have selected these:");
                 foreach (var prj in selected)
                 {
-                    RaiseMessage(prj, CliMessageType.Message);
+                    RaiseMessage(prj, CliMessageType.Info);
                 }
                 if (!AskQuestion("Is that right?", out answer, "y"))
                     return false;
@@ -168,7 +168,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                         RaiseError($"{error}");
                 }
                 var ending = selected.Count > 1 ? $"s: {selected.Count - errors.Count}/{selected.Count}" : null;
-                RaiseMessage($"\nCI operation is created and injected to the project{ending}.", CliMessageType.Message);
+                RaiseMessage($"\nCI operation is created and injected to the project{ending}.", CliMessageType.Info);
             }
             #endregion
             return true;

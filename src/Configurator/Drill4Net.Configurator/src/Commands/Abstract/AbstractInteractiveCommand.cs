@@ -63,7 +63,7 @@ namespace Drill4Net.Configurator
                     return false;
                 }
                 _logger.Info($"Config for {appName} saved to [{cfgPath}]");
-                RaiseMessage($"You can check the {appName}'s settings: {cfgPath}", Cli.CliMessageType.Message);
+                RaiseMessage($"You can check the {appName}'s settings: {cfgPath}", Cli.CliMessageType.Info);
 
                 // activating the config
                 (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
@@ -146,7 +146,7 @@ namespace Drill4Net.Configurator
             var empty = answer?.Length == 0;
             if (empty)
             {
-                answer = defValue;
+                answer = defValue ?? "";
                 RaiseMessage(answer, Cli.CliMessageType.Input_Default);
             }
             _logger.Info($"Question: [{question}]; Default: [{defValue}]; Answer: [{answer}]");

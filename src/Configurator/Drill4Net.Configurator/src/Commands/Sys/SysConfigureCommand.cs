@@ -13,15 +13,15 @@ namespace Drill4Net.Configurator.src.Commands.CI
 
         /*************************************************************************/
 
-        public async override Task<bool> Process()
+        public override Task<bool> Process()
         {
             _logger.Info("Start to system configure");
 
             SystemConfiguration cfg = new();
             if (!ConfigAdmin(_rep.Options, cfg))
-                return false;
+                return Task.FromResult(false);
             if (!ConfigMiddleware(_rep.Options, cfg))
-                return false;
+                return Task.FromResult(false);
 
             //TODO: view list of all properties
 
@@ -33,13 +33,13 @@ namespace Drill4Net.Configurator.src.Commands.CI
             {
                 RaiseMessage("YES", CliMessageType.Input_Default);
                 _rep.SaveSystemConfiguration(cfg);
-                RaiseMessage($"System options are saved. {ConfiguratorConstants.MESSAGE_PROPERTIES_EDIT_WARNING}");
+                RaiseMessage($"\nSystem options are saved. {ConfiguratorConstants.MESSAGE_PROPERTIES_EDIT_WARNING}", CliMessageType.Info);
             }
             else
             {
                 RaiseWarning("NO", true);
             }
-            return yes;
+            return Task.FromResult(yes);
         }
 
         internal bool ConfigAdmin(ConfiguratorOptions opts, SystemConfiguration cfg)

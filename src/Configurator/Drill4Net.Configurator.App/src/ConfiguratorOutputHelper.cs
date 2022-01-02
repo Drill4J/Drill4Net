@@ -13,11 +13,11 @@ namespace Drill4Net.Configurator.App
         {
             return messType switch
             {
-                CliMessageType.Input_Default => AppConstants.COLOR_INPUT,
-                CliMessageType.Info => AppConstants.COLOR_INFO,
-                CliMessageType.Message => AppConstants.COLOR_MESSAGE,
-                CliMessageType.Help => AppConstants.COLOR_INPUT,
+                CliMessageType.Help => AppConstants.COLOR_HELP,
                 CliMessageType.Question => AppConstants.COLOR_QUESTION,
+                CliMessageType.Annotation => AppConstants.COLOR_ANNOTATION,
+                CliMessageType.Input_Default => AppConstants.COLOR_INPUT_DEFAULT,
+                CliMessageType.Info => AppConstants.COLOR_INFO,
                 CliMessageType.Warning => AppConstants.COLOR_WARNING,
                 CliMessageType.Error => AppConstants.COLOR_ERROR,
                 _ => AppConstants.COLOR_DEFAULT,
@@ -31,7 +31,7 @@ namespace Drill4Net.Configurator.App
             Console.ForegroundColor = AppConstants.COLOR_DEFAULT;
         }
 
-        internal void Write(string mess, bool prevLine = false, CliMessageType messType = CliMessageType.Info, bool eraseInvitation = false)
+        internal void Write(string mess, bool prevLine = false, CliMessageType messType = CliMessageType.Annotation, bool eraseInvitation = false)
         {
             Write(mess, prevLine, ConvertMessageType(messType), eraseInvitation);
         }

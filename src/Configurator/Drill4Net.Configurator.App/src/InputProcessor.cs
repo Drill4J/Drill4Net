@@ -59,7 +59,7 @@ namespace Drill4Net.Configurator.App
         {
             while (true)
             {
-                _outputHelper.WriteLine("\nCommand:", AppConstants.COLOR_MESSAGE);
+                _outputHelper.WriteLine("\nCommand:", AppConstants.COLOR_INFO);
                 _outputHelper.Write(AppConstants.TERMINAL_SIGN, false, AppConstants.COLOR_DEFAULT);
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
@@ -104,20 +104,26 @@ namespace Drill4Net.Configurator.App
             cmd.MessageDelivered -= Command_MessageDelivered;
         }
 
-        private void Command_MessageDelivered(string source, string message, CliMessageType messType = CliMessageType.Info, bool newLine = true)
+        private void Command_MessageDelivered(string source, string message, CliMessageType messType = CliMessageType.Annotation, bool newLine = true)
         {
             var color = _outputHelper.ConvertMessageType(messType);
             if (IsInteractive)
             {
-                if(newLine)
-                    _outputHelper.WriteLine(message, color);
-                else
-                    _outputHelper.Write(message, false, color);
-                //
-                if(messType == CliMessageType.Question)
-                    _outputHelper.Write(AppConstants.TERMINAL_SIGN, false, AppConstants.COLOR_DEFAULT);
-                if(messType == CliMessageType.Input_Default)
-                    _outputHelper.Write(message, true, AppConstants.COLOR_INPUT, true);
+                switch (messType)
+                {
+                    //case CliMessageType.Question:
+                    //    _outputHelper.Write(AppConstants.TERMINAL_SIGN, false, AppConstants.COLOR_DEFAULT);
+                    //    break;
+                    case CliMessageType.Input_Default:
+                        _outputHelper.Write(message, true, AppConstants.COLOR_INPUT_DEFAULT, true);
+                        break;
+                    default:
+                        if (newLine)
+                            _outputHelper.WriteLine(message, color);
+                        else
+                            _outputHelper.Write(message, false, color);
+                        break;
+                }
             }
         }
     }

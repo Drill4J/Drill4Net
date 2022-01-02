@@ -4,7 +4,7 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Cli
 {
-    public delegate void MessageDeliveredDelegate(string source, string message, CliMessageType messType = CliMessageType.Info, bool newLine = true);
+    public delegate void MessageDeliveredDelegate(string source, string message, CliMessageType messType = CliMessageType.Annotation, bool newLine = true);
 
     /**********************************************************************************************************/
 
@@ -53,7 +53,7 @@ namespace Drill4Net.Cli
             return _arguments?.FirstOrDefault(a => a.Name.Equals(paramName, StringComparison.InvariantCultureIgnoreCase))?.Value;
         }
 
-        protected void RaiseMessage(string message, CliMessageType messType = CliMessageType.Info)
+        protected void RaiseMessage(string message, CliMessageType messType = CliMessageType.Annotation)
         {
             MessageDelivered?.Invoke(ContextId, message, messType);
         }
