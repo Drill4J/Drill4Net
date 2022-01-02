@@ -7,6 +7,7 @@
     {
         public string Name { get; set; }
         public string Value { get; set; }
+        public int Poisition { get; set; }
 
         /// <summary>
         /// Is it CLI switch (set of chars with prefix "-")?
@@ -15,11 +16,20 @@
 
         /*********************************************************/
 
+        public CliArgument(string name, string value, int position)
+        {
+            Name = name;
+            Value = value;
+            Type = CliArgumentType.Positional;
+            Poisition = position;
+        }
+
         public CliArgument(string name, string value, CliArgumentType type)
         {
             Name = name;
             Value = value;
             Type = type;
+            Poisition = -1;
         }
 
         /*********************************************************/
@@ -28,7 +38,7 @@
         {
             return Type switch
             {
-                CliArgumentType.OnlyValue => Value,
+                CliArgumentType.Positional => $"{Poisition}:{Value}",
                 CliArgumentType.Switch => $"-{Name}",
                 _ => $"{Name}={Value}",
             };

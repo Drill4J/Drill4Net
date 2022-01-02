@@ -42,7 +42,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             var cfgPath = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
             if (cfgPath == null)
             {
-                var aloners = cliDescriptor.GetAloners();
+                var aloners = cliDescriptor.GetPositionals();
                 if (aloners.Count > 0)
                     cfgPath = aloners[0].Value;
             }

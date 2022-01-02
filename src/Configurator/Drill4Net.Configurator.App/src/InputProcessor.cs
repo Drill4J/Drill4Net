@@ -82,7 +82,11 @@ namespace Drill4Net.Configurator.App
         {
             try
             {
-                //input = "c1 c2 -abc 1 "; // TEST !!!
+                //TEST !!!
+                //input = "c1 c2 -abc 1 ";
+                //input = "c1 -a=1";
+                input = @"cmd -n= ""abc dfe "" -Sw pos0 pos1";
+
                 var cmdDesc = new CliDescriptor(input, true);
                 var cmd = _cmdRep.GetCommand(cmdDesc.CommandId);
                 await ProcessCommand(cmd, cmdDesc.Arguments)

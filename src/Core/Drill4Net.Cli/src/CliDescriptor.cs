@@ -61,16 +61,16 @@ namespace Drill4Net.Cli
             //var a3 = Parse(@"ci cfg --name =""abc dfe """);
             //var a4 = Parse(@"ci cfg --name = ""abc dfe "" --version = ""1.2.3.4""");
             //var a5 = Parse(@"-n= ""abc dfe "" -Sw");
-            //var a6 = Parse(@"cmd -n= ""abc dfe "" -Sw pos1 pos2");
-            //var a7 = Parse(@"cmd -n= ""abc dfe "" -Sw -- pos1 pos2");
+            //var a6 = Parse(@"cmd -n= ""abc dfe "" -Sw pos0 pos1");
+            //var a7 = Parse(@"cmd -n= ""abc dfe "" -Sw -- pos0 pos1");
             //var a8 = Parse(@" -s --degree_parallelism = 4 --cfg_dir = ""d:\Projects\EPM - D4J\"" ");
             //var a9 = Parse(@" -s --cfg_dir = ""d:\Projects\EPM - D4J\"" --degree_parallelism = 4 ");
             //var a10 = Parse("c1 c2 --aaa 123 -jhcg");
             //var a11 = Parse(@"c1 c2 --aaa ""123"" -jhcg");
             //var a12 = Parse(@"c1 c2 --aaa= ""123"" -jhcg");
-            //var a13 = Parse("c1 c2 -abc=1 "); //improper expression because it is switch, and must be corrected as full name parameter
-            //var a14 = Parse("c1 c2 -abc 1 ");
-            //Setup(a14, true);
+            //var a13 = Parse("c1 -a=1"); //short name parameter
+            //var a14 = Parse("c1 c2 -abc=1 "); //improper expression because it is switch, and must be corrected as full name parameter
+            //var a15 = Parse("c1 c2 -abc 1 ");
 
             //real
             var argsAr = Parse(args);
@@ -112,8 +112,8 @@ namespace Drill4Net.Cli
                 if (ch == '=')
                 {
                     glued = true;
-                    //input contains improper expression (-aaa=1), and must be corrected as full name parameter
-                    if (!block.StartsWith("--"))
+                    //input is not short name parameter, so contains improper expression (-aaa=1), and must be corrected as full name parameter
+                    if (block.Length > 2 && !block.StartsWith("--"))
                         block = "-" + block;
                 }
                 if (ch == ' ')
@@ -165,9 +165,8 @@ namespace Drill4Net.Cli
 
             string? parameter = null;
             string[] parts;
-            int noCommandParameter = 0;
+            int posParamInd = -1;
             bool wasOptions = false;
-            bool isSwicth = false;
 
             // Valid parameters forms:
             // {-,/,--}param{ ,=,:}((",')value(",'))
@@ -194,16 +193,21 @@ namespace Drill4Net.Cli
                             if (!_argByNames.ContainsKey(parameter))
                             {
                                 parts[0] = remover.Replace(parts[0], "$1");
-                                AddParameter(parameter, parts[0], isAloner);
+                                AddParameter(parameter, parts[0]);
                             }
                             parameter = null;
                         }
 
                         // it is raw command/contexts
                         if (!wasOptions && withCommand)
+                        {
                             Contexts.Add(raw);
-                        else
-                            AddParameter($"Parameter{noCommandParameter++}", raw, isAloner);
+                        }
+                        else //positional parameter
+                        {
+                            posParamInd++;
+                            AddParameter($"Parameter{posParamInd}", raw, posParamInd);
+                        }
                         //
                         break;
 
@@ -238,7 +242,7 @@ namespace Drill4Net.Cli
                         if (!_argByNames.ContainsKey(parameter))
                         {
                             parts[2] = remover.Replace(parts[2], "$1");
-                            AddParameter(parameter, parts[2], isAloner);
+                            AddParameter(parameter, parts[2]);
                         }
 
                         parameter = null;
@@ -260,12 +264,16 @@ namespace Drill4Net.Cli
             return _switch?.Name?.Contains(sw) == true;
         }
 
-        private void AddParameter(string name, string val, bool isAloner)
+        private void AddParameter(string name, string val, int posParamInd = -1)
         {
             if (_argByNames.ContainsKey(name))
                 return;
             _argByNames.Add(name, val);
-            Arguments.Add(new CliArgument(name, val, isAloner ? CliArgumentType.OnlyValue : CliArgumentType.NameAndValue));
+            //
+            CliArgument arg = posParamInd == -1 ?
+                new(name, val, CliArgumentType.NameAndValue) :
+                new(name, val, posParamInd);
+            Arguments.Add(arg);
         }
 
         /// <summary>
@@ -286,7 +294,7 @@ namespace Drill4Net.Cli
         /// Get the alone values (parameters without their names and without prefix "-" or "--")
         /// </summary>
         /// <returns></returns>
-        public List<CliArgument> GetAloners() => Arguments.Where(a => a.Type == CliArgumentType.OnlyValue).ToList();
+        public List<CliArgument> GetPositionals() => Arguments.Where(a => a.Type == CliArgumentType.Positional).ToList();
 
         private void AddSwitch(string name)
         {

@@ -90,7 +90,7 @@ namespace Drill4Net.Injector.Core
             var sourceDir = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_SOURCE_PATH);
             if (sourceDir == null)
             {
-                var aloners = cliDescriptor.GetAloners();
+                var aloners = cliDescriptor.GetPositionals();
                 sourceDir = aloners.Count > 1 ?
                 PotentialPath(cliDescriptor.Arguments[0].Value) : //just the first parameter!
                 null;
@@ -104,7 +104,7 @@ namespace Drill4Net.Injector.Core
             var destDir = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_DESTINATION_PATH);
             if (destDir == null)
             {
-                var aloners = cliDescriptor.GetAloners();
+                var aloners = cliDescriptor.GetPositionals();
                 destDir = aloners.Count > 1 ?
                     PotentialPath(cliDescriptor.Arguments[1].Value) : //just the second parameter
                     null;
