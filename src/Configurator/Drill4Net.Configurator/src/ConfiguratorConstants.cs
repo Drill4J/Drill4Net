@@ -18,19 +18,24 @@
         public const string FILTER_TYPE_NAMESPACE = "NS";
         public const string FILTER_TYPE_ATTRIBUTE = "ATTR";
         #endregion
-        #region Commands
-        public const string COMMAND_SYS = "sys cfg";
-        public const string COMMAND_CI = "ci cfg";
-        public const string COMMAND_TARGET = "trg cfg";
-        public const string COMMAND_RUNNER = "runner cfg";
-        public const string COMMAND_START = "ci start";
-
-        public const string COMMAND_DELETE = "delete";
-        public const string COMMAND_ACTIVATE = "activate";
-
+        #region Contexts & Commands
+        public const string CONTEXT_CFG = "cfg";
+        public const string CONTEXT_SYS = "sys";
+        public const string CONTEXT_CI = "ci";
+        public const string CONTEXT_TARGET = "trg";
+        public const string CONTEXT_RUNNER = "runner";
+        
         public const string COMMAND_NEW = "new";
         public const string COMMAND_EDIT = "edit";
         public const string COMMAND_VIEW = "view";
+        public const string COMMAND_LIST = "list";
+        public const string COMMAND_DELETE = "delete";
+
+        public const string COMMAND_CLS = "cls";
+        public const string COMMAND_HELP = "?";
+        public const string COMMAND_HELP_2 = "help";
+        public const string COMMAND_START = "start";
+        public const string COMMAND_ACTIVATE = "activate";
         #endregion
 
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";

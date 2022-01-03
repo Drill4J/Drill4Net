@@ -8,7 +8,7 @@ using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute("runner", "cfg")]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.CONTEXT_CFG)]
     public class TestRunnerConfigureCommand : AbstractInteractiveCommand
     {
         public TestRunnerConfigureCommand(ConfiguratorRepository rep) : base(rep)

@@ -10,10 +10,10 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute("trg", "cfg")]
-    public class TargetConfigureCommand : AbstractInteractiveCommand
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_NEW)]
+    public class TargetNewCommand : AbstractInteractiveCommand
     {
-        public TargetConfigureCommand(ConfiguratorRepository rep) : base(rep)
+        public TargetNewCommand(ConfiguratorRepository rep) : base(rep)
         {
         }
 

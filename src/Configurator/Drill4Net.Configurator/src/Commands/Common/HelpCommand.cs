@@ -3,7 +3,7 @@ using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute("?")]
+    [CliCommandAttribute(ConfiguratorConstants.COMMAND_HELP)]
     public class HelpCommand : AbstractCliCommand
     {
         //https://docopt.org/
@@ -13,12 +13,12 @@ namespace Drill4Net.Configurator
             const string mess = $@"  === Please, type:
   >>> '?' or 'help' to print this menu.
   --- Configurations:
-  >>> '{ConfiguratorConstants.COMMAND_SYS}' to the system setup.
-  >>> '{ConfiguratorConstants.COMMAND_TARGET}' to target's injection configure.
-  >>> '{ConfiguratorConstants.COMMAND_RUNNER}' to tests run's configure.
-  >>> '{ConfiguratorConstants.COMMAND_CI}' for the CI run's settings.
+  >>> '{ConfiguratorConstants.CONTEXT_SYS} {ConfiguratorConstants.CONTEXT_CFG}' to the system setup.
+  >>> '{ConfiguratorConstants.CONTEXT_TARGET} {ConfiguratorConstants.CONTEXT_CFG}' to configure the target's injections.
+  >>> '{ConfiguratorConstants.CONTEXT_RUNNER} {ConfiguratorConstants.CONTEXT_CFG}' to configure the tests' run.
+  >>> '{ConfiguratorConstants.CONTEXT_CI} {ConfiguratorConstants.CONTEXT_CFG}' for the CI run's settings.
   --- Actions:
-  >>> '{ConfiguratorConstants.COMMAND_START}' to start full cycle (target injection + tests' running).
+  >>> '{ConfiguratorConstants.CONTEXT_CI} {ConfiguratorConstants.COMMAND_START}' to start full cycle (target injection + tests' running).
   >>> 'q' to exit.";
             RaiseMessage($"\n{mess}", CliMessageType.Help);
             return Task.FromResult(true);

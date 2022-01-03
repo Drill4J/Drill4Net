@@ -318,7 +318,7 @@ namespace Drill4Net.Configurator
 
         protected bool IsOk(string? s)
         {
-            return s.Replace("\"", null).Equals(ConfiguratorConstants.COMMAND_OK, StringComparison.InvariantCultureIgnoreCase);
+            return s?.Replace("\"", null).Equals(ConfiguratorConstants.COMMAND_OK, StringComparison.InvariantCultureIgnoreCase) == true;
         }
 
         protected bool IsYes(string? s, bool noInputIsYes = true)

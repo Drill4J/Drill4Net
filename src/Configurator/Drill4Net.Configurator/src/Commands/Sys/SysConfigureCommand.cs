@@ -4,7 +4,7 @@ using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator.src.Commands.CI
 {
-    [CliCommandAttribute("sys", "cfg")]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.CONTEXT_CFG)]
     public class SysConfigureCommand : AbstractInteractiveCommand
     {
         public SysConfigureCommand(ConfiguratorRepository rep) : base(rep)

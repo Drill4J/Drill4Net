@@ -9,21 +9,6 @@ namespace Drill4Net.Configurator.App
             WriteLine(mess, ConvertMessageType(messType));
         }
 
-        internal ConsoleColor ConvertMessageType(CliMessageType messType)
-        {
-            return messType switch
-            {
-                CliMessageType.Help => AppConstants.COLOR_HELP,
-                CliMessageType.Question => AppConstants.COLOR_QUESTION,
-                CliMessageType.Annotation => AppConstants.COLOR_ANNOTATION,
-                CliMessageType.EmptyInput => AppConstants.COLOR_INPUT_DEFAULT,
-                CliMessageType.Info => AppConstants.COLOR_INFO,
-                CliMessageType.Warning => AppConstants.COLOR_WARNING,
-                CliMessageType.Error => AppConstants.COLOR_ERROR,
-                _ => AppConstants.COLOR_DEFAULT,
-            };
-        }
-
         internal void WriteLine(string mess, ConsoleColor color = AppConstants.COLOR_DEFAULT)
         {
             Console.ForegroundColor = color;
@@ -55,6 +40,21 @@ namespace Drill4Net.Configurator.App
             //if (prevLine)
                 //Console.SetCursorPosition(0, Console.CursorTop + 1);
             Console.ForegroundColor = AppConstants.COLOR_DEFAULT;
+        }
+
+        internal ConsoleColor ConvertMessageType(CliMessageType messType)
+        {
+            return messType switch
+            {
+                CliMessageType.Help => AppConstants.COLOR_HELP,
+                CliMessageType.Question => AppConstants.COLOR_QUESTION,
+                CliMessageType.Annotation => AppConstants.COLOR_ANNOTATION,
+                CliMessageType.EmptyInput => AppConstants.COLOR_INPUT_DEFAULT,
+                CliMessageType.Info => AppConstants.COLOR_INFO,
+                CliMessageType.Warning => AppConstants.COLOR_WARNING,
+                CliMessageType.Error => AppConstants.COLOR_ERROR,
+                _ => AppConstants.COLOR_DEFAULT,
+            };
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Drill4Net.Cli
 
         public CliDescriptor(string args, bool withCommand)
         {
-            //test TODO: unit tests
+            // TODO: unit tests
             //var a1 = Parse("ci cfg add");
             //var a2 = Parse(@"ci cfg -n ""abc dfe """);
             //var a3 = Parse(@"ci cfg --name =""abc dfe """);
@@ -63,8 +63,8 @@ namespace Drill4Net.Cli
             //var a5 = Parse(@"-n= ""abc dfe "" -Sw");
             //var a6 = Parse(@"cmd -n= ""abc dfe "" -Sw pos0 pos1");
             //var a7 = Parse(@"cmd -n= ""abc dfe "" -Sw -- pos0 pos1");
-            //var a8 = Parse(@" -s --degree_parallelism = 4 --cfg_dir = ""d:\Projects\EPM - D4J\"" ");
-            //var a9 = Parse(@" -s --cfg_dir = ""d:\Projects\EPM - D4J\"" --degree_parallelism = 4 ");
+            //var a8 = Parse(@" -s --degree = 4 --cfg_dir = ""d:\EPM - D4J\"" ");
+            //var a9 = Parse(@" -s --cfg_dir = ""d:\EPM - D4J\"" --degree = 4 ");
             //var a10 = Parse("c1 c2 --aaa 123 -jhcg");
             //var a11 = Parse(@"c1 c2 --aaa ""123"" -jhcg");
             //var a12 = Parse(@"c1 c2 --aaa= ""123"" -jhcg");

@@ -9,7 +9,9 @@ using Drill4Net.Repository;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute("trg", "cfg", "list")]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
+                         ConfiguratorConstants.CONTEXT_CFG,
+                         ConfiguratorConstants.COMMAND_LIST)]
     public class TargetListCommand : AbstractConfiguratorCommand
     {
         public TargetListCommand(ConfiguratorRepository rep) : base(rep)

@@ -4,7 +4,7 @@ using Drill4Net.BanderLog;
 
 namespace Drill4Net.Cli
 {
-    public delegate void MessageDeliveredDelegate(string source, string message, CliMessageType messType = CliMessageType.Annotation, 
+    public delegate void MessageDeliveredDelegate(string source, string message, CliMessageType messType = CliMessageType.Annotation,
         MessageState state = MessageState.NewLine);
 
     /**********************************************************************************************************/
@@ -31,6 +31,11 @@ namespace Drill4Net.Cli
 
         /********************************************************************/
 
+        /// <summary>
+        /// You must initialize the command using the specified command-line interface 
+        /// descriptor before calling the process method.
+        /// </summary>
+        /// <param name="desc"></param>
         public void Init(CliDescriptor desc)
         {
             _desc = desc;
@@ -43,6 +48,10 @@ namespace Drill4Net.Cli
             return attr.Id;
         }
 
+        /// <summary>
+        /// Main method for the Command
+        /// </summary>
+        /// <returns></returns>
         public abstract Task<bool> Process();
 
         /// <summary>

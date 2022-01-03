@@ -82,14 +82,16 @@ namespace Drill4Net.Configurator
                     _logger.Error(error);
                 }
                 else
+                {
                     _logger.Info($"CI Command injected into the project file: [{path}]");
+                }
             }
         }
 
         internal bool InjectCiCommandTo(string prjPath, string command, out string error)
         {
             #region Checks
-            error = null;
+            error = "";
             if (string.IsNullOrWhiteSpace(prjPath))
             {
                 error = "The project parh is empty";
