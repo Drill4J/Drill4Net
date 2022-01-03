@@ -18,9 +18,7 @@ namespace Drill4Net.Cli
 
         public string ContextId { get; }
 
-        public CliArgument? SwitchArgument { get; private set; }
-
-        protected List<CliArgument> _arguments;
+        protected CliDescriptor? _desc;
         protected readonly Logger _logger;
 
         /********************************************************************/
@@ -28,16 +26,14 @@ namespace Drill4Net.Cli
         protected AbstractCliCommand()
         {
             ContextId = SearchCommandIdByAttribute();
-            _arguments = new();
             _logger = new TypedLogger<AbstractCliCommand>(CoreConstants.SUBSYSTEM_CONFIGURATOR);
         }
 
         /********************************************************************/
 
-        public void Init(List<CliArgument> arguments)
+        public void Init(CliDescriptor desc)
         {
-            _arguments = arguments;
-            SwitchArgument = arguments?.FirstOrDefault(a => a.Type == CliArgumentType.Switch);
+            _desc = desc;
         }
 
         protected string SearchCommandIdByAttribute()
@@ -49,10 +45,22 @@ namespace Drill4Net.Cli
 
         public abstract Task<bool> Process();
 
-        protected string? GetParamVal(string paramName)
+        /// <summary>
+        /// Get the parameter value by its name.
+        /// </summary>
+        /// <param name="name">Name of the parameter</param>
+        /// <param name="isSwitch">Is it CLI switch (one char, e.g. for 'a' in string "-abc" -> is it setted)?</param>
+        /// <returns>Value of the parameter. For switches it will be strings "true" or "false"</returns>
+        public string? GetParameter(string name, bool isSwitch = false)
         {
-            return _arguments?.FirstOrDefault(a => a.Name.Equals(paramName, StringComparison.InvariantCultureIgnoreCase))?.Value;
+            return _desc?.GetParameter(name, isSwitch);
         }
+
+        /// <summary>
+        /// Get the alone values (parameters without their names and without prefix "-" or "--")
+        /// </summary>
+        /// <returns></returns>
+        public List<CliArgument> GetPositionals() => _desc == null ? new() : _desc.GetPositionals();
 
         protected void RaiseMessage(string message, CliMessageType messType = CliMessageType.Annotation)
         {

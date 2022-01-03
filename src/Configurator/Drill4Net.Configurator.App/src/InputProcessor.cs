@@ -52,7 +52,7 @@ namespace Drill4Net.Configurator.App
         internal Task ProcessByArguments(CliDescriptor cliDesc)
         {
             var cmd = _cmdRep.GetCommand(cliDesc.CommandId);
-            return ProcessCommand(cmd, cliDesc.Arguments);
+            return ProcessCommand(cmd, cliDesc);
         }
 
         internal async Task StartInteractive()
@@ -89,7 +89,7 @@ namespace Drill4Net.Configurator.App
 
                 var cmdDesc = new CliDescriptor(input, true);
                 var cmd = _cmdRep.GetCommand(cmdDesc.CommandId);
-                await ProcessCommand(cmd, cmdDesc.Arguments)
+                await ProcessCommand(cmd, cmdDesc)
                         .ConfigureAwait(false);
                 return true;
             }
@@ -100,9 +100,9 @@ namespace Drill4Net.Configurator.App
             }
         }
 
-        internal async Task ProcessCommand(AbstractCliCommand cmd, List<CliArgument> args)
+        internal async Task ProcessCommand(AbstractCliCommand cmd, CliDescriptor desc)
         {
-            cmd.Init(args);
+            cmd.Init(desc);
             cmd.MessageDelivered += Command_MessageDelivered;
             await cmd.Process()
                 .ConfigureAwait(false);
