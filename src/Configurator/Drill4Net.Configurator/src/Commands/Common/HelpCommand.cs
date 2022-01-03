@@ -27,7 +27,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "";
+            return "View help for the commands";
         }
 
         public override string GetHelp()

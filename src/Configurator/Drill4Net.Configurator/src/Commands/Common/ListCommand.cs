@@ -16,14 +16,16 @@ namespace Drill4Net.Configurator
         public override Task<bool> Process()
         {
             CliCommandRepository cmdRep = new(_rep);
-            var list = cmdRep.Commands.Values.OrderBy(a => a.ContextId)
+            var list = cmdRep.Commands.Values
                 .Where(a => a.ContextId != CliConstants.COMMAND_NULL)
+                .OrderBy(a => a.ContextId)
                 .ToList();
             for (int i = 0; i < list.Count; i++)
             {
                 var cmd = list[i];
                 var sig = cmd.ContextId.ToLower().Replace("_", " ");
-                var desc = cmd.GetShortDescription().Trim();
+                var desc = "";
+                try { desc = cmd.GetShortDescription().Trim(); } catch { }
                 if (!string.IsNullOrWhiteSpace(desc))
                     desc = " => " + desc;
                 RaiseMessage($"{i}. {sig}{desc}");

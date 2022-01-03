@@ -2,9 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Drill4Net.Cli;
-using Drill4Net.Common;
 using Drill4Net.Repository;
 
 namespace Drill4Net.Configurator
@@ -41,7 +39,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "";
+            return "Get list of the Injector's configs";
         }
 
         public override string GetHelp()

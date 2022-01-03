@@ -108,7 +108,7 @@ Specify at least one tests' assembly.";
 
         public override string GetShortDescription()
         {
-            return "";
+            return "Create new Test Runner's config in interactive mode";
         }
 
         public override string GetHelp()

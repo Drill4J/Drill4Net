@@ -176,7 +176,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
 
         public override string GetShortDescription()
         {
-            return "";
+            return "Create new CI config in interactive mode (injections for the target + Test Runner's rules in CI pipeline)";
         }
 
         public override string GetHelp()

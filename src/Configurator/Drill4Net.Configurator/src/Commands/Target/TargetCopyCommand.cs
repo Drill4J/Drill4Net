@@ -136,7 +136,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "";
+            return "Copy the specified Injector's config to new one with new name, version and optional injected target's directory";
         }
 
         public override string GetHelp()

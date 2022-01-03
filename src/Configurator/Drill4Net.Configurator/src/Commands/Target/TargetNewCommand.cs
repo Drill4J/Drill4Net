@@ -339,7 +339,7 @@ Please make your choice";
 
         public override string GetShortDescription()
         {
-            return "";
+            return "Create new Injector's config in interactive mode";
         }
 
         public override string GetHelp()
