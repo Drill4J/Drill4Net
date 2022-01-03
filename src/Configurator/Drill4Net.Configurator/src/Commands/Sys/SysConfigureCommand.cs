@@ -115,5 +115,15 @@ namespace Drill4Net.Configurator.src.Commands.CI
 
             return true;
         }
+
+        public override string GetShortDescription()
+        {
+            return "";
+        }
+
+        public override string GetHelp()
+        {
+            return $"Help article not implemeted yet";
+        }
     }
 }

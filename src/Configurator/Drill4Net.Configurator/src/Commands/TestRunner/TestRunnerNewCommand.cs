@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Cli;
@@ -105,6 +104,16 @@ Specify at least one tests' assembly.";
                 directories.Add(dirRun);
             }
             return true;
+        }
+
+        public override string GetShortDescription()
+        {
+            return "";
+        }
+
+        public override string GetHelp()
+        {
+            return "Help article not implemeted yet";
         }
     }
 }

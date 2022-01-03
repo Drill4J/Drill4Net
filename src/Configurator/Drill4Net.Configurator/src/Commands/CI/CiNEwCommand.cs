@@ -173,5 +173,15 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             #endregion
             return true;
         }
+
+        public override string GetShortDescription()
+        {
+            return "";
+        }
+
+        public override string GetHelp()
+        {
+            return "Help article not implemeted yet";
+        }
     }
 }

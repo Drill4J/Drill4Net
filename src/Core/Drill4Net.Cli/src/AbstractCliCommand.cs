@@ -18,6 +18,11 @@ namespace Drill4Net.Cli
 
         public string ContextId { get; }
 
+        /// <summary>
+        /// List of arguments for the command (which located in <see cref="Contexts"/> among others contexts' tags).
+        /// </summary>
+        public List<CliArgument> Arguments => _desc == null ? new() : _desc.Arguments;
+
         protected CliDescriptor? _desc;
         protected readonly Logger _logger;
 
@@ -54,6 +59,9 @@ namespace Drill4Net.Cli
         /// <returns></returns>
         public abstract Task<bool> Process();
 
+        public abstract string GetShortDescription();
+        public abstract string GetHelp();
+
         /// <summary>
         /// Get the parameter value by its name.
         /// </summary>
@@ -71,6 +79,22 @@ namespace Drill4Net.Cli
         /// <returns></returns>
         public List<CliArgument> GetPositionals() => _desc == null ? new() : _desc.GetPositionals();
 
+        public string GetPositional(int ind)
+        {
+            if (ind < 0)
+                return string.Empty;
+            var poses = GetPositionals();
+            if (ind >= poses.Count)
+                return string.Empty;
+            return poses[ind].Value;
+        }
+
+        public bool IsSwitchSet(char sw)
+        {
+            return (_desc?.IsSwitchSet(sw)) ?? false;
+        }
+
+        #region RaiseMessage
         protected void RaiseMessage(string message, CliMessageType messType = CliMessageType.Annotation)
         {
             MessageDelivered?.Invoke(ContextId, message, messType);
@@ -90,5 +114,6 @@ namespace Drill4Net.Cli
         {
             MessageDelivered?.Invoke(ContextId, message, CliMessageType.Error);
         }
+        #endregion
     }
 }

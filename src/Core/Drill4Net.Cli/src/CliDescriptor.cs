@@ -313,7 +313,12 @@ namespace Drill4Net.Cli
             //switches from arguments
             var switches = Arguments.Where(a => a.Type == CliArgumentType.Switch).ToList();
             if (switches.Count < 2)
+            {
+                if(switches.Count > 0)
+                    _switch = switches[0];
                 return;
+            }
+            //
             var name = "";
             foreach (var sw in switches)
                 name += sw.Name;

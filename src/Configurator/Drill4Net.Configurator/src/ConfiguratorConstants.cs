@@ -27,9 +27,10 @@
         
         public const string COMMAND_NEW = "new";
         public const string COMMAND_EDIT = "edit";
+        public const string COMMAND_DELETE = "delete";
+        public const string COMMAND_COPY = "copy";
         public const string COMMAND_VIEW = "view";
         public const string COMMAND_LIST = "list";
-        public const string COMMAND_DELETE = "delete";
 
         public const string COMMAND_CLS = "cls";
         public const string COMMAND_HELP = "?";

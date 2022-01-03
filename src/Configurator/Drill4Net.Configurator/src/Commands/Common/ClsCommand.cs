@@ -12,5 +12,15 @@ namespace Drill4Net.Configurator
             Console.Clear();
             return Task.FromResult(true);
         }
+
+        public override string GetShortDescription()
+        {
+            return "Clears the program screen";
+        }
+
+        public override string GetHelp()
+        {
+            return "Help article not implemeted yet";
+        }
     }
 }

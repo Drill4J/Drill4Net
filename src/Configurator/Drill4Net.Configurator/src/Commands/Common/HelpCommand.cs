@@ -11,7 +11,8 @@ namespace Drill4Net.Configurator
         public override Task<bool> Process()
         {
             const string mess = $@"  === Please, type:
-  >>> '?' or 'help' to print this menu.
+  >>> '?' to print this menu.
+  >>> '{ConfiguratorConstants.COMMAND_LIST}' to list all commands.
   --- Configurations:
   >>> '{ConfiguratorConstants.CONTEXT_SYS} {ConfiguratorConstants.CONTEXT_CFG}' to the system setup.
   >>> '{ConfiguratorConstants.CONTEXT_TARGET} {ConfiguratorConstants.COMMAND_NEW}' to configure new target's injections.
@@ -22,6 +23,16 @@ namespace Drill4Net.Configurator
   >>> 'q' to exit.";
             RaiseMessage($"\n{mess}", CliMessageType.Help);
             return Task.FromResult(true);
+        }
+
+        public override string GetShortDescription()
+        {
+            return "";
+        }
+
+        public override string GetHelp()
+        {
+            return "Help article not implemeted yet";
         }
     }
 }

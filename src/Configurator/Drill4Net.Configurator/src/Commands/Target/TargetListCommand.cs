@@ -22,8 +22,8 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var dir = _rep.Options.InjectorDirectory ?? "";
-            var configs = GetConfigs(dir)
+            var dir = _rep.GetInjectorDirectory();
+            var configs = _rep.GetInjectorConfigs(dir)
                 .OrderBy(a => a).ToArray();
             var actualCfg = new BaseOptionsHelper(_rep.Subsystem)
                 .GetActualConfigPath(dir);
@@ -39,26 +39,14 @@ namespace Drill4Net.Configurator
             return Task.FromResult(true);
         }
 
-        internal List<string> GetConfigs(string dir)
+        public override string GetShortDescription()
         {
-            if (string.IsNullOrWhiteSpace(dir))
-                throw new Exception("The directory of Injector is empty in config");
-            if (!Directory.Exists(dir))
-                throw new Exception("The directory of Injector does not exist");
-            //
-            var allCfgs = Directory.GetFiles(dir, "*.yml");
-            var res = new List<string>();
-            foreach (var file in allCfgs)
-            {
-                try
-                {
-                    var cfg = _rep.ReadInjectorOptions(file);
-                    if(cfg?.Type == CoreConstants.SUBSYSTEM_INJECTOR)
-                        res.Add(FileUtils.GetFullPath(file, dir));
-                }
-                catch { }
-            }
-            return res;
+            return "";
+        }
+
+        public override string GetHelp()
+        {
+            return "Help article not implemeted yet";
         }
     }
 }

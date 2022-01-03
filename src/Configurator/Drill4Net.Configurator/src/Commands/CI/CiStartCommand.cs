@@ -81,7 +81,7 @@ namespace Drill4Net.Configurator
         private async Task<(bool res, string error)> InjectorProcess(string cfgsDir, int degreefParallelism)
         {
             var args = $"-{CoreConstants.ARGUMENT_SILENT} -{CoreConstants.ARGUMENT_DEGREE_PARALLELISM}={degreefParallelism} -{CoreConstants.ARGUMENT_CONFIG_DIR}=\"{cfgsDir}\"";
-            var path = Path.Combine(_rep.Options.InjectorDirectory, "Drill4Net.Injector.App.exe");
+            var path = Path.Combine(_rep.GetInjectorDirectory(), "Drill4Net.Injector.App.exe");
             var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
             if (!res)
                 return (false, err);
@@ -94,14 +94,25 @@ namespace Drill4Net.Configurator
         private async Task<(bool res, string error)> TestRunnerProcess(string testRunnerCfgPath)
         {
             var args = $"-{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
-            var path = Path.Combine(_rep.Options.TestRunnerDirectory, "Drill4Net.Agent.TestRunner.exe");
+            var path = Path.Combine(_rep.GetTestRunnerDirectory(), "Drill4Net.Agent.TestRunner.exe");
             var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, path, args, out var err);
             if (!res)
                 return (false, err);
 
             //wait
-            await CommonUtils.WaitForProcessExit(pid);
+            await CommonUtils.WaitForProcessExit(pid)
+                .ConfigureAwait(false);
             return (true, "");
+        }
+
+        public override string GetShortDescription()
+        {
+            return "";
+        }
+
+        public override string GetHelp()
+        {
+            return "Help article not implemeted yet";
         }
     }
 }

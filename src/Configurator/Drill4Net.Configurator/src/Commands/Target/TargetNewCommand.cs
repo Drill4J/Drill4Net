@@ -191,10 +191,7 @@ Please make your choice";
                 return Task.FromResult(false);
 
             // save config
-            var injDir = opts.InjectorDirectory;
-            if (string.IsNullOrEmpty(injDir))
-                injDir = @"..\injector";
-
+            var injDir = _rep.GetInjectorDirectory();
             var res = SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, injDir);
             return Task.FromResult(res);
         }
@@ -338,6 +335,16 @@ Please make your choice";
                 //TODO: remove duplicates
             }
             return true;
+        }
+
+        public override string GetShortDescription()
+        {
+            return "";
+        }
+
+        public override string GetHelp()
+        {
+            return "Help article not implemeted yet";
         }
     }
 }
