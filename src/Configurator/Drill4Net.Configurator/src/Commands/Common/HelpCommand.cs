@@ -4,15 +4,10 @@ using Drill4Net.Cli;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute("?")]
-    public class HelpCommand : AbstractConfiguratorCommand
+    public class HelpCommand : AbstractCliCommand
     {
-        public HelpCommand(ConfiguratorRepository rep) : base(rep)
-        {
-        }
-
-        /**********************************************************************/
-
         //https://docopt.org/
+
         public override Task<bool> Process()
         {
             const string mess = $@"  === Please, type:
