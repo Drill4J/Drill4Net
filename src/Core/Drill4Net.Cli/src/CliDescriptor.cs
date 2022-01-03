@@ -71,6 +71,7 @@ namespace Drill4Net.Cli
             //var a13 = Parse("c1 -a=1"); //short name parameter
             //var a14 = Parse("c1 c2 -abc=1 "); //improper expression because it is switch, and must be corrected as full name parameter
             //var a15 = Parse("c1 c2 -abc 1 ");
+            //var a16 = "copy trg -- cfg cfg3 0.3.0";
 
             //real
             var argsAr = Parse(args);
@@ -118,23 +119,26 @@ namespace Drill4Net.Cli
                 }
                 if (ch == ' ')
                 {
-                    if(i < lastInd)
+                    if (block != "--")
                     {
-                        var nextChar = args[i + 1];
-                        if (nextChar == ' ' || nextChar == '=')
-                            continue;
-                        if (!glued && (nextChar == '"' || block.StartsWith("--")))
+                        if (i < lastInd)
                         {
-                            if (!block.EndsWith("="))
+                            var nextChar = args[i + 1];
+                            if (nextChar == ' ' || nextChar == '=')
+                                continue;
+                            if (!glued && (nextChar == '"' || block.StartsWith("--")))
                             {
-                                block += '=';
-                                glued = true;
+                                if (!block.EndsWith("="))
+                                {
+                                    block += '=';
+                                    glued = true;
+                                }
+                                continue;
                             }
-                            continue;
                         }
+                        if (i > 0 && args[i - 1] == '=')
+                            continue;
                     }
-                    if(i > 0 && args[i - 1] == '=')
-                        continue;
                     //
                     block = block.Trim();
                     if(block != string.Empty)
@@ -177,6 +181,8 @@ namespace Drill4Net.Cli
             {
                 if (raw.StartsWith("-"))
                     wasOptions = true;
+                if (raw == "--")
+                    continue;
                 var isAloner = !raw.StartsWith("-") && !raw.Contains("=");
 
                 // Look for new parameters (-,/ or --) and a
