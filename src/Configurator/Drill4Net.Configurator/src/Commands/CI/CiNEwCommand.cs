@@ -7,10 +7,10 @@ using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CI, ConfiguratorConstants.CONTEXT_CFG)]
-    public class CiConfigureCommand : AbstractInteractiveCommand
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CI, ConfiguratorConstants.COMMAND_NEW)]
+    public class CiNewCommand : AbstractInteractiveCommand
     {
-        public CiConfigureCommand(ConfiguratorRepository rep) : base(rep)
+        public CiNewCommand(ConfiguratorRepository rep) : base(rep)
         {
         }
 
