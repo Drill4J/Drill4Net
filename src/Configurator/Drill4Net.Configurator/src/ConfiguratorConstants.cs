@@ -14,7 +14,7 @@
         public const string FILTER_TYPE_DIR = "DIR";
         public const string FILTER_TYPE_FOLDER = "FLD";
         public const string FILTER_TYPE_FILE = "FILE";
-        public const string FILTER_TYPE_TYPE = "TYPE";
+        public const string FILTER_TYPE_CLASS = "TYPE";
         public const string FILTER_TYPE_NAMESPACE = "NS";
         public const string FILTER_TYPE_ATTRIBUTE = "ATTR";
         #endregion

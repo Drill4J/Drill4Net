@@ -18,6 +18,48 @@ namespace Drill4Net.Common
 
         /**********************************************************/
 
+        public void AddDirectory(string dir)
+        {
+            if (string.IsNullOrWhiteSpace(dir) || Directories.Contains(dir))
+                return;
+            (Directories ??= new()).Add(dir);
+        }
+
+        public void AddFolder(string fld)
+        {
+            if (string.IsNullOrWhiteSpace(fld) || Folders.Contains(fld))
+                return;
+            (Folders ??= new()).Add(fld);
+        }
+
+        public void AddFile(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name) || Files.Contains(name))
+                return;
+            (Files ??= new()).Add(name);
+        }
+
+        public void AddNamespace(string ns)
+        {
+            if (string.IsNullOrWhiteSpace(ns) || Namespaces.Contains(ns))
+                return;
+            (Namespaces ??= new()).Add(ns);
+        }
+
+        public void AddClass(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName) || Classes.Contains(fullName))
+                return;
+            (Classes ??= new()).Add(fullName);
+        }
+
+        public void AddAttribute(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName) || Attributes.Contains(fullName))
+                return;
+            (Attributes ??= new()).Add(fullName);
+        }
+
         public bool IsDirectoryListed(string path)
         {
             if (string.IsNullOrWhiteSpace(path))

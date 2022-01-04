@@ -21,7 +21,7 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************************/
 
-        internal bool AskAndSaveConfig<T>(string appName, T cfg, string dir, bool activate = false) where T : AbstractOptions, new()
+        internal bool AskNameAndSave<T>(string appName, T cfg, string dir, bool activate = false) where T : AbstractOptions, new()
         {
             string cfgPath;
             var needSave = true;
