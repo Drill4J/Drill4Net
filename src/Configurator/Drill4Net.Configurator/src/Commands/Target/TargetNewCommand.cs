@@ -191,7 +191,7 @@ Please make your choice";
 
             // save config
             var injDir = _rep.GetInjectorDirectory();
-            var res = AskAndSaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, injDir);
+            var res = AskAndSaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, injDir, true);
             return Task.FromResult(res);
         }
 

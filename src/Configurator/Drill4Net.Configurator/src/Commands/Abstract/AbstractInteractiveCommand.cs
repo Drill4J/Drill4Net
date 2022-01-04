@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Drill4Net.Cli;
 using Drill4Net.Common;
-using Drill4Net.Configuration;
 using Drill4Net.Repository;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Configurator
 {
@@ -21,7 +21,7 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************************/
 
-        internal bool AskAndSaveConfig<T>(string appName, T cfg, string dir) where T : AbstractOptions, new()
+        internal bool AskAndSaveConfig<T>(string appName, T cfg, string dir, bool activate = false) where T : AbstractOptions, new()
         {
             string cfgPath;
             var needSave = true;
@@ -53,9 +53,12 @@ namespace Drill4Net.Configurator
                     return false;
 
                 //activating
-                (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
-                if (needActivate)
-                    return SaveRedirectFile(appName, cfgPath, redirectCfgPath);
+                if (activate)
+                {
+                    (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
+                    if (needActivate)
+                        return SaveRedirectFile(appName, cfgPath, redirectCfgPath);
+                }
             }
             return true;
         }

@@ -3,8 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
-using Drill4Net.Common;
-using Drill4Net.Repository;
 
 namespace Drill4Net.Configurator
 {

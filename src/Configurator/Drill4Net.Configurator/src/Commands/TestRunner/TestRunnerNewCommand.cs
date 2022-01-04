@@ -55,7 +55,7 @@ Specify at least one tests' assembly.";
                 return Task.FromResult(false);
 
             // save the options
-            var res = AskAndSaveConfig(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, cfg, opts.TestRunnerDirectory ?? "");
+            var res = AskAndSaveConfig(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, cfg, opts.TestRunnerDirectory ?? "", true);
             return Task.FromResult(res);
         }
 
