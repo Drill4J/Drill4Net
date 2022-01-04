@@ -22,7 +22,6 @@ namespace Drill4Net.Configurator
         public override Task<bool> Process()
         {
             _logger.Info("Start to target configure");
-            var opts = _rep.Options;
 
             #region Init Injector config
             var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, ConfiguratorConstants.CONFIG_INJECTOR_MODEL);

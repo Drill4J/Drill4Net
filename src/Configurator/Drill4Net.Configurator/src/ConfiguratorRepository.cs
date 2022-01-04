@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
@@ -8,12 +9,12 @@ using Drill4Net.Configuration;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.TestRunner.Core;
-using System.Collections.Generic;
 
 namespace Drill4Net.Configurator
 {
     public class ConfiguratorRepository : AbstractRepository<ConfiguratorOptions>
     {
+        private readonly BaseOptionsHelper _optHelper;
         private readonly Logger _logger;
 
         /***********************************************************************************/
@@ -24,6 +25,7 @@ namespace Drill4Net.Configurator
         {
             _logger = new TypedLogger<ConfiguratorRepository>(Subsystem);
             Options = opts ?? ReadOptions<ConfiguratorOptions>(Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_APP));
+            _optHelper = new BaseOptionsHelper(Subsystem);
         }
 
         /***********************************************************************************/
@@ -71,6 +73,28 @@ namespace Drill4Net.Configurator
             return res;
         }
 
+        #region Redirecting
+        public string GetActualConfigPath(string dir)
+        {
+            return _optHelper.GetActualConfigPath(dir);
+        }
+
+        public string CalcRedirectConfigPath(string dir)
+        {
+            return _optHelper.CalcRedirectConfigPath(dir);
+        }
+
+        public RedirectData ReadRedirectData(string dir)
+        {
+            return _optHelper.ReadRedirectData(dir);
+        }
+
+        public void WriteRedirectData(RedirectData data, string dir)
+        {
+            _optHelper.WriteRedirectData(data, dir);
+        }
+        #endregion
+        #region Read/write options
         public void SaveSystemConfiguration(SystemConfiguration cfg)
         {
             //Agent's options
@@ -163,5 +187,6 @@ namespace Drill4Net.Configurator
             var optHelper = new BaseOptionsHelper<T>(Subsystem);
             optHelper.WriteOptions(opts, cfgPath);
         }
+        #endregion
     }
 }
