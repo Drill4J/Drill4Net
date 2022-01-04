@@ -7,7 +7,9 @@ using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_NEW)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER,
+                         ConfiguratorConstants.CONTEXT_CFG,
+                         ConfiguratorConstants.COMMAND_NEW)]
     public class TestRunnerNewCommand : AbstractInteractiveCommand
     {
         public TestRunnerNewCommand(ConfiguratorRepository rep) : base(rep)
@@ -20,7 +22,7 @@ namespace Drill4Net.Configurator
         {
             _logger.Info("Start to Test Runner configure");
 
-            RaiseMessage("\nDescribe the configuration of a specific tests: what and how Test Runner should be used.");
+            RaiseMessage("\nDescribe the configuration of the specific tests: what and how Test Runner should be used.");
 
             var opts = _rep.Options;
             var modelCfgPath = Path.Combine(opts.InstallDirectory, "test_runner.yml");

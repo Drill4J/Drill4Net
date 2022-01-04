@@ -4,7 +4,9 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_COPY)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
+                         ConfiguratorConstants.CONTEXT_CFG, 
+                         ConfiguratorConstants.COMMAND_COPY)]
     public class TargetCopyCommand : AbstractConfiguratorCommand
     {
         public TargetCopyCommand(ConfiguratorRepository rep) : base(rep)
