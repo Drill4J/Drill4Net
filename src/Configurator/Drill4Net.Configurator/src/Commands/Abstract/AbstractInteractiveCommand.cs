@@ -15,22 +15,18 @@ namespace Drill4Net.Configurator
     /// </summary>
     public abstract class AbstractInteractiveCommand : AbstractConfiguratorCommand
     {
-        private readonly BaseOptionsHelper _optHelper;
-
-        /**************************************************************************************/
-
         protected AbstractInteractiveCommand(ConfiguratorRepository rep) : base(rep)
         {
-            _optHelper = new(_rep.Subsystem);
         }
 
         /**************************************************************************************/
 
-        #region Saving config
-        internal bool SaveConfig<T>(string appName, T cfg, string dir) where T : AbstractOptions, new()
+        internal bool AskAndSaveConfig<T>(string appName, T cfg, string dir) where T : AbstractOptions, new()
         {
             string cfgPath;
             var needSave = true;
+
+            //questions
             while (true)
             {
                 if (!AskQuestion($"Name of the {appName}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
@@ -49,75 +45,20 @@ namespace Drill4Net.Configurator
                 }
                 break;
             }
-            //
+
+            //saving
             if (needSave)
             {
-                try
-                {
-                    _rep.WriteOptions<T>(cfg, cfgPath);
-                }
-                catch (Exception ex)
-                {
-                    var er = $"Config for {appName} is not saved:\n{ex}";
-                    _logger.Error(er);
-                    RaiseError(er);
+                if (!SaveConfig(appName, cfg, cfgPath))
                     return false;
-                }
-                _logger.Info($"Config for {appName} saved to [{cfgPath}]");
-                RaiseMessage($"You can check the {appName}'s settings: {cfgPath}", Cli.CliMessageType.Info);
 
-                // activating the config
+                //activating
                 (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
                 if (needActivate)
                     return SaveRedirectFile(appName, cfgPath, redirectCfgPath);
             }
             return true;
         }
-
-        internal (bool, string) IsNeedAcivateConfigFor(string appDir, string curCfgPath)
-        {
-            var redirectCfgPath = _optHelper.CalcRedirectConfigPath(appDir);
-            var name = Path.GetFileName(curCfgPath);
-            var isDefName = name.Equals(CoreConstants.CONFIG_NAME_DEFAULT, StringComparison.InvariantCultureIgnoreCase);
-            bool needActivate;
-            if (File.Exists(redirectCfgPath))
-            {
-                var redirData = _optHelper.ReadRedirectData(redirectCfgPath);
-                if (redirData == null)
-                {
-                    needActivate = true;
-                }
-                else
-                {
-                    var actualPath = redirData.Path;
-                    needActivate = string.IsNullOrWhiteSpace(actualPath) ||
-                        !actualPath.Equals(curCfgPath, StringComparison.InvariantCultureIgnoreCase);
-                }
-            }
-            else //no redirect-file
-            {
-                needActivate = !isDefName;
-            }
-            return (needActivate, redirectCfgPath);
-        }
-
-        internal bool SaveRedirectFile(string appName, string actualPath, string redirectCfgPath)
-        {
-            try
-            {
-                _optHelper.WriteRedirectData(new RedirectData { Path = actualPath }, redirectCfgPath);
-                _logger.Info($"Redirect config for {appName} saved to [{redirectCfgPath}]");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                var er = $"Redirect config for {appName} is not saved:\n{ex}";
-                _logger.Error(er);
-                RaiseError(er);
-                return false;
-            }
-        }
-        #endregion
 
         /// <summary>
         /// Ask the question and get the value.

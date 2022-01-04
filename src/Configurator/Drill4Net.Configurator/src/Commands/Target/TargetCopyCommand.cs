@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -73,9 +74,7 @@ namespace Drill4Net.Configurator
                     dest.FolderPostfix = "Injected";
 
             //save config
-            _rep.WriteInjectorOptions(cfg, destPath);
-            RaiseMessage($"Config saved to [{destPath}]", CliMessageType.Info);
-            return Task.FromResult(true);
+            return Task.FromResult(SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, destPath));
         }
 
         public override string GetShortDescription()

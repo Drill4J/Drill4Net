@@ -57,7 +57,7 @@ namespace Drill4Net.Repository
             //
             if (!actualPath.EndsWith(".yml"))
                 actualPath += ".yml";
-            actualPath = FileUtils.GetFullPath(actualPath);
+            actualPath = FileUtils.GetFullPath(actualPath, dir);
             _logger.Info($"Actual config path is defined: [{actualPath}]");
             Log.Flush();
             return actualPath;

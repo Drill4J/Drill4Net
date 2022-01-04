@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -13,13 +14,13 @@ namespace Drill4Net.Configurator
         {
         }
 
-        /*****************************************************************/
+        /******************************************************************/
 
         public override Task<bool> Process()
         {
             var dir = _rep.GetInjectorDirectory();
 
-            // source path
+            //source path
             var res = _commandHelper.GetSourceConfig(dir, this, out var sourcePath, out var _, out var error);
             if (!res)
             {
@@ -27,11 +28,9 @@ namespace Drill4Net.Configurator
                 return Task.FromResult(false);
             }
 
+            //activate
             var path = _rep.CalcRedirectConfigPath(dir);
-            var data = _rep.ReadRedirectData(path);
-            data.Path = Path.GetFileName(sourcePath); //better set just file name but its path
-            _rep.WriteRedirectData(data, path);
-            RaiseMessage($"The Injector's config [{sourcePath}] is active now");
+            SaveRedirectFile(CoreConstants.SUBSYSTEM_INJECTOR, Path.GetFileNameWithoutExtension(sourcePath), path); //better set just file name but its path
 
             return Task.FromResult(true);
         }

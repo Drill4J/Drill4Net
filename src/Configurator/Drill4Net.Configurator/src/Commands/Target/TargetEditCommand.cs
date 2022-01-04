@@ -5,8 +5,8 @@ using Drill4Net.Cli;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                     ConfiguratorConstants.CONTEXT_CFG,
-                     ConfiguratorConstants.COMMAND_EDIT)]
+                         ConfiguratorConstants.CONTEXT_CFG,
+                         ConfiguratorConstants.COMMAND_EDIT)]
     public class TargetEditCommand : AbstractInteractiveCommand
     {
         public TargetEditCommand(ConfiguratorRepository rep) : base(rep)

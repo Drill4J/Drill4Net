@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Drill4Net.Cli;
-using Drill4Net.Repository;
 
 namespace Drill4Net.Configurator
 {
