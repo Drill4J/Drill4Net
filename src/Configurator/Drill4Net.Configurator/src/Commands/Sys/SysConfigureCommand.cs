@@ -73,7 +73,7 @@ namespace Drill4Net.Configurator
             def = opts.PluginDirectory;
             do
             {
-                if (!_cli.AskQuestion("Agent plugin directory", out plugDir, def))
+                if (!_cli.AskQuestion("Agent plugin's directory", out plugDir, def))
                     return false;
             }
             while (!_cli.CheckDirectoryAnswer(ref plugDir, true));

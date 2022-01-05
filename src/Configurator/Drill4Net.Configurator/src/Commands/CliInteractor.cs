@@ -217,19 +217,19 @@ namespace Drill4Net.Configurator
 
         public bool IsQuit(string? s)
         {
-            return string.Equals(s, ConfiguratorConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(s, ConfiguratorConstants.ANSWER_QUIT, StringComparison.OrdinalIgnoreCase);
         }
 
         public bool IsOk(string? s)
         {
-            return s?.Replace("\"", null).Equals(ConfiguratorConstants.COMMAND_OK, StringComparison.InvariantCultureIgnoreCase) == true;
+            return s?.Replace("\"", null).Equals(ConfiguratorConstants.ANSWER_OK, StringComparison.InvariantCultureIgnoreCase) == true;
         }
 
         public bool IsYes(string? s, bool noInputIsYes = true)
         {
             if (s?.Length == 0 && noInputIsYes)
                 return true;
-            return string.Equals(s, ConfiguratorConstants.COMMAND_YES, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(s, ConfiguratorConstants.ANSWER_YES, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

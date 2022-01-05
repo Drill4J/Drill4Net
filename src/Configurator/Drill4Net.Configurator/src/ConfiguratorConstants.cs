@@ -5,10 +5,10 @@
     /// </summary>
     public static class ConfiguratorConstants
     {
-        public const string COMMAND_QUIT = "q";
-        public const string COMMAND_OK = "ok";
-        public const string COMMAND_YES = "y";
-        public const string COMMAND_NO = "n";
+        public const string ANSWER_QUIT = "q";
+        public const string ANSWER_OK = "ok";
+        public const string ANSWER_YES = "y";
+        public const string ANSWER_NO = "n";
 
         #region Filter types
         public const string FILTER_TYPE_DIR = "DIR";
@@ -30,6 +30,7 @@
         public const string COMMAND_DELETE = "del";
         public const string COMMAND_COPY = "copy";
         public const string COMMAND_VIEW = "view";
+        public const string COMMAND_OPEN = "open";
         public const string COMMAND_LIST = "list";
 
         public const string COMMAND_CLS = "cls";

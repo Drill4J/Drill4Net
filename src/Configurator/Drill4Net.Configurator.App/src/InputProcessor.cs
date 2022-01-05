@@ -64,7 +64,7 @@ namespace Drill4Net.Configurator.App
                 var input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                     continue;
-                if (string.Equals(input, ConfiguratorConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(input, ConfiguratorConstants.ANSWER_QUIT, StringComparison.OrdinalIgnoreCase))
                     return;
                 try
                 {

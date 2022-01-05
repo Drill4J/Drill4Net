@@ -125,7 +125,7 @@ You can enter several rules in separate strings, e.g. first for files, then for 
 Separate several entities in one rule with a comma. 
 You can use Include and Exclude rules at the same time. By default, a rule has Include type.
 
-To finish, just enter ""{ConfiguratorConstants.COMMAND_OK}"".
+To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".
 
 The filters:
   - By directory (full path). Examples:
