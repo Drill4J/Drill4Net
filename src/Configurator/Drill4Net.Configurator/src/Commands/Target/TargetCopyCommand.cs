@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -20,7 +21,8 @@ namespace Drill4Net.Configurator
             var dir = _rep.GetInjectorDirectory();
 
             // source path
-            var res = _commandHelper.GetSourceConfig(dir, this, out var sourcePath, out var fromSwitch, out var error);
+            var res = _cmdHelper.GetSourceConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this,
+                out var sourcePath, out var fromSwitch, out var error);
             if (!res)
             {
                 RaiseError(error);
@@ -31,7 +33,7 @@ namespace Drill4Net.Configurator
 
             // dest path
             var destName = GetPositional(1 - delta);
-            res = _commandHelper.GetConfigPath(dir, "destination", destName, false, out var destPath, out error);
+            res = _cmdHelper.GetConfigPath(dir, "destination", destName, false, out var destPath, out error);
             if (!res)
             {
                 RaiseError(error);
@@ -76,7 +78,7 @@ namespace Drill4Net.Configurator
                     dest.FolderPostfix = "Injected";
 
             //save config
-            return Task.FromResult(SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, destPath));
+            return Task.FromResult(_cmdHelper.SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, destPath));
         }
 
         public override string GetShortDescription()

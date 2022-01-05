@@ -49,15 +49,15 @@ namespace Drill4Net.Configurator
             //saving
             if (needSave)
             {
-                if (!SaveConfig(appName, cfg, cfgPath))
+                if (!_cmdHelper.SaveConfig(appName, cfg, cfgPath))
                     return false;
 
                 //activating
                 if (activate)
                 {
-                    (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
+                    (var needActivate, var redirectCfgPath) = _cmdHelper.IsNeedAcivateConfigFor(dir, cfgPath);
                     if (needActivate)
-                        return SaveRedirectFile(appName, cfgPath, redirectCfgPath);
+                        return _cmdHelper.SaveRedirectFile(appName, cfgPath, redirectCfgPath);
                 }
             }
             return true;

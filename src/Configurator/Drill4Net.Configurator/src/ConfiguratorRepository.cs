@@ -51,12 +51,12 @@ namespace Drill4Net.Configurator
             return FileUtils.GetFullPath(dir);
         }
 
-        public List<string> GetInjectorConfigs(string dir)
+        public List<string> GetConfigs<T>(string subsystem, string dir) where T : AbstractOptions, new()
         {
             if (string.IsNullOrWhiteSpace(dir))
-                throw new Exception("The directory of Injector is empty in config");
+                throw new Exception($"The directory of {subsystem} is empty in config");
             if (!Directory.Exists(dir))
-                throw new Exception("The directory of Injector does not exist");
+                throw new Exception($"The directory of {subsystem} does not exist");
             //
             var allCfgs = Directory.GetFiles(dir, "*.yml");
             var res = new List<string>();
@@ -64,8 +64,8 @@ namespace Drill4Net.Configurator
             {
                 try
                 {
-                    var cfg = ReadInjectorOptions(file);
-                    if (cfg?.Type == CoreConstants.SUBSYSTEM_INJECTOR)
+                    var cfg = ReadOptions<T>(file);
+                    if (cfg?.Type?.Equals(subsystem, StringComparison.InvariantCultureIgnoreCase) == true)
                         res.Add(FileUtils.GetFullPath(file, dir));
                 }
                 catch { }

@@ -12,12 +12,8 @@ namespace Drill4Net.Cli
     /// <summary>
     /// Abstract command formed from CLI (command line interface)
     /// </summary>
-    public abstract class AbstractCliCommand
+    public abstract class AbstractCliCommand : CliMessager
     {
-        public event MessageDeliveredDelegate? MessageDelivered;
-
-        public string Id { get; }
-
         public string RawContexts { get; }
 
         /// <summary>
@@ -30,12 +26,12 @@ namespace Drill4Net.Cli
 
         /********************************************************************/
 
-        protected AbstractCliCommand()
+        protected AbstractCliCommand(string subsystem)
         {
             var attr = SearchCommandAttribute();
             Id = attr.Id;
             RawContexts = attr.RawId;
-            _logger = new TypedLogger<AbstractCliCommand>(CoreConstants.SUBSYSTEM_CONFIGURATOR);
+            _logger = new TypedLogger<AbstractCliCommand>(subsystem);
         }
 
         /********************************************************************/
@@ -96,27 +92,5 @@ namespace Drill4Net.Cli
         {
             return (_desc?.IsSwitchSet(sw)) ?? false;
         }
-
-        #region RaiseMessage
-        protected void RaiseMessage(string message, CliMessageType messType = CliMessageType.Annotation)
-        {
-            MessageDelivered?.Invoke(Id, message, messType);
-        }
-
-        protected void RaiseQuestion(string message)
-        {
-            MessageDelivered?.Invoke(Id, message, CliMessageType.Question);
-        }
-
-        protected void RaiseWarning(string message, MessageState state = MessageState.NewLine)
-        {
-            MessageDelivered?.Invoke(Id, message, CliMessageType.Warning, state);
-        }
-
-        protected void RaiseError(string message)
-        {
-            MessageDelivered?.Invoke(Id, message, CliMessageType.Error);
-        }
-        #endregion
     }
 }

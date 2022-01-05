@@ -3,6 +3,12 @@
     [CliCommandAttribute(CliConstants.COMMAND_NULL)]
     public class NullCliCommand : AbstractCliCommand
     {
+        public NullCliCommand(string subsystem) : base(subsystem)
+        {
+        }
+
+        /***************************************************************/
+
         public override Task<bool> Process()
         {
             RaiseError("The command is not found");

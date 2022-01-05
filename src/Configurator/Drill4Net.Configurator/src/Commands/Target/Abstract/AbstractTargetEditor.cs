@@ -213,7 +213,7 @@ Please make your choice";
             if (isNew)
                 return AskNameAndSave(appName, cfg, _rep.GetInjectorDirectory(), true);
             else
-                return SaveConfig(appName, cfg, cfgPath);
+                return _cmdHelper.SaveConfig(appName, cfg, cfgPath);
         }
 
         private bool AskDestinationPostfix(ref string postfix)

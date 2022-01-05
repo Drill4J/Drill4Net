@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -16,22 +14,12 @@ namespace Drill4Net.Configurator
         {
         }
 
-        /******************************************************************/
+        /********************************************************************/
 
         public override Task<bool> Process()
         {
             var dir = _rep.GetInjectorDirectory();
-            var configs = _rep.GetInjectorConfigs(dir)
-                .OrderBy(a => a).ToArray();
-            var actualPath = _rep.GetActualConfigPath(dir);
-            for (int i = 0; i < configs.Length; i++)
-            {
-                string? path = configs[i];
-                var isActual = path.Equals(actualPath, StringComparison.InvariantCultureIgnoreCase);
-                var a = isActual ? ">>" : "";
-                var name = Path.GetFileNameWithoutExtension(path);
-                RaiseMessage($"{i+1}. {a}{name}", CliMessageType.Info);
-            }
+            _cmdHelper.ListConfigs<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir);
             return Task.FromResult(true);
         }
 

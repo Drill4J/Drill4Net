@@ -7,6 +7,12 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.COMMAND_CLS)]
     public class ClsCommand : AbstractCliCommand
     {
+        public ClsCommand(string subsystem) : base(subsystem)
+        {
+        }
+
+        /*************************************************************/
+
         public override Task<bool> Process()
         {
             Console.Clear();

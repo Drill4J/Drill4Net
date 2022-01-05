@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -22,7 +22,8 @@ namespace Drill4Net.Configurator
             var dir = _rep.GetTestRunnerDirectory();
 
             // sorce path
-            var res = _commandHelper.GetSourceConfig(dir, this, out var sourcePath, out var fromSwitch, out var error);
+            var res = _cmdHelper.GetSourceConfig<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, this,
+                out var sourcePath, out var fromSwitch, out var error);
             if (!res)
             {
                 RaiseError(error);

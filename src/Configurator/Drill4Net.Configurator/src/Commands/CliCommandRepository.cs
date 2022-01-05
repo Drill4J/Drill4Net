@@ -74,7 +74,7 @@ namespace Drill4Net.Configurator
                         cmd = (AbstractConfiguratorCommand)Activator.CreateInstance(type, new object[] { _rep });
                     else
                     if (type.BaseType?.FullName == typeof(AbstractCliCommand).FullName)
-                        cmd = (AbstractCliCommand)Activator.CreateInstance(type);
+                        cmd = (AbstractCliCommand)Activator.CreateInstance(type, new object[] { _rep.Subsystem });
                     if (cmd == null)
                         continue;
                     //
@@ -98,7 +98,7 @@ namespace Drill4Net.Configurator
         public AbstractCliCommand GetCommand(string id)
         {
             return string.IsNullOrWhiteSpace(id) || !Commands.ContainsKey(id)
-                ? new NullCliCommand() :
+                ? new NullCliCommand(_rep.Subsystem) :
                 Commands[id];
         }
     }

@@ -72,7 +72,7 @@ Specify at least one tests' assembly.";
             // save the options
             bool res = isNew
                 ? AskNameAndSave(CoreConstants.SUBSYSTEM_TEST_RUNNER, cfg, opts.TestRunnerDirectory ?? "", true)
-                : SaveConfig(appName, cfg, cfgPath);
+                : _cmdHelper.SaveConfig(appName, cfg, cfgPath);
             return res;
         }
 
