@@ -8,5 +8,5 @@ Directories:
        - DefaultAssemblyName: Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # DEFAULT assembly to run tests if no builds still exists in Drill service
          DefaultParallelRestrict: true # level of the tests in current assembly - default value is false
 Debug:
-    Disabled: false
-    IsFake: false # use fake data
+   Disabled: false
+   IsFake: false # use fake data

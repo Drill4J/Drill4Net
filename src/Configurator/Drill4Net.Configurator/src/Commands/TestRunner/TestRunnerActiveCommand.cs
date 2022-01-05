@@ -32,7 +32,9 @@ namespace Drill4Net.Configurator
 
             //activate
             var path = _rep.CalcRedirectConfigPath(dir);
-            _cmdHelper.SaveRedirectFile(CoreConstants.SUBSYSTEM_INJECTOR, Path.GetFileNameWithoutExtension(sourcePath), path); //better set just file name but its path
+            _cmdHelper.SaveRedirectFile(CoreConstants.SUBSYSTEM_INJECTOR,
+                Path.GetFileNameWithoutExtension(sourcePath), //better set just file name but its path
+                path);
 
             return Task.FromResult(true);
         }

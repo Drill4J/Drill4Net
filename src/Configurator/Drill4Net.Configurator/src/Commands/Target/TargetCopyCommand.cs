@@ -58,6 +58,7 @@ namespace Drill4Net.Configurator
                 RaiseError($"Source section in config is empty: [{sourcePath}]");
                 return Task.FromResult(false);
             }
+
             if (targetVersion.EndsWith(".dll") || targetVersion.EndsWith(".exe"))
                 cfg.Target.VersionAssemblyName = targetVersion;
             else
