@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, 
-                         ConfiguratorConstants.CONTEXT_CFG, 
+                         //ConfiguratorConstants.CONTEXT_CFG, 
                          ConfiguratorConstants.COMMAND_ACTIVATE)]
     public class TestRunnerActiveCommand : AbstractConfiguratorCommand
     {
@@ -22,7 +23,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "";
+            return $"Activate the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config";
         }
 
         public override string GetHelp()

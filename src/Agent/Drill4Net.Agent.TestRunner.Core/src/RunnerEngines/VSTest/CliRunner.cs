@@ -18,7 +18,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public CliRunner()
         {
-            _logger = new TypedLogger<CliRunner>(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
+            _logger = new TypedLogger<CliRunner>(CoreConstants.SUBSYSTEM_TEST_RUNNER);
         }
 
         /**********************************************************************/

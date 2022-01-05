@@ -5,7 +5,7 @@ using Drill4Net.Common;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         ConfiguratorConstants.CONTEXT_CFG, 
+                         //ConfiguratorConstants.CONTEXT_CFG, 
                          ConfiguratorConstants.COMMAND_COPY)]
     public class TargetCopyCommand : AbstractConfiguratorCommand
     {
@@ -81,7 +81,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Copy the specified Injector's config to new one with new name, version and optional injected target's directory";
+            return $"Copy the specified {CoreConstants.SUBSYSTEM_INJECTOR}'s config to new one with new name, version and optional injected target's directory";
         }
 
         public override string GetHelp()

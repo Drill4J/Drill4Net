@@ -20,7 +20,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public CliDispatcher()
         {
-            _logger = new TypedLogger<CliDispatcher>(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER);
+            _logger = new TypedLogger<CliDispatcher>(CoreConstants.SUBSYSTEM_TEST_RUNNER);
             _dirRunDatas = new Dictionary<DirectoryRunInfo, List<string>>();
         }
 

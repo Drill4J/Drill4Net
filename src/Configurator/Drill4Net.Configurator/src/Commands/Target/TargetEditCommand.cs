@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         ConfiguratorConstants.CONTEXT_CFG,
+                         //ConfiguratorConstants.CONTEXT_CFG,
                          ConfiguratorConstants.COMMAND_EDIT)]
     public class TargetEditCommand : AbstractTargetEditor
     {
@@ -32,7 +33,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Edit the specified Injector's config in interactive mode";
+            return $"Edit the specified {CoreConstants.SUBSYSTEM_INJECTOR}'s config in interactive mode";
         }
 
         public override string GetHelp()

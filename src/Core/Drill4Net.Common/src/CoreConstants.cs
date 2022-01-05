@@ -10,7 +10,7 @@
         public const string SUBSYSTEM_INJECTOR_PLUGIN = "InjectorPlugin";
         public const string SUBSYSTEM_TESTER = "Tester";
         public const string SUBSYSTEM_TEST_SERVER = "TestServer";
-        public const string SUBSYSTEM_AGENT_TEST_RUNNER = "AgentTestRunner";
+        public const string SUBSYSTEM_TEST_RUNNER = "TestRunner";
         public const string SUBSYSTEM_AGENT = "Agent";
         public const string SUBSYSTEM_TRANSMITTER = "Transmitter";
         public const string SUBSYSTEM_AGENT_SERVER = "AgentServer";

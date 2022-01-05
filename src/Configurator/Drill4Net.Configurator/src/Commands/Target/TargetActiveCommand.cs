@@ -6,7 +6,7 @@ using Drill4Net.Common;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         ConfiguratorConstants.CONTEXT_CFG,
+                         //ConfiguratorConstants.CONTEXT_CFG,
                          ConfiguratorConstants.COMMAND_ACTIVATE)]
     public class TargetActiveCommand : AbstractConfiguratorCommand
     {
@@ -37,7 +37,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Activate the specified Injector's config";
+            return $"Activate the specified {CoreConstants.SUBSYSTEM_INJECTOR}'s config";
         }
 
         public override string GetHelp()

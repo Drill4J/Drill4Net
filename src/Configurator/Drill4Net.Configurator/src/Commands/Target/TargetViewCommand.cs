@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         ConfiguratorConstants.CONTEXT_CFG,
+                         //ConfiguratorConstants.CONTEXT_CFG,
                          ConfiguratorConstants.COMMAND_VIEW)]
     public class TargetViewCommand : AbstractConfiguratorCommand
     {
@@ -36,7 +37,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "View the content of specified Injector's config";
+            return $"View the content of specified {CoreConstants.SUBSYSTEM_INJECTOR}'s config";
         }
 
         public override string GetHelp()

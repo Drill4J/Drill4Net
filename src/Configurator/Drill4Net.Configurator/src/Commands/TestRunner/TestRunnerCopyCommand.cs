@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER,
-                         ConfiguratorConstants.CONTEXT_CFG,
+                         //ConfiguratorConstants.CONTEXT_CFG,
                          ConfiguratorConstants.COMMAND_COPY)]
     public class TestRunnerCopyCommand : AbstractConfiguratorCommand
     {
@@ -22,7 +23,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "";
+            return $"Copy the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config to new one with some new parameters";
         }
 
         public override string GetHelp()

@@ -144,10 +144,10 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        protected bool AskDegreeOfParallelism(string mess, out int degree)
+        protected bool AskDegreeOfParallelism(string mess, ref int degree)
         {
             degree = 1;
-            var defDegree = Environment.ProcessorCount;
+            var defDegree = degree == 0 ? 0 : Environment.ProcessorCount;
             string degreeS;
             do
             {

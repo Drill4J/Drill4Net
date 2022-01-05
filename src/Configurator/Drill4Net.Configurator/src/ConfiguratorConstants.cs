@@ -40,6 +40,7 @@
         #endregion
 
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
+        internal const string CONFIG_TEST_RUNNER_MODEL = "test_runner.yml";
 
         internal const string MESSAGE_PROPERTIES_EDIT_WARNING = "Please note that only some basic settings can be changed now. You can read and edit the full list of properties in the corresponding configuration files.";
     }

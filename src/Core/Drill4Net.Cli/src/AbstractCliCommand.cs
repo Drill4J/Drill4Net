@@ -16,7 +16,9 @@ namespace Drill4Net.Cli
     {
         public event MessageDeliveredDelegate? MessageDelivered;
 
-        public string ContextId { get; }
+        public string Id { get; }
+
+        public string RawContexts { get; }
 
         /// <summary>
         /// List of arguments for the command (which located in <see cref="Contexts"/> among others contexts' tags).
@@ -30,7 +32,9 @@ namespace Drill4Net.Cli
 
         protected AbstractCliCommand()
         {
-            ContextId = SearchCommandIdByAttribute();
+            var attr = SearchCommandAttribute();
+            Id = attr.Id;
+            RawContexts = attr.RawId;
             _logger = new TypedLogger<AbstractCliCommand>(CoreConstants.SUBSYSTEM_CONFIGURATOR);
         }
 
@@ -46,11 +50,10 @@ namespace Drill4Net.Cli
             _desc = desc;
         }
 
-        protected string SearchCommandIdByAttribute()
+        protected CliCommandAttribute SearchCommandAttribute()
         {
             var attrs = GetType().GetCustomAttributes();
-            var attr = (CliCommandAttribute)attrs.First(a => a.GetType().Name == nameof(CliCommandAttribute));
-            return attr.Id;
+            return (CliCommandAttribute)attrs.First(a => a.GetType().Name == nameof(CliCommandAttribute));
         }
 
         /// <summary>
@@ -97,22 +100,22 @@ namespace Drill4Net.Cli
         #region RaiseMessage
         protected void RaiseMessage(string message, CliMessageType messType = CliMessageType.Annotation)
         {
-            MessageDelivered?.Invoke(ContextId, message, messType);
+            MessageDelivered?.Invoke(Id, message, messType);
         }
 
         protected void RaiseQuestion(string message)
         {
-            MessageDelivered?.Invoke(ContextId, message, CliMessageType.Question);
+            MessageDelivered?.Invoke(Id, message, CliMessageType.Question);
         }
 
         protected void RaiseWarning(string message, MessageState state = MessageState.NewLine)
         {
-            MessageDelivered?.Invoke(ContextId, message, CliMessageType.Warning, state);
+            MessageDelivered?.Invoke(Id, message, CliMessageType.Warning, state);
         }
 
         protected void RaiseError(string message)
         {
-            MessageDelivered?.Invoke(ContextId, message, CliMessageType.Error);
+            MessageDelivered?.Invoke(Id, message, CliMessageType.Error);
         }
         #endregion
     }

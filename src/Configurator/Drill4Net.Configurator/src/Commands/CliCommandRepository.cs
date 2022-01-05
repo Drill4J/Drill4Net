@@ -78,7 +78,7 @@ namespace Drill4Net.Configurator
                     if (cmd == null)
                         continue;
                     //
-                    var id = cmd.ContextId;
+                    var id = cmd.Id;
                     if (res.ContainsKey(id))
                     {
                         _logger.Warning($"Command already added: [{name}]");

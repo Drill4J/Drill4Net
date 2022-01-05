@@ -17,18 +17,20 @@ namespace Drill4Net.Configurator
         {
             CliCommandRepository cmdRep = new(_rep);
             var list = cmdRep.Commands.Values
-                .Where(a => a.ContextId != CliConstants.COMMAND_NULL)
-                .OrderBy(a => a.ContextId)
+                .Where(a => a.Id != CliConstants.COMMAND_NULL)
+                .OrderBy(a => a.RawContexts)
                 .ToList();
+            var maxIdLen = list.Max(a => a.RawContexts.Length) + 2;
             for (int i = 0; i < list.Count; i++)
             {
                 var cmd = list[i];
-                var sig = cmd.ContextId.ToLower().Replace("_", " ");
+                var num = $"{i+1}.".PadRight(4);
                 var desc = "";
                 try { desc = cmd.GetShortDescription().Trim(); } catch { }
                 if (!string.IsNullOrWhiteSpace(desc))
                     desc = " => " + desc;
-                RaiseMessage($"{i}. {sig}{desc}");
+                var s = $"{num}{cmd.RawContexts}".PadRight(maxIdLen + num.Length);
+                RaiseMessage($"{s}{desc}");
             }
 
             return Task.FromResult(true);
@@ -36,7 +38,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Get the list of available commands";
+            return "Get the list of available commands";
         }
 
         public override string GetHelp()

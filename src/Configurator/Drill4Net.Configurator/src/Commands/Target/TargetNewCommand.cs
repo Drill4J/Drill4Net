@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         ConfiguratorConstants.CONTEXT_CFG,
+                         //ConfiguratorConstants.CONTEXT_CFG,
                          ConfiguratorConstants.COMMAND_NEW)]
     public class TargetNewCommand : AbstractTargetEditor
     {
@@ -20,7 +21,7 @@ namespace Drill4Net.Configurator
             var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
             if (!File.Exists(modelCfgPath))
             {
-                RaiseError($"Model Injector's config not found: [{modelCfgPath}]");
+                RaiseError($"Model {CoreConstants.SUBSYSTEM_INJECTOR}'s config not found: [{modelCfgPath}]");
                 return Task.FromResult(false);
             }
 
@@ -30,7 +31,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Create new Injector's config in interactive mode";
+            return $"Create new {CoreConstants.SUBSYSTEM_INJECTOR}'s config in interactive mode";
         }
 
         public override string GetHelp()

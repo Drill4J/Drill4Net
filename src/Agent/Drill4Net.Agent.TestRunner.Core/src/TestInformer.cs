@@ -30,7 +30,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         private readonly StandardAgent _agent;
 
         private readonly AdminRequester _requester;
-        private const string Subsystem = CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER;
+        private const string Subsystem = CoreConstants.SUBSYSTEM_TEST_RUNNER;
         private readonly ManualResetEvent _initEvent = new(false);
         private readonly Logger _logger;
 
@@ -49,7 +49,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             TargetName = _agentRep.TargetName;
             _logger.Extras.Add("Target", TargetName);
             _logger.RefreshExtrasInfo();
-            _requester = new(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, _agentRep.Options.Admin.Url,
+            _requester = new(CoreConstants.SUBSYSTEM_TEST_RUNNER, _agentRep.Options.Admin.Url,
                 _agentRep.TargetName, _agentRep.TargetVersion);
 
             // agent

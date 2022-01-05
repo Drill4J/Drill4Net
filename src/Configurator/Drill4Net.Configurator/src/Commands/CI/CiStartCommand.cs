@@ -95,7 +95,7 @@ namespace Drill4Net.Configurator
         {
             var args = $"-{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
             var path = Path.Combine(_rep.GetTestRunnerDirectory(), "Drill4Net.Agent.TestRunner.exe");
-            var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_AGENT_TEST_RUNNER, path, args, out var err);
+            var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_TEST_RUNNER, path, args, out var err);
             if (!res)
                 return (false, err);
 

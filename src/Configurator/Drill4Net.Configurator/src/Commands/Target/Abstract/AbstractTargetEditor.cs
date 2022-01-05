@@ -19,7 +19,7 @@ namespace Drill4Net.Configurator
 
         public bool Edit(string cfgPath, bool isNew)
         {
-            _logger.Info($"Start configuring the target: new={isNew}");
+            _logger.Info($"Start configure the target: new={isNew}");
             var appName = CoreConstants.SUBSYSTEM_INJECTOR;
 
             #region Config

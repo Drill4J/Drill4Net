@@ -30,7 +30,8 @@ namespace Drill4Net.Configurator
             //asking
             if (!AskDirectory("Directory for the injections' configs (they will all be used)", out var dir, null, true, false))
                 return false;
-            if (!AskDegreeOfParallelism("The degree of parallelism on level those configs", out var degree))
+            int degree = 0;
+            if (!AskDegreeOfParallelism("The degree of parallelism on level those configs", ref degree))
                 return false;
             if (!AskFilePath("Test Runner's config path to run the injected targets", out var runCfgPath, null, true, false))
                 return false;

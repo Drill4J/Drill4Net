@@ -11,10 +11,13 @@
         /// </summary>
         public string Id { get; set; }
 
+        public string RawId { get; set; }
+
         /*****************************************************************/
 
         public CliCommandAttribute(params string[] contexts)
         {
+            RawId = string.Join(" ", contexts.Select(a => a.ToLower()));
             Id = CreateId(contexts);
         }
 
