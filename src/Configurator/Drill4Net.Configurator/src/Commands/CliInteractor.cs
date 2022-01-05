@@ -2,66 +2,26 @@
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using Drill4Net.Cli;
-using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Drill4Net.Configurator
 {
-    /// <summary>
-    /// Abstract command to configure some entity in interactive mode
-    /// </summary>
-    public abstract class AbstractInteractiveCommand : AbstractConfiguratorCommand
+    public class CliInteractor : CliMessager
     {
-        protected AbstractInteractiveCommand(ConfiguratorRepository rep) : base(rep)
+        private readonly Logger _logger;
+
+        /*************************************************************************/
+
+        public CliInteractor(string subsystem, string id = "") : base(id)
         {
+            _logger = new TypedLogger<CliInteractor>(subsystem);
         }
 
-        /**************************************************************************************/
-
-        internal bool AskNameAndSave<T>(string appName, T cfg, string dir, bool activate = false) where T : AbstractOptions, new()
-        {
-            string cfgPath;
-            var needSave = true;
-
-            //questions
-            while (true)
-            {
-                if (!AskQuestion($"Name of the {appName}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
-                    return false;
-                if (!CheckFileNameAnswer(ref name, "Wrong file name", false))
-                    continue;
-                if (!Path.HasExtension(name))
-                    name += ".yml";
-                cfgPath = Path.Combine(dir, name);
-
-                if (File.Exists(cfgPath))
-                {
-                    if (!AskQuestion("Such name already exists. Replace?", out var answer, "n"))
-                        return false;
-                    needSave = IsYes(answer);
-                }
-                break;
-            }
-
-            //saving
-            if (needSave)
-            {
-                if (!_cmdHelper.SaveConfig(appName, cfg, cfgPath))
-                    return false;
-
-                //activating
-                if (activate)
-                {
-                    (var needActivate, var redirectCfgPath) = _cmdHelper.IsNeedAcivateConfigFor(dir, cfgPath);
-                    if (needActivate)
-                        return _cmdHelper.SaveRedirectFile(appName, cfgPath, redirectCfgPath);
-                }
-            }
-            return true;
-        }
+        /*************************************************************************/
 
         /// <summary>
         /// Ask the question and get the value.
@@ -71,7 +31,7 @@ namespace Drill4Net.Configurator
         /// <param name="defValue">The default value</param>
         /// <param name="showDefVal">Do it need to output the default value</param>
         /// <returns>False, if user want to quit from the current setup</returns>
-        protected bool AskQuestion(string question, out string answer, string? defValue, bool showDefVal = true)
+        public bool AskQuestion(string question, out string answer, string? defValue, bool showDefVal = true)
         {
             if (string.IsNullOrWhiteSpace(question))
                 question = "?";
@@ -98,7 +58,7 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        protected bool AskDirectory(string question, out string destDir, string? defValue, bool mustExists, bool showDefVal = true)
+        public bool AskDirectory(string question, out string destDir, string? defValue, bool mustExists, bool showDefVal = true)
         {
             destDir = "";
             do
@@ -110,7 +70,7 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        protected bool AskFilePath(string question, out string filePath, string? defValue, bool mustExists, bool showDefVal = true)
+        public bool AskFilePath(string question, out string filePath, string? defValue, bool mustExists, bool showDefVal = true)
         {
             while (true)
             {
@@ -130,7 +90,7 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        protected bool AskFileName(string question, out string fileName, string? defValue, bool showDefVal = true)
+        public bool AskFileName(string question, out string fileName, string? defValue, bool showDefVal = true)
         {
             fileName = "";
             while (true)
@@ -144,7 +104,7 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        protected bool AskDegreeOfParallelism(string mess, ref int degree)
+        public bool AskDegreeOfParallelism(string mess, ref int degree)
         {
             degree = 1;
             var defDegree = degree == 0 ? 0 : Environment.ProcessorCount;
@@ -164,7 +124,7 @@ namespace Drill4Net.Configurator
         /// <param name="logs"></param>
         /// <param name="programName">Name of program</param>
         /// <returns>If false, it is the need to exit from this setup.</returns>
-        protected bool AddLogFile(List<LogData> logs, string programName = "program")
+        public bool AddLogFile(List<LogData> logs, string programName = "program")
         {
             if (!AskQuestion($"The {programName} logs will be output to the its console and to a file in the its {LoggerHelper.LOG_FOLDER} folder. Add an additional parallel log file?", out var answer, "n"))
                 return false;
@@ -200,7 +160,7 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        protected bool CheckStringAnswer(ref string answer, string mess, bool canBeEmpty = false)
+        public bool CheckStringAnswer(ref string answer, string mess, bool canBeEmpty = false)
         {
             if (canBeEmpty || !string.IsNullOrWhiteSpace(answer))
                 return true;
@@ -208,7 +168,7 @@ namespace Drill4Net.Configurator
             return false;
         }
 
-        protected bool CheckIntegerAnswer(string answer, string mess, int min, int max, out int val)
+        public bool CheckIntegerAnswer(string answer, string mess, int min, int max, out int val)
         {
             if (int.TryParse(answer, out val) && val >= min && val <= max)
                 return true;
@@ -216,7 +176,7 @@ namespace Drill4Net.Configurator
             return false;
         }
 
-        protected bool CheckDirectoryAnswer(ref string directory, bool mustExist = true)
+        public bool CheckDirectoryAnswer(ref string directory, bool mustExist = true)
         {
             if (mustExist && string.IsNullOrWhiteSpace(directory))
             {
@@ -238,7 +198,7 @@ namespace Drill4Net.Configurator
             return false;
         }
 
-        protected bool CheckFileNameAnswer(ref string filename, string mess, bool canBeEmpty)
+        public bool CheckFileNameAnswer(ref string filename, string mess, bool canBeEmpty)
         {
             if (!canBeEmpty && string.IsNullOrWhiteSpace(filename))
             {
@@ -255,17 +215,17 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        protected bool IsQuit(string? s)
+        public bool IsQuit(string? s)
         {
             return string.Equals(s, ConfiguratorConstants.COMMAND_QUIT, StringComparison.OrdinalIgnoreCase);
         }
 
-        protected bool IsOk(string? s)
+        public bool IsOk(string? s)
         {
             return s?.Replace("\"", null).Equals(ConfiguratorConstants.COMMAND_OK, StringComparison.InvariantCultureIgnoreCase) == true;
         }
 
-        protected bool IsYes(string? s, bool noInputIsYes = true)
+        public bool IsYes(string? s, bool noInputIsYes = true)
         {
             if (s?.Length == 0 && noInputIsYes)
                 return true;

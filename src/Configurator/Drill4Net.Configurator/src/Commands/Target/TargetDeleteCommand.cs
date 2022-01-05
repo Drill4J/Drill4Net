@@ -9,7 +9,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
                          //ConfiguratorConstants.CONTEXT_CFG,
                          ConfiguratorConstants.COMMAND_DELETE)]
-    public class TargetDeleteCommand : AbstractInteractiveCommand
+    public class TargetDeleteCommand : AbstractConfiguratorCommand
     {
         public TargetDeleteCommand(ConfiguratorRepository rep) : base(rep)
         {
@@ -39,15 +39,15 @@ namespace Drill4Net.Configurator
                 string answer;
                 if (actualCfg.Equals(sourcePath, System.StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (!AskQuestion($"The config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer", out answer, "n"))
+                    if (!_cli.AskQuestion($"The config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer", out answer, "n"))
                         return Task.FromResult(false);
-                    if (!IsYes(answer))
+                    if (!_cli.IsYes(answer))
                         return Task.FromResult(false);
                 }
                 //
-                if (!AskQuestion($"Delete the file [{sourcePath}]?", out answer, "y"))
+                if (!_cli.AskQuestion($"Delete the file [{sourcePath}]?", out answer, "y"))
                     return Task.FromResult(false);
-                if (!IsYes(answer))
+                if (!_cli.IsYes(answer))
                     return Task.FromResult(false);
             }
 

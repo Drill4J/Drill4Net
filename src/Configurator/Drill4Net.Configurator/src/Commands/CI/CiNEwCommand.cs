@@ -8,7 +8,7 @@ using Drill4Net.Cli;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CI, ConfiguratorConstants.COMMAND_NEW)]
-    public class CiNewCommand : AbstractInteractiveCommand
+    public class CiNewCommand : AbstractConfiguratorCommand
     {
         public CiNewCommand(ConfiguratorRepository rep) : base(rep)
         {
@@ -28,15 +28,15 @@ namespace Drill4Net.Configurator
             ciCfgPath = "";
 
             //asking
-            if (!AskDirectory("Directory for the injections' configs (they will all be used)", out var dir, null, true, false))
+            if (!_cli.AskDirectory("Directory for the injections' configs (they will all be used)", out var dir, null, true, false))
                 return false;
             int degree = 0;
-            if (!AskDegreeOfParallelism("The degree of parallelism on level those configs", ref degree))
+            if (!_cli.AskDegreeOfParallelism("The degree of parallelism on level those configs", ref degree))
                 return false;
-            if (!AskFilePath("Test Runner's config path to run the injected targets", out var runCfgPath, null, true, false))
+            if (!_cli.AskFilePath("Test Runner's config path to run the injected targets", out var runCfgPath, null, true, false))
                 return false;
             var defCfgPath = Path.Combine(dir, "ci.yml");
-            if (!AskFilePath("Config path for this CI run will be saved to", out ciCfgPath, defCfgPath, false, true))
+            if (!_cli.AskFilePath("Config path for this CI run will be saved to", out ciCfgPath, defCfgPath, false, true))
                 return false;
 
             //setting
@@ -74,7 +74,7 @@ namespace Drill4Net.Configurator
             IList<string> projects;
             while (true)
             {
-                if (!AskDirectory(@"This is CI integration questions. At the moment, integration is implemented only for IDEs (Visual Studio, Rider, etc). 
+                if (!_cli.AskDirectory(@"This is CI integration questions. At the moment, integration is implemented only for IDEs (Visual Studio, Rider, etc). 
 Please, specifiy the directory of one or more solutions with .NET source code projects", out dir, def, true, dirExists))
                     return false;
 
@@ -113,7 +113,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
             while (true)
             {
                 selected.Clear();
-                if (!AskQuestion($"Select project numbers to inject CI operations into them (comma-separated digits from 1 to {projects.Count})", out var answer, null, false))
+                if (!_cli.AskQuestion($"Select project numbers to inject CI operations into them (comma-separated digits from 1 to {projects.Count})", out var answer, null, false))
                     return false;
                 if (string.IsNullOrWhiteSpace(answer))
                 {
@@ -145,16 +145,16 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 {
                     RaiseMessage(prj, CliMessageType.Info);
                 }
-                if (!AskQuestion("Is that right?", out answer, "y"))
+                if (!_cli.AskQuestion("Is that right?", out answer, "y"))
                     return false;
-                if (IsYes(answer))
+                if (_cli.IsYes(answer))
                     break;
             }
             #endregion
             #region Config
             if (string.IsNullOrWhiteSpace(ciCfgPath))
             {
-                if (!AskFilePath("Config path for this CI run will read from", out ciCfgPath, null, true, false))
+                if (!_cli.AskFilePath("Config path for this CI run will read from", out ciCfgPath, null, true, false))
                     return false;
             }
             #endregion

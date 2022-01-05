@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using Drill4Net.BanderLog;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 
 namespace Drill4Net.Configurator
 {

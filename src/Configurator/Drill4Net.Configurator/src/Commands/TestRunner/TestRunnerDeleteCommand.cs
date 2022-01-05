@@ -8,7 +8,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER,
                          //ConfiguratorConstants.CONTEXT_CFG,
                          ConfiguratorConstants.COMMAND_DELETE)]
-    public class TestRunnerDeleteCommand : AbstractInteractiveCommand
+    public class TestRunnerDeleteCommand : AbstractConfiguratorCommand
     {
         public TestRunnerDeleteCommand(ConfiguratorRepository rep) : base(rep)
         {

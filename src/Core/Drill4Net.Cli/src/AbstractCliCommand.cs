@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Drill4Net.Common;
 using Drill4Net.BanderLog;
 
 namespace Drill4Net.Cli

@@ -10,18 +10,63 @@ namespace Drill4Net.Configurator
 {
     public class CommandHelper : CliMessager
     {
+        public CliInteractor Cli { get; }
+
         private readonly ConfiguratorRepository _rep;
         protected readonly Logger _logger;
 
         /*****************************************************************/
 
-        public CommandHelper(string id, ConfiguratorRepository rep): base(id)
+        public CommandHelper(CliInteractor cli, ConfiguratorRepository rep): base(cli.Id)
         {
+            Cli = cli ?? throw new ArgumentNullException(nameof(cli));
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _logger = new TypedLogger<AbstractCliCommand>(rep.Subsystem);
         }
 
         /*****************************************************************/
+
+        internal bool AskNameAndSave<T>(string appName, T cfg, string dir, bool activate = false) where T : AbstractOptions, new()
+        {
+            string cfgPath;
+            var needSave = true;
+
+            //questions
+            while (true)
+            {
+                if (!Cli.AskQuestion($"Name of the {appName}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
+                    return false;
+                if (!Cli.CheckFileNameAnswer(ref name, "Wrong file name", false))
+                    continue;
+                if (!Path.HasExtension(name))
+                    name += ".yml";
+                cfgPath = Path.Combine(dir, name);
+
+                if (File.Exists(cfgPath))
+                {
+                    if (!Cli.AskQuestion("Such name already exists. Replace?", out var answer, "n"))
+                        return false;
+                    needSave = Cli.IsYes(answer);
+                }
+                break;
+            }
+
+            //saving
+            if (needSave)
+            {
+                if (!SaveConfig(appName, cfg, cfgPath))
+                    return false;
+
+                //activating
+                if (activate)
+                {
+                    (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
+                    if (needActivate)
+                        return SaveRedirectFile(appName, cfgPath, redirectCfgPath);
+                }
+            }
+            return true;
+        }
 
         internal bool SaveConfig<T>(string appName, T cfg, string cfgPath) where T : AbstractOptions, new()
         {

@@ -5,7 +5,7 @@ using Drill4Net.Cli;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.CONTEXT_CFG)]
-    public class SysConfigureCommand : AbstractInteractiveCommand
+    public class SysConfigureCommand : AbstractConfiguratorCommand
     {
         public SysConfigureCommand(ConfiguratorRepository rep) : base(rep)
         {
@@ -28,7 +28,7 @@ namespace Drill4Net.Configurator
             //need to save?
             RaiseQuestion("\nSave the system configuration? [y]:");
             var answer = Console.ReadLine().Trim();
-            var yes = IsYes(answer);
+            var yes = _cli.IsYes(answer);
             if (yes)
             {
                 RaiseMessage("YES", CliMessageType.EmptyInput);
@@ -49,10 +49,10 @@ namespace Drill4Net.Configurator
             var def = opts.AdminHost;
             do
             {
-                if (!AskQuestion("Drill service host", out host, def))
+                if (!_cli.AskQuestion("Drill service host", out host, def))
                     return false;
             }
-            while (!CheckStringAnswer(ref host, "The service host address cannot be empty"));
+            while (!_cli.CheckStringAnswer(ref host, "The service host address cannot be empty"));
 
             // Drill port
             int port;
@@ -60,10 +60,10 @@ namespace Drill4Net.Configurator
             string portS;
             do
             {
-                if (!AskQuestion("Drill service port", out portS, def))
+                if (!_cli.AskQuestion("Drill service port", out portS, def))
                     return false;
             }
-            while (!CheckIntegerAnswer(portS, "The service port must be from 255 to 65535", 255, 65535, out port));
+            while (!_cli.CheckIntegerAnswer(portS, "The service port must be from 255 to 65535", 255, 65535, out port));
             //
             cfg.AdminUrl = $"{host}:{port}";
             _logger.Info($"Admin url: {cfg.AdminUrl }");
@@ -73,10 +73,10 @@ namespace Drill4Net.Configurator
             def = opts.PluginDirectory;
             do
             {
-                if (!AskQuestion("Agent plugin directory", out plugDir, def))
+                if (!_cli.AskQuestion("Agent plugin directory", out plugDir, def))
                     return false;
             }
-            while (!CheckDirectoryAnswer(ref plugDir, true));
+            while (!_cli.CheckDirectoryAnswer(ref plugDir, true));
             cfg.AgentPluginDirectory = plugDir;
             _logger.Info($"Plugin dir: {plugDir}");
             //
@@ -90,10 +90,10 @@ namespace Drill4Net.Configurator
             var def = opts.MiddlewareHost;
             do
             {
-                if (!AskQuestion("Kafka host", out host, def))
+                if (!_cli.AskQuestion("Kafka host", out host, def))
                     return false;
             }
-            while (!CheckStringAnswer(ref host, "The Kafka host address cannot be empty"));
+            while (!_cli.CheckStringAnswer(ref host, "The Kafka host address cannot be empty"));
 
             // Kafka port
             int port;
@@ -101,16 +101,16 @@ namespace Drill4Net.Configurator
             string portS;
             do
             {
-                if (!AskQuestion("Kafka port", out portS, def))
+                if (!_cli.AskQuestion("Kafka port", out portS, def))
                     return false;
             }
-            while (!CheckIntegerAnswer(portS, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
+            while (!_cli.CheckIntegerAnswer(portS, "The Kafka port must be from 255 to 65535", 255, 65535, out port));
             //
             cfg.MiddlewareUrl = $"{host}:{port}";
             _logger.Info($"Kafka url: {cfg.MiddlewareUrl}");
 
             // Logs
-            if (!AddLogFile(cfg.Logs, "Drill system"))
+            if (!_cli.AddLogFile(cfg.Logs, "Drill system"))
                 return false;
 
             return true;

@@ -9,7 +9,7 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    public abstract class AbstractTargetEditor : AbstractInteractiveCommand
+    public abstract class AbstractTargetEditor : AbstractConfiguratorCommand
     {
         protected AbstractTargetEditor(ConfiguratorRepository rep) : base(rep)
         {
@@ -35,11 +35,11 @@ namespace Drill4Net.Configurator
             string def = isNew ? "" : cfg.Source.Directory;
             do
             {
-                if (!AskQuestion("Target's directory (compiled assemblies). It can be full or relative (for the Injector program)",
+                if (!_cli.AskQuestion("Target's directory (compiled assemblies). It can be full or relative (for the Injector program)",
                     out sourceDir, def, !string.IsNullOrWhiteSpace(def)))
                     return false;
             }
-            while (!CheckDirectoryAnswer(ref sourceDir, true));
+            while (!_cli.CheckDirectoryAnswer(ref sourceDir, true));
             cfg.Source.Directory = sourceDir;
             #endregion
             #region Name
@@ -47,16 +47,16 @@ namespace Drill4Net.Configurator
             def = isNew ? GetDefaultTargetName(sourceDir) : cfg.Target.Name;
             do
             {
-                if (!AskQuestion("Target's name (as Agent ID). It must be the same for the different builds of the Product", out name, def))
+                if (!_cli.AskQuestion("Target's name (as Agent ID). It must be the same for the different builds of the Product", out name, def))
                     return false;
             }
-            while (!CheckStringAnswer(ref name, "Target's name cannot be empty", false));
+            while (!_cli.CheckStringAnswer(ref name, "Target's name cannot be empty", false));
             cfg.Target.Name = name;
             #endregion
 
             // Description
             def = isNew ? "" : cfg.Description;
-            if (!AskQuestion("Target's description", out string desc, def, !string.IsNullOrWhiteSpace(def)))
+            if (!_cli.AskQuestion("Target's description", out string desc, def, !string.IsNullOrWhiteSpace(def)))
                 return false;
             cfg.Description = desc;
 
@@ -82,9 +82,9 @@ namespace Drill4Net.Configurator
 Please make your choice";
             while (true)
             {
-                if (!AskQuestion(versionQuestion, out answer, def))
+                if (!_cli.AskQuestion(versionQuestion, out answer, def))
                     return false;
-                if (!CheckIntegerAnswer(answer, "Please select from 1 to 3", 1, 3, out int choice))
+                if (!_cli.CheckIntegerAnswer(answer, "Please select from 1 to 3", 1, 3, out int choice))
                     continue;
                 //
                 switch (choice)
@@ -156,7 +156,7 @@ Hint: to set up value for ""all entities of current filter type"" use sign *. Ex
             while (true)
             {
                 answer = Console.ReadLine().Trim().ToLower();
-                if (IsOk(answer))
+                if (_cli.IsOk(answer))
                     break;
                 if (!AddFilterRules(answer, cfg.Source.Filter, out string err))
                     RaiseError(err);
@@ -178,9 +178,9 @@ Hint: to set up value for ""all entities of current filter type"" use sign *. Ex
 Please make your choice";
             while (true)
             {
-                if (!AskQuestion(destQuestion, out answer, def))
+                if (!_cli.AskQuestion(destQuestion, out answer, def))
                     return false;
-                if (!CheckIntegerAnswer(answer, "Please select from 1 to 2", 1, 2, out int choice))
+                if (!_cli.CheckIntegerAnswer(answer, "Please select from 1 to 2", 1, 2, out int choice))
                     continue;
                 //
                 switch (choice)
@@ -192,7 +192,7 @@ Please make your choice";
                         cfg.Destination.FolderPostfix = postfix;
                         break;
                     case 2:
-                        if (!AskDirectory("Destination's directory (processed assemblies). It may not exist yet", out var destDir, null, false, false))
+                        if (!_cli.AskDirectory("Destination's directory (processed assemblies). It may not exist yet", out var destDir, null, false, false))
                             return false;
                         cfg.Destination.Directory = destDir;
                         break;
@@ -206,12 +206,12 @@ Please make your choice";
             // Logs
             if (cfg.Logs == null)
                 cfg.Logs = new();
-            if (!AddLogFile(cfg.Logs, appName))
+            if (!_cli.AddLogFile(cfg.Logs, appName))
                 return false;
 
             // save config
             if (isNew)
-                return AskNameAndSave(appName, cfg, _rep.GetInjectorDirectory(), true);
+                return _cmdHelper.AskNameAndSave(appName, cfg, _rep.GetInjectorDirectory(), true);
             else
                 return _cmdHelper.SaveConfig(appName, cfg, cfgPath);
         }
@@ -221,10 +221,10 @@ Please make your choice";
             var def = string.IsNullOrWhiteSpace(postfix) ? "Injected" : postfix;
             do
             {
-                if (!AskQuestion("Postfix to original directory", out postfix, def))
+                if (!_cli.AskQuestion("Postfix to original directory", out postfix, def))
                     return false;
             }
-            while (!CheckStringAnswer(ref postfix, "Postfix cannot be empty."));
+            while (!_cli.CheckStringAnswer(ref postfix, "Postfix cannot be empty."));
             return true;
         }
 
@@ -233,11 +233,11 @@ Please make your choice";
             var def = string.IsNullOrWhiteSpace(name) ? "" : name;
             do
             {
-                if (!AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version",
+                if (!_cli.AskQuestion("Set the assembly name (dll) with extension which contains the actual Product's version",
                     out name, def, !string.IsNullOrWhiteSpace(def)))
                     return false;
             }
-            while (!CheckFileNameAnswer(ref name, "The assembly name cannot be empty", false));
+            while (!_cli.CheckFileNameAnswer(ref name, "The assembly name cannot be empty", false));
             return true;
         }
 
@@ -246,7 +246,7 @@ Please make your choice";
             var def = string.IsNullOrWhiteSpace(version) ? null : version;
             while (true)
             {
-                if (!AskQuestion("Target's version (SemVer format)", out version, def, !String.IsNullOrWhiteSpace(def)))
+                if (!_cli.AskQuestion("Target's version (SemVer format)", out version, def, !string.IsNullOrWhiteSpace(def)))
                     return false;
                 //version = "0.8.240"; // "0.8.240-main+2befca57f1"
                 var pattern = new Regex(@"\d+(\.\d+)+([-](\p{L})+)?([+]([0-9a-zA-Z])+)?");
