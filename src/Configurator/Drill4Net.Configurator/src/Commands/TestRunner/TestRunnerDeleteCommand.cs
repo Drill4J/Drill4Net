@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -18,7 +18,9 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            throw new NotImplementedException();
+            var dir = _rep.GetTestRunnerDirectory();
+            var res = _cmdHelper.DeleteConfig<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, this);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()

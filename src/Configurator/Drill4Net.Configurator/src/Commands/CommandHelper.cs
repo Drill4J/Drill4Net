@@ -86,6 +86,44 @@ namespace Drill4Net.Configurator
             return true;
         }
 
+        internal bool DeleteConfig<T>(string appName, string dir, AbstractCliCommand cmd) where T : AbstractOptions, new()
+        {
+            // source path
+            var res = GetSourceConfig<T>(appName, dir, cmd, out var sourcePath, out var _, out var error);
+            if (!res)
+            {
+                RaiseError(error);
+                return false;
+            }
+
+            // ask
+            var forceDelete = cmd.IsSwitchSet('f');
+            if (!forceDelete)
+            {
+                //to delete the actual config in redirecting file is bad idea
+                var actualCfg = _rep.GetActualConfigPath(dir);
+                string answer;
+                if (actualCfg.Equals(sourcePath, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (!Cli.AskQuestion($"The {appName}'s config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer", out answer, "n"))
+                        return false;
+                    if (!Cli.IsYes(answer))
+                        return false;
+                }
+                //
+                if (!Cli.AskQuestion($"Delete the {appName}'s config [{sourcePath}]?", out answer, "y"))
+                    return false;
+                if (!Cli.IsYes(answer))
+                    return false;
+            }
+
+            //output
+            File.Delete(sourcePath);
+            RaiseMessage($"{appName}'s config is deleted: [{sourcePath}]", CliMessageType.Info);
+
+            return true;
+        }
+
         internal (bool, string) IsNeedAcivateConfigFor(string appDir, string curCfgPath)
         {
             var redirectCfgPath = _rep.CalcRedirectConfigPath(appDir);
@@ -185,6 +223,7 @@ namespace Drill4Net.Configurator
                 error = $"The {typeConfig} config is not specified, see help.";
                 return false;
             }
+            name = name.Replace("\"", null);
             if (!string.IsNullOrWhiteSpace(Path.GetDirectoryName(name)))
             {
                 error = $"The {typeConfig} config should be just a file name without a directory, see help.";

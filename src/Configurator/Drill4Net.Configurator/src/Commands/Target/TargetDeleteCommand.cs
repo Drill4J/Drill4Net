@@ -20,42 +20,8 @@ namespace Drill4Net.Configurator
         public override Task<bool> Process()
         {
             var dir = _rep.GetInjectorDirectory();
-
-            // source path
-            var res = _cmdHelper.GetSourceConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this,
-                out var sourcePath, out var _, out var error);
-            if (!res)
-            {
-                RaiseError(error);
-                return Task.FromResult(false);
-            }
-
-            // ask
-            var forceDelete = IsSwitchSet('f');
-            if (!forceDelete)
-            {
-                //to delete the actual config in redirecting file is bad idea
-                var actualCfg = _rep.GetActualConfigPath(dir);
-                string answer;
-                if (actualCfg.Equals(sourcePath, System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    if (!_cli.AskQuestion($"The config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer", out answer, "n"))
-                        return Task.FromResult(false);
-                    if (!_cli.IsYes(answer))
-                        return Task.FromResult(false);
-                }
-                //
-                if (!_cli.AskQuestion($"Delete the file [{sourcePath}]?", out answer, "y"))
-                    return Task.FromResult(false);
-                if (!_cli.IsYes(answer))
-                    return Task.FromResult(false);
-            }
-
-            //output
-            File.Delete(sourcePath);
-            RaiseMessage($"Config is deleted: [{sourcePath}]");
-
-            return Task.FromResult(true);
+            var res = _cmdHelper.DeleteConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()
