@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Drill4Net.Cli;
 
-namespace Drill4Net.Configurator.src.Commands.CI
+namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.CONTEXT_CFG)]
     public class SysConfigureCommand : AbstractInteractiveCommand
@@ -123,7 +123,7 @@ namespace Drill4Net.Configurator.src.Commands.CI
 
         public override string GetHelp()
         {
-            return $"Help article not implemeted yet";
+            return $"Help article not implemented yet";
         }
     }
 }

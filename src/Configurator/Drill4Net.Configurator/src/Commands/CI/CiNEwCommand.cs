@@ -182,7 +182,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
 
         public override string GetHelp()
         {
-            return "Help article not implemeted yet";
+            return "Help article not implemented yet";
         }
     }
 }
