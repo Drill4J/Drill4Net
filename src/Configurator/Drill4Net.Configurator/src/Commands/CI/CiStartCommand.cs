@@ -17,22 +17,31 @@ namespace Drill4Net.Configurator
 
         public override async Task<bool> Process()
         {
-            var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false);
-            if (ciCfgPath != null)
+            var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false); //from external call
+            if (string.IsNullOrWhiteSpace(ciCfgPath)) //from Configurator CLI
             {
-                var opts = _rep.ReadCiOptions(ciCfgPath);
-                var (res, err) = await StartCi(opts).ConfigureAwait(false);
-                if (res)
+                var dir = _rep.GetCiDir();
+                var res2 = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CONFIGURATOR, dir, this, out ciCfgPath,
+                    out var _, out var error);
+                if (!res2)
                 {
-                    const string mess = "CI workflow is done.";
-                    RaiseMessage(mess);
-                    _logger.Info(mess);
+                    RaiseError(error);
+                    return false;
                 }
-                else
-                {
-                    RaiseMessage(err);
-                    _logger.Error(err);
-                }
+            }
+            //
+            var opts = _rep.ReadCiOptions(ciCfgPath);
+            var (res, err) = await StartCi(opts).ConfigureAwait(false);
+            if (res)
+            {
+                const string mess = "CI workflow is done.";
+                RaiseMessage(mess);
+                _logger.Info(mess);
+            }
+            else
+            {
+                RaiseMessage(err);
+                _logger.Error(err);
             }
             return true;
         }

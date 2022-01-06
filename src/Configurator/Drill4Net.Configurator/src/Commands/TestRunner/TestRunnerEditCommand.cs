@@ -21,7 +21,7 @@ namespace Drill4Net.Configurator
             var dir = _rep.GetTestRunnerDirectory();
 
             // source path
-            var res = _cmdHelper.GetSourceConfig<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, this,
+            var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, this,
                 out var sourcePath, out var _, out var error);
             if (!res)
             {

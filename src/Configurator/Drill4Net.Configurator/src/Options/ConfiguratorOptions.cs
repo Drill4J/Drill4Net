@@ -53,6 +53,11 @@ namespace Drill4Net.Configurator
         public string? PluginDirectory { get; set; }
 
         /// <summary>
+        /// Default directory for the CI runs
+        /// </summary>
+        public string? CiDirectory { get; set; }
+
+        /// <summary>
         /// External editor to edit the configs
         /// </summary>
         public string? ExternalEditor { get; set; }

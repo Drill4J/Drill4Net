@@ -90,7 +90,7 @@ namespace Drill4Net.Configurator
         internal bool DeleteConfig<T>(string appName, string dir, AbstractCliCommand cmd) where T : AbstractOptions, new()
         {
             // source path
-            var res = GetSourceConfig<T>(appName, dir, cmd, out var sourcePath, out var _, out var error);
+            var res = GetSourceConfigPath<T>(appName, dir, cmd, out var sourcePath, out var _, out var error);
             if (!res)
             {
                 RaiseError(error);
@@ -170,7 +170,7 @@ namespace Drill4Net.Configurator
             }
         }
 
-        internal bool GetSourceConfig<T>(string subsystem, string dir, AbstractCliCommand cmd,
+        internal bool GetSourceConfigPath<T>(string subsystem, string dir, AbstractCliCommand cmd,
             out string path, out bool fromSwitch, out string error) where T : AbstractOptions, new()
         {
             var sourceName = string.Empty;
@@ -260,7 +260,7 @@ namespace Drill4Net.Configurator
 
         internal bool OpenConfig<T>(string subsystem, string dir, AbstractCliCommand cmd) where T : AbstractOptions, new()
         {
-            var res = GetSourceConfig<T>(subsystem, dir, cmd, out var fileName, out var _, out var error);
+            var res = GetSourceConfigPath<T>(subsystem, dir, cmd, out var fileName, out var _, out var error);
             if (!res)
             {
                 RaiseError(error);

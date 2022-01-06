@@ -22,7 +22,7 @@ namespace Drill4Net.Configurator
             var dir = _rep.GetInjectorDirectory();
 
             // sorce path
-            var res = _cmdHelper.GetSourceConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this,
+            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this,
                 out var sourcePath, out var fromSwitch, out var error);
             if (!res)
             {
