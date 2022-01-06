@@ -17,12 +17,14 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            throw new System.NotImplementedException();
+            var dir = _rep.GetInjectorDirectory();
+            var res = _cmdHelper.DeleteConfig<CiOptions>(CoreConstants.SUBSYSTEM_CONFIGURATOR, dir, this);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()
         {
-            return "";
+            return "Delete the specified CI config";
         }
 
         public override string GetHelp()

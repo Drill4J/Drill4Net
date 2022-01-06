@@ -40,7 +40,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "";
+            return "Activate the specified CI config";
         }
 
         public override string GetHelp()
