@@ -51,5 +51,10 @@ namespace Drill4Net.Configurator
         /// Default directory for the Agent's plugins (IEngineContexters)
         /// </summary>
         public string? PluginDirectory { get; set; }
+
+        /// <summary>
+        /// External editor to edit the configs
+        /// </summary>
+        public string? ExternalEditor { get; set; }
     }
 }

@@ -23,8 +23,9 @@
         public const string CONTEXT_SYS = "sys";
         public const string CONTEXT_CI = "ci";
         public const string CONTEXT_TARGET = "trg";
-        public const string CONTEXT_RUNNER = "runner";
-        
+        public const string CONTEXT_RUNNER = "run";
+        //public const string CONTEXT_SELF = "self";
+
         public const string COMMAND_NEW = "new";
         public const string COMMAND_EDIT = "edit";
         public const string COMMAND_DELETE = "del";
@@ -34,6 +35,7 @@
         public const string COMMAND_LIST = "list";
         public const string COMMAND_CHECK = "check";
         public const string COMMAND_PREP = "prep";
+        public const string COMMAND_RESTORE = "restore";
 
         public const string COMMAND_CLS = "cls";
         public const string COMMAND_HELP = "?";

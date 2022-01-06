@@ -256,5 +256,44 @@ namespace Drill4Net.Configurator
                 RaiseMessage($"{i + 1}. {name}{a}", CliMessageType.Info);
             }
         }
+
+        internal bool OpenConfig<T>(string subsystem, string dir, AbstractCliCommand cmd) where T : AbstractOptions, new()
+        {
+            var res = GetSourceConfig<T>(subsystem, dir, cmd, out var fileName, out var _, out var error);
+            if (!res)
+            {
+                RaiseError(error);
+                return false;
+            }
+            return OpenFile(fileName);
+        }
+
+        internal bool OpenFile(string fileName)
+        {
+            var edPath = _rep.GetExternalEditor();
+            if (string.IsNullOrWhiteSpace(edPath))
+            {
+                System.Diagnostics.Process.Start(fileName);
+            }
+            if (!File.Exists(edPath))
+            {
+                RaiseWarning("The specified external editor does not found");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                RaiseWarning("The file for editing is empty");
+                return false;
+            }
+            fileName = fileName.Replace("\"", null);
+            if (!File.Exists(fileName))
+            {
+                RaiseWarning("The specified file for editing does not found");
+                return false;
+            }
+            System.Diagnostics.Process.Start(edPath, fileName);
+
+            return true;
+        }
     }
 }

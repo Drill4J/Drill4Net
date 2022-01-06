@@ -87,6 +87,7 @@ namespace Drill4Net.Configurator.App
                 //input = "c1 -a=1";
                 //input = @"cmd -n= ""abc dfe "" -Sw pos0 pos1";
                 //input = "copy trg -- cfg cfg3 0.3.0";
+                //input = @"ci open -- ""d:\ci.yml""";
 
                 var cmdDesc = new CliDescriptor(input, true);
                 var cmd = _cmdRep.GetCommand(cmdDesc.CommandId);

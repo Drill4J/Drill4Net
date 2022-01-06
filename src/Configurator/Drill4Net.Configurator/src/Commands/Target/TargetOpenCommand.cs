@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -16,7 +16,9 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            throw new NotImplementedException();
+            var dir = _rep.GetInjectorDirectory();
+            var res = _cmdHelper.OpenConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()

@@ -188,5 +188,21 @@ namespace Drill4Net.Configurator
             optHelper.WriteOptions(opts, cfgPath);
         }
         #endregion
+
+        public string GetExternalEditor()
+        {
+            var path = Options.ExternalEditor;
+            if (!string.IsNullOrWhiteSpace(path))
+                return path;
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
+            }
+            else //UNIX
+            {
+                //TODO: search for default editor (Vim, ee, nano, Kate, etc...)
+                return string.Empty;
+            }
+        }
     }
 }

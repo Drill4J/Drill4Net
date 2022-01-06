@@ -188,6 +188,15 @@ namespace Drill4Net.Cli
                 // Look for new parameters (-,/ or --) and a
                 // possible enclosed value (=,:)
                 parts = splitter.Split(raw, 3);
+                if (parts.Length == 2)
+                {
+                    // it is Windows path in quotes
+                    if (parts[0].StartsWith("\"") && !parts[0].EndsWith("\"") &&
+                        !parts[1].StartsWith("\"") && parts[1].EndsWith("\""))
+                    {
+                        parts = new string[] { raw };
+                    }
+                }
 
                 switch (parts.Length)
                 {

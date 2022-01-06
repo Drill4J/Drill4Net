@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
-using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -17,12 +16,14 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            throw new System.NotImplementedException();
+            var path = GetPositional(0);
+            var res = _cmdHelper.OpenFile(path);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()
         {
-            return "";
+            return $"Open the config for CI in external editor";
         }
 
         public override string GetHelp()
