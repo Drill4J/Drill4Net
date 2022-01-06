@@ -98,23 +98,39 @@ namespace Drill4Net.Configurator
         public void SaveSystemConfiguration(SystemConfiguration cfg)
         {
             //Agent's options
-            var agCfgPath = Path.Combine(Options.InstallDirectory, CoreConstants.CONFIG_NAME_DEFAULT);
+            var agCfgPath = GetAgentConfigPath();
             var agentOpts = ReadAgentOptions(agCfgPath);
             agentOpts.Admin.Url = cfg.AdminUrl;
             agentOpts.PluginDir = cfg.AgentPluginDirectory;
             WriteAgentOptions(agentOpts, agCfgPath);
 
             // Transmitter opts
-            var transDir = Options.TransmitterDirectory;
-            if (string.IsNullOrEmpty(transDir))
-                transDir = @"..\transmitter";
-            var transCfgPath = Path.Combine(transDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            var transCfgPath = GetTransmitterConfigPath();
             var transOpts = ReadMessagerOptions(transCfgPath);
 
             transOpts.Servers.Clear();
             transOpts.Servers.Add(cfg.MiddlewareUrl);
 
             WriteMessagerOptions(transOpts, transCfgPath);
+        }
+
+        public string GetTransmitterDir()
+        {
+            var transDir = Options.TransmitterDirectory;
+            if (string.IsNullOrEmpty(transDir))
+                transDir = @"..\transmitter";
+            return transDir;
+        }
+
+        public string GetTransmitterConfigPath()
+        {
+            var transDir = GetTransmitterDir();
+            return  Path.Combine(transDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+        }
+
+        public string GetAgentConfigPath()
+        {
+            return Path.Combine(Options.InstallDirectory, CoreConstants.CONFIG_NAME_DEFAULT);
         }
 
         public InjectorOptions ReadInjectorOptions(string cfgPath)

@@ -6,7 +6,7 @@ using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, 
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER,
                          //ConfiguratorConstants.CONTEXT_CFG, 
                          ConfiguratorConstants.COMMAND_ACTIVE)]
     public class TestRunnerActiveCommand : AbstractConfiguratorCommand

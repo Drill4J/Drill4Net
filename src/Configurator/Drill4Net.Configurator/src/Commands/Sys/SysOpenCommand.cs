@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -15,7 +14,15 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            throw new NotImplementedException();
+            RaiseMessage("Be careful! The system properties are stored in two configs: for Agent and Transmitter components.", CliMessageType.Info);
+            //
+            var agentCfgPath = _rep.GetAgentConfigPath();
+            var res = _cmdHelper.OpenFile(agentCfgPath);
+            //
+            var trCfgPath = _rep.GetTransmitterConfigPath();
+            var res2 = _cmdHelper.OpenFile(trCfgPath);
+            //
+            return Task.FromResult(res && res2);
         }
 
         public override string GetShortDescription()
