@@ -17,11 +17,14 @@ namespace Drill4Net.Configurator
 
         public override async Task<bool> Process()
         {
+            if (_desc == null)
+                return false;
+            //
             var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false); //from external call
             if (string.IsNullOrWhiteSpace(ciCfgPath)) //from Configurator CLI
             {
                 var dir = _rep.GetCiDirectory();
-                var res2 = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CONFIGURATOR, dir, this, out ciCfgPath,
+                var res2 = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc, out ciCfgPath,
                     out var _, out var error);
                 if (!res2)
                 {

@@ -18,8 +18,10 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
+            if (_desc == null)
+                return Task.FromResult(false);
             var dir = _rep.GetTestRunnerDirectory();
-            var res = _cmdHelper.DeleteConfig<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, this);
+            var res = _cmdHelper.DeleteConfig<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, _desc);
             return Task.FromResult(res);
         }
 

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
@@ -19,24 +18,11 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var dir = _rep.GetInjectorDirectory();
-
-            //source path
-            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this,
-                out var sourcePath, out var _, out var error);
-            if (!res)
-            {
-                RaiseError(error);
+            if (_desc == null)
                 return Task.FromResult(false);
-            }
-
-            //activate
-            var path = _rep.CalcRedirectConfigPath(dir);
-            _cmdHelper.SaveRedirectFile(CoreConstants.SUBSYSTEM_INJECTOR,
-                Path.GetFileNameWithoutExtension(sourcePath), //better set just file name but its path 
-                path);
-
-            return Task.FromResult(true);
+            var dir = _rep.GetInjectorDirectory();
+            var res = _cmdHelper.ActivateConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()

@@ -18,10 +18,13 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
+            if (_desc == null)
+                return Task.FromResult(false);
+
             var dir = _rep.GetTestRunnerDirectory();
 
             // source path
-            var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, this,
+            var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, _desc,
                 out var sourcePath, out var _, out var error);
             if (!res)
             {

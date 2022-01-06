@@ -311,6 +311,16 @@ namespace Drill4Net.Cli
         /// <returns></returns>
         public List<CliArgument> GetPositionals() => Arguments.Where(a => a.Type == CliArgumentType.Positional).ToList();
 
+        public string GetPositional(int ind)
+        {
+            if (ind < 0)
+                return string.Empty;
+            var poses = GetPositionals();
+            if (ind >= poses.Count)
+                return string.Empty;
+            return poses[ind].Value;
+        }
+
         private void AddSwitch(string name)
         {
             if (_argByNames.ContainsKey(name))

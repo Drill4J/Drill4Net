@@ -16,6 +16,7 @@
         public const string SUBSYSTEM_AGENT_SERVER = "AgentServer";
         public const string SUBSYSTEM_AGENT_WORKER = "AgentWorker";
         public const string SUBSYSTEM_CONFIGURATOR = "Configurator";
+        public const string SUBSYSTEM_CI = "CI";
         #endregion
         #region Monikers
         public const string MONIKER_NET60 = "net6.0";

@@ -60,6 +60,8 @@ namespace Drill4Net.Cli
         public abstract string GetShortDescription();
         public abstract string GetHelp();
 
+        public CliDescriptor? GetDescriptor() => _desc;
+
         /// <summary>
         /// Get the parameter value by its name.
         /// </summary>
@@ -77,14 +79,9 @@ namespace Drill4Net.Cli
         /// <returns></returns>
         public List<CliArgument> GetPositionals() => _desc == null ? new() : _desc.GetPositionals();
 
-        public string GetPositional(int ind)
+        public string? GetPositional(int ind)
         {
-            if (ind < 0)
-                return string.Empty;
-            var poses = GetPositionals();
-            if (ind >= poses.Count)
-                return string.Empty;
-            return poses[ind].Value;
+            return _desc?.GetPositional(ind);
         }
 
         public bool IsSwitchSet(char sw)

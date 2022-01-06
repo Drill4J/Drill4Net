@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -177,7 +178,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
 
         public override string GetShortDescription()
         {
-            return "Create new CI config in interactive mode (injections for the target + Test Runner's rules in CI pipeline)";
+            return $"Create new {CoreConstants.SUBSYSTEM_CI}'s config in interactive mode (injections for the target + Test Runner's rules in CI pipeline)";
         }
 
         public override string GetHelp()

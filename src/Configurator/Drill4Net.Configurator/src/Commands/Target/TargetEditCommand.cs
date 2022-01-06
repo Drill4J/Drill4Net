@@ -18,10 +18,13 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
+            if (_desc == null)
+                return Task.FromResult(false);
+
             var dir = _rep.GetInjectorDirectory();
 
             // source path
-            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this, out var sourcePath,
+            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var sourcePath,
                 out var _, out var error);
             if (!res)
             {

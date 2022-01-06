@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Agent.TestRunner.Core;
@@ -19,22 +18,11 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var dir = _rep.GetTestRunnerDirectory();
-
-            // sorce path
-            var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, this,
-                out var sourcePath, out var fromSwitch, out var error);
-            if (!res)
-            {
-                RaiseError(error);
+            if (_desc == null)
                 return Task.FromResult(false);
-            }
-
-            //output
-            var text = File.ReadAllText(sourcePath);
-            RaiseMessage(text);
-
-            return Task.FromResult(true);
+            var dir = _rep.GetTestRunnerDirectory();
+            var res = _cmdHelper.ViewFile<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, _desc);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()

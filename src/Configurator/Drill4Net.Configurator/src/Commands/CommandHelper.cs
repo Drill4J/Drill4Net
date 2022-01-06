@@ -27,7 +27,7 @@ namespace Drill4Net.Configurator
 
         /*****************************************************************/
 
-        internal bool AskNameAndSave<T>(string appName, T cfg, string dir, bool activate = false) where T : AbstractOptions, new()
+        internal bool AskNameAndSave<T>(string subsystem, T cfg, string dir, bool activate = false) where T : AbstractOptions, new()
         {
             string cfgPath;
             var needSave = true;
@@ -35,7 +35,7 @@ namespace Drill4Net.Configurator
             //questions
             while (true)
             {
-                if (!Cli.AskQuestion($"Name of the {appName}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
+                if (!Cli.AskQuestion($"Name of the {subsystem}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
                     return false;
                 if (!Cli.CheckFileNameAnswer(ref name, "Wrong file name", false))
                     continue;
@@ -55,7 +55,7 @@ namespace Drill4Net.Configurator
             //saving
             if (needSave)
             {
-                if (!SaveConfig(appName, cfg, cfgPath))
+                if (!SaveConfig(subsystem, cfg, cfgPath))
                     return false;
 
                 //activating
@@ -63,13 +63,13 @@ namespace Drill4Net.Configurator
                 {
                     (var needActivate, var redirectCfgPath) = IsNeedAcivateConfigFor(dir, cfgPath);
                     if (needActivate)
-                        return SaveRedirectFile(appName, cfgPath, redirectCfgPath);
+                        return SaveRedirectFile(subsystem, cfgPath, redirectCfgPath);
                 }
             }
             return true;
         }
 
-        internal bool SaveConfig<T>(string appName, T cfg, string cfgPath) where T : AbstractOptions, new()
+        internal bool SaveConfig<T>(string subsystem, T cfg, string cfgPath) where T : AbstractOptions, new()
         {
             try
             {
@@ -77,20 +77,20 @@ namespace Drill4Net.Configurator
             }
             catch (Exception ex)
             {
-                var er = $"Config for {appName} is not saved:\n{ex}";
+                var er = $"Config for {subsystem} is not saved:\n{ex}";
                 _logger.Error(er);
                 RaiseError(er);
                 return false;
             }
-            _logger.Info($"Config for {appName} saved to [{cfgPath}]");
-            RaiseMessage($"Config is saved. You can check the {appName}'s settings: {cfgPath}", CliMessageType.Info);
+            _logger.Info($"Config for {subsystem} saved to [{cfgPath}]");
+            RaiseMessage($"Config is saved. You can check the {subsystem}'s settings: {cfgPath}", CliMessageType.Info);
             return true;
         }
 
-        internal bool DeleteConfig<T>(string appName, string dir, AbstractCliCommand cmd) where T : AbstractOptions, new()
+        internal bool DeleteConfig<T>(string subsystem, string dir, CliDescriptor desc) where T : AbstractOptions, new()
         {
             // source path
-            var res = GetSourceConfigPath<T>(appName, dir, cmd, out var sourcePath, out var _, out var error);
+            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out var sourcePath, out var _, out var error);
             if (!res)
             {
                 RaiseError(error);
@@ -98,7 +98,7 @@ namespace Drill4Net.Configurator
             }
 
             // ask
-            var forceDelete = cmd.IsSwitchSet('f');
+            var forceDelete = desc.IsSwitchSet('f');
             if (!forceDelete)
             {
                 //to delete the actual config in redirecting file is bad idea
@@ -106,13 +106,13 @@ namespace Drill4Net.Configurator
                 string answer;
                 if (actualCfg.Equals(sourcePath, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (!Cli.AskQuestion($"The {appName}'s config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer", out answer, "n"))
+                    if (!Cli.AskQuestion($"The {subsystem}'s config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer", out answer, "n"))
                         return false;
                     if (!Cli.IsYes(answer))
                         return false;
                 }
                 //
-                if (!Cli.AskQuestion($"Delete the {appName}'s config [{sourcePath}]?", out answer, "y"))
+                if (!Cli.AskQuestion($"Delete the {subsystem}'s config [{sourcePath}]?", out answer, "y"))
                     return false;
                 if (!Cli.IsYes(answer))
                     return false;
@@ -120,7 +120,26 @@ namespace Drill4Net.Configurator
 
             //output
             File.Delete(sourcePath);
-            RaiseMessage($"{appName}'s config is deleted: [{sourcePath}]", CliMessageType.Info);
+            RaiseMessage($"{subsystem}'s config is deleted: [{sourcePath}]", CliMessageType.Info);
+
+            return true;
+        }
+
+        internal bool ActivateConfig<T>(string subsystem, string dir, CliDescriptor desc) where T : AbstractOptions, new()
+        {
+            //source path
+            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out var sourcePath,
+                out var _, out var error);
+            if (!res)
+            {
+                RaiseError(error);
+                return false;
+            }
+
+            //activate
+            var path = _rep.CalcRedirectConfigPath(dir);
+            SaveRedirectFile(subsystem, Path.GetFileNameWithoutExtension(sourcePath), //better set just file name but its path 
+                path);
 
             return true;
         }
@@ -152,25 +171,42 @@ namespace Drill4Net.Configurator
             return (needActivate, redirectCfgPath);
         }
 
-        internal bool SaveRedirectFile(string appName, string actualPath, string redirectCfgPath)
+        internal bool ViewFile<T>(string subsystem, string dir, CliDescriptor desc) where T : AbstractOptions, new()
+        {
+            // sorce path
+            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out var sourcePath,
+                out var fromSwitch, out var error);
+            if (!res)
+            {
+                RaiseError(error);
+                return false;
+            }
+
+            //output
+            var text = File.ReadAllText(sourcePath);
+            RaiseMessage(text);
+            return true;
+        }
+
+        internal bool SaveRedirectFile(string subsystem, string actualPath, string redirectCfgPath)
         {
             try
             {
                 _rep.WriteRedirectData(new RedirectData { Path = actualPath }, redirectCfgPath);
-                _logger.Info($"Redirect config for {appName} saved to [{redirectCfgPath}]");
-                RaiseMessage($"The {appName}'s config [{actualPath}] is active now");
+                _logger.Info($"Redirect config for {subsystem} saved to [{redirectCfgPath}]");
+                RaiseMessage($"The {subsystem}'s config [{actualPath}] is active now");
                 return true;
             }
             catch (Exception ex)
             {
-                var er = $"Redirect config for {appName} is not saved:\n{ex}";
+                var er = $"Redirect config for {subsystem} is not saved:\n{ex}";
                 _logger.Error(er);
                 RaiseError(er);
                 return false;
             }
         }
 
-        internal bool GetSourceConfigPath<T>(string subsystem, string dir, AbstractCliCommand cmd,
+        internal bool GetSourceConfigPath<T>(string subsystem, string dir, CliDescriptor desc,
             out string path, out bool fromSwitch, out string error) where T : AbstractOptions, new()
         {
             var sourceName = string.Empty;
@@ -178,7 +214,7 @@ namespace Drill4Net.Configurator
             error = string.Empty;
 
             //switches
-            var copyActive = cmd.IsSwitchSet('a'); //copy active
+            var copyActive = desc.IsSwitchSet('a'); //copy active
             if (copyActive)
             {
                 var actualCfg = _rep.GetActualConfigPath(dir);
@@ -186,7 +222,7 @@ namespace Drill4Net.Configurator
             }
             if (sourceName == string.Empty)
             {
-                var copyLast = cmd.IsSwitchSet('l');
+                var copyLast = desc.IsSwitchSet('l');
                 if (copyLast)
                 {
                     var configs = _rep.GetConfigs<T>(subsystem, dir);
@@ -208,7 +244,7 @@ namespace Drill4Net.Configurator
             fromSwitch = !string.IsNullOrWhiteSpace(sourceName);
 
             if (string.IsNullOrWhiteSpace(sourceName))
-                sourceName = cmd.GetPositional(0);
+                sourceName = desc.GetPositional(0);
 
             //source path
             return GetConfigPath(dir, "source", sourceName, true, out path, out error);
@@ -258,9 +294,9 @@ namespace Drill4Net.Configurator
             }
         }
 
-        internal bool OpenConfig<T>(string subsystem, string dir, AbstractCliCommand cmd) where T : AbstractOptions, new()
+        internal bool OpenConfig<T>(string subsystem, string dir, CliDescriptor desc) where T : AbstractOptions, new()
         {
-            var res = GetSourceConfigPath<T>(subsystem, dir, cmd, out var fileName, out var _, out var error);
+            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out var fileName, out var _, out var error);
             if (!res)
             {
                 RaiseError(error);

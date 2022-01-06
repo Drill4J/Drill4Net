@@ -17,21 +17,16 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var dir = _rep.GetCiDirectory();
-            var res = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CONFIGURATOR, dir, this, out var sourcePath,
-                out var _, out var error);
-            if (!res)
-            {
-                RaiseError(error);
+            if (_desc == null)
                 return Task.FromResult(false);
-            }
-            res = _cmdHelper.OpenFile(sourcePath);
+            var dir = _rep.GetCiDirectory();
+            var res = _cmdHelper.OpenConfig<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc);
             return Task.FromResult(res);
         }
 
         public override string GetShortDescription()
         {
-            return "Open the config for CI in external editor";
+            return $"Open the config for {CoreConstants.SUBSYSTEM_CI}'s in external editor";
         }
 
         public override string GetHelp()

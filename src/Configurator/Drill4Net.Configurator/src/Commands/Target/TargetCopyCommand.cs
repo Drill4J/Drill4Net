@@ -18,10 +18,13 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
+            if (_desc == null)
+                return Task.FromResult(false);
+            //
             var dir = _rep.GetInjectorDirectory();
 
             // source path
-            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, this,
+            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc,
                 out var sourcePath, out var fromSwitch, out var error);
             if (!res)
             {
@@ -32,7 +35,7 @@ namespace Drill4Net.Configurator
             var delta = fromSwitch ? 1 : 0;
 
             // dest path
-            var destName = GetPositional(1 - delta);
+            var destName = GetPositional(1 - delta) ?? "";
             res = _cmdHelper.GetConfigPath(dir, "destination", destName, false, out var destPath, out error);
             if (!res)
             {

@@ -17,12 +17,14 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            throw new System.NotImplementedException();
+            var dir = _rep.GetCiDirectory();
+            _cmdHelper.ListConfigs<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir);
+            return Task.FromResult(true);
         }
 
         public override string GetShortDescription()
         {
-            return "";
+            return $"Get list of the {CoreConstants.SUBSYSTEM_CI}'s configs";
         }
 
         public override string GetHelp()

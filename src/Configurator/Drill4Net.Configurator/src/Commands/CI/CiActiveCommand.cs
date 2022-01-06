@@ -18,29 +18,16 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var dir = _rep.GetCiDirectory();
-
-            //source path
-            var res = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CONFIGURATOR, dir, this,
-                out var sourcePath, out var _, out var error);
-            if (!res)
-            {
-                RaiseError(error);
+            if(_desc == null)
                 return Task.FromResult(false);
-            }
-
-            //activate
-            var path = _rep.CalcRedirectConfigPath(dir);
-            _cmdHelper.SaveRedirectFile(CoreConstants.SUBSYSTEM_CONFIGURATOR,
-                Path.GetFileNameWithoutExtension(sourcePath), //better set just file name but its path 
-                path);
-
-            return Task.FromResult(true);
+            var dir = _rep.GetCiDirectory();
+            var res = _cmdHelper.ActivateConfig<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc);
+            return Task.FromResult(res);
         }
 
         public override string GetShortDescription()
         {
-            return "Activate the specified CI config";
+            return $"Activate the specified {CoreConstants.SUBSYSTEM_CI}'s config";
         }
 
         public override string GetHelp()
