@@ -133,7 +133,7 @@ namespace Drill4Net.Configurator
             return Path.Combine(Options.InstallDirectory, CoreConstants.CONFIG_NAME_DEFAULT);
         }
 
-        public string GetCiDir()
+        public string GetCiDirectory()
         {
             var transDir = Options.CiDirectory;
             if (string.IsNullOrEmpty(transDir))

@@ -20,7 +20,7 @@ namespace Drill4Net.Configurator
             var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false); //from external call
             if (string.IsNullOrWhiteSpace(ciCfgPath)) //from Configurator CLI
             {
-                var dir = _rep.GetCiDir();
+                var dir = _rep.GetCiDirectory();
                 var res2 = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CONFIGURATOR, dir, this, out ciCfgPath,
                     out var _, out var error);
                 if (!res2)

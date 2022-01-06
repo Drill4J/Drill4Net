@@ -17,7 +17,7 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var dir = _rep.GetCiDir();
+            var dir = _rep.GetCiDirectory();
             var res = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CONFIGURATOR, dir, this, out var sourcePath,
                 out var _, out var error);
             if (!res)
