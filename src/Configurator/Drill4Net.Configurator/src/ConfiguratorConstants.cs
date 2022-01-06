@@ -32,12 +32,14 @@
         public const string COMMAND_VIEW = "view";
         public const string COMMAND_OPEN = "open";
         public const string COMMAND_LIST = "list";
+        public const string COMMAND_CHECK = "check";
+        public const string COMMAND_PREP = "prep";
 
         public const string COMMAND_CLS = "cls";
         public const string COMMAND_HELP = "?";
         public const string COMMAND_HELP_2 = "help";
         public const string COMMAND_START = "start";
-        public const string COMMAND_ACTIVATE = "activate";
+        public const string COMMAND_ACTIVE = "active";
         #endregion
 
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
