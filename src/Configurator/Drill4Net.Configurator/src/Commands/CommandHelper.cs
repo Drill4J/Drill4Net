@@ -5,6 +5,7 @@ using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
+using System.Collections.Generic;
 
 namespace Drill4Net.Configurator
 {
@@ -294,6 +295,15 @@ namespace Drill4Net.Configurator
             System.Diagnostics.Process.Start(edPath, fileName);
 
             return true;
+        }
+
+        internal void ViewLogOptions(List<LogData> logs)
+        {
+            if (logs == null || logs.Count == 0)
+                return;
+            RaiseMessage("Additional logs:");
+            foreach (LogData logData in logs)
+                RaiseMessage($"  -- {logData}");
         }
     }
 }
