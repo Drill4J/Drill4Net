@@ -26,11 +26,14 @@ namespace Drill4Net.Configurator
 
         public string GetDefaultProjectSourcesDirectory()
         {
-            var def = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), @"source\repos\");
+            var prjDir = _rep.Options.ProjectsDirectory;
+            var def = string.IsNullOrWhiteSpace(_rep.Options.ProjectsDirectory) || !Directory.Exists(prjDir) ?
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), @"source\repos\") :
+                prjDir;
             var dirExists = Directory.Exists(def);
             if (!dirExists)
                 def = "";
-            return def;
+            return def ?? "";
         }
 
         /// <summary>
@@ -178,7 +181,7 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        internal bool DeleteInjections(string dir, string cfgPath)
+        internal bool DeleteInjections(string prjDir, string cfgPath)
         {
             return true;
         }

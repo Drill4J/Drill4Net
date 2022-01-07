@@ -19,4 +19,5 @@ CiDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\ci\
 TransmitterDirectory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\ # located somewhere in the distribution of Drill4Net
 PluginDirectory: ..\..\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net
 
-ExternalEditor: 
+ExternalEditor: # external editor to edit the configs
+ProjectsDirectory: d:\Projects\EPM-D4J\Distributions\debug\projects\ # default project sources' directory for CI integrations

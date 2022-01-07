@@ -39,7 +39,7 @@ Do you want to integrate CI run into some projects on its post-build events?",
             ciCfgPath = "";
 
             //asking
-            if (!_cli.AskDirectory("Directory for the injections' configs (they will all be used)", out var dir, null, true, false))
+            if (!_cli.AskDirectory("The Run have to has the one or more Injector's configs. Specify the directory with them (they will all be used)", out var dir, null, true, false))
                 return false;
             int degree = 0;
             if (!_cli.AskDegreeOfParallelism("The degree of parallelism on level those configs", ref degree))
@@ -82,7 +82,7 @@ Do you want to integrate CI run into some projects on its post-build events?",
             IList<string> projects;
             while (true)
             {
-                if (!_cli.AskDirectory("Specifiy the directory of one or more solutions with .NET source code projects",
+                if (!_cli.AskDirectory("Specify the directory of one or more projects/solutions with .NET source code projects",
                     out dir, def, true, !string.IsNullOrWhiteSpace(def)))
                     return false;
 
