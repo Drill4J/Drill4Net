@@ -97,9 +97,9 @@ namespace Drill4Net.Configurator
 
         public AbstractCliCommand GetCommand(string id)
         {
-            return string.IsNullOrWhiteSpace(id) || !Commands.ContainsKey(id)
+            return string.IsNullOrWhiteSpace(id) || !Commands.ContainsKey(id.ToUpper())
                 ? new NullCliCommand(_rep.Subsystem) :
-                Commands[id];
+                Commands[id.ToUpper()];
         }
     }
 }

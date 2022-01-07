@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -6,6 +8,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.COMMAND_HELP)]
     public class HelpCommand : AbstractConfiguratorCommand
     {
+        private Dictionary<string, AbstractCliCommand>? _commands;
         private readonly string _mess;
 
         /*****************************************************************/
@@ -27,11 +30,51 @@ namespace Drill4Net.Configurator
 
         /*******************************************************************/
 
+        public void SetCommands(Dictionary<string, AbstractCliCommand> commands)
+        {
+            _commands = commands;
+        }
+
         //https://docopt.org/
         public override Task<bool> Process()
         {
-            RaiseMessage($"\n{_mess}", CliMessageType.Help);
+            var contexts = GetPositionals();
+            string? s;
+            if (contexts == null || contexts.Count == 0)
+            {
+                s = _mess;
+            }
+            else
+            {
+                if (_commands == null)
+                {
+                    RaiseError("No commands were given");
+                    return Task.FromResult(false);
+                }
+                var args = string.Join(" ", contexts.Select(a => a.Value));
+                var desc = new CliDescriptor(args, true);
+                AbstractCliCommand cmd;
+                if (_commands.ContainsKey(desc.CommandId))
+                {
+                    cmd = _commands[desc.CommandId];
+                    s = CreateHelp(cmd);
+                }
+                else
+                {
+                    RaiseWarning($"The command was not found: [{args}]");
+                    return Task.FromResult(false);
+                }
+            }
+            RaiseMessage($"\n{s}", CliMessageType.Help);
             return Task.FromResult(true);
+        }
+
+        internal string CreateHelp(AbstractCliCommand cmd)
+        {
+            return @$"Command: {cmd.RawContexts}
+{cmd.GetShortDescription()}
+
+{cmd.GetHelp()}";
         }
 
         public override string GetShortDescription()
@@ -41,7 +84,10 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return @"Shows the help article for the specified command. Use positional parameters with -- symbols for dividing).
+   
+Example: ? -- ci view
+";
         }
     }
 }
