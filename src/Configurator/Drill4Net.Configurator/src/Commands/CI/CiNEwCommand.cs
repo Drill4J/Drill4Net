@@ -19,8 +19,12 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            if (!ConfigureCiConfig(out var ciCfgPath))
-                return Task.FromResult(false);
+            var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false);
+            if (string.IsNullOrWhiteSpace(ciCfgPath))
+            {
+                if (!ConfigureCiConfig(out ciCfgPath))
+                    return Task.FromResult(false);
+            }
             return Task.FromResult(InjectCiToProjects(ciCfgPath));
         }
 
@@ -75,7 +79,7 @@ namespace Drill4Net.Configurator
             IList<string> projects;
             while (true)
             {
-                if (!_cli.AskDirectory(@"This is CI integration questions. At the moment, integration is implemented only for IDEs (Visual Studio, Rider, etc). 
+                if (!_cli.AskDirectory(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). 
 Please, specifiy the directory of one or more solutions with .NET source code projects", out dir, def, true, dirExists))
                     return false;
 

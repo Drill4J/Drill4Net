@@ -10,7 +10,7 @@ namespace Drill4Net.Agent.Abstract
     {
         /// <summary>
         /// Directory for the Connector logs.
-        /// If empty, will be used the current common log directory
+        /// If empty, will be used the local log directory
         /// </summary>
         public string LogDir { get; set; }
 

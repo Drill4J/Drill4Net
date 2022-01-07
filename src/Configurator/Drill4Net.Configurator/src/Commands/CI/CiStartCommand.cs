@@ -32,6 +32,11 @@ namespace Drill4Net.Configurator
                     return false;
                 }
             }
+            if (string.IsNullOrWhiteSpace(ciCfgPath))
+            {
+                RaiseError("Path to the CI config was not found");
+                return false;
+            }
             //
             var opts = _rep.ReadCiOptions(ciCfgPath);
             var (res, err) = await StartCi(opts).ConfigureAwait(false);

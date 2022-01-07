@@ -8,6 +8,6 @@ Admin:
   Url: localhost:8090
 PluginDir: ..\..\ # in real cases better FULL path to the Transmitter's plugins with IEngineContexter interface
 Connector: #parameters for the connector auxiliary subsystem (native Drill library), it can be missed
-  LogDir: #if empty, will be used the current common log directory
+  LogDir: #if empty, will be used the local log directory
   LogFile: connector.log #it can be presented as full file path (in this case LogDir will be ignored), it can be empty
   LogLevel: debug
