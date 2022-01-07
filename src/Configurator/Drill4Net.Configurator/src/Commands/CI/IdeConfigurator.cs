@@ -24,6 +24,15 @@ namespace Drill4Net.Configurator
 
         /*******************************************************************/
 
+        public string GetDefaultProjectSourcesDirectory()
+        {
+            var def = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), @"source\repos\");
+            var dirExists = Directory.Exists(def);
+            if (!dirExists)
+                def = "";
+            return def;
+        }
+
         /// <summary>
         /// Find the .NET source code projects.
         /// </summary>
@@ -94,7 +103,7 @@ namespace Drill4Net.Configurator
             error = "";
             if (string.IsNullOrWhiteSpace(prjPath))
             {
-                error = "The project parh is empty";
+                error = "The project path is empty";
                 return false;
             }
             if (string.IsNullOrWhiteSpace(command))
@@ -118,8 +127,13 @@ namespace Drill4Net.Configurator
                 return false;
             }
 
+            //already injected?
+            if(text.IndexOf(command) != -1)
+                return true;
+
+            //search
             const string search = @"<Target Name=""PostBuild"" AfterTargets=""PostBuildEvent"">";
-            //but changed in-place spaces are not taken into account here ((
+            //but changed in-place spaces are not taken into account here
             var ind = text.IndexOf(search, StringComparison.InvariantCultureIgnoreCase);
             if (ind > -1)
             {

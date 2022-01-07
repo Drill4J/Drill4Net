@@ -82,13 +82,14 @@ namespace Drill4Net.Configurator.App
         {
             try
             {
-                //TEST !!!
+                //TEST !!! TODO: unit tests
                 //input = "c1 c2 -abc 1 ";
                 //input = "c1 -a=1";
                 //input = @"cmd -n= ""abc dfe "" -Sw pos0 pos1";
                 //input = "copy trg -- cfg cfg3 0.3.0";
                 //input = @"ci open -- ""d:\ci.yml""";
                 //input = @"ci new -- cfg_path ""d:\ci_1.yml""";
+                //input = @"ci new -- cfg_path = ""d:\ci_1.yml""";
 
                 var cmdDesc = new CliDescriptor(input, true);
                 var cmd = _cmdRep.GetCommand(cmdDesc.CommandId);

@@ -24,6 +24,12 @@ namespace Drill4Net.Configurator
             {
                 if (!ConfigureCiConfig(out ciCfgPath))
                     return Task.FromResult(false);
+                if (!_cli.AskQuestion(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). 
+Do you want to integrate CI run into some projects on its post-build events?",
+                    out var answer, "y"))
+                    return Task.FromResult(false);
+                if(!_cli.IsYes(answer))
+                    return Task.FromResult(true);
             }
             return Task.FromResult(InjectCiToProjects(ciCfgPath));
         }
@@ -71,16 +77,13 @@ namespace Drill4Net.Configurator
             var ide = new IdeConfigurator(_rep);
 
             #region Search the projects
-            var def = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), @"source\repos\");
-            var dirExists = Directory.Exists(def);
-            if (!dirExists)
-                def = null;
+            var def = ide.GetDefaultProjectSourcesDirectory();
             string dir;
             IList<string> projects;
             while (true)
             {
-                if (!_cli.AskDirectory(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). 
-Please, specifiy the directory of one or more solutions with .NET source code projects", out dir, def, true, dirExists))
+                if (!_cli.AskDirectory("Specifiy the directory of one or more solutions with .NET source code projects",
+                    out dir, def, true, !string.IsNullOrWhiteSpace(def)))
                     return false;
 
                 try
@@ -128,7 +131,13 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 //
                 try
                 {
-                    nums = answer.Split(',').Select(a => a.Trim()).Select(a => Convert.ToInt32(a)).ToArray();
+                    nums = answer.Split(',')
+                        .Select(a => a.Trim())
+                        .Where(x => !string.IsNullOrEmpty(x))
+                        .Distinct()
+                        .Select(a => Convert.ToInt32(a))
+                        .OrderBy(a => a)
+                        .ToArray();
                 }
                 catch
                 {
@@ -138,7 +147,7 @@ Please, specifiy the directory of one or more solutions with .NET source code pr
                 //
                 if (nums.Min() < 1 || nums.Max() > projects.Count)
                 {
-                    RaiseWarning("Out of range, pleae repeat");
+                    RaiseWarning("Out of range, please repeat");
                     continue;
                 }
                 //
