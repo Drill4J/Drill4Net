@@ -82,7 +82,7 @@ Do you want to integrate CI run into some projects on its post-build events?",
             IList<string> projects;
             while (true)
             {
-                if (!_cli.AskDirectory("Specify the directory of one or more projects/solutions with .NET source code projects",
+                if (!_cli.AskDirectory(ConfiguratorConstants.MESSAGE_CI_INTEGRATION_IDE_DIR,
                     out dir, def, true, !string.IsNullOrWhiteSpace(def)))
                     return false;
 

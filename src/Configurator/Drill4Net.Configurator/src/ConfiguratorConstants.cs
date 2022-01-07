@@ -48,5 +48,6 @@
         internal const string CONFIG_TEST_RUNNER_MODEL = "test_runner.yml";
 
         internal const string MESSAGE_PROPERTIES_EDIT_WARNING = "Please note that only some basic settings can be changed now. You can read and edit the full list of properties in the corresponding configuration files.";
+        internal const string MESSAGE_CI_INTEGRATION_IDE_DIR = "Specify the directory of one or more projects/solutions with .NET source code projects";
     }
 }

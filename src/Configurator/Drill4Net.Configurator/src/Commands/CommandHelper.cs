@@ -87,7 +87,8 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        internal bool DeleteConfig<T>(string subsystem, string dir, CliDescriptor desc, out string sourcePath) where T : AbstractOptions, new()
+        internal bool DeleteConfig<T>(string subsystem, string dir, CliDescriptor desc, out string sourcePath)
+            where T : AbstractOptions, new()
         {
             // source path
             var res = GetSourceConfigPath<T>(subsystem, dir, desc, out sourcePath, out var _, out var error);
@@ -98,7 +99,7 @@ namespace Drill4Net.Configurator
             }
 
             // ask
-            var forceDelete = desc.IsSwitchSet('f');
+            var forceDelete = desc.IsSwitchSet(CoreConstants.ARGUMENT_FORCE);
             if (!forceDelete)
             {
                 //to delete the actual config in redirecting file is bad idea
@@ -119,7 +120,17 @@ namespace Drill4Net.Configurator
             }
 
             //output
-            File.Delete(sourcePath);
+            try
+            {
+                File.Delete(sourcePath);
+            }
+            catch (Exception ex)
+            {
+                var er = ex.ToString();
+                _logger.Error(er);
+                RaiseError(er);
+                return false;
+            }
             RaiseMessage($"{subsystem}'s config was deleted: [{sourcePath}]", CliMessageType.Info);
 
             return true;

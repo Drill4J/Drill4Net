@@ -33,6 +33,8 @@ namespace Drill4Net.Configurator
                 {
                     res = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI, cfgDir, _desc, out cfgPath,
                         out var _, out var error);
+                    if (!res)
+                        RaiseError(error);
                 }
                 else
                 {
@@ -49,10 +51,19 @@ namespace Drill4Net.Configurator
                 var solutionDir = GetParameter(CoreConstants.ARGUMENT_SOURCE_DIR, false);
                 if (string.IsNullOrWhiteSpace(solutionDir))
                 {
-                    if (!_cli.AskDirectory("", out solutionDir, ide.GetDefaultProjectSourcesDirectory(), true))
+                    if (!_cli.AskDirectory(ConfiguratorConstants.MESSAGE_CI_INTEGRATION_IDE_DIR,
+                        out solutionDir, ide.GetDefaultProjectSourcesDirectory(), true))
                         return Task.FromResult(true);
                 }
-                res = ide.DeleteInjections(solutionDir, cfgPath);
+                res = ide.DeleteInjections(solutionDir, cfgPath, out var processed, out var errors, out var all);
+                //
+                var cnt = processed.Count + errors.Count;
+                RaiseMessage($"\nProcessed: {processed.Count}/{cnt} (total: {all})");
+                foreach (var prc in processed)
+                    RaiseMessage(prc, CliMessageType.Info);
+
+                foreach (var error in errors)
+                        RaiseError($"{error.path} -> {error.error}");
             }
             return Task.FromResult(res);
         }

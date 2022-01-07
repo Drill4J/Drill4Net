@@ -36,6 +36,39 @@ namespace Drill4Net.Configurator
             return def ?? "";
         }
 
+        public bool DeleteInjections(string prjDir, string ciCfgPath, out List<string> processed,
+            out List<(string error, string path)> errors, out int all)
+        {
+            processed = new();
+            errors = new();
+            var projects = GetProjects(prjDir);
+            all = projects.Count;
+            var tag = GetAloneCommandTag(GetProjectCommand(ciCfgPath));
+            foreach (var prjPath in projects)
+            {
+                if (!File.Exists(prjPath))
+                    continue;
+                var text = File.ReadAllText(prjPath);
+                if (string.IsNullOrWhiteSpace(text))
+                    continue;
+                if (text.IndexOf(tag) == -1) //for counr projects with injected commands
+                    continue;
+                text = text.Replace(tag, null);
+
+                //save
+                try
+                {
+                    File.WriteAllText(prjPath, text);
+                    processed.Add(prjPath);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add((ex.ToString(), prjPath));
+                }
+            }
+            return errors.Count == 0;
+        }
+
         /// <summary>
         /// Find the .NET source code projects.
         /// </summary>
@@ -84,7 +117,7 @@ namespace Drill4Net.Configurator
                 throw new ArgumentNullException(nameof(ciCfgPath));
             //
             errors = new();
-            var command = @$"""{_rep.GetAppPath()}"" -{CoreConstants.ARGUMENT_CONFIG_PATH}=""{ciCfgPath}""";
+            var command = GetProjectCommand(ciCfgPath);
             foreach (var path in paths)
             {
                 var res = InjectCiCommandTo(path, command, out var error);
@@ -121,8 +154,6 @@ namespace Drill4Net.Configurator
             }
             #endregion
 
-            command = command.Replace(@"""", "&quot");
-
             var text = File.ReadAllText(prjPath);
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -133,6 +164,8 @@ namespace Drill4Net.Configurator
             //already injected?
             if(text.IndexOf(command) != -1)
                 return true;
+
+            //TODO: use $MS API for that???
 
             //search
             const string search = @"<Target Name=""PostBuild"" AfterTargets=""PostBuildEvent"">";
@@ -149,7 +182,7 @@ namespace Drill4Net.Configurator
                     return false;
                 }
                 ind2--;
-                text = text.Insert(ind2, $"    <Exec Command=\"{command}\" />\n");
+                text = text.Insert(ind2, $"    {GetAloneCommandTag(command)}\n");
             }
             else
             {
@@ -180,10 +213,21 @@ namespace Drill4Net.Configurator
 
             return true;
         }
-
-        internal bool DeleteInjections(string prjDir, string cfgPath)
+        
+        internal string GetPureCommand(string ciCfgPath)
         {
-            return true;
+            return @$"""{_rep.GetAppPath()}"" -{CoreConstants.ARGUMENT_CONFIG_PATH}=""{ciCfgPath}""";
+        }
+
+        internal string GetProjectCommand(string ciCfgPath)
+        {
+            var command = GetPureCommand(ciCfgPath);
+            return command.Replace(@"""", "&quot");
+        }
+
+        internal string GetAloneCommandTag(string command)
+        {
+            return $"<Exec Command=\"{command}\" />";
         }
     }
 }
