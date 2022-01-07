@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -31,7 +30,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "Help article not implemented yet";
+            return "The article has not been written yet";
         }
     }
 }

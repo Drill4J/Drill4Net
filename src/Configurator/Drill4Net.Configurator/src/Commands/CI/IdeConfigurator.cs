@@ -177,5 +177,10 @@ namespace Drill4Net.Configurator
 
             return true;
         }
+
+        internal bool DeleteInjections(string dir, string cfgPath)
+        {
+            return true;
+        }
     }
 }

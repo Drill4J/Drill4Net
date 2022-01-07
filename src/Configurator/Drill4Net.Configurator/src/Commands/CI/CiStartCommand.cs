@@ -20,7 +20,7 @@ namespace Drill4Net.Configurator
             if (_desc == null)
                 return false;
             //
-            var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false); //from external call
+            var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false); //as a rule, from external call
             if (string.IsNullOrWhiteSpace(ciCfgPath)) //from Configurator CLI
             {
                 var dir = _rep.GetCiDirectory();
@@ -129,7 +129,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "Help article not implemented yet";
+            return "The article has not been written yet";
         }
     }
 }

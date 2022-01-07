@@ -87,10 +87,10 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        internal bool DeleteConfig<T>(string subsystem, string dir, CliDescriptor desc) where T : AbstractOptions, new()
+        internal bool DeleteConfig<T>(string subsystem, string dir, CliDescriptor desc, out string sourcePath) where T : AbstractOptions, new()
         {
             // source path
-            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out var sourcePath, out var _, out var error);
+            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out sourcePath, out var _, out var error);
             if (!res)
             {
                 RaiseError(error);
@@ -120,7 +120,7 @@ namespace Drill4Net.Configurator
 
             //output
             File.Delete(sourcePath);
-            RaiseMessage($"{subsystem}'s config is deleted: [{sourcePath}]", CliMessageType.Info);
+            RaiseMessage($"{subsystem}'s config was deleted: [{sourcePath}]", CliMessageType.Info);
 
             return true;
         }

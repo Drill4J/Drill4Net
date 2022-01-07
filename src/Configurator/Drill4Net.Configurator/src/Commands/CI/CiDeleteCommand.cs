@@ -5,8 +5,8 @@ using Drill4Net.Common;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CI,
-                     //ConfiguratorConstants.CONTEXT_CFG,
-                     ConfiguratorConstants.COMMAND_DELETE)]
+                         //ConfiguratorConstants.CONTEXT_CFG,
+                         ConfiguratorConstants.COMMAND_DELETE)]
     public class CiDeleteCommand : AbstractConfiguratorCommand
     {
         public CiDeleteCommand(ConfiguratorRepository rep) : base(rep)
@@ -19,8 +19,29 @@ namespace Drill4Net.Configurator
         {
             if (_desc == null)
                 return Task.FromResult(false);
-            var dir = _rep.GetCiDirectory();
-            var res = _cmdHelper.DeleteConfig<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc);
+
+            //delete the config
+            var cfgDir = _rep.GetCiDirectory();
+            var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false);
+
+            bool res;
+            if (string.IsNullOrWhiteSpace(cfgPath))
+            {
+                res = _cmdHelper.DeleteConfig<CiOptions>(CoreConstants.SUBSYSTEM_CI, cfgDir, _desc, out cfgPath);
+                if (!res)
+                    return Task.FromResult(false);
+            }
+
+            //delete the integrations with IDE
+            var ide = new IdeConfigurator(_rep);
+            var solutionDir = GetParameter(CoreConstants.ARGUMENT_SOURCE_DIR, false);
+            if (string.IsNullOrWhiteSpace(solutionDir))
+            {
+                if (!_cli.AskDirectory("", out solutionDir, ide.GetDefaultProjectSourcesDirectory(), true))
+                    return Task.FromResult(true);
+            }
+            res = ide.DeleteInjections(solutionDir, cfgPath);
+
             return Task.FromResult(res);
         }
 
@@ -31,7 +52,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "Help article not implemented yet";
+            return "The article has not been written yet";
         }
     }
 }

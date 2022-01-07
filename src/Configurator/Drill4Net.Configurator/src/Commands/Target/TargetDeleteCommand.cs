@@ -21,7 +21,7 @@ namespace Drill4Net.Configurator
             if (_desc == null)
                 return Task.FromResult(false);
             var dir = _rep.GetInjectorDirectory();
-            var res = _cmdHelper.DeleteConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc);
+            var res = _cmdHelper.DeleteConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var _);
             return Task.FromResult(res);
         }
 
@@ -32,7 +32,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "Help article not implemented yet";
+            return "The article has not been written yet";
         }
     }
 }

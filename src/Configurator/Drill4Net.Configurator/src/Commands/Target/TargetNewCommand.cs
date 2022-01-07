@@ -36,7 +36,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "Help article not implemented yet";
+            return "The article has not been written yet";
         }
     }
 }

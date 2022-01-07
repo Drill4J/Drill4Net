@@ -196,7 +196,7 @@ Do you want to integrate CI run into some projects on its post-build events?",
 
         public override string GetHelp()
         {
-            return "Help article not implemented yet";
+            return "The article has not been written yet";
         }
     }
 }
