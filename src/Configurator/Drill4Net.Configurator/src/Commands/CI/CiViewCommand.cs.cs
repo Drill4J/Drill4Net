@@ -19,11 +19,28 @@ namespace Drill4Net.Configurator
         {
             if (_desc == null)
                 return Task.FromResult(false);
-            var cfgDir = _rep.GetCiDirectory();
-            var res = _cmdHelper.ViewFile<CiOptions>(CoreConstants.SUBSYSTEM_CI, cfgDir, _desc, out var cfgPath);
-            if(!res)
-                return Task.FromResult(false);
             //
+            string cfgPath;
+            var noContent = IsSwitchSet(ConfiguratorConstants.SWITCH_CONTENT_NO);
+            var cfgDir = _rep.GetCiDirectory();
+            
+            // view content of the config
+            bool res;
+            if (!noContent)
+            {
+                res = _cmdHelper.ViewFile<CiOptions>(CoreConstants.SUBSYSTEM_CI, cfgDir, _desc, out cfgPath);
+            }
+            else
+            {
+                res = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI, cfgDir, _desc, out cfgPath,
+                    out _, out var error);
+                if (!res)
+                    RaiseError(error);
+            }
+            if (!res)
+                return Task.FromResult(false);
+            
+            // view projects with the config's integration
             var viewIntegration = IsSwitchSet(ConfiguratorConstants.SWITCH_INTEGRATION);
             var solutionDir = GetParameter(CoreConstants.ARGUMENT_SOURCE_DIR, false);
             if (viewIntegration || solutionDir != null)

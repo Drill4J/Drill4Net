@@ -49,6 +49,7 @@
         public const char SWITCH_ACTIVE = 'a';
         public const char SWITCH_DEFAULT = 'd';
         public const char SWITCH_DEFAULT_NO = 'D';
+        public const char SWITCH_CONTENT_NO = 'C';
         #endregion
 
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
