@@ -182,11 +182,11 @@ namespace Drill4Net.Configurator
             return (needActivate, redirectCfgPath);
         }
 
-        internal bool ViewFile<T>(string subsystem, string dir, CliDescriptor desc) where T : AbstractOptions, new()
+        internal bool ViewFile<T>(string subsystem, string dir, CliDescriptor desc, out string sourcePath) where T : AbstractOptions, new()
         {
             // sorce path
-            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out var sourcePath,
-                out var fromSwitch, out var error);
+            var res = GetSourceConfigPath<T>(subsystem, dir, desc, out sourcePath,
+                out var _, out var error);
             if (!res)
             {
                 RaiseError(error);
@@ -225,7 +225,7 @@ namespace Drill4Net.Configurator
             error = string.Empty;
 
             //switches
-            var copyActive = desc.IsSwitchSet('a'); //copy active
+            var copyActive = desc.IsSwitchSet(ConfiguratorConstants.SWITCH_ACTIVE); //copy active
             if (copyActive)
             {
                 var actualCfg = _rep.GetActualConfigPath(dir);
@@ -233,7 +233,7 @@ namespace Drill4Net.Configurator
             }
             if (sourceName == string.Empty)
             {
-                var copyLast = desc.IsSwitchSet('l');
+                var copyLast = desc.IsSwitchSet(ConfiguratorConstants.SWITCH_LAST);
                 if (copyLast)
                 {
                     var configs = _rep.GetConfigs<T>(subsystem, dir);

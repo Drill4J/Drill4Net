@@ -69,6 +69,25 @@ namespace Drill4Net.Configurator
             return errors.Count == 0;
         }
 
+        public List<string> GetProjectsWithCiIntegrations(string prjDir, string ciCfgPath)
+        {
+            var res = new List<string>();
+            var tag = GetAloneCommandTag(GetProjectCommand(ciCfgPath));
+            var projects = GetProjects(prjDir);
+            foreach (var prjPath in projects)
+            {
+                if (!File.Exists(prjPath))
+                    continue;
+                var text = File.ReadAllText(prjPath);
+                if (string.IsNullOrWhiteSpace(text))
+                    continue;
+                if (text.IndexOf(tag) == -1) //for counr projects with injected commands
+                    continue;
+                res.Add(prjPath);
+            }
+            return res;
+        }
+
         /// <summary>
         /// Find the .NET source code projects.
         /// </summary>

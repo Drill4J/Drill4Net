@@ -21,7 +21,8 @@ namespace Drill4Net.Configurator
             if (_desc == null)
                 return Task.FromResult(false);
             var dir = _rep.GetTestRunnerDirectory();
-            var res = _cmdHelper.ViewFile<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, dir, _desc);
+            var res = _cmdHelper.ViewFile<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER,
+                dir, _desc, out var _);
             return Task.FromResult(res);
         }
 

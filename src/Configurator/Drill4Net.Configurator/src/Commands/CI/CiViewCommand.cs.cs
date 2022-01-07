@@ -19,8 +19,46 @@ namespace Drill4Net.Configurator
         {
             if (_desc == null)
                 return Task.FromResult(false);
-            var dir = _rep.GetCiDirectory();
-            return Task.FromResult(_cmdHelper.ViewFile<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc));
+            var cfgDir = _rep.GetCiDirectory();
+            var res = _cmdHelper.ViewFile<CiOptions>(CoreConstants.SUBSYSTEM_CI, cfgDir, _desc, out var cfgPath);
+            if(!res)
+                return Task.FromResult(false);
+            //
+            var viewIntegration = IsSwitchSet(ConfiguratorConstants.SWITCH_INTEGRATION);
+            var solutionDir = GetParameter(CoreConstants.ARGUMENT_SOURCE_DIR, false);
+            if (viewIntegration || solutionDir != null)
+            {
+                var ide = new IdeConfigurator(_rep);
+                if (solutionDir == null)
+                {
+                    var def = ide.GetDefaultProjectSourcesDirectory();
+                    var needSpecify = IsSwitchSet(ConfiguratorConstants.SWITCH_DEFAULT_NO);
+                    if (needSpecify)
+                    {
+                        if (!_cli.AskDirectory(ConfiguratorConstants.MESSAGE_CI_INTEGRATION_IDE_DIR,
+                            out solutionDir, def, true))
+                            return Task.FromResult(true);
+                    }
+                    else
+                    {
+                        solutionDir = def;
+                    }
+                }
+                //
+                var prjs = ide.GetProjectsWithCiIntegrations(solutionDir, cfgPath);
+                if (prjs.Count == 0)
+                {
+                    RaiseMessage("No integrations were found in the projects.", CliMessageType.Info);
+                }
+                else
+                {
+                    RaiseMessage("\nThe projects with IDE's integrations are:", CliMessageType.Info);
+                    foreach (var prj in prjs)
+                        RaiseMessage(prj, CliMessageType.Info);
+                }
+            }
+            //
+            return Task.FromResult(true);
         }
 
         public override string GetShortDescription()

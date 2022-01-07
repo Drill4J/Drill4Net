@@ -64,6 +64,11 @@ Do you want to integrate CI run into some projects on its post-build events?",
                 DegreeOfParallelism = degree
             };
             opts.TestRunnerConfigPath = runCfgPath;
+            //
+            var def = opts.Description;
+            if (!_cli.AskQuestion("Run's description", out string desc, def, !string.IsNullOrWhiteSpace(def)))
+                return false;
+            opts.Description = desc;
 
             //saving
             _rep.WriteCiOptions(opts, ciCfgPath);

@@ -42,12 +42,19 @@
         public const string COMMAND_HELP_2 = "help";
         public const string COMMAND_START = "start";
         public const string COMMAND_ACTIVE = "active";
+
+        public const char SWITCH_INTEGRATION = 'i';
+        public const char SWITCH_INTEGRATION_NO = 'I';
+        public const char SWITCH_LAST = 'l';
+        public const char SWITCH_ACTIVE = 'a';
+        public const char SWITCH_DEFAULT = 'd';
+        public const char SWITCH_DEFAULT_NO = 'D';
         #endregion
 
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
         internal const string CONFIG_TEST_RUNNER_MODEL = "test_runner.yml";
 
         internal const string MESSAGE_PROPERTIES_EDIT_WARNING = "Please note that only some basic settings can be changed now. You can read and edit the full list of properties in the corresponding configuration files.";
-        internal const string MESSAGE_CI_INTEGRATION_IDE_DIR = "Specify the directory of one or more projects/solutions with .NET source code projects";
+        internal const string MESSAGE_CI_INTEGRATION_IDE_DIR = "Specify the directory of one or more projects/solutions with .NET source code";
     }
 }

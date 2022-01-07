@@ -21,7 +21,8 @@ namespace Drill4Net.Configurator
             if (_desc == null)
                 return Task.FromResult(false);
             var dir = _rep.GetInjectorDirectory();
-            return Task.FromResult(_cmdHelper.ViewFile<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc));
+            return Task.FromResult(_cmdHelper.ViewFile<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                dir, _desc, out var _));
         }
 
         public override string GetShortDescription()

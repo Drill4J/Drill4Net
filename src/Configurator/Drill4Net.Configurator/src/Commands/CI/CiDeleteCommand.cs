@@ -21,8 +21,8 @@ namespace Drill4Net.Configurator
                 return Task.FromResult(false);
 
             bool res = false;
-            var doNotDeleteIntegration = IsSwitchSet('I');
-            var deleteOnlyIntegration = IsSwitchSet('i');
+            var doNotDeleteIntegration = IsSwitchSet(ConfiguratorConstants.SWITCH_INTEGRATION_NO);
+            var deleteOnlyIntegration = IsSwitchSet(ConfiguratorConstants.SWITCH_INTEGRATION);
 
             //delete the config
             var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false);
