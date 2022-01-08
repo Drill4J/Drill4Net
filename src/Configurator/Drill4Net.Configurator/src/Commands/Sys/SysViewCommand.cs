@@ -30,7 +30,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "View the basic system properties (connections, etc)";
+            return "View the basic system properties (connections, etc).";
         }
 
         public override string GetHelp()

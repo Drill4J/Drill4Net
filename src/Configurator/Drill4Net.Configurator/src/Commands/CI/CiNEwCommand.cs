@@ -196,7 +196,7 @@ Do you want to integrate CI run into some projects on its post-build events?",
 
         public override string GetShortDescription()
         {
-            return $"Create new {CoreConstants.SUBSYSTEM_CI}'s config in interactive mode (injections for the target + Test Runner's rules in CI pipeline)";
+            return $"Create new {CoreConstants.SUBSYSTEM_CI}'s config in interactive mode (injections for the target + Test Runner's rules in CI pipeline).";
         }
 
         public override string GetHelp()

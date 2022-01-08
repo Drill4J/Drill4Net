@@ -52,7 +52,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Get the list of available commands";
+            return "Get the list of available commands.";
         }
 
         public override string GetHelp()

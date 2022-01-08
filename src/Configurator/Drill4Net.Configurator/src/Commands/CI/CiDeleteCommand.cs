@@ -70,7 +70,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Delete the specified {CoreConstants.SUBSYSTEM_CI}'s config";
+            return $"Delete the specified {CoreConstants.SUBSYSTEM_CI}'s config and its integrations (if possible).";
         }
 
         public override string GetHelp()

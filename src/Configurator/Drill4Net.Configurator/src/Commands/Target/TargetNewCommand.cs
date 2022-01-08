@@ -31,7 +31,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Create new {CoreConstants.SUBSYSTEM_INJECTOR}'s config in interactive mode";
+            return $"Create new {CoreConstants.SUBSYSTEM_INJECTOR}'s config in interactive mode.";
         }
 
         public override string GetHelp()

@@ -27,7 +27,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Activate the specified {CoreConstants.SUBSYSTEM_CI}'s config";
+            return $"Activate the specified {CoreConstants.SUBSYSTEM_CI}'s config.";
         }
 
         public override string GetHelp()

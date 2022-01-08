@@ -38,7 +38,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Edit the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config in interactive mode";
+            return $"Edit the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config in interactive mode.";
         }
 
         public override string GetHelp()

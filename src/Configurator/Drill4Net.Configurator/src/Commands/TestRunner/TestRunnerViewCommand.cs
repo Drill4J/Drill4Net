@@ -28,7 +28,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"View the content of specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config";
+            return $"View the content of specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config.";
         }
 
         public override string GetHelp()

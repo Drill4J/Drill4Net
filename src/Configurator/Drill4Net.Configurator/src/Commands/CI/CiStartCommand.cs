@@ -124,7 +124,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Start the CI run";
+            return "Start the CI run.";
         }
 
         public override string GetHelp()

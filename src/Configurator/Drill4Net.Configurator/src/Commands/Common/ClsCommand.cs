@@ -21,7 +21,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Clear the program screen";
+            return "Clear the program screen.";
         }
 
         public override string GetHelp()
