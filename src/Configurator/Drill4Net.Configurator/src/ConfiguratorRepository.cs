@@ -24,32 +24,11 @@ namespace Drill4Net.Configurator
         public ConfiguratorRepository(ConfiguratorOptions? opts) : base(CoreConstants.SUBSYSTEM_CONFIGURATOR, false)
         {
             _logger = new TypedLogger<ConfiguratorRepository>(Subsystem);
-            Options = opts ?? ReadOptions<ConfiguratorOptions>(Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_APP));
+            Options = opts ?? ReadConfiguratorOptions();
             _optHelper = new BaseOptionsHelper(Subsystem);
         }
 
         /***********************************************************************************/
-
-        public string GetAppPath()
-        {
-            return Path.Combine(FileUtils.EntryDir, "dfn.exe");
-        }
-
-        public string GetInjectorDirectory()
-        {
-            var dir = Options.InjectorDirectory;
-            if (string.IsNullOrEmpty(dir))
-                dir = @"..\injector";
-            return FileUtils.GetFullPath(dir);
-        }
-
-        public string GetTestRunnerDirectory()
-        {
-            var dir = Options.TestRunnerDirectory;
-            if (string.IsNullOrEmpty(dir))
-                dir = @"..\test_runner";
-            return FileUtils.GetFullPath(dir);
-        }
 
         public List<string> GetConfigs<T>(string subsystem, string dir) where T : AbstractOptions, new()
         {
@@ -73,6 +52,74 @@ namespace Drill4Net.Configurator
             return res;
         }
 
+        #region Dirs/paths
+        public string GetAppPath()
+        {
+            return Path.Combine(FileUtils.EntryDir, "dfn.exe");
+        }
+
+        public string GetInjectorDirectory()
+        {
+            var dir = Options.InjectorDirectory;
+            if (string.IsNullOrEmpty(dir))
+                dir = ConfiguratorConstants.PATH_INJECTOR;
+            return FileUtils.GetFullPath(dir);
+        }
+
+        public string GetTestRunnerDirectory()
+        {
+            var dir = Options.TestRunnerDirectory;
+            if (string.IsNullOrEmpty(dir))
+                dir = ConfiguratorConstants.PATH_RUNNER;
+            return FileUtils.GetFullPath(dir);
+        }
+
+        public string GetAgentConfigPath()
+        {
+            var dir = Options.InstallDirectory;
+            if (string.IsNullOrEmpty(dir))
+                dir = ConfiguratorConstants.PATH_INSTALL;
+            return Path.Combine(dir, CoreConstants.CONFIG_NAME_DEFAULT);
+        }
+
+        public string GetTransmitterDir()
+        {
+            var transDir = Options.TransmitterDirectory;
+            if (string.IsNullOrEmpty(transDir))
+                transDir = ConfiguratorConstants.PATH_TRANSMITTER;
+            return transDir;
+        }
+
+        public string GetTransmitterConfigPath()
+        {
+            var transDir = GetTransmitterDir();
+            return Path.Combine(transDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+        }
+
+        public string GetCiDirectory()
+        {
+            var transDir = Options.CiDirectory;
+            if (string.IsNullOrEmpty(transDir))
+                transDir = ConfiguratorConstants.PATH_CI;
+            return transDir;
+        }
+
+        public string GetExternalEditor()
+        {
+            var path = Options.ExternalEditor;
+            if (!string.IsNullOrWhiteSpace(path))
+                return path;
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
+            }
+            else //UNIX
+            {
+                //TODO: search for default editor (Vim, ee, nano, Kate, etc...)
+                return string.Empty;
+            }
+        }
+        #endregion
         #region Redirecting
         public string GetActualConfigPath(string dir)
         {
@@ -95,6 +142,21 @@ namespace Drill4Net.Configurator
         }
         #endregion
         #region Read/write options
+        public ConfiguratorOptions ReadConfiguratorOptions()
+        {
+            return ReadOptions<ConfiguratorOptions>(GetConfiguratorConfigPath());
+        }
+
+        public void WriteConfiguratorOptions(ConfiguratorOptions opts)
+        {
+            WriteOptions<ConfiguratorOptions>(opts, GetConfiguratorConfigPath());
+        }
+
+        internal string GetConfiguratorConfigPath()
+        {
+            return Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_APP);
+        }
+
         public void SaveSystemConfiguration(SystemConfiguration cfg)
         {
             //Agent's options
@@ -112,33 +174,6 @@ namespace Drill4Net.Configurator
             transOpts.Servers.Add(cfg.MiddlewareUrl);
 
             WriteMessagerOptions(transOpts, transCfgPath);
-        }
-
-        public string GetTransmitterDir()
-        {
-            var transDir = Options.TransmitterDirectory;
-            if (string.IsNullOrEmpty(transDir))
-                transDir = @"..\transmitter";
-            return transDir;
-        }
-
-        public string GetTransmitterConfigPath()
-        {
-            var transDir = GetTransmitterDir();
-            return  Path.Combine(transDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
-        }
-
-        public string GetAgentConfigPath()
-        {
-            return Path.Combine(Options.InstallDirectory, CoreConstants.CONFIG_NAME_DEFAULT);
-        }
-
-        public string GetCiDirectory()
-        {
-            var transDir = Options.CiDirectory;
-            if (string.IsNullOrEmpty(transDir))
-                transDir = @"..\..\ci";
-            return transDir;
         }
 
         public InjectorOptions ReadInjectorOptions(string cfgPath)
@@ -212,21 +247,5 @@ namespace Drill4Net.Configurator
             optHelper.WriteOptions(opts, cfgPath);
         }
         #endregion
-
-        public string GetExternalEditor()
-        {
-            var path = Options.ExternalEditor;
-            if (!string.IsNullOrWhiteSpace(path))
-                return path;
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
-            }
-            else //UNIX
-            {
-                //TODO: search for default editor (Vim, ee, nano, Kate, etc...)
-                return string.Empty;
-            }
-        }
     }
 }

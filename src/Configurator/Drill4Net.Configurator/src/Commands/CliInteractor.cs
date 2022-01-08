@@ -34,14 +34,16 @@ namespace Drill4Net.Configurator
         public bool AskQuestion(string question, out string answer, string? defValue, bool showDefVal = true)
         {
             if (string.IsNullOrWhiteSpace(question))
-                question = "?";
+                question = "???";
             if (question.EndsWith(":"))
                 question = question[1..];
             question = $"\n{question.Trim()}";
+
+            var colon = question.EndsWith(".") || question.EndsWith("!") || question.EndsWith("?") ? "" : ":";
             if (showDefVal)
-                question = $"{question}: [{defValue}]";
+                question = $"{question}{colon} [{defValue}]";
             else
-                question += ":";
+                question += colon;
             //
             RaiseQuestion(question);
             answer = Console.ReadLine().Trim();

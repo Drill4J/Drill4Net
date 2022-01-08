@@ -89,8 +89,7 @@ namespace Drill4Net.Configurator
 Those examples show the way to get the help description for the command 'ci view'.   
    Example 1: ? ci view
    Example 2: help ci view
-   Example 3: help -- ci view
-";
+   Example 3: help -- ci view";
         }
     }
 }

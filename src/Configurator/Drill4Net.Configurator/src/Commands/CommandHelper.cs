@@ -99,7 +99,7 @@ namespace Drill4Net.Configurator
             }
 
             // ask
-            var forceDelete = desc.IsSwitchSet(CoreConstants.ARGUMENT_FORCE);
+            var forceDelete = desc.IsSwitchSet(CoreConstants.SWITCH_FORCE);
             if (!forceDelete)
             {
                 //to delete the actual config in redirecting file is bad idea

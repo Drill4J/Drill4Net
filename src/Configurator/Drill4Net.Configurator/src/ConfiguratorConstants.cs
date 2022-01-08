@@ -24,7 +24,6 @@
         public const string CONTEXT_CI = "ci";
         public const string CONTEXT_TARGET = "trg";
         public const string CONTEXT_RUNNER = "run";
-        //public const string CONTEXT_SELF = "self";
 
         public const string COMMAND_NEW = "new";
         public const string COMMAND_EDIT = "edit";
@@ -48,6 +47,14 @@
         public const char SWITCH_DEFAULT = 'd';
         public const char SWITCH_DEFAULT_NO = 'D';
         public const char SWITCH_CONTENT_NO = 'C';
+        #endregion
+        #region App paths
+        public const string PATH_INSTALL = @"..\..\install\";
+        public const string PATH_INJECTOR = @"..\..\apps\injector\";
+        public const string PATH_RUNNER = @"..\..\apps\test_runner\";
+        public const string PATH_CI = @"..\..\ci\";
+        public const string PATH_TRANSMITTER = @"..\..\components\transmitter\";
+        public const string PATH_TRANSMITTER_PLUGINS = @"..\..\components\transmitter_plugins\"; //Agent's plugins (IEngineContexters)
         #endregion
 
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
