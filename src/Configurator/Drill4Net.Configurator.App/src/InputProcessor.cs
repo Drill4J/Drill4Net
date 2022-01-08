@@ -24,7 +24,7 @@ namespace Drill4Net.Configurator.App
             _cmdRep = new(rep);
 
             // if another such command appears, make a common interface and search with an automatic call
-            var helpCommand = _cmdRep.GetCommand(ConfiguratorConstants.COMMAND_HELP) as HelpCommand;
+            var helpCommand = _cmdRep.GetCommand(CliConstants.COMMAND_HELP) as HelpCommand;
             helpCommand.SetCommands(_cmdRep.Commands);
 
             var listCommand = _cmdRep.GetCommand(ConfiguratorConstants.COMMAND_LIST) as ListCommand;

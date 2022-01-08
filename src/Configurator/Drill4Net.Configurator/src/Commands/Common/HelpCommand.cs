@@ -5,7 +5,7 @@ using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.COMMAND_HELP)]
+    [CliCommandAttribute(CliConstants.COMMAND_HELP)]
     public class HelpCommand : AbstractConfiguratorCommand
     {
         private Dictionary<string, AbstractCliCommand>? _commands;
@@ -48,7 +48,7 @@ namespace Drill4Net.Configurator
             {
                 if (_commands == null)
                 {
-                    RaiseError("No commands were given");
+                    RaiseError("No commands were given, set them");
                     return Task.FromResult(false);
                 }
                 var args = string.Join(" ", contexts.Select(a => a.Value));
@@ -61,7 +61,7 @@ namespace Drill4Net.Configurator
                 }
                 else
                 {
-                    RaiseWarning($"The command was not found: [{args}]");
+                    RaiseWarning($"The command is not found: [{args}]");
                     return Task.FromResult(false);
                 }
             }
@@ -79,14 +79,17 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "View help for the commands";
+            return "View help for the commands.";
         }
 
         public override string GetHelp()
         {
-            return @"Shows the help article for the specified command. Use positional parameters with -- symbols for dividing).
-   
-Example: ? -- ci view
+            return @"Shows the help article for the specified command. You can use positional parameters with symbols -- for clear separation. It is also allowed to use the 'help' command. 
+
+Those examples show the way to get the help description for the command 'ci view'.   
+   Example 1: ? ci view
+   Example 2: help ci view
+   Example 3: help -- ci view
 ";
         }
     }

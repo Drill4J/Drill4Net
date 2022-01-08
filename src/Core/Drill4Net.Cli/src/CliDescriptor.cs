@@ -93,8 +93,26 @@ namespace Drill4Net.Cli
         internal string[] Parse(string args)
         {
             //https://docopt.org/
-            var argList = new List<string>();
 
+            if (args == null)
+                return new string[0];
+            args = args.Trim();
+            if (string.IsNullOrWhiteSpace(args))
+                return new string[0];
+
+            //special case: help system
+            var ar = args.Split(' ').ToList();
+            if (ar[0] == CliConstants.COMMAND_HELP || ar[0] == CliConstants.COMMAND_HELP_2)
+            {
+                ar[0] = CliConstants.COMMAND_HELP;
+                var ar2 = ar.Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
+                if(ar.Count > 1 && ar[1] != "--")
+                    ar.Insert(1, "--");
+                args = string.Join(" ", ar);
+            }
+
+            //processing
+            var argList = new List<string>();
             var inQuotas = false;
             var glued = false;
             var block = string.Empty;

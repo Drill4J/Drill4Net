@@ -30,7 +30,7 @@ namespace Drill4Net.Configurator
         {
             if (_commands == null)
             {
-                RaiseError("No commands were given");
+                RaiseError("No commands were given, set them");
                 return Task.FromResult(false);
             }
             //

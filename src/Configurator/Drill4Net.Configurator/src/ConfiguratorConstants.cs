@@ -38,8 +38,6 @@
         public const string COMMAND_RESTORE = "restore";
 
         public const string COMMAND_CLS = "cls";
-        public const string COMMAND_HELP = "?";
-        public const string COMMAND_HELP_2 = "help";
         public const string COMMAND_START = "start";
         public const string COMMAND_ACTIVE = "active";
 
