@@ -144,13 +144,13 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT}'s config. If necessary, such a config is created using a model file, which, in turn, is configured by system settings.
+            return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT}'s config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings.
 
 You can use swithes for {CoreConstants.SUBSYSTEM_INJECTOR}'s config which describes a specific infection: ""a"" for active one and ""l"" for last edited one.
     Example: trg prep -a
     Example: trg prep -l
 
-You can to do it by passing the short name of config file (local for Injector) or full path to it:
+You can to do it by passing the short name of {CoreConstants.SUBSYSTEM_INJECTOR}'s config file or full path:
     Example: trg prep -- cfg2
     Example: trg prep -- ""d:\Targets\TargA.Injected\cfg2.yml""
 
