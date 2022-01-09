@@ -107,7 +107,8 @@ namespace Drill4Net.Configurator
                 string answer;
                 if (actualCfg.Equals(sourcePath, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (!Cli.AskQuestion($"The {subsystem}'s config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer", out answer, "n"))
+                    if (!Cli.AskQuestion($"The {subsystem}'s config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer",
+                        out answer, "n"))
                         return false;
                     if (!Cli.IsYes(answer))
                         return false;

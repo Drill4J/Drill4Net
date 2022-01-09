@@ -49,7 +49,7 @@ namespace Drill4Net.Injector.Core
             {
                 asmCtx.Definition.Write(modifiedPath, writeParams);
             }
-            catch(Exception ex)
+            catch//(Exception ex)
             {
                 //because after the error the content of the current file could have been erased - it will be old now
                 File.Copy(origFilePath, modifiedPath, true);

@@ -18,7 +18,7 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
+            var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
             if (!File.Exists(modelCfgPath))
             {
                 RaiseError($"Model {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config not found: [{modelCfgPath}]");

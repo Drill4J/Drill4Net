@@ -58,6 +58,14 @@ namespace Drill4Net.Configurator
             return Path.Combine(FileUtils.EntryDir, "dfn.exe");
         }
 
+        public string GetInstallDirectory()
+        {
+            var dir = Options.InstallDirectory;
+            if (string.IsNullOrEmpty(dir))
+                dir = ConfiguratorConstants.PATH_INSTALL;
+            return dir;
+        }
+
         public string GetInjectorDirectory()
         {
             var dir = Options.InjectorDirectory;
@@ -76,10 +84,7 @@ namespace Drill4Net.Configurator
 
         public string GetAgentConfigPath()
         {
-            var dir = Options.InstallDirectory;
-            if (string.IsNullOrEmpty(dir))
-                dir = ConfiguratorConstants.PATH_INSTALL;
-            return Path.Combine(dir, CoreConstants.CONFIG_NAME_DEFAULT);
+            return Path.Combine(GetInstallDirectory(), CoreConstants.CONFIG_NAME_DEFAULT);
         }
 
         public string GetTransmitterDir()
@@ -176,14 +181,18 @@ namespace Drill4Net.Configurator
             WriteMessagerOptions(transOpts, transCfgPath);
         }
 
-        public InjectorOptions ReadInjectorOptions(string cfgPath)
+        public InjectorOptions ReadInjectorOptions(string cfgPath, bool processed = false)
         {
-            return ReadOptions<InjectorOptions>(cfgPath);
+            var optHelper = processed ?
+                new InjectorOptionsHelper() :
+                new BaseOptionsHelper<InjectorOptions>(Subsystem);
+            return optHelper.ReadOptions(cfgPath);
         }
 
         public void WriteInjectorOptions(InjectorOptions opts, string cfgPath)
         {
-            WriteOptions<InjectorOptions>(opts, cfgPath);
+            var optHelper = new InjectorOptionsHelper();
+            optHelper.WriteOptions(opts, cfgPath);
         }
 
         public AgentOptions ReadAgentOptions(string cfgPath)

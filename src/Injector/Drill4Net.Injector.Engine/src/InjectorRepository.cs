@@ -9,10 +9,10 @@ using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injection;
-using Drill4Net.Injector.Core;
-using Drill4Net.Configuration;
-using Drill4Net.Profiling.Tree;
 using Drill4Net.Repository;
+using Drill4Net.Configuration;
+using Drill4Net.Injector.Core;
+using Drill4Net.Profiling.Tree;
 using Drill4Net.Injector.Strategies.Blocks;
 
 namespace Drill4Net.Injector.Engine
@@ -93,7 +93,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="sourcePath">Source directory</param>
         /// <param name="destPath">destintation directory</param>
-        /// <param name="monikers">Dictionary of framework versions monikers from <see cref="VersionOptions.Targets"/>.
+        /// <param name="monikers">Dictionary of framework versions monikers from VersionOptions.Targets/>.
         /// Key is moniker (for example, net6.0)</param>
         public async virtual Task CopySource(string sourcePath, string destPath, Dictionary<string, MonikerData> monikers)
         {

@@ -18,7 +18,7 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
+            var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
             if (!File.Exists(modelCfgPath))
             {
                 RaiseError($"Model {CoreConstants.SUBSYSTEM_INJECTOR}'s config not found: [{modelCfgPath}]");
