@@ -12,7 +12,7 @@ MiddlewarePort: 9093 # Kafka
 #TransmitterDirectory: ..\..\components\transmitter\ # located somewhere in the distribution of Drill4Net
 #PluginDirectory: ..\..\components\transmitter_plugins\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net
 
-InstallDirectory: ..\..\install\
+InstallDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\install\
 InjectorDirectory: ..\..\Drill4Net.Injector.App\net6.0\
 TestRunnerDirectory: ..\..\Drill4Net.Agent.TestRunner\net6.0\
 CiDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\ci\
