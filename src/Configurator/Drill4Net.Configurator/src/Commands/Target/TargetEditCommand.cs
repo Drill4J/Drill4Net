@@ -28,7 +28,8 @@ namespace Drill4Net.Configurator
                 out var _, out var error);
             if (!res)
             {
-                RaiseError(error);
+                if(string.IsNullOrWhiteSpace(error))
+                    RaiseError(error);
                 return Task.FromResult(false);
             }
 

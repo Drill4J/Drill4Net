@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -20,7 +21,7 @@ namespace Drill4Net.Configurator
             var injCfg = GetPositional(0); //cfg name
             var injDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR, false); //injected target dir
             string? err;
-            if (!string.IsNullOrWhiteSpace(injCfg))
+            if (!string.IsNullOrWhiteSpace(injCfg)) //by config
             {
                 if (!Path.HasExtension(injCfg))
                     injCfg += ".yml";
@@ -29,37 +30,54 @@ namespace Drill4Net.Configurator
                     Path.Combine(_rep.GetInjectorDirectory(), injCfg) : //local config for the Injector
                     injCfg;
 
-                if(!File.Exists(cfgPath))
+                return Task.FromResult(CheckConfigByPath(cfgPath));
+            }
+            else
+            if (!string.IsNullOrWhiteSpace(injDir)) //by injected target dir
+            {
+                return Task.FromResult(CheckInjectedTarget(injDir));
+            }
+            else //by switches (last, active configs...)
+            {
+                if (_desc == null)
+                    return Task.FromResult(false);
+
+                var dir = _rep.GetInjectorDirectory();
+                var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var sourcePath,
+                    out var _, out err);
+                if (!res)
                 {
-                    err = $"{CoreConstants.SUBSYSTEM_INJECTOR}'s config does not exist: [{cfgPath}]";
+                    if (string.IsNullOrWhiteSpace(err))
+                        err = "You have to specify either the name of the config or the folder with the instrumented target.";
                     _logger.Error(err);
                     RaiseError(err);
                     return Task.FromResult(false);
                 }
-                try
-                {
-                    var opts = _rep.ReadInjectorOptions(cfgPath, true); //it needs to be processed to get the destination path
-                    return Task.FromResult(CheckInjectedTarget(opts.Destination.Directory));
-                }
-                catch(Exception ex)
-                {
-                    err = $"The {CoreConstants.SUBSYSTEM_INJECTOR}'s config cannot be read: [{cfgPath}]";
-                    _logger.Error(err, ex);
-                    RaiseError(err);
-                    return Task.FromResult(false);
-                }
+                return Task.FromResult(CheckConfigByPath(sourcePath));
             }
-            else
-            if (!string.IsNullOrWhiteSpace(injDir))
+        }
+
+        internal bool CheckConfigByPath(string cfgPath)
+        {
+            string? err;
+            if (!File.Exists(cfgPath))
             {
-                return Task.FromResult(CheckInjectedTarget(injDir));
-            }
-            else
-            {
-                err = "You have to specify either the name of the config or the folder with the instrumented target.";
+                err = $"{CoreConstants.SUBSYSTEM_INJECTOR}'s config does not exist: [{cfgPath}]";
                 _logger.Error(err);
                 RaiseError(err);
-                return Task.FromResult(false);
+                return false;
+            }
+            try
+            {
+                var opts = _rep.ReadInjectorOptions(cfgPath, true); //it needs to be processed to get the destination path
+                return CheckInjectedTarget(opts.Destination.Directory);
+            }
+            catch (Exception ex)
+            {
+                err = $"The {CoreConstants.SUBSYSTEM_INJECTOR}'s config cannot be read: [{cfgPath}]";
+                _logger.Error(err, ex);
+                RaiseError(err);
+                return false;
             }
         }
 
@@ -127,6 +145,10 @@ namespace Drill4Net.Configurator
         public override string GetHelp()
         {
             return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT}'s config. If necessary, such a config is created using a model file, which, in turn, is configured by system settings.
+
+You can use swithes for {CoreConstants.SUBSYSTEM_INJECTOR}'s config which describes a specific infection: ""a"" for active one and ""l"" for last edited one.
+    Example: trg prep -a
+    Example: trg prep -l
 
 You can to do it by passing the short name of config file (local for Injector) or full path to it:
     Example: trg prep -- cfg2
