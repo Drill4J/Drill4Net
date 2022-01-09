@@ -19,6 +19,7 @@
         public const string FILTER_TYPE_ATTRIBUTE = "ATTR";
         #endregion
         #region Contexts & Commands
+        public const string CONTEXT_ABOUT = "about";
         public const string CONTEXT_CFG = "cfg";
         public const string CONTEXT_SYS = "sys";
         public const string CONTEXT_CI = "ci";

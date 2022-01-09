@@ -17,6 +17,8 @@ namespace Drill4Net.Configurator
         {
             _mess = $@"  === Please, type:
   >>> '?' to print this menu.
+  >>> '? ?' to read about help system.
+  >>> 'about' to read about programm.
   >>> '{ConfiguratorConstants.COMMAND_LIST}' to list all commands.
   --- Configurations:
   >>> '{new SysConfigureCommand(_rep).RawContexts}' to the system setup.

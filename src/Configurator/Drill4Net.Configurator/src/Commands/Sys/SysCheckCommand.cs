@@ -2,7 +2,7 @@
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
-namespace Drill4Net.Configurator.src.Commands.Sys
+namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.COMMAND_CHECK)]
     public class SysCheckCommand : AbstractConfiguratorCommand
