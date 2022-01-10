@@ -93,7 +93,7 @@ docker-compose up -d
 Start Visual Studio
 
 
-Change svc.yml to:
+Change src\Agent\Drill4Net.Agent.Service\svc.yml to:
 
 ```
 ...
