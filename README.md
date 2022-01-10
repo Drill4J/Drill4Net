@@ -127,3 +127,15 @@ DOCKER_BUILDKIT=0 docker-compose -f docker-compose-agent.yml build --no-cache
 
 Remove `.env from .dockerignore`
 Use src/Agent/Drill4Net.Agent.Service/Dockerfile-new
+
+
+Add this line to Directory.Build.props in root project
+
+```
+  <!--<PropertyGroup>
+	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	<GenerateBindingRedirectsOutputType>false</GenerateBindingRedirectsOutputType>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	<EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>-->
+```
