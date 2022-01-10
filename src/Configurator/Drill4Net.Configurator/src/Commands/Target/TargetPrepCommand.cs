@@ -18,6 +18,7 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
+            var force = IsSwitchSet(CoreConstants.SWITCH_FORCE);
             var injCfg = GetPositional(0); //cfg name
             var injDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR, false); //injected target dir
             string? err;
@@ -30,12 +31,12 @@ namespace Drill4Net.Configurator
                     Path.Combine(_rep.GetInjectorDirectory(), injCfg) : //local config for the Injector
                     injCfg;
 
-                return Task.FromResult(CheckConfigByPath(cfgPath));
+                return Task.FromResult(processConfig(cfgPath, force));
             }
             else
             if (!string.IsNullOrWhiteSpace(injDir)) //by injected target dir
             {
-                return Task.FromResult(CheckInjectedTarget(injDir));
+                return Task.FromResult(ProcessInjectedTarget(injDir, force));
             }
             else //by switches (last, active configs...)
             {
@@ -43,7 +44,7 @@ namespace Drill4Net.Configurator
                     return Task.FromResult(false);
 
                 var dir = _rep.GetInjectorDirectory();
-                var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var sourcePath,
+                var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var cfgPath,
                     out var _, out err);
                 if (!res)
                 {
@@ -53,35 +54,25 @@ namespace Drill4Net.Configurator
                     RaiseError(err);
                     return Task.FromResult(false);
                 }
-                return Task.FromResult(CheckConfigByPath(sourcePath));
+                return Task.FromResult(processConfig(cfgPath, force));
+            }
+
+            bool processConfig(string agentCfgPath, bool forceRewrite)
+            {
+                try
+                {
+                    var trgDir = _rep.GetTargetDestinationDir(agentCfgPath);
+                    return ProcessInjectedTarget(trgDir, forceRewrite);
+                }
+                catch (Exception ex)
+                {
+                    RaiseError(ex.Message);
+                    return false;
+                }
             }
         }
 
-        internal bool CheckConfigByPath(string cfgPath)
-        {
-            string? err;
-            if (!File.Exists(cfgPath))
-            {
-                err = $"{CoreConstants.SUBSYSTEM_INJECTOR}'s config does not exist: [{cfgPath}]";
-                _logger.Error(err);
-                RaiseError(err);
-                return false;
-            }
-            try
-            {
-                var opts = _rep.ReadInjectorOptions(cfgPath, true); //it needs to be processed to get the destination path
-                return CheckInjectedTarget(opts.Destination.Directory);
-            }
-            catch (Exception ex)
-            {
-                err = $"The {CoreConstants.SUBSYSTEM_INJECTOR}'s config cannot be read: [{cfgPath}]";
-                _logger.Error(err, ex);
-                RaiseError(err);
-                return false;
-            }
-        }
-
-        internal bool CheckInjectedTarget(string dir)
+        internal bool ProcessInjectedTarget(string dir, bool force)
         {
             string? err;
             if (!Directory.Exists(dir))
@@ -94,7 +85,7 @@ namespace Drill4Net.Configurator
             //
             var trCfgName = CoreConstants.CONFIG_NAME_DEFAULT; //Transmitter's config (it has default name)
             var trCfgPath = Path.Combine(dir, trCfgName);
-            if (!File.Exists(trCfgPath))
+            if (force || !File.Exists(trCfgPath))
             {
                 var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), trCfgName);
                 if (!File.Exists(modelCfgPath))
@@ -112,7 +103,7 @@ namespace Drill4Net.Configurator
                 }
                 catch (Exception ex)
                 {
-                    err = $"Default agent's config exist in install directory but cannot be read: [{modelCfgPath}]";
+                    err = $"Default {CoreConstants.SUBSYSTEM_AGENT}'s config exists in install directory but cannot be read: [{modelCfgPath}]";
                     _logger?.Error(err, ex);
                     RaiseError(err);
                 }
@@ -139,23 +130,24 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Prepare the injected target to run it";
+            return "Prepare the injected target to run it.";
         }
 
         public override string GetHelp()
         {
-            return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT}'s config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings.
+            return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT}'s config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings. The Injector does it itself, but if the system settings were changed after that, you need to do the same manually and using the ""f"" switch (forced overwrite).
 
-You can use swithes for {CoreConstants.SUBSYSTEM_INJECTOR}'s config which describes a specific infection: ""a"" for active one and ""l"" for last edited one.
+You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_INJECTOR}'s config which describes a specific injection: ""a"" for the active one and ""l"" for the last edited one.
     Example: trg prep -a
     Example: trg prep -l
+    Example: trg prep -lf (forced)
 
-You can to do it by passing the short name of {CoreConstants.SUBSYSTEM_INJECTOR}'s config file or full path:
+Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR}'s config file or its full path as positional parameter:
     Example: trg prep -- cfg2
     Example: trg prep -- ""d:\Targets\TargA.Injected\cfg2.yml""
 
-Another option is passing the injected target directory directly using ""dest_dir"" option:
-    Example: trg prep --dest_dir=""d:\Targets\TargA.Injected\""";
+Another option is passing the injected target directory using ""dest_dir"" option:
+    Example: trg prep --dest_dir=""d:\Targets\TargA.Injected\"" -f";
         }
     }
 }

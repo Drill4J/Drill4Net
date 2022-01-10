@@ -256,5 +256,27 @@ namespace Drill4Net.Configurator
             optHelper.WriteOptions(opts, cfgPath);
         }
         #endregion
+
+        public string GetTargetDestinationDir(string cfgPath)
+        {
+            string? err;
+            if (!File.Exists(cfgPath))
+            {
+                err = $"{CoreConstants.SUBSYSTEM_INJECTOR}'s config does not exist: [{cfgPath}]";
+                _logger.Error(err);
+                throw new Exception(err);
+            }
+            try
+            {
+                var opts = ReadInjectorOptions(cfgPath, true); //it needs to be processed to get the destination path
+                return opts.Destination.Directory;
+            }
+            catch (Exception ex)
+            {
+                err = $"The {CoreConstants.SUBSYSTEM_INJECTOR}'s config cannot be read: [{cfgPath}]";
+                _logger.Error(err, ex);
+                throw new Exception(err);
+            }
+        }
     }
 }

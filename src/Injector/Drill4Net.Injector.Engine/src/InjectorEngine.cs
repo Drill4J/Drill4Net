@@ -156,6 +156,7 @@ namespace Drill4Net.Injector.Engine
             DeployInjectedTree(tree);
 
             ProcessByPlugins(runCtx);
+            DeployProfilerConfig(opts.Destination.Directory, opts.Profiler.Directory);
 
             #region Debug
             // debug TODO: to tests
@@ -231,14 +232,6 @@ namespace Drill4Net.Injector.Engine
                 runCtx.ProcessingDirectory = runCtx.RootDirectory;
                 await ProcessDirectory(runCtx).ConfigureAwait(false);
             }
-        }
-
-        internal void DeployInjectedTree(InjectedSolution tree)
-        {
-            tree.RemoveEmpties();
-            tree.FinishTime = DateTime.Now;
-            var deployer = new TreeDeployer(_rep);
-            deployer.Deploy(tree); //copying tree data to the target root's directories
         }
 
         /// <summary>
@@ -318,6 +311,25 @@ namespace Drill4Net.Injector.Engine
             }
 
             return true;
+        }
+
+        internal void DeployInjectedTree(InjectedSolution tree)
+        {
+            tree.RemoveEmpties();
+            tree.FinishTime = DateTime.Now;
+            var deployer = new TreeDeployer(_rep);
+            deployer.Deploy(tree); //copying tree data to the target root's directories
+        }
+
+        private void DeployProfilerConfig(string destDir, string profilerDir)
+        {
+            var cfgName = CoreConstants.CONFIG_NAME_DEFAULT; //here without _redirect.yml yet
+            var destCfgPath = Path.Combine(destDir, cfgName);
+            if (File.Exists(destCfgPath))
+                return;
+            var sourceCfgPath = Path.Combine(profilerDir, cfgName);
+            if (File.Exists(sourceCfgPath)) //some profilers may not have an agent config (Agent.File, Agent.Testing, etc)
+                File.Copy(sourceCfgPath, destCfgPath);
         }
     }
 }
