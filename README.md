@@ -84,7 +84,7 @@ Close Visual Studio
 
 Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-Run docker-compose with admin and kafka in PowerShell or git-bash
+Run docker-compose in root project directory with admin and kafka in PowerShell or git-bash
 
 ```
 docker-compose up -d
