@@ -83,14 +83,15 @@ namespace Drill4Net.Configurator
                 return false;
             }
             //
-            var trCfgName = CoreConstants.CONFIG_NAME_DEFAULT; //Transmitter's config (it has default name)
+            var trCfgName = CoreConstants.CONFIG_NAME_DEFAULT; //Transmitter's (agent) config (it has default name)
             var trCfgPath = Path.Combine(dir, trCfgName);
+            var agCfgS = $"{CoreConstants.SUBSYSTEM_AGENT}'s config";
             if (force || !File.Exists(trCfgPath))
             {
                 var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), trCfgName);
                 if (!File.Exists(modelCfgPath))
                 {
-                    RaiseError($"Model {CoreConstants.SUBSYSTEM_TRANSMITTER}'s config not found: [{modelCfgPath}]");
+                    RaiseError($"Model {agCfgS} not found: [{modelCfgPath}]");
                     return false;
                 }
                 try
@@ -99,11 +100,11 @@ namespace Drill4Net.Configurator
                     var opts = _rep.ReadAgentOptions(modelCfgPath);
                     //perhaps later there will be additional configuration settings for a specific target
                     _rep.WriteAgentOptions(opts, trCfgPath);
-                    RaiseMessage($"{CoreConstants.SUBSYSTEM_AGENT}'s config is written to the target directory: [{trCfgPath}]", CliMessageType.Info);
+                    RaiseMessage($"{agCfgS} is written to the target directory: [{trCfgPath}]", CliMessageType.Info);
                 }
                 catch (Exception ex)
                 {
-                    err = $"Default {CoreConstants.SUBSYSTEM_AGENT}'s config exists in install directory but cannot be read: [{modelCfgPath}]";
+                    err = $"Default {agCfgS} exists in install directory but cannot be read: [{modelCfgPath}]";
                     _logger?.Error(err, ex);
                     RaiseError(err);
                 }
@@ -115,11 +116,11 @@ namespace Drill4Net.Configurator
                     //check cfg itself
                     var opts = _rep.ReadAgentOptions(trCfgPath);
                     //here we just check the fact of reading the config
-                    RaiseMessage($"{CoreConstants.SUBSYSTEM_AGENT}'s config is ok: [{trCfgPath}]", CliMessageType.Info);
+                    RaiseMessage($"{agCfgS} is ok: [{trCfgPath}]", CliMessageType.Info);
                 }
                 catch (Exception ex)
                 {
-                    err = $"{CoreConstants.SUBSYSTEM_AGENT}'s config exist in target directory but cannot be read: [{trCfgPath}]";
+                    err = $"{agCfgS} exist in target directory but cannot be read: [{trCfgPath}]";
                     _logger?.Error(err, ex);
                     RaiseError(err);
                 }
@@ -147,7 +148,7 @@ Also you can to do it by passing the explicit short name of {CoreConstants.SUBSY
     Example: trg prep -- ""d:\Targets\TargA.Injected\cfg2.yml""
 
 Another option is passing the injected target directory using ""dest_dir"" option:
-    Example: trg prep --dest_dir=""d:\Targets\TargA.Injected\"" -f";
+    Example: trg prep --dest_dir=""d:\Targets\TargA.Injected\"" -f (forced)";
         }
     }
 }
