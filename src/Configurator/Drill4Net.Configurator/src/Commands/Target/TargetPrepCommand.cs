@@ -92,7 +92,7 @@ namespace Drill4Net.Configurator
                     RaiseError($"Model {agCfgS} not found: [{modelCfgPath}]");
                     return false;
                 }
-                try
+                try //rewriting
                 {
                     var opts = _rep.ReadAgentOptions(modelCfgPath);
 
