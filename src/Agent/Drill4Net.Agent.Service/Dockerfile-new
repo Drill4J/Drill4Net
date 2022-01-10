@@ -5,9 +5,9 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY . .
-RUN ls -la
+COPY ["src/Agent/Drill4Net.Agent.Service/Drill4Net.Agent.Service.csproj", "src/Agent/Drill4Net.Agent.Service/"]
 RUN dotnet restore "src/Agent/Drill4Net.Agent.Service/Drill4Net.Agent.Service.csproj"
+COPY . .
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Service"
 RUN dotnet build "Drill4Net.Agent.Service.csproj" -c Release -o /app/build
 
