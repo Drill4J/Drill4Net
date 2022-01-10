@@ -92,6 +92,15 @@ namespace Drill4Net.Configurator
             return Path.Combine(GetInstallDirectory(), ConfiguratorConstants.CONFIG_AGENT_MODEL);
         }
 
+        /// <summary>
+        /// Get the agent's config name for the injected Target.
+        /// </summary>
+        /// <returns></returns>
+        public string GetAgentTargetConfigName()
+        {
+            return CoreConstants.CONFIG_NAME_DEFAULT;
+        }
+
         public string GetTransmitterDir()
         {
             var transDir = Options.TransmitterDirectory;
@@ -174,7 +183,7 @@ namespace Drill4Net.Configurator
 
         public void SaveSystemConfiguration(SystemConfiguration cfg)
         {
-            //Agent's options (Admin side)
+            //Agent's options - for Admin side, using the Agent Worker
             var agCfgPath = GetAgentModelConfigPath();
             var agentOpts = ReadAgentOptions(agCfgPath);
             agentOpts.Admin.Url = cfg.AdminUrl;
@@ -182,7 +191,7 @@ namespace Drill4Net.Configurator
 
             WriteAgentOptions(agentOpts, agCfgPath);
 
-            //Transmitter's opts (middleware)
+            //Transmitter's opts - middleware (as Kafka) using inside Target
             var transCfgPath = GetTransmitterConfigPath();
             var transOpts = ReadMessagerOptions(transCfgPath);
 

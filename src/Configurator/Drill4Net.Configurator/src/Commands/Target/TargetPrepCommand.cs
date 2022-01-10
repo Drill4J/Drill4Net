@@ -82,8 +82,7 @@ namespace Drill4Net.Configurator
                 return false;
             }
             //
-            var trCfgName = CoreConstants.CONFIG_NAME_DEFAULT; //Transmitter's (agent) config (it has default name)
-            var trCfgPath = Path.Combine(dir, trCfgName);
+            var trCfgPath = Path.Combine(dir, _rep.GetAgentTargetConfigName());
             var agCfgS = $"{CoreConstants.SUBSYSTEM_AGENT}'s config";
             if (force || !File.Exists(trCfgPath))
             {
@@ -95,9 +94,14 @@ namespace Drill4Net.Configurator
                 }
                 try
                 {
-                    //check cfg itself
                     var opts = _rep.ReadAgentOptions(modelCfgPath);
-                    //perhaps later there will be additional configuration settings for a specific target
+
+                    //get full paths
+                    var relDir = _rep.GetInstallDirectory();
+                    opts.PluginDir = FileUtils.GetFullPath(opts.PluginDir, relDir);
+                    opts.Connector.LogDir = FileUtils.GetFullPath(opts.Connector.LogDir, relDir);
+                    
+                    //save
                     _rep.WriteAgentOptions(opts, trCfgPath);
                     RaiseMessage($"{agCfgS} is written to the target directory: [{trCfgPath}]", CliMessageType.Info);
                 }
