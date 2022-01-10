@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -20,10 +22,8 @@ namespace Drill4Net.Configurator
             SystemConfiguration cfg = new();
             if (!ConfigAdmin(_rep.Options, cfg))
                 return Task.FromResult(false);
-            if (!ConfigMiddleware(_rep.Options, cfg))
+            if (!ConfigMiddleware(cfg))
                 return Task.FromResult(false);
-
-            //TODO: view list of all properties
 
             //need to save?
             RaiseQuestion("\nSave the system configuration? [y]:");
@@ -32,7 +32,7 @@ namespace Drill4Net.Configurator
             if (yes)
             {
                 RaiseMessage("YES", CliMessageType.EmptyInput);
-                _rep.SaveSystemConfiguration(cfg);
+                _rep.SaveSystemConfiguration(cfg); //data are located in the "model configs"
                 RaiseMessage($"\nSystem options are saved. {ConfiguratorConstants.MESSAGE_PROPERTIES_EDIT_WARNING}", CliMessageType.Info);
             }
             else
@@ -44,9 +44,15 @@ namespace Drill4Net.Configurator
 
         internal bool ConfigAdmin(ConfiguratorOptions opts, SystemConfiguration cfg)
         {
+            var modelCfgPath = _rep.GetAgentModelConfigPath();
+            var modelAgentOpts = _rep.ReadAgentOptions(modelCfgPath);
+            var admin = modelAgentOpts.Admin;
+
+            // host + port from model
+            SimpleParseUrl(admin.Url, out var host, out var portS);
+
             //Drill host
-            string host = "";
-            var def = opts.AdminHost;
+            var def = host;
             do
             {
                 if (!_cli.AskQuestion("Drill service host", out host, def))
@@ -56,8 +62,7 @@ namespace Drill4Net.Configurator
 
             // Drill port
             int port;
-            def = opts.AdminPort.ToString();
-            string portS;
+            def = portS;
             do
             {
                 if (!_cli.AskQuestion("Drill service port", out portS, def))
@@ -66,7 +71,7 @@ namespace Drill4Net.Configurator
             while (!_cli.CheckIntegerAnswer(portS, "The service port must be from 255 to 65535", 255, 65535, out port));
             //
             cfg.AdminUrl = $"{host}:{port}";
-            _logger.Info($"Admin url: {cfg.AdminUrl }");
+            _logger.Info($"Admin url: {cfg.AdminUrl}");
 
             // agent's plugin dir
             string plugDir = "";
@@ -83,11 +88,15 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        internal bool ConfigMiddleware(ConfiguratorOptions opts, SystemConfiguration cfg)
+        internal bool ConfigMiddleware(SystemConfiguration cfg)
         {
+            var transCfgPath = _rep.GetTransmitterConfigPath();
+            var transOpts = _rep.ReadMessagerOptions(transCfgPath);
+            SimpleParseUrl(transOpts.Servers.Count > 0 ? transOpts.Servers[0] : "",
+                out var host, out var portS);
+
             // Kafka host
-            string host = "";
-            var def = opts.MiddlewareHost;
+            var def = host;
             do
             {
                 if (!_cli.AskQuestion("Kafka host", out host, def))
@@ -97,8 +106,7 @@ namespace Drill4Net.Configurator
 
             // Kafka port
             int port;
-            def = opts.MiddlewarePort.ToString();
-            string portS;
+            def = portS;
             do
             {
                 if (!_cli.AskQuestion("Kafka port", out portS, def))
@@ -110,15 +118,25 @@ namespace Drill4Net.Configurator
             _logger.Info($"Kafka url: {cfg.MiddlewareUrl}");
 
             // Logs
-            if (!_cli.AddLogFile(cfg.Logs, "Drill system"))
-                return false;
+            return _cli.AddLogFile(cfg.Logs, "Drill system");
+        }
 
-            return true;
+        internal void SimpleParseUrl(string url, out string host, out string port)
+        {
+            port = ""; host = "";
+            var urlAr = url?.Split(':');
+            if (urlAr?.Length > 1)
+            {
+                host = urlAr[0].Trim();
+                port = urlAr[1]?.Trim();
+                if (!int.TryParse(port, out var _)) //just the check
+                    port = "";
+            }
         }
 
         public override string GetShortDescription()
         {
-            return "Configure the basic system properties (connections, etc).";
+            return "Configures the basic system properties (connections, etc).";
         }
 
         public override string GetHelp()

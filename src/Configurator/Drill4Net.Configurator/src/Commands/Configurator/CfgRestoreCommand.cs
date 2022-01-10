@@ -42,14 +42,11 @@ namespace Drill4Net.Configurator
             opts.ExternalEditor = null;
             opts.ProjectsDirectory = null;
             opts.Logs = null;
-            if (connNeed)
+            if (connNeed) //it is located in the "model configs"
             {
-                opts.AdminHost = "localhost";
-                opts.AdminPort = 8090;
-                opts.MiddlewareHost = "localhost";
-                opts.MiddlewarePort = 9093; //Kafka
+                _rep.SetDefaultSystemConfiguration();
             }
-            if (pathsNeed)
+            if (pathsNeed) //Configurator's options
             {
                 opts.InstallDirectory = ConfiguratorConstants.PATH_INSTALL;
                 opts.InjectorDirectory = ConfiguratorConstants.PATH_INJECTOR;

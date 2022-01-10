@@ -58,6 +58,7 @@
         public const string PATH_TRANSMITTER_PLUGINS = @"..\..\components\transmitter_plugins\"; //Agent's plugins (IEngineContexters)
         #endregion
 
+        internal const string CONFIG_AGENT_MODEL = "agent.yml";
         internal const string CONFIG_INJECTOR_MODEL = "injector.yml";
         internal const string CONFIG_TEST_RUNNER_MODEL = "test_runner.yml";
 

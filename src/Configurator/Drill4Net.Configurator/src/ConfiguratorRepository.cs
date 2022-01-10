@@ -82,9 +82,14 @@ namespace Drill4Net.Configurator
             return FileUtils.GetFullPath(dir);
         }
 
-        public string GetAgentConfigPath()
+        /// <summary>
+        /// Get the agent's config as default model's one. It is also copied
+        /// to the injected target directory for normal workflow.
+        /// </summary>
+        /// <returns></returns>
+        public string GetAgentModelConfigPath()
         {
-            return Path.Combine(GetInstallDirectory(), CoreConstants.CONFIG_NAME_DEFAULT);
+            return Path.Combine(GetInstallDirectory(), ConfiguratorConstants.CONFIG_AGENT_MODEL);
         }
 
         public string GetTransmitterDir()
@@ -95,6 +100,11 @@ namespace Drill4Net.Configurator
             return transDir;
         }
 
+        /// <summary>
+        /// Get the Transmitter's config path (it connects to the middleware as Kafka,
+        /// not Drill admin side)
+        /// </summary>
+        /// <returns></returns>
         public string GetTransmitterConfigPath()
         {
             var transDir = GetTransmitterDir();
@@ -164,21 +174,33 @@ namespace Drill4Net.Configurator
 
         public void SaveSystemConfiguration(SystemConfiguration cfg)
         {
-            //Agent's options
-            var agCfgPath = GetAgentConfigPath();
+            //Agent's options (Admin side)
+            var agCfgPath = GetAgentModelConfigPath();
             var agentOpts = ReadAgentOptions(agCfgPath);
             agentOpts.Admin.Url = cfg.AdminUrl;
             agentOpts.PluginDir = cfg.AgentPluginDirectory;
+
             WriteAgentOptions(agentOpts, agCfgPath);
 
-            // Transmitter opts
+            //Transmitter's opts (middleware)
             var transCfgPath = GetTransmitterConfigPath();
             var transOpts = ReadMessagerOptions(transCfgPath);
 
             transOpts.Servers.Clear();
             transOpts.Servers.Add(cfg.MiddlewareUrl);
 
+            //writing config to native Transmitter dir
             WriteMessagerOptions(transOpts, transCfgPath);
+        }
+
+        public void SetDefaultSystemConfiguration()
+        {
+            var defCfg = new SystemConfiguration
+            {
+                AdminUrl = "localhost:8090",
+                MiddlewareUrl = "localhost:9093",
+            };
+            SaveSystemConfiguration(defCfg);
         }
 
         public InjectorOptions ReadInjectorOptions(string cfgPath, bool processed = false)

@@ -14,7 +14,7 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            var agCfgPath = _rep.GetAgentConfigPath();
+            var agCfgPath = _rep.GetAgentModelConfigPath();
             var agentOpts = _rep.ReadAgentOptions(agCfgPath);
 
             var transCfgPath = _rep.GetTransmitterConfigPath();

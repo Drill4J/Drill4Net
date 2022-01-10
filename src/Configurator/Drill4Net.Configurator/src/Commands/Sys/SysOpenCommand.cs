@@ -16,7 +16,7 @@ namespace Drill4Net.Configurator
         {
             RaiseMessage("Be careful! The system properties are stored in two configs: for Agent and Transmitter components.", CliMessageType.Info);
             //
-            var agentCfgPath = _rep.GetAgentConfigPath();
+            var agentCfgPath = _rep.GetAgentModelConfigPath();
             var res = _cmdHelper.OpenFile(agentCfgPath);
             //
             var trCfgPath = _rep.GetTransmitterConfigPath();

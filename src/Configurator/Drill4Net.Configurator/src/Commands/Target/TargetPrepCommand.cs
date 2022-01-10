@@ -21,7 +21,6 @@ namespace Drill4Net.Configurator
             var force = IsSwitchSet(CoreConstants.SWITCH_FORCE);
             var injCfg = GetPositional(0); //cfg name
             var injDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR, false); //injected target dir
-            string? err;
             if (!string.IsNullOrWhiteSpace(injCfg)) //by config
             {
                 if (!Path.HasExtension(injCfg))
@@ -45,7 +44,7 @@ namespace Drill4Net.Configurator
 
                 var dir = _rep.GetInjectorDirectory();
                 var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var cfgPath,
-                    out var _, out err);
+                    out var _, out string? err);
                 if (!res)
                 {
                     if (string.IsNullOrWhiteSpace(err))
@@ -88,7 +87,7 @@ namespace Drill4Net.Configurator
             var agCfgS = $"{CoreConstants.SUBSYSTEM_AGENT}'s config";
             if (force || !File.Exists(trCfgPath))
             {
-                var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), trCfgName);
+                var modelCfgPath = _rep.GetAgentModelConfigPath();
                 if (!File.Exists(modelCfgPath))
                 {
                     RaiseError($"Model {agCfgS} not found: [{modelCfgPath}]");
