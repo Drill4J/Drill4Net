@@ -39,28 +39,28 @@ namespace Drill4Net.Configurator
             var runDirOpts = opts.Directories;
             if (runDirOpts == null)
             {
-                _cmdHelper.WriteCheck("Options", "No options", false);
+                _cmdHelper.WriteCheck("Directory options", "No directory options", false);
                 return Task.FromResult(false);
             }
             else
             {
-                foreach (var runDirOpt in runDirOpts)
+                foreach (var dirOpts in runDirOpts)
                 {
-                    var runDirA = runDirOpt.Directory;
-                    if (string.IsNullOrWhiteSpace(runDirA))
+                    var runDir = dirOpts.Directory;
+                    if (string.IsNullOrWhiteSpace(runDir))
                     {
                         _cmdHelper.WriteCheck("Target directory", "Target directory path is empty", false);
                         continue;
                     }
-                    var runDir = FileUtils.GetFullPath(runDirA, _rep.GetTestRunnerDirectory());
-                    _cmdHelper.WriteCheck($"Target directory: [{runDir}]", $"Directory does not exist: [{runDir}]", Directory.Exists(runDir));
+                    var fullDir = FileUtils.GetFullPath(runDir, _rep.GetTestRunnerDirectory());
+                    _cmdHelper.WriteCheck($"Target directory: [{fullDir}]", $"Directory does not exist: [{fullDir}]", Directory.Exists(fullDir));
 
-                    foreach (var asmOpts in runDirOpt.Assemblies)
+                    foreach (var asmOpts in dirOpts.Assemblies)
                     {
                         var asmName = asmOpts.DefaultAssemblyName;
                         if (string.IsNullOrWhiteSpace(asmName)) //it is normal
                             continue;
-                        var asmPath = Path.Combine(runDir, asmName);
+                        var asmPath = Path.Combine(fullDir, asmName);
                         _cmdHelper.WriteCheck($"Test assembly: [{asmPath}]", $"Test assembly does not exist: [{asmPath}]", File.Exists(asmPath));
                     }
                 }

@@ -22,7 +22,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "About the Programm, its command line interface, main workflow, etc.";
+            return "About the Program, its command line interface, main workflow, etc.";
         }
 
         public override string GetHelp()

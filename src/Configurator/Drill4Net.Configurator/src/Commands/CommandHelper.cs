@@ -429,7 +429,11 @@ namespace Drill4Net.Configurator
             else
             {
                 RaiseError($"{check}: NOT");
-                RaiseError(error);
+                //
+                error = error.Trim();
+                if (!string.IsNullOrWhiteSpace(error))
+                    error = char.ToLower(error[0]) + error[1..];
+                RaiseError($"Reason: {error}");
             }
         }
     }

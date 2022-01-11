@@ -254,11 +254,17 @@ namespace Drill4Net.Configurator
             if (validate)
             {
                 var cfgDirs = opts.Injection?.ConfigDir;
-                if (string.IsNullOrWhiteSpace(cfgDirs) || !Directory.Exists(cfgDirs))
+                if (string.IsNullOrWhiteSpace(cfgDirs))
+                    throw new ArgumentException("The directory path for injector's configs is empty");
+                cfgDirs = FileUtils.GetFullPath(cfgDirs);
+                if (!Directory.Exists(cfgDirs))
                     throw new ArgumentException("The directory for injector's configs does not exist");
 
                 var runnerCfg = opts.TestRunnerConfigPath;
-                if (string.IsNullOrWhiteSpace(runnerCfg) || !File.Exists(runnerCfg))
+                if (string.IsNullOrWhiteSpace(runnerCfg))
+                    throw new ArgumentException("The Test Runner's config path is empty");
+                runnerCfg = FileUtils.GetFullPath(runnerCfg);
+                if (!File.Exists(runnerCfg))
                     throw new ArgumentException("The Test Runner's config does not exist");
             }
             //
