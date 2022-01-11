@@ -139,3 +139,10 @@ Add this line to Directory.Build.props in root project
 	<EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>-->
 ```
+
+Add `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` to src\Agent\Drill4Net.Agent.Service\Drill4Net.Agent.Service.csproj
+```
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+```
