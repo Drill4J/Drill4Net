@@ -120,10 +120,6 @@ Choose and start profile Docker
 
 
 ## Debug Docker build when build without Visual Studio
-```
-DOCKER_BUILDKIT=0 docker-compose -f docker-compose-agent.yml build --no-cache
-```
-
 
 Remove `.env from .dockerignore`
 Use src/Agent/Drill4Net.Agent.Service/Dockerfile-new
@@ -146,4 +142,8 @@ Add `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` to src\Agent\Drill4Net.
     <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Service</OutputPath>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+```
+
+```
+DOCKER_BUILDKIT=0 docker-compose -f docker-compose-agent.yml build --no-cache
 ```
