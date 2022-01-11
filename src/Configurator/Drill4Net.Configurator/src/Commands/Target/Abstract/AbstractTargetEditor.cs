@@ -11,7 +11,7 @@ namespace Drill4Net.Configurator
 {
     public abstract class AbstractTargetEditor : AbstractConfiguratorCommand
     {
-        protected AbstractTargetEditor(ConfiguratorRepository rep) : base(rep)
+        protected AbstractTargetEditor(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_DELETE)]
     public class TestRunnerDeleteCommand : AbstractConfiguratorCommand
     {
-        public TestRunnerDeleteCommand(ConfiguratorRepository rep) : base(rep)
+        public TestRunnerDeleteCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

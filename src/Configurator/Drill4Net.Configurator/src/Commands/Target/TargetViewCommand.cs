@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_VIEW)]
     public class TargetViewCommand : AbstractConfiguratorCommand
     {
-        public TargetViewCommand(ConfiguratorRepository rep) : base(rep)
+        public TargetViewCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

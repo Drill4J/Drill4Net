@@ -9,7 +9,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CI, ConfiguratorConstants.COMMAND_START)]
     public class CiStartCommand : AbstractConfiguratorCommand
     {
-        public CiStartCommand(ConfiguratorRepository rep): base(rep)
+        public CiStartCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

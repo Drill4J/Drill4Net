@@ -7,7 +7,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CFG, ConfiguratorConstants.COMMAND_RESTORE)]
     public class CfgRestoreCommand : AbstractConfiguratorCommand
     {
-        public CfgRestoreCommand(ConfiguratorRepository rep) : base(rep)
+        public CfgRestoreCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_NEW)]
     public class TestRunnerNewCommand : AbstractTestRunnerEditor
     {
-        public TestRunnerNewCommand(ConfiguratorRepository rep) : base(rep)
+        public TestRunnerNewCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

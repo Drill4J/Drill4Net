@@ -11,7 +11,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CI, ConfiguratorConstants.COMMAND_NEW)]
     public class CiNewCommand : AbstractConfiguratorCommand
     {
-        public CiNewCommand(ConfiguratorRepository rep) : base(rep)
+        public CiNewCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

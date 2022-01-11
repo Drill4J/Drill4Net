@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_EDIT)]
     public class TestRunnerEditCommand : AbstractTestRunnerEditor
     {
-        public TestRunnerEditCommand(ConfiguratorRepository rep) : base(rep)
+        public TestRunnerEditCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -6,7 +6,7 @@ namespace Drill4Net.Configurator
 {
     public abstract class AbstractTestRunnerEditor : AbstractConfiguratorCommand
     {
-        protected AbstractTestRunnerEditor(ConfiguratorRepository rep) : base(rep)
+        protected AbstractTestRunnerEditor(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -11,7 +11,7 @@ namespace Drill4Net.Configurator
                      ConfiguratorConstants.COMMAND_CHECK)]
     public class TestRunnerCheckCommand : AbstractConfiguratorCommand
     {
-        public TestRunnerCheckCommand(ConfiguratorRepository rep) : base(rep)
+        public TestRunnerCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

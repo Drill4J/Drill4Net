@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
-using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.CONTEXT_CFG)]
     public class SysConfigureCommand : AbstractConfiguratorCommand
     {
-        public SysConfigureCommand(ConfiguratorRepository rep) : base(rep)
+        public SysConfigureCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -8,7 +8,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_OPEN)]
     public class TargetOpenCommand : AbstractConfiguratorCommand
     {
-        public TargetOpenCommand(ConfiguratorRepository rep) : base(rep)
+        public TargetOpenCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

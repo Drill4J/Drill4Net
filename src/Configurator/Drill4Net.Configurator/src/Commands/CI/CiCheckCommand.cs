@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                      ConfiguratorConstants.COMMAND_CHECK)]
     public class CiCheckCommand : AbstractConfiguratorCommand
     {
-        public CiCheckCommand(ConfiguratorRepository rep) : base(rep)
+        public CiCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 
@@ -20,6 +20,8 @@ namespace Drill4Net.Configurator
         {
             if (_desc == null)
                 return Task.FromResult(false);
+
+            var force = IsSwitchSet(CoreConstants.SWITCH_FORCE); //to check all the specified configurations
 
             // open cfg
             var dir = _rep.GetCiDirectory();
@@ -52,8 +54,13 @@ namespace Drill4Net.Configurator
                 }
                 else
                 {
-                    cfgsDir = FileUtils.GetFullPath(cfgsDir);  //relative Configurator
-                    _cmdHelper.WriteCheck(check, $"Path does not exist: [{cfgsDir}]", Directory.Exists(cfgsDir));
+                    cfgsDir = FileUtils.GetFullPath(cfgsDir);  //relative to Configurator
+                    var cfgExists = Directory.Exists(cfgsDir);
+                    _cmdHelper.WriteCheck(check, $"Path does not exist: [{cfgsDir}]", cfgExists);
+                    if(force && cfgExists)
+                    {
+
+                    }
                 }
             }
 
@@ -66,8 +73,13 @@ namespace Drill4Net.Configurator
             }
             else
             {
-                testRunPath = FileUtils.GetFullPath(testRunPath); //relative Configurator
-                _cmdHelper.WriteCheck(check, $"Path does not exist: [{testRunPath}]", File.Exists(testRunPath));
+                testRunPath = FileUtils.GetFullPath(testRunPath); //relative to Configurator
+                var cfgExists = File.Exists(testRunPath);
+                _cmdHelper.WriteCheck(check, $"Path does not exist: [{testRunPath}]", cfgExists);
+                if (force && cfgExists)
+                {
+
+                }
             }
             //
             return Task.FromResult(true);

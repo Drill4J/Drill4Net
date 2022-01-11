@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_PREP)]
     public class TestRunnerPrepCommand : AbstractConfiguratorCommand
     {
-        public TestRunnerPrepCommand(ConfiguratorRepository rep) : base(rep)
+        public TestRunnerPrepCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

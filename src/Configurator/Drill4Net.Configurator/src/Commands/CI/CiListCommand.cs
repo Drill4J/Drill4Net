@@ -9,7 +9,7 @@ namespace Drill4Net.Configurator
                      ConfiguratorConstants.COMMAND_LIST)]
     public class CiListCommand : AbstractConfiguratorCommand
     {
-        public CiListCommand(ConfiguratorRepository rep) : base(rep)
+        public CiListCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

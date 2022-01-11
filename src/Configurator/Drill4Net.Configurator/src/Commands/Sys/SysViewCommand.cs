@@ -6,7 +6,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.COMMAND_VIEW)]
     public class SysViewCommand : AbstractConfiguratorCommand
     {
-        public SysViewCommand(ConfiguratorRepository rep) : base(rep)
+        public SysViewCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -6,7 +6,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.COMMAND_OPEN)]
     public class SysOpenCommand : AbstractConfiguratorCommand
     {
-        public SysOpenCommand(ConfiguratorRepository rep) : base(rep)
+        public SysOpenCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

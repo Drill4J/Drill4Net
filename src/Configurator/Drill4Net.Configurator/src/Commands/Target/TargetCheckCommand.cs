@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
-using Drill4Net.Configuration;
 using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
@@ -14,7 +13,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_CHECK)]
     public class TargetCheckCommand : AbstractConfiguratorCommand
     {
-        public TargetCheckCommand(ConfiguratorRepository rep) : base(rep)
+        public TargetCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep): base(rep, cliRep)
         {
         }
 

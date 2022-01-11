@@ -7,7 +7,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.COMMAND_CHECK)]
     public class SysCheckCommand : AbstractConfiguratorCommand
     {
-        public SysCheckCommand(ConfiguratorRepository rep) : base(rep)
+        public SysCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

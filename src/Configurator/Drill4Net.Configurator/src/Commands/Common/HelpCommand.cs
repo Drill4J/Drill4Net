@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -8,12 +7,11 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(CliConstants.COMMAND_HELP)]
     public class HelpCommand : AbstractConfiguratorCommand
     {
-        private Dictionary<string, AbstractCliCommand>? _commands;
         private readonly string _mess;
 
         /*****************************************************************/
 
-        public HelpCommand(ConfiguratorRepository rep) : base(rep)
+        public HelpCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
             _mess = $@"  === Please, type:
   >>> '?' to print this menu.
@@ -21,21 +19,16 @@ namespace Drill4Net.Configurator
   >>> 'about' to read about programm.
   >>> '{ConfiguratorConstants.COMMAND_LIST}' to list all commands.
   --- Configurations:
-  >>> '{new SysConfigureCommand(_rep).RawContexts}' to the system setup.
-  >>> '{new TargetNewCommand(_rep).RawContexts}' to configure new target's injections.
-  >>> '{new TestRunnerNewCommand(_rep).RawContexts}' to configure new tests' run.
-  >>> '{new CiNewCommand(_rep).RawContexts}' for new CI run's settings.
+  >>> '{new SysConfigureCommand(_rep, _cliRep).RawContexts}' to the system setup.
+  >>> '{new TargetNewCommand(_rep, _cliRep).RawContexts}' to configure new target's injections.
+  >>> '{new TestRunnerNewCommand(_rep, _cliRep).RawContexts}' to configure new tests' run.
+  >>> '{new CiNewCommand(_rep, _cliRep).RawContexts}' for new CI run's settings.
   --- Actions:
-  >>> '{new CiStartCommand(_rep).RawContexts}' to start full cycle (target injection + tests' running).
+  >>> '{new CiStartCommand(_rep, _cliRep).RawContexts}' to start full cycle (target injection + tests' running).
   >>> 'q' to exit.";
         }
 
         /*******************************************************************/
-
-        public void SetCommands(Dictionary<string, AbstractCliCommand> commands)
-        {
-            _commands = commands;
-        }
 
         //https://docopt.org/
         public override Task<bool> Process()
@@ -48,17 +41,15 @@ namespace Drill4Net.Configurator
             }
             else
             {
-                if (_commands == null)
-                {
-                    RaiseError("No commands were given, set them");
-                    return Task.FromResult(false);
-                }
                 var args = string.Join(" ", contexts.Select(a => a.Value));
                 var desc = new CliDescriptor(args, true);
                 AbstractCliCommand cmd;
-                if (_commands.ContainsKey(desc.CommandId))
+                var commands = _cliRep.Commands
+                    .Where(a => a.Value.Id != "NULL")
+                    .ToDictionary(a => a.Key);
+                if (commands.ContainsKey(desc.CommandId))
                 {
-                    cmd = _commands[desc.CommandId];
+                    cmd = _cliRep.Commands[desc.CommandId];
                     s = CreateHelp(cmd);
                 }
                 else

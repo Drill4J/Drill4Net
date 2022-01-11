@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_COPY)]
     public class TargetCopyCommand : AbstractConfiguratorCommand
     {
-        public TargetCopyCommand(ConfiguratorRepository rep) : base(rep)
+        public TargetCopyCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -6,7 +6,7 @@ namespace Drill4Net.Configurator
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_ABOUT)]
     public class AboutCommand : AbstractConfiguratorCommand
     {
-        public AboutCommand(ConfiguratorRepository rep) : base(rep)
+        public AboutCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

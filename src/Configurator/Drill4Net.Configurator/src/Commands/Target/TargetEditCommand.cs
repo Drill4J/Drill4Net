@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_EDIT)]
     public class TargetEditCommand : AbstractTargetEditor
     {
-        public TargetEditCommand(ConfiguratorRepository rep) : base(rep)
+        public TargetEditCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_ACTIVE)]
     public class TestRunnerActiveCommand : AbstractConfiguratorCommand
     {
-        public TestRunnerActiveCommand(ConfiguratorRepository rep) : base(rep)
+        public TestRunnerActiveCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

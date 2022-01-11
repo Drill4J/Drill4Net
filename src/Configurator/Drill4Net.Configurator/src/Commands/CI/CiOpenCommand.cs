@@ -9,7 +9,7 @@ namespace Drill4Net.Configurator
                      ConfiguratorConstants.COMMAND_OPEN)]
     public class CiOpenCommand : AbstractConfiguratorCommand
     {
-        public CiOpenCommand(ConfiguratorRepository rep) : base(rep)
+        public CiOpenCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

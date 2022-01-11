@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -10,7 +9,7 @@ namespace Drill4Net.Configurator
                      ConfiguratorConstants.COMMAND_ACTIVE)]
     public class CiActiveCommand : AbstractConfiguratorCommand
     {
-        public CiActiveCommand(ConfiguratorRepository rep) : base(rep)
+        public CiActiveCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

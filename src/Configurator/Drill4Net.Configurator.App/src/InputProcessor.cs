@@ -22,13 +22,6 @@ namespace Drill4Net.Configurator.App
             _logger = new TypedLogger<InputProcessor>(rep.Subsystem);
             
             _cmdRep = new(rep);
-
-            // if another such command appears, make a common interface and search with an automatic call
-            var helpCommand = _cmdRep.GetCommand(CliConstants.COMMAND_HELP) as HelpCommand;
-            helpCommand.SetCommands(_cmdRep.Commands);
-
-            var listCommand = _cmdRep.GetCommand(ConfiguratorConstants.COMMAND_LIST) as ListCommand;
-            listCommand.SetCommands(_cmdRep.Commands);
         }
 
         /**********************************************************************/

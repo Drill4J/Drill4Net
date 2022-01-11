@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
                          ConfiguratorConstants.COMMAND_DELETE)]
     public class TargetDeleteCommand : AbstractConfiguratorCommand
     {
-        public TargetDeleteCommand(ConfiguratorRepository rep) : base(rep)
+        public TargetDeleteCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 

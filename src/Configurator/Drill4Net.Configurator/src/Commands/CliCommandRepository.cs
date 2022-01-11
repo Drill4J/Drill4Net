@@ -71,7 +71,7 @@ namespace Drill4Net.Configurator
                 {
                     AbstractCliCommand? cmd = null;
                     if(type.IsSubclassOf(typeof(AbstractConfiguratorCommand)))
-                        cmd = (AbstractConfiguratorCommand)Activator.CreateInstance(type, new object[] { _rep });
+                        cmd = (AbstractConfiguratorCommand)Activator.CreateInstance(type, new object[] { _rep, this });
                     else
                     if (type.BaseType?.FullName == typeof(AbstractCliCommand).FullName)
                         cmd = (AbstractCliCommand)Activator.CreateInstance(type, new object[] { _rep.Subsystem });
