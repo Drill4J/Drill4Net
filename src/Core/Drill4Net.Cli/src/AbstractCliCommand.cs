@@ -18,7 +18,7 @@ namespace Drill4Net.Cli
         /// <summary>
         /// List of arguments for the command (which located in <see cref="Contexts"/> among others contexts' tags).
         /// </summary>
-        public List<CliArgument> Arguments => _desc == null ? new() : _desc.Arguments;
+        public List<CliArgument>? Arguments => _desc?.Arguments;
 
         protected CliDescriptor? _desc;
         protected readonly Logger _logger;
@@ -57,6 +57,15 @@ namespace Drill4Net.Cli
         /// <returns></returns>
         public abstract Task<bool> Process();
 
+        protected async Task<bool> ProcessFor(AbstractCliCommand cmd, CliDescriptor desc)
+        {
+            cmd.Init(desc);
+            cmd.MessageDelivered += RaiseRawMessage;
+            var res3 = await cmd.Process();
+            cmd.MessageDelivered -= RaiseRawMessage;
+            return res3;
+        }
+
         public abstract string GetShortDescription();
         public abstract string GetHelp();
 
@@ -77,7 +86,7 @@ namespace Drill4Net.Cli
         /// Get the alone values (parameters without their names and without prefix "-" or "--")
         /// </summary>
         /// <returns></returns>
-        public List<CliArgument> GetPositionals() => _desc == null ? new() : _desc.GetPositionals();
+        public List<CliArgument>? GetPositionals() => _desc?.GetPositionals();
 
         public string? GetPositional(int ind)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
@@ -100,6 +101,11 @@ namespace Drill4Net.Configurator
             return string.IsNullOrWhiteSpace(id) || !Commands.ContainsKey(id.ToUpper())
                 ? new NullCliCommand(_rep.Subsystem) :
                 Commands[id.ToUpper()];
+        }
+
+        public AbstractCliCommand GetCommand(Type type)
+        {
+            return Commands.Values.FirstOrDefault(a => a.GetType().Name == type.Name);
         }
     }
 }

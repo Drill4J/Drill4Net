@@ -16,6 +16,11 @@
         /************************************************************************/
 
         #region RaiseMessage
+        protected void RaiseRawMessage(string source, string message, CliMessageType messType, MessageState state)
+        {
+            MessageDelivered?.Invoke(source, message, messType, state);
+        }
+
         protected void RaiseDelivered(string message, CliMessageType messType = CliMessageType.Annotation,
             MessageState state = MessageState.NewLine)
         {

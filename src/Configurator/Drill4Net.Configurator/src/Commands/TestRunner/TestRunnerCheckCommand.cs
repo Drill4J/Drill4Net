@@ -19,20 +19,32 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            if (_desc == null)
-                return Task.FromResult(false);
-
-            // open cfg
-            var dir = _rep.GetTestRunnerDirectory();
-            var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER,
-                dir, _desc, out var cfgPath, out var _, out var error);
-            if (!res)
+            //open cfg
+            var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
+            if (string.IsNullOrWhiteSpace(cfgPath))
             {
-                RaiseError(error);
-                return Task.FromResult(false);
+                if (_desc == null)
+                    return Task.FromResult(false);
+
+                var dir = _rep.GetTestRunnerDirectory();
+                var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER,
+                    dir, _desc, out cfgPath, out var _, out var error);
+                if (!res)
+                {
+                    RaiseError(error);
+                    return Task.FromResult(false);
+                }
             }
-            RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
+            else
+            {
+                if (!File.Exists(cfgPath))
+                {
+                    RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
+                    return Task.FromResult(false);
+                }
+            }
             //
+            RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
             var opts = _rep.ReadTestRunnerOptions(cfgPath);
             
             //target dirs

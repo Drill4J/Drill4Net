@@ -16,10 +16,10 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override async Task<bool> Process()
         {
             if (_desc == null)
-                return Task.FromResult(false);
+                return false;
 
             var force = IsSwitchSet(CoreConstants.SWITCH_FORCE); //to check all the specified configurations
 
@@ -30,7 +30,7 @@ namespace Drill4Net.Configurator
             if (!res)
             {
                 RaiseError(error);
-                return Task.FromResult(false);
+                return false;
             }
             RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
             //
@@ -42,7 +42,7 @@ namespace Drill4Net.Configurator
             if (injection == null)
             {
                 _cmdHelper.WriteCheck("Injection options", "No injection options", false);
-                return Task.FromResult(false);
+                return false;
             }
             else
             {
@@ -59,7 +59,21 @@ namespace Drill4Net.Configurator
                     _cmdHelper.WriteCheck(check, $"Path does not exist: [{cfgsDir}]", cfgExists);
                     if(force && cfgExists)
                     {
-
+                        var checkTrgCmd = _cliRep.GetCommand(typeof(TargetCheckCommand));
+                        if (checkTrgCmd != null)
+                        {
+                            var configs = Directory.GetFiles(cfgsDir, "*.yml");
+                            if (configs.Length > 0)
+                            {
+                                foreach (var config in configs)
+                                {
+                                    _cli.DrawLine();
+                                    var desc = new CliDescriptor(@$"{CoreConstants.ARGUMENT_CONFIG_PATH}=""{config}""", false);
+                                    await ProcessFor(checkTrgCmd, desc);
+                                }
+                                _cli.DrawLine();
+                            }
+                        }
                     }
                 }
             }
@@ -78,11 +92,18 @@ namespace Drill4Net.Configurator
                 _cmdHelper.WriteCheck(check, $"Path does not exist: [{testRunPath}]", cfgExists);
                 if (force && cfgExists)
                 {
-
+                    var checkTrgCmd = _cliRep.GetCommand(typeof(TestRunnerCheckCommand));
+                    if (checkTrgCmd != null)
+                    {
+                        _cli.DrawLine();
+                        var desc = new CliDescriptor(@$"{CoreConstants.ARGUMENT_CONFIG_PATH}=""{testRunPath}""", false);
+                        await ProcessFor(checkTrgCmd, desc);
+                       _cli.DrawLine();
+                    }
                 }
             }
             //
-            return Task.FromResult(true);
+            return true;
         }
 
         public override string GetShortDescription()

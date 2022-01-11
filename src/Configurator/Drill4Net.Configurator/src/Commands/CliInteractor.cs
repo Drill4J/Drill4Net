@@ -233,5 +233,10 @@ namespace Drill4Net.Configurator
                 return true;
             return string.Equals(s, ConfiguratorConstants.ANSWER_YES, StringComparison.OrdinalIgnoreCase);
         }
+
+        public void DrawLine()
+        {
+            RaiseMessage("----------------------------------------------------------------");
+        }
     }
 }

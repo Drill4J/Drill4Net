@@ -21,21 +21,33 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
-            if (_desc == null)
-                return Task.FromResult(false);
-
-            // open cfg
-            var dir = _rep.GetInjectorDirectory();
-            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
-                dir, _desc, out var cfgPath, out var _, out var error);
-            if (!res)
+            //open cfg
+            var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
+            if (string.IsNullOrWhiteSpace(cfgPath))
             {
-                RaiseError(error);
-                return Task.FromResult(false);
+                if (_desc == null)
+                    return Task.FromResult(false);
+                var dir = _rep.GetInjectorDirectory();
+                var res2 = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                    dir, _desc, out cfgPath, out var _, out var error);
+                if (!res2)
+                {
+                    RaiseError(error);
+                    return Task.FromResult(false);
+                }
             }
+            else
+            {
+                if (!File.Exists(cfgPath))
+                {
+                    RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
+                    return Task.FromResult(false);
+                }
+            }
+
             RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
             //
-            var opts = _rep.ReadInjectorOptions(cfgPath, true);
+            var opts = _rep.ReadInjectorOptions(cfgPath ?? "", true);
             var destDir = opts.Destination.Directory ?? "";
             string check;
 
@@ -72,7 +84,7 @@ namespace Drill4Net.Configurator
                 _cmdHelper.WriteCheck(check, $"Source directory does not exist: [{sourceDir}]", Directory.Exists(sourceDir));
 
             //filter
-            res = IsFilterPartOk(source?.Filter?.Includes) || IsFilterPartOk(source?.Filter?.Excludes);
+            var res = IsFilterPartOk(source?.Filter?.Includes) || IsFilterPartOk(source?.Filter?.Excludes);
             _cmdHelper.WriteCheck("Filter for injected entities", "No filter entry", res);
 
             //destination
