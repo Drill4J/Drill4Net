@@ -143,6 +143,7 @@ Add this line to Directory.Build.props in root project
 Add `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` to src\Agent\Drill4Net.Agent.Service\Drill4Net.Agent.Service.csproj
 ```
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Agent.Service</OutputPath>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 ```
