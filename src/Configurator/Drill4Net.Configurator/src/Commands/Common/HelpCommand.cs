@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
 
@@ -45,7 +46,8 @@ namespace Drill4Net.Configurator
                 var desc = new CliDescriptor(args, true);
                 AbstractCliCommand cmd;
                 var commands = _cliRep.Commands
-                    .Where(a => a.Value.Id != "NULL")
+                    .Where(a => !a.Value.Id.Equals(CliConstants.COMMAND_NULL,
+                                StringComparison.InvariantCultureIgnoreCase))
                     .ToDictionary(a => a.Key);
                 if (commands.ContainsKey(desc.CommandId))
                 {
