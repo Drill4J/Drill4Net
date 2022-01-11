@@ -7,10 +7,10 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_PREP)]
-    public class TargetPrepCommand : AbstractConfiguratorCommand
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_PREP)]
+    public class TestRunnerPrepCommand : AbstractConfiguratorCommand
     {
-        public TargetPrepCommand(ConfiguratorRepository rep) : base(rep)
+        public TestRunnerPrepCommand(ConfiguratorRepository rep) : base(rep)
         {
         }
 

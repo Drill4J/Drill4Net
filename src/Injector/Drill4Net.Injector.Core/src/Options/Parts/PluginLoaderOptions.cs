@@ -9,9 +9,9 @@ namespace Drill4Net.Injector.Core
     public class PluginLoaderOptions
     {
         /// <summary>
-        /// Path to the plugin assemblies
+        /// Plugin assemblies' directory
         /// </summary>
-        public string Path { get; set; }
+        public string Directory { get; set; }
 
         /// <summary>
         /// Inner plugin specific config: name (for Injector's root directory)

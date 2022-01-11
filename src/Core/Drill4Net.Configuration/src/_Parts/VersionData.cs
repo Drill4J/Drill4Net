@@ -10,7 +10,7 @@ namespace Drill4Net.Configuration
     public class VersionData
     {
         /// <summary>
-        /// Base directory of the testing targets
+        /// Base directory of the testing targets (use only for tests' system)
         /// </summary>
         public string Directory { get; set; }
 

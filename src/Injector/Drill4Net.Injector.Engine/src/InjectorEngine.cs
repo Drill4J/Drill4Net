@@ -83,7 +83,7 @@ namespace Drill4Net.Injector.Engine
 
             //SpecFlow
             var plugCfg = GetPluginOptions(SpecFlowHookInjector.PluginName, opts.Plugins);
-            if (!string.IsNullOrWhiteSpace(plugCfg?.Path))
+            if (!string.IsNullOrWhiteSpace(plugCfg?.Directory))
                 plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
 
             return plugins;
@@ -99,7 +99,7 @@ namespace Drill4Net.Injector.Engine
             var opts = cfgPlugins[name];
 
             //some opt's preproc
-            opts.Path = FileUtils.GetFullPath(opts.Path);
+            opts.Directory = FileUtils.GetFullPath(opts.Directory);
 
             return opts;
         }

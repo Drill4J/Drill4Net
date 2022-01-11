@@ -231,6 +231,7 @@ namespace Drill4Net.Configurator
             {
                 var actualCfg = _rep.GetActualConfigPath(dir);
                 sourceName = Path.GetFileName(actualCfg);
+                dir = Path.GetDirectoryName(actualCfg);
             }
             if (sourceName == string.Empty)
             {

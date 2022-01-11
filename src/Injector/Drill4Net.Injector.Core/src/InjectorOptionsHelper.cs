@@ -41,7 +41,9 @@ namespace Drill4Net.Injector.Core
             opts.Destination.Directory = FileUtils.GetFullPath(destDir);
 
             opts.Profiler.Directory = FileUtils.GetFullPath(opts.Profiler.Directory);
-            if (opts.Versions?.Directory != null) //extract to separate Test Cfg
+
+            //TODO: extract to separate Test Cfg
+            if (opts.Versions?.Directory != null) 
                 opts.Versions.Directory = FileUtils.GetFullPath(opts.Versions.Directory);
 
             //filter for source

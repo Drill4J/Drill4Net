@@ -50,7 +50,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
             _loaderOpts = loaderCfg ?? throw new ArgumentNullException(nameof(loaderCfg));
 
-            HelperReadDir = loaderCfg.Path;
+            HelperReadDir = loaderCfg.Directory;
 
             // these are real constants, aren't the cfg params
             var typeHelper = typeof(SpecFlowGeneratorContexter);
