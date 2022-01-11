@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
@@ -38,17 +37,15 @@ namespace Drill4Net.Configurator
             RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
             //
             var opts = _rep.ReadInjectorOptions(cfgPath, true);
-            RaiseMessage("\nChecks:");
-
             var destDir = opts.Destination.Directory ?? "";
             string check;
 
             //target
             var target = opts.Target;
-            write("Target name", "Name is empty", !string.IsNullOrWhiteSpace(target.Name));
+            _cmdHelper.WriteCheck("Target name", "Name is empty", !string.IsNullOrWhiteSpace(target.Name));
             if (!string.IsNullOrWhiteSpace(target.Version))
             {
-                write("Target version", "", true);
+                _cmdHelper.WriteCheck("Target version", "", true);
             }
             else
             {
@@ -57,11 +54,11 @@ namespace Drill4Net.Configurator
                 {
                     check = "Target version assembly";
                     var asmPath = Path.Combine(destDir, asmName);
-                    write(check, $"The assembly for determining the target version was not found: [{asmPath}]", File.Exists(asmPath));
+                    _cmdHelper.WriteCheck(check, $"The assembly for determining the target version was not found: [{asmPath}]", File.Exists(asmPath));
                 }
                 else
                 {
-                    write("Target versioning", "", false);
+                    _cmdHelper.WriteCheck("Target versioning", "", false);
                 }
             }
 
@@ -71,56 +68,56 @@ namespace Drill4Net.Configurator
             check = "Source directory";
             var sourceDir = source?.Directory;
             if (string.IsNullOrWhiteSpace(sourceDir))
-                write(check, "Source directory path is empty", false);
+                _cmdHelper.WriteCheck(check, "Source directory path is empty", false);
             else
-                write(check, $"Source directory does not exist: [{sourceDir}]", Directory.Exists(sourceDir));
+                _cmdHelper.WriteCheck(check, $"Source directory does not exist: [{sourceDir}]", Directory.Exists(sourceDir));
 
             //filter
             res = IsFilterPartOk(source?.Filter?.Includes) || IsFilterPartOk(source?.Filter?.Excludes);
-            write("Filter for injected entities", "No filter entry", res);
+            _cmdHelper.WriteCheck("Filter for injected entities", "No filter entry", res);
 
             //destination
             check = "Destination directory";
             if (string.IsNullOrWhiteSpace(destDir))
-                write(check, "Destination directory path is empty", false);
+                _cmdHelper.WriteCheck(check, "Destination directory path is empty", false);
             else
-                write(check, "Destination directory does not exist", Directory.Exists(destDir));
+                _cmdHelper.WriteCheck(check, "Destination directory does not exist", Directory.Exists(destDir));
 
             // proxy
             var proxy = opts.Proxy;
-            write("Proxy class", "Class name is empty", !string.IsNullOrWhiteSpace(proxy?.Class));
-            write("Proxy method", "Method name is empty", !string.IsNullOrWhiteSpace(proxy?.Method));
+            _cmdHelper.WriteCheck("Proxy class", "Class name is empty", !string.IsNullOrWhiteSpace(proxy?.Class));
+            _cmdHelper.WriteCheck("Proxy method", "Method name is empty", !string.IsNullOrWhiteSpace(proxy?.Method));
 
             //profiler (transmiter)
             var profiler = opts.Profiler;
             check = "Profiler directory";
             var profDir = profiler?.Directory;
             if (string.IsNullOrWhiteSpace(profDir))
-                write(check, "Directory path is empty", false);
+                _cmdHelper.WriteCheck(check, "Directory path is empty", false);
             else
-                write(check, $"Directory does not exist: [{profDir}]", Directory.Exists(profDir));
+                _cmdHelper.WriteCheck(check, $"Directory does not exist: [{profDir}]", Directory.Exists(profDir));
 
             var profAsmName = profiler?.AssemblyName;
-            write("Profiler assembly name", "Assembly name is empty", !string.IsNullOrWhiteSpace(profAsmName));
+            _cmdHelper.WriteCheck("Profiler assembly name", "Assembly name is empty", !string.IsNullOrWhiteSpace(profAsmName));
 
             var profAsmPath = Path.Combine(profDir, profAsmName);
-            write("Profiler assembly file", "Assembly file is not found", File.Exists(profAsmPath));
+            _cmdHelper.WriteCheck("Profiler assembly file", "Assembly file is not found", File.Exists(profAsmPath));
 
-            write("Profiler namespace", "Namespace is empty", !string.IsNullOrWhiteSpace(profiler?.Namespace));
-            write("Profiler class", "Class name is empty", !string.IsNullOrWhiteSpace(profiler?.Class));
-            write("Profiler method", "Method name is empty", !string.IsNullOrWhiteSpace(profiler?.Method));
+            _cmdHelper.WriteCheck("Profiler namespace", "Namespace is empty", !string.IsNullOrWhiteSpace(profiler?.Namespace));
+            _cmdHelper.WriteCheck("Profiler class", "Class name is empty", !string.IsNullOrWhiteSpace(profiler?.Class));
+            _cmdHelper.WriteCheck("Profiler method", "Method name is empty", !string.IsNullOrWhiteSpace(profiler?.Method));
 
             //TODO: real check by Reflection
 
             // plugins
             check = "Contexter plugins";
-            write(check, "Plugin configuration error", CheckPlugins(check, opts.Plugins));
+            _cmdHelper.WriteCheck(check, "Plugin configuration error", CheckPlugins(check, opts.Plugins));
 
             // versions
             if (opts.Versions != null)
             {
                 check = "Version section";
-                write(check, "Version configuration error", CheckVersions(check, sourceDir ?? "", opts.Versions));
+                _cmdHelper.WriteCheck(check, "Version configuration error", _cmdHelper.CheckVersions(check, sourceDir ?? "", opts.Versions));
             }
             //
             return Task.FromResult(true);
@@ -140,7 +137,7 @@ namespace Drill4Net.Configurator
                 var dir = FileUtils.GetFullPath(plug.Directory, injDir);
                 if(!Directory.Exists(dir))
                 {
-                    write(check, $"Plugin {name}: the directory does not exist: [{dir}]", false);
+                    _cmdHelper.WriteCheck(check, $"Plugin {name}: the directory does not exist: [{dir}]", false);
                     res = false;
                 }
                 //
@@ -150,89 +147,11 @@ namespace Drill4Net.Configurator
                 var cfgPath = FileUtils.GetFullPath(Path.Combine(injDir, cfg), dir);
                 if (!File.Exists(cfgPath))
                 {
-                    write(check, $"The specified config does not exist for plugin {name}: [{cfgPath}]", false);
+                    _cmdHelper.WriteCheck(check, $"The specified config does not exist for plugin {name}: [{cfgPath}]", false);
                     res = false;
                 }
             }
             return res;
-        }
-
-        private bool CheckVersions(string check, string sourceDir, VersionData? versData)
-        {
-            // section can be empty
-            if (versData == null)
-                return true;
-            if (string.IsNullOrWhiteSpace(sourceDir))
-            {
-                write(check, "Can't check the version section due to source directory path is empty", false);
-                return false;
-            }
-            //
-            var res = true;
-            //var dir = versData.Directory; //used only for tests' system
-            foreach (var moniker in versData.Targets.Keys)
-            {
-                var monData = versData.Targets[moniker];
-                
-                // base dir
-                var rootDir = Path.Combine(monData.BaseFolder, sourceDir);
-                var res2 = Directory.Exists(rootDir);
-                if (!res2)
-                {
-                    write(check, $"Directory for {moniker} does not exist: [{rootDir}]", false);
-                    res = false;
-                }
-
-                // folders (used fot Test Engine, not for common targets)
-                if (monData.Folders != null)
-                {
-                    foreach (var fldData in monData.Folders)
-                    {
-                        var asmFld = fldData.Folder; //can be empty
-                        if (string.IsNullOrWhiteSpace(asmFld))
-                            asmFld = rootDir;
-                        //
-                        var asmDir = FileUtils.GetFullPath(asmFld, rootDir);
-                        res2 = Directory.Exists(asmDir);
-                        if (!res2)
-                        {
-                            write(check, $"Directory for {moniker} and folder {asmFld} does not exist: [{asmDir}]", false);
-                            res = false;
-                        }
-
-                        //assemblies
-                        if (fldData.Assemblies != null)
-                        {
-                            foreach (var asmName in fldData.Assemblies.Keys)
-                            {
-                                var asmPath = Path.Combine(asmDir, asmName);
-                                res2 = File.Exists(asmPath);
-                                if (!res2)
-                                {
-                                    write(check, $"Assembly for {moniker} and folder {asmFld} not found: [{asmPath}]", false);
-                                    res = false;
-                                }
-                                //
-                                //var types = fldData.Assemblies[asmName]; //We are not checking this yet
-                            }
-                        }
-                    }
-                }
-            }
-            return res;
-        }
-
-        void write(string check, string error, bool res)
-        {
-            if (res)
-            {
-                RaiseMessage($"{check}: OK", CliMessageType.Info);
-            }
-            else
-            {
-                RaiseError($"{check}: NOT");
-                RaiseError(error);
-            }
         }
 
         private bool IsFilterPartOk(SourceFilterParams? pars)
@@ -246,7 +165,6 @@ namespace Drill4Net.Configurator
                    pars.Folders?.Any() == true ||
                    pars.Namespaces?.Any() == true;
         }
-
 
         public override string GetShortDescription()
         {

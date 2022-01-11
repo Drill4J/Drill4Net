@@ -65,7 +65,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         internal StandardAgentRepository CreateAgentRepository()
         {
-            var dir = _dirOptions.Path;
+            var dir = _dirOptions.Directory;
 
             //we need to give the concrete path to the agent config from target's directory
             var optsHelper = new BaseOptionsHelper(Subsystem);
@@ -180,7 +180,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             #region All
             if (runInfo.RunType == RunningType.All)
             {
-                var dir = _dirOptions.Path;
+                var dir = _dirOptions.Directory;
                 foreach (var asm in _dirOptions.Assemblies)
                 {
                     var asmName = asm.DefaultAssemblyName;
@@ -305,7 +305,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{TargetName}: [{_dirOptions.Path}] -> [{_asmOptions}]";
+            return $"{TargetName}: [{_dirOptions.Directory}] -> [{_asmOptions}]";
         }
     }
 }

@@ -74,7 +74,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
                 if (runParallelRestrict || dirParalRestrictActual) //level: directories OR assemblies
                 {
-                    var key = dirRunInfo.DirectoryOptions.Path;
+                    var key = dirRunInfo.DirectoryOptions.Directory;
                     if (dirParalRestrictActual)
                         key += "/" + dirRunInfo.AssemblyOptions.DefaultAssemblyName;
 

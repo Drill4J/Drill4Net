@@ -10,9 +10,9 @@ namespace Drill4Net.Agent.TestRunner.Core
     public class RunDirectoryOptions
     {
         /// <summary>
-        /// Directory for the injected tests (full path)
+        /// Directory for the injected tests (full path??)
         /// </summary>
-        public string Path { get; set; }
+        public string Directory { get; set; }
 
         /// <summary>
         /// Assemblies with the injected tests
@@ -29,7 +29,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{Path} -> assemblies: {Assemblies.Count}, DefaultParallelRestrict: {DefaultParallelRestrict}";
+            return $"{Directory} -> assemblies: {Assemblies.Count}, DefaultParallelRestrict: {DefaultParallelRestrict}";
         }
     }
 }

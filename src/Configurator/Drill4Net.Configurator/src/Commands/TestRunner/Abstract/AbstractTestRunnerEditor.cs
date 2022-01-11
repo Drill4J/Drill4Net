@@ -93,7 +93,7 @@ Specify at least one tests' assembly.";
                 //
                 var dirRun = new RunDirectoryOptions
                 {
-                    Path = dir,
+                    Directory = dir,
                     DefaultParallelRestrict = dirParalellRestrict,
                     Assemblies = new(),
                 };

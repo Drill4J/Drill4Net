@@ -354,5 +354,83 @@ namespace Drill4Net.Configurator
             foreach (LogData logData in logs)
                 RaiseMessage($"  -- {logData}");
         }
+
+        internal bool CheckVersions(string check, string sourceDir, VersionData? versData)
+        {
+            // section can be empty
+            if (versData == null)
+                return true;
+            if (string.IsNullOrWhiteSpace(sourceDir))
+            {
+                WriteCheck(check, "Can't check the version section due to source directory path is empty", false);
+                return false;
+            }
+            //
+            var res = true;
+            //var dir = versData.Directory; //used only for tests' system
+            foreach (var moniker in versData.Targets.Keys)
+            {
+                var monData = versData.Targets[moniker];
+
+                // base dir
+                var rootDir = Path.Combine(monData.BaseFolder, sourceDir);
+                var res2 = Directory.Exists(rootDir);
+                if (!res2)
+                {
+                    WriteCheck(check, $"Directory for {moniker} does not exist: [{rootDir}]", false);
+                    res = false;
+                }
+
+                // folders (used fot Test Engine, not for common targets)
+                if (monData.Folders != null)
+                {
+                    foreach (var fldData in monData.Folders)
+                    {
+                        var asmFld = fldData.Folder; //can be empty
+                        if (string.IsNullOrWhiteSpace(asmFld))
+                            asmFld = rootDir;
+                        //
+                        var asmDir = FileUtils.GetFullPath(asmFld, rootDir);
+                        res2 = Directory.Exists(asmDir);
+                        if (!res2)
+                        {
+                            WriteCheck(check, $"Directory for {moniker} and folder {asmFld} does not exist: [{asmDir}]", false);
+                            res = false;
+                        }
+
+                        //assemblies
+                        if (fldData.Assemblies != null)
+                        {
+                            foreach (var asmName in fldData.Assemblies.Keys)
+                            {
+                                var asmPath = Path.Combine(asmDir, asmName);
+                                res2 = File.Exists(asmPath);
+                                if (!res2)
+                                {
+                                    WriteCheck(check, $"Assembly for {moniker} and folder {asmFld} not found: [{asmPath}]", false);
+                                    res = false;
+                                }
+                                //
+                                //var types = fldData.Assemblies[asmName]; //We are not checking this yet
+                            }
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
+        internal void WriteCheck(string check, string error, bool res)
+        {
+            if (res)
+            {
+                RaiseMessage($"{check}: OK", CliMessageType.Info);
+            }
+            else
+            {
+                RaiseError($"{check}: NOT");
+                RaiseError(error);
+            }
+        }
     }
 }

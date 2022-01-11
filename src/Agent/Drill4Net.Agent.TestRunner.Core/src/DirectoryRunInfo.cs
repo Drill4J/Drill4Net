@@ -36,7 +36,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public override string ToString()
         {
-            return $"{Target}: {RunType} -> [{DirectoryOptions.Path}] -> assemblies: {RunAssemblyInfos.Count}";
+            return $"{Target}: {RunType} -> [{DirectoryOptions.Directory}] -> assemblies: {RunAssemblyInfos.Count}";
         }
     }
 }

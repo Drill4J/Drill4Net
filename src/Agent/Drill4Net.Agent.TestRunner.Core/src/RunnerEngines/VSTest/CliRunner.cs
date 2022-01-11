@@ -55,7 +55,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             foreach (var asmInfo in asmInfos.Values)
             {
                 var tests = asmInfo.Tests;
-                var asmPath = FileUtils.GetFullPath(Path.Combine(runInfo.DirectoryOptions.Path, asmInfo.AssemblyName), FileUtils.EntryDir);
+                var asmPath = FileUtils.GetFullPath(Path.Combine(runInfo.DirectoryOptions.Directory, asmInfo.AssemblyName), FileUtils.EntryDir);
 
                 // prefix "/C" - is for running in the CMD
                 var args = $"/C dotnet test \"{asmPath}\"";
