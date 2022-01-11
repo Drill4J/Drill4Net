@@ -53,7 +53,7 @@ namespace Drill4Net.Configurator
                 else
                 {
                     cfgsDir = FileUtils.GetFullPath(cfgsDir);  //relative Configurator
-                    _cmdHelper.WriteCheck(check, $"Path does not exist: [{cfgsDir}]", File.Exists(cfgsDir));
+                    _cmdHelper.WriteCheck(check, $"Path does not exist: [{cfgsDir}]", Directory.Exists(cfgsDir));
                 }
             }
 
@@ -75,7 +75,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Checks the specified {CoreConstants.SUBSYSTEM_CI}'s configuration before start full workflow.";
+            return $"Checks the specified {CoreConstants.SUBSYSTEM_CI}'s configuration before starting the full workflow.";
         }
 
         public override string GetHelp()
