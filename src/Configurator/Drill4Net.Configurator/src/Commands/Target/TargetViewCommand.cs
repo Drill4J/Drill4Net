@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
@@ -16,13 +17,14 @@ namespace Drill4Net.Configurator
 
         /*****************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             if (_desc == null)
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             var dir = _rep.GetInjectorDirectory();
-            return Task.FromResult(_cmdHelper.ViewFile<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
-                dir, _desc, out var _));
+            var done = _cmdHelper.ViewFile<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                dir, _desc, out var _);
+            return Task.FromResult((done, new Dictionary<string, object>()));
         }
 
         public override string GetShortDescription()

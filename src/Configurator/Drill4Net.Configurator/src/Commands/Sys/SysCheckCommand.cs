@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -13,7 +14,7 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             //var injCfg = GetPositional(0); //cfg name
             //var injDir = GetParameter(CoreConstants.ARGUMENT_SOURCE_DIR, false); //injected target dir
@@ -25,7 +26,7 @@ namespace Drill4Net.Configurator
             ////
 
             //
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         public override string GetShortDescription()

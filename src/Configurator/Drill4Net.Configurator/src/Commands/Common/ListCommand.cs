@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -14,7 +15,7 @@ namespace Drill4Net.Configurator
 
         /****************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var commands = _cliRep.Commands.Values
                 .Where(a => !a.Id.Equals(CliConstants.COMMAND_NULL, StringComparison.InvariantCultureIgnoreCase))
@@ -31,7 +32,7 @@ namespace Drill4Net.Configurator
                 var s = $"{num}{cmd.RawContexts}".PadRight(maxIdLen + num.Length);
                 RaiseMessage($"{s}{desc}");
             }
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         public override string GetShortDescription()

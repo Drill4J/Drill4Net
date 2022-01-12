@@ -20,6 +20,9 @@ namespace Drill4Net.Cli
         /// </summary>
         public List<CliArgument>? Arguments => _desc?.Arguments;
 
+        protected (bool done, Dictionary<string, object> results) FalseEmptyResult = new(false,new());
+        protected (bool done, Dictionary<string, object> results) TrueEmptyResult = new(true, new());
+
         protected CliDescriptor? _desc;
         protected readonly Logger _logger;
 
@@ -55,15 +58,15 @@ namespace Drill4Net.Cli
         /// Main method for the Command
         /// </summary>
         /// <returns></returns>
-        public abstract Task<bool> Process();
+        public abstract Task<(bool done, Dictionary<string, object> results)> Process();
 
-        protected async Task<bool> ProcessFor(AbstractCliCommand cmd, CliDescriptor desc)
+        protected async Task<(bool done, Dictionary<string, object> results)> ProcessFor(AbstractCliCommand cmd, CliDescriptor desc)
         {
             cmd.Init(desc);
             cmd.MessageDelivered += RaiseRawMessage;
-            var res3 = await cmd.Process();
+            var res = await cmd.Process();
             cmd.MessageDelivered -= RaiseRawMessage;
-            return res3;
+            return res;
         }
 
         public abstract string GetShortDescription();

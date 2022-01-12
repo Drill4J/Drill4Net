@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -16,12 +17,12 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override async Task<bool> Process()
+        public override async Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var globRes = true;
 
             if (_desc == null)
-                return false;
+                return FalseEmptyResult;
 
             var force = IsSwitchSet(CoreConstants.SWITCH_FORCE); //to check all the specified configurations
 
@@ -32,7 +33,7 @@ namespace Drill4Net.Configurator
             if (!res)
             {
                 RaiseError(error);
-                return false;
+                return FalseEmptyResult;
             }
             RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
             //
@@ -44,7 +45,7 @@ namespace Drill4Net.Configurator
             if (injection == null)
             {
                 _cmdHelper.RegCheck("Injection options", "No injection options", false, ref globRes);
-                return false;
+                return FalseEmptyResult;
             }
             else
             {
@@ -105,8 +106,8 @@ namespace Drill4Net.Configurator
                 }
             }
             //
-            _cmdHelper.RegResult(globRes);
-            return true;
+            _cmdHelper.RegResult(globRes, true);
+            return TrueEmptyResult;
         }
 
         public override string GetShortDescription()

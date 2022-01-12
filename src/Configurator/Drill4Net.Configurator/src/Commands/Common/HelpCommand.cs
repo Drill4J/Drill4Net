@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -32,7 +33,7 @@ namespace Drill4Net.Configurator
         /*******************************************************************/
 
         //https://docopt.org/
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var contexts = GetPositionals();
             string? s;
@@ -57,11 +58,11 @@ namespace Drill4Net.Configurator
                 else
                 {
                     RaiseWarning($"The command is not found: [{args}]");
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 }
             }
             RaiseMessage($"\n{s}", CliMessageType.Help);
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         internal string CreateHelp(AbstractCliCommand cmd)

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Agent.TestRunner.Core;
+using System.Collections.Generic;
 
 namespace Drill4Net.Configurator
 {
@@ -17,7 +18,7 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var globRes = true;
 
@@ -26,7 +27,7 @@ namespace Drill4Net.Configurator
             if (string.IsNullOrWhiteSpace(cfgPath))
             {
                 if (_desc == null)
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
 
                 var dir = _rep.GetTestRunnerDirectory();
                 var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER,
@@ -34,7 +35,7 @@ namespace Drill4Net.Configurator
                 if (!res)
                 {
                     RaiseError(error);
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 }
             }
             else
@@ -42,7 +43,7 @@ namespace Drill4Net.Configurator
                 if (!File.Exists(cfgPath))
                 {
                     RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 }
             }
             //
@@ -54,7 +55,7 @@ namespace Drill4Net.Configurator
             if (runDirOpts == null)
             {
                 _cmdHelper.RegCheck("Directory options", "No directory options", false, ref globRes);
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             }
             else
             {
@@ -83,7 +84,7 @@ namespace Drill4Net.Configurator
             }
             //
             _cmdHelper.RegResult(globRes);
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         public override string GetShortDescription()

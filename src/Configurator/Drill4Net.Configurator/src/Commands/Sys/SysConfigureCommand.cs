@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -13,15 +14,15 @@ namespace Drill4Net.Configurator
 
         /*************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             _logger.Info("Start to system configure");
 
             SystemConfiguration cfg = new();
             if (!ConfigAdmin(_rep.Options, cfg))
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             if (!ConfigMiddleware(cfg))
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
 
             //need to save?
             RaiseQuestion("\nSave the system configuration? [y]:");
@@ -37,7 +38,7 @@ namespace Drill4Net.Configurator
             {
                 RaiseWarning("NO");
             }
-            return Task.FromResult(yes);
+            return Task.FromResult((yes, new Dictionary<string, object>()));
         }
 
         internal bool ConfigAdmin(ConfiguratorOptions opts, SystemConfiguration cfg)

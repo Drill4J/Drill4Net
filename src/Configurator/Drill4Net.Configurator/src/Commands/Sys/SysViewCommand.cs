@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -12,7 +13,7 @@ namespace Drill4Net.Configurator
 
         /*****************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var agCfgPath = _rep.GetAgentModelConfigPath();
             var agentOpts = _rep.ReadAgentOptions(agCfgPath);
@@ -25,7 +26,7 @@ namespace Drill4Net.Configurator
             RaiseMessage($"Middleware (Kafka): {string.Join(", ", transOpts.Servers)}");
             _cmdHelper.ViewLogOptions(transOpts.Logs);
             //
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         public override string GetShortDescription()

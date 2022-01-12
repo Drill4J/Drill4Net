@@ -19,7 +19,7 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var globRes = true;
 
@@ -28,14 +28,14 @@ namespace Drill4Net.Configurator
             if (string.IsNullOrWhiteSpace(cfgPath))
             {
                 if (_desc == null)
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 var dir = _rep.GetInjectorDirectory();
                 var res2 = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
                     dir, _desc, out cfgPath, out var _, out var error);
                 if (!res2)
                 {
                     RaiseError(error);
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 }
             }
             else
@@ -43,7 +43,7 @@ namespace Drill4Net.Configurator
                 if (!File.Exists(cfgPath))
                 {
                     RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 }
             }
 
@@ -136,7 +136,7 @@ namespace Drill4Net.Configurator
             }
             //
             _cmdHelper.RegResult(globRes);
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         private bool CheckPlugins(string check, Dictionary<string, PluginLoaderOptions>? plugins)

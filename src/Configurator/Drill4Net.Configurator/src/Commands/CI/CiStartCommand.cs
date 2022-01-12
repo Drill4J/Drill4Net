@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -15,10 +16,10 @@ namespace Drill4Net.Configurator
 
         /******************************************************************/
 
-        public override async Task<bool> Process()
+        public override async Task<(bool done, Dictionary<string, object> results)> Process()
         {
             if (_desc == null)
-                return false;
+                return FalseEmptyResult;
             //
             var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false); //as a rule, from external call
             if (string.IsNullOrWhiteSpace(ciCfgPath)) //from Configurator CLI
@@ -29,13 +30,13 @@ namespace Drill4Net.Configurator
                 if (!res2)
                 {
                     RaiseError(error);
-                    return false;
+                    return FalseEmptyResult;
                 }
             }
             if (string.IsNullOrWhiteSpace(ciCfgPath))
             {
                 RaiseError("Path to the CI config was not found");
-                return false;
+                return FalseEmptyResult;
             }
             //
             var opts = _rep.ReadCiOptions(ciCfgPath);
@@ -51,7 +52,7 @@ namespace Drill4Net.Configurator
                 RaiseMessage(err);
                 _logger.Error(err);
             }
-            return true;
+            return TrueEmptyResult;
         }
 
         private async Task<(bool res, string error)> StartCi(CiOptions opts)

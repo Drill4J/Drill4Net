@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -16,17 +17,17 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
             if (!File.Exists(modelCfgPath))
             {
                 RaiseError($"Model {CoreConstants.SUBSYSTEM_INJECTOR}'s config not found: [{modelCfgPath}]");
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             }
 
             var res = Edit(modelCfgPath, true);
-            return Task.FromResult(res);
+            return Task.FromResult((res, new Dictionary<string, object>()));
         }
 
         public override string GetShortDescription()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
@@ -16,7 +17,7 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var force = IsSwitchSet(CoreConstants.SWITCH_FORCE);
             var injCfg = GetPositional(0); //cfg name
@@ -30,17 +31,17 @@ namespace Drill4Net.Configurator
                     Path.Combine(_rep.GetInjectorDirectory(), injCfg) : //local config for the Injector
                     injCfg;
 
-                return Task.FromResult(processConfig(cfgPath, force));
+                return Task.FromResult((processConfig(cfgPath, force), new Dictionary<string, object>()));
             }
             else
             if (!string.IsNullOrWhiteSpace(injDir)) //by injected target dir
             {
-                return Task.FromResult(ProcessInjectedTarget(injDir, force));
+                return Task.FromResult((ProcessInjectedTarget(injDir, force), new Dictionary<string, object>()));
             }
             else //by switches (last, active configs...)
             {
                 if (_desc == null)
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
 
                 var dir = _rep.GetInjectorDirectory();
                 var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var cfgPath,
@@ -51,9 +52,9 @@ namespace Drill4Net.Configurator
                         err = "You have to specify either the name of the config or the folder with the instrumented target.";
                     _logger.Error(err);
                     RaiseError(err);
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 }
-                return Task.FromResult(processConfig(cfgPath, force));
+                return Task.FromResult((processConfig(cfgPath, force), new Dictionary<string, object>()));
             }
 
             bool processConfig(string agentCfgPath, bool forceRewrite)

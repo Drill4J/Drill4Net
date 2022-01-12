@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -15,13 +16,13 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             if (_desc == null)
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             var dir = _rep.GetCiDirectory();
             var res = _cmdHelper.OpenConfig<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc);
-            return Task.FromResult(res);
+            return Task.FromResult((res, new Dictionary<string, object>()));
         }
 
         public override string GetShortDescription()

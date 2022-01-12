@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -13,7 +14,7 @@ namespace Drill4Net.Configurator
 
         /*****************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var connNeed = true;
             var pathsNeed = true;
@@ -23,17 +24,17 @@ namespace Drill4Net.Configurator
             {
                 if (!_cli.AskQuestion($"Do you really want to restore the default configuration settings for the {CoreConstants.SUBSYSTEM_CONFIGURATOR}?",
                     out var answer, "n"))
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 if (_cli.IsYes(answer))
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 //
                 if (!_cli.AskQuestion("To restore the 'default connections' settings?", out answer, "n"))
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 connNeed = _cli.IsYes(answer);
                 //
                 if (!_cli.AskQuestion("To restore the paths of the applications and components?\nThis can be done only if all folders are in their standard places, as it was in the distribution.",
                     out answer, "n"))
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 pathsNeed = _cli.IsYes(answer);
             }
             
@@ -60,7 +61,7 @@ namespace Drill4Net.Configurator
             _rep.WriteConfiguratorOptions(opts);
             RaiseMessage("The settings are restored.", CliMessageType.Info);
 
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         public override string GetShortDescription()

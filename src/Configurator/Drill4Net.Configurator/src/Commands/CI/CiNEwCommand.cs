@@ -17,21 +17,22 @@ namespace Drill4Net.Configurator
 
         /************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false);
             if (string.IsNullOrWhiteSpace(ciCfgPath))
             {
                 if (!ConfigureCiConfig(out ciCfgPath))
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 if (!_cli.AskQuestion(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). 
 Do you want to integrate CI run into some projects on its post-build events?",
                     out var answer, "y"))
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
                 if(!_cli.IsYes(answer))
-                    return Task.FromResult(true);
+                    return Task.FromResult(TrueEmptyResult);
             }
-            return Task.FromResult(InjectCiToProjects(ciCfgPath));
+            var res = (InjectCiToProjects(ciCfgPath), new Dictionary<string, object>());
+            return Task.FromResult(res);
         }
 
         private bool ConfigureCiConfig(out string ciCfgPath)

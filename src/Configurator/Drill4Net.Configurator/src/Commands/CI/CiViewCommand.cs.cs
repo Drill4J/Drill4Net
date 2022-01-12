@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -15,10 +16,10 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             if (_desc == null)
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             //
             string cfgPath;
             var noContent = IsSwitchSet(ConfiguratorConstants.SWITCH_CONTENT_NO);
@@ -38,7 +39,7 @@ namespace Drill4Net.Configurator
                     RaiseError(error);
             }
             if (!res)
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             
             // view projects with the config's integration
             var viewIntegration = IsSwitchSet(ConfiguratorConstants.SWITCH_INTEGRATION);
@@ -54,7 +55,7 @@ namespace Drill4Net.Configurator
                     {
                         if (!_cli.AskDirectory(ConfiguratorConstants.MESSAGE_CI_INTEGRATION_IDE_DIR,
                             out solutionDir, def, true))
-                            return Task.FromResult(true);
+                            return Task.FromResult(TrueEmptyResult);
                     }
                     else
                     {
@@ -75,7 +76,7 @@ namespace Drill4Net.Configurator
                 }
             }
             //
-            return Task.FromResult(true);
+            return Task.FromResult(TrueEmptyResult);
         }
 
         public override string GetShortDescription()

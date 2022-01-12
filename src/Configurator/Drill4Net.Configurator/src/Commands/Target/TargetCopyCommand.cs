@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
@@ -16,10 +17,10 @@ namespace Drill4Net.Configurator
 
         /***************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             if (_desc == null)
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             //
             var dir = _rep.GetInjectorDirectory();
 
@@ -29,7 +30,7 @@ namespace Drill4Net.Configurator
             if (!res)
             {
                 RaiseError(error);
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             }
 
             var delta = fromSwitch ? 1 : 0;
@@ -40,7 +41,7 @@ namespace Drill4Net.Configurator
             if (!res)
             {
                 RaiseError(error);
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             }
 
             //target version/assembly
@@ -48,7 +49,7 @@ namespace Drill4Net.Configurator
             if (string.IsNullOrWhiteSpace(targetVersion))
             {
                 RaiseError("Target's version/assembly is not specified.");
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             }
 
             //target working dir
@@ -59,7 +60,7 @@ namespace Drill4Net.Configurator
             if (cfg.Target == null)
             {
                 RaiseError($"Source section in config is empty: [{sourcePath}]");
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             }
 
             if (targetVersion.EndsWith(".dll") || targetVersion.EndsWith(".exe"))
@@ -71,7 +72,7 @@ namespace Drill4Net.Configurator
             if (dest == null)
             {
                 RaiseError($"Destination section in config is empty: [{sourcePath}]");
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
             }
             if (!string.IsNullOrWhiteSpace(targetDir))
             {
@@ -82,7 +83,8 @@ namespace Drill4Net.Configurator
                     dest.FolderPostfix = "Injected";
 
             //save config
-            return Task.FromResult(_cmdHelper.SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, destPath));
+            res = _cmdHelper.SaveConfig(CoreConstants.SUBSYSTEM_INJECTOR, cfg, destPath);
+            return Task.FromResult((res, new Dictionary<string, object>()));
         }
 
         public override string GetShortDescription()

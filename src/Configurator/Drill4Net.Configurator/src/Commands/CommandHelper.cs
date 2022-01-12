@@ -422,7 +422,14 @@ namespace Drill4Net.Configurator
             return res;
         }
 
-        internal void RegCheck(string check, string error, bool res, ref bool globRes)
+        /// <summary>
+        /// Registering the result of current operation of the <see cref="AbstractCliCommand"/> object
+        /// </summary>
+        /// <param name="check"></param>
+        /// <param name="error"></param>
+        /// <param name="res"></param>
+        /// <param name="cmdRes">The result for current command</param>
+        internal void RegCheck(string check, string error, bool res, ref bool cmdRes)
         {
             if (res)
             {
@@ -439,13 +446,19 @@ namespace Drill4Net.Configurator
             }
             //
             if (!res)
-                globRes = false;
+                cmdRes = false;
         }
-        
-        internal void RegResult(bool globRes)
+
+        /// <summary>
+        /// Registering the result of some check.
+        /// </summary>
+        /// <param name="cmdRes">The result of current <see cref="AbstractCliCommand"/> object</param>
+        /// <param name="isFinalRes">The final group result when several command are run in a group</param>
+        internal void RegResult(bool cmdRes, bool isFinalRes = false)
         {
-            var res = globRes ? "OK" : "NOT";
-            RaiseMessage($"\nRESULT: {res}", globRes ? CliMessageType.Info : CliMessageType.Error);
+            var res = cmdRes ? "OK" : "NOT";
+            var final = isFinalRes ? "FINAL " : "";
+            RaiseMessage($"\n{final}RESULT: {res}", cmdRes ? CliMessageType.Info : CliMessageType.Error);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 
@@ -15,10 +16,10 @@ namespace Drill4Net.Configurator
 
         /**************************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             if (_desc == null)
-                return Task.FromResult(false);
+                return Task.FromResult(FalseEmptyResult);
 
             bool res = false;
             var doNotDeleteIntegration = IsSwitchSet(ConfiguratorConstants.SWITCH_INTEGRATION_NO);
@@ -41,7 +42,7 @@ namespace Drill4Net.Configurator
                     res = _cmdHelper.DeleteConfig<CiOptions>(CoreConstants.SUBSYSTEM_CI, cfgDir, _desc, out cfgPath);
                 }
                 if (!res)
-                    return Task.FromResult(false);
+                    return Task.FromResult(FalseEmptyResult);
             }
 
             //delete the integrations with IDE
@@ -53,7 +54,7 @@ namespace Drill4Net.Configurator
                 {
                     if (!_cli.AskDirectory(ConfiguratorConstants.MESSAGE_CI_INTEGRATION_IDE_DIR,
                         out solutionDir, ide.GetDefaultProjectSourcesDirectory(), true))
-                        return Task.FromResult(true);
+                        return Task.FromResult(TrueEmptyResult);
                 }
                 res = ide.DeleteInjections(solutionDir, cfgPath, out var processed, out var errors, out var all);
                 //
@@ -65,7 +66,7 @@ namespace Drill4Net.Configurator
                 foreach (var error in errors)
                         RaiseError($"{error.path} -> {error.error}");
             }
-            return Task.FromResult(res);
+            return Task.FromResult((res, new Dictionary<string, object>()));
         }
 
         public override string GetShortDescription()

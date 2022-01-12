@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Cli
+﻿using System.Collections.Generic;
+
+namespace Drill4Net.Cli
 {
     [CliCommandAttribute(CliConstants.COMMAND_NULL)]
     public class NullCliCommand : AbstractCliCommand
@@ -9,10 +11,10 @@
 
         /***************************************************************/
 
-        public override Task<bool> Process()
+        public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             RaiseError("The command is not found");
-            return Task.FromResult(false);
+            return Task.FromResult(FalseEmptyResult);
         }
 
         public override string GetHelp()
