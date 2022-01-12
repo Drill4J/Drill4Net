@@ -22,7 +22,7 @@ namespace Drill4Net.Configurator
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var cmdRes = true;
-            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_INJECTOR}'s configuration check.", CliMessageType.Info);
+            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_INJECTOR} configuration check.", CliMessageType.Info);
 
             //open cfg
             var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);

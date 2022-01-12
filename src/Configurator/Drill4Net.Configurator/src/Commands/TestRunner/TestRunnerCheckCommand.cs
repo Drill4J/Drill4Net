@@ -4,6 +4,7 @@ using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Agent.TestRunner.Core;
 using System.Collections.Generic;
+using Drill4Net.Repository;
 
 namespace Drill4Net.Configurator
 {
@@ -21,7 +22,7 @@ namespace Drill4Net.Configurator
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var cmdRes = true;
-            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_TEST_RUNNER}'s configuration check.", CliMessageType.Info);
+            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_TEST_RUNNER} configuration check.", CliMessageType.Info);
 
             //open cfg
             var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
@@ -49,6 +50,8 @@ namespace Drill4Net.Configurator
             }
             //
             RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
+            _cli.DrawShortSeparator();
+
             var opts = _rep.ReadTestRunnerOptions(cfgPath);
             
             //target dirs
@@ -60,6 +63,7 @@ namespace Drill4Net.Configurator
             }
             else
             {
+                var treeHelper = new TreeRepositoryHelper(CoreConstants.SUBSYSTEM_CONFIGURATOR);
                 foreach (var dirOpts in runDirOpts)
                 {
                     var runDir = dirOpts.Directory;
@@ -68,19 +72,31 @@ namespace Drill4Net.Configurator
                         _cmdHelper.RegCheck("Target directory", "Target directory path is empty", false, ref cmdRes);
                         continue;
                     }
-                    var fullDir = FileUtils.GetFullPath(runDir, _rep.GetTestRunnerDirectory());
-                    _cmdHelper.RegCheck($"Target directory: [{fullDir}]", $"Directory does not exist: [{fullDir}]",
-                        Directory.Exists(fullDir), ref cmdRes);
 
-                    foreach (var asmOpts in dirOpts.Assemblies)
+                    var fullDir = FileUtils.GetFullPath(runDir, _rep.GetTestRunnerDirectory());
+                    var dirExists = Directory.Exists(fullDir);
+                    _cmdHelper.RegCheck($"Target directory: [{fullDir}]", $"Directory does not exist: [{fullDir}]",
+                        dirExists, ref cmdRes);
+
+                    if (dirExists)
                     {
-                        var asmName = asmOpts.DefaultAssemblyName;
-                        if (string.IsNullOrWhiteSpace(asmName)) //it is normal
-                            continue;
-                        var asmPath = Path.Combine(fullDir, asmName);
-                        _cmdHelper.RegCheck($"Test assembly: [{asmPath}]", $"Test assembly does not exist: [{asmPath}]",
-                            File.Exists(asmPath), ref cmdRes);
+                        //tree file
+                        var treePath = treeHelper.CalculateTreeFilePath(fullDir);
+                        _cmdHelper.RegCheck("Tree metadata file", $"Tree metadata file does not exist, check injection process: [{treePath}]",
+                            File.Exists(treePath), ref cmdRes);
+
+                        //assemblies
+                        foreach (var asmOpts in dirOpts.Assemblies)
+                        {
+                            var asmName = asmOpts.DefaultAssemblyName;
+                            if (string.IsNullOrWhiteSpace(asmName)) //it is normal
+                                continue;
+                            var asmPath = Path.Combine(fullDir, asmName);
+                            _cmdHelper.RegCheck($"Test assembly: [{asmName}]", $"Test assembly does not exist: [{asmPath}]",
+                                File.Exists(asmPath), ref cmdRes);
+                        }
                     }
+                    _cli.DrawShortSeparator();
                 }
             }
             //

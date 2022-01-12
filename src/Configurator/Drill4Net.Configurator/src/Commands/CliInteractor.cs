@@ -234,6 +234,11 @@ namespace Drill4Net.Configurator
             return string.Equals(s, ConfiguratorConstants.ANSWER_YES, StringComparison.OrdinalIgnoreCase);
         }
 
+        public void DrawShortSeparator()
+        {
+            RaiseMessage(new string('.', 10));
+        }
+
         public void DrawLine()
         {
             RaiseMessage(new string('-', 70));

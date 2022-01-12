@@ -20,7 +20,7 @@ namespace Drill4Net.Configurator
         public override async Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var cmdRes = true;
-            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_CI}'s configuration check.", CliMessageType.Info);
+            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_CI} configuration check.", CliMessageType.Info);
 
             if (_desc == null)
                 return FalseEmptyResult;
