@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
-using System.Collections.Generic;
 
 namespace Drill4Net.Configurator
 {
@@ -357,12 +357,14 @@ namespace Drill4Net.Configurator
 
         internal bool CheckVersions(string check, string sourceDir, VersionData? versData)
         {
+            var globRes = true;
+
             // section can be empty
             if (versData == null)
                 return true;
             if (string.IsNullOrWhiteSpace(sourceDir))
             {
-                WriteCheck(check, "Can't check the version section due to source directory path is empty", false);
+                RegCheck(check, "Can't check the version section due to source directory path is empty", false, ref globRes);
                 return false;
             }
             //
@@ -377,7 +379,7 @@ namespace Drill4Net.Configurator
                 var res2 = Directory.Exists(rootDir);
                 if (!res2)
                 {
-                    WriteCheck(check, $"Directory for {moniker} does not exist: [{rootDir}]", false);
+                    RegCheck(check, $"Directory for {moniker} does not exist: [{rootDir}]", false, ref globRes);
                     res = false;
                 }
 
@@ -394,7 +396,7 @@ namespace Drill4Net.Configurator
                         res2 = Directory.Exists(asmDir);
                         if (!res2)
                         {
-                            WriteCheck(check, $"Directory for {moniker} and folder {asmFld} does not exist: [{asmDir}]", false);
+                            RegCheck(check, $"Directory for {moniker} and folder {asmFld} does not exist: [{asmDir}]", false, ref globRes);
                             res = false;
                         }
 
@@ -407,7 +409,7 @@ namespace Drill4Net.Configurator
                                 res2 = File.Exists(asmPath);
                                 if (!res2)
                                 {
-                                    WriteCheck(check, $"Assembly for {moniker} and folder {asmFld} not found: [{asmPath}]", false);
+                                    RegCheck(check, $"Assembly for {moniker} and folder {asmFld} not found: [{asmPath}]", false, ref globRes);
                                     res = false;
                                 }
                                 //
@@ -420,7 +422,7 @@ namespace Drill4Net.Configurator
             return res;
         }
 
-        internal void WriteCheck(string check, string error, bool res)
+        internal void RegCheck(string check, string error, bool res, ref bool globRes)
         {
             if (res)
             {
@@ -435,6 +437,15 @@ namespace Drill4Net.Configurator
                     error = char.ToLower(error[0]) + error[1..];
                 RaiseError($"Reason: {error}");
             }
+            //
+            if (!res)
+                globRes = false;
+        }
+        
+        internal void RegResult(bool globRes)
+        {
+            var res = globRes ? "OK" : "NOT";
+            RaiseMessage($"\nRESULT: {res}", globRes ? CliMessageType.Info : CliMessageType.Error);
         }
     }
 }

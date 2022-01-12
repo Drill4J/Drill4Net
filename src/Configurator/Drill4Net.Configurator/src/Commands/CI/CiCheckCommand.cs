@@ -18,6 +18,8 @@ namespace Drill4Net.Configurator
 
         public override async Task<bool> Process()
         {
+            var globRes = true;
+
             if (_desc == null)
                 return false;
 
@@ -41,7 +43,7 @@ namespace Drill4Net.Configurator
             var injection = opts.Injection;
             if (injection == null)
             {
-                _cmdHelper.WriteCheck("Injection options", "No injection options", false);
+                _cmdHelper.RegCheck("Injection options", "No injection options", false, ref globRes);
                 return false;
             }
             else
@@ -50,13 +52,13 @@ namespace Drill4Net.Configurator
                 check = $"Directory with {CoreConstants.SUBSYSTEM_INJECTOR}'s configs";
                 if (string.IsNullOrWhiteSpace(cfgsDir))
                 {
-                    _cmdHelper.WriteCheck(check, $"{check}'s path is empty", false);
+                    _cmdHelper.RegCheck(check, $"{check}'s path is empty", false, ref globRes);
                 }
                 else
                 {
                     cfgsDir = FileUtils.GetFullPath(cfgsDir);  //relative to Configurator
                     var cfgExists = Directory.Exists(cfgsDir);
-                    _cmdHelper.WriteCheck(check, $"Path does not exist: [{cfgsDir}]", cfgExists);
+                    _cmdHelper.RegCheck(check, $"Path does not exist: [{cfgsDir}]", cfgExists, ref globRes);
                     if(force && cfgExists)
                     {
                         var checkTrgCmd = _cliRep.GetCommand(typeof(TargetCheckCommand));
@@ -83,13 +85,13 @@ namespace Drill4Net.Configurator
             check = $"{CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config";
             if (string.IsNullOrWhiteSpace(testRunPath))
             {
-                _cmdHelper.WriteCheck(check, "Path is empty", false);
+                _cmdHelper.RegCheck(check, "Path is empty", false, ref globRes);
             }
             else
             {
                 testRunPath = FileUtils.GetFullPath(testRunPath); //relative to Configurator
                 var cfgExists = File.Exists(testRunPath);
-                _cmdHelper.WriteCheck(check, $"Path does not exist: [{testRunPath}]", cfgExists);
+                _cmdHelper.RegCheck(check, $"Path does not exist: [{testRunPath}]", cfgExists, ref globRes);
                 if (force && cfgExists)
                 {
                     var checkTrgCmd = _cliRep.GetCommand(typeof(TestRunnerCheckCommand));
@@ -103,6 +105,7 @@ namespace Drill4Net.Configurator
                 }
             }
             //
+            _cmdHelper.RegResult(globRes);
             return true;
         }
 

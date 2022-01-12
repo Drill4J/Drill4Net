@@ -19,6 +19,8 @@ namespace Drill4Net.Configurator
 
         public override Task<bool> Process()
         {
+            var globRes = true;
+
             //open cfg
             var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
             if (string.IsNullOrWhiteSpace(cfgPath))
@@ -51,7 +53,7 @@ namespace Drill4Net.Configurator
             var runDirOpts = opts.Directories;
             if (runDirOpts == null)
             {
-                _cmdHelper.WriteCheck("Directory options", "No directory options", false);
+                _cmdHelper.RegCheck("Directory options", "No directory options", false, ref globRes);
                 return Task.FromResult(false);
             }
             else
@@ -61,11 +63,12 @@ namespace Drill4Net.Configurator
                     var runDir = dirOpts.Directory;
                     if (string.IsNullOrWhiteSpace(runDir))
                     {
-                        _cmdHelper.WriteCheck("Target directory", "Target directory path is empty", false);
+                        _cmdHelper.RegCheck("Target directory", "Target directory path is empty", false, ref globRes);
                         continue;
                     }
                     var fullDir = FileUtils.GetFullPath(runDir, _rep.GetTestRunnerDirectory());
-                    _cmdHelper.WriteCheck($"Target directory: [{fullDir}]", $"Directory does not exist: [{fullDir}]", Directory.Exists(fullDir));
+                    _cmdHelper.RegCheck($"Target directory: [{fullDir}]", $"Directory does not exist: [{fullDir}]",
+                        Directory.Exists(fullDir), ref globRes);
 
                     foreach (var asmOpts in dirOpts.Assemblies)
                     {
@@ -73,11 +76,13 @@ namespace Drill4Net.Configurator
                         if (string.IsNullOrWhiteSpace(asmName)) //it is normal
                             continue;
                         var asmPath = Path.Combine(fullDir, asmName);
-                        _cmdHelper.WriteCheck($"Test assembly: [{asmPath}]", $"Test assembly does not exist: [{asmPath}]", File.Exists(asmPath));
+                        _cmdHelper.RegCheck($"Test assembly: [{asmPath}]", $"Test assembly does not exist: [{asmPath}]",
+                            File.Exists(asmPath), ref globRes);
                     }
                 }
             }
             //
+            _cmdHelper.RegResult(globRes);
             return Task.FromResult(true);
         }
 
