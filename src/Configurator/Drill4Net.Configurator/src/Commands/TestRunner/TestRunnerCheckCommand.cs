@@ -20,7 +20,8 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
-            var globRes = true;
+            var cmdRes = true;
+            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_TEST_RUNNER}'s configuration check.", CliMessageType.Info);
 
             //open cfg
             var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
@@ -47,14 +48,14 @@ namespace Drill4Net.Configurator
                 }
             }
             //
-            RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
+            RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
             var opts = _rep.ReadTestRunnerOptions(cfgPath);
             
             //target dirs
             var runDirOpts = opts.Directories;
             if (runDirOpts == null)
             {
-                _cmdHelper.RegCheck("Directory options", "No directory options", false, ref globRes);
+                _cmdHelper.RegCheck("Directory options", "No directory options", false, ref cmdRes);
                 return Task.FromResult(FalseEmptyResult);
             }
             else
@@ -64,12 +65,12 @@ namespace Drill4Net.Configurator
                     var runDir = dirOpts.Directory;
                     if (string.IsNullOrWhiteSpace(runDir))
                     {
-                        _cmdHelper.RegCheck("Target directory", "Target directory path is empty", false, ref globRes);
+                        _cmdHelper.RegCheck("Target directory", "Target directory path is empty", false, ref cmdRes);
                         continue;
                     }
                     var fullDir = FileUtils.GetFullPath(runDir, _rep.GetTestRunnerDirectory());
                     _cmdHelper.RegCheck($"Target directory: [{fullDir}]", $"Directory does not exist: [{fullDir}]",
-                        Directory.Exists(fullDir), ref globRes);
+                        Directory.Exists(fullDir), ref cmdRes);
 
                     foreach (var asmOpts in dirOpts.Assemblies)
                     {
@@ -78,13 +79,13 @@ namespace Drill4Net.Configurator
                             continue;
                         var asmPath = Path.Combine(fullDir, asmName);
                         _cmdHelper.RegCheck($"Test assembly: [{asmPath}]", $"Test assembly does not exist: [{asmPath}]",
-                            File.Exists(asmPath), ref globRes);
+                            File.Exists(asmPath), ref cmdRes);
                     }
                 }
             }
             //
-            _cmdHelper.RegResult(globRes);
-            return Task.FromResult(TrueEmptyResult);
+            _cmdHelper.RegResult(cmdRes);
+            return Task.FromResult(cmdRes ? OkCheck : NotCheck);
         }
 
         public override string GetShortDescription()

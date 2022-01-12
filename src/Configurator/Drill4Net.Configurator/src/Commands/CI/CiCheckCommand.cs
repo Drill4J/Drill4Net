@@ -19,7 +19,8 @@ namespace Drill4Net.Configurator
 
         public override async Task<(bool done, Dictionary<string, object> results)> Process()
         {
-            var globRes = true;
+            var cmdRes = true;
+            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_CI}'s configuration check.", CliMessageType.Info);
 
             if (_desc == null)
                 return FalseEmptyResult;
@@ -35,7 +36,7 @@ namespace Drill4Net.Configurator
                 RaiseError(error);
                 return FalseEmptyResult;
             }
-            RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
+            RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
             //
             var opts = _rep.ReadCiOptions(cfgPath, false);
             string? check;
@@ -44,7 +45,7 @@ namespace Drill4Net.Configurator
             var injection = opts.Injection;
             if (injection == null)
             {
-                _cmdHelper.RegCheck("Injection options", "No injection options", false, ref globRes);
+                _cmdHelper.RegCheck("Injection options", "No injection options", false, ref cmdRes);
                 return FalseEmptyResult;
             }
             else
@@ -53,13 +54,13 @@ namespace Drill4Net.Configurator
                 check = $"Directory with {CoreConstants.SUBSYSTEM_INJECTOR}'s configs";
                 if (string.IsNullOrWhiteSpace(cfgsDir))
                 {
-                    _cmdHelper.RegCheck(check, $"{check}'s path is empty", false, ref globRes);
+                    _cmdHelper.RegCheck(check, $"{check}'s path is empty", false, ref cmdRes);
                 }
                 else
                 {
                     cfgsDir = FileUtils.GetFullPath(cfgsDir);  //relative to Configurator
                     var cfgExists = Directory.Exists(cfgsDir);
-                    _cmdHelper.RegCheck(check, $"Path does not exist: [{cfgsDir}]", cfgExists, ref globRes);
+                    _cmdHelper.RegCheck(check, $"Path does not exist: [{cfgsDir}]", cfgExists, ref cmdRes);
                     if(force && cfgExists)
                     {
                         var checkTrgCmd = _cliRep.GetCommand(typeof(TargetCheckCommand));
@@ -72,7 +73,8 @@ namespace Drill4Net.Configurator
                                 {
                                     _cli.DrawLine();
                                     var desc = new CliDescriptor(@$"{CoreConstants.ARGUMENT_CONFIG_PATH}=""{config}""", false);
-                                    await ProcessFor(checkTrgCmd, desc);
+                                    var trgRes = await ProcessFor(checkTrgCmd, desc);
+                                    _cmdHelper.SetCommandCheckResult(trgRes, ref cmdRes);
                                 }
                                 _cli.DrawLine();
                             }
@@ -86,13 +88,13 @@ namespace Drill4Net.Configurator
             check = $"{CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config";
             if (string.IsNullOrWhiteSpace(testRunPath))
             {
-                _cmdHelper.RegCheck(check, "Path is empty", false, ref globRes);
+                _cmdHelper.RegCheck(check, "Path is empty", false, ref cmdRes);
             }
             else
             {
                 testRunPath = FileUtils.GetFullPath(testRunPath); //relative to Configurator
                 var cfgExists = File.Exists(testRunPath);
-                _cmdHelper.RegCheck(check, $"Path does not exist: [{testRunPath}]", cfgExists, ref globRes);
+                _cmdHelper.RegCheck(check, $"Path does not exist: [{testRunPath}]", cfgExists, ref cmdRes);
                 if (force && cfgExists)
                 {
                     var checkTrgCmd = _cliRep.GetCommand(typeof(TestRunnerCheckCommand));
@@ -100,14 +102,15 @@ namespace Drill4Net.Configurator
                     {
                         _cli.DrawLine();
                         var desc = new CliDescriptor(@$"{CoreConstants.ARGUMENT_CONFIG_PATH}=""{testRunPath}""", false);
-                        await ProcessFor(checkTrgCmd, desc);
-                       _cli.DrawLine();
+                        var runnerRes = await ProcessFor(checkTrgCmd, desc);
+                        _cmdHelper.SetCommandCheckResult(runnerRes, ref cmdRes);
+                        _cli.DrawLine();
                     }
                 }
             }
             //
-            _cmdHelper.RegResult(globRes, true);
-            return TrueEmptyResult;
+            _cmdHelper.RegResult(cmdRes, true);
+            return cmdRes ? OkCheck : NotCheck;
         }
 
         public override string GetShortDescription()

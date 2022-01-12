@@ -20,7 +20,7 @@ namespace Drill4Net.Cli
         /// </summary>
         public List<CliArgument>? Arguments => _desc?.Arguments;
 
-        protected (bool done, Dictionary<string, object> results) FalseEmptyResult = new(false,new());
+        protected (bool done, Dictionary<string, object> results) FalseEmptyResult = new(false, new());
         protected (bool done, Dictionary<string, object> results) TrueEmptyResult = new(true, new());
 
         protected CliDescriptor? _desc;

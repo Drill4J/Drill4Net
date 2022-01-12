@@ -21,7 +21,8 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
-            var globRes = true;
+            var cmdRes = true;
+            RaiseMessage($"\n{CoreConstants.SUBSYSTEM_INJECTOR}'s configuration check.", CliMessageType.Info);
 
             //open cfg
             var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
@@ -47,7 +48,7 @@ namespace Drill4Net.Configurator
                 }
             }
 
-            RaiseMessage($"\nChecking: [{cfgPath}]", CliMessageType.Info);
+            RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
             //
             var opts = _rep.ReadInjectorOptions(cfgPath ?? "", true);
             var destDir = opts.Destination.Directory ?? "";
@@ -55,13 +56,13 @@ namespace Drill4Net.Configurator
 
             //target
             var target = opts.Target;
-            _cmdHelper.RegCheck("Target name", "Name is empty", !string.IsNullOrWhiteSpace(target.Name), ref globRes);
+            _cmdHelper.RegCheck("Target name", "Name is empty", !string.IsNullOrWhiteSpace(target.Name), ref cmdRes);
 
             //an empty and direct version, and a "assembly's version" is normal (but is not best) -
             //the system will try to get the version at runtime "from somewhere"
             if (!string.IsNullOrWhiteSpace(target.Version))
             {
-                _cmdHelper.RegCheck("Target version", "", true, ref globRes);
+                _cmdHelper.RegCheck("Target version", "", true, ref cmdRes);
             }
             else
             {
@@ -71,7 +72,7 @@ namespace Drill4Net.Configurator
                     check = "Target version assembly";
                     var asmPath = Path.Combine(destDir, asmName);
                     _cmdHelper.RegCheck(check, $"The assembly for determining the target version was not found: [{asmPath}]",
-                        File.Exists(asmPath), ref globRes);
+                        File.Exists(asmPath), ref cmdRes);
                 }
             }
 
@@ -81,62 +82,62 @@ namespace Drill4Net.Configurator
             check = "Source directory";
             var sourceDir = source?.Directory;
             if (string.IsNullOrWhiteSpace(sourceDir))
-                _cmdHelper.RegCheck(check, "Source directory path is empty", false, ref globRes);
+                _cmdHelper.RegCheck(check, "Source directory path is empty", false, ref cmdRes);
             else
                 _cmdHelper.RegCheck(check, $"Source directory does not exist: [{sourceDir}]",
-                    Directory.Exists(sourceDir), ref globRes);
+                    Directory.Exists(sourceDir), ref cmdRes);
 
             //filter
             var res = IsFilterPartOk(source?.Filter?.Includes) || IsFilterPartOk(source?.Filter?.Excludes);
-            _cmdHelper.RegCheck("Filter for injected entities", "No filter entry", res, ref globRes);
+            _cmdHelper.RegCheck("Filter for injected entities", "No filter entry", res, ref cmdRes);
 
             //destination
             check = "Destination directory";
             if (string.IsNullOrWhiteSpace(destDir))
-                _cmdHelper.RegCheck(check, "Destination directory path is empty", false, ref globRes);
+                _cmdHelper.RegCheck(check, "Destination directory path is empty", false, ref cmdRes);
             else
-                _cmdHelper.RegCheck(check, "Destination directory does not exist", Directory.Exists(destDir), ref globRes);
+                _cmdHelper.RegCheck(check, "Destination directory does not exist", Directory.Exists(destDir), ref cmdRes);
 
             // proxy
             var proxy = opts.Proxy;
-            _cmdHelper.RegCheck("Proxy class", "Class name is empty", !string.IsNullOrWhiteSpace(proxy?.Class), ref globRes);
-            _cmdHelper.RegCheck("Proxy method", "Method name is empty", !string.IsNullOrWhiteSpace(proxy?.Method), ref globRes);
+            _cmdHelper.RegCheck("Proxy class", "Class name is empty", !string.IsNullOrWhiteSpace(proxy?.Class), ref cmdRes);
+            _cmdHelper.RegCheck("Proxy method", "Method name is empty", !string.IsNullOrWhiteSpace(proxy?.Method), ref cmdRes);
 
             //profiler (transmiter)
             var profiler = opts.Profiler;
             check = "Profiler directory";
             var profDir = profiler?.Directory;
             if (string.IsNullOrWhiteSpace(profDir))
-                _cmdHelper.RegCheck(check, "Directory path is empty", false, ref globRes);
+                _cmdHelper.RegCheck(check, "Directory path is empty", false, ref cmdRes);
             else
-                _cmdHelper.RegCheck(check, $"Directory does not exist: [{profDir}]", Directory.Exists(profDir), ref globRes);
+                _cmdHelper.RegCheck(check, $"Directory does not exist: [{profDir}]", Directory.Exists(profDir), ref cmdRes);
 
             var profAsmName = profiler?.AssemblyName;
-            _cmdHelper.RegCheck("Profiler assembly name", "Assembly name is empty", !string.IsNullOrWhiteSpace(profAsmName), ref globRes);
+            _cmdHelper.RegCheck("Profiler assembly name", "Assembly name is empty", !string.IsNullOrWhiteSpace(profAsmName), ref cmdRes);
 
             var profAsmPath = Path.Combine(profDir, profAsmName);
-            _cmdHelper.RegCheck("Profiler assembly file", "Assembly file is not found", File.Exists(profAsmPath), ref globRes);
+            _cmdHelper.RegCheck("Profiler assembly file", "Assembly file is not found", File.Exists(profAsmPath), ref cmdRes);
 
-            _cmdHelper.RegCheck("Profiler namespace", "Namespace is empty", !string.IsNullOrWhiteSpace(profiler?.Namespace), ref globRes);
-            _cmdHelper.RegCheck("Profiler class", "Class name is empty", !string.IsNullOrWhiteSpace(profiler?.Class), ref globRes);
-            _cmdHelper.RegCheck("Profiler method", "Method name is empty", !string.IsNullOrWhiteSpace(profiler?.Method), ref globRes);
+            _cmdHelper.RegCheck("Profiler namespace", "Namespace is empty", !string.IsNullOrWhiteSpace(profiler?.Namespace), ref cmdRes);
+            _cmdHelper.RegCheck("Profiler class", "Class name is empty", !string.IsNullOrWhiteSpace(profiler?.Class), ref cmdRes);
+            _cmdHelper.RegCheck("Profiler method", "Method name is empty", !string.IsNullOrWhiteSpace(profiler?.Method), ref cmdRes);
 
             //TODO: real check by Reflection
 
             // plugins
             check = "Contexter plugins";
-            _cmdHelper.RegCheck(check, "Plugin configuration error", CheckPlugins(check, opts.Plugins), ref globRes);
+            _cmdHelper.RegCheck(check, "Plugin configuration error", CheckPlugins(check, opts.Plugins), ref cmdRes);
 
             // versions
             if (opts.Versions != null)
             {
                 check = "Version section";
                 _cmdHelper.RegCheck(check, "Version configuration error",
-                    _cmdHelper.CheckVersions(check, sourceDir ?? "", opts.Versions), ref globRes);
+                    _cmdHelper.CheckVersions(check, sourceDir ?? "", opts.Versions), ref cmdRes);
             }
             //
-            _cmdHelper.RegResult(globRes);
-            return Task.FromResult(TrueEmptyResult);
+            _cmdHelper.RegResult(cmdRes);
+            return Task.FromResult(cmdRes ? OkCheck : NotCheck);
         }
 
         private bool CheckPlugins(string check, Dictionary<string, PluginLoaderOptions>? plugins)

@@ -460,5 +460,27 @@ namespace Drill4Net.Configurator
             var final = isFinalRes ? "FINAL " : "";
             RaiseMessage($"\n{final}RESULT: {res}", cmdRes ? CliMessageType.Info : CliMessageType.Error);
         }
+
+        internal void SetCommandCheckResult((bool done, Dictionary<string, object> results) res, ref bool cmdRes)
+        {
+            if (!res.done)
+            {
+                cmdRes = false;
+            }
+            else
+            {
+                var results = res.results;
+                if (results == null || !results.ContainsKey(ConfiguratorConstants.CHECK_KEY))
+                {
+                    cmdRes = false;
+                }
+                else
+                {
+                    if (!results[ConfiguratorConstants.CHECK_KEY]?.ToString()?
+                        .Equals(ConfiguratorConstants.CHECK_VALUE_NOT, StringComparison.InvariantCultureIgnoreCase) == true)
+                        cmdRes = false;
+                }
+            }
+        }
     }
 }

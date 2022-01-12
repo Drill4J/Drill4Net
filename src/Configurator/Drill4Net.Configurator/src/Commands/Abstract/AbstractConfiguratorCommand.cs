@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
@@ -10,9 +11,14 @@ namespace Drill4Net.Configurator
         protected readonly CliCommandRepository _cliRep;
         protected readonly ConfiguratorRepository _rep;
 
+        protected (bool done, Dictionary<string, object> results) OkCheck =
+            new(true, new() { { ConfiguratorConstants.CHECK_KEY, ConfiguratorConstants.CHECK_VALUE_OK } });
+        protected (bool done, Dictionary<string, object> results) NotCheck =
+            new(true, new() { { ConfiguratorConstants.CHECK_KEY, ConfiguratorConstants.CHECK_VALUE_NOT } });
+
         /****************************************************************************/
 
-        protected AbstractConfiguratorCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep.Subsystem)
+        protected AbstractConfiguratorCommand(ConfiguratorRepository rep, CliCommandRepository cliRep): base(rep.Subsystem)
         {
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
             _cliRep = cliRep ?? throw new ArgumentNullException(nameof(cliRep));

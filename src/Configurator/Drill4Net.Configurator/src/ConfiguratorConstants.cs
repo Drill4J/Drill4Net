@@ -5,11 +5,12 @@
     /// </summary>
     public static class ConfiguratorConstants
     {
+        #region Answers
         public const string ANSWER_QUIT = "q";
         public const string ANSWER_OK = "ok";
         public const string ANSWER_YES = "y";
         public const string ANSWER_NO = "n";
-
+        #endregion
         #region Filter types
         public const string FILTER_TYPE_DIR = "DIR";
         public const string FILTER_TYPE_FOLDER = "FLD";
@@ -56,6 +57,11 @@
         public const string PATH_CI = @"..\..\ci\";
         public const string PATH_TRANSMITTER = @"..\..\components\transmitter\";
         public const string PATH_TRANSMITTER_PLUGINS = @"..\..\components\transmitter_plugins\"; //Agent's plugins (IEngineContexters)
+        #endregion
+        #region Results
+        public const string CHECK_KEY = "CHECK";
+        public const string CHECK_VALUE_OK = "OK";
+        public const string CHECK_VALUE_NOT = "NOT";
         #endregion
 
         internal const string CONFIG_AGENT_MODEL = "agent.yml";
