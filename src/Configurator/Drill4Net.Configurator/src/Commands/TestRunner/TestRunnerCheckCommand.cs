@@ -8,8 +8,8 @@ using System.Collections.Generic;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER,
-                     //ConfiguratorConstants.CONTEXT_CFG,
-                     ConfiguratorConstants.COMMAND_CHECK)]
+                        //ConfiguratorConstants.CONTEXT_CFG,
+                        ConfiguratorConstants.COMMAND_CHECK)]
     public class TestRunnerCheckCommand : AbstractConfiguratorCommand
     {
         public TestRunnerCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)

@@ -60,9 +60,10 @@ namespace Drill4Net.Configurator
 
             //an empty and direct version, and a "assembly's version" is normal (but is not best) -
             //the system will try to get the version at runtime "from somewhere"
+            check = "Target version";
             if (!string.IsNullOrWhiteSpace(target.Version))
             {
-                _cmdHelper.RegCheck("Target version", "", true, ref cmdRes);
+                _cmdHelper.RegCheck(check, "", true, ref cmdRes);
             }
             else
             {
@@ -71,8 +72,22 @@ namespace Drill4Net.Configurator
                 {
                     check = "Target version assembly";
                     var asmPath = Path.Combine(destDir, asmName);
-                    _cmdHelper.RegCheck(check, $"The assembly for determining the target version was not found: [{asmPath}]",
-                        File.Exists(asmPath), ref cmdRes);
+                    var asmExists = File.Exists(asmPath);
+                    if (asmExists)
+                    {
+                        _cmdHelper.RegCheck(check, "", true, ref cmdRes);
+                    }
+                    else
+                    {
+                        var files = Directory.GetFiles(destDir, $"*{Path.GetExtension(asmName)}", SearchOption.AllDirectories);
+                        asmExists = files.Any(a => Path.GetFileName(a).Equals(asmName, System.StringComparison.InvariantCultureIgnoreCase));
+                        _cmdHelper.RegCheck(check, $"The assembly for determining the target version was not found: [{asmPath}]",
+                            asmExists, ref cmdRes);
+                    }
+                }
+                else
+                {
+                    RaiseWarning($"{check}: the target version will be retrieved dynamically at runtime");
                 }
             }
 
@@ -126,7 +141,7 @@ namespace Drill4Net.Configurator
 
             // plugins
             check = "Contexter plugins";
-            _cmdHelper.RegCheck(check, "Plugin configuration error", CheckPlugins(check, opts.Plugins), ref cmdRes);
+            _cmdHelper.RegCheck(check, "Plugin configuration error", CheckPlugins(check, opts.Plugins, ref cmdRes), ref cmdRes);
 
             // versions
             if (opts.Versions != null)
@@ -140,10 +155,8 @@ namespace Drill4Net.Configurator
             return Task.FromResult(cmdRes ? OkCheck : NotCheck);
         }
 
-        private bool CheckPlugins(string check, Dictionary<string, PluginLoaderOptions>? plugins)
+        private bool CheckPlugins(string check, Dictionary<string, PluginLoaderOptions>? plugins, ref bool cmdRes)
         {
-            var globRes = true;
-
             // if there are no plugins, it can be ... for very simple targets
             if (plugins == null)
                 return true;
@@ -153,10 +166,10 @@ namespace Drill4Net.Configurator
             foreach (var name in plugins.Keys)
             {
                 var plug = plugins[name];
-                var dir = FileUtils.GetFullPath(plug.Directory, injDir);
+                var dir = FileUtils.GetFullPath(plug.Directory ?? injDir, injDir);
                 if(!Directory.Exists(dir))
                 {
-                    _cmdHelper.RegCheck(check, $"Plugin {name}: the directory does not exist: [{dir}]", false, ref globRes);
+                    _cmdHelper.RegCheck(check, $"Plugin {name}: the directory does not exist: [{dir}]", false, ref cmdRes);
                     res = false;
                 }
                 //
@@ -166,7 +179,7 @@ namespace Drill4Net.Configurator
                 var cfgPath = FileUtils.GetFullPath(Path.Combine(injDir, cfg), dir);
                 if (!File.Exists(cfgPath))
                 {
-                    _cmdHelper.RegCheck(check, $"The specified config does not exist for plugin {name}: [{cfgPath}]", false, ref globRes);
+                    _cmdHelper.RegCheck(check, $"The specified config does not exist for plugin {name}: [{cfgPath}]", false, ref cmdRes);
                     res = false;
                 }
             }

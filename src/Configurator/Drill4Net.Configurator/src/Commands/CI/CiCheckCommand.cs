@@ -7,8 +7,8 @@ using Drill4Net.Common;
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_CI,
-                     //ConfiguratorConstants.CONTEXT_CFG,
-                     ConfiguratorConstants.COMMAND_CHECK)]
+                         //ConfiguratorConstants.CONTEXT_CFG,
+                         ConfiguratorConstants.COMMAND_CHECK)]
     public class CiCheckCommand : AbstractConfiguratorCommand
     {
         public CiCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)

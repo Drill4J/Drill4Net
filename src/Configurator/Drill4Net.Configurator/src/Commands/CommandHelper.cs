@@ -476,7 +476,7 @@ namespace Drill4Net.Configurator
                 }
                 else
                 {
-                    if (!results[ConfiguratorConstants.CHECK_KEY]?.ToString()?
+                    if (results[ConfiguratorConstants.CHECK_KEY]?.ToString()?
                         .Equals(ConfiguratorConstants.CHECK_VALUE_NOT, StringComparison.InvariantCultureIgnoreCase) == true)
                         cmdRes = false;
                 }
