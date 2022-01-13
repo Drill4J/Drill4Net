@@ -83,7 +83,7 @@ namespace Drill4Net.Configurator
         }
 
         /// <summary>
-        /// Get the agent's config as default model's one. It is also copied
+        /// Get the agent config as default model's one. It is also copied
         /// to the injected target directory for normal workflow.
         /// </summary>
         /// <returns></returns>
@@ -93,7 +93,7 @@ namespace Drill4Net.Configurator
         }
 
         /// <summary>
-        /// Get the agent's config name for the injected Target.
+        /// Get the agent config name for the injected Target.
         /// </summary>
         /// <returns></returns>
         public string GetAgentTargetConfigName()
@@ -110,7 +110,7 @@ namespace Drill4Net.Configurator
         }
 
         /// <summary>
-        /// Get the Transmitter's config path (it connects to the middleware as Kafka,
+        /// Get the Transmitter config path (it connects to the middleware as Kafka,
         /// not Drill admin side)
         /// </summary>
         /// <returns></returns>
@@ -255,17 +255,17 @@ namespace Drill4Net.Configurator
             {
                 var cfgDirs = opts.Injection?.ConfigDir;
                 if (string.IsNullOrWhiteSpace(cfgDirs))
-                    throw new ArgumentException("The directory path for injector's configs is empty");
+                    throw new ArgumentException($"The directory path for {CoreConstants.SUBSYSTEM_INJECTOR} configs is empty");
                 cfgDirs = FileUtils.GetFullPath(cfgDirs);
                 if (!Directory.Exists(cfgDirs))
-                    throw new ArgumentException("The directory for injector's configs does not exist");
+                    throw new ArgumentException($"The directory for {CoreConstants.SUBSYSTEM_INJECTOR} configs does not exist");
 
                 var runnerCfg = opts.TestRunnerConfigPath;
                 if (string.IsNullOrWhiteSpace(runnerCfg))
-                    throw new ArgumentException("The Test Runner's config path is empty");
+                    throw new ArgumentException($"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config path is empty");
                 runnerCfg = FileUtils.GetFullPath(runnerCfg);
                 if (!File.Exists(runnerCfg))
-                    throw new ArgumentException("The Test Runner's config does not exist");
+                    throw new ArgumentException($"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config does not exist");
             }
             //
             return opts;
@@ -299,7 +299,7 @@ namespace Drill4Net.Configurator
             string? err;
             if (!File.Exists(cfgPath))
             {
-                err = $"{CoreConstants.SUBSYSTEM_INJECTOR}'s config does not exist: [{cfgPath}]";
+                err = $"{CoreConstants.SUBSYSTEM_INJECTOR} config does not exist: [{cfgPath}]";
                 _logger.Error(err);
                 throw new Exception(err);
             }
@@ -310,7 +310,7 @@ namespace Drill4Net.Configurator
             }
             catch (Exception ex)
             {
-                err = $"The {CoreConstants.SUBSYSTEM_INJECTOR}'s config cannot be read: [{cfgPath}]";
+                err = $"The {CoreConstants.SUBSYSTEM_INJECTOR} config cannot be read: [{cfgPath}]";
                 _logger.Error(err, ex);
                 throw new Exception(err);
             }

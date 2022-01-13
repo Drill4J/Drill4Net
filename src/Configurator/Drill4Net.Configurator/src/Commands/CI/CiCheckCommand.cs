@@ -51,7 +51,7 @@ namespace Drill4Net.Configurator
             else
             {
                 var cfgsDir = injection.ConfigDir;
-                check = $"Directory with {CoreConstants.SUBSYSTEM_INJECTOR}'s configs";
+                check = $"Directory with {CoreConstants.SUBSYSTEM_INJECTOR} configs";
                 if (string.IsNullOrWhiteSpace(cfgsDir))
                 {
                     _cmdHelper.RegCheck(check, $"{check}'s path is empty", false, ref cmdRes);
@@ -85,7 +85,7 @@ namespace Drill4Net.Configurator
 
             //Test Runner
             var testRunPath = opts.TestRunnerConfigPath;
-            check = $"{CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config";
+            check = $"{CoreConstants.SUBSYSTEM_TEST_RUNNER} config";
             if (string.IsNullOrWhiteSpace(testRunPath))
             {
                 _cmdHelper.RegCheck(check, "Path is empty", false, ref cmdRes);

@@ -25,7 +25,7 @@ namespace Drill4Net.Configurator
             #region Config
             if (!File.Exists(cfgPath))
             {
-                RaiseError($"Injector's config not found: [{cfgPath}]");
+                RaiseError($"{CoreConstants.SUBSYSTEM_INJECTOR} config not found: [{cfgPath}]");
                 return false;
             }
             var cfg = _rep.ReadInjectorOptions(cfgPath);
@@ -102,7 +102,7 @@ Please make your choice";
                         cfg.Target.VersionAssemblyName = asmName;
                         break;
                     case 3:
-                        var mess = "The target's version won't stored in tree file (metadata of target's injection) - so, if the version will be missed ALSO in Agent's config (it is one more possibility to pass this value to the Drill admin side), CI engineer is responsible for passing the actual one to the Test Runner by argument.";
+                        var mess = "The target's version won't stored in tree file (metadata of target's injection) - so, if the version will be missed ALSO in Agent config (it is one more possibility to pass this value to the Drill admin side), CI engineer is responsible for passing the actual one to the Test Runner by argument.";
                         RaiseWarning(mess);
                         break;
                     default:

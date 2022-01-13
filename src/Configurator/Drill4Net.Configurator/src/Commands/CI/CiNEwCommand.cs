@@ -40,12 +40,12 @@ Do you want to integrate CI run into some projects on its post-build events?",
             ciCfgPath = "";
 
             //asking
-            if (!_cli.AskDirectory("The Run have to has the one or more Injector's configs. Specify the directory with them (they will all be used)", out var dir, null, true, false))
+            if (!_cli.AskDirectory($"The Run have to has the one or more {CoreConstants.SUBSYSTEM_INJECTOR} configs. Specify the directory with them (they will all be used)", out var dir, null, true, false))
                 return false;
             int degree = 0;
             if (!_cli.AskDegreeOfParallelism("The degree of parallelism on level those configs", ref degree))
                 return false;
-            if (!_cli.AskFilePath("Test Runner's config path to run the injected targets", out var runCfgPath, null, true, false))
+            if (!_cli.AskFilePath($"{CoreConstants.SUBSYSTEM_TEST_RUNNER} config path to run the injected targets", out var runCfgPath, null, true, false))
                 return false;
             var defCfgPath = Path.Combine(dir, "ci.yml");
             if (!_cli.AskFilePath("Config path for this CI run will be saved to", out ciCfgPath, defCfgPath, false, true))
@@ -197,7 +197,7 @@ Do you want to integrate CI run into some projects on its post-build events?",
 
         public override string GetShortDescription()
         {
-            return $"Create new {CoreConstants.SUBSYSTEM_CI}'s config in interactive mode (injections for the target + Test Runner's rules in CI pipeline).";
+            return $"Create new {CoreConstants.SUBSYSTEM_CI} config in interactive mode (injections for the target + Test Runner's rules in CI pipeline).";
         }
 
         public override string GetHelp()

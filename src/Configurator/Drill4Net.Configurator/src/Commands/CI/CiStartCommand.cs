@@ -21,17 +21,14 @@ namespace Drill4Net.Configurator
             if (_desc == null)
                 return FalseEmptyResult;
             //
-            var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false); //as a rule, from external call
-            if (string.IsNullOrWhiteSpace(ciCfgPath)) //from Configurator CLI
+            var dir = _rep.GetCiDirectory();
+            var res2 = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI,
+                dir, _desc, out var ciCfgPath,
+                out var _, out var error);
+            if (!res2)
             {
-                var dir = _rep.GetCiDirectory();
-                var res2 = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc, out ciCfgPath,
-                    out var _, out var error);
-                if (!res2)
-                {
-                    RaiseError(error);
-                    return FalseEmptyResult;
-                }
+                RaiseError(error);
+                return FalseEmptyResult;
             }
             if (string.IsNullOrWhiteSpace(ciCfgPath))
             {
@@ -63,15 +60,15 @@ namespace Drill4Net.Configurator
 
             var cfgsDir = opts.Injection?.ConfigDir;
             if (string.IsNullOrWhiteSpace(cfgsDir))
-                return (false, "The directory of Injector's configs is empty");
+                return (false, $"The directory of {CoreConstants.SUBSYSTEM_INJECTOR} configs is empty");
             if (!Directory.Exists(cfgsDir))
-                return (false, "The directory of Injector's configs not found");
+                return (false, $"The directory of {CoreConstants.SUBSYSTEM_INJECTOR} configs not found");
 
             var runCfgPath = opts.TestRunnerConfigPath;
             if (string.IsNullOrWhiteSpace(runCfgPath))
-                return (false, "The Test Runner config's path is empty");
+                return (false, $"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config's path is empty");
             if (!File.Exists(runCfgPath))
-                return (false, "The Test Runner config's not found");
+                return (false, $"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config's not found");
             #endregion
 
             //degreeParallel

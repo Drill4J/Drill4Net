@@ -90,7 +90,7 @@ namespace Drill4Net.Agent.Service
             if (!File.Exists(_workerPath))
                 _workerPath = Path.Combine(FileUtils.ExecutingDir, workerName);
             if (!File.Exists(_workerPath))
-                throw new Exception("Agent Worker's executable not found");
+                throw new Exception($"Agent Worker's executable not found: [{_workerPath}]");
             _workerDir = Path.GetDirectoryName(_workerPath);
 
             //for using by workers

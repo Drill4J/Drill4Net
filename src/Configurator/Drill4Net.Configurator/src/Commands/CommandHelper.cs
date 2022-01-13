@@ -35,7 +35,7 @@ namespace Drill4Net.Configurator
             //questions
             while (true)
             {
-                if (!Cli.AskQuestion($"Name of the {cfgSubsystem}'s config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
+                if (!Cli.AskQuestion($"Name of the {cfgSubsystem} config", out var name, CoreConstants.CONFIG_NAME_DEFAULT))
                     return false;
                 if (!Cli.CheckFileNameAnswer(ref name, "Wrong file name", false))
                     continue;
@@ -107,14 +107,14 @@ namespace Drill4Net.Configurator
                 string answer;
                 if (actualCfg.Equals(sourcePath, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (!Cli.AskQuestion($"The {cfgSubsystem}'s config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer",
+                    if (!Cli.AskQuestion($"The {cfgSubsystem} config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer",
                         out answer, "n"))
                         return false;
                     if (!Cli.IsYes(answer))
                         return false;
                 }
                 //
-                if (!Cli.AskQuestion($"Delete the {cfgSubsystem}'s config [{sourcePath}]?", out answer, "y"))
+                if (!Cli.AskQuestion($"Delete the {cfgSubsystem} config [{sourcePath}]?", out answer, "y"))
                     return false;
                 if (!Cli.IsYes(answer))
                     return false;
@@ -132,7 +132,7 @@ namespace Drill4Net.Configurator
                 RaiseError(er);
                 return false;
             }
-            RaiseMessage($"{cfgSubsystem}'s config was deleted: [{sourcePath}]", CliMessageType.Info);
+            RaiseMessage($"{cfgSubsystem} config was deleted: [{sourcePath}]", CliMessageType.Info);
 
             return true;
         }
@@ -206,7 +206,7 @@ namespace Drill4Net.Configurator
             {
                 _rep.WriteRedirectData(new RedirectData { Path = actualPath }, redirectCfgPath);
                 _logger.Info($"Redirect config for {cfgSubsystem} saved to [{redirectCfgPath}]");
-                RaiseMessage($"The {cfgSubsystem}'s config [{actualPath}] is active now");
+                RaiseMessage($"The {cfgSubsystem} config [{actualPath}] is active now");
                 return true;
             }
             catch (Exception ex)

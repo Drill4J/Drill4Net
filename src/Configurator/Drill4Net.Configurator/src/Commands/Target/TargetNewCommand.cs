@@ -22,7 +22,7 @@ namespace Drill4Net.Configurator
             var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
             if (!File.Exists(modelCfgPath))
             {
-                RaiseError($"Model {CoreConstants.SUBSYSTEM_INJECTOR}'s config not found: [{modelCfgPath}]");
+                RaiseError($"Model {CoreConstants.SUBSYSTEM_INJECTOR} config not found: [{modelCfgPath}]");
                 return Task.FromResult(FalseEmptyResult);
             }
 
@@ -32,7 +32,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Create new {CoreConstants.SUBSYSTEM_INJECTOR}'s config in interactive mode.";
+            return $"Create new {CoreConstants.SUBSYSTEM_INJECTOR} config in interactive mode.";
         }
 
         public override string GetHelp()

@@ -26,7 +26,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Get list of the {CoreConstants.SUBSYSTEM_INJECTOR}'s configs.";
+            return $"Get list of the {CoreConstants.SUBSYSTEM_INJECTOR} configs.";
         }
 
         public override string GetHelp()

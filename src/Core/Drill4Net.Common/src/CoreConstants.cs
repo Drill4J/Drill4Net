@@ -38,7 +38,7 @@
         public const string CONFIG_NAME_REDIRECT = "_redirect.yml";
 
         /// <summary>
-        /// Standard file name for the Injector's config (if no <see cref="CONFIG_NAME_REDIRECT"/> and other configs exists)
+        /// Standard file name for the Injector config (if no <see cref="CONFIG_NAME_REDIRECT"/> and other configs exists)
         /// </summary>
         public const string CONFIG_NAME_DEFAULT = "cfg.yml";
 

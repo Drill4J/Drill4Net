@@ -22,7 +22,7 @@ namespace Drill4Net.Configurator
             var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
             if (!File.Exists(modelCfgPath))
             {
-                RaiseError($"Model {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config not found: [{modelCfgPath}]");
+                RaiseError($"Model {CoreConstants.SUBSYSTEM_TEST_RUNNER} config not found: [{modelCfgPath}]");
                 return Task.FromResult(FalseEmptyResult);
             }
             var res = Edit(modelCfgPath, true);
@@ -31,7 +31,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Create new {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config in interactive mode.";
+            return $"Create new {CoreConstants.SUBSYSTEM_TEST_RUNNER} config in interactive mode.";
         }
 
         public override string GetHelp()
