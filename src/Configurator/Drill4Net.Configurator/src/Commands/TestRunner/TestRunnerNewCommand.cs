@@ -19,7 +19,7 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
-            var modelCfgPath = Path.Combine(_rep.GetInstallDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
+            var modelCfgPath = _rep.GetTestRunnerModelConfigPath();
             if (!File.Exists(modelCfgPath))
             {
                 RaiseError($"Model {CoreConstants.SUBSYSTEM_TEST_RUNNER} config not found: [{modelCfgPath}]");
@@ -36,7 +36,9 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return $@"This command allows you to interactively create a configuration for the {CoreConstants.SUBSYSTEM_TEST_RUNNER} ""run"" of injected automatic tests in the target application (SUT - system under test). You should simply answer a number of clarifying questions. This is the second stage in the full workflow of the Drill for .NET (after ""just injection of the target"").
+
+The command does not accept any clarifying arguments yet, but this may be done in the near future.";
         }
     }
 }

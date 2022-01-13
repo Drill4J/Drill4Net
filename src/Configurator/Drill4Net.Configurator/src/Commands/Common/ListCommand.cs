@@ -19,6 +19,7 @@ namespace Drill4Net.Configurator
         {
             var commands = _cliRep.Commands.Values
                 .Where(a => !a.Id.Equals(CliConstants.COMMAND_NULL, StringComparison.InvariantCultureIgnoreCase))
+                .OrderBy(a => a.RawContexts)
                 .ToList();
             var maxIdLen = commands.Max(a => a.RawContexts.Length) + 2;
             for (int i = 0; i < commands.Count; i++)

@@ -1,18 +1,18 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Cli;
-using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_SYS, ConfiguratorConstants.COMMAND_CHECK)]
-    public class SysCheckCommand : AbstractConfiguratorCommand
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_INJECT)]
+    public class TargetInjectCommand : AbstractConfiguratorCommand
     {
-        public SysCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
+        public TargetInjectCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 
-        /**************************************************************************/
+        /****************************************************************/
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {

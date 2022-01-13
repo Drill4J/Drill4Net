@@ -75,17 +75,17 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "View help for the commands.";
+            return "View help article for the specified commands.";
         }
 
         public override string GetHelp()
         {
-            return @"Shows the help article for the specified command. You can use positional parameters with symbols -- for clear separation. It is also allowed to use the 'help' command. 
+            return @"You can use positional parameters with symbols -- for clear separation. It is also allowed to use the 'help' command. 
 
 Those examples show the way to get the help description for the command 'ci view'.   
-   Example 1: ? ci view
-   Example 2: help ci view
-   Example 3: help -- ci view";
+   Example 1: ? ci check
+   Example 2: help ci check
+   Example 3: help -- ci check";
         }
     }
 }
