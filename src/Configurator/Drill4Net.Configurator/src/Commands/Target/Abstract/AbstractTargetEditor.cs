@@ -25,7 +25,7 @@ namespace Drill4Net.Configurator
             #region Config
             if (!File.Exists(cfgPath))
             {
-                RaiseError($"{CoreConstants.SUBSYSTEM_INJECTOR} config not found: [{cfgPath}]");
+                RaiseError($"{appName} config not found: [{cfgPath}]");
                 return false;
             }
             var cfg = _rep.ReadInjectorOptions(cfgPath);
@@ -35,7 +35,7 @@ namespace Drill4Net.Configurator
             string def = isNew ? "" : cfg.Source.Directory;
             do
             {
-                if (!_cli.AskQuestion("Target's directory (compiled assemblies). It can be full or relative (for the Injector program)",
+                if (!_cli.AskQuestion($"Target's directory (compiled assemblies). It can be full or relative (for the {appName} program)",
                     out sourceDir, def, !string.IsNullOrWhiteSpace(def)))
                     return false;
             }

@@ -37,6 +37,8 @@
         public const string COMMAND_CHECK = "check";
         public const string COMMAND_PREP = "prep";
         public const string COMMAND_RESTORE = "restore";
+        public const string COMMAND_INJECT = "inj";
+        public const string COMMAND_TEST = "test";
 
         public const string COMMAND_CLS = "cls";
         public const string COMMAND_START = "start";

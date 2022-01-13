@@ -83,6 +83,24 @@ namespace Drill4Net.Configurator
         }
 
         /// <summary>
+        /// Get the Injector config as default model's one.
+        /// </summary>
+        /// <returns></returns>
+        public string GetInjectorModelConfigPath()
+        {
+            return Path.Combine(GetInstallDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
+        }
+
+        /// <summary>
+        /// Get the Test Runner config as default model's one.
+        /// </summary>
+        /// <returns></returns>
+        public string GetTestRunnerModelConfigPath()
+        {
+            return Path.Combine(GetInstallDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
+        }
+
+        /// <summary>
         /// Get the agent config as default model's one. It is also copied
         /// to the injected target directory for normal workflow.
         /// </summary>
