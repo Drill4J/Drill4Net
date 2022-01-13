@@ -9,9 +9,8 @@ Receiver:
    GroupId: dotnet-agent # group of consumers
    #Topics: # additional topics
       # #- aaa
-WorkerDirs: 
+WorkerDirs: # if not found, the local one for the Service is used (in Docker)
     - ..\..\Drill4Net.Agent.Worker\net6.0\
-    - .\
 #WorkerPath: ./worker/Drill4Net.Agent.Worker.exe
 #Debug:
 #    Disabled: true

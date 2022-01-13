@@ -221,52 +221,57 @@ namespace Drill4Net.Configurator
         internal bool GetSourceConfigPath<T>(string cfgSubsystem, string dir, CliDescriptor desc,
             out string path, out bool fromSwitch, out string error) where T : AbstractOptions, new()
         {
-            var sourceName = string.Empty;
             path = string.Empty;
             error = string.Empty;
+            fromSwitch = false;
 
-            //switches
-            var copyActive = desc.IsSwitchSet(ConfiguratorConstants.SWITCH_ACTIVE); //copy active
-            if (copyActive)
+            var sourceName = desc.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
+            if (string.IsNullOrWhiteSpace(sourceName))
             {
-                var actualCfg = _rep.GetActualConfigPath(dir);
-                sourceName = Path.GetFileName(actualCfg);
-                dir = Path.GetDirectoryName(actualCfg);
-            }
-            if (sourceName == string.Empty)
-            {
-                var copyLast = desc.IsSwitchSet(ConfiguratorConstants.SWITCH_LAST);
-                if (copyLast)
+                //switches
+                var copyActive = desc.IsSwitchSet(ConfiguratorConstants.SWITCH_ACTIVE); //copy active
+                if (copyActive)
                 {
-                    var configs = _rep.GetConfigs<T>(cfgSubsystem, dir);
-                    var lastEditedFile = string.Empty;
-                    var dt = DateTime.MinValue;
-                    foreach (var config in configs)
-                    {
-                        var fdt = File.GetLastWriteTime(config);
-                        if (fdt < dt)
-                            continue;
-                        dt = fdt;
-                        lastEditedFile = config;
-                    }
-                    if (lastEditedFile != string.Empty)
-                        sourceName = Path.GetFileName(lastEditedFile);
+                    var actualCfg = _rep.GetActualConfigPath(dir);
+                    sourceName = Path.GetFileName(actualCfg);
+                    dir = Path.GetDirectoryName(actualCfg);
                 }
-            }
+                if (string.IsNullOrWhiteSpace(sourceName))
+                {
+                    var copyLast = desc.IsSwitchSet(ConfiguratorConstants.SWITCH_LAST);
+                    if (copyLast)
+                    {
+                        var configs = _rep.GetConfigs<T>(cfgSubsystem, dir);
+                        var lastEditedFile = string.Empty;
+                        var dt = DateTime.MinValue;
+                        foreach (var config in configs)
+                        {
+                            var fdt = File.GetLastWriteTime(config);
+                            if (fdt < dt)
+                                continue;
+                            dt = fdt;
+                            lastEditedFile = config;
+                        }
+                        if (lastEditedFile != string.Empty)
+                            sourceName = Path.GetFileName(lastEditedFile);
+                    }
+                }
 
-            fromSwitch = !string.IsNullOrWhiteSpace(sourceName);
+                fromSwitch = !string.IsNullOrWhiteSpace(sourceName);
+            }
 
             //check file name
-            if (string.IsNullOrWhiteSpace(sourceName))
-                sourceName = desc.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
             if(string.IsNullOrWhiteSpace(sourceName))
                 sourceName = desc.GetPositional(0);
-            if (!string.IsNullOrWhiteSpace(sourceName) && string.IsNullOrWhiteSpace(Path.GetPathRoot(sourceName)))
+            if (!string.IsNullOrWhiteSpace(sourceName))
             {
                 //in fact, it is full path
-                sourceName = sourceName.Replace("\"", null);
-                dir = Path.GetDirectoryName(sourceName);
-                sourceName = Path.GetFileName(sourceName);
+                if (!string.IsNullOrWhiteSpace(Path.GetPathRoot(sourceName)))
+                {
+                    sourceName = sourceName.Replace("\"", null);
+                    dir = Path.GetDirectoryName(sourceName);
+                    sourceName = Path.GetFileName(sourceName);
+                }
             }
 
             //source path

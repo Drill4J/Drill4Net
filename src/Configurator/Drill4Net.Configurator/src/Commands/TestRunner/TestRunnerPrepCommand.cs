@@ -20,22 +20,8 @@ namespace Drill4Net.Configurator
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var force = IsSwitchSet(CoreConstants.SWITCH_FORCE);
-            //var injCfg = GetPositional(0); //cfg name
-            var destDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR, false); //injected target dir
             var injectorDir = _rep.GetInjectorDirectory();
-
-            //if (!string.IsNullOrWhiteSpace(injCfg)) //by config
-            //{
-                //if (!Path.HasExtension(injCfg))
-                //    injCfg += ".yml";
-
-                //var cfgPath = string.IsNullOrWhiteSpace(Path.GetPathRoot(injCfg)) ? //is it full path?
-                //    Path.Combine(injectorDir, injCfg) : //local config for the Injector
-                //    injCfg;
-
-                //return Task.FromResult((processConfig(cfgPath, force), new Dictionary<string, object>()));
-            //}
-            //else
+            var destDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR, false); //injected target dir
             if (!string.IsNullOrWhiteSpace(destDir)) //by injected target dir
             {
                 return Task.FromResult((ProcessInjectedTarget(destDir, force), new Dictionary<string, object>()));
