@@ -11,7 +11,7 @@ COPY . .
 RUN ls -la build || true
 RUN rm -rf build/bin 
 RUN rm -rf build/obj
-RUN ls -la build
+RUN ls -la build || true
 RUN dotnet restore "src/Agent/Drill4Net.Agent.Service/Drill4Net.Agent.Service.csproj"
 RUN dotnet restore "src/Agent/Drill4Net.Agent.Worker/Drill4Net.Agent.Worker.csproj"
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Service"
