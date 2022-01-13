@@ -11,11 +11,17 @@ RUN rm -rf build/bin
 RUN rm -rf build/obj
 RUN ls -la build
 RUN dotnet restore "src/Agent/Drill4Net.Agent.Service/Drill4Net.Agent.Service.csproj"
+RUN dotnet restore "src/Agent/Drill4Net.Agent.Worker/Drill4Net.Agent.Worker.csproj"
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Service"
 RUN dotnet build "Drill4Net.Agent.Service.csproj" -c Release -o /app/build
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Worker"
+RUN dotnet build "Drill4Net.Agent.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Service"
 RUN dotnet publish "Drill4Net.Agent.Service.csproj" -c Release -o /app/publish
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Worker"
+RUN dotnet publish "Drill4Net.Agent.Worker.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

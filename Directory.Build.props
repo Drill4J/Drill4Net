@@ -7,12 +7,12 @@
 	  <BaseIntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)build\obj\$(Configuration)'))\$(MSBuildProjectName)</BaseIntermediateOutputPath>
   </PropertyGroup>
 
-  <!--<PropertyGroup>
+  <PropertyGroup>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>false</GenerateBindingRedirectsOutputType>
 	<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	<EmbedUntrackedSources>true</EmbedUntrackedSources>
-  </PropertyGroup>-->
+  </PropertyGroup>
 
   <!--<ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="$(NerdbankGitVersioningVersion)" PrivateAssets="all" />

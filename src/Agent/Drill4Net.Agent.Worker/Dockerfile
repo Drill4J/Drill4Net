@@ -10,14 +10,14 @@ RUN ls -la build
 RUN rm -rf build/bin
 RUN rm -rf build/obj
 RUN ls -la build
-RUN dotnet restore "src/Agent/Drill4Net.Agent.Service/Drill4Net.Agent.Service.csproj"
-WORKDIR "/src/src/Agent/Drill4Net.Agent.Service"
-RUN dotnet build "Drill4Net.Agent.Service.csproj" -c Release -o /app/build
+RUN dotnet restore "src/Agent/Drill4Net.Agent.Worker/Drill4Net.Agent.Worker.csproj"
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Worker"
+RUN dotnet build "Drill4Net.Agent.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Drill4Net.Agent.Service.csproj" -c Release -o /app/publish
+RUN dotnet publish "Drill4Net.Agent.Worker.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Drill4Net.Agent.Service.dll"]
+ENTRYPOINT ["dotnet", "Drill4Net.Agent.Worker.dll"]
