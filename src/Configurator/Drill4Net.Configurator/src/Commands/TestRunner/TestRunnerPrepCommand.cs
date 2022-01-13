@@ -64,14 +64,14 @@ namespace Drill4Net.Configurator
             string? err;
             if (!Directory.Exists(dir))
             {
-                err = $"Directory does not exist: [{dir}]. Perform the target injection first by specified {CoreConstants.SUBSYSTEM_INJECTOR}'s config.";
+                err = $"Directory does not exist: [{dir}]. Perform the target injection first by specified {CoreConstants.SUBSYSTEM_INJECTOR} config.";
                 _logger.Error(err);
                 RaiseError(err);
                 return false;
             }
             //
             var trCfgPath = Path.Combine(dir, _rep.GetAgentTargetConfigName());
-            var agCfgS = $"{CoreConstants.SUBSYSTEM_AGENT}'s config";
+            var agCfgS = $"{CoreConstants.SUBSYSTEM_AGENT} config";
             if (force || !File.Exists(trCfgPath))
             {
                 var modelCfgPath = _rep.GetAgentModelConfigPath();
@@ -127,19 +127,22 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT}'s config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings. The Injector does it itself, but if the system settings were changed after that, you need to do the same manually and using the ""f"" switch (forced overwrite).
+            return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT} config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings. The Injector does it itself, but if the system settings were changed after that, you need to do the same manually and using the ""f"" switch (forced overwrite).
 
 You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_INJECTOR} config which describes a specific injection: ""a"" for the active one and ""l"" for the last edited one.
-    Example: trg prep -a
-    Example: trg prep -l
-    Example: trg prep -lf (forced)
+    Example: run prep -a
+    Example: run prep -l
+    Example: run prep -lf (forced)
 
 Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR} config file or its full path as positional parameter:
-    Example: trg prep -- cfg2
-    Example: trg prep -- ""d:\Targets\TargA.Injected\cfg2.yml""
+    Example: run prep -- cfg2
+    Example: run prep -- ""d:\configs\injections\cfg2.yml""
+
+...or with named argument:
+    Example: run prep --cfg_path=""d:\configs\injections\cfg2.yml""
 
 Another option is passing the injected target directory using ""dest_dir"" option:
-    Example: trg prep --dest_dir=""d:\Targets\TargA.Injected\"" -f (forced)";
+    Example: run prep --dest_dir=""d:\Targets\TargetA.Injected\"" -f (forced)";
         }
     }
 }

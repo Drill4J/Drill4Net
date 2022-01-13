@@ -23,29 +23,22 @@ namespace Drill4Net.Configurator
         {
             var cmdRes = true;
             RaiseMessage($"\n{CoreConstants.SUBSYSTEM_INJECTOR} configuration check.", CliMessageType.Info);
+            if (_desc == null)
+                return Task.FromResult(FalseEmptyResult);
 
             //open cfg
-            var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
-            if (string.IsNullOrWhiteSpace(cfgPath))
+            var dir = _rep.GetInjectorDirectory();
+            var res2 = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                dir, _desc, out var cfgPath, out var _, out var error);
+            if (!res2)
             {
-                if (_desc == null)
-                    return Task.FromResult(FalseEmptyResult);
-                var dir = _rep.GetInjectorDirectory();
-                var res2 = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
-                    dir, _desc, out cfgPath, out var _, out var error);
-                if (!res2)
-                {
-                    RaiseError(error);
-                    return Task.FromResult(FalseEmptyResult);
-                }
+                RaiseError(error);
+                return Task.FromResult(FalseEmptyResult);
             }
-            else
+           if (!File.Exists(cfgPath))
             {
-                if (!File.Exists(cfgPath))
-                {
-                    RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
-                    return Task.FromResult(FalseEmptyResult);
-                }
+                RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
+                return Task.FromResult(FalseEmptyResult);
             }
 
             RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
@@ -214,8 +207,10 @@ You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_IN
 
 Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR} config file or its full path as positional parameter:
     Example: trg check -- cfg2
-    Example: trg check -- ""d:\Targets\TargA.Injected\cfg2.yml""
-";
+    Example: trg check -- ""d:\configs\injections\cfg2.yml""
+
+...or with named argument:
+    Example: run check --cfg_path=""d:\configs\injections\cfg2.yml""";
         }
     }
 }

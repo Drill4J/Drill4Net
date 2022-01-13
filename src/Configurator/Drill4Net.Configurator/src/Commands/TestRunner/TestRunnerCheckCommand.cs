@@ -23,30 +23,22 @@ namespace Drill4Net.Configurator
         {
             var cmdRes = true;
             RaiseMessage($"\n{CoreConstants.SUBSYSTEM_TEST_RUNNER} configuration check.", CliMessageType.Info);
+            if (_desc == null)
+                return Task.FromResult(FalseEmptyResult);
 
             //open cfg
-            var cfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
-            if (string.IsNullOrWhiteSpace(cfgPath))
+            var dir = _rep.GetTestRunnerDirectory();
+            var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER,
+                dir, _desc, out var cfgPath, out var _, out var error);
+            if (!res)
             {
-                if (_desc == null)
-                    return Task.FromResult(FalseEmptyResult);
-
-                var dir = _rep.GetTestRunnerDirectory();
-                var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER,
-                    dir, _desc, out cfgPath, out var _, out var error);
-                if (!res)
-                {
-                    RaiseError(error);
-                    return Task.FromResult(FalseEmptyResult);
-                }
+                RaiseError(error);
+                return Task.FromResult(FalseEmptyResult);
             }
-            else
+            if (!File.Exists(cfgPath))
             {
-                if (!File.Exists(cfgPath))
-                {
-                    RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
-                    return Task.FromResult(FalseEmptyResult);
-                }
+                RaiseError($"Specified by parameter config is not found: [{cfgPath}]");
+                return Task.FromResult(FalseEmptyResult);
             }
             //
             RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
@@ -111,7 +103,18 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return $@"This command allows you to check the {CoreConstants.SUBSYSTEM_TEST_RUNNER} configuration to run the tests before actually start them. The correctness and integrity of parameter values, file paths to targets, and the like are automatically checked. A report is displayed at the end.
+
+You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_TEST_RUNNER} config: ""a"" for the active one and ""l"" for the last edited one.
+    Example: run check -a
+    Example: run check -l
+
+Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_TEST_RUNNER} config file or its full path as positional parameter:
+    Example: run check -- cfg2
+    Example: run check -- ""d:\configs\test_runner\cfg2.yml""
+
+...or with named argument:
+    Example: run check --cfg_path=""d:\configs\test_runner\cfg2.yml""";
         }
     }
 }
