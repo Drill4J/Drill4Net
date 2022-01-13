@@ -151,3 +151,9 @@ Enter to container in Git-bash (Windows)
 docker ps
 winpty  docker exec -it CONTAINER_ID bash
 ```
+
+
+Try pass environment variable to docker
+```
+docker run -it  drill4net_agent:latest -e KAFKA_SERVER_PORT='host.docker.internal:9093'
+```
