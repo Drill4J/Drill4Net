@@ -1,4 +1,4 @@
-Description: Model agent's config
+Description: Model agent config
 Type: Agent # type as hint
 Target: # metadata about Target - overriding one from tree file
   Name: # need if during injection it was missed

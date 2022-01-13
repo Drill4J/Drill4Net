@@ -28,7 +28,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Delete the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config.";
+            return $"Delete the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER} config.";
         }
 
         public override string GetHelp()

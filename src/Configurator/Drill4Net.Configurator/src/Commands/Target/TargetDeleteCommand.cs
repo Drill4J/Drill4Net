@@ -28,7 +28,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Delete the specified {CoreConstants.SUBSYSTEM_INJECTOR}'s config.";
+            return $"Delete the specified {CoreConstants.SUBSYSTEM_INJECTOR} config.";
         }
 
         public override string GetHelp()

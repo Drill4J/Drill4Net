@@ -2,7 +2,7 @@
 Type: Injector # type as hint
 Target: # some metadata about target
     Name: console-testing-target-kafka # optional injection name
-    Version: # 0.0.999 # version of whole Product, can be empty and can be overridden by Agent's configs
+    Version: # 0.0.999 # version of whole Product, can be empty and can be overridden by Agent configs
     VersionAssemblyName: Drill4Net.Target.Common.dll # Name of main Product assembly - if the version is empty, you can specify with the automatic changing version
 Source: # what and how processing
     Directory: ..\..\Tests\TargetApps\

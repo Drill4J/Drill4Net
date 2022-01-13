@@ -58,7 +58,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Copy the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s config to new one with some new parameters.";
+            return $"Copy the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER} config to new one with some new parameters.";
         }
 
         public override string GetHelp()

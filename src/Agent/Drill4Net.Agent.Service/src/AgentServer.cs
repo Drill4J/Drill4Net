@@ -80,7 +80,7 @@ namespace Drill4Net.Agent.Service
                 foreach (var wDir in wDirs)
                 {
                     var curPath = FileUtils.GetFullPath(Path.Combine(wDir, workerName));
-                    if (File.Exists(curPath))
+                    if (FileUtils.ExecutableExists(curPath))
                     {
                         _workerPath = curPath;
                         break;
@@ -89,7 +89,7 @@ namespace Drill4Net.Agent.Service
             }
             if (!File.Exists(_workerPath))
                 _workerPath = Path.Combine(FileUtils.ExecutingDir, workerName);
-            if (!File.Exists(_workerPath))
+            if (!FileUtils.ExecutableExists(_workerPath))
                 throw new Exception($"Agent Worker's executable not found: [{_workerPath}]");
             _workerDir = Path.GetDirectoryName(_workerPath);
 

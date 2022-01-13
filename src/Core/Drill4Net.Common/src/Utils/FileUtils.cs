@@ -175,5 +175,18 @@ namespace Drill4Net.Common
             }
         }
         #endregion
+
+        /// <summary>
+        /// Does executable file exist (taking into account Linux executable)?
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool ExecutableExists(string path)
+        {
+            if (File.Exists(path))
+                return true;
+            path = Path.GetFileNameWithoutExtension(path);
+            return File.Exists(path);
+        }
     }
 }
