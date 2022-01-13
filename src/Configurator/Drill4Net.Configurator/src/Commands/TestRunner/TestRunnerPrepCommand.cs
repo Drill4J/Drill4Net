@@ -20,32 +20,33 @@ namespace Drill4Net.Configurator
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var force = IsSwitchSet(CoreConstants.SWITCH_FORCE);
-            var injCfg = GetPositional(0); //cfg name
-            var injDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR, false); //injected target dir
-            if (!string.IsNullOrWhiteSpace(injCfg)) //by config
-            {
-                if (!Path.HasExtension(injCfg))
-                    injCfg += ".yml";
+            //var injCfg = GetPositional(0); //cfg name
+            var destDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR, false); //injected target dir
+            var injectorDir = _rep.GetInjectorDirectory();
 
-                var cfgPath = string.IsNullOrWhiteSpace(Path.GetPathRoot(injCfg)) ? //is it full path?
-                    Path.Combine(_rep.GetInjectorDirectory(), injCfg) : //local config for the Injector
-                    injCfg;
+            //if (!string.IsNullOrWhiteSpace(injCfg)) //by config
+            //{
+                //if (!Path.HasExtension(injCfg))
+                //    injCfg += ".yml";
 
-                return Task.FromResult((processConfig(cfgPath, force), new Dictionary<string, object>()));
-            }
-            else
-            if (!string.IsNullOrWhiteSpace(injDir)) //by injected target dir
+                //var cfgPath = string.IsNullOrWhiteSpace(Path.GetPathRoot(injCfg)) ? //is it full path?
+                //    Path.Combine(injectorDir, injCfg) : //local config for the Injector
+                //    injCfg;
+
+                //return Task.FromResult((processConfig(cfgPath, force), new Dictionary<string, object>()));
+            //}
+            //else
+            if (!string.IsNullOrWhiteSpace(destDir)) //by injected target dir
             {
-                return Task.FromResult((ProcessInjectedTarget(injDir, force), new Dictionary<string, object>()));
+                return Task.FromResult((ProcessInjectedTarget(destDir, force), new Dictionary<string, object>()));
             }
             else //by switches (last, active configs...)
             {
                 if (_desc == null)
                     return Task.FromResult(FalseEmptyResult);
 
-                var dir = _rep.GetInjectorDirectory();
-                var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc, out var cfgPath,
-                    out var _, out string? err);
+                var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                    injectorDir, _desc, out var cfgPath, out var _, out string? err);
                 if (!res)
                 {
                     if (string.IsNullOrWhiteSpace(err))
@@ -142,12 +143,12 @@ namespace Drill4Net.Configurator
         {
             return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT}'s config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings. The Injector does it itself, but if the system settings were changed after that, you need to do the same manually and using the ""f"" switch (forced overwrite).
 
-You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_INJECTOR}'s config which describes a specific injection: ""a"" for the active one and ""l"" for the last edited one.
+You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_INJECTOR} config which describes a specific injection: ""a"" for the active one and ""l"" for the last edited one.
     Example: trg prep -a
     Example: trg prep -l
     Example: trg prep -lf (forced)
 
-Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR}'s config file or its full path as positional parameter:
+Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR} config file or its full path as positional parameter:
     Example: trg prep -- cfg2
     Example: trg prep -- ""d:\Targets\TargA.Injected\cfg2.yml""
 

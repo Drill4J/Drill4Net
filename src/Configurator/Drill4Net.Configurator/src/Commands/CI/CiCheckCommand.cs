@@ -115,7 +115,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Checks the specified {CoreConstants.SUBSYSTEM_CI}'s configuration before starting the full workflow.";
+            return $"Checks the specified {CoreConstants.SUBSYSTEM_CI} configuration before starting the full workflow.";
         }
 
         public override string GetHelp()

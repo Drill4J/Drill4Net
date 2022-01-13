@@ -49,6 +49,7 @@ namespace Drill4Net.Configurator
             }
 
             RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
+            _cli.DrawShortSeparator();
             //
             var opts = _rep.ReadInjectorOptions(cfgPath ?? "", true);
             var destDir = opts.Destination.Directory ?? "";
@@ -200,12 +201,21 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Checks the specified {CoreConstants.SUBSYSTEM_INJECTOR}'s configuration before target proccessing.";
+            return $"Checks the specified {CoreConstants.SUBSYSTEM_INJECTOR} configuration before target's proccessing.";
         }
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return $@"This command allows you to check the injection configuration of one or more targets before the actual processing. The correctness and integrity of parameter values, file paths to targets, system components, and the like are automatically checked. A report is displayed at the end.
+
+You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_INJECTOR} config which describes a specific injection: ""a"" for the active one and ""l"" for the last edited one.
+    Example: trg check -a
+    Example: trg check -l
+
+Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR} config file or its full path as positional parameter:
+    Example: trg check -- cfg2
+    Example: trg check -- ""d:\Targets\TargA.Injected\cfg2.yml""
+";
         }
     }
 }

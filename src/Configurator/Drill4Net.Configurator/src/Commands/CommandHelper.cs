@@ -256,8 +256,18 @@ namespace Drill4Net.Configurator
 
             fromSwitch = !string.IsNullOrWhiteSpace(sourceName);
 
+            //check file name
             if (string.IsNullOrWhiteSpace(sourceName))
+                sourceName = desc.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
+            if(string.IsNullOrWhiteSpace(sourceName))
                 sourceName = desc.GetPositional(0);
+            if (!string.IsNullOrWhiteSpace(sourceName) && string.IsNullOrWhiteSpace(Path.GetPathRoot(sourceName)))
+            {
+                //in fact, it is full path
+                sourceName = sourceName.Replace("\"", null);
+                dir = Path.GetDirectoryName(sourceName);
+                sourceName = Path.GetFileName(sourceName);
+            }
 
             //source path
             return GetConfigPath(dir, "source", sourceName, true, out path, out error);

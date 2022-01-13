@@ -1,14 +1,16 @@
-﻿namespace Drill4Net.Agent.Messaging.Transport
+﻿using System.Collections.Generic;
+
+namespace Drill4Net.Agent.Messaging.Transport
 {
     public class AgentServerOptions : MessagerOptions
     {
         /// <summary>
-        /// Gets or sets the agent worker path.
+        /// Gets or sets the agent potential worker dirs.
         /// </summary>
         /// <value>
         /// The agent worker path.
         /// </value>
-        public string WorkerPath { get; set; }
+        public List<string> WorkerDirs { get; set; }
         
         public AgentServerDebugOptions Debug { get; set; }
     }

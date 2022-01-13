@@ -106,7 +106,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Checks the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER}'s configuration before start its tests.";
+            return $"Checks the specified {CoreConstants.SUBSYSTEM_TEST_RUNNER} configuration before start its tests.";
         }
 
         public override string GetHelp()

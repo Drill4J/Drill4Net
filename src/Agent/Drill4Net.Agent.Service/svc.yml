@@ -9,7 +9,9 @@ Receiver:
    GroupId: dotnet-agent # group of consumers
    #Topics: # additional topics
       # #- aaa
-WorkerPath: ..\..\Drill4Net.Agent.Worker\net6.0\Drill4Net.Agent.Worker.exe
+WorkerDirs: 
+    - ..\..\Drill4Net.Agent.Worker\net6.0\
+    - .\
 #WorkerPath: ./worker/Drill4Net.Agent.Worker.exe
 #Debug:
 #    Disabled: true
