@@ -19,6 +19,7 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
+            RaiseMessage("\nCreating a configuration for the instrumenting the target (SUT - system under test).", CliMessageType.Info);
             var modelCfgPath = _rep.GetInjectorModelConfigPath();
             if (!File.Exists(modelCfgPath))
             {

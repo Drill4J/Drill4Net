@@ -19,6 +19,7 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
+            RaiseMessage("\nCreating a configuration for the run the instrumented automatic tests of the target (SUT - system under test).", CliMessageType.Info);
             var modelCfgPath = _rep.GetTestRunnerModelConfigPath();
             if (!File.Exists(modelCfgPath))
             {

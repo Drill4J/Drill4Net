@@ -19,8 +19,15 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
-            var ciCfgPath = GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH, false);
-            if (string.IsNullOrWhiteSpace(ciCfgPath))
+            if (_desc == null)
+                return Task.FromResult(FalseEmptyResult);
+
+            RaiseMessage("\nCreating a configuration for the CI pipeline.", CliMessageType.Info);
+
+            var dir = _rep.GetCiDirectory();
+            var res = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc,
+                out var ciCfgPath, out var _, out var _);
+            if (!res) //this is fine for a full setup
             {
                 if (!ConfigureCiConfig(out ciCfgPath))
                     return Task.FromResult(FalseEmptyResult);
@@ -31,8 +38,8 @@ So, do you want to integrate CI run into some source code projects (on its post-
                 if(!_cli.IsYes(answer))
                     return Task.FromResult(TrueEmptyResult);
             }
-            var res = (InjectCiToProjects(ciCfgPath), new Dictionary<string, object>());
-            return Task.FromResult(res);
+            var res2 = (InjectCiToProjects(ciCfgPath), new Dictionary<string, object>());
+            return Task.FromResult(res2);
         }
 
         private bool ConfigureCiConfig(out string ciCfgPath)
@@ -207,7 +214,11 @@ So, do you want to integrate CI run into some source code projects (on its post-
     Example: ci new
 
 You can skip the stage of creating the config and configure only the injecting of CI procedures in source code projects using a named argument pointing to an already created config:
-    Example: ci new --cfg_path=""d:\configs\ci\cfg2.yml""";
+    Example: ci new --cfg_path=""d:\configs\ci\cfg2.yml""
+
+Also you can use some swithes for implicit specifying this config: ""a"" for the active one and ""l"" for the last edited one.
+    Example: ci new -a
+    Example: ci new -l";
         }
     }
 }
