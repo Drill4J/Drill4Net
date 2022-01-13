@@ -36,9 +36,11 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return $@"This command allows you to interactively create a configuration for the {CoreConstants.SUBSYSTEM_TEST_RUNNER} ""run"" of injected automatic tests in the target application (SUT - system under test). You should simply answer a number of clarifying questions. This is the second stage in the full workflow of the Drill for .NET (after ""just injection of the target"").
+            return $@"This command allows you to interactively create a configuration from scratch for the {CoreConstants.SUBSYSTEM_TEST_RUNNER} ""run"" of injected automatic tests in the target application (SUT - system under test). You should simply answer a number of clarifying questions. This is the second stage in the full workflow of the Drill for .NET (after ""just injection of the target"").
 
-The command does not accept any clarifying arguments yet, but this may be done in the near future.";
+The command does not accept any clarifying arguments yet, but this may be done in the near future.
+
+    Example: run new";
         }
     }
 }

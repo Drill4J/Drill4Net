@@ -24,8 +24,8 @@ namespace Drill4Net.Configurator
             {
                 if (!ConfigureCiConfig(out ciCfgPath))
                     return Task.FromResult(FalseEmptyResult);
-                if (!_cli.AskQuestion(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). 
-Do you want to integrate CI run into some projects on its post-build events?",
+                if (!_cli.AskQuestion(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). Integration with the Jenkins, TeamCity, etc will be implement later.
+So, do you want to integrate CI run into some source code projects (on its post-build events)?",
                     out var answer, "y"))
                     return Task.FromResult(FalseEmptyResult);
                 if(!_cli.IsYes(answer))
@@ -202,7 +202,12 @@ Do you want to integrate CI run into some projects on its post-build events?",
 
         public override string GetHelp()
         {
-            return $@"";
+            return $@"This command allows you to interactively create a configuration from scratch for the CI pipeline, connecting the injection stage for several independent configs and the stage of launching automatic tests by the {CoreConstants.SUBSYSTEM_TEST_RUNNER} contained in the corresponding targets (SUT - system under test). The command will also integrate the launch of the CI process by the generated config into the post-build event of compiling .NET projects to choose from, which allows you to fully automate the entire CI pipeline.
+
+    Example: ci new
+
+You can skip the stage of creating the config and configure only the injecting of CI procedures in source code projects using a named argument pointing to an already created config:
+    Example: ci new --cfg_path=""d:\configs\ci\cfg2.yml""";
         }
     }
 }
