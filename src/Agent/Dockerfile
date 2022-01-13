@@ -8,8 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ENV KAFKA_SERVER_PORT $KAFKA_SERVER_PORT
 WORKDIR /src
 COPY . .
-RUN ls -la build
-RUN rm -rf build/bin
+RUN ls -la build || true
+RUN rm -rf build/bin 
 RUN rm -rf build/obj
 RUN ls -la build
 RUN dotnet restore "src/Agent/Drill4Net.Agent.Service/Drill4Net.Agent.Service.csproj"
