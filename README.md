@@ -121,9 +121,7 @@ Choose and start profile Docker
 
 ## Debug Docker build when build without Visual Studio
 
-Remove `.env from .dockerignore`
 Use src/Agent/Drill4Net.Agent.Service/Dockerfile-new
-
 
 Add this line to Directory.Build.props in root project
 
