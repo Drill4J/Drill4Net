@@ -11,7 +11,7 @@ fi
 ls -la
 pwd
 
-envsubst < svc.yml.tamplate > svc.yml
+envsubst < svc.yml.template > svc.yml
 
 echo 'cat svc.yml'
 
