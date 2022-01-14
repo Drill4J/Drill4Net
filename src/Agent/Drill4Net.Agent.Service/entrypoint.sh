@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo MESSAGE_SERVER_ADDRESS:
 echo ${MESSAGE_SERVER_ADDRESS}
 
