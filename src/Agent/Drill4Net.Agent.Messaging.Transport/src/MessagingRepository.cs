@@ -42,10 +42,10 @@ namespace Drill4Net.Agent.Messaging.Transport
         internal static bool GetServerAddressesFromEnvVars(out List<string> servers)
         {
             servers = new();
-            var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS);
+            var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.Machine);
             if(val == null)
                 return false;
-            servers = val.Split(',').ToList();
+            servers = val.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
             _logger.Info($"Message server address found in the environment variables: {servers}");
             return true;
         }
