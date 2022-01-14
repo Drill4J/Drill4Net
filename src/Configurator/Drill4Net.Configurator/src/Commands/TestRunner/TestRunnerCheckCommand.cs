@@ -105,16 +105,7 @@ namespace Drill4Net.Configurator
         {
             return $@"This command allows you to check the {CoreConstants.SUBSYSTEM_TEST_RUNNER} configuration to run the tests before actually start them. The correctness and integrity of parameter values, file paths to targets, and the like are automatically checked. A report is displayed at the end.
 
-You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_TEST_RUNNER} config: ""a"" for the active one and ""l"" for the last edited one.
-    Example: run check -a
-    Example: run check -l
-
-Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_TEST_RUNNER} config file or its full path as positional parameter:
-    Example: run check -- cfg2
-    Example: run check -- ""d:\configs\test_runner\cfg2.yml""
-
-...or with named argument:
-    Example: run check --cfg_path=""d:\configs\test_runner\cfg2.yml""";
+{HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_TEST_RUNNER, RawContexts, "runner")}";
         }
     }
 }

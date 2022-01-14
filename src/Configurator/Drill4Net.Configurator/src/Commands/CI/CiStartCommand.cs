@@ -60,15 +60,15 @@ namespace Drill4Net.Configurator
 
             var cfgsDir = opts.Injection?.ConfigDir;
             if (string.IsNullOrWhiteSpace(cfgsDir))
-                return (false, $"The directory of {CoreConstants.SUBSYSTEM_INJECTOR} configs is empty");
+                return (false, $"The directory path of {CoreConstants.SUBSYSTEM_INJECTOR} configs is empty");
             if (!Directory.Exists(cfgsDir))
-                return (false, $"The directory of {CoreConstants.SUBSYSTEM_INJECTOR} configs not found");
+                return (false, $"The directory with {CoreConstants.SUBSYSTEM_INJECTOR} configs not found");
 
             var runCfgPath = opts.TestRunnerConfigPath;
             if (string.IsNullOrWhiteSpace(runCfgPath))
                 return (false, $"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config's path is empty");
             if (!File.Exists(runCfgPath))
-                return (false, $"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config's not found");
+                return (false, $"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config not found");
             #endregion
 
             //degreeParallel
@@ -122,7 +122,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Start the CI run.";
+            return "Start the CI pipeline.";
         }
 
         public override string GetHelp()

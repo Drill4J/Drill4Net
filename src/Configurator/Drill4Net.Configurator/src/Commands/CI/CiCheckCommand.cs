@@ -122,16 +122,7 @@ namespace Drill4Net.Configurator
         {
             return $@"This command allows you to check the {CoreConstants.SUBSYSTEM_CI} configuration for soame ""run"" before the actual processing. The correctness and integrity of parameter values, file paths to targets, specified {CoreConstants.SUBSYSTEM_TEST_RUNNER} executable, and the like are automatically checked. A report is displayed at the end.
 
-You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_CI} config: ""a"" for the active one and ""l"" for the last edited one.
-    Example: ci check -a
-    Example: ci check -l
-
-Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_CI} config file or its full path as positional parameter:
-    Example: ci check -- cfg2
-    Example: ci check -- ""d:\configs\ci\cfg2.yml""
-
-...or with named argument:
-    Example: ci check --cfg_path=""d:\configs\ci\cfg2.yml""
+{HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_CI, RawContexts, "ci")}
 
 You can use the ""f"" switch to check not only the {CoreConstants.SUBSYSTEM_CI} configuration, but also all related configurations (for the injections and the {CoreConstants.SUBSYSTEM_TEST_RUNNER}).
     Example: ci check -lf";

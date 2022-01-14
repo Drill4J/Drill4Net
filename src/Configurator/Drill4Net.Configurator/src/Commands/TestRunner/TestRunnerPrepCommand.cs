@@ -127,21 +127,15 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
+            //here are mentioned exactly INJECTOR configs!
             return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT} config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings. The Injector does it itself, but if the system settings were changed after that, you need to do the same manually and using the ""f"" switch (forced overwrite).
 
-You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_INJECTOR} config which describes a specific injection: ""a"" for the active one and ""l"" for the last edited one.
-    Example: run prep -a
-    Example: run prep -l
+{HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts)}
     Example: run prep -lf (forced)
 
-Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR} config file or its full path as positional parameter:
-    Example: run prep -- cfg2
-    Example: run prep -- ""d:\configs\injections\cfg2.yml""
+{HelpHelper.GetExplicitConfigDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts, "injections")}
 
-...or with named argument:
-    Example: run prep --cfg_path=""d:\configs\injections\cfg2.yml""
-
-Another option is passing the injected target directory using ""dest_dir"" option:
+Another option is passing the injected target directory directly using ""dest_dir"" option:
     Example: run prep --dest_dir=""d:\Targets\TargetA.Injected\"" -f (forced)";
         }
     }

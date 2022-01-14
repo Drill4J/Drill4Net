@@ -209,16 +209,16 @@ So, do you want to integrate CI run into some source code projects (on its post-
 
         public override string GetHelp()
         {
-            return $@"This command allows you to interactively create a configuration from scratch for the CI pipeline, connecting the injection stage for several independent configs and the stage of launching automatic tests by the {CoreConstants.SUBSYSTEM_TEST_RUNNER} contained in the corresponding targets (SUT - system under test). The command will also integrate the launch of the CI process by the generated config into the post-build event of compiling .NET projects to choose from, which allows you to fully automate the entire CI pipeline.
+            return $@"This command allows you interactively:
+  a). to create a configuration from scratch for the CI pipeline, connecting the injection stage for several independent configs and the stage of launching automatic tests by the {CoreConstants.SUBSYSTEM_TEST_RUNNER} contained in the corresponding targets (SUT - system under test). 
+  b). to integrate the launch of the CI process by the generated config into the post-build event of compiling .NET projects to choose from, which allows you to fully automate the CI pipeline during the developing.
 
     Example: ci new
 
-You can skip the stage of creating the config and configure only the injecting of CI procedures in source code projects using a named argument pointing to an already created config:
-    Example: ci new --cfg_path=""d:\configs\ci\cfg2.yml""
+{HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_CI, RawContexts)}
 
-Also you can use some swithes for implicit specifying this config: ""a"" for the active one and ""l"" for the last edited one.
-    Example: ci new -a
-    Example: ci new -l";
+You can skip the stage of creating the config and configure only the injecting of CI procedures in source code projects using a named argument pointing to an already created config:
+    Example: ci new --cfg_path=""d:\configs\ci\cfg2.yml""";
         }
     }
 }

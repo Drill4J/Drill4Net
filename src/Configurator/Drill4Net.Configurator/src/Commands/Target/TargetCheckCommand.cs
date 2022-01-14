@@ -201,16 +201,7 @@ namespace Drill4Net.Configurator
         {
             return $@"This command allows you to check the injection configuration of one or more targets before the actual processing. The correctness and integrity of parameter values, file paths to targets, system components, and the like are automatically checked. A report is displayed at the end.
 
-You can use some swithes for implicit specifying the {CoreConstants.SUBSYSTEM_INJECTOR} config which describes a specific injection: ""a"" for the active one and ""l"" for the last edited one.
-    Example: trg check -a
-    Example: trg check -l
-
-Also you can to do it by passing the explicit short name of {CoreConstants.SUBSYSTEM_INJECTOR} config file or its full path as positional parameter:
-    Example: trg check -- cfg2
-    Example: trg check -- ""d:\configs\injections\cfg2.yml""
-
-...or with named argument:
-    Example: run check --cfg_path=""d:\configs\injections\cfg2.yml""";
+{HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts, "injections")}";
         }
     }
 }
