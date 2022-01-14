@@ -1,7 +1,7 @@
 ﻿Description: Agent Server for controlling workers processing the probes for Drill Admin side by messaging
 Type: agent-service # type as hint
 Servers: # list of Kafka servers
-   - '${KAFKA_SERVER_ADDRESS}' # from host
+   - '${MESSAGE_SERVER_ADDRESS}' # from host
 Sender:
    #Topics: # additional topics
 Receiver:
