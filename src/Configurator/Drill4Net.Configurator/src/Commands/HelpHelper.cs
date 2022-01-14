@@ -37,7 +37,7 @@
         internal static string GetActiveConfigText(string appName, bool isProgram, string cmd, string fld)
         {
             var str = $"The command sets the specified config active, the link to which is written to the special redirection config _redirect.yml, located in the root of the {appName} folder. The corresponding process will use the specified config as the default config, which makes it possible to run the program without arguments";
-            
+
             if(isProgram)
                 str += ", for example, by clicking on the icon from the file manager.";
             else

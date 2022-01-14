@@ -215,10 +215,10 @@ So, do you want to integrate CI run into some source code projects (on its post-
 
     Example: ci new
 
-{HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_CI, RawContexts)}
-
 You can skip the stage of creating the config and configure only the injecting of CI procedures in source code projects using a named argument pointing to an already created config:
-    Example: ci new --cfg_path=""d:\configs\ci\cfg2.yml""";
+    Example: ci new --cfg_path=""d:\configs\ci\cfg2.yml""
+
+{HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_CI, RawContexts)}";
         }
     }
 }

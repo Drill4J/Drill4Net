@@ -131,7 +131,7 @@ namespace Drill4Net.Configurator
 
 {HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_CI, RawContexts, "ci", true)}
 
-
+The working folder for CI pipeline is installed in the config of the {CoreConstants.SUBSYSTEM_CONFIGURATOR} (for now – directly), but you can set the defaults by the command ""cfg restore"".
 ";
         }
     }

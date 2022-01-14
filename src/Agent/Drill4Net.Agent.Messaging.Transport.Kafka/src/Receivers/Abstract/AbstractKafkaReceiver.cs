@@ -5,26 +5,26 @@ using Drill4Net.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {
-    public abstract class AbstractKafkaReceiver<T> : IMessageReceiver
-        where T : MessagerOptions, new()
+    public abstract class AbstractKafkaReceiver<TOpts> : IMessageReceiver
+        where TOpts : MessagerOptions, new()
     {
         public event ErrorOccuredDelegate ErrorOccured;
 
         public bool IsStarted { get; protected set; }
 
         protected readonly ConsumerConfig _cfg;
-        protected readonly AbstractRepository<T> _rep;
+        protected readonly AbstractRepository<TOpts> _rep;
         private readonly Logger _logger;
 
         private int _unknownTopicCounter;
 
         /*****************************************************************************************/
 
-        protected AbstractKafkaReceiver(AbstractRepository<T> rep)
+        protected AbstractKafkaReceiver(AbstractRepository<TOpts> rep)
         {
             #region Init/checks
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
-            _logger = new TypedLogger<AbstractKafkaReceiver<T>>(rep.Subsystem);
+            _logger = new TypedLogger<AbstractKafkaReceiver<TOpts>>(rep.Subsystem);
             var opts = _rep.Options;
             if(opts == null)
                 throw new Exception("Options are empty");

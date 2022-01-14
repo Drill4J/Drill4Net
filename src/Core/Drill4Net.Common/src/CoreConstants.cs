@@ -78,5 +78,16 @@
         /// </summary>
         public const string REGEX_FILTER_PREFIX = "reg:";
         #endregion
+        #region Environment variables (Docker)
+        /// <summary>
+        /// Environment variables in the Docker for middleware (Kafka)
+        /// </summary>
+        public const string ENV_MESSAGE_SERVER_ADDRESS = "MESSAGE_SERVER_ADDRESS";
+
+        /// <summary>
+        /// Environment variables in the Docker for Drill admin service
+        /// </summary>
+        public const string ENV_DRILL_ADMIN_ADDRESS = "DRILL_ADMIN_ADDRESS";
+        #endregion
     }
 }
