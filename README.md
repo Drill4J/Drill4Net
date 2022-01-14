@@ -149,5 +149,5 @@ DOCKER_BUILDKIT=0 docker-compose -f docker-compose-agent.yml build --no-cache
 
 Pass environment variable to docker in Git-bash (Windows)
 ```
-winpty docker run -it -e KAFKA_SERVER_PORT='host.docker.internal:9093' drill4net_agent:latest
+winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network drill4net_agent:latest
 ```

@@ -1,15 +1,16 @@
 #!/bin/bash
-echo KAFKA_SERVER_PORT:
-echo ${KAFKA_SERVER_PORT}
 
-if [[ -z "${KAFKA_SERVER_PORT}" ]]; 
+echo MESSAGE_SERVER_ADDRESS:
+echo ${MESSAGE_SERVER_ADDRESS}
+
+if [[ -z "${MESSAGE_SERVER_ADDRESS}" ]]; 
 then
-  echo "Value KAFKA_SERVER_PORT is undefined"
+  echo "Value MESSAGE_SERVER_ADDRESS is undefined"
   exit 1;
 fi
 
-ls -la
-pwd
+echo 'ENV:'
+env
 
 envsubst < svc.yml.template > svc.yml
 
