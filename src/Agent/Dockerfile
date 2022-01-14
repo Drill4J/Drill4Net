@@ -28,6 +28,7 @@ RUN dotnet publish "Drill4Net.Agent.Worker.csproj" -c Release -o /app/publish
 
 FROM base AS final
 ENV KAFKA_SERVER_ADDRESS $KAFKA_SERVER_ADDRESS
+ENV DRILL_ADMIN_ADDRESS $DRILL_ADMIN_ADDRESS
 RUN apt-get update && apt-get install -y --no-install-recommends gettext-base && apt-get clean
 WORKDIR /app
 COPY --from=publish /app/publish .

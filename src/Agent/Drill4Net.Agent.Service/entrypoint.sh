@@ -8,8 +8,8 @@ then
   exit 1;
 fi
 
-ls -la
-pwd
+echo 'ENV:'
+env
 
 envsubst < svc.yml.template > svc.yml
 
