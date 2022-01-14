@@ -31,7 +31,7 @@ ENV KAFKA_SERVER_PORT $KAFKA_SERVER_PORT
 RUN apt-get update && apt-get install -y --no-install-recommends gettext-base && apt-get clean
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY --from=build /src/src/Agent/Drill4Net.Agent.Service/svc.yml.tamplate .
+COPY --from=build /src/src/Agent/Drill4Net.Agent.Service/svc.yml.template .
 COPY --from=build /src/src/Agent/Drill4Net.Agent.Service/entrypoint.sh .
 RUN ls -la
 #ENTRYPOINT [ "dotnet", "Drill4Net.Agent.Service.dll"]
