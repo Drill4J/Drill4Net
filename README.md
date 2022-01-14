@@ -126,12 +126,12 @@ Use src/Agent/Drill4Net.Agent.Service/Dockerfile-new
 Add this line to Directory.Build.props in root project
 
 ```
-  <!--<PropertyGroup>
+  <PropertyGroup>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>false</GenerateBindingRedirectsOutputType>
 	<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	<EmbedUntrackedSources>true</EmbedUntrackedSources>
-  </PropertyGroup>-->
+  </PropertyGroup>
 ```
 
 Add `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` to src\Agent\Drill4Net.Agent.Service\Drill4Net.Agent.Service.csproj
