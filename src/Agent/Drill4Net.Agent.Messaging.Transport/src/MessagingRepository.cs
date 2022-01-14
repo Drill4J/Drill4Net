@@ -50,17 +50,17 @@ namespace Drill4Net.Agent.Messaging.Transport
             var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.Process);
             if (val == null)
             {
-                _logger.Info($"The environment variables for message server address is emty - will be used the config's value");
+                //_logger.Info("The environment variables for message server address is emty - will be used the config's value");
                 return false;
             }
             servers = val.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
             var mess = "Message server address found in the environment variables";
             if (servers.Count == 0)
             {
-                _logger.Error($"{mess}: {servers}");
+                //_logger.Error($"{mess}: {servers}");
                 return false;
             }
-            _logger.Info($"{mess}, but no address: {servers}");
+            //_logger.Info($"{mess}, but no address: {servers}");
             return true;
         }
     }
