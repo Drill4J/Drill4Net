@@ -144,7 +144,7 @@ Add `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` to src\Agent\Drill4Net.
 
 Build in Git-bash (Windows)
 ```
-DOCKER_BUILDKIT=0 docker-compose -f docker-compose-agent.yml build --no-cache
+docker-compose -f docker-compose-agent.yml build
 ```
 
 Pass environment variable to docker in Git-bash (Windows)
