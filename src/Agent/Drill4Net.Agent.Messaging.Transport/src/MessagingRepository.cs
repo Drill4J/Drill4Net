@@ -39,14 +39,28 @@ namespace Drill4Net.Agent.Messaging.Transport
             return opts;
         }
 
+        /// <summary>
+        /// It is used for the Docker environment - overrides the options for middleware address
+        /// </summary>
+        /// <param name="servers"></param>
+        /// <returns></returns>
         internal static bool GetServerAddressesFromEnvVars(out List<string> servers)
         {
             servers = new();
-            var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.Machine);
-            if(val == null)
+            var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.User);
+            if (val == null)
+            {
+                _logger.Info($"The environment variables for message server address is emty - will be used the config's value");
                 return false;
+            }
             servers = val.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
-            _logger.Info($"Message server address found in the environment variables: {servers}");
+            var mess = "Message server address found in the environment variables";
+            if (servers.Count == 0)
+            {
+                _logger.Error($"{mess}: {servers}");
+                return false;
+            }
+            _logger.Info($"{mess}, but no address: {servers}");
             return true;
         }
     }

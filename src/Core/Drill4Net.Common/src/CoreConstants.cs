@@ -79,6 +79,8 @@
         public const string REGEX_FILTER_PREFIX = "reg:";
         #endregion
         #region Environment variables (Docker)
+        //Environment variable names are case-sensitive on Linux and macOS but are not case-sensitive on Windows.
+
         /// <summary>
         /// Environment variables in the Docker for middleware (Kafka)
         /// </summary>
