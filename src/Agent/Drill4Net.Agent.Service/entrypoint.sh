@@ -1,10 +1,10 @@
 #!/bin/bash
-echo KAFKA_SERVER_PORT:
-echo ${KAFKA_SERVER_PORT}
+echo KAFKA_SERVER_ADDRESS:
+echo ${KAFKA_SERVER_ADDRESS}
 
-if [[ -z "${KAFKA_SERVER_PORT}" ]]; 
+if [[ -z "${KAFKA_SERVER_ADDRESS}" ]]; 
 then
-  echo "Value KAFKA_SERVER_PORT is undefined"
+  echo "Value KAFKA_SERVER_ADDRESS is undefined"
   exit 1;
 fi
 
