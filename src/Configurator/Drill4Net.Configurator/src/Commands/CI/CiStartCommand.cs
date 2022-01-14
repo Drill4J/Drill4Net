@@ -127,7 +127,9 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return @$"The command starts the CI pipeline: instrumentation by the {CoreConstants.SUBSYSTEM_INJECTOR} of one or more targets (SUT - system under test), and then launching automatic tests located in them using {CoreConstants.SUBSYSTEM_TEST_RUNNER}. The pipeline launch is currently integrated into the post-build event of .NET projects and is designed to facilitate development in the IDE. In the future, support for Jenkins, TeamCity, etc is planned.
+
+{HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_CI, RawContexts, "ci")}";
         }
     }
 }
