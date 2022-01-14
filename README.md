@@ -155,5 +155,5 @@ winpty  docker exec -it CONTAINER_ID bash
 
 Try pass environment variable to docker
 ```
-winpty docker run -e KAFKA_SERVER_PORT='host.docker.internal:9093' drill4net_agent:latest
+winpty docker run -it -e KAFKA_SERVER_PORT='host.docker.internal:9093' drill4net_agent:latest
 ```
