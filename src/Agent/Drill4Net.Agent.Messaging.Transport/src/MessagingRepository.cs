@@ -47,7 +47,7 @@ namespace Drill4Net.Agent.Messaging.Transport
         internal static bool GetServerAddressesFromEnvVars(out List<string> servers)
         {
             servers = new();
-            var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.User);
+            var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.Process);
             if (val == null)
             {
                 _logger.Info($"The environment variables for message server address is emty - will be used the config's value");
