@@ -67,6 +67,6 @@ services:
       - drill4net-dev-network
 
 networks:
-  drill4j-dev-network:
+  drill4net-dev-network:
     external: false
     name: drill4net-dev-network
