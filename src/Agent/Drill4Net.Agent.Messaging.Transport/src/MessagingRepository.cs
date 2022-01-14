@@ -52,13 +52,14 @@ namespace Drill4Net.Agent.Messaging.Transport
             }
             //
             servers = val.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
+
             const string mess = "Message server address found in the environment variables";
             if (servers.Count == 0)
             {
-                Log.Error($"{mess}, but no address: {servers}", null);
+                Log.Error($"{mess}, but no address", null);
                 return false;
             }
-            Log.Info($"{mess}: {servers}");
+            Log.Info($"{mess}: {string.Join(",", servers)}");
             return true;
         }
     }
