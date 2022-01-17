@@ -36,6 +36,9 @@ namespace Drill4Net.Agent.Messaging.Transport
             TargetName = targetName ?? throw new ArgumentNullException(nameof(targetName));
             TargetVersion = targetVersion ?? throw new ArgumentNullException(nameof(targetVersion));
 
+            if (MessagingRepository<MessagerOptions>.GetServersFromEnv(out var servers))
+                Options.Servers = servers;
+
             MessagerOptions = Options; //guano
 
             if (Options.Sender == null)

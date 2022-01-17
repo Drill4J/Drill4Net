@@ -112,8 +112,8 @@ namespace Drill4Net.Agent.Worker
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
 
-            //this is in Docker
-            if (MessagingRepository<MessagerOptions>.GetServerAddressesFromEnv(out var servers))
+            //this is in the Docker
+            if (MessagingRepository<MessagerOptions>.GetServersFromEnv(out var servers))
                 opts.Servers = servers;
 
             _logger.Debug($"Communicator options: [{opts}]");

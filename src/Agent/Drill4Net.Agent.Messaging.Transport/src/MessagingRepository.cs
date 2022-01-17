@@ -19,7 +19,7 @@ namespace Drill4Net.Agent.Messaging.Transport
         {
             Options = opts ?? throw new ArgumentNullException(nameof(opts));
             PrepareLogger();
-            if (GetServerAddressesFromEnv(out var envServers))
+            if (GetServersFromEnv(out var envServers))
                 opts.Servers = envServers;
         }
 
@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.Messaging.Transport
             if(string.IsNullOrWhiteSpace(cfgPath))
                cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
             var opts = optHelper.ReadOptions(cfgPath);
-            if (GetServerAddressesFromEnv(out var envServers))
+            if (GetServersFromEnv(out var envServers))
                 opts.Servers = envServers;
             return opts;
         }
@@ -41,7 +41,7 @@ namespace Drill4Net.Agent.Messaging.Transport
         /// </summary>
         /// <param name="servers"></param>
         /// <returns></returns>
-        public static bool GetServerAddressesFromEnv(out List<string> servers)
+        public static bool GetServersFromEnv(out List<string> servers)
         {
             servers = new();
 
