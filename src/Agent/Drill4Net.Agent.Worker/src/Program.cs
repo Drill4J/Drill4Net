@@ -6,6 +6,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging.Transport;
 using Drill4Net.Repository;
 using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.BanderLog.Sinks.Console;
 
 /*** INFO
      automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -85,6 +86,7 @@ namespace Drill4Net.Agent.Worker
             var path = LoggerHelper.GetCommonFilePath(LoggerHelper.LOG_FOLDER);
             var builder = new LogBuilder()
                 .AddSink(new FileSink(path))
+                .AddSink(new ConsoleSink()) //only for Debug or DebuggerAtached?
                 .Build();
             Log.Configure(builder);
             _logger = new TypedLogger<Program>(CoreConstants.SUBSYSTEM_CONFIGURATOR);

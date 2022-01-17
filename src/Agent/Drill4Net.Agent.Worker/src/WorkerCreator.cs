@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -20,8 +21,8 @@ namespace Drill4Net.Agent.Worker
         {
             if (appArgs == null)
                 throw new ArgumentNullException(nameof(appArgs));
-            _cliDescriptor = new CliDescriptor(appArgs, false);
             _logger = new TypedLogger<WorkerCreator>(CoreConstants.SUBSYSTEM_AGENT_WORKER);
+            _cliDescriptor = new CliDescriptor(appArgs, false);
         }
 
         /**************************************************************************/
@@ -80,6 +81,7 @@ namespace Drill4Net.Agent.Worker
             if (!string.IsNullOrWhiteSpace(cmdForTransTopic))
                 opts.Sender.Topics.Add(cmdForTransTopic);
 
+            _logger.Debug($"Communicator options: [{JsonConvert.SerializeObject(opts)}]");
             return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, targetName, targetVersion, opts, cfgPath);
         }
 
@@ -116,7 +118,6 @@ namespace Drill4Net.Agent.Worker
             if (MessagingRepository<MessagerOptions>.GetServersFromEnv(out var servers))
                 opts.Servers = servers;
 
-            _logger.Debug($"Communicator options: [{opts}]");
             return (cfgPathArg, opts);
         }
     }

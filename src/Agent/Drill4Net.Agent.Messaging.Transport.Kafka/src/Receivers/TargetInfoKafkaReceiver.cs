@@ -59,6 +59,8 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                 _cts = new();
 
             var opts = _rep.Options; //can contains different topics
+            _logger.Debug($"Target info servers: {string.Join(",", _rep.Options.Servers)}");
+
             var topics = MessagingUtils.FilterTargetTopics(opts.Receiver?.Topics, _isServer);
             _logger.Debug($"Target info topics: {string.Join(",", topics)}");
 

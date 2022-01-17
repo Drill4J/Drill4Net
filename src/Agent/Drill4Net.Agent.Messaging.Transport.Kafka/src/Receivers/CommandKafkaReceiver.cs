@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using Confluent.Kafka;
 using Drill4Net.BanderLog;
@@ -46,11 +45,12 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         private void RetrieveCommands()
         {
             _logger.Info("Start retrieving commands...");
+            _logger.Debug($"Receiver command servers: {string.Join(",", _rep.Options.Servers)}");
 
-            _cts = new();
             var cmdTopics = MessagingUtils.FilterCommandTopics(_rep.Options.Receiver?.Topics);
             _logger.Debug($"Receiver command topics: [{string.Join(",", cmdTopics)}]");
 
+            _cts = new();
             while (true)
             {
                 try

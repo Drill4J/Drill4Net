@@ -15,6 +15,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
         public CommandKafkaSender(IMessagerRepository rep) : base(rep)
         {
             _logger = new TypedLogger<CommandKafkaSender>(rep.Subsystem);
+            _logger.Debug($"Command sender servers: {string.Join(",", _rep.MessagerOptions.Servers)}");
         }
 
         /**************************************************************************/

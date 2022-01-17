@@ -44,6 +44,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
         private void RetrieveProbes()
         {
             _logger.Info("Start retrieving probes...");
+            _logger.Debug($"Probe servers: {string.Join(",", _rep.Options.Servers)}");
 
             _cts = new();
             var opts = _rep.Options;
