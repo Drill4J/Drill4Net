@@ -47,7 +47,7 @@ namespace Drill4Net.Agent.Messaging.Transport
             var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.Process);
             if (val == null)
             {
-                Log.Info("The environment variables for message server address is emty - will be used the config's value");
+                Log.Info("The environment variable for message server addresses is empty - will be used the config's value");
                 return false;
             }
             //
@@ -59,6 +59,7 @@ namespace Drill4Net.Agent.Messaging.Transport
                 Log.Error($"{mess}, but no address", null);
                 return false;
             }
+
             Log.Info($"{mess}: {string.Join(",", servers)}");
             return true;
         }
