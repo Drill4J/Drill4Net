@@ -16,11 +16,11 @@ namespace Drill4Net.Agent.Messaging.Transport
 
         /***************************************************************************************/
 
-        public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, string targetVersion, string cfgPath):
-            base(subsystem, cfgPath)
-        {
-            Init(targetSession, targetName, targetVersion);
-        }
+        //public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, string targetVersion, string cfgPath):
+        //    base(subsystem, cfgPath)
+        //{
+        //    Init(targetSession, targetName, targetVersion);
+        //}
 
         public TargetedSenderRepository(string subsystem, Guid targetSession, string targetName, string targetVersion, MessagerOptions opts):
             base(subsystem, opts)

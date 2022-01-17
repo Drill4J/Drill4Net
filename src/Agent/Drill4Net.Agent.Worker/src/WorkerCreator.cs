@@ -38,7 +38,7 @@ namespace Drill4Net.Agent.Worker
             ITargetInfoReceiver targetReceiver = new TargetInfoKafkaReceiver<MessagerOptions>(rep, false);
 
             //senders
-            ICommandSender cmdSender = CreateCommandSender(rep);
+            ICommandSender cmdSender = CreateCommandSender(rep, rep.Options);
 
             //worker
             return new AgentWorker(rep, targetReceiver, probeReceiver, cmdReceiver, cmdSender);
@@ -85,11 +85,11 @@ namespace Drill4Net.Agent.Worker
             return new TargetedReceiverRepository(CoreConstants.SUBSYSTEM_AGENT_WORKER, targetSession, targetName, targetVersion, opts, cfgPath);
         }
 
-        private ICommandSender CreateCommandSender(ITargetedRepository rep)
+        private ICommandSender CreateCommandSender(ITargetedRepository rep, MessagerOptions msgOpts)
         {
             _logger.Debug("Creating command sender...");
             IMessagerRepository targRep = new TargetedSenderRepository(rep.Subsystem, rep.TargetSession, rep.TargetName,
-                rep.TargetVersion, rep.ConfigPath); //need read own config
+                rep.TargetVersion, msgOpts); //need read own config
             if (targRep.MessagerOptions.Receiver == null)
                 throw new Exception("Receiver is empty");
 
