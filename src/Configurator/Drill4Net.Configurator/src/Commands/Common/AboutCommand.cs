@@ -63,9 +63,21 @@ In turn, the CLI arguments support both Windows syntax and Unix syntax. It is pr
 
             mess = @"
     Example: ? -- ci view
-    Example: ? ci view"
-;
+    Example: ? ci view
+";
             RaiseMessage(mess, CliMessageType.Info);
+
+            mess = @"In addition to the usual CLI capabilities, spaces are allowed in named options around the = sign.";
+            RaiseMessage(mess, CliMessageType.Help);
+
+            mess = @"
+    Example: ci edit -- cfg_path=""d:\ci_1.yml""
+    Example: ci edit -- cfg_path = ""d:\ci_1.yml""
+";
+            RaiseMessage(mess, CliMessageType.Info);
+
+            mess = "Warning: All file and directory paths must be in quotation marks.";
+            RaiseMessage(mess, CliMessageType.Help);
 
             return Task.FromResult(TrueEmptyResult);
         }

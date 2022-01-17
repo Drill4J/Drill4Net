@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
-using Drill4Net.Agent.TestRunner.Core;
-using System.Collections.Generic;
 using Drill4Net.Repository;
+using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
