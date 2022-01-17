@@ -151,3 +151,8 @@ Pass environment variable to docker in Git-bash (Windows)
 ```
 winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network drill4net_agent:latest
 ```
+
+Enter to Docker container and run
+```
+dotnet Drill4Net.Agent.Worker.dll --cfg_path=svc.yml --target_session=4fbf1ce9-c51d-4b35-a2cf-52f6c07d8932 --target_name=IHS-bdd --target_version=0.1.0
+```
