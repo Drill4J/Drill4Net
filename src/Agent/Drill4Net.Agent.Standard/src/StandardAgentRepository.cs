@@ -139,7 +139,28 @@ namespace Drill4Net.Agent.Standard
         {
             if (adminOpts == null)
                 throw new ArgumentNullException(nameof(adminOpts));
-            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminOpts.Url, GetAdminAgentConfig(targetOpts, connOpts));
+            //
+            if (!GetAdminAddressFromEnvVar(out var adminUrl))
+                adminUrl = adminOpts.Url;
+            return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminUrl, GetAdminAgentConfig(targetOpts, connOpts));
+        }
+
+        /// <summary>
+        /// It is used for the Docker environment - overrides the options for Drill service address
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        internal bool GetAdminAddressFromEnvVar(out string address)
+        {
+            //.NET Core on macOS and Linux does not support per-machine or per-user environment variables.
+            address = Environment.GetEnvironmentVariable(CoreConstants.ENV_DRILL_ADMIN_ADDRESS, EnvironmentVariableTarget.Process);
+            if (address == null)
+            {
+                _logger.Info("The environment variable for Drill service addresses is empty - will be used the config's value");
+                return false;
+            }
+            _logger.Info($"Message server address found in the environment variables: {address}");
+            return true;
         }
 
         internal AdminAgentConfig GetAdminAgentConfig(TargetData targOpts, ConnectorAuxOptions connOpts)

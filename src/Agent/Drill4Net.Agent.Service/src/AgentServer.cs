@@ -74,7 +74,7 @@ namespace Drill4Net.Agent.Service
 
             //worker's path
             var wDirs = _rep.Options.WorkerDirs;
-            var workerName = "Drill4Net.Agent.Worker.exe";
+            const string workerName = "Drill4Net.Agent.Worker.exe";
             if (wDirs != null)
             {
                 foreach (var wDir in wDirs)

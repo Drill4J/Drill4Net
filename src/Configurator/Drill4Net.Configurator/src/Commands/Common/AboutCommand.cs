@@ -58,7 +58,7 @@ In turn, the CLI arguments support both Windows syntax and Unix syntax. It is pr
 ";
             RaiseMessage(mess, CliMessageType.Info);
 
-            mess = @"At the same time, for the parameters of the “?” (help) special command, you can omit the separator for the positional parameters --.";
+            mess = @"At the same time, for the parameters of the ""?"" (help) special command, you can omit the separator for the positional parameters --.";
             RaiseMessage(mess, CliMessageType.Help);
 
             mess = @"
@@ -67,12 +67,12 @@ In turn, the CLI arguments support both Windows syntax and Unix syntax. It is pr
 ";
             RaiseMessage(mess, CliMessageType.Info);
 
-            mess = @"In addition to the usual CLI capabilities, spaces are allowed in named options around the = sign.";
+            mess = "In addition to the usual CLI capabilities, spaces are allowed in named options around the = sign.";
             RaiseMessage(mess, CliMessageType.Help);
 
             mess = @"
-    Example: ci edit -- cfg_path=""d:\ci_1.yml""
-    Example: ci edit -- cfg_path = ""d:\ci_1.yml""
+    Example: ci edit --cfg_path=""d:\ci_1.yml""
+    Example: ci edit --cfg_path = ""d:\ci_1.yml""
 ";
             RaiseMessage(mess, CliMessageType.Info);
 

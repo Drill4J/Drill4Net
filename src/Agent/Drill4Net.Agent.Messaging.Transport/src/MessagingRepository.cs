@@ -29,7 +29,7 @@ namespace Drill4Net.Agent.Messaging.Transport
             if(string.IsNullOrWhiteSpace(cfgPath))
                cfgPath = Path.Combine(FileUtils.ExecutingDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
             var opts = optHelper.ReadOptions(cfgPath);
-            if (GetServerAddressesFromEnvVars(out var envServers))
+            if (GetServerAddressesFromEnv(out var envServers))
                 opts.Servers = envServers;
             return opts;
         }
@@ -39,7 +39,7 @@ namespace Drill4Net.Agent.Messaging.Transport
         /// </summary>
         /// <param name="servers"></param>
         /// <returns></returns>
-        internal static bool GetServerAddressesFromEnvVars(out List<string> servers)
+        internal static bool GetServerAddressesFromEnv(out List<string> servers)
         {
             servers = new();
 
