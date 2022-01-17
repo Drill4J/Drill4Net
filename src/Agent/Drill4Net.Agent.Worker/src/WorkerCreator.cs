@@ -111,6 +111,11 @@ namespace Drill4Net.Agent.Worker
             var opts = TargetedReceiverRepository.GetOptionsByPath(CoreConstants.SUBSYSTEM_AGENT_WORKER, cfgPathArg);
             if (opts == null)
                 throw new Exception("Communicator options hasn't retrieved");
+
+            //this is in Docker
+            if (MessagingRepository<MessagerOptions>.GetServerAddressesFromEnv(out var servers))
+                opts.Servers = servers;
+
             _logger.Debug($"Communicator options: [{opts}]");
             return (cfgPathArg, opts);
         }

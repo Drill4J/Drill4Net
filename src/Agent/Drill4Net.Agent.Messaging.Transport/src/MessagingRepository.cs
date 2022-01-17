@@ -18,10 +18,9 @@ namespace Drill4Net.Agent.Messaging.Transport
         public MessagingRepository(string subsystem, TOpts opts): base(subsystem)
         {
             Options = opts ?? throw new ArgumentNullException(nameof(opts));
+            PrepareLogger();
             if (GetServerAddressesFromEnv(out var envServers))
                 opts.Servers = envServers;
-
-            PrepareLogger();
         }
 
         /************************************************************************************************/
@@ -42,7 +41,7 @@ namespace Drill4Net.Agent.Messaging.Transport
         /// </summary>
         /// <param name="servers"></param>
         /// <returns></returns>
-        internal static bool GetServerAddressesFromEnv(out List<string> servers)
+        public static bool GetServerAddressesFromEnv(out List<string> servers)
         {
             servers = new();
 
