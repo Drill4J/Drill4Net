@@ -10,15 +10,15 @@
     },
     "VersionFromArgs": {
       "commandName": "Project",
-      "commandLineArgs": "silent -cfg_path=d:\\Projects\\EPM-D4J\\Drill4Net\\src\\Tests\\IntegrationTests\\Engine\\Drill4Net.Target.Tests.Engine\\post_build_cfg.yml "
+      "commandLineArgs": "--silent --cfg_path=d:\\Projects\\EPM-D4J\\Drill4Net\\src\\Tests\\IntegrationTests\\Engine\\Drill4Net.Target.Tests.Engine\\post_build_cfg.yml "
     },
     "args_for_d4n": {
       "commandName": "Project",
-      "commandLineArgs": "-silent  -degree_parallelism=4 -mutex_id=\"Global\\Injector:38e342ff-eaf1-46eb-a346-66bdb8a1ffb1\" -cfg_dir=\"d:\\Projects\\EPM-D4J\\Distributions\\Drill4Net_debug\\debug_ci\\set_1\\inj_cfg\\\""
+      "commandLineArgs": "--silent  --degree_parallelism=4 --cfg_dir=\"d:\\Projects\\EPM-D4J\\Distributions\\Drill4Net_debug\\debug_ci\\set_1\\inj_cfg\\\""
     },
     "post_build_cfg": {
       "commandName": "Project",
-      "commandLineArgs": "silent -cfg_path=D:\\Projects\\EPM-D4J\\Drill4Net\\src\\Tests\\IntegrationTests\\Engine\\Drill4Net.Target.Tests.Engine\\post_build_cfg.yml"
+      "commandLineArgs": "--silent --cfg_path=D:\\Projects\\EPM-D4J\\Drill4Net\\src\\Tests\\IntegrationTests\\Engine\\Drill4Net.Target.Tests.Engine\\post_build_cfg.yml"
     }
   }
 }

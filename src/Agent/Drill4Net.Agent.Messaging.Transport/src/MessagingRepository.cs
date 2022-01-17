@@ -18,6 +18,9 @@ namespace Drill4Net.Agent.Messaging.Transport
         public MessagingRepository(string subsystem, TOpts opts): base(subsystem)
         {
             Options = opts ?? throw new ArgumentNullException(nameof(opts));
+            if (GetServerAddressesFromEnv(out var envServers))
+                opts.Servers = envServers;
+
             PrepareLogger();
         }
 

@@ -74,7 +74,8 @@ namespace Drill4Net.Agent.Service
 
             //worker's path
             var wDirs = _rep.Options.WorkerDirs;
-            const string workerName = "Drill4Net.Agent.Worker.exe";
+            var workerName = "Drill4Net.Agent.Worker.";
+            workerName += OperatingSystem.IsWindows() ? "exe" : "dll";
             if (wDirs != null)
             {
                 foreach (var wDir in wDirs)
@@ -91,6 +92,8 @@ namespace Drill4Net.Agent.Service
                 _workerPath = Path.Combine(FileUtils.ExecutingDir, workerName);
             if (!FileUtils.ExecutableExists(_workerPath))
                 throw new Exception($"Agent Worker's executable not found: [{_workerPath}]");
+            _logger.Info($"Worker path: [{_workerPath}]");
+
             _workerDir = Path.GetDirectoryName(_workerPath);
 
             //for using by workers
