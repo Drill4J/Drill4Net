@@ -48,6 +48,7 @@ namespace Drill4Net.Cli
             }
         }
 
+        private const string _true = "true";
         private CliArgument? _switch;
         private readonly Dictionary<string, string> _argByNames = new();
 
@@ -260,7 +261,7 @@ namespace Drill4Net.Cli
                             // The last parameter is still waiting. 
                             // With no value, set it to true.
                             if (parameter != null)
-                                AddSwitch(parameter);
+                                AddParameter(parameter);
                             parameter = parts[1];
                         }
                         break;
@@ -270,7 +271,12 @@ namespace Drill4Net.Cli
                         // The last parameter is still waiting.
                         // With no value, set it to true.
                         if (parameter != null)
-                            AddSwitch(parameter);
+                        {
+                            if (raw.StartsWith("--"))
+                                AddParameter(parameter);
+                            else
+                                AddSwitch(parameter);
+                        }
 
                         parameter = parts[1];
 
@@ -300,7 +306,7 @@ namespace Drill4Net.Cli
             return _switch?.Name?.Contains(sw) == true;
         }
 
-        private void AddParameter(string name, string val, int posParamInd = -1)
+        private void AddParameter(string name, string val = _true, int posParamInd = -1)
         {
             if (_argByNames.ContainsKey(name))
                 return;
@@ -310,6 +316,14 @@ namespace Drill4Net.Cli
                 new(name, val, CliArgumentType.NameAndValue) :
                 new(name, val, posParamInd);
             Arguments.Add(arg);
+        }
+
+        private void AddSwitch(string name)
+        {
+            if (_argByNames.ContainsKey(name))
+                return;
+            _argByNames.Add(name, _true);
+            Arguments.Add(new CliArgument(name, _true, CliArgumentType.Switch));
         }
 
         /// <summary>
@@ -340,15 +354,6 @@ namespace Drill4Net.Cli
             if (ind >= poses.Count)
                 return string.Empty;
             return poses[ind].Value;
-        }
-
-        private void AddSwitch(string name)
-        {
-            if (_argByNames.ContainsKey(name))
-                return;
-            const string val = "true";
-            _argByNames.Add(name, val);
-            Arguments.Add(new CliArgument(name, val, CliArgumentType.Switch));
         }
 
         /// <summary>

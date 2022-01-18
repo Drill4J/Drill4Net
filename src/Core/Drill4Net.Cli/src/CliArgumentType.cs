@@ -4,6 +4,7 @@
     {
         /// <summary>
         /// Is it normal parameter with name and value (option)?
+        /// A single parameter (--abc) belongs to this type and has implicit boolean type.
         /// </summary>
         NameAndValue,
 
