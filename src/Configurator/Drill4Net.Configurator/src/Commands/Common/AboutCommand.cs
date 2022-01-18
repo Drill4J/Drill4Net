@@ -15,7 +15,8 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
-            var mess = @"1. ABOUT WORKFLOW
+            var mess = @"
+  1. ABOUT WORKFLOW
 
 Instrumentation is the process of obtaining useful data in runtime from the target application (SUT - system under test), in this case test coverage. It is provided by the preliminary injection of the inspection code in assemblies (files) in the ""offline"", for example, in the pipeline CI/CD. This is done by a special injector that operates not with a high-level language like C#, but with an intermediate bytecode - CIL (Common Intermediate Language). Only after that, the modified assemblies are run in the usual way, for example, on a test server.
 ";
@@ -45,16 +46,16 @@ The injector can handle several different .NET builds, and Test Runner is able t
             RaiseMessage(mess, CliMessageType.Help);
 
             mess = @"
-2. ABOUT CLI
+  2. ABOUT CLI
 
 The command line interface (CLI) of this program is used both to facilitate the configuration of the CI pipeline through wizards (injecting targets, running automatic tests, implementing the CI startup into the compilation of projects .NET, etc.), and provides manual launch of all operations described in the configs with a command or in the program launch arguments for some ones (""ci start"") - this is used for run CI pipeline.
 
-In turn, the CLI arguments support both Windows syntax and Unix syntax. It is preferable to use the latter. Moreover, the word order in the command is not important. So, it is allowed to write both ""trg new"" and ""new trg"". The command options should come last, of course.";
+In turn, the CLI arguments support both Windows syntax and Unix syntax. It is preferable to use the latter. Also, the word order in the command is not important. So, it is allowed to write both ""trg new"" and ""new trg"". The command options should come last, of course.";
             RaiseMessage(mess, CliMessageType.Help);
 
             mess = @"
-    Example: trg activate -- cfg2
-    Example: activate trg -- cfg2
+    Example: trg edit -- cfg2
+    Example: edit trg -- cfg2
 ";
             RaiseMessage(mess, CliMessageType.Info);
 
