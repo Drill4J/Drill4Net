@@ -55,12 +55,12 @@ services:
   
   # Kafka UI
   kafdrop:
-    image: obsidiandynamics/kafdrop:latest
+    image: obsidiandynamics/kafdrop:3.28.0
     container_name: kafdrop
     ports:
       - 9000:9000
     environment:
-      - KAFKA_BROKERCONNECT=kafka1:9092
+      - KAFKA_BROKERCONNECT=kafka1:9093
     depends_on: 
       - kafka1
     networks:
