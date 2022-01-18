@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Drill4Net.Cli;
 using Drill4Net.Common;
+using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
@@ -20,7 +21,7 @@ namespace Drill4Net.Configurator
         public bool Edit(string cfgPath, bool isNew)
         {
             _logger.Info($"Start configure the target: new={isNew}");
-            var appName = CoreConstants.SUBSYSTEM_INJECTOR;
+            const string appName = CoreConstants.SUBSYSTEM_INJECTOR;
 
             #region Config
             if (!File.Exists(cfgPath))
@@ -150,7 +151,7 @@ Hint: to set up value for ""all entities of current filter type"" use sign *. Ex
        {ConfiguratorConstants.FILTER_TYPE_FOLDER}=^* (do not process any folders)";
             RaiseMessage(filterHint, CliMessageType.Help);
 
-            var filterQuestion = "Please create at least one filter rule";
+            const string? filterQuestion = "Please create at least one filter rule";
             RaiseQuestion($"\n{filterQuestion}: ");
 
             while (true)
@@ -209,6 +210,9 @@ Please make your choice";
             if (!_cli.AddLogFile(cfg.Logs, appName))
                 return false;
 
+            //corrections
+            CorrectProfilerDirectory(cfg);
+
             // save config
             if (isNew)
             {
@@ -219,6 +223,14 @@ Please make your choice";
             {
                 return _cmdHelper.SaveConfig(appName, cfg, cfgPath);
             }
+        }
+
+        internal void CorrectProfilerDirectory(InjectorOptions opts)
+        {
+            var dir = opts.Profiler.Directory;
+            if (Path.IsPathRooted(dir)) //absolute path
+                return;
+            opts.Profiler.Directory = FileUtils.GetFullPath(dir, _rep.GetInjectorDirectory());
         }
 
         private bool AskDestinationPostfix(ref string postfix)
