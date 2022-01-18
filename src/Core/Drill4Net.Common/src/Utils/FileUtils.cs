@@ -142,7 +142,7 @@ namespace Drill4Net.Common
             return path?.Replace('/', Path.DirectorySeparatorChar)?.Replace('\\', Path.DirectorySeparatorChar);
         }
 
-        public static string GetDirectoryName(string path)
+        public static string RefineDirectoryName(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
                 return null;

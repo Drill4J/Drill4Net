@@ -21,9 +21,9 @@ namespace Drill4Net.Injector.Core
             if (string.IsNullOrWhiteSpace(destDir))
             {
                 if (string.IsNullOrWhiteSpace(opts.Destination?.Directory))
-                    destDir = $"{FileUtils.GetDirectoryName(opts.Source.Directory)}.{opts.Destination?.FolderPostfix ?? "Injected"}";
+                    destDir = $"{FileUtils.RefineDirectoryName(opts.Source.Directory)}.{opts.Destination?.FolderPostfix ?? "Injected"}";
                 else
-                    destDir = FileUtils.GetDirectoryName(opts.Destination.Directory);
+                    destDir = FileUtils.RefineDirectoryName(opts.Destination.Directory);
             }
 
             opts.Destination.Directory = destDir;
@@ -98,7 +98,7 @@ namespace Drill4Net.Injector.Core
                 null;
             }
             if (!string.IsNullOrWhiteSpace(sourceDir))
-                opts.Source.Directory = FileUtils.GetDirectoryName(sourceDir);
+                opts.Source.Directory = FileUtils.RefineDirectoryName(sourceDir);
         }
 
         internal void ClarifyDestinationDirectory(CliDescriptor cliDescriptor, InjectorOptions opts)

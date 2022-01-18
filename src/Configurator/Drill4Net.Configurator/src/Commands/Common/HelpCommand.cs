@@ -82,7 +82,7 @@ namespace Drill4Net.Configurator
         {
             return @"You can use positional parameters with symbols -- for clear separation. It is also allowed to use the 'help' command. 
 
-Those examples show the way to get the help description for the command 'ci view'.   
+Those examples show the way to get the help description for the command 'ci check'.   
    Example 1: ? ci check
    Example 2: help ci check
    Example 3: help -- ci check";

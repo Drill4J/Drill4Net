@@ -70,10 +70,15 @@ Specify at least one tests' assembly.";
             #endregion
 
             // save the options
-            bool res = isNew
-                ? _cmdHelper.AskNameAndSave(CoreConstants.SUBSYSTEM_TEST_RUNNER, cfg, opts.TestRunnerDirectory ?? "", true)
-                : _cmdHelper.SaveConfig(appName, cfg, cfgPath);
-            return res;
+            if (isNew)
+            {
+                RaiseMessage($"\n{HelpHelper.GetInjectorAndRunnerConfigSavingNote(CoreConstants.SUBSYSTEM_TEST_RUNNER)}");
+                return _cmdHelper.AskNameAndSave(CoreConstants.SUBSYSTEM_TEST_RUNNER, cfg, opts.TestRunnerDirectory ?? "", true);
+            }
+            else
+            {
+                return _cmdHelper.SaveConfig(appName, cfg, cfgPath);
+            }
         }
 
         private bool AddTestDirectories(IList<RunDirectoryOptions> directories, bool runDefaultParalelRestrint, out string err)

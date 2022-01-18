@@ -7,6 +7,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Configuration;
 using Microsoft.Extensions.Logging;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -207,12 +208,26 @@ namespace Drill4Net.Configurator
                 RaiseWarning("Filename cannot be empty\n", MessageState.PrevLine);
                 return false;
             }
-            if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            //
+            if (Path.GetDirectoryName(filename) != null) //full file path
             {
-                if (string.IsNullOrWhiteSpace(mess))
-                    mess = "File name contains invalid symbols";
-                RaiseWarning(mess);
-                return false;
+                if (filename.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                {
+                    if (string.IsNullOrWhiteSpace(mess))
+                        mess = "File path contains invalid symbols";
+                    RaiseWarning(mess);
+                    return false;
+                }
+            }
+            else //just file name
+            {
+                if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+                {
+                    if (string.IsNullOrWhiteSpace(mess))
+                        mess = "File name contains invalid symbols";
+                    RaiseWarning(mess);
+                    return false;
+                }
             }
             return true;
         }

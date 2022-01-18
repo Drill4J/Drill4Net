@@ -20,44 +20,56 @@ namespace Drill4Net.Common
 
         public void AddDirectory(string dir)
         {
+            if (Directories == null)
+                Directories = new();
             if (string.IsNullOrWhiteSpace(dir) || Directories.Contains(dir))
                 return;
-            (Directories ??= new()).Add(dir);
+            Directories.Add(dir);
         }
 
         public void AddFolder(string fld)
         {
+            if (Folders == null)
+                Folders = new();
             if (string.IsNullOrWhiteSpace(fld) || Folders.Contains(fld))
                 return;
-            (Folders ??= new()).Add(fld);
+            Folders.Add(fld);
         }
 
         public void AddFile(string name)
         {
+            if (Files == null)
+                Files = new();
             if (string.IsNullOrWhiteSpace(name) || Files.Contains(name))
                 return;
-            (Files ??= new()).Add(name);
+            Files.Add(name);
         }
 
         public void AddNamespace(string ns)
         {
+            if (Namespaces == null)
+                Namespaces = new();
             if (string.IsNullOrWhiteSpace(ns) || Namespaces.Contains(ns))
                 return;
-            (Namespaces ??= new()).Add(ns);
+            Namespaces.Add(ns);
         }
 
         public void AddClass(string fullName)
         {
+            if (Classes == null)
+                Classes = new();
             if (string.IsNullOrWhiteSpace(fullName) || Classes.Contains(fullName))
                 return;
-            (Classes ??= new()).Add(fullName);
+            Classes.Add(fullName);
         }
 
         public void AddAttribute(string fullName)
         {
+            if (Attributes == null)
+                Attributes = new();
             if (string.IsNullOrWhiteSpace(fullName) || Attributes.Contains(fullName))
                 return;
-            (Attributes ??= new()).Add(fullName);
+            Attributes.Add(fullName);
         }
 
         public bool IsDirectoryListed(string path)

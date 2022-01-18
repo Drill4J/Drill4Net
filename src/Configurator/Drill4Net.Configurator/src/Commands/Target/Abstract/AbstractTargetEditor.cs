@@ -134,20 +134,20 @@ The filters:
        {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\,d:\Projects\123\ (two directories in one type's tag with comma)
        {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\;{ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\123\ (two directories in separate blocks with semicolon)
   - By folder (just name). Example: 
-       {ConfiguratorConstants.FILTER_TYPE_FOLDER}: ref
+       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=ref
   - By file (short name). Example: 
-       {ConfiguratorConstants.FILTER_TYPE_FILE}: Drill4Net.Target.Common.dll
+       {ConfiguratorConstants.FILTER_TYPE_FILE}=Drill4Net.Target.Common.dll
   - By namespace (by beginning if value is presented as string, or by regex). Examples:
-       {ConfiguratorConstants.FILTER_TYPE_NAMESPACE}: Drill4Net
-       {ConfiguratorConstants.FILTER_TYPE_NAMESPACE}: reg: ^Drill4Net\.([\w-]+\.)+[\w]*Tests$
+       {ConfiguratorConstants.FILTER_TYPE_NAMESPACE}=Drill4Net
+       {ConfiguratorConstants.FILTER_TYPE_NAMESPACE}=reg: ^Drill4Net\.([\w-]+\.)+[\w]*Tests$
   - By class fullname (with namespace). Example:
-       {ConfiguratorConstants.FILTER_TYPE_CLASS}: Drill4Net.Target.Common.ModelTarget
+       {ConfiguratorConstants.FILTER_TYPE_CLASS}=Drill4Net.Target.Common.ModelTarget
   - By attribute of type. Example:
-       {ConfiguratorConstants.FILTER_TYPE_ATTRIBUTE}: Drill4Net.Target.SuperAttribute (it is full name of its type)
+       {ConfiguratorConstants.FILTER_TYPE_ATTRIBUTE}=Drill4Net.Target.SuperAttribute (it is full name of its type)
 
 Hint: the regex must be located only in a sole filter tag (one expression in one tag).
 Hint: to set up value for ""all entities of current filter type"" use sign *. Example:
-       {ConfiguratorConstants.FILTER_TYPE_FOLDER}: ^* (do not process any folders)";
+       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=^* (do not process any folders)";
             RaiseMessage(filterHint, CliMessageType.Help);
 
             var filterQuestion = "Please create at least one filter rule";
@@ -155,7 +155,7 @@ Hint: to set up value for ""all entities of current filter type"" use sign *. Ex
 
             while (true)
             {
-                answer = Console.ReadLine().Trim().ToLower();
+                answer = Console.ReadLine().Trim();
                 if (_cli.IsOk(answer))
                     break;
                 if (!AddFilterRules(answer, cfg.Source.Filter, out string err))
@@ -211,9 +211,14 @@ Please make your choice";
 
             // save config
             if (isNew)
+            {
+                RaiseMessage($"\n{HelpHelper.GetInjectorAndRunnerConfigSavingNote(CoreConstants.SUBSYSTEM_INJECTOR)}");
                 return _cmdHelper.AskNameAndSave(appName, cfg, _rep.GetInjectorDirectory(), true);
+            }
             else
+            {
                 return _cmdHelper.SaveConfig(appName, cfg, cfgPath);
+            }
         }
 
         private bool AskDestinationPostfix(ref string postfix)
@@ -313,7 +318,6 @@ Please make your choice";
                     return false;
                 }
                 var ar = rule.Split("=");
-                var type = ar[0];
 
                 //get rules' values
                 var val = ar[1];
@@ -324,12 +328,13 @@ Please make your choice";
                     vals = new() { val };
 
                 // add the rules' values
+                var type = ar[0].Trim().ToUpper();
                 foreach (var curVal in vals)
                 {
                     var isExclude = curVal.StartsWith("^");
                     SourceFilterParams pars = isExclude ? filter.Excludes : filter.Includes;
                     var actualVal = (isExclude ? curVal[1..] : curVal)?.Trim();
-                    switch (type.ToUpper())
+                    switch (type)
                     {
                         case ConfiguratorConstants.FILTER_TYPE_DIR:
                             pars.AddDirectory(actualVal);

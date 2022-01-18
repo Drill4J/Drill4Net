@@ -41,7 +41,11 @@ namespace Drill4Net.Configurator
                     continue;
                 if (!Path.HasExtension(name))
                     name += ".yml";
-                cfgPath = Path.Combine(dir, name);
+
+                if (Path.GetDirectoryName(name) != null)
+                    cfgPath = FileUtils.GetFullPath(name, dir);
+                else
+                    cfgPath = Path.Combine(dir, name);
 
                 if (File.Exists(cfgPath))
                 {
@@ -73,6 +77,9 @@ namespace Drill4Net.Configurator
         {
             try
             {
+                var dir = Path.GetDirectoryName(cfgPath);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
                 _rep.WriteOptions<T>(cfg, cfgPath);
             }
             catch (Exception ex)
@@ -83,7 +90,7 @@ namespace Drill4Net.Configurator
                 return false;
             }
             _logger.Info($"Config for {cfgSubsystem} saved to [{cfgPath}]");
-            RaiseMessage($"Config is saved. You can check the {cfgSubsystem}'s settings: {cfgPath}", CliMessageType.Info);
+            RaiseMessage($"\nConfig is saved. You can check the {cfgSubsystem}'s settings: {cfgPath}", CliMessageType.Info);
             return true;
         }
 

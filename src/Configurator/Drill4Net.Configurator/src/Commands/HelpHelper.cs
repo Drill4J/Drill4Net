@@ -59,5 +59,10 @@
             var aboutSwitches = showAboutActiveConfig ? @"switches ""l"" and ""a""" : @"switch ""l""";
             return $"Configs should be located in the root directory {appName} if they are specified by a short name (with or without an extension). The same applies to the use of {aboutSwitches}.";
         }
+
+        internal static string GetInjectorAndRunnerConfigSavingNote(string appName)
+        {
+            return $"You can specify either just the name of the config (with or without an extension), and in this case it will be saved to the standard {appName} folder, or specify the full arbitrary path, for example, for the target folder in the case of CI pipeline.";
+        }
     }
 }
