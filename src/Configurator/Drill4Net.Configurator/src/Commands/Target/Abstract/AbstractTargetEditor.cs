@@ -211,7 +211,8 @@ Please make your choice";
                 return false;
 
             //corrections
-            CorrectProfilerDirectory(cfg);
+            ClarifyProfilerDirectory(cfg.Profiler);
+            ClarifyPluginDirectories(cfg.Plugins);
 
             // save config
             if (isNew)
@@ -225,12 +226,24 @@ Please make your choice";
             }
         }
 
-        internal void CorrectProfilerDirectory(InjectorOptions opts)
+        internal void ClarifyProfilerDirectory(ProfilerOptions opts)
         {
-            var dir = opts.Profiler.Directory;
+            var dir = opts.Directory;
             if (Path.IsPathRooted(dir)) //absolute path
                 return;
-            opts.Profiler.Directory = FileUtils.GetFullPath(dir, _rep.GetInjectorDirectory());
+            opts.Directory = FileUtils.GetFullPath(dir, _rep.GetInjectorDirectory());
+        }
+
+        internal void ClarifyPluginDirectories(Dictionary<string, PluginLoaderOptions> plugs)
+        {
+            var baseDir = _rep.GetInjectorDirectory();
+            foreach (var plug in plugs.Values)
+            {
+                var dir = plug.Directory;
+                if (Path.IsPathRooted(dir)) //absolute path
+                    continue;
+                plug.Directory = FileUtils.GetFullPath(dir, baseDir);
+            }
         }
 
         private bool AskDestinationPostfix(ref string postfix)
