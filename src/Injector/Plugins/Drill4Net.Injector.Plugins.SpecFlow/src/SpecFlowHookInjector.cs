@@ -78,28 +78,15 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
         }
 
         #region Traverse the assemblies
-        public async Task Process(RunContext runCtx)
+        public Task Process(RunContext runCtx)
         {
             if(runCtx == null)
                 throw new ArgumentNullException(nameof(runCtx));
+            //
             _proxyGenerator = runCtx.ProxyGenerator;
-
-            //inner folders: already filtered by base process needed targets' directories
-            //we work with already injected assemblies
-            var dirs = new List<string>() { runCtx.Options.Destination.Directory };
-            foreach (var dir in dirs)
-            {
-                runCtx.ProcessingDirectory = dir;
-                await ProcessDirectory(runCtx).ConfigureAwait(false);
-            }
-
-            //possible files in the root directly
-            if (!runCtx.Tree.GetAllAssemblies().Any()) //get only the needed assemblies
-            {
-                runCtx.ProcessingDirectory = runCtx.RootDirectory;
-                await ProcessDirectory(runCtx).ConfigureAwait(false);
-            }
-        }
+            runCtx.ProcessingDirectory = runCtx.Options.Destination.Directory;
+            return ProcessDirectory(runCtx);
+        } 
 
         /// <summary>
         /// Process directory from current Engine's context

@@ -169,13 +169,13 @@ namespace Drill4Net.Agent.Standard
             (var logFile, LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
 
             var version = GetAgentVersion();
-            _logger.Debug($"Agent version: {version}");
-
-            return new AdminAgentConfig(targOpts.Name, targOpts.Version, version)
+            var cfg = new AdminAgentConfig(targOpts.Name, targOpts.Version, version)
             {
                 ConnectorLogFilePath = logFile,
                 ConnectorLogLevel = logLevel
             };
+            _logger.Debug($"{nameof(AdminAgentConfig)}: {cfg}");
+            return cfg;
         }
 
         /// <summary>

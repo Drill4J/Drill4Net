@@ -19,6 +19,10 @@
     "post_build_cfg": {
       "commandName": "Project",
       "commandLineArgs": "--silent --cfg_path=D:\\Projects\\EPM-D4J\\Drill4Net\\src\\Tests\\IntegrationTests\\Engine\\Drill4Net.Target.Tests.Engine\\post_build_cfg.yml"
+    },
+    "ci": {
+      "commandName": "Project",
+      "commandLineArgs": "--silent --degree_parallelism=4 --cfg_dir=\"d:\\Projects\\EPM-D4J\\Distributions\\debug\\Drill4Net_dis\\ci\\specflow-test\\inj\\\""
     }
   }
 }

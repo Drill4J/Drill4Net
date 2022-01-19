@@ -62,7 +62,7 @@ namespace Drill4Net.Agent.Worker
             _cmdReceiver.ErrorOccured += Receiver_ErrorOccured;
 
             _cmdToTransTopics = GetCommandToTransmitterTopics();
-            _logger.Debug($"Topics for commands to Transmitter: {string.Join(",", _cmdToTransTopics)}");
+            _logger.Debug($"Topics for commands to Transmitter: {string.Join(", ", _cmdToTransTopics)}");
 
             _logger.Debug($"{nameof(AgentWorker)} is created");
         }

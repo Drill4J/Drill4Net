@@ -66,5 +66,12 @@ namespace Drill4Net.Agent.Abstract
             ConnectorLogLevel = LogLevel.Error;
             ConnectorLogFilePath = AbstractAgent.GetDefaultConnectorLogFilePath();
         }
+
+        /************************************************************************************/
+
+        public override string ToString()
+        {
+            return $"{Id} {BuildVersion}: Agent [{AgentVersion}]";
+        }
     }
 }
