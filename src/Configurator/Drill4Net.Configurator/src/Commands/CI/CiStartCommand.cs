@@ -23,8 +23,7 @@ namespace Drill4Net.Configurator
             //
             var dir = _rep.GetCiDirectory();
             var res2 = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI,
-                dir, _desc, out var ciCfgPath,
-                out var _, out var error);
+                dir, _desc, out var ciCfgPath, out var _, out var error);
             if (!res2)
             {
                 RaiseError(error);
@@ -32,7 +31,7 @@ namespace Drill4Net.Configurator
             }
             if (string.IsNullOrWhiteSpace(ciCfgPath))
             {
-                RaiseError("Path to the CI config was not found");
+                RaiseError($"Path to the CI config was not found: [{ciCfgPath}].");
                 return FalseEmptyResult;
             }
             //
@@ -40,13 +39,13 @@ namespace Drill4Net.Configurator
             var (res, err) = await StartCi(opts).ConfigureAwait(false);
             if (res)
             {
-                const string mess = "CI workflow is done.";
+                var mess = $"CI workflow is done: [{ciCfgPath}].";
                 RaiseMessage(mess);
                 _logger.Info(mess);
             }
             else
             {
-                RaiseMessage(err);
+                RaiseError(err);
                 _logger.Error(err);
             }
             return TrueEmptyResult;
@@ -95,21 +94,22 @@ namespace Drill4Net.Configurator
 
         private async Task<(bool res, string error)> InjectorProcess(string cfgsDir, int degreefParallelism)
         {
-            var args = $"-{CoreConstants.ARGUMENT_SILENT} -{CoreConstants.ARGUMENT_DEGREE_PARALLELISM}={degreefParallelism} -{CoreConstants.ARGUMENT_CONFIG_DIR}=\"{cfgsDir}\"";
-            var path = Path.Combine(_rep.GetInjectorDirectory(), "Drill4Net.Injector.App.exe");
+            var args = $"--{CoreConstants.ARGUMENT_SILENT} --{CoreConstants.ARGUMENT_DEGREE_PARALLELISM}={degreefParallelism} --{CoreConstants.ARGUMENT_CONFIG_DIR}=\"{cfgsDir}\"";
+            var path = _rep.GetInjectorPath();
             var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
             if (!res)
                 return (false, err);
 
             //wait
-            await CommonUtils.WaitForProcessExit(pid);
+            await CommonUtils.WaitForProcessExit(pid)
+                .ConfigureAwait(false);
             return (true, "");
         }
 
         private async Task<(bool res, string error)> TestRunnerProcess(string testRunnerCfgPath)
         {
-            var args = $"-{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
-            var path = Path.Combine(_rep.GetTestRunnerDirectory(), "Drill4Net.Agent.TestRunner.exe");
+            var args = $"--{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
+            var path = _rep.GetTestRunnerPath();
             var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_TEST_RUNNER, path, args, out var err);
             if (!res)
                 return (false, err);

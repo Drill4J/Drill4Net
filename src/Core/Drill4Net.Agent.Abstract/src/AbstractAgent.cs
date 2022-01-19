@@ -45,7 +45,7 @@ namespace Drill4Net.Agent.Abstract
 
         protected AbstractAgent()
         {
-            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
             AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
@@ -74,9 +74,9 @@ namespace Drill4Net.Agent.Abstract
             Initialized?.Invoke();
         }
 
-        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            CommonUtils.LogFirstChanceException(EmergencyLogDir, nameof(AbstractAgent), e.Exception);
+            CommonUtils.LogUnhandledException(EmergencyLogDir, nameof(AbstractAgent), e.ExceptionObject?.ToString());
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)

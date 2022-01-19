@@ -92,25 +92,25 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.StepDefinitions
         //    var threadId = testRunner.ThreadId;
         //}
 
-        [BeforeScenario(Order = 0)]
-        public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext)
-        {
-            var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
-            var scenario = scenarioContext.ScenarioInfo.Title;
-            var key = $"{feature}^{scenario}";
-            scenarioContext["TestCase"] = key;
-        }
+        //[BeforeScenario(Order = 0)]
+        //public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext)
+        //{
+        //    var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
+        //    var scenario = scenarioContext.ScenarioInfo.Title;
+        //    var key = $"{feature}^{scenario}";
+        //    scenarioContext["TestCase"] = key;
+        //}
 
-        [AfterScenario(Order = 0)]
-        public static void DebugScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
-        {
-            var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
-            var scenario = scenarioContext.ScenarioInfo.Title;
-            var testStatus = scenarioContext.ScenarioExecutionStatus;
-            var testError = scenarioContext.TestError;
+        //[AfterScenario(Order = 0)]
+        //public static void DebugScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
+        //{
+        //    var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
+        //    var scenario = scenarioContext.ScenarioInfo.Title;
+        //    var testStatus = scenarioContext.ScenarioExecutionStatus;
+        //    var testError = scenarioContext.TestError;
 
-            var key = scenarioContext["TestCase"];
-        }
+        //    var key = scenarioContext["TestCase"];
+        //}
         #endregion
 
         /************************************************************************************/

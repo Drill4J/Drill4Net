@@ -309,8 +309,8 @@ namespace Drill4Net.Agent.Service
 
         internal virtual int StartAgentWorkerProcess(Guid targetSession, string targetName, string targetVersion)
         {
-            var args = $"-{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}=\"{_cfgPath}\" -{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} -{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName} -{MessagingTransportConstants.ARGUMENT_TARGET_VERSION}={targetVersion}";
-            _logger.Debug($"Agent Worker's argument: [{args}]");
+            var args = $"--{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}=\"{_cfgPath}\" --{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} --{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName} --{MessagingTransportConstants.ARGUMENT_TARGET_VERSION}={targetVersion}";
+            _logger.Debug($"Agent Worker's arguments: [{args}]");
 
             var process = new Process
             {

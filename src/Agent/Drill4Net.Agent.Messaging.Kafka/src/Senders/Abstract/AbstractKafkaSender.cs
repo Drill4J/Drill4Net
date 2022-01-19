@@ -1,5 +1,6 @@
 ﻿using System;
 using Confluent.Kafka;
+using Drill4Net.BanderLog;
 using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Messaging.Kafka
@@ -84,9 +85,12 @@ namespace Drill4Net.Agent.Messaging.Kafka
             if (opts.Servers == null || opts.Servers.Count == 0)
                 throw new Exception("Servers are empty");
             //
+            var servers = string.Join(",", opts.Servers);
+            Log.Debug($"{GetType().Name} servers: {servers}");
+
             return new ProducerConfig
             {
-                BootstrapServers = string.Join(",", opts.Servers),
+                BootstrapServers = servers,
                 MessageMaxBytes = MessagingConstants.MaxMessageSize,
                 Acks = Acks.None, //no acks for real writing messaging
             };

@@ -225,7 +225,7 @@ namespace Drill4Net.Agent.Standard
             {
                 logFile = Path.Combine(logDir, logFile);
             }
-            _logger.Debug($"Connector's logging: [{logLevel}] to [{logFile}]");
+            _logger.Debug($"Connector logging: [{logLevel}] to [{logFile}]");
 
             return (logFile, logLevel);
         }
@@ -248,7 +248,7 @@ namespace Drill4Net.Agent.Standard
             // check for different compiling target version 
             //we need only one for current runtime
             var rootDirs = tree.GetDirectories().ToList();
-            _logger.Debug($"Root dirs' count: {rootDirs.Count}");
+            _logger.Debug($"Root dirs: {rootDirs.Count}");
             if (rootDirs.Count > 1)
             {
                 //TODO: refactor (optimize)!

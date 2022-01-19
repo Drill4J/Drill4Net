@@ -3,12 +3,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TechTalk.SpecFlow;
 using Drill4Net.Target.Frameworks.Common;
 
-                /* *
-                 * 
-                 * NEVER!!!! NEVER!!!! NEVER INCLUDE ANY DRILL4NET DEPENDENCIES TO THIS PROJECT (except specific common tests' ones)
-                 * Because they will be injected and then conflict with depenedncies from Transmitter, Agents and so on in memory
-                 * 
-                 * */
+           /* *
+            * 
+            * NEVER!!!! NEVER!!!! NEVER INCLUDE ANY DRILL4NET DEPENDENCIES TO THIS PROJECT (except specific common tests' ones)
+            * Because they will be injected and then conflict with depenedncies from Transmitter, Agents and so on in memory
+            * 
+            * */
 
 // automatic version tagger including Git info - https://github.com/devlooped/GitInfo
 // semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
@@ -43,22 +43,22 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest.StepDefinitions
 
         //DON'T REMOVE THIS EVEN IF IT IS COMMENTED
 
-        [BeforeScenario(Order = 0)]
-        public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext, TestContext testCtx)
-        {
-            var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
-            var scenario = scenarioContext.ScenarioInfo.Title;
-            var key = $"{feature}^{scenario}";
-        }
+        //[BeforeScenario(Order = 0)]
+        //public static void DebugScenarioStarting(FeatureContext featureContext, ScenarioContext scenarioContext, TestContext testCtx)
+        //{
+        //    var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
+        //    var scenario = scenarioContext.ScenarioInfo.Title;
+        //    var key = $"{feature}^{scenario}";
+        //}
 
-        [AfterScenario(Order = 0)]
-        public static void DebugScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
-        {
-            var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
-            var scenario = scenarioContext.ScenarioInfo.Title;
-            var testStatus = scenarioContext.ScenarioExecutionStatus;
-            var testError = scenarioContext.TestError;
-        }
+        //[AfterScenario(Order = 0)]
+        //public static void DebugScenarioFinished(FeatureContext featureContext, ScenarioContext scenarioContext)
+        //{
+        //    var feature = $"{featureContext.FeatureInfo.FolderPath}/{featureContext.FeatureInfo.Title}";
+        //    var scenario = scenarioContext.ScenarioInfo.Title;
+        //    var testStatus = scenarioContext.ScenarioExecutionStatus;
+        //    var testError = scenarioContext.TestError;
+        //}
 
         /************************************************************************************/
 

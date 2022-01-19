@@ -90,7 +90,7 @@ namespace Drill4Net.Agent.Transmitter
             Repository = rep ?? throw new ArgumentNullException(nameof(rep));
 
             //TODO: find out - on IHS adoption it falls
-            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException; ;
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
             AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
@@ -131,6 +131,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Trace($"{nameof(DataTransmitter)} singleton is created");
         }
 
+
         ~DataTransmitter()
         {
             Dispose(false);
@@ -139,9 +140,9 @@ namespace Drill4Net.Agent.Transmitter
         /************************************************************************************/
 
         #region Resolving
-        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            CommonUtils.LogFirstChanceException(EmergencyLogDir, "FirstChanceException", e.Exception);
+            CommonUtils.LogUnhandledException(EmergencyLogDir, "UnhandledException", e.ExceptionObject?.ToString());
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)

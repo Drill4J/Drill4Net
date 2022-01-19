@@ -128,14 +128,14 @@ namespace Drill4Net.Common
         }
         #endregion
         #region FirstChanceException & Resolving
-        public static void LogFirstChanceException(string emergencyLogDir, string context, Exception e)
+        public static void LogUnhandledException(string emergencyLogDir, string context, string err)
         {
             try
             {
                 if (!Directory.Exists(emergencyLogDir))
                     Directory.CreateDirectory(emergencyLogDir);
-                File.AppendAllLines(Path.Combine(emergencyLogDir, "first_chance_error.log"),
-                    new List<string> { $"{GetPreciseTime()}|{context}|{e}" });
+                File.AppendAllLines(Path.Combine(emergencyLogDir, "unhandled_error.log"),
+                    new List<string> { $"{GetPreciseTime()}|{context}|{err}" });
             }
             catch { }
         }

@@ -74,12 +74,33 @@ namespace Drill4Net.Configurator
             return FileUtils.GetFullPath(dir);
         }
 
+        public string GetInjectorPath()
+        {
+            return Path.Combine(GetInjectorDirectory(), GetExecutableName("Drill4Net.Injector.App"));
+        }
+
         public string GetTestRunnerDirectory()
         {
             var dir = Options.TestRunnerDirectory;
             if (string.IsNullOrEmpty(dir))
                 dir = ConfiguratorConstants.PATH_RUNNER;
             return FileUtils.GetFullPath(dir);
+        }
+
+
+        public string GetTestRunnerPath()
+        {
+            return Path.Combine(GetTestRunnerDirectory(), GetExecutableName("Drill4Net.Agent.TestRunner"));
+        }
+
+        internal string GetExecutableName(string appFullName)
+        {
+            if(string.IsNullOrWhiteSpace(appFullName))
+                throw new ArgumentNullException(nameof(appFullName));
+            if (!appFullName.EndsWith("."))
+                appFullName += ".";
+            appFullName += Environment.OSVersion.Platform == PlatformID.Win32NT ? "exe" : "dll";
+            return appFullName;
         }
 
         /// <summary>
