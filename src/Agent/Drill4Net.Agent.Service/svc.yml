@@ -1,5 +1,5 @@
 ﻿Description: Agent Server for controlling workers processing the probes for Drill Admin side by messaging
-Type: agent-service # type as hint
+Type: agent-service
 Servers: # list of Kafka servers
    - 'localhost:9093' # from host
    #- 'host.docker.internal:9093' # from Docker

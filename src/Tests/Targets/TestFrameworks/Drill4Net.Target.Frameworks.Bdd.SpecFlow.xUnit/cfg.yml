@@ -1,5 +1,5 @@
 Description: Debug SpecFlow + xUnit Agent config
-Type: Agent # type as hint
+Type: Agent
 Target: # metadata about Target - overriding one from tree file
   Name: #IHS-bdd
   Version: # if empty will retrieved from Tree file or dynamically by first call of profiler (for simple systems)

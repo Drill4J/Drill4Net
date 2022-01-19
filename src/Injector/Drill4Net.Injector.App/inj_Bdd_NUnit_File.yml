@@ -1,5 +1,5 @@
 ﻿Description: BDD SpecFlow + NUnit tests for debug to the file
-Type: Injector #type as hint
+Type: Injector
 Target: # some metadata about target
     Name: bdd-specflow-NUnit-file #optional injection name, if empty must be set in agent config
     Version:  # version of whole Product, can be empty and can be overridden by Agent configs

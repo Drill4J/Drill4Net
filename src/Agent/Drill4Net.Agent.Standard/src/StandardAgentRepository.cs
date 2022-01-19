@@ -168,7 +168,10 @@ namespace Drill4Net.Agent.Standard
             // aux connector parameters
             (var logFile, LogLevel logLevel) = GetConnectorLogParameters(connOpts, _logger);
 
-            return new AdminAgentConfig(targOpts.Name, targOpts.Version, GetAgentVersion())
+            var version = GetAgentVersion();
+            _logger.Debug($"Agent version: {version}");
+
+            return new AdminAgentConfig(targOpts.Name, targOpts.Version, version)
             {
                 ConnectorLogFilePath = logFile,
                 ConnectorLogLevel = logLevel

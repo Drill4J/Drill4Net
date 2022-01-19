@@ -1,5 +1,5 @@
 ﻿Description: BDD SpecFlow + xUnit tests with Kafka
-Type: Injector # type as hint
+Type: Injector
 Target: # some metadata about target
     Name: bdd-specflow-xUnit-std #optional injection name, if empty must be set in agent config
     Version:  # version of whole Product, can be empty and can be overridden by Agent configs

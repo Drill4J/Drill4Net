@@ -1,5 +1,5 @@
 ﻿Description: BDD SpecFlow injector's plugin options for IHS
-Type: InjectorPlugin # type as hint
+Type: InjectorPlugin
 Filter: # mask for search files, namespaces, classes...
    Includes:
       Directories:

@@ -1,5 +1,5 @@
 ﻿Description: Debugging of Injector App (Standard Agent & Target)
-Type: Injector # type as hint
+Type: Injector
 Target: # some metadata about target
     Name: console-testing-target-std # optional injection name
     Version:  # version of whole Product, can be empty and can be overridden by Agent configs

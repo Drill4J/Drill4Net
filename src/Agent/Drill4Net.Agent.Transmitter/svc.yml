@@ -1,5 +1,5 @@
 ﻿Description: Transmitter the probes data from Target to Agent service through Kafka
-Type: kafka-transmitter # type as hint
+Type: kafka-transmitter
 Servers: # list of Kafka servers
    - 'localhost:9093'
    #- 'localhost:9094'

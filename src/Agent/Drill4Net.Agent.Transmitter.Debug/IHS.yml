@@ -1,5 +1,5 @@
 ﻿Description: For Kafka middleware & IHS Bdd tests debugging
-Type: Agent #type as hint
+Type: Agent
 Target: 
   Name: IHS-bdd-kafka-transmitter-debug
   Version: #0.0.1.1 # if empty will retrieved dynamically by first call of profiler (for simple systems)

@@ -1,5 +1,5 @@
 ﻿Description: Manual debugging of Injector App (RnD) on Blazor app (Wasm)
-Type: Injector # type as hint
+Type: Injector
 Target: # some metadata about target
     Name: blazor-wasm-app # optional injection name
     Version:  # version of whole Product, can be empty and can be overridden by Agent configs

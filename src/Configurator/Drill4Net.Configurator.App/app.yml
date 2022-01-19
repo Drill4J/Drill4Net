@@ -1,5 +1,5 @@
 ﻿Description: Config for Configurator App
-Type: Configurator # type as hint
+Type: Configurator
 
 #InstallDirectory: ..\..\install\
 #InjectorDirectory: ..\..\apps\injector\

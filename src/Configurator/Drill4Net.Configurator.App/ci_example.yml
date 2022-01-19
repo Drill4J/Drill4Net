@@ -1,5 +1,5 @@
 ﻿Description: Example configuration for the end2end workflow - it runs batch injections of some targets and then tests using TestRunner
-Type: CI # type as hint
+Type: CI
 Injection:
    ConfigDir: d:\Projects\EPM-D4J\Distributions\debug\ci\set_1\inj_cfg\ # Directory with the injector configs to be used (all in the folder)
    DegreeOfParallelism: 4 # this applies to the processing of targets by Injectors themselves, default is number of CPU cores

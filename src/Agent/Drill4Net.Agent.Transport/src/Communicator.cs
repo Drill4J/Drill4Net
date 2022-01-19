@@ -36,11 +36,14 @@ namespace Drill4Net.Agent.Transport
         {
             Url = url ?? throw new ArgumentNullException(nameof(url));
             AgentConfig = agentCfg ?? throw new ArgumentNullException(nameof(agentCfg));
+
             _logger = new TypedLogger<Communicator>(subsystem);
+            _logger.Debug("Creating...");
 
             _connector = new Connector();
             Receiver = new AgentReceiver(_connector);
             Sender = new AgentSender(_connector);
+            _logger.Debug("Created");
         }
 
         /*****************************************************************************/

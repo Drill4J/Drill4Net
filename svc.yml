@@ -1,5 +1,5 @@
 Description: Model agent config
-Type: Agent # type as hint
+Type: Agent
 Target: # metadata about Target - overriding one from tree file
   Name: # need if during injection it was missed
   Version: # if empty will retrieved from Tree file or dynamically by first call of profiler (for simple systems)

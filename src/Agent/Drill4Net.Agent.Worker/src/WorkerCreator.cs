@@ -61,7 +61,7 @@ namespace Drill4Net.Agent.Worker
                 throw new Exception("Receiver is empty");
             #endregion
 
-            //some topics are located together in the Topics property of options //
+            // some topics are located together in the Topics property of options //
 
             //Receivers
             var targetTopic = MessagingUtils.GetTargetWorkerTopic(targetSession);
@@ -95,7 +95,7 @@ namespace Drill4Net.Agent.Worker
 
             var cmdToTransTopic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
             _logger.Debug($"Command sender topic is {cmdToTransTopic}");
-            (targRep.MessagerOptions.Sender.Topics ??= new()).Add(cmdToTransTopic); //Receiver
+            (targRep.MessagerOptions.Sender.Topics ??= new()).Add(cmdToTransTopic);
 
             _logger.Debug("Command sender is created.");
             Log.Flush();

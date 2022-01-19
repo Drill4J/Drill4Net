@@ -1,5 +1,5 @@
 ﻿Description: Engine for integration tests
-Type: Tests #type as hint
+Type: Tests
 Target:
     Name: test-target
 TreePath: TargetApps.Injected.Tests\ # where tree data about probes are located - if empty, system will try to find it by another ways

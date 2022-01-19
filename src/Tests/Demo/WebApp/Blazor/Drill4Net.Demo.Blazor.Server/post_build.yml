@@ -1,5 +1,5 @@
 ﻿Description: For post build actions in IDE, forming dirs for demo app
-Type: Injector #type as hint
+Type: Injector
 Target: # some metadata about target
     Name: test-target #optional injection name, if empty must be set in agent config
 Source: # what and how processing
