@@ -93,9 +93,9 @@ namespace Drill4Net.Agent.Worker
             if (targRep.MessagerOptions.Receiver == null)
                 throw new Exception("Receiver is empty");
 
-            var topic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
-            _logger.Debug($"Command sender topic is {topic}");
-            (targRep.MessagerOptions.Receiver.Topics ??= new()).Add(topic);
+            var cmdToTransTopic = MessagingUtils.GetCommandToTransmitterTopic(rep.TargetSession);
+            _logger.Debug($"Command sender topic is {cmdToTransTopic}");
+            (targRep.MessagerOptions.Sender.Topics ??= new()).Add(cmdToTransTopic); //Receiver
 
             _logger.Debug("Command sender is created.");
             Log.Flush();
