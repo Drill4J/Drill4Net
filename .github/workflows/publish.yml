@@ -1,0 +1,24 @@
+name: Publish docker image
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3 | cut -c 2-)
+      - name: Publish to GitHub Container registry
+        uses: jerray/publish-docker-action@master
+        with:
+          username: ${{ secrets.GH_PACKAGE_USERNAME }}
+          password: ${{ secrets.GH_PACKAGE_TOKEN }}
+          registry: ghcr.io
+          repository: drill4j/drill4net
+          tags: latest,${{ steps.get_version.outputs.VERSION }}
+          build_args: VERSION=${{ steps.get_version.outputs.VERSION }}
