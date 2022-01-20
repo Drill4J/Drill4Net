@@ -105,7 +105,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public string NameKey => $"{DestinationDir}${Definition?.FullName}${Version}";
 
-        public string DestinationKey => Path.Combine(DestinationDir, Module?.Name); //$"{DestinationDir}{Path.DirectorySeparatorChar}{Module?.Name}";
+        public string DestinationKey => Path.Combine(DestinationDir, Module?.Name);
 
         private bool _disposedValue;
 

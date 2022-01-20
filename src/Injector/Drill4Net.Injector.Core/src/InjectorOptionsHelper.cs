@@ -142,7 +142,7 @@ namespace Drill4Net.Injector.Core
             if (string.IsNullOrEmpty(sourceDir))
                 throw new Exception("Source directory name is empty");
             if (!Directory.Exists(sourceDir))
-                throw new DirectoryNotFoundException($"Source directory does not exists: {sourceDir}");
+                throw new DirectoryNotFoundException($"Source directory does not exist: {sourceDir}");
             //
             var destDir = FileUtils.GetFullPath(opts.Destination.Directory);
             if (string.IsNullOrEmpty(destDir))

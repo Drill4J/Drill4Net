@@ -212,7 +212,7 @@ Please make your choice";
                 var plugins = cfg.Plugins;
                 if (isNew)
                 {
-                    plugins.Clear(); //clear plugins from model config
+                    plugins.Clear(); //clear plugins from the model config
                     while (true)
                     {
                         var plugPhrase = plugins.Any() ? "One more plugin" : "Plugin name (just distinctive alias for you)";

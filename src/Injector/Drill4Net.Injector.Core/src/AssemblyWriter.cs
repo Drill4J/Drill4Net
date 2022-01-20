@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -12,10 +11,10 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="runCtx"></param>
         /// <param name="asmCtx"></param>
-        /// <returns></returns>
+        /// <returns>New path for the saved assembly</returns>
         public string SaveAssembly(RunContext runCtx, AssemblyContext asmCtx, string modifiedPath = null)
         {
-            if (runCtx.AssemblyPaths.ContainsKey(asmCtx.NameKey))
+            if (runCtx.AssemblyPaths.ContainsKey(asmCtx.DestinationKey))
                 return null;
             //
             string origFilePath;
@@ -56,7 +55,7 @@ namespace Drill4Net.Injector.Core
                 throw;
             }
 
-            runCtx.AssemblyPaths.Add(asmCtx.NameKey, modifiedPath);
+            runCtx.AssemblyPaths.Add(asmCtx.DestinationKey, modifiedPath);
             return modifiedPath;
         }
 

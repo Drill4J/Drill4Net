@@ -113,6 +113,7 @@ namespace Drill4Net.Injector.Engine
             if (Plugins.Count == 0)
                 return;
             //
+            runCtx.AssemblyPaths.Clear();
             Console.WriteLine("");
             _logger.Info("Processing by plugins...");
             foreach (var plugin in Plugins)
