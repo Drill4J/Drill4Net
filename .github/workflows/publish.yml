@@ -1,11 +1,7 @@
-name: Publish docker image
-
+name: Build & publish drill artifacts
 on:
   release:
-    types:
-      - published
-      - created
-      - released
+    types: [published]
 
 jobs:
   publish:
@@ -24,3 +20,4 @@ jobs:
           repository: drill4j/drill4net
           tags: latest,${{ steps.get_version.outputs.VERSION }}
           build_args: VERSION=${{ steps.get_version.outputs.VERSION }}
+          
