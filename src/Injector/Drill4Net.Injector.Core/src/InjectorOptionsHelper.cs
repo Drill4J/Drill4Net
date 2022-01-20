@@ -10,8 +10,16 @@ namespace Drill4Net.Injector.Core
     {
         protected override void PostProcess(InjectorOptions opts)
         {
+            PreliminaryCheckConfig(opts);
             SetDestinationDirectory(opts, null);
             NormalizePaths(opts);
+        }
+
+        internal void PreliminaryCheckConfig(InjectorOptions opts)
+        {
+            //we check this here because Injector can process several configs in specified directory
+            if (opts == null || !CoreConstants.SUBSYSTEM_INJECTOR.Equals(opts.Type, StringComparison.InvariantCultureIgnoreCase))
+                throw new ArgumentException($"In fact, this is not {CoreConstants.SUBSYSTEM_INJECTOR} options: {opts.Type}");
         }
 
         internal void SetDestinationDirectory(InjectorOptions opts, string destDir)

@@ -31,7 +31,7 @@ namespace Drill4Net.Configurator
             }
             if (string.IsNullOrWhiteSpace(ciCfgPath))
             {
-                RaiseError($"Path to the CI config was not found: [{ciCfgPath}].");
+                RaiseError("Path to the CI config is empty");
                 return FalseEmptyResult;
             }
             //
@@ -95,7 +95,7 @@ namespace Drill4Net.Configurator
         private async Task<(bool res, string error)> InjectorProcess(string cfgsDir, int degreefParallelism)
         {
             var args = $"--{CoreConstants.ARGUMENT_SILENT} --{CoreConstants.ARGUMENT_DEGREE_PARALLELISM}={degreefParallelism} --{CoreConstants.ARGUMENT_CONFIG_DIR}=\"{cfgsDir}\"";
-             var path = _rep.GetInjectorPath();
+            var path = _rep.GetInjectorPath();
             var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
             if (!res)
                 return (false, err);

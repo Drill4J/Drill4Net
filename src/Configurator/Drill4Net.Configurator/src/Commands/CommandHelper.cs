@@ -272,10 +272,9 @@ namespace Drill4Net.Configurator
                 sourceName = desc.GetPositional(0);
             if (!string.IsNullOrWhiteSpace(sourceName))
             {
-                //in fact, it is full path
-                if (!string.IsNullOrWhiteSpace(Path.GetPathRoot(sourceName)))
+                sourceName = sourceName.Replace("\"", null);
+                if (!string.IsNullOrWhiteSpace(Path.GetPathRoot(sourceName))) //in fact, it is full path
                 {
-                    sourceName = sourceName.Replace("\"", null);
                     dir = Path.GetDirectoryName(sourceName);
                     sourceName = Path.GetFileName(sourceName);
                 }

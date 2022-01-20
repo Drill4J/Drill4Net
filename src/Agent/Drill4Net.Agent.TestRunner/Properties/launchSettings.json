@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Drill4Net.Agent.TestRunner": {
+      "commandName": "Project"
+    },
+    "ci": {
+      "commandName": "Project",
+      "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Distributions\\debug\\Drill4Net_dis\\ci\\test123\\run.yml\""
+    }
+  }
+}

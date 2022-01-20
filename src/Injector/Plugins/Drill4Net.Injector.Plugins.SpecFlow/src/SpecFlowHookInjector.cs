@@ -48,7 +48,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
 
             SourceDir = sourceDir ?? throw new ArgumentNullException(nameof(sourceDir));
             ProxyClass = proxyClass ?? throw new ArgumentNullException(nameof(proxyClass));
-            _loaderOpts = loaderCfg ?? throw new ArgumentNullException(nameof(loaderCfg));
+            _loaderOpts = loaderCfg ?? throw new ArgumentNullException(nameof(loaderCfg)); //plugin loader options
 
             HelperReadDir = loaderCfg.Directory;
 
@@ -61,7 +61,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
                 .Build();
-            Options = GetOptions(loaderCfg.Config);
+            Options = GetOptions(loaderCfg.Config); //inner options for the plugin
 
             LoadTestFramework(sourceDir);
         }

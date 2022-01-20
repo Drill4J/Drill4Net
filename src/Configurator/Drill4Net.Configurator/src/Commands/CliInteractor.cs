@@ -259,7 +259,7 @@ namespace Drill4Net.Configurator
             RaiseMessage(new string('-', 70));
         }
 
-        public void DrawDubleLine()
+        public void DrawDoubleLine()
         {
             RaiseMessage(new string('=', 70));
         }

@@ -209,7 +209,7 @@ So, do you want to integrate CI run into some source code projects (on its post-
 
         public override string GetHelp()
         {
-            return $@"This command allows you interactively:
+            return $@"This command allows you:
   a). to create a configuration from scratch for the CI pipeline, connecting the injection stage for several independent configs and the stage of launching automatic tests by the {CoreConstants.SUBSYSTEM_TEST_RUNNER} contained in the corresponding targets (SUT - system under test). 
   b). to integrate the launch of the CI process by the generated config into the post-build event of compiling .NET projects to choose from, which allows you to fully automate the CI pipeline during the developing.
 

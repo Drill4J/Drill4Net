@@ -8,6 +8,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Injector.Engine;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.App
 {
@@ -59,11 +60,11 @@ namespace Drill4Net.Injector.App
 
                     //run in parallel
                     var parOpts = new ParallelOptions { MaxDegreeOfParallelism = degreeParallel };
-                    Parallel.ForEach(configs, parOpts, (cfgPath) => Process(cfgPath));
+                    Parallel.ForEach(configs, parOpts, (cfgPath) => Process(silent, cfgPath));
                 }
                 else //manual start
                 {
-                    await Process().ConfigureAwait(false);
+                    await Process(silent).ConfigureAwait(false);
                 }
 #if DEBUG
                 #region Benchmark
@@ -96,13 +97,25 @@ namespace Drill4Net.Injector.App
         }
 
         //the magic is here
-        internal static Task Process(string cfgPath = null)
+        internal static Task Process(bool isSilent, string cfgPath = null)
         {
-            var rep = cfgPath == null ? new InjectorRepository(_cliDescriptor) : new InjectorRepository(cfgPath);
-            _logger.Debug(rep.Options);
-
-            var injector = new InjectorEngine(rep);
-            return injector.Process();
+            try
+            {
+                var rep = cfgPath == null ? new InjectorRepository(_cliDescriptor) : new InjectorRepository(cfgPath);
+                _logger.Debug(rep.Options);
+                var injector = new InjectorEngine(rep);
+                return injector.Process();
+            }
+            catch (Exception ex)
+            {
+                if (isSilent)
+                {
+                    _logger.Warning($"{ex.Message}");
+                    return Task.CompletedTask;
+                }
+                else
+                    return Task.FromException(ex);
+            }
         }
     }
 }

@@ -8,29 +8,6 @@ using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.Core
 {
-    public abstract class AbstractCodeInjector<TOptions> : AbstractCodeInjector
-        where TOptions : AbstractOptions
-    {
-        public TOptions Options { get; set; }
-
-        /*****************************************************************************************/
-
-        protected string GetInnerConfigFullPath(string pathFromInjectorConfig)
-        {
-            if (string.IsNullOrWhiteSpace(pathFromInjectorConfig))
-                return string.Empty;
-            if (FileUtils.IsPossibleFilePath(pathFromInjectorConfig))
-                return FileUtils.GetFullPath(pathFromInjectorConfig); //maybe it is relative path (will be used the Injector root)
-            // it is just config name
-            const string ext = ".yml";
-            if (!pathFromInjectorConfig.EndsWith(ext))
-                pathFromInjectorConfig += ext;
-            return Path.Combine(FileUtils.EntryDir, pathFromInjectorConfig);
-        }
-    }
-
-    /*********************************************************************************************************/
-
     public abstract class AbstractCodeInjector : IDisposable
     {
         public const string METHOD_COMMAND_NAME = "DoCommand";
@@ -158,6 +135,32 @@ namespace Drill4Net.Injector.Core
         {
             foreach (var lib in _syslibs.Values)
                 lib.Dispose();
+        }
+    }
+
+    /*********************************************************************************************************/
+
+    public abstract class AbstractCodeInjector<TOptions> : AbstractCodeInjector
+        where TOptions : AbstractOptions
+    {
+        /// <summary>
+        /// Inner options for executing the plugin
+        /// </summary>
+        public TOptions Options { get; set; }
+
+        /*****************************************************************************************/
+
+        protected string GetInnerConfigFullPath(string pathFromInjectorConfig)
+        {
+            if (string.IsNullOrWhiteSpace(pathFromInjectorConfig))
+                return string.Empty;
+            if (FileUtils.IsPossibleFilePath(pathFromInjectorConfig))
+                return FileUtils.GetFullPath(pathFromInjectorConfig); //maybe it is relative path (will be used the Injector root)
+            // it is just config name
+            const string ext = ".yml";
+            if (!pathFromInjectorConfig.EndsWith(ext))
+                pathFromInjectorConfig += ext;
+            return Path.Combine(FileUtils.EntryDir, pathFromInjectorConfig);
         }
     }
 }

@@ -35,6 +35,8 @@ namespace Drill4Net.Cli
         /// </summary>
         public List<CliArgument> Arguments { get; } = new();
 
+        public string RawArguments { get; }
+
         /// <summary>
         /// Get parameter value by its name (switches are not included)
         /// </summary>
@@ -56,6 +58,8 @@ namespace Drill4Net.Cli
 
         public CliDescriptor(string args, bool withCommand)
         {
+            RawArguments = args;
+
             // TODO: unit tests
             //var a1 = Parse("ci cfg add");
             //var a2 = Parse(@"ci cfg -n ""abc dfe """);
@@ -81,6 +85,7 @@ namespace Drill4Net.Cli
 
         public CliDescriptor(string[] args, bool withCommand)
         {
+            RawArguments = string.Join(" ", args);
             Setup(args, withCommand);
         }
 
@@ -381,6 +386,11 @@ namespace Drill4Net.Cli
                 _argByNames.Remove(sw.Name);
                 Arguments.Remove(sw);
             }
+        }
+
+        public override string ToString()
+        {
+            return $"Contexts: [{string.Join(", ", Contexts)}], options: [{string.Join(", ", Arguments.ToString())}]";
         }
     }
 }

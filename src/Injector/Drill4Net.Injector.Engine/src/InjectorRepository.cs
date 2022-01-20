@@ -143,7 +143,8 @@ namespace Drill4Net.Injector.Engine
         public virtual IEnumerable<string> GetAssemblies(string directory)
         {
             return Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly)
-                .Where(a => a.EndsWith(".exe") || a.EndsWith(".dll"));
+                .Where(a => a.EndsWith(".exe") || a.EndsWith(".dll"))
+                .OrderByDescending(a => a); //better EXE first
         }
 
         /// <summary>

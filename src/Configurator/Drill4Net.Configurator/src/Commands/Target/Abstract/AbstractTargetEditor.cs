@@ -22,6 +22,7 @@ namespace Drill4Net.Configurator
         {
             _logger.Info($"Start configure the target: new={isNew}");
             const string appName = CoreConstants.SUBSYSTEM_INJECTOR;
+            var injectorDir = _rep.GetInjectorDirectory();
 
             #region Config
             if (!File.Exists(cfgPath))
@@ -44,27 +45,25 @@ namespace Drill4Net.Configurator
             cfg.Source.Directory = sourceDir;
             #endregion
             #region Name
-            string name = "";
+            string trgName = "";
             def = isNew ? GetDefaultTargetName(sourceDir) : cfg.Target.Name;
             do
             {
-                if (!_cli.AskQuestion("Target's name (as Agent ID). It must be the same for the different builds of the Product", out name, def))
+                if (!_cli.AskQuestion("Target's name (as Agent ID). It must be the same for the different builds of the Product", out trgName, def))
                     return false;
             }
-            while (!_cli.CheckStringAnswer(ref name, "Target's name cannot be empty", false));
-            cfg.Target.Name = name;
+            while (!_cli.CheckStringAnswer(ref trgName, "Target's name cannot be empty", false));
+            cfg.Target.Name = trgName;
             #endregion
-
-            // Description
+            #region Description
             def = isNew ? "" : cfg.Description;
             if (!_cli.AskQuestion("Target's description", out string desc, def, !string.IsNullOrWhiteSpace(def)))
                 return false;
             cfg.Description = desc;
-
+            #endregion
+            #region Version
             if (cfg.Target == null)
                 cfg.Target = new();
-
-            #region Version
             def = "1";
             if (!isNew)
             {
@@ -130,12 +129,12 @@ To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".
 
 The filters:
   - By directory (full path). Examples:
-       {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\ - Include rule by default
-       {ConfiguratorConstants.FILTER_TYPE_DIR}=^d:\Projects\ABC\ - Exclude rule (note the ^ sign at the beginning of the value)
-       {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\,d:\Projects\123\ (two directories in one type's tag with comma)
+       {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\  (include rule by default)
+       {ConfiguratorConstants.FILTER_TYPE_DIR}=^d:\Projects\ABC\  (exclude rule - note the ^ sign at the beginning of the value)
+       {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\,d:\Projects\123\  (two directories in one type's tag with comma)
        {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\;{ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\123\ (two directories in separate blocks with semicolon)
   - By folder (just name). Example: 
-       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=ref
+       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=backup1
   - By file (short name). Example: 
        {ConfiguratorConstants.FILTER_TYPE_FILE}=Drill4Net.Target.Common.dll
   - By namespace (by beginning if value is presented as string, or by regex). Examples:
@@ -144,11 +143,11 @@ The filters:
   - By class fullname (with namespace). Example:
        {ConfiguratorConstants.FILTER_TYPE_CLASS}=Drill4Net.Target.Common.ModelTarget
   - By attribute of type. Example:
-       {ConfiguratorConstants.FILTER_TYPE_ATTRIBUTE}=Drill4Net.Target.SuperAttribute (it is full name of its type)
+       {ConfiguratorConstants.FILTER_TYPE_ATTRIBUTE}=Drill4Net.Target.SuperAttribute  (this is full name of its type)
 
 Hint: the regex must be located only in a sole filter tag (one expression in one tag).
 Hint: to set up value for ""all entities of current filter type"" use sign *. Example:
-       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=^* (do not process any folders)";
+       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=^*  (do not process any folders)";
             RaiseMessage(filterHint, CliMessageType.Help);
 
             const string? filterQuestion = "Please create at least one filter rule";
@@ -203,12 +202,76 @@ Please make your choice";
                 break;
             }
             #endregion
-
-            // Logs
+            #region Plugins
+            if(!_cli.AskQuestion("Does the target have any automated tests?", out answer, "y"))
+                return false;
+            if (_cli.IsYes(answer))
+            {
+                RaiseMessage("\nNow you need specify only necessary \"Generator contexter plugins\" which intercept the tests' execution workflow and retrieve their context (implemented IGeneratorContexter interface, for example, for SpecFlow framework. For simple test frameworks, such as xUnit, NUnit, or MsTest you don't need to do it here).");
+                RaiseMessage("When you're done, type ok.");
+                var plugins = cfg.Plugins;
+                if (isNew)
+                {
+                    plugins.Clear(); //clear plugins from model config
+                    while (true)
+                    {
+                        var plugPhrase = plugins.Any() ? "One more plugin" : "Plugin name (just distinctive alias for you)";
+                        if (!_cli.AskQuestion(plugPhrase, out answer, null, false))
+                            return false;
+                        if (_cli.IsOk(answer))
+                            break;
+                        var plugName = answer;
+                        if (plugins.ContainsKey(plugName))
+                        {
+                            RaiseWarning($"Such plugin already specified: {plugName}");
+                            continue;
+                        }
+                        
+                        // common plugin directory
+                        if (!_cli.AskDirectory($@"Shared plugin directory for the ""{plugName}""", out var plugDir, null, true, false))
+                            return false;
+                        
+                        // plugin config path
+                        def = $"plug_{trgName}.yml";
+                        string plugCfgPath;
+                        while (true)
+                        {
+                            if (!_cli.AskFileName(@"Name for the target specific config (with specified test assembly, etc). It is better to use ""plug_"" prefix.",
+                                out var plugCfgName, def, false))
+                                return false;
+                            if (string.IsNullOrWhiteSpace(plugCfgName))
+                            {
+                                RaiseWarning("The target specific config name is empty");
+                                continue;
+                            }
+                            if (!plugCfgName.EndsWith(".yml"))
+                                plugCfgName += ".yml";
+                            plugCfgPath = Path.Combine(injectorDir, plugCfgName);
+                            if (File.Exists(plugCfgPath))
+                                break;
+                            RaiseWarning(@$"The target specific config for the target ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
+                        }
+                        //
+                        var plugOpts = new PluginLoaderOptions()
+                        {
+                            Directory = plugDir,
+                            Config = plugCfgPath,
+                        };
+                        plugins.Add(plugName, plugOpts);
+                    }
+                }
+                else
+                {
+                    //
+                }
+            }
+            #endregion
+            #region Logs
             if (cfg.Logs == null)
                 cfg.Logs = new();
             if (!_cli.AddLogFile(cfg.Logs, appName))
                 return false;
+            #endregion
 
             //corrections
             ClarifyProfilerDirectory(cfg.Profiler);
@@ -218,7 +281,7 @@ Please make your choice";
             if (isNew)
             {
                 RaiseMessage($"\n{HelpHelper.GetInjectorAndRunnerConfigSavingNote(CoreConstants.SUBSYSTEM_INJECTOR)}");
-                return _cmdHelper.AskNameAndSave(appName, cfg, _rep.GetInjectorDirectory(), true);
+                return _cmdHelper.AskNameAndSave(appName, cfg, injectorDir, true);
             }
             else
             {

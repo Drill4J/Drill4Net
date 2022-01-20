@@ -73,7 +73,7 @@ namespace Drill4Net.Profiling.Tree
 
         public IEnumerable<InjectedDirectory> GetAllDirectories()
         {
-            return Flatten(typeof(InjectedType)) //exactly for class, not assembly
+            return Flatten(typeof(InjectedType)) //exactly for class, not assembly!
                 .Where(a => a.GetType().Name == nameof(InjectedDirectory))
                 .Cast<InjectedDirectory>();
         }

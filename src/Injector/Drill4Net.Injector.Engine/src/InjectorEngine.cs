@@ -212,6 +212,8 @@ namespace Drill4Net.Injector.Engine
             var isMonikersRoot = monikers?.Count > 0 && sourceDir == runCtx.RootDirectory;
             runCtx.Monikers = monikers?.Keys == null ? new List<string>() : monikers?.Keys?.ToList();
 
+            //NO PARALLEL EXECUTION !
+
             //inner folders: possible targets from cfg
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
@@ -245,6 +247,8 @@ namespace Drill4Net.Injector.Engine
             if(!InjectorCoreUtils.IsNeedProcessDirectory(opts.Source.Filter, directory, directory == runCtx.RootDirectory))
                 return false;
             _logger.Info($"Processing dir [{directory}]");
+
+            //NO PARALLEL EXECUTION !
 
             //files
             var files = _rep.GetAssemblies(directory);

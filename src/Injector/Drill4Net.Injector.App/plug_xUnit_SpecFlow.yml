@@ -1,4 +1,4 @@
-﻿Description: BDD SpecFlow injector's plugin options for NUnit test project
+﻿Description: BDD SpecFlow injector's plugin options for xUnit test project
 Type: InjectorPlugin
 Filter: # mask for search files, namespaces, classes...
    Includes:
