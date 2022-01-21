@@ -52,7 +52,7 @@ namespace Drill4Net.Configurator
             try
             {
                 //search in local dir
-                ctxTypes = pluginator.GetBy(TypeFinderMode.Attribute, FileUtils.EntryDir, typeof(CliCommandAttribute), filter);
+                ctxTypes = pluginator.GetBy(TypeFinderMode.Attribute, FileUtils.EntryDir, nameof(CliCommandAttribute), filter);
             }
             catch (Exception ex)
             {

@@ -13,6 +13,10 @@ namespace Drill4Net.Agent.Plugins.SpecFlow
     /// </summary>
     public class SpecFlowGeneratorContexter : IGeneratorContexter
     {
+        public string Name => PluginName;
+
+        public const string PluginName = "SpecFlow";
+
         private static readonly SpecFlowGeneratorContexter _singleton = new();
         private readonly TestGenerator _generator;
         private static readonly ConcurrentDictionary<string, long> _testCaseStartTimes = new();

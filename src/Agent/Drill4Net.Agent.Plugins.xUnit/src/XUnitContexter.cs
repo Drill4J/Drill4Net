@@ -1,5 +1,4 @@
-﻿using System;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 

@@ -9,6 +9,7 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Plugins.SpecFlow;
 using Drill4Net.Injector.Plugins.SpecFlow;
 
 /*** INFO
@@ -82,7 +83,7 @@ namespace Drill4Net.Injector.Engine
             //...and use generated Proxy namespace
 
             //SpecFlow
-            var plugCfg = GetPluginOptions(SpecFlowHookInjector.PluginName, opts.Plugins);
+            var plugCfg = GetPluginOptions(SpecFlowGeneratorContexter.PluginName, opts.Plugins);
             if (!string.IsNullOrWhiteSpace(plugCfg?.Directory))
                 plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
 

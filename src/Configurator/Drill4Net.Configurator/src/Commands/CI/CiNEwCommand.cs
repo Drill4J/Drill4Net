@@ -46,6 +46,20 @@ So, do you want to integrate CI run into some source code projects (on its post-
         {
             ciCfgPath = "";
 
+            //setting
+            var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, "ci.yml");
+            CiOptions opts;
+            if (File.Exists(modelCfgPath))
+                opts = _rep.ReadCiOptions(modelCfgPath, false);
+            else
+                opts = new();
+            
+            //description
+            var def = opts.Description;
+            if (!_cli.AskQuestion("CI run's description", out string desc, def, !string.IsNullOrWhiteSpace(def)))
+                return false;
+            opts.Description = desc;
+
             //asking
             if (!_cli.AskDirectory($"The Run have to has the one or more {CoreConstants.SUBSYSTEM_INJECTOR} configs. Specify the directory with them (they will all be used)", out var dir, null, true, false))
                 return false;
@@ -58,25 +72,12 @@ So, do you want to integrate CI run into some source code projects (on its post-
             if (!_cli.AskFilePath("Config path for this CI run will be saved to", out ciCfgPath, defCfgPath, false, true))
                 return false;
 
-            //setting
-            var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, "ci.yml");
-            CiOptions opts;
-            if (File.Exists(modelCfgPath))
-                opts = _rep.ReadCiOptions(modelCfgPath, false);
-            else
-                opts = new();
-
             opts.Injection = new BatchInjectionOptions
             {
                 ConfigDir = dir,
                 DegreeOfParallelism = degree
             };
             opts.TestRunnerConfigPath = runCfgPath;
-            //
-            var def = opts.Description;
-            if (!_cli.AskQuestion("Run's description", out string desc, def, !string.IsNullOrWhiteSpace(def)))
-                return false;
-            opts.Description = desc;
 
             //saving
             _rep.WriteCiOptions(opts, ciCfgPath);

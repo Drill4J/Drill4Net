@@ -28,7 +28,7 @@ namespace Drill4Net.Configurator
         public string? TransmitterDirectory { get; set; }
 
         /// <summary>
-        /// Default directory for the Agent's plugins (IEngineContexters)
+        /// Default directory for the plugins
         /// </summary>
         public string? PluginDirectory { get; set; }
 

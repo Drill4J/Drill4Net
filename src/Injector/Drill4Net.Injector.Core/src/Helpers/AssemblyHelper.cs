@@ -41,7 +41,7 @@ namespace Drill4Net.Injector.Core
             treeDir.Add(treeAsm);
             asmCtx.InjAssembly = treeAsm;
 
-            var key = asmCtx.NameKey;
+            var key = asmCtx.DestinationKey;
             var keys = runCtx.AssemblyPaths;
             if (keys.ContainsKey(key)) //the assembly is shared and already is injected
             {

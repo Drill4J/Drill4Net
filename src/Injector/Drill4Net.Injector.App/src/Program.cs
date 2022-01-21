@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Drill4Net.Cli;
@@ -8,7 +7,6 @@ using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Injector.Engine;
-using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.App
 {

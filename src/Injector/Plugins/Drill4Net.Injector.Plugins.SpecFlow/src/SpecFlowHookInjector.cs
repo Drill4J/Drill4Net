@@ -19,7 +19,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
     /// </summary>
     public class SpecFlowHookInjector : AbstractCodeInjector<SpecFlowPluginOptions>, IInjectorPlugin
     {
-        public string Name => PluginName;
+        public string Name => SpecFlowGeneratorContexter.PluginName;
 
         public string SourceDir { get; }
         public string ProxyClass { get; }
@@ -27,8 +27,6 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
         public string HelperClass { get; }
         public string HelperNs { get; }
         public string HelperAsmName { get; }
-
-        public const string PluginName = "SpecFlow";
 
         private const string _getContextDataMethod = "GetContextData";
         private const string _scenarioField = "_scenarioMethInfo";

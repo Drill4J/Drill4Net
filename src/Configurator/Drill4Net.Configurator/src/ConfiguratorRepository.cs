@@ -167,6 +167,14 @@ namespace Drill4Net.Configurator
             return transDir;
         }
 
+        public string GetPluginDirectory()
+        {
+            var dir = Options.PluginDirectory;
+            if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
+                dir = GetAppPath();
+            return FileUtils.GetFullPath(dir);
+        }
+
         public string GetExternalEditor()
         {
             var path = Options.ExternalEditor;
@@ -288,8 +296,6 @@ namespace Drill4Net.Configurator
         public CiOptions ReadCiOptions(string cfgPath, bool validate = true)
         {
             var opts = ReadOptions<CiOptions>(cfgPath);
-
-            //validate
             if (validate)
             {
                 var cfgDirs = opts.Injection?.ConfigDir;
@@ -306,7 +312,6 @@ namespace Drill4Net.Configurator
                 if (!File.Exists(runnerCfg))
                     throw new ArgumentException($"The {CoreConstants.SUBSYSTEM_TEST_RUNNER} config does not exist");
             }
-            //
             return opts;
         }
 

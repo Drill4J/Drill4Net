@@ -27,7 +27,7 @@ namespace Drill4Net.TypeFinding
         /// <param name="filter"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public List<Type> GetBy(TypeFinderMode finderMode, string dir, Type searchType, SourceFilterOptions filter = null)
+        public List<Type> GetBy(TypeFinderMode finderMode, string dir, string searchType, SourceFilterOptions filter = null)
         {
             if (string.IsNullOrWhiteSpace(dir))
                 return new List<Type>();
@@ -38,7 +38,7 @@ namespace Drill4Net.TypeFinding
             return SearchBy(finderMode, dir, searchType, asms, filter).ToList();
         }
 
-        internal IEnumerable<Type> SearchBy(TypeFinderMode finderMode, string dir, Type searchType, ConcurrentDictionary<string, string> asms,
+        internal IEnumerable<Type> SearchBy(TypeFinderMode finderMode, string dir, string searchType, ConcurrentDictionary<string, string> asms,
             SourceFilterOptions filter)
         {
             var list = new ConcurrentBag<Type>();
@@ -62,8 +62,9 @@ namespace Drill4Net.TypeFinding
                     //continue;
                 //
                 var dirTypes = GetTypes(finderMode, file, searchType, asms, filter);
-                foreach(var type in dirTypes)
-                    list.Add(type);
+                if(dirTypes != null)
+                    foreach(var type in dirTypes)
+                        list.Add(type);
             });
             //}
 
@@ -81,7 +82,7 @@ namespace Drill4Net.TypeFinding
             return list;
         }
 
-        internal IEnumerable<Type> GetTypes(TypeFinderMode finderMode, string asmPath, Type searchType, ConcurrentDictionary<string, string> asms,
+        internal IEnumerable<Type> GetTypes(TypeFinderMode finderMode, string asmPath, string searchType, ConcurrentDictionary<string, string> asms,
             SourceFilterOptions filter)
         {
             if (!asms.TryAdd(Path.GetFileName(asmPath), null))
@@ -120,18 +121,18 @@ namespace Drill4Net.TypeFinding
                     switch (finderMode)
                     {
                         case TypeFinderMode.ClassChildren:
-                            if (type.BaseType?.FullName == searchType.FullName) //only 1 level of inheritance...
+                            if (type.BaseType?.Name == searchType) //only 1 level of inheritance...
                                 list.Add(_loader.LoadType(asmPath, type.FullName));
                             break;
                         case TypeFinderMode.Interface:
                             var interfaces = type.Interfaces;
-                            var intrfs = interfaces.Where(a => a.InterfaceType.Name == searchType.Name);
-                            if (intrfs != null)
+                            var intrfs = interfaces.Where(a => a.InterfaceType.Name == searchType);
+                            if (intrfs?.Any() == true)
                                 list.Add(_loader.LoadType(asmPath, type.FullName));
                             break;
                         case TypeFinderMode.Attribute:
                             var attrs = type.CustomAttributes;
-                            var attr = attrs.FirstOrDefault(a => a.AttributeType.Name == searchType.Name);
+                            var attr = attrs.FirstOrDefault(a => a.AttributeType.Name == searchType);
                             if (attr != null)
                                 list.Add(_loader.LoadType(asmPath, type.FullName));
                             break;

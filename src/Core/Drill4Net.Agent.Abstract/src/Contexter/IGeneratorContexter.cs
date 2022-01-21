@@ -6,6 +6,7 @@
     /// </summary>
     public interface IGeneratorContexter
     {
+        string Name { get; }
         TestGenerator GetTestGenerator();
     }
 }

@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
+using Drill4Net.TypeFinding;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Configurator
 {
@@ -208,61 +210,105 @@ Please make your choice";
             if (_cli.IsYes(answer))
             {
                 RaiseMessage("\nNow you need specify only necessary \"Generator contexter plugins\" which intercept the tests' execution workflow and retrieve their context (implemented IGeneratorContexter interface, for example, for SpecFlow framework. For simple test frameworks, such as xUnit, NUnit, or MsTest you don't need to do it here).");
-                RaiseMessage("When you're done, type ok.");
                 var plugins = cfg.Plugins;
                 if (isNew)
                 {
                     plugins.Clear(); //clear plugins from the model config
-                    while (true)
+
+                    #region Search the plugins
+                    string dir = _rep.GetPluginDirectory();
+                    List<Type> plugTypes = new();
+                    try
                     {
-                        var plugPhrase = plugins.Any() ? "One more plugin" : "Plugin name (just distinctive alias for you)";
-                        if (!_cli.AskQuestion(plugPhrase, out answer, null, false))
-                            return false;
-                        if (_cli.IsOk(answer))
-                            break;
-                        var plugName = answer;
-                        if (plugins.ContainsKey(plugName))
+                        RaiseMessage("Searching. Please, wait...");
+                        plugTypes = GetPlugins(dir).OrderBy(a => a.Name).ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        var er = ex.ToString();
+                        _logger.Error(er);
+                        RaiseWarning($"Error: {er}");
+
+                    }
+                    #endregion
+                    #region Create the plugin section
+                    if (plugTypes.Count == 0)
+                    {
+                        RaiseWarning("No plugins detected.");
+                    }
+                    else
+                    {
+                        RaiseMessage("\nThe found plugins are:");
+                        for (int i = 0; i < plugTypes.Count; i++)
                         {
-                            RaiseWarning($"Such plugin already specified: {plugName}");
-                            continue;
+                            var type = plugTypes[i];
+                            RaiseMessage($"{i + 1}. {type.Name}", CliMessageType.Info);
                         }
-                        
-                        // common plugin directory
-                        if (!_cli.AskDirectory($@"Shared plugin directory for the ""{plugName}""", out var plugDir, null, true, false))
-                            return false;
-                        
-                        // plugin config path
-                        def = $"plug_{trgName}.yml";
-                        string plugCfgPath;
+                        RaiseMessage("\nType the plugin number. When you're done, type ok.");
+                        //
+                        Type plugType;
                         while (true)
                         {
-                            if (!_cli.AskFileName(@"Name for the target specific config (with specified test assembly, etc). It is better to use ""plug_"" prefix.",
-                                out var plugCfgName, def, false))
+                            #region Select plugin
+                            if (!_cli.AskQuestion("Plugin number", out answer, null, false))
                                 return false;
-                            if (string.IsNullOrWhiteSpace(plugCfgName))
+                            if (_cli.IsOk(answer))
+                                break;
+                            if (string.IsNullOrWhiteSpace(answer))
                             {
-                                RaiseWarning("The target specific config name is empty");
+                                RaiseWarning("Input cannot be empty");
                                 continue;
                             }
-                            if (!plugCfgName.EndsWith(".yml"))
-                                plugCfgName += ".yml";
-                            plugCfgPath = Path.Combine(injectorDir, plugCfgName);
-                            if (File.Exists(plugCfgPath))
-                                break;
-                            RaiseWarning(@$"The target specific config for the target ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
+                            answer = answer.Trim();
+                            if (!int.TryParse(answer, out var num) || num < 1 || num > plugTypes.Count)
+                            {
+                                RaiseWarning("Out of range, please repeat");
+                                continue;
+                            }
+                            //
+                            plugType = plugTypes[num - 1];
+                            var plugDir = Path.GetDirectoryName(plugType.Assembly.Location);
+                            var plug = (IGeneratorContexter)Activator.CreateInstance(plugType);
+                            var plugName = plug.Name;
+                            #endregion
+                            #region Plugin config path
+                            def = $"plug_{trgName}.yml";
+                            string plugCfgPath = "";
+                            while (true)
+                            {
+                                if (!_cli.AskFileName(@$"Name for the target specific config for plugin ""{plugName}"" (contains test assembly, etc). It is better to use ""plug_"" prefix.",
+                                    out var plugCfgName, def, false))
+                                    return false;
+                                if (string.IsNullOrWhiteSpace(plugCfgName))
+                                {
+                                    RaiseWarning("The target specific config name is empty");
+                                    continue;
+                                }
+                                if (!plugCfgName.EndsWith(".yml"))
+                                    plugCfgName += ".yml";
+                                plugCfgPath = Path.Combine(injectorDir, plugCfgName);
+                                if (File.Exists(plugCfgPath))
+                                    break;
+                                RaiseWarning(@$"The target specific config for the target ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
+                            }
+                            #endregion
+
+                            if (!string.IsNullOrWhiteSpace(plugCfgPath))
+                            {
+                                var plugOpts = new PluginLoaderOptions()
+                                {
+                                    Directory = plugDir,
+                                    Config = plugCfgPath,
+                                };
+                                plugins.Add(plugName, plugOpts);
+                            }
                         }
-                        //
-                        var plugOpts = new PluginLoaderOptions()
-                        {
-                            Directory = plugDir,
-                            Config = plugCfgPath,
-                        };
-                        plugins.Add(plugName, plugOpts);
+                        #endregion
                     }
                 }
                 else
                 {
-                    //
+                    RaiseWarning($"The program does not yet implement editing information about the plugin in the configuration. Please do it manually in [{cfgPath}]");
                 }
             }
             #endregion
@@ -287,6 +333,34 @@ Please make your choice";
             {
                 return _cmdHelper.SaveConfig(appName, cfg, cfgPath);
             }
+        }
+
+        internal List<Type> GetPlugins(string dir)
+        {
+            //search the plugins
+            var pluginator = new TypeFinder();
+            var filter = new SourceFilterOptions
+            {
+                Excludes = new SourceFilterParams
+                {
+                    Files = new List<string>
+                    {
+                        "reg:.resources.dll$",
+                    },
+                },
+            };
+            List<Type> ctxDirs = new();
+            try
+            {
+                ctxDirs = pluginator.GetBy(TypeFinderMode.Interface, dir, nameof(IGeneratorContexter), filter);
+            }
+            catch (Exception ex)
+            {
+                var er = $"Search for plugins is failed in [{dir}]";
+                _logger.Fatal(er, ex);
+                RaiseWarning(er);
+            }
+            return ctxDirs;
         }
 
         internal void ClarifyProfilerDirectory(ProfilerOptions opts)

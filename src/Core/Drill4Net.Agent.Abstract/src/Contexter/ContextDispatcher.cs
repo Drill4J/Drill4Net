@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Drill4Net.Common;
@@ -50,7 +49,7 @@ namespace Drill4Net.Agent.Abstract
             List<Type> ctxTypes;
             try
             {
-                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, typeof(AbstractEngineContexter), filter);
+                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, nameof(AbstractEngineContexter), filter);
             }
             catch (Exception ex)
             {

@@ -100,10 +100,10 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public MethodReference ProxyMethRef { get; set; }
 
-        /// <summary>
-        /// The Key of the assembly
-        /// </summary>
-        public string NameKey => $"{DestinationDir}${Definition?.FullName}${Version}";
+        ///// <summary>
+        ///// The Key of the assembly
+        ///// </summary>
+        //public string NameKey => $"{DestinationDir}${Definition?.FullName}${Version}";
 
         public string DestinationKey => Path.Combine(DestinationDir, Module?.Name);
 

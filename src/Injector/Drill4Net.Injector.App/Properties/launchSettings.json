@@ -22,7 +22,7 @@
     },
     "ci": {
       "commandName": "Project",
-      "commandLineArgs": "--silent --degree_parallelism=4 --cfg_dir=\"d:\\Projects\\EPM-D4J\\Distributions\\debug\\Drill4Net_dis\\ci\\test123\\\""
+      "commandLineArgs": "--silent --degree_parallelism=4 --cfg_dir=\"d:\\Projects\\EPM-D4J\\Distributions\\debug\\Drill4Net_dis\\ci\\test_A\\\""
     }
   }
 }
