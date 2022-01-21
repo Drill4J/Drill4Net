@@ -12,7 +12,7 @@ docker-compose up -d
 docker-compose -f docker-compose-admin-without-agent.yml up -d
 ```
 
-Pass environment variable to docker in Git-bash (Windows) for ghcr.io/epamx/drill4net:latest
+Wait for start Kafka. Pass environment variable to docker in Git-bash (Windows) for ghcr.io/epamx/drill4net:latest
 ```
 winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network ghcr.io/epamx/drill4net:latest
 ```
