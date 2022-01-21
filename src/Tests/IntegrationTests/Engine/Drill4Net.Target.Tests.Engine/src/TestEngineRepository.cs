@@ -59,8 +59,8 @@ namespace Drill4Net.Target.Tests.Engine
 
                 var callDir = FileUtils.CallingDir;
                 var cfgDir = FindConfigInDepth(callDir);
-                var cfg_path = Path.Combine(cfgDir, CoreConstants.CONFIG_NAME_TESTS);
-                _tstRep = new TestAgentRepository(cfg_path);
+                var cfgPath = Path.Combine(cfgDir, CoreConstants.CONFIG_NAME_TESTS);
+                _tstRep = new TestAgentRepository(cfgPath);
 
                 //targets
                 Targets = Options.Versions.Targets;

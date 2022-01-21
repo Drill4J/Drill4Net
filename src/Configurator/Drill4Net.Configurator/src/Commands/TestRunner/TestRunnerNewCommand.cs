@@ -41,7 +41,7 @@ namespace Drill4Net.Configurator
 
 The command does not accept any clarifying arguments yet, but this may be done in the near future.
 
-    Example: run new";
+    Example: {RawContexts}";
         }
     }
 }

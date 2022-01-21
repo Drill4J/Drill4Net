@@ -39,8 +39,8 @@ namespace Drill4Net.Agent.Testing
                 {
                     //rep
                     var callingDir = FileUtils.CallingDir;
-                    var cfg_path = Path.Combine(callingDir, CoreConstants.CONFIG_NAME_TESTS);
-                    var rep = new TestAgentRepository(cfg_path);
+                    var cfgPath = Path.Combine(callingDir, CoreConstants.CONFIG_NAME_TESTS);
+                    var rep = new TestAgentRepository(cfgPath);
 
                     //tree info
                     var targetsDir = rep.GetTargetsDir(callingDir);

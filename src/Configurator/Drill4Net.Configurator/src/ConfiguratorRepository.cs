@@ -327,6 +327,7 @@ namespace Drill4Net.Configurator
 
         public T ReadOptions<T>(string cfgPath) where T : AbstractOptions, new()
         {
+            cfgPath = FileUtils.GetFullPath(cfgPath);
             if (!File.Exists(cfgPath))
                 throw new FileNotFoundException($"File not found. Note: any path must be in quotes. Path: [{cfgPath}]");
             var optHelper = new BaseOptionsHelper<T>(Subsystem);

@@ -72,8 +72,8 @@ In turn, the CLI arguments support both Windows syntax and Unix syntax. It is pr
             RaiseMessage(mess, CliMessageType.Help);
 
             mess = @"
-    Example: ci edit --cfg_path=""d:\ci_1.yml""
-    Example: ci edit --cfg_path = ""d:\ci_1.yml""
+    Example: ci edit --{CoreConstants.ARGUMENT_CONFIG_PATH}=""d:\ci_1.yml""
+    Example: ci edit --{CoreConstants.ARGUMENT_CONFIG_PATH} = ""d:\ci_1.yml""
 ";
             RaiseMessage(mess, CliMessageType.Info);
 

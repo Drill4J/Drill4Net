@@ -71,6 +71,7 @@
         public const string ARGUMENT_SOURCE_PATH = "source_path";
         public const string ARGUMENT_DESTINATION_DIR = "dest_dir";
         public const string ARGUMENT_DESTINATION_PATH = "dest_path";
+        public const string ARGUMENT_RUN_CFG = "run_cfg";
         public const string ARGUMENT_DEGREE_PARALLELISM = "degree_parallelism";
 
         /// <summary>

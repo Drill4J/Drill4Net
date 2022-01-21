@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Configurator
+﻿using Drill4Net.Common;
+
+namespace Drill4Net.Configurator
 {
     internal static class HelpHelper
     {
@@ -31,7 +33,7 @@
     Example: {cmd} -- ""d:\configs\{fld}\cfg2.yml""
 
 ...or with named argument:
-    Example: {cmd} --cfg_path=""d:\configs\{fld}\cfg2.yml""";
+    Example: {cmd} --{CoreConstants.ARGUMENT_CONFIG_PATH}=""d:\configs\{fld}\cfg2.yml""";
         }
 
         internal static string GetActiveConfigText(string appName, bool isProgram, string cmd, string fld)

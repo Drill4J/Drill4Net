@@ -26,7 +26,7 @@ namespace Drill4Net.Configurator
             _cli = new(Id);
             _cli.MessageDelivered += MessageDeliveredHandler;
 
-            _cmdHelper = new(_cli, rep);
+            _cmdHelper = new(_cli, rep, _cliRep);
             _cmdHelper.MessageDelivered += MessageDeliveredHandler;
         }
 

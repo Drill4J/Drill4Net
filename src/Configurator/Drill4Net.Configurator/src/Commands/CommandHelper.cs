@@ -14,15 +14,17 @@ namespace Drill4Net.Configurator
     {
         public CliInteractor Cli { get; }
 
+        private readonly CliCommandRepository _cliRep;
         private readonly ConfiguratorRepository _rep;
         protected readonly Logger _logger;
 
         /*****************************************************************/
 
-        public CommandHelper(CliInteractor cli, ConfiguratorRepository rep): base(cli.Id)
+        public CommandHelper(CliInteractor cli, ConfiguratorRepository rep, CliCommandRepository cliRep) : base(cli.Id)
         {
             Cli = cli ?? throw new ArgumentNullException(nameof(cli));
             _rep = rep ?? throw new ArgumentNullException(nameof(rep));
+            _cliRep = cliRep ?? throw new ArgumentNullException(nameof(cliRep));
             _logger = new TypedLogger<AbstractCliCommand>(rep.Subsystem);
         }
 
@@ -289,7 +291,7 @@ namespace Drill4Net.Configurator
                 out string path, out bool fromSwitch) where T : AbstractOptions, new()
         {
             fromSwitch = false;
-            //
+
             var res2 = GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
                 dir, desc, out path, out var _, out var error);
             if (!res2)
@@ -298,6 +300,12 @@ namespace Drill4Net.Configurator
                     RaiseError(error);
                 return false;
             }
+
+            return CheckConfigPath(cfgSubsystem, path);
+        }
+
+        internal bool CheckConfigPath(string cfgSubsystem, string path)
+        {
             if (string.IsNullOrWhiteSpace(path))
             {
                 RaiseError($"Path to the {cfgSubsystem} config is empty");
@@ -544,9 +552,19 @@ namespace Drill4Net.Configurator
 
         internal async Task<(bool res, string error)> TestRunnerProcess(string testRunnerCfgPath)
         {
-            var args = $"--{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
+            // prep target (with Agent config, etc) by TestRuner config (not Injector config here!)
+            var trgArgs = $"--{CoreConstants.ARGUMENT_RUN_CFG}=\"{testRunnerCfgPath}\"";
+            var prepCmd = new TestRunnerPrepCommand(_rep, _cliRep);
+            var desc = new CliDescriptor(trgArgs, true);
+            prepCmd.Init(desc);
+            var runRes = await prepCmd.Process();
+            if (!runRes.done)
+                return (false, "Target's preparing failed");
+
+            // run Test Runner
             var path = _rep.GetTestRunnerPath();
-            var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_TEST_RUNNER, path, args, out var err);
+            var runnerArgs = $"--{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
+            var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_TEST_RUNNER, path, runnerArgs, out var err);
             if (!res)
                 return (false, err);
 

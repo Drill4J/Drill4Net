@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.Injector.Core;
+using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
     [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_PREP)]
     public class TestRunnerPrepCommand : AbstractConfiguratorCommand
     {
-        public TestRunnerPrepCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
+        public TestRunnerPrepCommand(ConfiguratorRepository rep, CliCommandRepository cliRep): base(rep, cliRep)
         {
         }
 
@@ -28,20 +29,39 @@ namespace Drill4Net.Configurator
             }
             else //by switches (last, active configs...)
             {
-                if (_desc == null)
-                    return Task.FromResult(FalseEmptyResult);
-
-                var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
-                    injectorDir, _desc, out var cfgPath, out var _, out string? err);
-                if (!res)
+                var runCfg = GetParameter(CoreConstants.ARGUMENT_RUN_CFG, false); //by TestRunner config (several targets)
+                if (runCfg != null)
                 {
-                    if (string.IsNullOrWhiteSpace(err))
-                        err = "You have to specify either the name of the config or the folder with the instrumented target.";
-                    _logger.Error(err);
-                    RaiseError(err);
-                    return Task.FromResult(FalseEmptyResult);
+                    if (!_cmdHelper.CheckConfigPath(CoreConstants.SUBSYSTEM_TEST_RUNNER, runCfg))
+                        return Task.FromResult(FalseEmptyResult);
+                    var runOpts = _rep.ReadTestRunnerOptions(runCfg);
+                    var runnerDir = _rep.GetTestRunnerDirectory();
+                    var res = true;
+                    foreach (var runDirOpts in runOpts.Directories)
+                    {
+                        var trgDir = FileUtils.GetFullPath(runDirOpts.Directory, runnerDir);
+                        if (!ProcessInjectedTarget(trgDir, false))
+                            res = false;
+                    }
+                    return Task.FromResult(res ? TrueEmptyResult : FalseEmptyResult);
                 }
-                return Task.FromResult((processConfig(cfgPath, force), new Dictionary<string, object>()));
+                else //is the target specified?
+                {
+                    if (_desc == null)
+                        return Task.FromResult(FalseEmptyResult);
+
+                    var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                        injectorDir, _desc, out var cfgPath, out var _, out string? err);
+                    if (!res)
+                    {
+                        if (string.IsNullOrWhiteSpace(err))
+                            err = "You have to specify either the name of the config or the folder with the instrumented target.";
+                        _logger.Error(err);
+                        RaiseError(err);
+                        return Task.FromResult(FalseEmptyResult);
+                    }
+                    return Task.FromResult((processConfig(cfgPath, force), new Dictionary<string, object>()));
+                }
             }
 
             bool processConfig(string agentCfgPath, bool forceRewrite)
@@ -135,8 +155,11 @@ namespace Drill4Net.Configurator
 
 {HelpHelper.GetExplicitConfigDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts, "injections")}
 
-Another option is passing the injected target directory directly using ""dest_dir"" option:
-    Example: {RawContexts} --dest_dir=""d:\Targets\TargetA.Injected\"" -f (forced)";
+Another option is passing the injected target directory directly using ""{CoreConstants.ARGUMENT_DESTINATION_DIR}"" option:
+    Example: {RawContexts} --{CoreConstants.ARGUMENT_DESTINATION_DIR}=""d:\Targets\TargetA.Injected\"" -f (forced)
+
+You can even pass the {CoreConstants.SUBSYSTEM_TEST_RUNNER} config with several targets directories using ""{CoreConstants.ARGUMENT_RUN_CFG}"" option:
+    Example: {RawContexts} --{CoreConstants.ARGUMENT_RUN_CFG}=""d:\test_runner\run1.yml""";
         }
     }
 }
