@@ -84,20 +84,6 @@ services:
     networks:
       - drill4net-dev-network
 
-  drill4net-service:
-    image: ghcr.io/epamx/drill4net:latest
-    container_name: drill4net-service
-    environment:
-      - MESSAGE_SERVER_ADDRESS=kafka1:9093
-      - DRILL_ADMIN_ADDRESS=drill-admin:8090
-    depends_on:
-      kafka1:
-        condition: service_healthy
-      drill-admin:
-        condition: service_healthy
-    networks:
-      - drill4net-dev-network
-
 networks:
   drill4net-dev-network:
     external: false
