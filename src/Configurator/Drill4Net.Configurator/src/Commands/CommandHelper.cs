@@ -6,6 +6,7 @@ using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Configuration;
+using System.Threading.Tasks;
 
 namespace Drill4Net.Configurator
 {
@@ -287,25 +288,24 @@ namespace Drill4Net.Configurator
         internal bool GetExistingSourceConfigPath<T>(string cfgSubsystem, string dir, CliDescriptor desc,
                 out string path, out bool fromSwitch) where T : AbstractOptions, new()
         {
-            path = string.Empty;
             fromSwitch = false;
             //
             var res2 = GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
-                dir, desc, out var injCfgPath, out var _, out var error);
+                dir, desc, out path, out var _, out var error);
             if (!res2)
             {
                 if (error != null)
                     RaiseError(error);
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(injCfgPath))
+            if (string.IsNullOrWhiteSpace(path))
             {
                 RaiseError($"Path to the {cfgSubsystem} config is empty");
                 return false;
             }
-            if (!File.Exists(injCfgPath))
+            if (!File.Exists(path))
             {
-                RaiseError($"{cfgSubsystem} config not found: [{injCfgPath}]");
+                RaiseError($"{cfgSubsystem} config not found: [{path}]");
                 return false;
             }
             return true;
@@ -540,6 +540,20 @@ namespace Drill4Net.Configurator
                         cmdRes = false;
                 }
             }
+        }
+
+        internal async Task<(bool res, string error)> TestRunnerProcess(string testRunnerCfgPath)
+        {
+            var args = $"--{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
+            var path = _rep.GetTestRunnerPath();
+            var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_TEST_RUNNER, path, args, out var err);
+            if (!res)
+                return (false, err);
+
+            //wait
+            await CommonUtils.WaitForProcessExit(pid)
+                .ConfigureAwait(false);
+            return (true, "");
         }
     }
 }

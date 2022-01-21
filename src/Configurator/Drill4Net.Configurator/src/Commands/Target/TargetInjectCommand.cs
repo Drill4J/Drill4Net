@@ -56,7 +56,7 @@ namespace Drill4Net.Configurator
 {HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts)}
 
 Also you can use config path directly:
-    Example: trg inj --cfg_path=""d:\Drill4Net\ci\targetA\inj.yml""";
+    Example: {RawContexts} --cfg_path=""d:\Drill4Net\ci\targetA\inj.yml""";
         }
     }
 }

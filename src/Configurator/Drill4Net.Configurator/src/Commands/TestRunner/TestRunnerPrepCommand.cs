@@ -131,12 +131,12 @@ namespace Drill4Net.Configurator
             return @$"Check and prepare the injected target for additional requirements, it is now the presence of an {CoreConstants.SUBSYSTEM_AGENT} config in instrumented directory. If necessary, such a config is created using a model file, which, in turn, is configured by system settings. The Injector does it itself, but if the system settings were changed after that, you need to do the same manually and using the ""f"" switch (forced overwrite).
 
 {HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts)}
-    Example: run prep -lf (forced)
+    Example: {RawContexts} -lf (forced)
 
 {HelpHelper.GetExplicitConfigDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts, "injections")}
 
 Another option is passing the injected target directory directly using ""dest_dir"" option:
-    Example: run prep --dest_dir=""d:\Targets\TargetA.Injected\"" -f (forced)";
+    Example: {RawContexts} --dest_dir=""d:\Targets\TargetA.Injected\"" -f (forced)";
         }
     }
 }

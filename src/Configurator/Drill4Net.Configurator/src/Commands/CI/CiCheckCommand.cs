@@ -125,7 +125,7 @@ namespace Drill4Net.Configurator
 {HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_CI, RawContexts, "ci")}
 
 You can use the ""f"" switch to check not only the {CoreConstants.SUBSYSTEM_CI} configuration, but also all related configurations (for the injections and the {CoreConstants.SUBSYSTEM_TEST_RUNNER}).
-    Example: ci check -lf";
+    Example: {RawContexts} -lf";
         }
     }
 }

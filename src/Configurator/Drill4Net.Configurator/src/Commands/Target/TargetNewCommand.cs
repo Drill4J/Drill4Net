@@ -38,11 +38,11 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return @"This command allows you to interactively create a configuration from scratch for the injection of the target application (SUT - system under test). You should simply answer a number of clarifying questions. This is the first stage in the full workflow of the Drill for .NET.
+            return $@"This command allows you to interactively create a configuration from scratch for the injection of the target application (SUT - system under test). You should simply answer a number of clarifying questions. This is the first stage in the full workflow of the Drill for .NET.
 
 The command does not accept any clarifying arguments yet, but this may be done in the near future.
 
-    Example: trg new";
+    Example: {RawContexts}";
         }
     }
 }

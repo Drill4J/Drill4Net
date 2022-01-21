@@ -85,7 +85,7 @@ namespace Drill4Net.Configurator
                 return (false, err);
 
             // Test Runner
-            (res, err) = await TestRunnerProcess(runCfgPath)
+            (res, err) = await _cmdHelper.TestRunnerProcess(runCfgPath)
                 .ConfigureAwait(false);
             if (!res)
                 return (false, err);
@@ -98,20 +98,6 @@ namespace Drill4Net.Configurator
             var args = $"--{CoreConstants.ARGUMENT_SILENT} --{CoreConstants.ARGUMENT_DEGREE_PARALLELISM}={degreefParallelism} --{CoreConstants.ARGUMENT_CONFIG_DIR}=\"{cfgsDir}\"";
             var path = _rep.GetInjectorPath();
             var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
-            if (!res)
-                return (false, err);
-
-            //wait
-            await CommonUtils.WaitForProcessExit(pid)
-                .ConfigureAwait(false);
-            return (true, "");
-        }
-
-        private async Task<(bool res, string error)> TestRunnerProcess(string testRunnerCfgPath)
-        {
-            var args = $"--{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
-            var path = _rep.GetTestRunnerPath();
-            var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_TEST_RUNNER, path, args, out var err);
             if (!res)
                 return (false, err);
 
