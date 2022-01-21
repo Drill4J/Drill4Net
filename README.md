@@ -1,6 +1,18 @@
 
 ## Start Drill4Net.Agent.Service in Docker and connect to Kafka in Docker
+Run docker-compose in root project directory with admin and kafka in PowerShell or git-bash
 
+```
+docker-compose up -d
+```
+
+
+Pass environment variable to docker in Git-bash (Windows) for ghcr.io/epamx/drill4net:latest
+```
+winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network ghcr.io/epamx/drill4net:latest
+```
+
+## Build Drill4Net.Agent.Service in Docker and connect to Kafka in Docker
 Use Visual Studio Community 2022 because Targeting .NET 6.0 in Visual Studio 2019 is not supported.
 
 Run installer Visual Studio Community 2022 - https://docs.microsoft.com/ru-ru/visualstudio/releases/2022/release-notes
@@ -150,11 +162,6 @@ docker-compose -f docker-compose-agent.yml build
 Pass environment variable to docker in Git-bash (Windows) for drill4net_agent:latest
 ```
 winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network drill4net_agent:latest
-```
-
-Pass environment variable to docker in Git-bash (Windows) for ghcr.io/epamx/drill4net:latest
-```
-winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network ghcr.io/epamx/drill4net:latest
 ```
 
 Enter to Docker container and run
