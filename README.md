@@ -147,9 +147,14 @@ Build in Git-bash (Windows)
 docker-compose -f docker-compose-agent.yml build
 ```
 
-Pass environment variable to docker in Git-bash (Windows)
+Pass environment variable to docker in Git-bash (Windows) for drill4net_agent:latest
 ```
 winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network drill4net_agent:latest
+```
+
+Pass environment variable to docker in Git-bash (Windows) for ghcr.io/epamx/drill4net:latest
+```
+winpty docker run -it -e MESSAGE_SERVER_ADDRESS='host.docker.internal:9093' -e DRILL_ADMIN_ADDRESS='drill-admin:8090' --network=drill4net-dev-network ghcr.io/epamx/drill4net:latest
 ```
 
 Enter to Docker container and run
