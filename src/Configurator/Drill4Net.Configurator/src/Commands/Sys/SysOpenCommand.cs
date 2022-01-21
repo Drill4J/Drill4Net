@@ -28,7 +28,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Open in external editor the configs with system properties (connections, etc).";
+            return "Open the system configs (connections, etc) in external editor.";
         }
 
         public override string GetHelp()
