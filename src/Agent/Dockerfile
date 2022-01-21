@@ -22,9 +22,11 @@ RUN dotnet build "Drill4Net.Agent.Worker.csproj" -c Release -o /app/build
 FROM build AS publish
 ENV MESSAGE_SERVER_ADDRESS $MESSAGE_SERVER_ADDRESS
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Service"
-RUN dotnet publish "Drill4Net.Agent.Service.csproj" -c Release -o /app/publish
+RUN dotnet publish "Drill4Net.Agent.Service.csproj" -c Release --runtime linux-x64 -o /app/publish
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Worker"
-RUN dotnet publish "Drill4Net.Agent.Worker.csproj" -c Release -o /app/publish
+RUN dotnet publish "Drill4Net.Agent.Worker.csproj" -c Release --runtime linux-x64 -o /app/publish
+RUN ls -l /app/publish
+RUN chmod +x /app/publish/Drill4Net.Agent.Worker.dll
 
 FROM base AS final
 ENV MESSAGE_SERVER_ADDRESS $MESSAGE_SERVER_ADDRESS
