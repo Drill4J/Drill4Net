@@ -85,7 +85,7 @@ namespace Drill4Net.Configurator
                 return (false, err);
 
             // Test Runner
-            (res, err) = await _cmdHelper.TestRunnerProcess(runCfgPath)
+            (res, err) = await _cmdHelper.TestRunnerProcess(this, runCfgPath)
                 .ConfigureAwait(false);
             if (!res)
                 return (false, err);

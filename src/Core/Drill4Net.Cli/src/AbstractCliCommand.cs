@@ -60,7 +60,7 @@ namespace Drill4Net.Cli
         /// <returns></returns>
         public abstract Task<(bool done, Dictionary<string, object> results)> Process();
 
-        protected async Task<(bool done, Dictionary<string, object> results)> ProcessFor(AbstractCliCommand cmd, CliDescriptor desc)
+        public async Task<(bool done, Dictionary<string, object> results)> ProcessFor(AbstractCliCommand cmd, CliDescriptor desc)
         {
             cmd.Init(desc);
             cmd.MessageDelivered += RaiseRawMessage;

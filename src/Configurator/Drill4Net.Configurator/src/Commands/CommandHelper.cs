@@ -550,14 +550,13 @@ namespace Drill4Net.Configurator
             }
         }
 
-        internal async Task<(bool res, string error)> TestRunnerProcess(string testRunnerCfgPath)
+        internal async Task<(bool res, string error)> TestRunnerProcess(AbstractCliCommand parentCmd, string testRunnerCfgPath)
         {
             // prep target (with Agent config, etc) by TestRuner config (not Injector config here!)
             var trgArgs = $"--{CoreConstants.ARGUMENT_RUN_CFG}=\"{testRunnerCfgPath}\"";
-            var prepCmd = new TestRunnerPrepCommand(_rep, _cliRep);
+            var prepCmd = _cliRep.Commands.Values.Single(a => a.GetType().Name == nameof(TestRunnerPrepCommand));
             var desc = new CliDescriptor(trgArgs, true);
-            prepCmd.Init(desc);
-            var runRes = await prepCmd.Process();
+            var runRes = await parentCmd.ProcessFor(prepCmd, desc);
             if (!runRes.done)
                 return (false, "Target's preparing failed");
 

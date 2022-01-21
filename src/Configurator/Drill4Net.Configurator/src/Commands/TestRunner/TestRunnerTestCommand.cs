@@ -26,7 +26,7 @@ namespace Drill4Net.Configurator
             if (!res2)
                 return FalseEmptyResult;
 
-            var (res, err) = await _cmdHelper.TestRunnerProcess(runCfgPath)
+            var (res, err) = await _cmdHelper.TestRunnerProcess(this, runCfgPath)
                 .ConfigureAwait(false);
             if (!res)
             {
