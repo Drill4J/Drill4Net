@@ -6,6 +6,11 @@ Run docker-compose in root project directory with admin and kafka in PowerShell 
 docker-compose up -d
 ```
 
+## Start Kafka in Docker. Later start Drill4Net.Agent.Service in Docker and connect to Kafka
+
+```
+docker-compose -f docker-compose-admin-without-agent.yml up -d
+```
 
 Pass environment variable to docker in Git-bash (Windows) for ghcr.io/epamx/drill4net:latest
 ```
