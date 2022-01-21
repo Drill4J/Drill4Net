@@ -303,7 +303,7 @@ namespace Drill4Net.Configurator
                     throw new ArgumentException($"The directory path for {CoreConstants.SUBSYSTEM_INJECTOR} configs is empty");
                 cfgDirs = FileUtils.GetFullPath(cfgDirs);
                 if (!Directory.Exists(cfgDirs))
-                    throw new ArgumentException($"The directory for {CoreConstants.SUBSYSTEM_INJECTOR} configs does not exist");
+                    throw new ArgumentException($"The directory for {CoreConstants.SUBSYSTEM_INJECTOR} configs does not exist. Any file path must be in quotes.");
 
                 var runnerCfg = opts.TestRunnerConfigPath;
                 if (string.IsNullOrWhiteSpace(runnerCfg))
@@ -327,6 +327,8 @@ namespace Drill4Net.Configurator
 
         public T ReadOptions<T>(string cfgPath) where T : AbstractOptions, new()
         {
+            if (!File.Exists(cfgPath))
+                throw new FileNotFoundException($"File not found. Note: any path must be in quotes. Path: [{cfgPath}]");
             var optHelper = new BaseOptionsHelper<T>(Subsystem);
             return optHelper.ReadOptions(cfgPath);
         }

@@ -284,26 +284,53 @@ namespace Drill4Net.Configurator
             return GetConfigPath(dir, "source", sourceName, true, out path, out error);
         }
 
-        internal bool GetConfigPath(string dir, string typeConfig, string name, bool mustExist, out string path, out string error)
+        internal bool GetExistingSourceConfigPath<T>(string cfgSubsystem, string dir, CliDescriptor desc,
+                out string path, out bool fromSwitch) where T : AbstractOptions, new()
+        {
+            path = string.Empty;
+            fromSwitch = false;
+            //
+            var res2 = GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                dir, desc, out var injCfgPath, out var _, out var error);
+            if (!res2)
+            {
+                if (error != null)
+                    RaiseError(error);
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(injCfgPath))
+            {
+                RaiseError($"Path to the {cfgSubsystem} config is empty");
+                return false;
+            }
+            if (!File.Exists(injCfgPath))
+            {
+                RaiseError($"{cfgSubsystem} config not found: [{injCfgPath}]");
+                return false;
+            }
+            return true;
+        }
+
+        internal bool GetConfigPath(string dir, string typeConfig, string cfg, bool mustExist, out string path, out string error)
         {
             path = string.Empty;
             error = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(cfg))
             {
                 error = $"The {typeConfig} config is not specified, see help.";
                 return false;
             }
-            name = name.Replace("\"", null);
-            if (!string.IsNullOrWhiteSpace(Path.GetDirectoryName(name)))
+            cfg = cfg.Replace("\"", null);
+            if (!string.IsNullOrWhiteSpace(Path.GetDirectoryName(cfg)))
             {
                 error = $"The {typeConfig} config should be just a file name without a directory, see help.";
                 return false;
             }
-            if (!name.EndsWith(".yml"))
-                name += ".yml";
+            if (!cfg.EndsWith(".yml"))
+                cfg += ".yml";
 
-            path = Path.Combine(dir, name);
+            path = Path.Combine(dir, cfg);
             if (mustExist && !File.Exists(path))
             {
                 error = $"The {typeConfig} config not found: [{path}]";
@@ -333,7 +360,18 @@ namespace Drill4Net.Configurator
             var res = GetSourceConfigPath<T>(cfgSubsystem, dir, desc, out var fileName, out var _, out var error);
             if (!res)
             {
-                RaiseError(error);
+                if(error != null)
+                    RaiseError(error);
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                RaiseError($"Path to the {cfgSubsystem} config is empty");
+                return false;
+            }
+            if (!File.Exists(fileName))
+            {
+                RaiseError($"{cfgSubsystem} config not found: [{fileName}]");
                 return false;
             }
             return OpenFile(fileName);

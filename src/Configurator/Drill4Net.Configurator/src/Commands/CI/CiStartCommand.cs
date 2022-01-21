@@ -26,7 +26,8 @@ namespace Drill4Net.Configurator
                 dir, _desc, out var ciCfgPath, out var _, out var error);
             if (!res2)
             {
-                RaiseError(error);
+                if (error != null)
+                    RaiseError(error);
                 return FalseEmptyResult;
             }
             if (string.IsNullOrWhiteSpace(ciCfgPath))
@@ -35,18 +36,18 @@ namespace Drill4Net.Configurator
                 return FalseEmptyResult;
             }
             //
-            var opts = _rep.ReadCiOptions(ciCfgPath);
-            var (res, err) = await StartCi(opts).ConfigureAwait(false);
-            if (res)
+            try
             {
-                var mess = $"CI workflow is done: [{ciCfgPath}].";
-                RaiseMessage(mess);
-                _logger.Info(mess);
+                var opts = _rep.ReadCiOptions(ciCfgPath);
+                var (res, err) = await StartCi(opts).ConfigureAwait(false);
+                if (res)
+                    RaiseMessage($"CI workflow is done: [{ciCfgPath}].");
+                else
+                    RaiseError(err);
             }
-            else
+            catch (Exception ex)
             {
-                RaiseError(err);
-                _logger.Error(err);
+                RaiseError(ex.Message);
             }
             return TrueEmptyResult;
         }

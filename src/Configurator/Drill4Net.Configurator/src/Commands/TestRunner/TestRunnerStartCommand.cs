@@ -5,10 +5,10 @@ using Drill4Net.Cli;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_TEST)]
-    public class TestRunnerTestCommand : AbstractConfiguratorCommand
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_START)]
+    public class TestRunnerStartCommand : AbstractConfiguratorCommand
     {
-        public TestRunnerTestCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
+        public TestRunnerStartCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
         }
 
