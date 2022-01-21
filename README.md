@@ -6,6 +6,12 @@ Run docker-compose in root project directory with admin and kafka in PowerShell 
 docker-compose up -d
 ```
 
+Enter to Docker container and run
+```
+docker exec -it drill4net-service bash
+dotnet Drill4Net.Agent.Worker.dll --cfg_path=svc.yml --target_session=4fbf1ce9-c51d-4b35-a2cf-52f6c07d8932 --target_name=IHS-bdd --target_version=0.1.0
+```
+
 ## Start Kafka in Docker. Later start Drill4Net.Agent.Service in Docker and connect to Kafka
 
 ```
