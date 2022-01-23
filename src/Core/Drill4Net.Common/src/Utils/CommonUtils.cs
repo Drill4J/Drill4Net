@@ -262,6 +262,11 @@ namespace Drill4Net.Common
             return Environment.OSVersion.Platform == PlatformID.Win32NT;
         }
 
+        public static string GetUserDir()
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+
         public static (bool res, int pid) StartProgramm(string subsystem, string path, string args, out string error, bool createNoWindow = false)
         {
             error = "";

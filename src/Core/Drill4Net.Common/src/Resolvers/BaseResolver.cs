@@ -9,6 +9,7 @@ namespace Drill4Net.Common
     public abstract class BaseResolver
     {
         public List<string> SearchDirs { get; }
+
         private readonly List<string> _runtimeDirs;
 
         /************************************************************************/
@@ -104,8 +105,7 @@ namespace Drill4Net.Common
             #region User's nuget cache
             if (firstMatch == null)
             {
-                var usersDir = CommonUtils.IsWindows() ? "c:\\Users" : "/home";
-                var nugetDir = $"{usersDir}{Path.DirectorySeparatorChar}{Environment.UserName}{Path.DirectorySeparatorChar}.nuget{Path.DirectorySeparatorChar}packages{Path.DirectorySeparatorChar}";
+                var nugetDir = Path.Combine(CommonUtils.GetUserDir(), ".nuget", "packages") + Path.DirectorySeparatorChar;
                 string folder = null;
                 if (shortName.EndsWith(".resources.dll"))
                     folder = shortName.Replace(".resources.dll", null);
@@ -147,7 +147,7 @@ namespace Drill4Net.Common
             //root runtime path - TODO: regex
             var curPath = RuntimeEnvironment.GetRuntimeDirectory();
             var arP = curPath.Split(Path.DirectorySeparatorChar).ToList();
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < arP.Count - 2; i++)
                 arP.RemoveAt(arP.Count - 1);
             return string.Join(Path.DirectorySeparatorChar.ToString(), arP);
         }

@@ -99,7 +99,7 @@ namespace Drill4Net.Configurator
                 throw new ArgumentNullException(nameof(appFullName));
             if (!appFullName.EndsWith("."))
                 appFullName += ".";
-            appFullName += Environment.OSVersion.Platform == PlatformID.Win32NT ? "exe" : "dll";
+            appFullName += CommonUtils.IsWindows() ? "exe" : "dll";
             return appFullName;
         }
 
@@ -180,7 +180,7 @@ namespace Drill4Net.Configurator
             var path = Options.ExternalEditor;
             if (!string.IsNullOrWhiteSpace(path))
                 return path;
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (CommonUtils.IsWindows())
             {
                 return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
             }

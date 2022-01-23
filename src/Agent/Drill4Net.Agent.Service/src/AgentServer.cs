@@ -12,6 +12,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
+using System.Runtime.InteropServices;
 
 namespace Drill4Net.Agent.Service
 {
@@ -312,12 +313,13 @@ namespace Drill4Net.Agent.Service
             var args = $"--{MessagingTransportConstants.ARGUMENT_CONFIG_PATH}=\"{_cfgPath}\" --{MessagingTransportConstants.ARGUMENT_TARGET_SESSION}={targetSession} --{MessagingTransportConstants.ARGUMENT_TARGET_NAME}={targetName} --{MessagingTransportConstants.ARGUMENT_TARGET_VERSION}={targetVersion}";
             _logger.Debug($"Agent Worker's arguments: [{args}]");
 
+            var isWindows = CommonUtils.IsWindows();
             var process = new Process
             {
                 StartInfo =
                 {
-                    FileName = _workerPath,
-                    Arguments = args,
+                    FileName = isWindows ? _workerPath : "dotnet",
+                    Arguments = isWindows ? args : _workerPath + " " + args,
                     WorkingDirectory = _workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
