@@ -45,7 +45,7 @@ namespace Drill4Net.TypeFinding
             if (filter?.IsDirectoryNeed(dir) == false)
                 return list;
             var di = new DirectoryInfo(dir);
-            if (filter?.IsFolderNeed(di.Parent.Name) == false)
+            if (filter?.IsFolderNeed(di.Parent?.Name) == false)
                 return list;
 
             //files
