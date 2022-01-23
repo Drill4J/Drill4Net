@@ -42,7 +42,8 @@ namespace Drill4Net.Agent.Abstract
 
         internal void Init()
         {
-            _ctxDisp = new ContextDispatcher(Options.PluginDir, CoreConstants.SUBSYSTEM_AGENT);
+            if(!AgentInitParameters.LocatedInWorker)
+                _ctxDisp = new ContextDispatcher(Options.PluginDir, CoreConstants.SUBSYSTEM_AGENT);
         }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace Drill4Net.Agent.Abstract
         /// <returns></returns>
         public string GetContextId()
         {
-            return _ctxDisp.GetContextId();
+            return _ctxDisp?.GetContextId();
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace Drill4Net.Agent.Abstract
         /// <param name="data"></param>
         public void RegisterCommand(int command, string data)
         {
-            _ctxDisp.RegisterCommand(command, data);
+            _ctxDisp?.RegisterCommand(command, data);
         }
 
 

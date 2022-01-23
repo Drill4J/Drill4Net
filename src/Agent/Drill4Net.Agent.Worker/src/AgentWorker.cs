@@ -134,8 +134,8 @@ namespace Drill4Net.Agent.Worker
             if (_isAgentInitStarted)
                 return;
 
-            StandardAgentInitParameters.SkipCreatingSingleton = true;
-            StandardAgentInitParameters.LocatedInWorker = true;
+            AgentInitParameters.SkipCreatingSingleton = true;
+            AgentInitParameters.LocatedInWorker = true;
             StandardAgent.Init(target.Options, target.Solution);
             StandardAgent.Agent.Initialized += AgentInitialized;
 

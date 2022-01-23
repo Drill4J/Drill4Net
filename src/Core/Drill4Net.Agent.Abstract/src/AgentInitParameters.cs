@@ -1,10 +1,10 @@
-﻿namespace Drill4Net.Agent.Standard
+﻿namespace Drill4Net.Agent.Abstract
 {
     /// <summary>
     /// Some parameters for the Standard Agent (instead of
     /// impossible parameters for any static constructor).
     /// </summary>
-    public static class StandardAgentInitParameters
+    public static class AgentInitParameters
     {
         /// <summary>
         /// Gets or sets a value indicating whether skip the static constructor 

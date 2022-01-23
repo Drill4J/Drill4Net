@@ -66,7 +66,7 @@ namespace Drill4Net.Agent.Standard
             _entitiesLocker = new();
             _logger = new TypedLogger<StandardAgent>(CoreConstants.SUBSYSTEM_AGENT);
 
-            if (StandardAgentInitParameters.SkipCreatingSingleton)
+            if (AgentInitParameters.SkipCreatingSingleton)
                 return;
 
             var rep = new StandardAgentRepository();
@@ -384,7 +384,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="data"></param>
         public override void Register(string data)
         {
-            if (StandardAgentInitParameters.LocatedInWorker)
+            if (AgentInitParameters.LocatedInWorker)
                 return;
             //it is only for local Agent injected directly in Target's sys process
             var ctx = Repository.GetContextId();

@@ -35,53 +35,50 @@ namespace Drill4Net.Agent.Abstract
             _contextBindings = new();
 
             //search the plugins
-            if (subsystem != CoreConstants.SUBSYSTEM_AGENT_WORKER)
+            var pluginator = new TypeFinder();
+            var filter = new SourceFilterOptions
             {
-                var pluginator = new TypeFinder();
-                var filter = new SourceFilterOptions
+                Excludes = new SourceFilterParams
                 {
-                    Excludes = new SourceFilterParams
-                    {
-                        Files = new List<string>
-                    {
-                        "reg:.resources.dll$",
-                    },
-                    },
-                };
-                List<Type> ctxTypes;
+                    Files = new List<string>
+                {
+                    "reg:.resources.dll$",
+                },
+                },
+            };
+            List<Type> ctxTypes;
+            try
+            {
+                ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, nameof(AbstractEngineContexter), filter);
+                _logger.Debug($"Items found: {ctxTypes.Count}");
+                Log.Flush();
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal("Search for contexters' plugin is failed", ex);
+                Log.Flush();
+                throw;
+            }
+
+            //creating the plugins
+            _contexters = new List<AbstractEngineContexter>();
+            foreach (var contexter in ctxTypes)
+            {
+                var name = contexter.Name;
+                if (string.IsNullOrWhiteSpace(name))
+                    continue;
+                //
                 try
                 {
-                    ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, nameof(AbstractEngineContexter), filter);
-                    _logger.Debug($"Items found: {ctxTypes.Count}");
-                    Log.Flush();
+                    var plug = Activator.CreateInstance(contexter) as AbstractEngineContexter;
+                    if (plug == null)
+                        continue;
+                    _contexters.Add(plug);
+                    _logger.Info($"Plugin added: [{name}]");
                 }
                 catch (Exception ex)
                 {
-                    _logger.Fatal("Search for contexters' plugin is failed", ex);
-                    Log.Flush();
-                    throw;
-                }
-
-                //creating the plugins
-                _contexters = new List<AbstractEngineContexter>();
-                foreach (var contexter in ctxTypes)
-                {
-                    var name = contexter.Name;
-                    if (string.IsNullOrWhiteSpace(name))
-                        continue;
-                    //
-                    try
-                    {
-                        var plug = Activator.CreateInstance(contexter) as AbstractEngineContexter;
-                        if (plug == null)
-                            continue;
-                        _contexters.Add(plug);
-                        _logger.Info($"Plugin added: [{name}]");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error($"Plugin creation failed: [{name}]", ex);
-                    }
+                    _logger.Error($"Plugin creation failed: [{name}]", ex);
                 }
             }
 

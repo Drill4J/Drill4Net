@@ -78,7 +78,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         internal StandardAgent CreateAgent()
         {
-            StandardAgentInitParameters.SkipCreatingSingleton = true;
+            AgentInitParameters.SkipCreatingSingleton = true;
             return new StandardAgent(_agentRep);
         }
 
