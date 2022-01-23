@@ -50,6 +50,8 @@ namespace Drill4Net.Agent.Abstract
             try
             {
                 ctxTypes = pluginator.GetBy(TypeFinderMode.ClassChildren, dir, nameof(AbstractEngineContexter), filter);
+                _logger.Debug($"Items found: {ctxTypes.Count}");
+                Log.Flush();
             }
             catch (Exception ex)
             {
