@@ -145,11 +145,10 @@ namespace Drill4Net.Common
         {
             //root runtime path - TODO: regex
             var curPath = RuntimeEnvironment.GetRuntimeDirectory();
-            var arP = curPath.Split('\\').ToList();
+            var arP = curPath.Split(Path.DirectorySeparatorChar).ToList();
             for (var i = 0; i < 3; i++)
                 arP.RemoveAt(arP.Count - 1);
-            var runtimeRootPath = string.Join("\\", arP);
-            return runtimeRootPath;
+            return string.Join("\\", arP);
         }
     }
 }
