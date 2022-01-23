@@ -257,6 +257,11 @@ namespace Drill4Net.Common
         }
         #endregion
 
+        public static bool IsWindows()
+        {
+            return Environment.OSVersion.Platform == PlatformID.Win32NT;
+        }
+
         public static (bool res, int pid) StartProgramm(string subsystem, string path, string args, out string error, bool createNoWindow = false)
         {
             error = "";

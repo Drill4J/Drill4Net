@@ -101,10 +101,11 @@ namespace Drill4Net.Common
                 }
             }
 
-            #region from user's nuget cache
+            #region User's nuget cache
             if (firstMatch == null)
             {
-                var nugetDir = $@"c:\Users\{Environment.UserName}\.nuget\packages\";
+                var usersDir = CommonUtils.IsWindows() ? "c:\\Users" : "/home";
+                var nugetDir = $"{usersDir}{Path.DirectorySeparatorChar}{Environment.UserName}{Path.DirectorySeparatorChar}.nuget{Path.DirectorySeparatorChar}packages{Path.DirectorySeparatorChar}";
                 string folder = null;
                 if (shortName.EndsWith(".resources.dll"))
                     folder = shortName.Replace(".resources.dll", null);
@@ -120,7 +121,7 @@ namespace Drill4Net.Common
                     {
                         if (!dir.ToLower().StartsWith(may))
                             continue;
-                        var dirLIbs = $"{dir}\\lib";
+                        var dirLIbs = $"{dir}{Path.DirectorySeparatorChar}lib";
                         //guanito with sorting. First trying get the netstandard, then netcoreapp, then net...
                         var innerDirs2 = Directory.GetDirectories(dirLIbs).OrderByDescending(a => a);
                         foreach (var dir2 in innerDirs2) //by target
@@ -128,7 +129,7 @@ namespace Drill4Net.Common
                             var innerDirs3 = Directory.GetDirectories(dir2);
                             foreach (var dir3 in innerDirs3) //by language
                             {
-                                var file = $"{dir3}\\{shortName}";
+                                var file = $"{dir3}{Path.DirectorySeparatorChar}{shortName}";
                                 if (!File.Exists(file))
                                     continue;
                                 return file;
@@ -148,7 +149,7 @@ namespace Drill4Net.Common
             var arP = curPath.Split(Path.DirectorySeparatorChar).ToList();
             for (var i = 0; i < 3; i++)
                 arP.RemoveAt(arP.Count - 1);
-            return string.Join("\\", arP);
+            return string.Join(Path.DirectorySeparatorChar.ToString(), arP);
         }
     }
 }
