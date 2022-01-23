@@ -26,9 +26,7 @@ namespace Drill4Net.Common
         public static string GetRegexPatternForFilter(string filter)
         {
             if (!IsFilterWithRegex(filter))
-            {
                 throw new ArgumentNullException(nameof(filter), $"Regex filter should start with {CoreConstants.REGEX_FILTER_PREFIX} prefix.");
-            }
             return filter.Substring(CoreConstants.REGEX_FILTER_PREFIX.Length);
         }
 
@@ -40,12 +38,10 @@ namespace Drill4Net.Common
         /// <returns></returns>
         public static bool IsMatchRegexFilterPattern(string s, string filter)
         {
-            if (IsFilterWithRegex(filter))
-            {
-                var regexPattern = GetRegexPatternForFilter(filter);
-                return CommonUtils.IsStringMachRegexPattern(s, regexPattern);
-            }
-            return false;
+            if (!IsFilterWithRegex(filter))
+                return false;
+            var regexPattern = GetRegexPatternForFilter(filter);
+            return CommonUtils.IsStringMachRegexPattern(s, regexPattern);
         }
 
         ///<summary>
