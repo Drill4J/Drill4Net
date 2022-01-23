@@ -46,6 +46,8 @@ namespace Drill4Net.Agent.Worker
 
             _logger.Debug($"Worker is initializing for target session: {_rep.TargetSession}");
 
+            var disp = new ContextDispatcher("D:\\","TEST"); // TEST!!!
+
             _targetReceiver = targetReceiver ?? throw new ArgumentNullException(nameof(targetReceiver));
             _probeReceiver = probeReceiver ?? throw new ArgumentNullException(nameof(probeReceiver));
             _cmdReceiver = cmdReceiver ?? throw new ArgumentNullException(nameof(cmdReceiver));

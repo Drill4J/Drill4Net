@@ -50,24 +50,29 @@ namespace Drill4Net.TypeFinding
                 return list;
 
             //files
-            var files = Directory.GetFiles(dir)
-                .Where(a => Path.GetExtension(a) == ".dll");
-            Parallel.ForEach(files, (file) =>
-           //foreach (var file in files) //DEBUG!!!
+            try
             {
-                if (filter?.IsFileNeedByPath(file) == false)
-                    return;
+                var files = Directory.GetFiles(dir)
+                    .Where(a => Path.GetExtension(a) == ".dll");
+
+                Parallel.ForEach(files, (file) =>
+                //foreach (var file in files) //DEBUG!!!
+                {
+                    if (filter?.IsFileNeedByPath(file) == false)
+                        return;
                     //continue;
-                if (filter?.IsFileNeed(Path.GetFileName(file)) == false)
-                    return;
+                    if (filter?.IsFileNeed(Path.GetFileName(file)) == false)
+                        return;
                     //continue;
-                //
-                var dirTypes = GetTypes(finderMode, file, searchType, asms, filter);
-                if(dirTypes != null)
-                    foreach(var type in dirTypes)
-                        list.Add(type);
-            });
-            //}
+                    //
+                    var dirTypes = GetTypes(finderMode, file, searchType, asms, filter);
+                    if (dirTypes != null)
+                        foreach (var type in dirTypes)
+                            list.Add(type);
+                });
+                //}
+            }
+            catch { return list; }
 
             //subdirectories
             var dirs = Directory.GetDirectories(dir);

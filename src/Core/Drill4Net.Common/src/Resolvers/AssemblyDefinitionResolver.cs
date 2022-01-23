@@ -41,9 +41,13 @@ namespace Drill4Net.Common
             var path = FindAssemblyPath(name, nameRef.Version);
             if (path == null)
                 return null;
-            var def = AssemblyDefinition.ReadAssembly(path, _readerParams);
-            _cache.TryAdd(name, def);
-            return def;
+            try
+            {
+                var def = AssemblyDefinition.ReadAssembly(path, _readerParams);
+                _cache.TryAdd(name, def);
+                return def;
+            }
+            catch { return null; }
         }
 
         public void Dispose()
