@@ -270,6 +270,8 @@ namespace Drill4Net.Common
                     WorkingDirectory = Path.GetDirectoryName(path),
                     CreateNoWindow = createNoWindow, //true for real using
                     //UseShellExecute = false, //false for real using
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 }
             };
             var res = process.Start();

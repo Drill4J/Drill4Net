@@ -321,6 +321,8 @@ namespace Drill4Net.Agent.Service
                     WorkingDirectory = _workerDir,
                     CreateNoWindow = false, //true for real using
                     //UseShellExecute = true, //false for real using
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 }
             };
             var res = process.Start();

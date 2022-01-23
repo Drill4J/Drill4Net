@@ -175,6 +175,8 @@ namespace Drill4Net.Agent.TestRunner.Core
                     Arguments = args,
                     CreateNoWindow = false,
                     UseShellExecute = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 }
             };
 

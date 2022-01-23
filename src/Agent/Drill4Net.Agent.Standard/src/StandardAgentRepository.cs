@@ -184,8 +184,12 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public async Task RetrieveTargetBuilds()
         {
-            Builds = await _requester.GetBuildSummaries()
-                .ConfigureAwait(false);
+            try
+            {
+                Builds = await _requester.GetBuildSummaries()
+                    .ConfigureAwait(false);
+            }
+            catch { Builds = new(); }
         }
 
         internal (string logFile, Microsoft.Extensions.Logging.LogLevel logLevel) GetConnectorLogParameters(ConnectorAuxOptions connOpts, Logger logger)
