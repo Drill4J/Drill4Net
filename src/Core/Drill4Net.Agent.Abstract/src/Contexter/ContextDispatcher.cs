@@ -13,12 +13,27 @@ namespace Drill4Net.Agent.Abstract
     public class ContextDispatcher
     {
         private readonly ConcurrentDictionary<string, string> _contextBindings;
-        private readonly SimpleContexter _stdContexter;
+        private SimpleContexter _stdContexter;
         private readonly List<AbstractEngineContexter> _contexters;
         private readonly Logger _logger;
 
         /**********************************************************************************/
 
+        /// <summary>
+        /// Constructor for separate Agent Worker
+        /// </summary>
+        /// <param name="subsystem"></param>
+        public ContextDispatcher(string subsystem)
+        {
+            _logger = new TypedLogger<ContextDispatcher>(subsystem);
+            AddSimpleContexter();
+        }
+
+        /// <summary>
+        /// Constructr for real Agent located in the Target
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="subsystem"></param>
         public ContextDispatcher(string dir, string subsystem)
         {
             _logger = new TypedLogger<ContextDispatcher>(subsystem);
@@ -81,12 +96,17 @@ namespace Drill4Net.Agent.Abstract
                     _logger.Error($"Plugin creation failed: [{name}]", ex);
                 }
             }
-
-            _stdContexter = new SimpleContexter();
-            _logger.Info($"Plugin added: [{nameof(SimpleContexter)}] (standard)");
+            //
+            AddSimpleContexter();
         }
 
         /**********************************************************************************/
+
+        private void AddSimpleContexter()
+        {
+            _stdContexter = new SimpleContexter();
+            _logger.Info($"Plugin added: [{nameof(SimpleContexter)}] (standard)");
+        }
 
         public bool RegisterCommand(int command, string data)
         {

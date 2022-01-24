@@ -42,7 +42,9 @@ namespace Drill4Net.Agent.Abstract
 
         internal void Init()
         {
-            if(!AgentInitParameters.LocatedInWorker)
+            if(AgentInitParameters.LocatedInWorker)
+                _ctxDisp = new ContextDispatcher(CoreConstants.SUBSYSTEM_AGENT_WORKER);
+            else
                 _ctxDisp = new ContextDispatcher(Options.PluginDir, CoreConstants.SUBSYSTEM_AGENT);
         }
 
@@ -64,7 +66,6 @@ namespace Drill4Net.Agent.Abstract
         {
             _ctxDisp?.RegisterCommand(command, data);
         }
-
 
         /// <summary>
         /// Deserialize <see cref="TestCaseContext"/> from JSON string
