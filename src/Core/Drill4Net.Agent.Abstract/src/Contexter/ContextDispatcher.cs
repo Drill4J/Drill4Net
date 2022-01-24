@@ -27,6 +27,7 @@ namespace Drill4Net.Agent.Abstract
         {
             _logger = new TypedLogger<ContextDispatcher>(subsystem);
             _contexters = new List<AbstractEngineContexter>();
+            _contextBindings = new();
 
             _stdContexter = new SimpleContexter();
             _logger.Info($"Plugin added: [{nameof(SimpleContexter)}] (standard)");
@@ -48,8 +49,6 @@ namespace Drill4Net.Agent.Abstract
             _logger.Info($"Actual plugin directory: [{dir}]");
             Log.Flush();
 
-            _contextBindings = new();
-
             //search the plugins
             var pluginator = new TypeFinder();
             var filter = new SourceFilterOptions
@@ -57,9 +56,9 @@ namespace Drill4Net.Agent.Abstract
                 Excludes = new SourceFilterParams
                 {
                     Files = new List<string>
-                {
-                    "reg:.resources.dll$",
-                },
+                    {
+                        "reg:.resources.dll$",
+                    },
                 },
             };
             List<Type> ctxTypes;
@@ -77,7 +76,6 @@ namespace Drill4Net.Agent.Abstract
             }
 
             //creating the plugins
-            _contexters = new List<AbstractEngineContexter>();
             foreach (var contexter in ctxTypes)
             {
                 var name = contexter.Name;
