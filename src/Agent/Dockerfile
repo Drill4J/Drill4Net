@@ -36,6 +36,7 @@ RUN ls -l
 RUN unzip agent_connector-linuxX64-debug-0.5.3.zip
 RUN ls -l
 RUN cd linuxX64Debug-0.5.3
+RUN ls -l
 RUN mv libagent_connector.so /usr/lib64/
 RUN cd ..
 ENV MESSAGE_SERVER_ADDRESS $MESSAGE_SERVER_ADDRESS
