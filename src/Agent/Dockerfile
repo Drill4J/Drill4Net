@@ -34,7 +34,10 @@ RUN apt-get update && apt-get install -y wget unzip
 RUN wget https://drill4j.jfrog.io/artifactory/drill/com/epam/drill/dotnet/agent_connector-linuxX64-debug/0.5.3/agent_connector-linuxX64-debug-0.5.3.zip
 RUN ls -l
 RUN unzip agent_connector-linuxX64-debug-0.5.3.zip
-RUN mv linuxX64Debug-0.5.3/libagent_connector.so /usr/lib64
+RUN ls -l
+RUN cd linuxX64Debug-0.5.3
+RUN mv libagent_connector.so /usr/lib64/
+RUN cd ..
 ENV MESSAGE_SERVER_ADDRESS $MESSAGE_SERVER_ADDRESS
 ENV DRILL_ADMIN_ADDRESS $DRILL_ADMIN_ADDRESS
 WORKDIR /app
