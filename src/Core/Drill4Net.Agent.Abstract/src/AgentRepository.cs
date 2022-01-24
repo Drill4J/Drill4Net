@@ -52,7 +52,7 @@ namespace Drill4Net.Agent.Abstract
         /// <returns></returns>
         public string GetContextId()
         {
-            return _ctxDisp?.GetContextId();
+            return _ctxDisp?.GetContextId() ?? "no_context";
         }
 
         /// <summary>

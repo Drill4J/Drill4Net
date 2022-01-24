@@ -358,10 +358,10 @@ namespace Drill4Net.Agent.Standard
         internal void AddSessionData(StartSessionPayload session)
         {
             string ctxId = null;
-            if (session.TestType == AgentConstants.TEST_MANUAL) //maybe at first to check context parameter?
+            if (session.TestType == AgentConstants.TEST_MANUAL) //maybe check the context parameter first?
                 ctxId = session.TestName;
             if(string.IsNullOrWhiteSpace(ctxId))
-                ctxId = /*context ?? */GetContextId();
+                ctxId = GetContextId();
 
             if (_ctxToSessions.ContainsKey(ctxId)) //or recreate?!
                 return;
