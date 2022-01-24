@@ -29,16 +29,11 @@ RUN ls -l /app/publish
 RUN chmod +x /app/publish/Drill4Net.Agent.Worker.dll
 
 FROM base AS final
-# install agent_connector-linuxX64-debug-0.5.3.zip
-RUN apt-get update && apt-get install -y wget unzip
-RUN wget https://drill4j.jfrog.io/artifactory/drill/com/epam/drill/dotnet/agent_connector-linuxX64-debug/0.5.3/agent_connector-linuxX64-debug-0.5.3.zip
-RUN ls -l
-RUN unzip agent_connector-linuxX64-debug-0.5.3.zip
-RUN ls -l
-RUN cd linuxX64Debug-0.5.3
-RUN ls -l
-RUN mv libagent_connector.so /usr/lib64/
-RUN cd ..
+# install agent_connector-linuxX64-debug-0.6.0
+RUN apt-get update && apt-get install -y wget unzip && \
+    wget https://drill4j.jfrog.io/artifactory/drill/com/epam/drill/dotnet/agent_connector-linuxX64-debug/0.6.0/agent_connector-linuxX64-debug-0.6.0.zip && \
+    unzip agent_connector-linuxX64-debug-0.6.0.zip && \
+    mv linuxX64Debug-0.6.0/libagent_connector.so /usr/lib/
 ENV MESSAGE_SERVER_ADDRESS $MESSAGE_SERVER_ADDRESS
 ENV DRILL_ADMIN_ADDRESS $DRILL_ADMIN_ADDRESS
 WORKDIR /app
