@@ -97,7 +97,7 @@ namespace Drill4Net.Configurator
         {
             var args = $"--{CoreConstants.ARGUMENT_SILENT} --{CoreConstants.ARGUMENT_DEGREE_PARALLELISM}={degreefParallelism} --{CoreConstants.ARGUMENT_CONFIG_DIR}=\"{cfgsDir}\"";
             var path = _rep.GetInjectorPath();
-            var (res, pid) = CommonUtils.StartProgramm(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
+            var (res, pid) = CommonUtils.StartProgram(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
             if (!res)
                 return (false, err);
 

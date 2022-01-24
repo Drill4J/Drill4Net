@@ -30,15 +30,15 @@ namespace Drill4Net.Common
         /// </summary>
         /// <param name="shortName">The short name of the assembly.</param>
         /// <param name="version">The exact version of the assembly.</param>
-        /// <param name="dependenciesDir">The dependencies dir.</param>
+        /// <param name="dependencyDir">The dependencies dir.</param>
         /// <returns></returns>
-        public string FindAssemblyPath(string shortName, Version version, string dependenciesDir = null)
+        public string FindAssemblyPath(string shortName, Version version, string dependencyDir = null)
         {
             //dirs
             var dirs = new List<string>();
             dirs.AddRange(SearchDirs);
-            if (!string.IsNullOrWhiteSpace(dependenciesDir) && !dirs.Contains(dependenciesDir))
-                dirs.Add(dependenciesDir);
+            if (!string.IsNullOrWhiteSpace(dependencyDir) && !dirs.Contains(dependencyDir))
+                dirs.Add(dependencyDir);
             if (!dirs.Contains(FileUtils.EntryDir))
                 dirs.Add(FileUtils.EntryDir);
             if (!dirs.Contains(FileUtils.ExecutingDir))
@@ -121,9 +121,9 @@ namespace Drill4Net.Common
                     {
                         if (!dir.ToLower().StartsWith(may))
                             continue;
-                        var dirLIbs = $"{dir}{Path.DirectorySeparatorChar}lib";
+                        var dirLibs = $"{dir}{Path.DirectorySeparatorChar}lib";
                         //guanito with sorting. First trying get the netstandard, then netcoreapp, then net...
-                        var innerDirs2 = Directory.GetDirectories(dirLIbs).OrderByDescending(a => a);
+                        var innerDirs2 = Directory.GetDirectories(dirLibs).OrderByDescending(a => a);
                         foreach (var dir2 in innerDirs2) //by target
                         {
                             var innerDirs3 = Directory.GetDirectories(dir2);
@@ -147,7 +147,7 @@ namespace Drill4Net.Common
             //root runtime path - TODO: regex
             var curPath = RuntimeEnvironment.GetRuntimeDirectory();
             var arP = curPath.Split(Path.DirectorySeparatorChar).ToList();
-            for (var i = 0; i < arP.Count - 2; i++)
+            for (var i = 0; i < arP.Count - 2; i++) //get the root of .NET API
                 arP.RemoveAt(arP.Count - 1);
             return string.Join(Path.DirectorySeparatorChar.ToString(), arP);
         }

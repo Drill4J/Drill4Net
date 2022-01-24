@@ -267,7 +267,8 @@ namespace Drill4Net.Common
             return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         }
 
-        public static (bool res, int pid) StartProgramm(string subsystem, string path, string args, out string error, bool createNoWindow = false)
+        public static (bool res, int pid) StartProgram(string subsystem, string path, string args,
+            out string error, bool createNoWindow = false)
         {
             error = "";
             path = FileUtils.GetFullPath(path);
