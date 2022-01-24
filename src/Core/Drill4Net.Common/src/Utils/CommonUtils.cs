@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 using Mono.Cecil;
 
 namespace Drill4Net.Common

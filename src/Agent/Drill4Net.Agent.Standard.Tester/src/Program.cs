@@ -30,6 +30,7 @@ namespace Drill4Net.Agent.Standard.Tester
                 Console.WriteLine(ex);
             }
             helper.WriteMessage("Done.", TesterConstants.COLOR_TEXT);
+            Console.ReadKey(true);
         }
     }
 }

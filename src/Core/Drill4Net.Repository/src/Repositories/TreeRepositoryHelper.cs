@@ -43,13 +43,20 @@ namespace Drill4Net.Repository
                 }
             }
             //
+            path = FileUtils.GetFullPath(path);
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) //search in local dir
             {
                 path = Path.Combine(baseDir, CoreConstants.TREE_FILE_NAME);
                 _logger.Debug($"Last chance to get the tree path: [{path}]");
             }
+            path = FileUtils.GetFullPath(path);
             if (!File.Exists(path))
+            {
+                var trgDir = Path.GetDirectoryName(path);
+                if (!Directory.Exists(trgDir))
+                    throw new FileNotFoundException($"Target directory not found: [{trgDir}]");
                 throw new FileNotFoundException($"Solution Tree not found: [{path}]");
+            }
             return path;
         }
 
