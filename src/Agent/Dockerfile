@@ -29,13 +29,11 @@ RUN ls -l /app/publish
 RUN chmod +x /app/publish/Drill4Net.Agent.Worker.dll
 
 FROM base AS final
-# install System.Drawing native dependencies
-RUN apt-get update \
-    && apt-get install -y --allow-unauthenticated \
-        libc6-dev \
-        libgdiplus \
-        libx11-dev \
-     && rm -rf /var/lib/apt/lists/*
+# install agent_connector-linuxX64-debug-0.5.3.zip
+RUN apt-get update && apt-get install wget unzip
+RUN wget https://drill4j.jfrog.io/ui/native/drill/com/epam/drill/dotnet/agent_connector-linuxX64-debug/0.5.3/agent_connector-linuxX64-debug-0.5.3.zip
+RUN unzip agent_connector-linuxX64-debug-0.5.3.zip
+RUN mv linuxX64Debug-0.5.3/libagent_connector.so /usr/lib64
 ENV MESSAGE_SERVER_ADDRESS $MESSAGE_SERVER_ADDRESS
 ENV DRILL_ADMIN_ADDRESS $DRILL_ADMIN_ADDRESS
 WORKDIR /app
