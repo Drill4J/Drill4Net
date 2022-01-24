@@ -403,7 +403,7 @@ namespace Drill4Net.Agent.Standard
             {
                 #region Checks
                 //in Worker we can work only with one autotests' Target/suite/session (I still think so)
-                //yes, some needless probes of tests' infrastructure we can to lose
+                //yes, some needless probes of tests' infrastructure we should & can to lose
                 if (_isAutotests)
                 {
                     if (_curAutoSession == null)

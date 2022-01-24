@@ -361,7 +361,7 @@ namespace Drill4Net.Agent.Standard
             if (session.TestType == AgentConstants.TEST_MANUAL) //maybe check the context parameter first?
                 ctxId = session.TestName;
             if(string.IsNullOrWhiteSpace(ctxId))
-                ctxId = GetContextId();
+                ctxId = GetContextId() ?? session.TestName;
 
             if (_ctxToSessions.ContainsKey(ctxId)) //or recreate?!
                 return;
