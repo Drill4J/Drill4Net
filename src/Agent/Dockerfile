@@ -30,7 +30,7 @@ RUN chmod +x /app/publish/Drill4Net.Agent.Worker.dll
 
 FROM base AS final
 # install agent_connector-linuxX64-debug-0.5.3.zip
-RUN apt-get update && apt-get install wget unzip
+RUN apt-get update && apt-get install -y wget unzip
 RUN wget https://drill4j.jfrog.io/ui/native/drill/com/epam/drill/dotnet/agent_connector-linuxX64-debug/0.5.3/agent_connector-linuxX64-debug-0.5.3.zip
 RUN unzip agent_connector-linuxX64-debug-0.5.3.zip
 RUN mv linuxX64Debug-0.5.3/libagent_connector.so /usr/lib64
