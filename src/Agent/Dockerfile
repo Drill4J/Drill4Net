@@ -29,6 +29,13 @@ RUN ls -l /app/publish
 RUN chmod +x /app/publish/Drill4Net.Agent.Worker.dll
 
 FROM base AS final
+# install System.Drawing native dependencies
+RUN apt-get update \
+    && apt-get install -y --allow-unauthenticated \
+        libc6-dev \
+        libgdiplus \
+        libx11-dev \
+     && rm -rf /var/lib/apt/lists/*
 ENV MESSAGE_SERVER_ADDRESS $MESSAGE_SERVER_ADDRESS
 ENV DRILL_ADMIN_ADDRESS $DRILL_ADMIN_ADDRESS
 WORKDIR /app
