@@ -57,7 +57,7 @@ namespace Drill4Net.Agent.Standard
 
         private static Logger _logger;
         private static FileSink _probeLogger;
-        private readonly bool _writeProbesToFile;
+        private bool _writeProbesToFile;
 
         /*****************************************************************************/
 
@@ -117,15 +117,7 @@ namespace Drill4Net.Agent.Standard
                 _comm.Connect(); //connect to Drill Admin side
 
                 //debug
-                _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
-                if (_writeProbesToFile)
-                {
-                    var probeLogfile = Path.Combine(LoggerHelper.GetDefaultLogDir(), "probes.log");
-                    _logger.Debug($"Probes writing to [{probeLogfile}]");
-                    if (File.Exists(probeLogfile))
-                        File.Delete(probeLogfile);
-                    _probeLogger = new FileSink(probeLogfile);
-                }
+                GetDebugOptions();
 
                 Initialized += Agent_Initialized; //Agent needs to control itself
 
@@ -155,6 +147,28 @@ namespace Drill4Net.Agent.Standard
             Agent = new StandardAgent(rep);
             if (Agent == null)
                 throw new Exception($"{nameof(StandardAgent)}: creation is failed");
+        }
+
+        private void GetDebugOptions()
+        {
+            //inside Docker
+            var fromEnvS = Environment.GetEnvironmentVariable(CoreConstants.ENV_DEBUG_WRITE_PROBES, EnvironmentVariableTarget.Process);
+            if (fromEnvS != null)
+            {
+                _writeProbesToFile = int.TryParse(fromEnvS, out var fromEnv) && fromEnv == 1;
+                _logger.Debug($"Probes writing mode from Env variables: {_writeProbesToFile}");
+            }
+            else
+                _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
+
+            if (_writeProbesToFile)
+            {
+                var probeLogfile = Path.Combine(LoggerHelper.GetDefaultLogDir(), "probes.log");
+                _logger.Debug($"Probes writing to [{probeLogfile}]");
+                if (File.Exists(probeLogfile))
+                    File.Delete(probeLogfile);
+                _probeLogger = new FileSink(probeLogfile);
+            }
         }
 
         private bool GetIsFastInitilizing()
