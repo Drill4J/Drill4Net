@@ -466,10 +466,25 @@ namespace Drill4Net.Agent.Standard
             //local session
             var reg = GetOrCreateLocalCoverageRegistrator(ctx);
             if (reg != null)
-                return reg.RegisterCoverage(pointUid, out missReason);
+            {
+                var res = reg.RegisterCoverage(pointUid, out missReason);
+                if (!res && !_wasNoRegistraton)
+                {
+                    _logger.Error($"NO POINT REGISTRATION. Point={pointUid}. This is signaled only at the first appearance.");
+                    _wasNoRegistraton = true;
+
+                    //first 5 potentially alien points
+                    var points = string.Join(", ", reg.PointToTypes.Keys.Take(5).ToList());
+                    _logger.Warning($"First 5 potentially alien points: {points}");
+                }
+                return res;
+            }
             else
+            {
                 return isGlobalReg;
+            }
         }
+        private bool _wasNoRegistraton = false;
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
