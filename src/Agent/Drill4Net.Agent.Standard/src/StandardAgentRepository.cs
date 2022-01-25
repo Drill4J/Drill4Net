@@ -200,19 +200,16 @@ namespace Drill4Net.Agent.Standard
 
             //Guanito: just first file sink is bad idea...
             //the last because the firast may be just emergency logger
-            var fileSink = logger?.GetManager()?.GetSinks()?.LastOrDefault(s => s is FileSink) as FileSink;
+            FileSink fileSink = logger?.GetManager()?.GetSinks()?
+                .LastOrDefault(s => s is FileSink) as FileSink;
 
             //dir
             if (string.IsNullOrWhiteSpace(logDir))
             {
                 if (fileSink == null)
-                {
                     logDir = FileUtils.EntryDir;
-                }
                 else
-                {
                     logDir = Path.GetDirectoryName(fileSink.Filepath);
-                }
             }
             else
             {
@@ -252,7 +249,7 @@ namespace Drill4Net.Agent.Standard
             IEnumerable<InjectedType> injTypes = null;
             var sysChecker = new TypeChecker();
 
-            // check for different compiling target version 
+            //check for different compiling target version 
             //we need only one for current runtime
             var rootDirs = tree.GetDirectories().ToList();
             _logger.Debug($"Root dirs: {rootDirs.Count}");

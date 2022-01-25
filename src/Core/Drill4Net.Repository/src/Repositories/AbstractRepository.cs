@@ -91,6 +91,9 @@ namespace Drill4Net.Repository
         {
             LogManager logger = null;
             var bld = new LogBuilder();
+            if (CreateDefaultLogger)
+                logger = bld.CreateStandardLogger(LoggerHelper.GetDefaultLogPath());
+
             //cfg.MinimumLevel.Verbose(); //global min level must be the most "verbosing"
             if (Options.Logs != null)
             {
@@ -100,11 +103,6 @@ namespace Drill4Net.Repository
                     AddLogOption(bld, opt);
                 }
                 logger = bld.Build();
-            }
-            else
-            {
-                if(CreateDefaultLogger)
-                    logger = bld.CreateStandardLogger(LoggerHelper.GetDefaultLogPath());
             }
             //
             if(logger != null)

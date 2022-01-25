@@ -1,3 +1,4 @@
-﻿Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net60.App\ # root Target's directory (not inside moniker folder if it exists)
+﻿#Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\TargetApps.Injected\Drill4Net.Target.Net60.App\ # root Target's directory (not inside moniker folder if it exists)
+Directory: d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Injected\
 Moniker: net6.0 # inner folder of moniker for framework's name - if it exists
 CSV: # directory where the tree data must be saved. The empty field means local directory
