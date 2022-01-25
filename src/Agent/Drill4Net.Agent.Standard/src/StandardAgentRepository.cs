@@ -475,7 +475,7 @@ namespace Drill4Net.Agent.Standard
 
                     //first 5 potentially alien points
                     var points = string.Join(", ", reg.PointToTypes.Keys.Take(5).ToList());
-                    _logger.Warning($"First 5 existed points: {points}");
+                    _logger.Debug($"First 5 existed points: {points}");
                 }
                 return res;
             }
