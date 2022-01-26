@@ -60,7 +60,7 @@ namespace Drill4Net.Agent.Messaging
 
         public override string ToString()
         {
-            return $"{Session} -> {TargetName} {TargetVersion}";
+            return $"{TargetName} {TargetVersion}: [{TargetDir}]";
         }
     }
 }
