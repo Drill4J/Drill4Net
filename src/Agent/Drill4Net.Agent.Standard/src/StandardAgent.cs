@@ -140,10 +140,10 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="opts"></param>
         /// <param name="tree"></param>
-        /// <param name="initHandler"></param>
         public static void Init(AgentOptions opts, InjectedSolution tree)
         {
             var rep = new StandardAgentRepository(opts, tree);
+            rep.SetTypesByTargetVersion();
             Agent = new StandardAgent(rep);
             if (Agent == null)
                 throw new Exception($"{nameof(StandardAgent)}: creation is failed");

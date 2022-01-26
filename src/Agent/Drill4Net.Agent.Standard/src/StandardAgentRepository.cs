@@ -43,6 +43,7 @@ namespace Drill4Net.Agent.Standard
         private TreeConverter _converter;
         private IEnumerable<InjectedType> _injTypes;
         private AdminRequester _requester;
+        private InjectedSolution _tree;
 
         private Logger _logger;
         private System.Timers.Timer _sendTimer;
@@ -107,7 +108,9 @@ namespace Drill4Net.Agent.Standard
             //Target
             if (tree == null)
                 tree = ReadInjectedTree();
-            _injTypes = GetTypesByTargetVersion(tree);
+            _tree = tree;
+            if(!AgentInitParameters.LocatedInWorker)
+                SetTypesByTargetVersion();
 
             var target = Options.Target;
             TargetName = target?.Name ?? tree.Name;
@@ -244,18 +247,18 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="tree">The tree data of injected assemblies.</param>
         /// <returns></returns>
-        internal IEnumerable<InjectedType> GetTypesByTargetVersion(InjectedSolution tree)
+        public void SetTypesByTargetVersion()
         {
             IEnumerable<InjectedType> injTypes = null;
 
             //check for different compiling target version 
             //we need only one for current runtime
-            var rootDirs = tree.GetDirectories().ToList();
+            var rootDirs = _tree.GetDirectories().ToList();
             _logger.Debug($"Root dirs: {rootDirs.Count}");
             Log.Flush();
             if (rootDirs.Count > 1)
             {
-                if (!tree.GetAssemblies().Any()) //maybe this is root of monikers
+                if (!_tree.GetAssemblies().Any()) //maybe this is root of monikers
                 {
                     var runDir = AgentInitParameters.TargetDir ?? (AgentInitParameters.LocatedInWorker ? null : FileUtils.EntryDir);
                     if (string.IsNullOrWhiteSpace(runDir))
@@ -289,7 +292,7 @@ namespace Drill4Net.Agent.Standard
             if(injTypes == null)
                 injTypes = tree.GetAllTypes();
 
-            return injTypes.Distinct(new InjectedEntityComparer<InjectedType>());
+            _injTypes = injTypes.Distinct(new InjectedEntityComparer<InjectedType>());
         }
 
         /// <summary>
