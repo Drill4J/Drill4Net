@@ -19,5 +19,15 @@
         /// Agent works in separate Worker (not in the Target's process directly)
         /// </summary>
         public static bool LocatedInWorker { get; set; }
+
+        /// <summary>
+        /// Target run directory if Agent located in Worker
+        /// </summary>
+        public static string TargetDir { get; set; }
+
+        /// <summary>
+        /// Target run version if Agent located in Worker
+        /// </summary>
+        public static string TargetVersion { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Standard.Tester
 {
@@ -37,6 +38,7 @@ namespace Drill4Net.Agent.Standard.Tester
                 TreeInfo.TargetPath = Path.Combine(TreeInfo.TargetPath, moniker);
 
             //tree's data (in fact, we can use the TestEngine's one)
+            AgentInitParameters.TargetDir = Path.Combine(TreeInfo.Opts.Directory, TreeInfo.Opts.Moniker);
             var rep = StandardAgent.Agent.Repository;
             TreeInfo.InjSolution = rep.ReadInjectedTree();
 

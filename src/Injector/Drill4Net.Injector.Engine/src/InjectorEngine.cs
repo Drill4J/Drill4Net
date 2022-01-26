@@ -210,9 +210,9 @@ namespace Drill4Net.Injector.Engine
         internal async Task InjectSource(RunContext runCtx)
         {
             var sourceDir = runCtx.ProcessingDirectory ?? runCtx.RootDirectory;
-            var monikers = runCtx.Options.Versions?.Targets;
-            var isMonikersRoot = monikers?.Count > 0 && sourceDir == runCtx.RootDirectory;
-            runCtx.Monikers = monikers?.Keys == null ? new List<string>() : monikers?.Keys?.ToList();
+            var needMonikers = runCtx.Options.Versions?.Targets;
+            var isMonikersRoot = needMonikers?.Count > 0 && sourceDir == runCtx.RootDirectory;
+            runCtx.Monikers = needMonikers?.Keys == null ? new List<string>() : needMonikers?.Keys?.ToList();
 
             //NO PARALLEL EXECUTION !
 
@@ -220,7 +220,8 @@ namespace Drill4Net.Injector.Engine
             var dirs = Directory.GetDirectories(sourceDir, "*");
             foreach (var dir in dirs)
             {
-                if (!InjectorCoreUtils.IsDirectoryNeedByMoniker(monikers, sourceDir, dir))
+                //filter by option monikers is done only for root dir
+                if (!InjectorCoreUtils.IsDirectoryNeedByMoniker(needMonikers, sourceDir, dir))
                     continue;
                 //
                 if(isMonikersRoot)

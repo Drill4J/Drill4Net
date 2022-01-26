@@ -94,10 +94,10 @@ namespace Drill4Net.Agent.Transmitter
                 Name = TargetName,
                 Version = TargetVersion,
                 EntryDir = FileUtils.EntryDir, //some directory will be here anyway
-                Assembly = entryAsm != null ? Path.GetFileName(entryAsm) : null, //Null happens for some targets by this way
+                EntryAssembly = entryAsm != null ? Path.GetFileName(entryAsm) : null, //Null happens for some targets by this way
                 Session = TargetSession,
                 Options = Options,
-                Data = _tree, //excess monikers will be deleted in the Agent
+                Tree = _tree, //excess monikers will be deleted in the Agent
             };
             _tree = null; //in general, this data is no longer needed - we save memory
             return Serializer.ToArray<TargetInfo>(targetInfo);

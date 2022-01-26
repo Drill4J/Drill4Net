@@ -112,14 +112,14 @@ namespace Drill4Net.Agent.Worker
             StandardAgent.DoCommand(command.Type, command.Data);
         }
 
-        private void Receiver_TargetInfoReceived(TargetInfo target)
+        private void Receiver_TargetInfoReceived(TargetInfo info)
         {
             _logger.Info($"{nameof(TargetInfo)} is received");
 
             IsTargetReceived = true;
             _targetReceiver.Stop();
 
-            InitAgent(target);
+            InitAgent(info);
 
             _logger.Info($"{nameof(AgentWorker)} starts receiving the commands...");
             Task.Run(_cmdReceiver.Start);
@@ -128,14 +128,17 @@ namespace Drill4Net.Agent.Worker
             _probeReceiver.Start();
         }
 
-        private void InitAgent(TargetInfo target)
+        private void InitAgent(TargetInfo info)
         {
             if (_isAgentInitStarted)
                 return;
 
             AgentInitParameters.SkipCreatingSingleton = true;
             AgentInitParameters.LocatedInWorker = true;
-            StandardAgent.Init(target.Options, target.Data);
+            AgentInitParameters.TargetDir = info.EntryDir;
+            AgentInitParameters.TargetVersion = info.Version;
+
+            StandardAgent.Init(info.Options, info.Tree);
             StandardAgent.Agent.Initialized += AgentInitialized;
 
             _isAgentInitStarted = true;

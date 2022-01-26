@@ -107,7 +107,7 @@ namespace Drill4Net.Agent.Standard
             //Target
             if (tree == null)
                 tree = ReadInjectedTree();
-            _injTypes = GetTypesByCallerVersion(tree);
+            _injTypes = GetTypesByTargetVersion(tree);
 
             var target = Options.Target;
             TargetName = target?.Name ?? tree.Name;
@@ -244,10 +244,9 @@ namespace Drill4Net.Agent.Standard
         /// </summary>
         /// <param name="tree">The tree data of injected assemblies.</param>
         /// <returns></returns>
-        internal IEnumerable<InjectedType> GetTypesByCallerVersion(InjectedSolution tree)
+        internal IEnumerable<InjectedType> GetTypesByTargetVersion(InjectedSolution tree)
         {
             IEnumerable<InjectedType> injTypes = null;
-            var sysChecker = new TypeChecker();
 
             //check for different compiling target version 
             //we need only one for current runtime
@@ -255,53 +254,31 @@ namespace Drill4Net.Agent.Standard
             _logger.Debug($"Root dirs: {rootDirs.Count}");
             if (rootDirs.Count > 1)
             {
-                //TODO: refactor (optimize)!
-                //investigate the versionable copies of target
-                var asmNameByDirs = (from dir in rootDirs
-                                     select dir.GetAssemblies()
-                                               .Select(a => a.Name)
-                                               .Where(a => a.EndsWith(".dll") && sysChecker.CheckByAssemblyPath(a))
-                                               .ToList())
-                                     .ToList();
-                if (asmNameByDirs[0].Count > 0)
+                if (!tree.GetAssemblies().Any()) //maybe this is root of monikers
                 {
-                    var multi = true;
-                    for (var i = 1; i < asmNameByDirs.Count; i++)
+                    var runDir = AgentInitParameters.TargetDir ?? FileUtils.EntryDir;
+                    if (!runDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                        runDir += Path.DirectorySeparatorChar;
+                    InjectedDirectory targetDir = null;
+
+                    //by directory directly
+                    foreach (var dir in rootDirs)
                     {
-                        var prev = asmNameByDirs[i - 1];
-                        var cur = asmNameByDirs[i];
-                        //is the ALMOST same structure? It's not a strict match to compare NetFx and NetCore assembly sets
-                        if (Math.Abs(prev.Count - cur.Count) < 2 && prev.Intersect(cur).Any())
+                        if (!dir.DestinationPath.Equals(runDir, StringComparison.InvariantCultureIgnoreCase))
                             continue;
-                        multi = false;
+                        targetDir = dir;
+                        _logger.Debug($"Target dir: {dir}");
                         break;
                     }
-                    _logger.Debug($"Framework's multi-target: {multi}");
-                    //
-                    if (multi)
+
+                    //by run target version
+                    if (targetDir == null)
                     {
-                        //here many copies of target for different runtimes - we need only actual
-                        var entryAsm = Assembly.GetEntryAssembly();
-                        var asmDir = Path.GetDirectoryName(entryAsm.Location);
-                        var moniker = new DirectoryInfo(asmDir).Name;
-                        _logger.Debug($"Entry moniker: {moniker}; asm: {entryAsm.FullName}; location=[{entryAsm.Location}]");
-                        if (!entryAsm.FullName.Contains("testhost"))
-                        {
-                            var execVer = CommonUtils.GetAssemblyVersioning(entryAsm);
-                            _logger.Debug($"Actual version: {execVer}");
-                        }
-                        //
-                        InjectedDirectory targetDir = null;
-                        foreach (var dir in rootDirs)
-                        {
-                            if (new DirectoryInfo(dir.Path).Name != moniker)
-                                continue;
-                            targetDir = dir;
-                            _logger.Debug($"Target dir: {dir}");
-                            break;
-                        }
-                        injTypes = targetDir?.GetAllTypes();
+                        _logger.Warning($"Target dir not found by directory directly");
+
+                        //TODO: search by target version against potential entry version in each injected directory
                     }
+                    injTypes = targetDir?.GetAllTypes();
                 }
             }
 

@@ -34,6 +34,9 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         public string ProcessingFile { get; set; }
 
+        /// <summary>
+        /// Target frameworks (monikers) from options which needed for processing
+        /// </summary>
         public List<string> Monikers { get; set; }
 
         public List<string> MonikerDirectories { get; }

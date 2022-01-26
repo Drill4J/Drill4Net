@@ -11,7 +11,7 @@ namespace Drill4Net.Agent.Messaging
     public class TargetInfo
     {
         /// <summary>
-        /// Gets or sets the uid of the current object.
+        /// Gets or sets the uid of the current info object.
         /// </summary>
         /// <value>
         /// The uid of the current object.
@@ -24,7 +24,7 @@ namespace Drill4Net.Agent.Messaging
 
         public string EntryDir { get; set; }
 
-        public string Assembly { get; set; }
+        public string EntryAssembly { get; set; }
 
         /// <summary>
         /// Gets or sets the session uid.
@@ -48,7 +48,7 @@ namespace Drill4Net.Agent.Messaging
         /// <value>
         /// The Tree of injected entities of Target.
         /// </value>
-        public InjectedSolution Data { get; set; }
+        public InjectedSolution Tree { get; set; }
 
         /*******************************************************************/
 
