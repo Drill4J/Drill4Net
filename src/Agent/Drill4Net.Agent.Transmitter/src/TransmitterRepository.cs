@@ -91,10 +91,10 @@ namespace Drill4Net.Agent.Transmitter
             var entryAsm = Assembly.GetEntryAssembly()?.Location;
             var targetInfo = new TargetInfo
             {
-                Name = TargetName,
-                Version = TargetVersion,
-                EntryDir = FileUtils.EntryDir, //some directory will be here anyway
-                EntryAssembly = entryAsm != null ? Path.GetFileName(entryAsm) : null, //Null happens for some targets by this way
+                TargetName = TargetName,
+                TargetVersion = TargetVersion,
+                TargetDir = FileUtils.EntryDir, //some directory will be here anyway
+                TargetAssembly = entryAsm != null ? Path.GetFileName(entryAsm) : null, //Null happens for some targets by this way
                 Session = TargetSession,
                 Options = Options,
                 Tree = _tree, //excess monikers will be deleted in the Agent

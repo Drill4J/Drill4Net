@@ -290,8 +290,8 @@ namespace Drill4Net.Agent.Service
             var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
             if (needStartWorker)
             {
-                pid = StartAgentWorkerProcess(target.Session, target.Name, target.Version);
-                _logger.Info($"Worker was started with pid={pid} -> {sessionUid} : {target.Name} {target.Version}");
+                pid = StartAgentWorkerProcess(target.Session, target.TargetName, target.TargetVersion);
+                _logger.Info($"Worker was started with pid={pid} -> {sessionUid} : {target.TargetName} {target.TargetVersion}");
 
                 //add local worker info
                 var worker = new WorkerInfo(target, pid, trgTopic, probeTopic, cmdToWorkerTopic, cmdToTransTopic);

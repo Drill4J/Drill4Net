@@ -274,7 +274,7 @@ namespace Drill4Net.Agent.Standard
                     //by run target version
                     if (targetDir == null)
                     {
-                        _logger.Warning($"Target dir not found by directory directly");
+                        _logger.Warning("Target dir not found by its path directly");
 
                         //TODO: search by target version against potential entry version in each injected directory
                     }

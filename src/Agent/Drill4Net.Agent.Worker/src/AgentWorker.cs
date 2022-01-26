@@ -135,8 +135,8 @@ namespace Drill4Net.Agent.Worker
 
             AgentInitParameters.SkipCreatingSingleton = true;
             AgentInitParameters.LocatedInWorker = true;
-            AgentInitParameters.TargetDir = info.EntryDir;
-            AgentInitParameters.TargetVersion = info.Version;
+            AgentInitParameters.TargetDir = info.TargetDir;
+            AgentInitParameters.TargetVersion = info.TargetVersion;
 
             StandardAgent.Init(info.Options, info.Tree);
             StandardAgent.Agent.Initialized += AgentInitialized;
