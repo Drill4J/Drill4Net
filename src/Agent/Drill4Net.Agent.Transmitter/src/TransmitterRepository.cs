@@ -44,14 +44,11 @@ namespace Drill4Net.Agent.Transmitter
 
         private InjectedSolution _tree;
         private readonly ContextDispatcher _ctxDisp;
-        private Logger _logger;
 
         /*********************************************************************************************/
 
         public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
         {
-            _logger = new TypedLogger<TransmitterRepository>(CoreConstants.SUBSYSTEM_TRANSMITTER);
-
             //messager options
             Directory = Path.GetDirectoryName(typeof(TransmitterRepository).Assembly.Location);
             MessagerConfigPath = Path.Combine(Directory, CoreConstants.CONFIG_NAME_MIDDLEWARE);
@@ -102,7 +99,7 @@ namespace Drill4Net.Agent.Transmitter
                 Options = Options,
                 Tree = _tree, //excess monikers will be deleted in the Agent
             };
-            _logger.Debug($"Target info: {targetInfo}");
+            Log.Debug($"Target info created: {targetInfo}");
 
             _tree = null; //in general, this data is no longer needed - we save memory
             return Serializer.ToArray<TargetInfo>(targetInfo);
