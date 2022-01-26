@@ -18,9 +18,13 @@ namespace Drill4Net.Agent.Messaging
         /// </value>
         public Guid Uid { get; set; } = Guid.NewGuid();
 
-        public string TargetName { get; set; }
+        public string Name { get; set; }
 
-        public string TargetVersion { get; set; }
+        public string Version { get; set; }
+
+        public string EntryDir { get; set; }
+
+        public string Assembly { get; set; }
 
         /// <summary>
         /// Gets or sets the session uid.
@@ -28,7 +32,7 @@ namespace Drill4Net.Agent.Messaging
         /// <value>
         /// The session uid.
         /// </value>
-        public Guid SessionUid { get; set; }
+        public Guid Session { get; set; }
 
         /// <summary>
         /// Gets or sets the Agent options.
@@ -44,13 +48,13 @@ namespace Drill4Net.Agent.Messaging
         /// <value>
         /// The Tree of injected entities of Target.
         /// </value>
-        public InjectedSolution Solution { get; set; }
+        public InjectedSolution Data { get; set; }
 
         /*******************************************************************/
 
         public override string ToString()
         {
-            return $"{SessionUid} -> {TargetName} {TargetVersion}";
+            return $"{Session} -> {Name} {Version}";
         }
     }
 }

@@ -88,13 +88,16 @@ namespace Drill4Net.Agent.Transmitter
 
         public byte[] GetTargetInfo()
         {
+            var entryAsm = Assembly.GetEntryAssembly()?.Location;
             var targetInfo = new TargetInfo
             {
-                TargetName = TargetName,
-                TargetVersion = TargetVersion,
-                SessionUid = TargetSession,
+                Name = TargetName,
+                Version = TargetVersion,
+                EntryDir = FileUtils.EntryDir, //some directory will be here anyway
+                Assembly = entryAsm != null ? Path.GetFileName(entryAsm) : null, //Null happens for some targets by this way
+                Session = TargetSession,
                 Options = Options,
-                Solution = _tree,
+                Data = _tree, //excess monikers will be deleted in the Agent
             };
             _tree = null; //in general, this data is no longer needed - we save memory
             return Serializer.ToArray<TargetInfo>(targetInfo);

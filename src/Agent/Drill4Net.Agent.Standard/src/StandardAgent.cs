@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
-using Drill4Net.Agent.Abstract;
-using Drill4Net.Agent.Abstract.Transfer;
-using Drill4Net.BanderLog;
-using Drill4Net.BanderLog.Sinks.File;
+using System.Threading;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Common;
+using Drill4Net.BanderLog;
 using Drill4Net.Repository;
 using Drill4Net.Profiling.Tree;
+using Drill4Net.Agent.Abstract;
+using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.Agent.Abstract.Transfer;
 
 /*** INFO
  automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -124,7 +124,7 @@ namespace Drill4Net.Agent.Standard
                 //...and now we will wait the events from the admin side and the
                 //probe's data from the instrumented code on the RegisterStatic
 
-                _logger.Debug($"{nameof(StandardAgent)} is primarly initialized.");
+                _logger.Debug($"{nameof(StandardAgent)} is primary initialized.");
             }
             catch (Exception ex)
             {

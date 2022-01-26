@@ -13,8 +13,8 @@ namespace Drill4Net.Agent.Service
         /*******************************************************************************/
 
         public TargetedInfoSenderRepository(TargetInfo targetInfo, MessagerOptions senderOptions):
-            base(CoreConstants.SUBSYSTEM_AGENT_SERVER, targetInfo.SessionUid, targetInfo.TargetName ?? targetInfo.Solution?.Name,
-                targetInfo.TargetVersion ?? targetInfo.Solution?.ProductVersion, senderOptions)
+            base(CoreConstants.SUBSYSTEM_AGENT_SERVER, targetInfo.Session, targetInfo.Name ?? targetInfo.Data?.Name,
+                targetInfo.Version ?? targetInfo.Data?.ProductVersion, senderOptions)
         {
             Directory = FileUtils.EntryDir;
             _targetInfo = targetInfo;

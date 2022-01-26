@@ -276,7 +276,7 @@ namespace Drill4Net.Agent.Service
         internal virtual void RunAgentWorker(TargetInfo target)
         {
             //Target session
-            var sessionUid = target.SessionUid;
+            var sessionUid = target.Session;
             if (_workers.ContainsKey(sessionUid))
                 return;
 
@@ -290,12 +290,12 @@ namespace Drill4Net.Agent.Service
             var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
             if (needStartWorker)
             {
-                pid = StartAgentWorkerProcess(target.SessionUid, target.TargetName, target.TargetVersion);
-                _logger.Info($"Worker was started with pid={pid} -> {sessionUid} : {target.TargetName} {target.TargetVersion}");
+                pid = StartAgentWorkerProcess(target.Session, target.Name, target.Version);
+                _logger.Info($"Worker was started with pid={pid} -> {sessionUid} : {target.Name} {target.Version}");
 
                 //add local worker info
                 var worker = new WorkerInfo(target, pid, trgTopic, probeTopic, cmdToWorkerTopic, cmdToTransTopic);
-                if (!_workers.TryAdd(target.SessionUid, worker))
+                if (!_workers.TryAdd(target.Session, worker))
                     return;
             }
             else

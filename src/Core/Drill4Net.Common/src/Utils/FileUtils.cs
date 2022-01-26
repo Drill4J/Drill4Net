@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
 using System.Reflection;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Drill4Net.Common
