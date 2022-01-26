@@ -290,7 +290,7 @@ namespace Drill4Net.Agent.Standard
             }
 
             if(injTypes == null)
-                injTypes = tree.GetAllTypes();
+                injTypes = _tree.GetAllTypes();
 
             _injTypes = injTypes.Distinct(new InjectedEntityComparer<InjectedType>());
         }
