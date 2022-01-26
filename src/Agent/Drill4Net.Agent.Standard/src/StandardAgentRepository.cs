@@ -280,6 +280,7 @@ namespace Drill4Net.Agent.Standard
                         _logger.Warning("Target dir not found by its path directly");
 
                         //TODO: search by target version against potential entry version in each injected directory
+                        //use AgentInitParameters.FrameworkVersion
                     }
                     injTypes = targetDir?.GetAllTypes();
                 }

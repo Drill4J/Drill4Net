@@ -1,4 +1,6 @@
-﻿namespace Drill4Net.Agent.Abstract
+﻿using Drill4Net.Common;
+
+namespace Drill4Net.Agent.Abstract
 {
     /// <summary>
     /// Some parameters for the Standard Agent (instead of
@@ -26,8 +28,13 @@
         public static string TargetDir { get; set; }
 
         /// <summary>
-        /// Target run version if Agent located in Worker
+        /// Target run version as Product if Agent located in Worker
         /// </summary>
         public static string TargetVersion { get; set; }
+
+        /// <summary>
+        /// Framework version if Agent located in Worker
+        /// </summary>
+        public static AssemblyVersioning FrameworkVersion { get; set; }
     }
 }

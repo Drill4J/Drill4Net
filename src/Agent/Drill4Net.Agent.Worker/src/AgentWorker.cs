@@ -6,6 +6,7 @@ using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
+using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Worker
 {
@@ -137,7 +138,8 @@ namespace Drill4Net.Agent.Worker
             AgentInitParameters.LocatedInWorker = true;
             AgentInitParameters.TargetDir = info.TargetDir;
             AgentInitParameters.TargetVersion = info.TargetVersion;
-            _logger.Debug($"{nameof(AgentInitParameters)}: TargetVersion=[{AgentInitParameters.TargetVersion}], TargetDir=[{AgentInitParameters.TargetDir}]");
+            AgentInitParameters.FrameworkVersion = CommonUtils.GetEntryTargetVersioning();
+            _logger.Debug($"{nameof(AgentInitParameters)}: FrameworkVersion=[{AgentInitParameters.FrameworkVersion}], TargetVersion=[{AgentInitParameters.TargetVersion}], TargetDir=[{AgentInitParameters.TargetDir}]");
 
             StandardAgent.Init(info.Options, info.Tree);
             StandardAgent.Agent.Initialized += AgentInitialized;
