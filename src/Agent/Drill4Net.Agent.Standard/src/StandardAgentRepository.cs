@@ -265,6 +265,8 @@ namespace Drill4Net.Agent.Standard
                         throw new Exception("Unknown target runtime dir");
                     if (!runDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
                         runDir += Path.DirectorySeparatorChar;
+                    _logger.Debug($"Target runtime dir: [{runDir}]");
+
                     InjectedDirectory targetDir = null;
 
                     //by directory directly
