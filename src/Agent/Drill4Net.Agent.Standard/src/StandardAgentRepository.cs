@@ -257,7 +257,9 @@ namespace Drill4Net.Agent.Standard
             {
                 if (!tree.GetAssemblies().Any()) //maybe this is root of monikers
                 {
-                    var runDir = AgentInitParameters.TargetDir ?? FileUtils.EntryDir;
+                    var runDir = AgentInitParameters.TargetDir ?? (AgentInitParameters.LocatedInWorker ? null : FileUtils.EntryDir);
+                    if (string.IsNullOrWhiteSpace(runDir))
+                        throw new Exception("Unknown target runtime dir");
                     if (!runDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
                         runDir += Path.DirectorySeparatorChar;
                     InjectedDirectory targetDir = null;

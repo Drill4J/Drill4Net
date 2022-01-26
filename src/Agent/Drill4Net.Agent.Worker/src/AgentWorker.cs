@@ -121,10 +121,10 @@ namespace Drill4Net.Agent.Worker
 
             InitAgent(info);
 
-            _logger.Info($"{nameof(AgentWorker)} starts receiving the commands...");
+            _logger.Info($"{nameof(AgentWorker)} starts the commands' receiving...");
             Task.Run(_cmdReceiver.Start);
 
-            _logger.Info($"{nameof(AgentWorker)} starts receiving the probes...");
+            _logger.Info($"{nameof(AgentWorker)} starts the probes' receiving...");
             _probeReceiver.Start();
         }
 

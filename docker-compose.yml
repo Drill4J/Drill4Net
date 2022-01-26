@@ -8,12 +8,12 @@ services:
       - TEST2CODE_PLUGIN_VERSION=0.8.0-40
       - LOG_LEVEL=DEBUG
       - DRILL_AGENTS_SOCKET_TIMEOUT=60
-    healthcheck:
-      test: curl --fail http://localhost:8090/apidocs/index.html?url=./openapi.json || exit 1
-      interval: 10s
-      retries: 5
-      start_period: 20s
-      timeout: 5s
+    # healthcheck:
+      # test: curl --fail http://localhost:8090/apidocs/index.html?url=./openapi.json || exit 1
+      # interval: 10s
+      # retries: 5
+      # start_period: 20s
+      # timeout: 5s
     ports:
       - 8090:8090
       - 5006:5006
@@ -28,9 +28,9 @@ services:
     environment:
       WAIT_HOSTS: drill-admin:8090
       UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-104/dist/Drill4J-test-to-code.js
-    depends_on:
-      drill-admin:
-        condition: service_healthy
+    # depends_on:
+      # drill-admin:
+        # condition: service_healthy
     networks:
       - drill4net-dev-network
 
@@ -41,11 +41,11 @@ services:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
-    healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc -w 2 zookeeper 2181"]
-      interval: 5s
-      timeout: 10s
-      retries: 3
+    # healthcheck:
+      # test: ["CMD-SHELL", "echo ruok | nc -w 2 zookeeper 2181"]
+      # interval: 5s
+      # timeout: 10s
+      # retries: 3
     networks:
       - drill4net-dev-network
       
@@ -60,14 +60,14 @@ services:
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://host.docker.internal:9093
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181"]
-      interval: 2s
-      timeout: 2s
-      retries: 15
+    # depends_on:
+      # zookeeper:
+        # condition: service_healthy
+    # healthcheck:
+      # test: ["CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181"]
+      # interval: 2s
+      # timeout: 2s
+      # retries: 15
     networks:
       - drill4net-dev-network
   
@@ -78,9 +78,9 @@ services:
       - 9000:9000
     environment:
       - KAFKA_BROKERCONNECT=kafka1:9093
-    depends_on:
-      kafka1:
-        condition: service_healthy
+    # depends_on:
+      # kafka1:
+        # condition: service_healthy
     networks:
       - drill4net-dev-network
 
@@ -90,10 +90,10 @@ services:
     environment:
       - MESSAGE_SERVER_ADDRESS=kafka1:9093
       - DRILL_ADMIN_ADDRESS=drill-admin:8090
-      #- DEBUG_WRITE_PROBES=1
-    depends_on:
-      kafka1:
-        condition: service_healthy
+      - DEBUG_WRITE_PROBES=1
+    # depends_on:
+      # kafka1:
+        # condition: service_healthy
     networks:
       - drill4net-dev-network
 
