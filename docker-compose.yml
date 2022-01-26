@@ -90,10 +90,9 @@ services:
     environment:
       - MESSAGE_SERVER_ADDRESS=kafka1:9093
       - DRILL_ADMIN_ADDRESS=drill-admin:8090
+      #- DEBUG_WRITE_PROBES=1
     depends_on:
       kafka1:
-        condition: service_healthy
-      drill-admin:
         condition: service_healthy
     networks:
       - drill4net-dev-network

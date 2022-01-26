@@ -115,7 +115,7 @@ namespace Drill4Net.Agent.Standard
                             tree.SearchProductVersion(target?.VersionAssemblyName) ??
                             (AgentInitParameters.LocatedInWorker ? "0.0.0.0-unknown" : FileUtils.GetProductVersion(Assembly.GetCallingAssembly())); //for Agents injected directly to Target
 
-            _logger.Info($"Target: [{TargetName}], version: {TargetVersion}");
+            _logger.Info($"Target: {TargetName}, version: {TargetVersion}");
 
             _requester = new AdminRequester(Subsystem, Options.Admin.Url, TargetName, TargetVersion);
             RetrieveTargetBuilds().GetAwaiter().GetResult();
@@ -252,6 +252,7 @@ namespace Drill4Net.Agent.Standard
             //we need only one for current runtime
             var rootDirs = tree.GetDirectories().ToList();
             _logger.Debug($"Root dirs: {rootDirs.Count}");
+            Log.Flush();
             if (rootDirs.Count > 1)
             {
                 if (!tree.GetAssemblies().Any()) //maybe this is root of monikers
@@ -634,6 +635,5 @@ namespace Drill4Net.Agent.Standard
             return reg;
         }
         #endregion
-
     }
 }
