@@ -27,8 +27,8 @@ namespace Drill4Net.Common
     /// </summary>
     public static class CommonUtils
     {
-        public const string AssemblyFileGitVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}.{ThisAssembly.Git.SemVer.Label}";
-        public const string AssemblyProductVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}";
+        public const string AssemblyFileGitVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}";
+        public const string AssemblyProductVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}.{ThisAssembly.Git.SemVer.Label}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}";
         public static int CurrentProcessId { get; }
 
         /******************************************************************/
