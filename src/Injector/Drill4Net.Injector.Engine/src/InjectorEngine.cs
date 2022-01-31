@@ -21,7 +21,7 @@ using Drill4Net.Injector.Plugins.SpecFlow;
      For file version format exactly is digit
 ***/
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 [assembly: InternalsVisibleToAttribute("Drill4Net.Injector.Engine.UnitTests")]
 namespace Drill4Net.Injector.Engine

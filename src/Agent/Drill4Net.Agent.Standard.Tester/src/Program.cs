@@ -6,7 +6,7 @@ using Drill4Net.Common;
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 namespace Drill4Net.Agent.Standard.Tester
 {

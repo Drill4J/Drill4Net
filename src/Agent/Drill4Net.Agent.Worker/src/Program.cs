@@ -17,7 +17,7 @@ using Drill4Net.BanderLog.Sinks.Console;
      For file version format exactly is digit
 ***/
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 namespace Drill4Net.Agent.Worker
 {

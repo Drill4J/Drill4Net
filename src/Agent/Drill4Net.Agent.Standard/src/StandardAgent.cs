@@ -22,7 +22,7 @@ using Drill4Net.Agent.Abstract.Transfer;
  For file version format exactly is digit
 ***/
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 namespace Drill4Net.Agent.Standard
 {

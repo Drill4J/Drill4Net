@@ -15,7 +15,7 @@ using Drill4Net.Agent.Messaging.Transport.Kafka;
 // patches'(commits) count starts with 0 again after new tag pushing
 // For file version format exactly is digit
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 namespace Drill4Net.Agent.Service
 {

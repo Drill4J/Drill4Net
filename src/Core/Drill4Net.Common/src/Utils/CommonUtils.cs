@@ -18,7 +18,7 @@ using Drill4Net.Common;
 // patches'(commits) count starts with 0 again after new tag pushing
 // For file version format exactly is digit
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 namespace Drill4Net.Common
 {
@@ -28,7 +28,7 @@ namespace Drill4Net.Common
     public static class CommonUtils
     {
         public const string AssemblyFileGitVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}.{ThisAssembly.Git.SemVer.Label}";
-        public const string AssemblyGitVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}.{ThisAssembly.Git.SemVer.Label}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}";
+        public const string AssemblyProductVersion = $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}/*.{ThisAssembly.Git.SemVer.Label}*/-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}";
         public static int CurrentProcessId { get; }
 
         /******************************************************************/

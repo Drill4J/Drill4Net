@@ -11,7 +11,7 @@ using Drill4Net.BanderLog.Sinks.File;
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
 [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyGitVersion)]
+[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 namespace Drill4Net.Agent.Transmitter.Debug
 {
