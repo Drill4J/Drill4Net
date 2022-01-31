@@ -9,16 +9,17 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 using Mono.Cecil;
-//using Drill4Net.Common;
 
-//// automatic version tagger including Git info - https://github.com/devlooped/GitInfo
-//// semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
-//// the most common format is v0.0 (or just 0.0 is enough)
-//// to change semVer it is nesseccary to create appropriate tag and push it to remote repository
-//// patches'(commits) count starts with 0 again after new tag pushing
-//// For file version format exactly is digit
-//[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-//[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
+// automatic version tagger including Git info - https://github.com/devlooped/GitInfo
+// semVer creates an automatic version number based on the combination of a SemVer-named tag/branches
+// the most common format is v0.0 (or just 0.0 is enough)
+// to change semVer it is nesseccary to create appropriate tag and push it to remote repository
+// patches'(commits) count starts with 0 again after new tag pushing
+// For file version format exactly is digit
+
+// DON'T USE CommonUtils.AssemblyFileGitVersion & CommonUtils.AssemblyProductVersion -> Action will fail on the GitHub
+[assembly: AssemblyFileVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}.{ThisAssembly.Git.SemVer.Label}")]
+[assembly: AssemblyInformationalVersion($"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}.{ThisAssembly.Git.SemVer.Label}-{ThisAssembly.Git.Branch}+{ThisAssembly.Git.Commit}")]
 
 namespace Drill4Net.Common
 {
