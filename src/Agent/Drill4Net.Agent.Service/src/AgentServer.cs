@@ -12,7 +12,6 @@ using Drill4Net.BanderLog;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Kafka;
 using Drill4Net.Agent.Messaging.Transport;
-using System.Runtime.InteropServices;
 
 namespace Drill4Net.Agent.Service
 {
