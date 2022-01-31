@@ -81,7 +81,7 @@ namespace Drill4Net.Configurator
                 var text = File.ReadAllText(prjPath);
                 if (string.IsNullOrWhiteSpace(text))
                     continue;
-                if (text.IndexOf(tag) == -1) //for counr projects with injected commands
+                if (text.IndexOf(tag) == -1) //for count projects with injected commands
                     continue;
                 res.Add(prjPath);
             }
@@ -235,7 +235,7 @@ namespace Drill4Net.Configurator
         
         internal string GetPureCommand(string ciCfgPath)
         {
-            return @$"""{_rep.GetAppPath()}"" -{CoreConstants.ARGUMENT_CONFIG_PATH}=""{ciCfgPath}""";
+            return @$"""{_rep.GetAppPath()}"" ci start --{CoreConstants.ARGUMENT_CONFIG_PATH}=""{ciCfgPath}""";
         }
 
         internal string GetProjectCommand(string ciCfgPath)

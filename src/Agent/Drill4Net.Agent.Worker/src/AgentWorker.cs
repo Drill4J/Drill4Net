@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.Messaging.Transport;
-using Drill4Net.Common;
 
 namespace Drill4Net.Agent.Worker
 {
