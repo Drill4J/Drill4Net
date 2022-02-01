@@ -249,58 +249,65 @@ Please make your choice";
                         Type plugType;
                         while (true)
                         {
-                            #region Select plugin
-                            if (!_cli.AskQuestion("Plugin number", out answer, null, false))
-                                return false;
-                            if (_cli.IsOk(answer))
-                                break;
-                            if (string.IsNullOrWhiteSpace(answer))
+                            try
                             {
-                                RaiseWarning("Input cannot be empty");
-                                continue;
-                            }
-                            answer = answer.Trim();
-                            if (!int.TryParse(answer, out var num) || num < 1 || num > plugTypes.Count)
-                            {
-                                RaiseWarning("Out of range, please repeat");
-                                continue;
-                            }
-                            //
-                            plugType = plugTypes[num - 1];
-                            var plugDir = Path.GetDirectoryName(plugType.Assembly.Location);
-                            var plug = (IGeneratorContexter)Activator.CreateInstance(plugType);
-                            var plugName = plug.Name;
-                            #endregion
-                            #region Plugin config path
-                            def = $"plug_{trgName}.yml";
-                            string plugCfgPath = "";
-                            while (true)
-                            {
-                                if (!_cli.AskFileName(@$"Name for the target specific config for plugin ""{plugName}"" (contains test assembly, etc). It is better to use ""plug_"" prefix.",
-                                    out var plugCfgName, def, false))
+                                #region Select plugin
+                                if (!_cli.AskQuestion("Plugin number", out answer, null, false))
                                     return false;
-                                if (string.IsNullOrWhiteSpace(plugCfgName))
+                                if (_cli.IsOk(answer))
+                                    break;
+                                if (string.IsNullOrWhiteSpace(answer))
                                 {
-                                    RaiseWarning("The target specific config name is empty");
+                                    RaiseWarning("Input cannot be empty");
                                     continue;
                                 }
-                                if (!plugCfgName.EndsWith(".yml"))
-                                    plugCfgName += ".yml";
-                                plugCfgPath = Path.Combine(injectorDir, plugCfgName);
-                                if (File.Exists(plugCfgPath))
-                                    break;
-                                RaiseWarning(@$"The target specific config for the target ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
-                            }
-                            #endregion
-
-                            if (!string.IsNullOrWhiteSpace(plugCfgPath))
-                            {
-                                var plugOpts = new PluginLoaderOptions()
+                                answer = answer.Trim();
+                                if (!int.TryParse(answer, out var num) || num < 1 || num > plugTypes.Count)
                                 {
-                                    Directory = plugDir,
-                                    Config = plugCfgPath,
-                                };
-                                plugins.Add(plugName, plugOpts);
+                                    RaiseWarning("Out of range, please repeat");
+                                    continue;
+                                }
+                                //
+                                plugType = plugTypes[num - 1];
+                                var plugDir = Path.GetDirectoryName(plugType.Assembly.Location);
+                                var plug = (IGeneratorContexter)Activator.CreateInstance(plugType);
+                                var plugName = plug.Name;
+                                #endregion
+                                #region Plugin config path
+                                def = $"plug_{trgName}.yml";
+                                string plugCfgPath = "";
+                                while (true)
+                                {
+                                    if (!_cli.AskFileName(@$"Name for the target specific config for plugin ""{plugName}"" (contains test assembly, etc). It is better to use ""plug_"" prefix.",
+                                        out var plugCfgName, def, false))
+                                        return false;
+                                    if (string.IsNullOrWhiteSpace(plugCfgName))
+                                    {
+                                        RaiseWarning("The target specific config name is empty");
+                                        continue;
+                                    }
+                                    if (!plugCfgName.EndsWith(".yml"))
+                                        plugCfgName += ".yml";
+                                    plugCfgPath = Path.Combine(injectorDir, plugCfgName);
+                                    if (File.Exists(plugCfgPath))
+                                        break;
+                                    RaiseWarning(@$"The target specific config for the target ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
+                                }
+                                #endregion
+
+                                if (!string.IsNullOrWhiteSpace(plugCfgPath))
+                                {
+                                    var plugOpts = new PluginLoaderOptions()
+                                    {
+                                        Directory = plugDir,
+                                        Config = plugCfgPath,
+                                    };
+                                    plugins.Add(plugName, plugOpts);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                RaiseError(ex.Message);
                             }
                         }
                         #endregion
@@ -432,12 +439,15 @@ Please make your choice";
 
             //split name by "-" for Camel notation
             var sb = new StringBuilder();
+            var prevHigh = false;
             for (int i = 0; i < name.Length; i++)
             {
                 var ch = name[i];
-                if (char.IsUpper(ch) && i > 0 && name[i - 1] != '-')
+                var isUpper = char.IsUpper(ch);
+                if (isUpper && !prevHigh && i > 0 && name[i - 1] != '-')
                     sb.Append('-');
                 sb.Append(ch);
+                prevHigh = isUpper;
             }
             return sb.ToString().ToLower();
         }

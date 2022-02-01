@@ -27,10 +27,16 @@ namespace Drill4Net.Configurator
             var dir = _rep.GetCiDirectory();
             var res = _cmdHelper.GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_CI, dir, _desc,
                 out var ciCfgPath, out var _, out var _);
-            if (!res) //this is fine for a full setup
+            var noIntegrate = IsSwitchSet(ConfiguratorConstants.SWITCH_INTEGRATION_NO);
+            if (!res) //this is normal for a full setup
             {
+                //configuring
                 if (!ConfigureCiConfig(out ciCfgPath))
                     return Task.FromResult(FalseEmptyResult);
+                
+                //integration question
+                if (noIntegrate)
+                    return Task.FromResult(TrueEmptyResult);
                 if (!_cli.AskQuestion(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). Integration with the Jenkins, TeamCity, etc will be implement later.
 So, do you want to integrate CI run into some source code projects (on its post-build events)?",
                     out var answer, "y"))
@@ -38,6 +44,10 @@ So, do you want to integrate CI run into some source code projects (on its post-
                 if(!_cli.IsYes(answer))
                     return Task.FromResult(TrueEmptyResult);
             }
+
+            //integration 
+            if (noIntegrate)
+                return Task.FromResult(TrueEmptyResult);
             var res2 = (InjectCiToProjects(ciCfgPath), new Dictionary<string, object>());
             return Task.FromResult(res2);
         }
@@ -68,7 +78,7 @@ So, do you want to integrate CI run into some source code projects (on its post-
                 return false;
             if (!_cli.AskFilePath($"{CoreConstants.SUBSYSTEM_TEST_RUNNER} config path to run the injected targets", out var runCfgPath, null, true, false))
                 return false;
-            var defCfgPath = Path.Combine(dir, "ci.yml");
+            var defCfgPath = Path.Combine(new DirectoryInfo(dir).Parent.FullName, "ci.yml");
             if (!_cli.AskFilePath("Config path for this CI run will be saved to", out ciCfgPath, defCfgPath, false, true))
                 return false;
 
@@ -81,7 +91,7 @@ So, do you want to integrate CI run into some source code projects (on its post-
 
             //saving
             _rep.WriteCiOptions(opts, ciCfgPath);
-            RaiseMessage("\nConfig was saved.");
+            RaiseMessage("\nConfig was saved.", CliMessageType.Info);
 
             return true;
         }
@@ -215,6 +225,9 @@ So, do you want to integrate CI run into some source code projects (on its post-
   b). to integrate the launch of the CI process by the generated config into the post-build event of compiling .NET projects to choose from, which allows you to fully automate the CI pipeline during the developing.
 
     Example: {RawContexts}
+
+You can skip the integration stage using {ConfiguratorConstants.SWITCH_INTEGRATION_NO} swith:
+    Example: {RawContexts} -{ConfiguratorConstants.SWITCH_INTEGRATION_NO}
 
 You can skip the stage of creating the config and configure only the injecting of CI procedures in source code projects using a named argument pointing to an already created config:
     Example: {RawContexts} --{CoreConstants.ARGUMENT_CONFIG_PATH}=""d:\configs\ci\cfg2.yml""
