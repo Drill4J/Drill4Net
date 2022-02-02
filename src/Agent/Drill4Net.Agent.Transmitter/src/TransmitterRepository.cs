@@ -47,7 +47,7 @@ namespace Drill4Net.Agent.Transmitter
 
         /*********************************************************************************************/
 
-        public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER, string.Empty)
+        public TransmitterRepository() : base(CoreConstants.SUBSYSTEM_TRANSMITTER)
         {
             //messager options
             Directory = Path.GetDirectoryName(typeof(TransmitterRepository).Assembly.Location);

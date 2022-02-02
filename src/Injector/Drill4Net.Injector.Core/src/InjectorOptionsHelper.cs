@@ -90,7 +90,8 @@ namespace Drill4Net.Injector.Core
                 throw new ArgumentNullException(nameof(opts));
             if (cliDescriptor == null)
                 throw new ArgumentNullException(nameof(cliDescriptor));
-            //
+            
+            // clarify directories
             ClarifySourceDirectory(cliDescriptor, opts);
             ClarifyDestinationDirectory(cliDescriptor, opts);
 
