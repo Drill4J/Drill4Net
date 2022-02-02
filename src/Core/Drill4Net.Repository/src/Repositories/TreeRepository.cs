@@ -18,6 +18,7 @@ namespace Drill4Net.Repository
             where TOptions : TargetOptions, new()
             where THelper : BaseOptionsHelper<TOptions>, new()
     {
+        public string TargetNameFromArgs { get; }
         public string TargetVersionFromArgs { get; }
 
         protected TreeRepositoryHelper _helper;
@@ -25,17 +26,21 @@ namespace Drill4Net.Repository
 
         /*****************************************************************************************/
 
-        protected TreeRepository(string subsystem, CliDescriptor cliDescriptor) : base(subsystem, cliDescriptor)
+        protected TreeRepository(string subsystem, string cfgPath = null, CliDescriptor cliDescriptor = null) : base(subsystem, cfgPath)
         {
             Init();
-            TargetVersionFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
-            if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
-                Options.Target.Version = TargetVersionFromArgs;
-        }
 
-        protected TreeRepository(string subsystem, string cfgPath) : base(subsystem, cfgPath)
-        {
-            Init();
+            if (cliDescriptor != null)
+            {
+                //overridings from CLI
+                TargetNameFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_NAME);
+                if (!string.IsNullOrWhiteSpace(TargetNameFromArgs))
+                    Options.Target.Name = TargetNameFromArgs;
+
+                TargetVersionFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
+                if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
+                    Options.Target.Version = TargetVersionFromArgs;
+            }
         }
 
         protected TreeRepository(string subsystem, TOptions opts) : base(subsystem, opts)

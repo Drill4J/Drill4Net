@@ -94,19 +94,19 @@ namespace Drill4Net.Injector.App
                 Console.ReadKey(true);
         }
 
-        //the magic is here
-        internal static Task Process(bool isSilent, string cfgPath = null)
+        // *** The magic is here *** //
+        internal static Task Process(bool silent, string cfgPath = null)
         {
             try
             {
-                var rep = cfgPath == null ? new InjectorRepository(_cliDescriptor) : new InjectorRepository(cfgPath);
+                var rep = new InjectorRepository(cfgPath, _cliDescriptor);
                 _logger.Debug(rep.Options);
                 var injector = new InjectorEngine(rep);
                 return injector.Process();
             }
             catch (Exception ex)
             {
-                if (isSilent)
+                if (silent)
                 {
                     _logger.Warning($"{ex.Message}");
                     return Task.CompletedTask;

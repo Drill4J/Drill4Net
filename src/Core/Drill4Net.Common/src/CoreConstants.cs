@@ -60,24 +60,6 @@
         /// File name with a path to the <see cref="TREE_FILE_NAME"/> helping to search it
         /// </summary>
         public const string TREE_FILE_HINT_NAME = "injected_hint.tree";
-
-        public const char SWITCH_FORCE = 'f';
-
-        public const string ARGUMENT_SILENT = "silent";
-        public const string ARGUMENT_TARGET_VERSION = "version";
-        public const string ARGUMENT_CONFIG_PATH = "cfg_path";
-        public const string ARGUMENT_CONFIG_DIR = "cfg_dir";
-        public const string ARGUMENT_SOURCE_DIR = "source_dir";
-        public const string ARGUMENT_SOURCE_PATH = "source_path";
-        public const string ARGUMENT_DESTINATION_DIR = "dest_dir";
-        public const string ARGUMENT_DESTINATION_PATH = "dest_path";
-        public const string ARGUMENT_RUN_CFG = "run_cfg";
-        public const string ARGUMENT_DEGREE_PARALLELISM = "degree_parallelism";
-
-        /// <summary>
-        /// Prefix for regex filter in config
-        /// </summary>
-        public const string REGEX_FILTER_PREFIX = "reg:";
         #endregion
         #region Environment variables (Docker)
         //Environment variable names are case-sensitive on Linux and macOS but are not case-sensitive on Windows.
@@ -94,5 +76,25 @@
 
         public const string ENV_DEBUG_WRITE_PROBES = "DEBUG_WRITE_PROBES";
         #endregion
+        #region CLI
+        public const char SWITCH_FORCE = 'f';
+
+        public const string ARGUMENT_SILENT = "silent";
+        public const string ARGUMENT_TARGET_NAME = "name";
+        public const string ARGUMENT_TARGET_VERSION = "version";
+        public const string ARGUMENT_CONFIG_PATH = "cfg_path";
+        public const string ARGUMENT_CONFIG_DIR = "cfg_dir";
+        public const string ARGUMENT_SOURCE_DIR = "source_dir";
+        public const string ARGUMENT_SOURCE_PATH = "source_path";
+        public const string ARGUMENT_DESTINATION_DIR = "dest_dir";
+        public const string ARGUMENT_DESTINATION_PATH = "dest_path";
+        public const string ARGUMENT_RUN_CFG = "run_cfg";
+        public const string ARGUMENT_DEGREE_PARALLELISM = "degree_parallelism";
+        #endregion
+
+        /// <summary>
+        /// Prefix for regex filter in config
+        /// </summary>
+        public const string REGEX_FILTER_PREFIX = "reg:";
     }
 }

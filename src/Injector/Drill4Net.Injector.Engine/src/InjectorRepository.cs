@@ -32,21 +32,12 @@ namespace Drill4Net.Injector.Engine
         /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
         /// injector for them, the reading/writing of resulting tree data, etc)
         /// </summary>
+        /// <param name="cfgPath">Path to the Injector config</param>
         /// <param name="cliDescriptor">Input arguments from console, including path to config, etc</param>
-        public InjectorRepository(CliDescriptor cliDescriptor): base(_subsystem, cliDescriptor)
+        public InjectorRepository(string cfgPath, CliDescriptor cliDescriptor = null): base(_subsystem, cfgPath, cliDescriptor)
         {
             CreateLogger();
             _optHelper.Clarify(cliDescriptor, Options);
-        }
-
-        /// <summary>
-        /// Create Injector Engine's repository (provides injection strategy, target assemblies, 
-        /// injector for them, the reading/writing of resulting tree data, etc).
-        /// </summary>
-        /// <param name="cfgPath">Path to the config of injection</param>
-        public InjectorRepository(string cfgPath) : base(_subsystem, cfgPath)
-        {
-            CreateLogger();
         }
 
         /*****************************************************************************************/

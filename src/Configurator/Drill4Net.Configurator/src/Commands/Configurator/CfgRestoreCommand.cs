@@ -25,19 +25,19 @@ namespace Drill4Net.Configurator
                 if (!_cli.AskQuestion($"Do you really want to restore the default configuration settings for the {CoreConstants.SUBSYSTEM_CONFIGURATOR}?",
                     out var answer, "n"))
                     return Task.FromResult(FalseEmptyResult);
-                if (_cli.IsYes(answer))
+                if (!_cli.IsYes(answer))
                     return Task.FromResult(FalseEmptyResult);
                 //
                 if (!_cli.AskQuestion("To restore the 'default connections' settings?", out answer, "n"))
                     return Task.FromResult(FalseEmptyResult);
                 connNeed = _cli.IsYes(answer);
                 //
-                if (!_cli.AskQuestion("To restore the paths of the applications and components?\nThis can be done only if all folders are in their standard places, as it was in the distribution.",
+                if (!_cli.AskQuestion("To restore the paths of the applications and components?\nThis can be done only if all folders are in their standard places, as it was in the distribution",
                     out answer, "n"))
                     return Task.FromResult(FalseEmptyResult);
                 pathsNeed = _cli.IsYes(answer);
             }
-            
+
             // set up
             var opts = _rep.Options;
             opts.ExternalEditor = null;

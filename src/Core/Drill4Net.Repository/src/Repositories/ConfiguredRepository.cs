@@ -25,13 +25,12 @@ namespace Drill4Net.Repository
 
         /**********************************************************************************/
 
-        protected ConfiguredRepository(string subsystem, CliDescriptor cliDescriptor) : this(subsystem, GetArgumentConfigPath(cliDescriptor))
-        {
-        }
-
-        protected ConfiguredRepository(string subsystem, string cfgPath) : base(subsystem)
+        protected ConfiguredRepository(string subsystem, string cfgPath = null, CliDescriptor cliDescriptor = null): base(subsystem)
         {
             _optHelper = new THelper();
+
+            if(cfgPath == null && cliDescriptor != null)
+                cfgPath = GetArgumentConfigPath(cliDescriptor);
 
             //options
             if (string.IsNullOrWhiteSpace(cfgPath))
