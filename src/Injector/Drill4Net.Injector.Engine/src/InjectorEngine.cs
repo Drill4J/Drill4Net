@@ -68,63 +68,6 @@ namespace Drill4Net.Injector.Engine
 
         /*****************************************************************/
 
-        #region Plugins
-        private List<IInjectorPlugin> GetPlugins(InjectorOptions opts)
-        {
-            var plugins = new List<IInjectorPlugin>();
-
-            //TODO: loads them dynamically from the disk by cfg
-
-            // standard plugins //
-
-            //now we work with already injected Destination, not Source
-            var dir = opts.Destination.Directory;
-            var proxyClass = opts.Proxy.Class;
-            //...and use generated Proxy namespace
-
-            //SpecFlow
-            var plugCfg = GetPluginOptions(SpecFlowGeneratorContexter.PluginName, opts.Plugins);
-            if (!string.IsNullOrWhiteSpace(plugCfg?.Directory))
-                plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
-
-            return plugins;
-        }
-
-        internal PluginLoaderOptions GetPluginOptions(string name, Dictionary<string, PluginLoaderOptions> cfgPlugins)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
-            if (cfgPlugins?.ContainsKey(name) != true)
-                return null; //maybe it is normal for some plugins
-            //
-            var opts = cfgPlugins[name];
-
-            //some opt's preproc
-            opts.Directory = FileUtils.GetFullPath(opts.Directory);
-
-            return opts;
-        }
-
-        /// <summary>
-        /// Injecting some features by extending plugins
-        /// </summary>
-        /// <param name="runCtx"></param>
-        private void ProcessByPlugins(RunContext runCtx)
-        {
-            if (Plugins.Count == 0)
-                return;
-            //
-            runCtx.AssemblyPaths.Clear();
-            Console.WriteLine("");
-            _logger.Info("Processing by plugins...");
-            foreach (var plugin in Plugins)
-            {
-                _logger.Info($"Processing by [{plugin.Name}]");
-                plugin?.Process(runCtx);
-            }
-        }
-        #endregion
-
         /// <summary>
         /// Inject the target accordingly by the current config from repository
         /// </summary>
@@ -326,5 +269,62 @@ namespace Drill4Net.Injector.Engine
             var deployer = new TreeDeployer(_rep);
             deployer.Deploy(tree); //copying tree data to the target root's directories
         }
+
+        #region Plugins
+        private List<IInjectorPlugin> GetPlugins(InjectorOptions opts)
+        {
+            var plugins = new List<IInjectorPlugin>();
+
+            //TODO: loads them dynamically from the disk by cfg
+
+            // standard plugins //
+
+            //now we work with already injected Destination, not Source
+            var dir = opts.Destination.Directory;
+            var proxyClass = opts.Proxy.Class;
+            //...and use generated Proxy namespace
+
+            //SpecFlow
+            var plugCfg = GetPluginOptions(SpecFlowGeneratorContexter.PluginName, opts.Plugins);
+            if (!string.IsNullOrWhiteSpace(plugCfg?.Directory))
+                plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
+
+            return plugins;
+        }
+
+        internal PluginLoaderOptions GetPluginOptions(string name, Dictionary<string, PluginLoaderOptions> cfgPlugins)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+            if (cfgPlugins?.ContainsKey(name) != true)
+                return null; //maybe it is normal for some plugins
+            //
+            var opts = cfgPlugins[name];
+
+            //some opt's preproc
+            opts.Directory = FileUtils.GetFullPath(opts.Directory);
+
+            return opts;
+        }
+
+        /// <summary>
+        /// Injecting some features by extending plugins
+        /// </summary>
+        /// <param name="runCtx"></param>
+        private void ProcessByPlugins(RunContext runCtx)
+        {
+            if (Plugins.Count == 0)
+                return;
+            //
+            runCtx.AssemblyPaths.Clear();
+            Console.WriteLine("");
+            _logger.Info("Processing by plugins...");
+            foreach (var plugin in Plugins)
+            {
+                _logger.Info($"Processing by [{plugin.Name}]");
+                plugin?.Process(runCtx);
+            }
+        }
+        #endregion
     }
 }

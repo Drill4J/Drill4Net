@@ -9,7 +9,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     public class TestRunnerOptions : AbstractOptions
     {
         /// <summary>
-        /// Directory for the injected tests
+        /// Directories for the injected tests
         /// </summary>
         public List<RunDirectoryOptions> Directories { get; set; }
 

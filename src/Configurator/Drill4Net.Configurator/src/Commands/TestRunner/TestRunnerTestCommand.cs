@@ -20,7 +20,7 @@ namespace Drill4Net.Configurator
             if (_desc == null)
                 return FalseEmptyResult;
             //
-            var dir = _rep.GetInjectorDirectory();
+            var dir = _rep.GetTestRunnerDirectory();
             var res2 = _cmdHelper.GetExistingSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER,
                 dir, _desc, out var runCfgPath, out var _);
             if (!res2)

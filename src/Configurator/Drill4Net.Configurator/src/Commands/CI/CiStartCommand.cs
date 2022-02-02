@@ -39,6 +39,7 @@ namespace Drill4Net.Configurator
             try
             {
                 var opts = _rep.ReadCiOptions(ciCfgPath);
+                var trgVersion = GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
                 var (res, err) = await StartCi(opts).ConfigureAwait(false);
                 if (res)
                     RaiseMessage($"CI workflow is done: [{ciCfgPath}].");
