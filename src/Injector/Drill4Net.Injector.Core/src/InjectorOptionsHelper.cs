@@ -93,6 +93,14 @@ namespace Drill4Net.Injector.Core
             //
             ClarifySourceDirectory(cliDescriptor, opts);
             ClarifyDestinationDirectory(cliDescriptor, opts);
+
+            //overriding
+            if (cliDescriptor != null)
+            {
+                var silent = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_SILENT);
+                if (silent != null)
+                    opts.Silent = true;
+            }
         }
 
         internal void ClarifySourceDirectory(CliDescriptor cliDescriptor, InjectorOptions opts)

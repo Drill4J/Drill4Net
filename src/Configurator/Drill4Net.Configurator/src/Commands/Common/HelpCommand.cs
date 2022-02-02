@@ -15,18 +15,23 @@ namespace Drill4Net.Configurator
 
         public HelpCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)
         {
-            _mess = $@"  === Please, type:
+            _mess = $@"  --- Please, type:
   >>> '?' to print this menu.
   >>> '? ?' to read about help system.
   >>> 'about' to read about program.
   >>> '{ConfiguratorConstants.COMMAND_LIST}' to list all commands.
+  
   --- Configurations:
   >>> '{new SysConfigureCommand(_rep, _cliRep).RawContexts}' to the system setup.
   >>> '{new TargetNewCommand(_rep, _cliRep).RawContexts}' to configure new target's injections.
   >>> '{new TestRunnerNewCommand(_rep, _cliRep).RawContexts}' to configure new tests' run.
   >>> '{new CiNewCommand(_rep, _cliRep).RawContexts}' for new CI run's settings.
+  
   --- Actions:
   >>> '{new CiStartCommand(_rep, _cliRep).RawContexts}' to start full cycle (target injection + tests' running).
+  >>> '{new TargetInjectCommand(_rep, _cliRep).RawContexts}' to inject the target separately.
+  >>> '{new TestRunnerTestCommand(_rep, _cliRep).RawContexts}' to start the tests in the injected targets separately.
+  
   >>> 'q' to exit.";
         }
 

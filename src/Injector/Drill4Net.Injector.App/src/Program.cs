@@ -36,10 +36,6 @@ namespace Drill4Net.Injector.App
                 _logger = new TypedLogger<Program>(CoreConstants.SUBSYSTEM_INJECTOR); //real typed logger from cfg
                 _logger.Debug($"Arguments: [{string.Join(" ", args)}]");
 
-                //silent
-                var silentArg = _cliDescriptor.GetParameter(CoreConstants.ARGUMENT_SILENT);
-                silent = silentArg != null;
-
                 //loop count
                 var loops = 1;
                 var cfgDirArg = _cliDescriptor.GetParameter(CoreConstants.ARGUMENT_CONFIG_DIR);
@@ -58,11 +54,11 @@ namespace Drill4Net.Injector.App
 
                     //run in parallel
                     var parOpts = new ParallelOptions { MaxDegreeOfParallelism = degreeParallel };
-                    Parallel.ForEach(configs, parOpts, (cfgPath) => Process(silent, cfgPath));
+                    Parallel.ForEach(configs, parOpts, (cfgPath) => Process(cfgPath));
                 }
                 else //manual start
                 {
-                    await Process(silent).ConfigureAwait(false);
+                    await Process().ConfigureAwait(false);
                 }
 #if DEBUG
                 #region Benchmark
@@ -95,24 +91,27 @@ namespace Drill4Net.Injector.App
         }
 
         // *** The magic is here *** //
-        internal static Task Process(bool silent, string cfgPath = null)
+        internal static Task Process(string cfgPath = null)
         {
+            InjectorRepository rep = null;
             try
             {
-                var rep = new InjectorRepository(cfgPath, _cliDescriptor);
+                rep = new InjectorRepository(cfgPath, _cliDescriptor);
                 _logger.Debug(rep.Options);
                 var injector = new InjectorEngine(rep);
                 return injector.Process();
             }
             catch (Exception ex)
             {
-                if (silent)
+                if (rep?.Options?.Silent == true)
                 {
                     _logger.Warning($"{ex.Message}");
                     return Task.CompletedTask;
                 }
                 else
+                {
                     return Task.FromException(ex);
+                }
             }
         }
     }

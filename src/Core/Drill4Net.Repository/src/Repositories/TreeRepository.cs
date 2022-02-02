@@ -26,7 +26,7 @@ namespace Drill4Net.Repository
 
         /*****************************************************************************************/
 
-        protected TreeRepository(string subsystem, string cfgPath = null, CliDescriptor cliDescriptor = null) : base(subsystem, cfgPath)
+        protected TreeRepository(string subsystem, string cfgPath = null, CliDescriptor cliDescriptor = null) : base(subsystem, cfgPath, cliDescriptor)
         {
             Init();
 
