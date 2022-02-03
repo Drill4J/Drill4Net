@@ -205,7 +205,7 @@ Please make your choice";
             }
             #endregion
             #region Plugins
-            if(!_cli.AskQuestion("Does the target have any automated tests?", out answer, "y"))
+            if (!_cli.AskQuestion("Does the target have any automated tests?", out answer, "y"))
                 return false;
             if (_cli.IsYes(answer))
             {
@@ -327,7 +327,9 @@ Please make your choice";
             #endregion
 
             //corrections
+            cfg.Profiler.Directory = _rep.GetTransmitterDir();
             ClarifyProfilerDirectory(cfg.Profiler);
+
             ClarifyPluginDirectories(cfg.Plugins);
 
             // save config

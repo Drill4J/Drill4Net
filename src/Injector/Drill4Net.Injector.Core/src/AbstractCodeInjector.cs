@@ -116,7 +116,7 @@ namespace Drill4Net.Injector.Core
             var dotnetDir = GetDotnetDir(prgDir);
             var prg32 = GetProgDir(false);
             if (!Directory.Exists(dotnetDir))
-            { 
+            {
                 prgDir = prg32;
                 dotnetDir = GetDotnetDir(prgDir);
             }

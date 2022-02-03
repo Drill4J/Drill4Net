@@ -292,8 +292,7 @@ namespace Drill4Net.Configurator
         {
             fromSwitch = false;
 
-            var res2 = GetSourceConfigPath<CiOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
-                dir, desc, out path, out var _, out var error);
+            var res2 = GetSourceConfigPath<T>(cfgSubsystem, dir, desc, out path, out var _, out var error);
             if (!res2)
             {
                 if (error != null)
