@@ -112,10 +112,19 @@ namespace Drill4Net.Injector.Core
 
         protected string GetSysLibPath(bool isNetFx)
         {
-            //TODO: get real root dirs from Environment
+            var prgDir = GetProgDir(true);
+            var dotnetDir = GetDotnetDir(prgDir);
+            var prg32 = GetProgDir(false);
+            if (!Directory.Exists(dotnetDir))
+            { 
+                prgDir = prg32;
+                dotnetDir = GetDotnetDir(prgDir);
+            }
+            //
             var root = isNetFx ?
-                @"c:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\" :
-                @"c:\Program Files (x86)\dotnet\shared\Microsoft.NETCore.App\";
+                //ProgramFiles is prg32 for NetFx anyway
+                Path.Combine(prg32, "Reference Assemblies", "Microsoft", "Framework", ".NETFramework") :
+                Path.Combine(dotnetDir, "Microsoft.NETCore.App");
             var pattern = isNetFx ? "v4.*" : "5.*"; //TODO: for next versions
             var fileName = isNetFx ? "mscorlib.dll" : "System.Private.CoreLib.dll";
             var dirs = Directory.GetDirectories(root, pattern, SearchOption.TopDirectoryOnly)
@@ -128,6 +137,16 @@ namespace Drill4Net.Injector.Core
             if (!File.Exists(path))
                 throw new Exception("System lib not found");
             return path;
+        }
+
+        private string GetProgDir(bool is64)
+        {
+            return Environment.GetFolderPath(is64 ? Environment.SpecialFolder.ProgramFiles : Environment.SpecialFolder.ProgramFilesX86);
+        }
+
+        private string GetDotnetDir(string prgDir)
+        {
+            return Path.Combine(prgDir, "dotnet", "shared");
         }
 
         //TODO: full pattern!

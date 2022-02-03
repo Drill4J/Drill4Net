@@ -42,7 +42,8 @@ namespace Drill4Net.Repository
 
                 //overriding version from CLI
                 TargetVersionFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
-                //format for multi-arg in CI pipeline: targetA=0.1.0,TargetB=0.2.0 or targetA=0.1.0;TargetB=0.2.0
+                //"ci start" command and Injector CLI arguments: multi-arg for overriding the targets' version
+                //format: targetA=0.1.0,TargetB=0.2.0 or targetA=0.1.0;TargetB=0.2.0
                 var versions = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSIONS);
                 if (!string.IsNullOrWhiteSpace(versions))
                 {

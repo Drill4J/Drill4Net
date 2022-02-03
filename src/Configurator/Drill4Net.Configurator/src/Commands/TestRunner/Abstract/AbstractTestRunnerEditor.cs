@@ -91,7 +91,7 @@ Specify at least one tests' assembly.";
                     return false;
                 if (_cli.IsOk(dir))
                     break;
-                if (!_cli.AskQuestion("Does it need to limit the parallel execution of tests in this FOLDER by DEFAULT? It contains Xunit 2.x tests?",
+                if (!_cli.AskQuestion("Does it need to limit the parallel execution of tests in this FOLDER by DEFAULT? Does it contain Xunit 2.x tests?",
                     out string answer, runDefaultParalelRestrint ? "y" : "n"))
                     return false;
                 var dirParalellRestrict = _cli.IsYes(answer);
@@ -110,7 +110,7 @@ Specify at least one tests' assembly.";
                         return false;
                     if (_cli.IsOk(asmName))
                         break;
-                    if (!_cli.AskQuestion("Does it need to limit the parallel execution of tests in this ASSEMBLY? It contains Xunit 2.x tests?",
+                    if (!_cli.AskQuestion("Does it need to limit the parallel execution of tests in this ASSEMBLY? Does it contain Xunit 2.x tests?",
                         out answer, dirParalellRestrict ? "y" : "n"))
                         return false;
                     var asmParallelRestrict = _cli.IsYes(answer);
