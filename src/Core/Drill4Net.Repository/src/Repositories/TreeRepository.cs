@@ -32,7 +32,7 @@ namespace Drill4Net.Repository
 
             if (cliDescriptor != null)
             {
-                //overridings from CLI
+                //overriding name from CLI
                 TargetNameFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_NAME);
                 if (!string.IsNullOrWhiteSpace(TargetNameFromArgs))
                 {
@@ -40,21 +40,38 @@ namespace Drill4Net.Repository
                     Options.Target.Name = TargetNameFromArgs;
                 }
 
+                //overriding version from CLI
                 TargetVersionFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
-                var versions = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSIONS); //versions by target in Ci pipeline
+                //format for multi-arg in CI pipeline: targetA=0.1.0,TargetB=0.2.0 or targetA=0.1.0;TargetB=0.2.0
+                var versions = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSIONS);
                 if (!string.IsNullOrWhiteSpace(versions))
                 {
                     var delim = versions.Contains(",") ? ',' : ';';
-                    var ar = versions.Split(delim);
-
-                }
-                else
-                {
-                    if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
+                    versions = versions.Replace(" ", null);
+                    var name = Options.Target.Name;
+                    if (!string.IsNullOrWhiteSpace(name))
                     {
-                        _logger.Info($"Target version is overriden: [{Options.Target.Version}] -> [{TargetVersionFromArgs}]");
-                        Options.Target.Version = TargetVersionFromArgs;
+                        foreach (var pair in versions.Split(delim))
+                        {
+                            if (pair == null)
+                                continue;
+                            var ar2 = pair.Split('=');
+                            if (ar2.Length != 2 || !name.Equals(ar2[0], StringComparison.InvariantCultureIgnoreCase))
+                                continue;
+                            var version = ar2[1];
+                            if (!string.IsNullOrWhiteSpace(version))
+                            {
+                                TargetVersionFromArgs = version;
+                                break;
+                            }
+                        }
                     }
+                }
+                //
+                if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
+                {
+                    _logger.Info($"Target version is overriden: [{Options.Target.Version}] -> [{TargetVersionFromArgs}]");
+                    Options.Target.Version = TargetVersionFromArgs;
                 }
             }
         }
