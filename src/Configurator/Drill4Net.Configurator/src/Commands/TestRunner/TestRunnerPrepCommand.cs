@@ -105,7 +105,7 @@ namespace Drill4Net.Configurator
                     var opts = _rep.ReadAgentOptions(modelCfgPath);
 
                     //get full paths
-                    var relDir = _rep.GetInstallDirectory();
+                    var relDir = FileUtils.EntryDir;
                     opts.PluginDir = FileUtils.GetFullPath(opts.PluginDir, relDir);
                     opts.Connector.LogDir = FileUtils.GetFullPath(opts.Connector.LogDir, relDir);
                     
