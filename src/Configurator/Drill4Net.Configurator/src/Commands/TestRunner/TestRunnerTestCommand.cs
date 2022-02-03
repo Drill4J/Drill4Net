@@ -48,6 +48,7 @@ namespace Drill4Net.Configurator
 {HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_TEST_RUNNER, RawContexts)}
 
 Also you can use config path directly:
+    Example: {RawContexts} -- ""d:\Drill4Net\ci\targetA\run.yml""
     Example: {RawContexts} --{CoreConstants.ARGUMENT_CONFIG_PATH}=""d:\Drill4Net\ci\targetA\run.yml""";
         }
     }

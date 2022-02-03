@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Mono.Cecil;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
@@ -92,7 +93,7 @@ namespace Drill4Net.Injector.Core
                 new Type[] { typeof(object), typeof(object[]) }, typeof(object));
 
             //HACK: for proper creating of object[] (and under/for the NetFx, and under/for the NetCore)
-            var reflectRef = target.ImportReference(Cecilifier.Runtime.TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke", 
+            var reflectRef = target.ImportReference(Cecilifier.Runtime.TypeHelpers.ResolveMethod("mscorlib", "System.Reflection.MethodBase", "Invoke",
                 System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.Object", "System.Object[]"));
             methInvoke.Parameters.Clear();
             foreach (var p in reflectRef.Parameters)
@@ -125,10 +126,11 @@ namespace Drill4Net.Injector.Core
                 //ProgramFiles is prg32 for NetFx anyway
                 Path.Combine(prg32, "Reference Assemblies", "Microsoft", "Framework", ".NETFramework") :
                 Path.Combine(dotnetDir, "Microsoft.NETCore.App");
-            var pattern = isNetFx ? "v4.*" : "5.*"; //TODO: for next versions
+
+            Regex reg = new(isNetFx ? "v4.*" : @"5\.*|6\.*|7\.*|8\.*");
             var fileName = isNetFx ? "mscorlib.dll" : "System.Private.CoreLib.dll";
-            var dirs = Directory.GetDirectories(root, pattern, SearchOption.TopDirectoryOnly)
-                .Where(a => !a.Contains("X")) //NetFx folder without libs
+            var dirs = Directory.GetDirectories(root)
+                .Where(a => !a.Contains("X") && reg.IsMatch(a)) //NetFx folder without libs
                 .OrderBy(a => a)
                 .ToArray();
             if (dirs.Length == 0)
