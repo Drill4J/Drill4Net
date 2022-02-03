@@ -26,8 +26,7 @@ namespace Drill4Net.Injector.App
             Log.Info($"{name} is starting"); //use emergency logger with simple static call until normal logger is created
 
             _cliDescriptor = new CliDescriptor(args, false);
-
-            bool silent = false;
+            bool silent = _cliDescriptor.GetParameter(CoreConstants.ARGUMENT_SILENT) != null;
 #if DEBUG
             var watcher = Stopwatch.StartNew();
 #endif

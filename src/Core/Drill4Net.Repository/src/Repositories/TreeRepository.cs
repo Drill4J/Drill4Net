@@ -35,11 +35,27 @@ namespace Drill4Net.Repository
                 //overridings from CLI
                 TargetNameFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_NAME);
                 if (!string.IsNullOrWhiteSpace(TargetNameFromArgs))
+                {
+                    _logger.Info($"Target name is overriden: [{Options.Target.Name}] -> [{TargetNameFromArgs}]");
                     Options.Target.Name = TargetNameFromArgs;
+                }
 
                 TargetVersionFromArgs = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
-                if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
-                    Options.Target.Version = TargetVersionFromArgs;
+                var versions = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_TARGET_VERSIONS); //versions by target in Ci pipeline
+                if (!string.IsNullOrWhiteSpace(versions))
+                {
+                    var delim = versions.Contains(",") ? ',' : ';';
+                    var ar = versions.Split(delim);
+
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(TargetVersionFromArgs))
+                    {
+                        _logger.Info($"Target version is overriden: [{Options.Target.Version}] -> [{TargetVersionFromArgs}]");
+                        Options.Target.Version = TargetVersionFromArgs;
+                    }
+                }
             }
         }
 

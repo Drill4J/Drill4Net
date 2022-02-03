@@ -4,7 +4,7 @@ Filter: # mask for search files, namespaces, classes...
    Includes:
       Directories:
       Files:
-         - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # BDD framework's hooks located exactly here
+         - Ipreo.Csp.IaDeal.Api.Bdd.Tests.dll # BDD framework's hooks is located exactly here
       Namespaces:
       Classes:
       Attributes:

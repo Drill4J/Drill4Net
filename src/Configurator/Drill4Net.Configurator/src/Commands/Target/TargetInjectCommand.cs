@@ -32,7 +32,7 @@ namespace Drill4Net.Configurator
 
         private async Task<(bool res, string error)> InjectorProcess(string cfgPath)
         {
-            var args = $"--{CoreConstants.ARGUMENT_SILENT} --{CoreConstants.ARGUMENT_CONFIG_PATH}={cfgPath}";
+            var args = @$"--{CoreConstants.ARGUMENT_SILENT} --{CoreConstants.ARGUMENT_CONFIG_PATH}=""{cfgPath}""";
             var path = _rep.GetInjectorPath();
             var (res, pid) = CommonUtils.StartProgram(CoreConstants.SUBSYSTEM_INJECTOR, path, args, out var err);
             if (!res)

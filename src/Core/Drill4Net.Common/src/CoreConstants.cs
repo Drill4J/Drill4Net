@@ -82,6 +82,7 @@
         public const string ARGUMENT_SILENT = "silent";
         public const string ARGUMENT_TARGET_NAME = "name";
         public const string ARGUMENT_TARGET_VERSION = "version";
+        public const string ARGUMENT_TARGET_VERSIONS = "versions";
         public const string ARGUMENT_CONFIG_PATH = "cfg_path";
         public const string ARGUMENT_CONFIG_DIR = "cfg_dir";
         public const string ARGUMENT_SOURCE_DIR = "source_dir";
