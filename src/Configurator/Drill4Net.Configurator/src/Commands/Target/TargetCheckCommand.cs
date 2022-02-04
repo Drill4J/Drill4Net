@@ -104,8 +104,6 @@ namespace Drill4Net.Configurator
             check = "Destination directory";
             if (string.IsNullOrWhiteSpace(destDir))
                 _cmdHelper.RegCheck(check, "Destination directory path is empty", false, ref cmdRes);
-            else
-                _cmdHelper.RegCheck(check, "Destination directory does not exist", Directory.Exists(destDir), ref cmdRes);
 
             // proxy
             var proxy = opts.Proxy;
