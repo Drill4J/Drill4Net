@@ -37,6 +37,17 @@ namespace Drill4Net.Configurator
                     var runOpts = _rep.ReadTestRunnerOptions(runCfg);
                     var runnerDir = _rep.GetTestRunnerDirectory();
                     var res = true;
+                    if (runOpts == null)
+                    {
+                        RaiseError("Run options is empty. Check type of the config.");
+                        return Task.FromResult(FalseEmptyResult);
+                    }
+                    if (runOpts.Directories == null)
+                    {
+                        RaiseError("Directories are empty in the run options. Check the config.");
+                        return Task.FromResult(FalseEmptyResult);
+                    }
+                    //
                     foreach (var runDirOpts in runOpts.Directories)
                     {
                         var trgDir = FileUtils.GetFullPath(runDirOpts.Directory, runnerDir);

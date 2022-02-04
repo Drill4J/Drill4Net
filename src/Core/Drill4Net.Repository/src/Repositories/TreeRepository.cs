@@ -48,7 +48,7 @@ namespace Drill4Net.Repository
                 if (!string.IsNullOrWhiteSpace(versions))
                 {
                     var delim = versions.Contains(",") ? ',' : ';';
-                    versions = versions.Replace(" ", null);
+                    versions = versions.Replace(" ", null).Replace("\"", null);
                     var name = Options.Target.Name;
                     if (!string.IsNullOrWhiteSpace(name))
                     {
