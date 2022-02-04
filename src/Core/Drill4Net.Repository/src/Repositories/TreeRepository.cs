@@ -52,20 +52,20 @@ namespace Drill4Net.Repository
                     var name = Options.Target.Name;
                     if (!string.IsNullOrWhiteSpace(name))
                     {
+                        string version = null;
                         foreach (var pair in versions.Split(delim))
                         {
                             if (pair == null)
                                 continue;
                             var ar2 = pair.Split('=');
-                            if (ar2.Length != 2 || !name.Equals(ar2[0], StringComparison.InvariantCultureIgnoreCase))
+                            if (ar2.Length != 2)
                                 continue;
-                            var version = ar2[1];
-                            if (!string.IsNullOrWhiteSpace(version))
-                            {
-                                TargetVersionFromArgs = version;
+                            version = ar2[1];
+                            if (name.Equals(ar2[0], StringComparison.InvariantCultureIgnoreCase))
                                 break;
-                            }
                         }
+                        if (!string.IsNullOrWhiteSpace(version))
+                            TargetVersionFromArgs = version;
                     }
                 }
                 //
