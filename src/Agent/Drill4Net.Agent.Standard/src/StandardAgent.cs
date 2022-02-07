@@ -159,7 +159,9 @@ namespace Drill4Net.Agent.Standard
                 _logger.Debug($"Probes writing mode from Env variables: {_writeProbesToFile}");
             }
             else
+            {
                 _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
+            }
 
             if (_writeProbesToFile)
             {
