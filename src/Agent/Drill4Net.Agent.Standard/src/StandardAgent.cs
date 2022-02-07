@@ -417,6 +417,8 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
+                _logger.Trace($"data={data}; ctx={ctx}"); // TEST!!!
+
                 #region Checks
                 //in Worker we can work only with one autotests' Target/suite/session (I still think so)
                 //yes, some needless probes of tests' infrastructure we should & can to lose

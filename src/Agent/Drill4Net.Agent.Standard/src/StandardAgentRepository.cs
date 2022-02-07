@@ -446,7 +446,7 @@ namespace Drill4Net.Agent.Standard
             if (_globalRegistrator != null)
                 isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid, out missReason);
 
-            _logger.Trace($"point={pointUid}");
+            _logger.Trace($"point={pointUid}; ctx={ctx}"); // TEST!!!
 
             //local session
             var reg = GetOrCreateLocalCoverageRegistrator(ctx);
