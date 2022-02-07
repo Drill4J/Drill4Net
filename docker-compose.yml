@@ -2,19 +2,24 @@ version: '3.9'
 
 services:
 
-  # Drill Admin
   drill-admin:
-    image: drill4j/admin:0.8.0-40
+    image: drill4j/admin:0.8.0-39
     environment:
       - TEST2CODE_PLUGIN_VERSION=0.8.0-40
       - LOG_LEVEL=DEBUG
       - DRILL_AGENTS_SOCKET_TIMEOUT=60
+    healthcheck:
+      test: curl --fail http://localhost:8090/apidocs/index.html?url=./openapi.json || exit 1
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
     ports:
       - 8090:8090
       - 5006:5006
     networks:
       - drill4net-dev-network
-      
+
   admin-ui:
     image: drill4j/admin-ui-root-config:0.1.0-101
     restart: always
@@ -22,60 +27,50 @@ services:
       - 8091:8080
     environment:
       WAIT_HOSTS: drill-admin:8090
-      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-104/dist/Drill4J-test-to-code.js
+      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-94/dist/Drill4J-test-to-code.js
+    depends_on:
+      drill-admin:
+        condition: service_healthy
     networks:
       - drill4net-dev-network
 
-  # Agent Server  
-  drill4net-service:
-    image: ghcr.io/epamx/drill4net:latest
-    container_name: drill4net-service
-    environment:
-      - MESSAGE_SERVER_ADDRESS=kafka1:9093
-      - DRILL_ADMIN_ADDRESS=drill-admin:8090
-      - DEBUG_WRITE_PROBES=1
-    depends_on:
-      - kafka1
-        # condition: service_healthy
-    networks:
-      - drill4net-dev-network
-      
-  # Kafka middleware
   zookeeper:
-    image: bitnami/zookeeper:3.6.2
+    image: bitnami/zookeeper:3.6.2 #3.7
     container_name: zookeeper
     ports:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc -w 2 zookeeper 2181"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
     networks:
       - drill4net-dev-network
       
   kafka1:
-    image: bitnami/kafka:2.7.0
+    image: bitnami/kafka:2.7.0 #2.5.0
     container_name: kafka1
     ports:
       - '9093:9093'
     environment:
-      # - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      # - ALLOW_PLAINTEXT_LISTENER=yes
-      # - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      # - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-      # - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka1:9092,EXTERNAL://localhost:9093
-      # - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
-     
       - KAFKA_BROKER_ID=1
-      - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_LISTENERS=PLAINTEXT://:9093
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://host.docker.internal:9093
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true 
+      - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
     networks:
       - drill4net-dev-network
   
-  # Kafka UI
   kafdrop:
     image: obsidiandynamics/kafdrop:3.27.0
     container_name: kafdrop
@@ -84,11 +79,24 @@ services:
     environment:
       - KAFKA_BROKERCONNECT=kafka1:9093
     depends_on:
-      - kafka1
-        # condition: service_healthy
+      kafka1:
+        condition: service_healthy
     networks:
       - drill4net-dev-network
-    
+
+  drill4net-service:
+    image: ghcr.io/epamx/drill4net:latest
+    container_name: drill4net-service
+    environment:
+      - MESSAGE_SERVER_ADDRESS=kafka1:9093
+      - DRILL_ADMIN_ADDRESS=drill-admin:8090
+      - DEBUG_WRITE_PROBES=1
+    depends_on:
+      kafka1:
+        condition: service_healthy
+    networks:
+      - drill4net-dev-network
+
 networks:
   drill4net-dev-network:
     external: false
