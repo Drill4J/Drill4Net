@@ -7,5 +7,10 @@ namespace Drill4Net.Agent.Messaging
     {
         public string Context { get; set; }
         public string Data { get; set; }
+
+        public override string ToString()
+        {
+            return $"data=[{Data}]; Context=[{Context}]";
+        }
     }
 }

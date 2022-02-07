@@ -10,8 +10,8 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
-using Drill4Net.Agent.Abstract;
 using Drill4Net.Repository;
+using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Agent.Messaging.Kafka;
@@ -239,8 +239,8 @@ namespace Drill4Net.Agent.Transmitter
                 ctx = Repository.GetContextId();
 
             //no need the same probe in the same context
-            var bagExists = _probesByCtx.TryGetValue(ctx, out var probes);
-            if (bagExists) //for ctx some probes are exist
+            var groupExists = _probesByCtx.TryGetValue(ctx, out var probes);
+            if (groupExists) //for ctx some probes are exist
             {
                 if (!probes.TryAdd(data, true)) //the probe already exists
                     return 0;

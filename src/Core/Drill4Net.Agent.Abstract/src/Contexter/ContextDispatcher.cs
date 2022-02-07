@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Abstract
         }
 
         /// <summary>
-        /// Constructr for real Agent located in the Target
+        /// Constructor for real Agent located in the Target
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="subsystem"></param>
@@ -42,7 +42,7 @@ namespace Drill4Net.Agent.Abstract
         {
             if (string.IsNullOrWhiteSpace(dir))
             {
-                _logger.Info($"Plugin directory parameter: [{dir}]");
+                _logger.Debug($"Plugin directory parameter: [{dir}]");
                 dir = FileUtils.EntryDir;
             }
             dir = FileUtils.GetFullPath(dir);

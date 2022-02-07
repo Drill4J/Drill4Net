@@ -439,14 +439,14 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public bool RegisterCoverage(string pointUid, string ctx, out string missReason)
         {
+            _logger.Trace($"point={pointUid}; ctx={ctx}"); // TEST !!!
+
             missReason = null;
 
             //global session
             var isGlobalReg = false;
             if (_globalRegistrator != null)
                 isGlobalReg = _globalRegistrator.RegisterCoverage(pointUid, out missReason);
-
-            _logger.Trace($"point={pointUid}; ctx={ctx}"); // TEST!!!
 
             //local session
             var reg = GetOrCreateLocalCoverageRegistrator(ctx);

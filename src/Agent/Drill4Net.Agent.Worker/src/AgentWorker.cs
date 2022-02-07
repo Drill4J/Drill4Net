@@ -166,8 +166,6 @@ namespace Drill4Net.Agent.Worker
         {
             if (probe == null)
                 return; //??
-
-            //_logger.Debug("Message: {Message}", message); //TODO: option from cfg (true only for RnD/debug/small projects, etc)
             StandardAgent.RegisterWithContextStatic(probe.Data, probe.Context);
         }
 

@@ -90,20 +90,20 @@ namespace Drill4Net.Configurator
             }
         }
 
-        internal bool ProcessInjectedTarget(string dir, bool force)
+        internal bool ProcessInjectedTarget(string trgDestDir, bool force)
         {
             string? err;
-            if (!Directory.Exists(dir))
+            if (!Directory.Exists(trgDestDir))
             {
-                err = $"Directory does not exist: [{dir}]. Perform the target injection first by specified {CoreConstants.SUBSYSTEM_INJECTOR} config.";
+                err = $"Target destination directory does not exist: [{trgDestDir}]. Perform the target injection first by specified {CoreConstants.SUBSYSTEM_INJECTOR} config.";
                 _logger.Error(err);
                 RaiseError(err);
                 return false;
             }
             //
-            var trCfgPath = Path.Combine(dir, _rep.GetAgentTargetConfigName());
+            var trgCfgPath = Path.Combine(trgDestDir, _rep.GetAgentTargetConfigName());
             var agCfgS = $"{CoreConstants.SUBSYSTEM_AGENT} config";
-            if (force || !File.Exists(trCfgPath))
+            if (force || !File.Exists(trgCfgPath))
             {
                 var modelCfgPath = _rep.GetAgentModelConfigPath();
                 if (!File.Exists(modelCfgPath))
@@ -121,8 +121,8 @@ namespace Drill4Net.Configurator
                     opts.Connector.LogDir = FileUtils.GetFullPath(opts.Connector.LogDir, relDir);
                     
                     //save
-                    _rep.WriteAgentOptions(opts, trCfgPath);
-                    RaiseMessage($"{agCfgS} is written to the target directory: [{trCfgPath}]", CliMessageType.Info);
+                    _rep.WriteAgentOptions(opts, trgCfgPath);
+                    RaiseMessage($"{agCfgS} is written to the target directory: [{trgCfgPath}]", CliMessageType.Info);
                 }
                 catch (Exception ex)
                 {
@@ -136,13 +136,13 @@ namespace Drill4Net.Configurator
                 try
                 {
                     //check cfg itself
-                    var opts = _rep.ReadAgentOptions(trCfgPath);
+                    var opts = _rep.ReadAgentOptions(trgCfgPath);
                     //here we just check the fact of reading the config
-                    RaiseMessage($"{agCfgS} is ok: [{trCfgPath}]", CliMessageType.Info);
+                    RaiseMessage($"{agCfgS} is ok: [{trgCfgPath}]", CliMessageType.Info);
                 }
                 catch (Exception ex)
                 {
-                    err = $"{agCfgS} exist in target directory but cannot be read: [{trCfgPath}]";
+                    err = $"{agCfgS} exist in target directory but cannot be read: [{trgCfgPath}]";
                     _logger?.Error(err, ex);
                     RaiseError(err);
                 }
