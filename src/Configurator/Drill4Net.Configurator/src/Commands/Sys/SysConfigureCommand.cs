@@ -140,7 +140,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return "The command works with special configs and has no arguments. Just answer a few questions in interactive mode.";
         }
     }
 }

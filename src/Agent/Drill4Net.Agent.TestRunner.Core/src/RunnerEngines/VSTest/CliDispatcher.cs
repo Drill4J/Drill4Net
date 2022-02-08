@@ -49,7 +49,6 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// </summary>
         /// <param name="dirRunDatas"></param>
         /// <param name="runParallelRestrict">Parallel execurion restriction on Run level - for all specified directories</param>
-        /// <param name="degreeOfParallelism">Degree of parallelism for "places" where it possibly</param>
         /// <returns></returns>
         internal List<List<string>> CalculateGroups(Dictionary<DirectoryRunInfo, List<string>> dirRunDatas,
             bool runParallelRestrict)

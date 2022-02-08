@@ -439,7 +439,7 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public bool RegisterCoverage(string pointUid, string ctx, out string missReason)
         {
-            _logger.Trace($"point={pointUid}; ctx={ctx}"); // TEST !!!
+            //_logger.Trace($"point={pointUid}; ctx={ctx}"); // TEST !!!
 
             missReason = null;
 

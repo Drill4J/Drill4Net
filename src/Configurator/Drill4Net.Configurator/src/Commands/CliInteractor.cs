@@ -117,7 +117,7 @@ namespace Drill4Net.Configurator
                 if (!AskQuestion(mess, out degreeS, defDegree.ToString()))
                     return false;
             }
-            while (!CheckIntegerAnswer(degreeS, $"The degree of parallelism must be from 2 to {defDegree}", 2, defDegree, out degree));
+            while (!CheckIntegerAnswer(degreeS, $"The max degree of parallelism must be from 2 to {defDegree}", 2, defDegree, out degree));
             return true;
         }
 
@@ -186,15 +186,16 @@ namespace Drill4Net.Configurator
                 RaiseWarning("Directory cannot be empty and must exist\n", MessageState.PrevLine);
                 return false;
             }
+            if (directory?.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            {
+                RaiseWarning("The directory has invalid characters.");
+                return false;
+            }
             if (!mustExist || (mustExist && Directory.Exists(directory)))
             {
-                if (directory?.IndexOfAny(Path.GetInvalidPathChars()) != -1)
-                {
-                    RaiseWarning("The directory is invalid.");
-                    return false;
-                }
-
-                //TODO: check for proper dir path itself (cross-platform!)
+                //I don't see a way to unambiguously check the correctness of the path that
+                //has not yet been created (the check won't work through DirectoryInfo -
+                //it will use the current path for some abracadabra as inner folders)
                 return true;
             }
             RaiseWarning("Directory does not exists.");
@@ -209,26 +210,24 @@ namespace Drill4Net.Configurator
                 return false;
             }
             //
-            if (Path.GetDirectoryName(filename) != null) //full file path
+            if (filename.IndexOfAny(Path.GetInvalidPathChars()) != -1)
             {
-                if (filename.IndexOfAny(Path.GetInvalidPathChars()) != -1)
-                {
-                    if (string.IsNullOrWhiteSpace(mess))
-                        mess = "File path contains invalid symbols";
-                    RaiseWarning(mess);
-                    return false;
-                }
+                if (string.IsNullOrWhiteSpace(mess))
+                    mess = "File path contains invalid symbols";
+                RaiseWarning(mess);
+                return false;
             }
-            else //just file name
+            if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
             {
-                if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-                {
-                    if (string.IsNullOrWhiteSpace(mess))
-                        mess = "File name contains invalid symbols";
-                    RaiseWarning(mess);
-                    return false;
-                }
+                if (string.IsNullOrWhiteSpace(mess))
+                    mess = "File name contains invalid symbols";
+                RaiseWarning(mess);
+                return false;
             }
+
+            //I don't see a way to unambiguously check the correctness of the path that
+            //has not yet been created (the check won't work through FileInfo -
+            //it will use the current path for some abracadabra as inner folders)
             return true;
         }
 

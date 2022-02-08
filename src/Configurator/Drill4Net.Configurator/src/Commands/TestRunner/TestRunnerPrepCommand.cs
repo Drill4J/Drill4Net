@@ -126,7 +126,7 @@ namespace Drill4Net.Configurator
                 }
                 catch (Exception ex)
                 {
-                    err = $"Default {agCfgS} exists in install directory but cannot be read: [{modelCfgPath}]";
+                    err = $"Default {agCfgS} exists in the install directory but cannot be read: [{modelCfgPath}]";
                     _logger?.Error(err, ex);
                     RaiseError(err);
                 }
