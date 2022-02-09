@@ -25,6 +25,7 @@ namespace Drill4Net.Configurator
             _logger.Info($"Start configure the target: new={isNew}");
             const string appName = CoreConstants.SUBSYSTEM_INJECTOR;
             var injectorDir = _rep.GetInjectorDirectory();
+            bool answerBool;
 
             #region Config
             if (!File.Exists(cfgPath))
@@ -205,9 +206,9 @@ Please make your choice";
             }
             #endregion
             #region Plugins
-            if (!_cli.AskQuestion("Does the target have any automated tests?", out answer, "y"))
+            if (!_cli.AskQuestionBoolean("Does the target have any automated tests?", out answerBool, true))
                 return false;
-            if (_cli.IsYes(answer))
+            if (answerBool)
             {
                 RaiseMessage("\nNow you need specify only necessary \"Generator contexter plugins\" which intercept the tests' execution workflow and retrieve their context (implemented IGeneratorContexter interface, for example, for SpecFlow framework. For simple test frameworks, such as xUnit, NUnit, or MsTest you don't need to do it here).");
                 var plugins = cfg.Plugins;

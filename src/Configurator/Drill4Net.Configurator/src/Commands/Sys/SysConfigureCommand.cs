@@ -25,9 +25,8 @@ namespace Drill4Net.Configurator
                 return Task.FromResult(FalseEmptyResult);
 
             //need to save?
-            RaiseQuestion("\nSave the system configuration? [y]:");
-            var answer = Console.ReadLine().Trim();
-            var yes = _cli.IsYes(answer);
+            if(!_cli.AskQuestionBoolean("\nSave the system configuration?", out var yes, true))
+                return Task.FromResult(FalseEmptyResult);
             if (yes)
             {
                 RaiseMessage("YES", CliMessageType.EmptyInput);

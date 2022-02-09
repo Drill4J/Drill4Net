@@ -61,6 +61,25 @@ namespace Drill4Net.Configurator
             return true;
         }
 
+        public bool AskQuestionBoolean(string question, out bool answer, bool? defValue)
+        {
+            answer = false;
+            var def = defValue == null ? null : (defValue == true ? "y" : "n");
+            while (true)
+            {
+                if (!AskQuestion(question, out var answerS, def, defValue != null))
+                    return false;
+                if (IsYes(answerS))
+                {
+                    answer = true;
+                    break;
+                }
+                if (IsNo(answerS))
+                    break;
+            }
+            return true;
+        }
+
         public bool AskDirectory(string question, out string destDir, string? defValue, bool mustExists, bool showDefVal = true)
         {
             destDir = "";
@@ -129,9 +148,10 @@ namespace Drill4Net.Configurator
         /// <returns>If false, it is the need to exit from this setup.</returns>
         public bool AddLogFile(List<LogData> logs, string programName = "program")
         {
-            if (!AskQuestion($"The {programName} logs will be output to the its console and to a file in the its {LoggerHelper.LOG_FOLDER} folder. Add an additional parallel log file?", out var answer, "n"))
+            if (!AskQuestionBoolean($"The {programName} logs will be output to the its console and to a file in the its {LoggerHelper.LOG_FOLDER} folder. Add an additional parallel log file?",
+                out var answerBool, false))
                 return false;
-            if (IsYes(answer))
+            if (answerBool)
             {
                 if (!AskFilePath("File path", out var logPath, "", false, false))
                     return false;
@@ -246,6 +266,13 @@ namespace Drill4Net.Configurator
             if (s?.Length == 0 && noInputIsYes)
                 return true;
             return string.Equals(s, ConfiguratorConstants.ANSWER_YES, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public bool IsNo(string? s, bool noInputIsYes = true)
+        {
+            if (s?.Length == 0 && noInputIsYes)
+                return true;
+            return string.Equals(s, ConfiguratorConstants.ANSWER_NO, StringComparison.OrdinalIgnoreCase);
         }
 
         public void DrawShortSeparator()

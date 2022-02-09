@@ -29,10 +29,9 @@ namespace Drill4Net.Configurator
             cfg.Description = desc;
 
             // parallel restrict
-            def = isNew ? "n" : (cfg.DefaultParallelRestrict ? "y" : "n");
-            if (!_cli.AskQuestion("Does it need to limit the parallel execution of tests in this run by DEFAULT?", out string answer, def))
+            if (!_cli.AskQuestionBoolean("Does it need to limit the parallel execution of tests in this run by DEFAULT?", out var runParalellRestrict,
+                isNew ? false : cfg.DefaultParallelRestrict))
                 return false;
-            var runParalellRestrict = _cli.IsYes(answer);
             cfg.DefaultParallelRestrict = runParalellRestrict;
 
             // DegreeOfParallelism
@@ -53,9 +52,8 @@ Specify at least one tests' assembly.";
             var yes = true;
             if (!isNew && cfg.Directories.Count > 0)
             {
-                if (!_cli.AskQuestion("Is it necessary to change the data on tests' assemblies? Existing records will be deleted.", out answer, "n"))
+                if (!_cli.AskQuestionBoolean("Is it necessary to change the data on tests' assemblies? Existing records will be deleted.", out yes, false))
                     return false;
-                yes = _cli.IsYes(answer);
                 if (yes)
                     cfg.Directories.Clear();
             }
@@ -91,10 +89,9 @@ Specify at least one tests' assembly.";
                     return false;
                 if (_cli.IsOk(dir))
                     break;
-                if (!_cli.AskQuestion("Does it need to limit the parallel execution of tests in this FOLDER by DEFAULT? Or does it contain Xunit 2.x tests?",
-                    out string answer, runDefaultParalelRestrint ? "y" : "n"))
+                if (!_cli.AskQuestionBoolean("Does it need to limit the parallel execution of tests in this FOLDER by DEFAULT? Or does it contain Xunit 2.x tests?",
+                    out var dirParalellRestrict, runDefaultParalelRestrint))
                     return false;
-                var dirParalellRestrict = _cli.IsYes(answer);
                 //
                 var dirRun = new RunDirectoryOptions
                 {
@@ -110,10 +107,9 @@ Specify at least one tests' assembly.";
                         return false;
                     if (_cli.IsOk(asmName))
                         break;
-                    if (!_cli.AskQuestion("Does it need to limit the parallel execution of tests in this ASSEMBLY? Or does it contain Xunit 2.x tests?",
-                        out answer, dirParalellRestrict ? "y" : "n"))
+                    if (!_cli.AskQuestionBoolean("Does it need to limit the parallel execution of tests in this ASSEMBLY? Or does it contain Xunit 2.x tests?",
+                        out var asmParallelRestrict, dirParalellRestrict))
                         return false;
-                    var asmParallelRestrict = _cli.IsYes(answer);
 
                     var asmRun = new RunAssemblyOptions
                     {

@@ -52,9 +52,8 @@ namespace Drill4Net.Configurator
 
                 if (File.Exists(cfgPath))
                 {
-                    if (!Cli.AskQuestion("Such name already exists. Replace?", out var answer, "n"))
+                    if (!Cli.AskQuestionBoolean("Such name already exists. Replace?", out needSave, false))
                         return false;
-                    needSave = Cli.IsYes(answer);
                 }
                 break;
             }
@@ -114,19 +113,19 @@ namespace Drill4Net.Configurator
             {
                 //to delete the actual config in redirecting file is bad idea
                 var actualCfg = _rep.GetActualConfigPath(dir);
-                string answer;
+                bool answerBool;
                 if (actualCfg.Equals(sourcePath, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (!Cli.AskQuestion($"The {cfgSubsystem} config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer",
-                        out answer, "n"))
+                    if (!Cli.AskQuestionBoolean($"The {cfgSubsystem} config [{sourcePath}] is active in the redirecting file.\nDo you want to delete it? Answer",
+                        out answerBool, false))
                         return false;
-                    if (!Cli.IsYes(answer))
+                    if (!answerBool)
                         return false;
                 }
                 //
-                if (!Cli.AskQuestion($"Delete the {cfgSubsystem} config [{sourcePath}]?", out answer, "y"))
+                if (!Cli.AskQuestionBoolean($"Delete the {cfgSubsystem} config [{sourcePath}]?", out answerBool, true))
                     return false;
-                if (!Cli.IsYes(answer))
+                if (!answerBool)
                     return false;
             }
 

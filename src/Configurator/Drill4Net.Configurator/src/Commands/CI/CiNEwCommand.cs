@@ -37,11 +37,11 @@ namespace Drill4Net.Configurator
                 //integration question
                 if (noIntegrate)
                     return Task.FromResult(TrueEmptyResult);
-                if (!_cli.AskQuestion(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). Integration with the Jenkins, TeamCity, etc will be implement later.
+                if (!_cli.AskQuestionBoolean(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). Integration with the Jenkins, TeamCity, etc will be implement later.
 So, do you want to integrate CI run into some source code projects (on its post-build events)?",
-                    out var answer, "y"))
+                    out var answerBool, true))
                     return Task.FromResult(FalseEmptyResult);
-                if(!_cli.IsYes(answer))
+                if(!answerBool)
                     return Task.FromResult(TrueEmptyResult);
             }
 
@@ -99,6 +99,7 @@ So, do you want to integrate CI run into some source code projects (on its post-
         internal bool InjectCiToProjects(string ciCfgPath = "")
         {
             var ide = new IdeConfigurator(_rep);
+            bool answerBool;
 
             #region Search the projects
             var def = ide.GetDefaultProjectSourcesDirectory();
@@ -183,9 +184,9 @@ So, do you want to integrate CI run into some source code projects (on its post-
                 {
                     RaiseMessage(prj, CliMessageType.Info);
                 }
-                if (!_cli.AskQuestion("Is that right?", out answer, "y"))
+                if (!_cli.AskQuestionBoolean("Is that right?", out answerBool, true))
                     return false;
-                if (_cli.IsYes(answer))
+                if (answerBool)
                     break;
             }
             #endregion
