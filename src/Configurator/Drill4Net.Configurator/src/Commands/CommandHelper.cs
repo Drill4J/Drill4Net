@@ -317,7 +317,7 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        internal bool GetConfigPath(string dir, string typeConfig, string cfg, bool mustExist, out string path, out string error)
+        internal bool GetConfigPath(string defDir, string typeConfig, string cfg, bool mustExist, out string path, out string error)
         {
             path = string.Empty;
             error = string.Empty;
@@ -328,21 +328,17 @@ namespace Drill4Net.Configurator
                 return false;
             }
             cfg = cfg.Replace("\"", null);
-            if (!string.IsNullOrWhiteSpace(Path.GetDirectoryName(cfg)))
-            {
-                error = $"The {typeConfig} config should be just a file name without a directory, see help.";
-                return false;
-            }
+
             if (!cfg.EndsWith(".yml"))
                 cfg += ".yml";
-
-            path = Path.Combine(dir, cfg);
+            if (string.IsNullOrWhiteSpace(Path.GetDirectoryName(cfg)))
+                cfg = Path.Combine(defDir, cfg);
+            path = cfg;
             if (mustExist && !File.Exists(path))
             {
                 error = $"The {typeConfig} config not found: [{path}]";
                 return false;
             }
-
             return true;
         }
 

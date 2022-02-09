@@ -164,7 +164,7 @@ namespace Drill4Net.Configurator
 {HelpHelper.GetActiveLastSwitchesDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts)}
     Example: {RawContexts} -lf (forced)
 
-{HelpHelper.GetExplicitConfigDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts, "injections")}
+{HelpHelper.GetPositionalConfigDesc(CoreConstants.SUBSYSTEM_INJECTOR, RawContexts, "injections")}
 
 Another option is passing the injected target directory directly using ""{CoreConstants.ARGUMENT_DESTINATION_DIR}"" option:
     Example: {RawContexts} --{CoreConstants.ARGUMENT_DESTINATION_DIR}=""d:\Targets\TargetA.Injected\"" -f (forced)

@@ -68,7 +68,8 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return @$"The command uses the config file of the Configurator itself. Now some values in it can be changed only by editing the file directly (for example, the system editor path for commands like ""{ConfiguratorConstants.CONTEXT_RUNNER} {ConfiguratorConstants.COMMAND_OPEN}"").
+After executing the command, the config will contain default values (in the case of Windows, Notepad will become the config editor).";
         }
     }
 }

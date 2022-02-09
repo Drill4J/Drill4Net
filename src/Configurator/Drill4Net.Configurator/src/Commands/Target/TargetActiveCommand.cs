@@ -33,7 +33,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return HelpHelper.GetActiveConfigText(CoreConstants.SUBSYSTEM_INJECTOR, true, RawContexts, "injection");
+            return HelpHelper.GetActiveConfigText(CoreConstants.SUBSYSTEM_INJECTOR, true, RawContexts, "targetA");
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "";
+            return $@"{HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_TEST_RUNNER, RawContexts, "runner")}";
         }
     }
 }

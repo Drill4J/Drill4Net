@@ -77,6 +77,7 @@ namespace Drill4Net.Cli
             //var a14 = Parse("c1 c2 -abc=1 "); //improper expression because it is switch, and must be corrected as full name parameter
             //var a15 = Parse("c1 c2 -abc 1 ");
             //var a16 = "copy trg -- cfg cfg3 0.3.0";
+            //var a17 = Parse(@"run copy -- ""d:\Projects\EPM - D4J\Distributions\debug\Drill4Net_dis\ci\set_1\inj_cfg\inj_Kafka.yml"" ""d:\Projects\EPM - D4J\Distributions\debug\Drill4Net_dis\ci\set_1\inj_cfg\inj_Kafka2.yml""");
 
             //real
             var argsAr = Parse(args);
@@ -123,12 +124,16 @@ namespace Drill4Net.Cli
             var glued = false;
             var block = string.Empty;
             var lastInd = args.Length - 1;
+            var endOfBlock = false;
             for (int i = 0; i <= lastInd; i++)
             {
                 char ch = args[i];
 
                 if (ch == '"')
+                {
+                    endOfBlock = inQuotas;
                     inQuotas = !inQuotas;
+                }
                 if (inQuotas)
                 {
                     block += ch;
@@ -152,7 +157,7 @@ namespace Drill4Net.Cli
                                 continue;
                             if (!glued && (nextChar == '"' || block.StartsWith("--")))
                             {
-                                if (!block.EndsWith("="))
+                                if (block != string.Empty && !block.EndsWith("="))
                                 {
                                     block += '=';
                                     glued = true;
@@ -173,6 +178,12 @@ namespace Drill4Net.Cli
                 else
                 {
                     block += ch;
+                    if (endOfBlock)
+                    {
+                        argList.Add(block);
+                        block = string.Empty;
+                        endOfBlock = false;
+                    }
                 }
             }
             //

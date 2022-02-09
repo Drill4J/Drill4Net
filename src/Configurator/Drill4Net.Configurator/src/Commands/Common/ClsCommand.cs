@@ -27,7 +27,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return "";
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         }
 
         /// <summary>
-        /// Caclulate the VSTest CLI's groups, start and control them
+        /// Calculate the VSTest CLI's groups, start and control them
         /// </summary>
         /// <param name="runParallelRestrict">Parallel execurion restriction on Run level - for all specified directories</param>
         /// <param name="degreeOfParallelism">Degree of parallelism for "places" where it possibly</param>
