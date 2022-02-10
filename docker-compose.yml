@@ -3,7 +3,7 @@ version: '3.9'
 services:
 
   drill-admin:
-    image: drill4j/admin:0.8.0-39
+    image: drill4j/admin:0.8.0-40
     environment:
       - TEST2CODE_PLUGIN_VERSION=0.8.0-40
       - LOG_LEVEL=DEBUG
@@ -27,7 +27,7 @@ services:
       - 8091:8080
     environment:
       WAIT_HOSTS: drill-admin:8090
-      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-94/dist/Drill4J-test-to-code.js
+      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-104/dist/Drill4J-test-to-code.js
     depends_on:
       drill-admin:
         condition: service_healthy
@@ -85,7 +85,7 @@ services:
       - drill4net-dev-network
 
   drill4net-service:
-    image: ghcr.io/epamx/drill4net:latest
+    image: ghcr.io/epamx/drill4net:v0.9.0-92
     container_name: drill4net-service
     environment:
       - MESSAGE_SERVER_ADDRESS=kafka1:9093
