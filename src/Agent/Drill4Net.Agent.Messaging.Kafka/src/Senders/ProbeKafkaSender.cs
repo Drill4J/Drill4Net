@@ -39,7 +39,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
         protected override void CreateProducers()
         {
             //topics
-            _probeTopics = _rep.MessagerOptions.Sender.Topics ?? new List<string>(); //additional probe topics from cfg
+            _probeTopics = _rep.MessagerOptions.Sender?.Topics ?? new List<string>(); //additional probe topics from cfg
             var baseProbeTopic = MessagingUtils.GetProbeTopic(_rep.TargetSession); //the base one
             _probeTopics.Add(baseProbeTopic);
 
