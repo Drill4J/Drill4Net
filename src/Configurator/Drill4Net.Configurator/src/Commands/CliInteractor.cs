@@ -211,6 +211,13 @@ namespace Drill4Net.Configurator
                 RaiseWarning("The directory has invalid characters.");
                 return false;
             }
+            //
+            if (FileUtils.IsSystemDirectory(directory, true, out var reason))
+            {
+                RaiseWarning($"Please, specify another directory. {reason}");
+                return false;
+            }
+            //
             if (!mustExist || (mustExist && Directory.Exists(directory)))
             {
                 //I don't see a way to unambiguously check the correctness of the path that

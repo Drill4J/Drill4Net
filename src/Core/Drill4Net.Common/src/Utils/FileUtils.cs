@@ -176,6 +176,55 @@ namespace Drill4Net.Common
         }
         #endregion
 
+        public static bool IsSystemDirectory(string dir, bool rootRestricted, out string reason)
+        {
+            reason = null;
+            if (string.IsNullOrWhiteSpace(dir))
+            {
+                reason = "The path is empty";
+                return true;
+            }
+
+            // here we need remove ALL variants for dir separator at string ending
+            if(dir.EndsWith(Path.DirectorySeparatorChar.ToString()) || dir.EndsWith("\\") || dir.EndsWith("/"))
+                dir = dir.Substring(0, dir.Length - 1);
+
+            // root disk
+            if (rootRestricted && dir.Equals(Path.GetPathRoot(dir), StringComparison.InvariantCultureIgnoreCase))
+            {
+                reason = "The path is root volume";
+                return true;
+            }
+            
+            // user's temp folder
+            if (dir.Equals(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase))
+            {
+                reason = "The path is user's temp folder";
+                return true;
+            }
+            
+            // special system folders
+            foreach (Environment.SpecialFolder type in Enum.GetValues(typeof(Environment.SpecialFolder)))
+            {
+                var sysPath = Environment.GetFolderPath(type, Environment.SpecialFolderOption.DoNotVerify); //DoNotVerify - it is important
+                if (dir.Equals(sysPath, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    reason = $"The path is system: {type}";
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool AreFoldersNested(string fullName1, string fullName2)
+        {
+            if (string.IsNullOrWhiteSpace(fullName1) || string.IsNullOrWhiteSpace(fullName2))
+                return false;
+            if (fullName1.StartsWith(fullName2, StringComparison.InvariantCultureIgnoreCase) || fullName2.StartsWith(fullName1, StringComparison.InvariantCultureIgnoreCase))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// Does executable file exist (taking into account Linux executable)?
         /// </summary>

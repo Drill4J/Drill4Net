@@ -38,13 +38,13 @@ namespace Drill4Net.Configurator
             #region Source dir
             string sourceDir = "";
             string def = isNew ? "" : cfg.Source.Directory;
-            do
+            while(true)
             {
-                if (!_cli.AskQuestion($"Target's directory (compiled assemblies). It can be full or relative (for the {appName} program)",
-                    out sourceDir, def, !string.IsNullOrWhiteSpace(def)))
+                if (!_cli.AskDirectory($"Target's directory (compiled assemblies). It can be full or relative (for the {appName} program)",
+                    out sourceDir, def, true, !string.IsNullOrWhiteSpace(def)))
                     return false;
+                break;
             }
-            while (!_cli.CheckDirectoryAnswer(ref sourceDir, true));
             cfg.Source.Directory = sourceDir;
             #endregion
             #region Name
@@ -195,13 +195,25 @@ Please make your choice";
                         cfg.Destination.FolderPostfix = postfix;
                         break;
                     case 2:
-                        if (!_cli.AskDirectory("Destination's directory (processed assemblies). It may not exist yet", out var destDir, null, false, false))
+                        if (!_cli.AskDirectory("Destination's directory (processed assemblies). It may not exist yet. Be careful: the targets output folder is intended exclusively for this instrumented target. During the injection process, it will be cleaned!",
+                            out var destDir, null, false, false))
                             return false;
                         cfg.Destination.Directory = destDir;
                         break;
                     default:
                         continue;
                 }
+                //
+                try
+                {
+                    InjectorOptionsHelper.ValidateOptions(cfg);
+                } 
+                catch (Exception ex)
+                {
+                    RaiseWarning(ex.Message);
+                    continue;
+                }
+                //
                 break;
             }
             #endregion
@@ -311,8 +323,8 @@ Please make your choice";
                                 RaiseError(ex.Message);
                             }
                         }
-                        #endregion
                     }
+                    #endregion
                 }
                 else
                 {

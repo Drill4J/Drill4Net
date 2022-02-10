@@ -156,6 +156,11 @@ namespace Drill4Net.Injector.Core
             var destDir = FileUtils.GetFullPath(opts.Destination.Directory);
             if (string.IsNullOrEmpty(destDir))
                 throw new Exception("Destination directory name is empty");
+            if (FileUtils.IsSystemDirectory(destDir, true, out var reason))
+                throw new Exception($"Destination directory is bad. {reason}");
+            //
+            if(FileUtils.AreFoldersNested(sourceDir, destDir))
+                throw new Exception("The source and destination directories are nested - this is forbidden.");
         }
     }
 }
