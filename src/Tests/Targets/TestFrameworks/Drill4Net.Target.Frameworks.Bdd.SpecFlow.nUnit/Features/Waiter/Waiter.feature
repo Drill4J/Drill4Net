@@ -1,4 +1,4 @@
-﻿Feature: Longer
+﻿Feature: Waiter
 
 A example for parallel long operation with certain timeout (must be in separate feature)
 

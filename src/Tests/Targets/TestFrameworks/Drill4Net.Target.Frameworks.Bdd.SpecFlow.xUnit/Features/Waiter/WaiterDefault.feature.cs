@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Features.Long
+namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Waiter
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,40 +19,42 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Features.Long
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("LongerDefault")]
-    public partial class LongerDefaultFeature
+    public partial class WaiterDefaultFeature : object, Xunit.IClassFixture<WaiterDefaultFeature.FixtureData>, System.IDisposable
     {
         
-        private TechTalk.SpecFlow.ITestRunner testRunner;
+        private static TechTalk.SpecFlow.ITestRunner testRunner;
         
         private string[] _featureTags = ((string[])(null));
         
-#line 1 "LongerDefault.feature"
+        private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
+        
+#line 1 "WaiterDefault.feature"
 #line hidden
         
-        [NUnit.Framework.OneTimeSetUpAttribute()]
-        public virtual void FeatureSetup()
+        public WaiterDefaultFeature(WaiterDefaultFeature.FixtureData fixtureData, Drill4Net_Target_Frameworks_Bdd_SpecFlow_xUnit_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        {
+            this._testOutputHelper = testOutputHelper;
+            this.TestInitialize();
+        }
+        
+        public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Long", "LongerDefault", "A example for parallel long operation with default timeout (must be in separate f" +
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Waiter", "WaiterDefault", "A example for parallel long operation with default timeout (must be in separate f" +
                     "eature)", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
-        [NUnit.Framework.OneTimeTearDownAttribute()]
-        public virtual void FeatureTearDown()
+        public static void FeatureTearDown()
         {
             testRunner.OnFeatureEnd();
             testRunner = null;
         }
         
-        [NUnit.Framework.SetUpAttribute()]
         public virtual void TestInitialize()
         {
         }
         
-        [NUnit.Framework.TearDownAttribute()]
         public virtual void TestTearDown()
         {
             testRunner.OnScenarioEnd();
@@ -61,7 +63,7 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Features.Long
         public virtual void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
-            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<NUnit.Framework.TestContext>(NUnit.Framework.TestContext.CurrentContext);
+            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<Xunit.Abstractions.ITestOutputHelper>(_testOutputHelper);
         }
         
         public virtual void ScenarioStart()
@@ -74,9 +76,15 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Features.Long
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Wait default")]
-        [NUnit.Framework.CategoryAttribute("default_wait")]
+        void System.IDisposable.Dispose()
+        {
+            this.TestTearDown();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Wait default")]
+        [Xunit.TraitAttribute("FeatureTitle", "WaiterDefault")]
+        [Xunit.TraitAttribute("Description", "Wait default")]
+        [Xunit.TraitAttribute("Category", "default_wait")]
         public virtual void WaitDefault()
         {
             string[] tagsOfScenario = new string[] {
@@ -111,6 +119,22 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
             }
             this.ScenarioCleanup();
+        }
+        
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
+        [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        public class FixtureData : System.IDisposable
+        {
+            
+            public FixtureData()
+            {
+                WaiterDefaultFeature.FeatureSetup();
+            }
+            
+            void System.IDisposable.Dispose()
+            {
+                WaiterDefaultFeature.FeatureTearDown();
+            }
         }
     }
 }

@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
+namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.Features.Waiter
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,42 +19,40 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class Longer0Feature : object, Xunit.IClassFixture<Longer0Feature.FixtureData>, System.IDisposable
+    [NUnit.Framework.TestFixtureAttribute()]
+    [NUnit.Framework.DescriptionAttribute("Waiter")]
+    public partial class WaiterFeature
     {
         
-        private static TechTalk.SpecFlow.ITestRunner testRunner;
+        private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private string[] _featureTags = ((string[])(null));
         
-        private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
-        
-#line 1 "Longer0.feature"
+#line 1 "Waiter.feature"
 #line hidden
         
-        public Longer0Feature(Longer0Feature.FixtureData fixtureData, Drill4Net_Target_Frameworks_Bdd_SpecFlow_xUnit_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
-        {
-            this._testOutputHelper = testOutputHelper;
-            this.TestInitialize();
-        }
-        
-        public static void FeatureSetup()
+        [NUnit.Framework.OneTimeSetUpAttribute()]
+        public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Long", "Longer0", "A example for parallel long operation with certain timeout (must be in separate f" +
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Waiter", "Waiter", "A example for parallel long operation with certain timeout (must be in separate f" +
                     "eature)", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
-        public static void FeatureTearDown()
+        [NUnit.Framework.OneTimeTearDownAttribute()]
+        public virtual void FeatureTearDown()
         {
             testRunner.OnFeatureEnd();
             testRunner = null;
         }
         
+        [NUnit.Framework.SetUpAttribute()]
         public virtual void TestInitialize()
         {
         }
         
+        [NUnit.Framework.TearDownAttribute()]
         public virtual void TestTearDown()
         {
             testRunner.OnScenarioEnd();
@@ -63,7 +61,7 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
         public virtual void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
-            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<Xunit.Abstractions.ITestOutputHelper>(_testOutputHelper);
+            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<NUnit.Framework.TestContext>(NUnit.Framework.TestContext.CurrentContext);
         }
         
         public virtual void ScenarioStart()
@@ -76,21 +74,15 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
             testRunner.CollectScenarioErrors();
         }
         
-        void System.IDisposable.Dispose()
-        {
-            this.TestTearDown();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Wait if zero value")]
-        [Xunit.TraitAttribute("FeatureTitle", "Longer0")]
-        [Xunit.TraitAttribute("Description", "Wait if zero value")]
-        [Xunit.TraitAttribute("Category", "wait_if_0")]
-        public virtual void WaitIfZeroValue()
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Wait 5000")]
+        [NUnit.Framework.CategoryAttribute("wait_5000")]
+        public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
-                    "wait_if_0"};
+                    "wait_5000"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait if zero value", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -112,29 +104,13 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 7
- testRunner.When("do long work for 0", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("do long work for 5000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
  testRunner.Then("just void", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
-        }
-        
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
-        [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        public class FixtureData : System.IDisposable
-        {
-            
-            public FixtureData()
-            {
-                Longer0Feature.FeatureSetup();
-            }
-            
-            void System.IDisposable.Dispose()
-            {
-                Longer0Feature.FeatureTearDown();
-            }
         }
     }
 }

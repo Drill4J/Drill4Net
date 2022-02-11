@@ -1,4 +1,4 @@
-﻿Feature: LongerDefault
+﻿Feature: WaiterDefault
 
 A example for parallel long operation with default timeout (must be in separate feature)
 

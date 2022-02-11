@@ -57,17 +57,17 @@
     <Compile Update="Features\Basics\StringProcessor.feature.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Features\Long\Longer.feature.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
+    <Compile Update="Features\Waiter\Waiter.feature.cs">
+      <DependentUpon>Waiter.feature</DependentUpon>
     </Compile>
-    <Compile Update="Features\Long\Longer0.feature.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
+    <Compile Update="Features\Waiter\Waiter0.feature.cs">
+      <DependentUpon>Waiter0.feature</DependentUpon>
     </Compile>
-    <Compile Update="Features\Long\LongerDefault.feature.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
+    <Compile Update="Features\Waiter\WaiterDefault.feature.cs">
+      <DependentUpon>WaiterDefault.feature</DependentUpon>
     </Compile>
-    <Compile Update="Features\Long\LongerTooBig.feature.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
+    <Compile Update="Features\Waiter\WaiterTooBig.feature.cs">
+      <DependentUpon>WaiterTooBig.feature</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -86,19 +86,19 @@
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Features\Long\Longer.feature">
+    <SpecFlowFeatureFiles Update="Features\Waiter\Waiter.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Features\Long\Longer0.feature">
+    <SpecFlowFeatureFiles Update="Features\Waiter\Waiter0.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Features\Long\LongerDefault.feature">
+    <SpecFlowFeatureFiles Update="Features\Waiter\WaiterDefault.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Features\Long\LongerTooBig.feature">
+    <SpecFlowFeatureFiles Update="Features\Waiter\WaiterTooBig.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>

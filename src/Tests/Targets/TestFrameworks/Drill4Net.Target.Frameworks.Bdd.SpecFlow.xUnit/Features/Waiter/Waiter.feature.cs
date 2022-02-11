@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
+namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Waiter
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,7 +19,7 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class LongerTooBigFeature : object, Xunit.IClassFixture<LongerTooBigFeature.FixtureData>, System.IDisposable
+    public partial class WaiterFeature : object, Xunit.IClassFixture<WaiterFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -28,10 +28,10 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "LongerTooBig.feature"
+#line 1 "Waiter.feature"
 #line hidden
         
-        public LongerTooBigFeature(LongerTooBigFeature.FixtureData fixtureData, Drill4Net_Target_Frameworks_Bdd_SpecFlow_xUnit_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public WaiterFeature(WaiterFeature.FixtureData fixtureData, Drill4Net_Target_Frameworks_Bdd_SpecFlow_xUnit_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -40,7 +40,7 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Long", "LongerTooBig", "A example for parallel long operation with certain timeout (must be in separate f" +
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Waiter", "Waiter", "A example for parallel long operation with certain timeout (must be in separate f" +
                     "eature)", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
@@ -81,16 +81,16 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Wait if too big")]
-        [Xunit.TraitAttribute("FeatureTitle", "LongerTooBig")]
-        [Xunit.TraitAttribute("Description", "Wait if too big")]
-        [Xunit.TraitAttribute("Category", "wait_if_100000")]
-        public virtual void WaitIfTooBig()
+        [Xunit.SkippableFactAttribute(DisplayName="Wait 5000")]
+        [Xunit.TraitAttribute("FeatureTitle", "Waiter")]
+        [Xunit.TraitAttribute("Description", "Wait 5000")]
+        [Xunit.TraitAttribute("Category", "wait_5000")]
+        public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
-                    "wait_if_100000"};
+                    "wait_5000"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait if too big", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Wait 5000", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -112,7 +112,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 7
- testRunner.When("do long work for 100000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("do long work for 5000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
  testRunner.Then("just void", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -128,12 +128,12 @@ this.ScenarioInitialize(scenarioInfo);
             
             public FixtureData()
             {
-                LongerTooBigFeature.FeatureSetup();
+                WaiterFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                LongerTooBigFeature.FeatureTearDown();
+                WaiterFeature.FeatureTearDown();
             }
         }
     }

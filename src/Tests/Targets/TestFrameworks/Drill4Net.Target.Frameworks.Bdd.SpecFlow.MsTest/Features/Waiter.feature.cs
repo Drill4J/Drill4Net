@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
+namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest.Features
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,42 +19,58 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class LongerFeature : object, Xunit.IClassFixture<LongerFeature.FixtureData>, System.IDisposable
+    [Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute()]
+    public partial class WaiterFeature
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
         
+        private Microsoft.VisualStudio.TestTools.UnitTesting.TestContext _testContext;
+        
         private string[] _featureTags = ((string[])(null));
         
-        private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
-        
-#line 1 "Longer.feature"
+#line 1 "Waiter.feature"
 #line hidden
         
-        public LongerFeature(LongerFeature.FixtureData fixtureData, Drill4Net_Target_Frameworks_Bdd_SpecFlow_xUnit_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public virtual Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext
         {
-            this._testOutputHelper = testOutputHelper;
-            this.TestInitialize();
+            get
+            {
+                return this._testContext;
+            }
+            set
+            {
+                this._testContext = value;
+            }
         }
         
-        public static void FeatureSetup()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.ClassInitializeAttribute()]
+        public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features/Long", "Longer", "A example for parallel long operation with certain timeout (must be in separate f" +
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Waiter", "A example for parallel long operation with certain timeout (must be in separate f" +
                     "eature)", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.ClassCleanupAttribute()]
         public static void FeatureTearDown()
         {
             testRunner.OnFeatureEnd();
             testRunner = null;
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute()]
         public virtual void TestInitialize()
         {
+            if (((testRunner.FeatureContext != null) 
+                        && (testRunner.FeatureContext.FeatureInfo.Title != "Waiter")))
+            {
+                global::Drill4Net.Target.Frameworks.Bdd.SpecFlow.MsTest.Features.WaiterFeature.FeatureSetup(null);
+            }
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanupAttribute()]
         public virtual void TestTearDown()
         {
             testRunner.OnScenarioEnd();
@@ -63,7 +79,7 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
         public virtual void ScenarioInitialize(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
-            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<Xunit.Abstractions.ITestOutputHelper>(_testOutputHelper);
+            testRunner.ScenarioContext.ScenarioContainer.RegisterInstanceAs<Microsoft.VisualStudio.TestTools.UnitTesting.TestContext>(_testContext);
         }
         
         public virtual void ScenarioStart()
@@ -76,15 +92,10 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Features.Long
             testRunner.CollectScenarioErrors();
         }
         
-        void System.IDisposable.Dispose()
-        {
-            this.TestTearDown();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Wait 5000")]
-        [Xunit.TraitAttribute("FeatureTitle", "Longer")]
-        [Xunit.TraitAttribute("Description", "Wait 5000")]
-        [Xunit.TraitAttribute("Category", "wait_5000")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Wait 5000")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Waiter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("wait_5000")]
         public virtual void Wait5000()
         {
             string[] tagsOfScenario = new string[] {
@@ -119,22 +130,6 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
             }
             this.ScenarioCleanup();
-        }
-        
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
-        [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        public class FixtureData : System.IDisposable
-        {
-            
-            public FixtureData()
-            {
-                LongerFeature.FeatureSetup();
-            }
-            
-            void System.IDisposable.Dispose()
-            {
-                LongerFeature.FeatureTearDown();
-            }
         }
     }
 }

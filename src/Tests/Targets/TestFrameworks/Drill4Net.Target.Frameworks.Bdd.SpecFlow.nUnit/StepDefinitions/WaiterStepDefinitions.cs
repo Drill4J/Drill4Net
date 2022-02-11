@@ -31,15 +31,15 @@ using Drill4Net.Target.Frameworks.Common;
 namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.StepDefinitions
 {
     [Binding]
-    public class LongerStepDefinitions
+    public class WaiterStepDefinitions
     {
-        private readonly Longer _longer;
+        private readonly Waiter _waiter;
 
         /************************************************************************************/
 
-        public LongerStepDefinitions()
+        public WaiterStepDefinitions()
         {
-            _longer = new Longer();
+            _waiter = new Waiter();
         }
 
         /************************************************************************************/
@@ -68,13 +68,13 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit.StepDefinitions
         [When("do long work for (.*)")]
         public void WaitTimeout(int timeout)
         {
-            _longer.DoLongWork(timeout);
+            _waiter.Wait(timeout);
         }
 
         [When("do default long work")]
         public void DoDefaultAction()
         {
-            _longer.DoLongWork();
+            _waiter.Wait();
         }
     }
 }
