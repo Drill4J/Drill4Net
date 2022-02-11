@@ -122,7 +122,8 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         public virtual void ValidateOptions()
         {
-            InjectorOptionsHelper.ValidateOptions(Options);
+            var cfgHelper = new InjectorOptionsHelper();
+            cfgHelper.ValidateOptions(Options);
         }
 
         #region Assembly

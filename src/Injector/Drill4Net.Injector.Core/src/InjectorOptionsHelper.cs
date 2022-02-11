@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Core
                 throw new ArgumentException($"In fact, this is not {CoreConstants.SUBSYSTEM_INJECTOR} options: {opts.Type}");
         }
 
-        internal void SetDestinationDirectory(InjectorOptions opts, string destDir)
+        public void SetDestinationDirectory(InjectorOptions opts, string destDir)
         {
             if (opts.Destination == null)
                 opts.Destination = new DestinationOptions();
@@ -140,7 +140,7 @@ namespace Drill4Net.Injector.Core
         }
         #endregion
 
-        public static void ValidateOptions(InjectorOptions opts)
+        public void ValidateOptions(InjectorOptions opts)
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));

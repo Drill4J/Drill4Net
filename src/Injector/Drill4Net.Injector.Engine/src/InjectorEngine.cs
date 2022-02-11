@@ -86,7 +86,8 @@ namespace Drill4Net.Injector.Engine
         public async Task<InjectedSolution> Process(InjectorOptions opts)
         {
             _logger.Debug("Process is starting...");
-            InjectorOptionsHelper.ValidateOptions(opts);
+            var cfgHelper = new InjectorOptionsHelper();
+            cfgHelper.ValidateOptions(opts);
 
             await CopySource(opts)
                 .ConfigureAwait(false);

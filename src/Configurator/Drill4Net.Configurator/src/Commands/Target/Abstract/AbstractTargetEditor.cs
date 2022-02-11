@@ -56,7 +56,12 @@ namespace Drill4Net.Configurator
                     return false;
             }
             while (!_cli.CheckStringAnswer(ref trgName, "Target's name cannot be empty", false));
-            cfg.Target.Name = trgName;
+            var corrTrgName = CorrectTargetName(trgName);
+            if (!corrTrgName.Equals(trgName, StringComparison.InvariantCultureIgnoreCase))
+            {
+                RaiseWarning(corrTrgName);
+            }
+            cfg.Target.Name = corrTrgName;
             #endregion
             #region Description
             def = isNew ? "" : cfg.Description;
@@ -128,7 +133,7 @@ You can enter several rules in separate strings, e.g. first for files, then for 
 Separate several entities in one rule with a comma. 
 You can use Include and Exclude rules at the same time. By default, a rule has Include type.
 
-To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".
+
 
 The filters:
   - By directory (full path). Examples:
@@ -150,7 +155,9 @@ The filters:
 
 Hint: the regex must be located only in a sole filter tag (one expression in one tag).
 Hint: to set up value for ""all entities of current filter type"" use sign *. Example:
-       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=^*  (do not process any folders)";
+       {ConfiguratorConstants.FILTER_TYPE_FOLDER}=^*  (do not process any folders)
+
+To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".";
             RaiseMessage(filterHint, CliMessageType.Help);
 
             const string? filterQuestion = "Please create at least one filter rule";
@@ -179,6 +186,7 @@ Hint: to set up value for ""all entities of current filter type"" use sign *. Ex
   2. Arbitrary path to the processed folder. It can be full or relative (for the Injector program).
 
 Please make your choice";
+            var cfgHelper = new InjectorOptionsHelper();
             while (true)
             {
                 if (!_cli.AskQuestion(destQuestion, out answer, def))
@@ -206,7 +214,8 @@ Please make your choice";
                 //
                 try
                 {
-                    InjectorOptionsHelper.ValidateOptions(cfg);
+                    cfgHelper.SetDestinationDirectory(cfg, null);
+                    cfgHelper.ValidateOptions(cfg);
                 } 
                 catch (Exception ex)
                 {
@@ -450,7 +459,14 @@ Please make your choice";
         {
             if (string.IsNullOrWhiteSpace(sourceDir))
                 throw new ArgumentNullException(nameof(sourceDir));
-            var name = ReplaceSpecialSymbolsForTargetName(new DirectoryInfo(sourceDir).Name);
+            return CorrectTargetName(new DirectoryInfo(sourceDir).Name);
+        }
+
+        internal string CorrectTargetName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                name = "target-default";
+            name = ReplaceSpecialSymbolsForTargetName(name);
 
             //split name by "-" for Camel notation
             var sb = new StringBuilder();
