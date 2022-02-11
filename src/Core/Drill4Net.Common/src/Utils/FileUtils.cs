@@ -220,8 +220,12 @@ namespace Drill4Net.Common
         {
             if (string.IsNullOrWhiteSpace(fullName1) || string.IsNullOrWhiteSpace(fullName2))
                 return false;
-            if (fullName1.StartsWith(fullName2, StringComparison.InvariantCultureIgnoreCase) || fullName2.StartsWith(fullName1, StringComparison.InvariantCultureIgnoreCase))
+            if (fullName1.Equals(fullName2, StringComparison.InvariantCultureIgnoreCase))
                 return true;
+            if (fullName1.StartsWith(fullName2, StringComparison.InvariantCultureIgnoreCase) && fullName1.Length > fullName2.Length)
+                return true;
+            //if (fullName2.StartsWith(fullName1, StringComparison.InvariantCultureIgnoreCase) && fullName2.Length > fullName1.Length)
+                //return true;
             return false;
         }
 

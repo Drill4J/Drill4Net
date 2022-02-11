@@ -300,7 +300,7 @@ Please make your choice";
                                 string plugCfgPath = "";
                                 while (true)
                                 {
-                                    if (!_cli.AskFileName(@$"Name for the target specific config for plugin ""{plugName}"" (contains test assembly, etc). It is better to use ""plug_"" prefix.",
+                                    if (!_cli.AskFileName(@$"Name or full path file for the 'target specific config' for plugin ""{plugName}"". Please, create this config out of the Configurator. Usually such files have the ""plug_"" prefix.",
                                         out var plugCfgName, def, false))
                                         return false;
                                     if (string.IsNullOrWhiteSpace(plugCfgName))
@@ -310,7 +310,12 @@ Please make your choice";
                                     }
                                     if (!plugCfgName.EndsWith(".yml"))
                                         plugCfgName += ".yml";
-                                    plugCfgPath = Path.Combine(injectorDir, plugCfgName);
+
+                                    if (plugCfgName.Contains(Path.DirectorySeparatorChar))
+                                        plugCfgPath = plugCfgName;
+                                    else
+                                        plugCfgPath = Path.Combine(injectorDir, plugCfgName);
+
                                     if (File.Exists(plugCfgPath))
                                         break;
                                     RaiseWarning(@$"The target specific config for the target ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
