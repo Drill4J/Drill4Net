@@ -35,7 +35,7 @@ services:
       - drill4net-dev-network
 
   zookeeper:
-    image: bitnami/zookeeper:3.6.2 #3.7
+    image: bitnami/zookeeper:3.7 #3.6.2 #3.7
     container_name: zookeeper
     ports:
       - '2181:2181'
@@ -49,6 +49,7 @@ services:
     networks:
       - drill4net-dev-network
       
+  #https://github.com/bitnami/bitnami-docker-kafka#accessing-apache-kafka-with-internal-and-external-clients
   kafka1:
     image: bitnami/kafka:2.7.0 #2.5.0
     container_name: kafka1

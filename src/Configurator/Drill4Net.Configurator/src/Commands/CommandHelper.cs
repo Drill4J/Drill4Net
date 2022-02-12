@@ -228,11 +228,11 @@ namespace Drill4Net.Configurator
         }
 
         internal bool GetSourceConfigPath<T>(string cfgSubsystem, string dir, CliDescriptor desc,
-            out string path, out bool fromSwitch, out string error) where T : AbstractOptions, new()
+            out string path, out bool fromPositional, out string error) where T : AbstractOptions, new()
         {
             path = string.Empty;
             error = string.Empty;
-            fromSwitch = false;
+            fromPositional = false;
 
             var sourceName = desc.GetParameter(CoreConstants.ARGUMENT_CONFIG_PATH);
             if (string.IsNullOrWhiteSpace(sourceName))
@@ -265,13 +265,14 @@ namespace Drill4Net.Configurator
                             sourceName = Path.GetFileName(lastEditedFile);
                     }
                 }
-
-                fromSwitch = !string.IsNullOrWhiteSpace(sourceName);
             }
 
             //check file name
-            if(string.IsNullOrWhiteSpace(sourceName))
+            if (string.IsNullOrWhiteSpace(sourceName))
+            {
                 sourceName = desc.GetPositional(0);
+                fromPositional = !string.IsNullOrWhiteSpace(sourceName);
+            }
             if (!string.IsNullOrWhiteSpace(sourceName))
             {
                 sourceName = sourceName.Replace("\"", null);

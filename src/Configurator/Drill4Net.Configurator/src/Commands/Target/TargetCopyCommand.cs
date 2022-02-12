@@ -24,20 +24,30 @@ namespace Drill4Net.Configurator
             //
             var defDir = _rep.GetInjectorDirectory();
 
-            // source path
+            //trg copy -- "d:\Projects\inj_Kafka.yml" "d:\Projects\inj_Kafka2.yml" --version=0.3.4 "c:\Downloads\abc"
+            //trg copy -- "d:\Projects\inj_razor.yml" "d:\Projects\inj_razor_2.yml" --version=0.1.2 --postfix ABC
+            //trg copy --cfg_path="d:\Projects\inj_razor.yml" --version=0.1.2 "d:\Projects\inj_razor_2.yml" 
+
+            // source cfg path
             var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, defDir, _desc,
-                out var sourcePath, out var fromSwitch, out var error);
+                out var sourcePath, out var fromPos, out var error);
             if (!res)
             {
                 RaiseError(error);
                 return Task.FromResult(FalseEmptyResult);
             }
 
-            var delta = fromSwitch ? 1 : 0;
+            var pos = fromPos ? 1 : 0;
 
-            // dest path
-            var destName = GetPositional(1 - delta) ?? "";
-            res = _cmdHelper.GetConfigPath(defDir, "destination", destName, false, out var destPath, out error);
+            // dest cfg path
+            var destCfg = GetParameter(CoreConstants.ARGUMENT_DESTINATION_PATH);
+            if (string.IsNullOrWhiteSpace(destCfg))
+            {
+                destCfg = GetPositional(pos) ?? "";
+                if (!string.IsNullOrWhiteSpace(destCfg))
+                    pos++;
+            }
+            res = _cmdHelper.GetConfigPath(defDir, "destination", destCfg, false, out var destPath, out error);
             if (!res)
             {
                 RaiseError(error);
@@ -45,12 +55,12 @@ namespace Drill4Net.Configurator
             }
 
             //target version/assembly
-            var targetVersion = GetPositional(2 - delta);
+            var targetVersion = GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
             if (string.IsNullOrWhiteSpace(targetVersion))
             {
-                targetVersion = GetParameter(CoreConstants.ARGUMENT_TARGET_VERSION);
+                targetVersion = GetPositional(pos);
                 if (!string.IsNullOrWhiteSpace(targetVersion))
-                    delta++;
+                    pos++;
             }
             if (string.IsNullOrWhiteSpace(targetVersion))
             {
@@ -58,12 +68,12 @@ namespace Drill4Net.Configurator
                 return Task.FromResult(FalseEmptyResult);
             }
 
-            //target working dir
-            var targetDir = GetPositional(3 - delta); //empty value means the same directory
+            //target destination working dir (empty value means the SAME directory)
+            var targetDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR);
             if (string.IsNullOrWhiteSpace(targetDir))
-                targetDir = GetParameter(CoreConstants.ARGUMENT_DESTINATION_DIR);
+                targetDir = GetPositional(pos);
 
-            //set config
+            //set up the config
             var cfg = _rep.ReadInjectorOptions(sourcePath);
             if (cfg.Target == null)
             {
@@ -86,10 +96,17 @@ namespace Drill4Net.Configurator
             {
                 dest.Directory = targetDir;
             }
-            else
+            
+            //postfix (if the dir is empty, including in the future)
+            var postfix = GetParameter(CoreConstants.ARGUMENT_POSTFIX);
+            if (string.IsNullOrWhiteSpace(postfix))
             {
                 if (string.IsNullOrWhiteSpace(dest.FolderPostfix))
                     dest.FolderPostfix = "Injected";
+            }
+            else
+            {
+                dest.FolderPostfix = postfix;
             }
 
             //save config

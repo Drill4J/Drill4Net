@@ -196,7 +196,7 @@ namespace Drill4Net.Agent.Abstract
         {
             //executed test case
             string test = testCtx.GetKey();
-            if (!_testCaseCtxs.TryRemove(test, out Test2RunInfo info)) //it is bad
+            if (!_testCaseCtxs.TryRemove(test, out Test2RunInfo info)) //this is bad
                 info = PrepareTest2RunInfo(testCtx);
             info.result = testCtx.Result ?? nameof(TestResult.UNKNOWN);
             info.finishedAt = testCtx.FinishTime;
@@ -227,7 +227,7 @@ namespace Drill4Net.Agent.Abstract
         {
             var engineDesc = "";
 
-            //a-la BDD SpecFlow
+            //e.g. BDD SpecFlow
             var generator = testCtx.Generator;
             if (generator != null)
             {
