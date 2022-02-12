@@ -24,20 +24,26 @@ namespace Drill4Net.Configurator
 
             var defDir = _rep.GetTestRunnerDirectory();
 
-            // source path
+            // source config path
             var res = _cmdHelper.GetSourceConfigPath<TestRunnerOptions>(CoreConstants.SUBSYSTEM_TEST_RUNNER, defDir, _desc,
-                out var sourcePath, out var fromSwitch, out var error);
+                out var sourcePath, out var fromPos, out var error);
             if (!res)
             {
                 RaiseError(error);
                 return Task.FromResult(FalseEmptyResult);
             }
 
-            var delta = fromSwitch ? 1 : 0;
+            var pos = fromPos ? 1 : 0;
 
-            // dest path
-            var destName = GetPositional(1 - delta) ?? "";
-            res = _cmdHelper.GetConfigPath(defDir, "destination", destName, false, out var destPath, out error);
+            // dest config path
+            var destCfg = GetParameter(CoreConstants.ARGUMENT_DESTINATION_PATH);
+            if (string.IsNullOrWhiteSpace(destCfg))
+            {
+                destCfg = GetPositional(pos) ?? "";
+                if (!string.IsNullOrWhiteSpace(destCfg))
+                    pos++;
+            }
+            res = _cmdHelper.GetConfigPath(defDir, "destination", destCfg, false, out var destPath, out error);
             if (!res)
             {
                 RaiseError(error);

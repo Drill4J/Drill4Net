@@ -8,7 +8,7 @@ namespace Drill4Net.Configurator
         {
             var addS = string.IsNullOrWhiteSpace(addition) ? null : addition + " ";
             return @$"You should specify source config and destination one. 
-{GetActiveLastSwitchesShortDesc(appName)}
+{GetActiveLastSwitchesShortDesc("source " + appName)}
 You can to pass the explicit short name of {appName} config file or its full path, and you can use they as positional parameters.
 
   Example: {cmd} --{CoreConstants.ARGUMENT_CONFIG_PATH}=""d:\configs\{folder}\source.yml"" ""d:\Drill4Net\{folder}\destination.yml"" {addS}(source.yml will copied to the destination.yml)
