@@ -10,7 +10,7 @@ namespace Drill4Net.Agent.Plugins.xUnit2
 
     public class XUnitContexter : AbstractEngineContexter
     {
-        private string _curCtx;
+        private TestCaseContext _testCaseCtx;
 
         /**********************************************************************/
 
@@ -22,7 +22,7 @@ namespace Drill4Net.Agent.Plugins.xUnit2
 
         public override string GetContextId()
         {
-            return _curCtx;
+            return _testCaseCtx?.GetKey(); //CaseName
         }
 
         public override TestEngine GetTestEngine()
@@ -35,23 +35,25 @@ namespace Drill4Net.Agent.Plugins.xUnit2
             };
         }
 
-        public override bool RegisterCommand(int command, string data)
+        public override (bool Res, object Answer) RegisterCommand(int command, string data)
         {
             if (!_comTypes.Contains(command))
-                return false;
+                return (false, null);
             //
+            TestCaseContext testCaseCtx = null;
             switch ((AgentCommandType)command)
             {
                 case AgentCommandType.TEST_CASE_START:
-                    var testCaseCtx = GetTestCaseContext(data);
-                    _curCtx = testCaseCtx.CaseName;
+                    testCaseCtx = GetTestCaseContext(data);
+                    _testCaseCtx = testCaseCtx;
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
-                    _curCtx = null;
+                    testCaseCtx = _testCaseCtx;
+                    _testCaseCtx = null;
                     break;
                 //another commands we don't process here
             }
-            return true;
+            return (true, testCaseCtx);
         }
     }
 }

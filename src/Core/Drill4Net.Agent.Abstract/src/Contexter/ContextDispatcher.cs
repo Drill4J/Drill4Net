@@ -99,15 +99,28 @@ namespace Drill4Net.Agent.Abstract
 
         /**********************************************************************************/
 
-        public bool RegisterCommand(int command, string data)
+        public (bool Res, object Answer) RegisterCommand(int command, string data)
         {
-            _logger.Debug($"Command: [{command}] -> [{data}]");
+            _logger.Debug($"Command: [{command}]");
             foreach (var ctxr in _contexters)
             {
-                if(!ctxr.RegisterCommand(command, data))
+                var (res, answer) = ctxr.RegisterCommand(command, data);
+                if (!res)
+                {
                     _logger.Error($"Unknown command: [{command}] -> [{data}]");
+                }
+                else
+                {
+                    //only one contexter should get the context of test here
+                    var curTestCtx = answer as TestCaseContext;
+                    if (curTestCtx != null)
+                    {
+                        _logger.Debug($"Test context: [{data}]");
+                        return (true, curTestCtx);
+                    }
+                }
             }
-            return true;
+            return (false, null);
         }
 
         public string GetContextId()

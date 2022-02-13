@@ -27,13 +27,14 @@ namespace Drill4Net.Agent.Abstract
         /******************************************************************************/
 
         public abstract string GetContextId();
-        public abstract bool RegisterCommand(int command, string data);
+        public abstract TestEngine GetTestEngine();
+        public abstract (bool Res, object Answer) RegisterCommand(int command, string data);
 
         protected TestCaseContext GetTestCaseContext(string str)
         {
-            return JsonConvert.DeserializeObject<TestCaseContext>(str);
+            var testCtx = JsonConvert.DeserializeObject<TestCaseContext>(str);
+            testCtx.Engine = GetTestEngine();
+            return testCtx;
         }
-
-        public abstract TestEngine GetTestEngine();
     }
 }

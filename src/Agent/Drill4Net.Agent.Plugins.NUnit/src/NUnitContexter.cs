@@ -15,7 +15,10 @@ namespace Drill4Net.Agent.Plugins.NUnit3
 
         public override string GetContextId()
         {
-            var ctx = NUnit.Framework.TestContext.CurrentContext?.Test?.FullName;
+            var test = NUnit.Framework.TestContext.CurrentContext?.Test;
+            if (test?.MethodName == null)
+                return null;
+            var ctx = test.FullName;
             if (ctx?.Contains("Internal.TestExecutionContext+") == true) //in fact, NUnit's context is absent
                 return null;
             return ctx; //TODO: check !!!!
@@ -31,9 +34,21 @@ namespace Drill4Net.Agent.Plugins.NUnit3
             };
         }
 
-        public override bool RegisterCommand(int command, string data)
+        public override (bool Res, object Answer) RegisterCommand(int command, string data)
         {
-            return true; //no specific action for NUnit
+            if (!_comTypes.Contains(command) || GetContextId() == null)
+                return (false, null);
+            //
+            TestCaseContext testCaseCtx = null;
+            switch ((AgentCommandType)command)
+            {
+                case AgentCommandType.TEST_CASE_START:
+                case AgentCommandType.TEST_CASE_STOP:
+                    testCaseCtx = GetTestCaseContext(data);
+                    break;
+                    //another commands we don't process here
+            }
+            return (true, testCaseCtx);
         }
     }
 }

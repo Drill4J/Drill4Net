@@ -62,9 +62,9 @@ namespace Drill4Net.Agent.Abstract
         /// </summary>
         /// <param name="command"></param>
         /// <param name="data"></param>
-        public void RegisterCommand(int command, string data)
+        public (bool Res, object Answer) RegisterCommand(int command, string data)
         {
-            _ctxDisp?.RegisterCommand(command, data);
+            return _ctxDisp == null ? (false, null) : _ctxDisp.RegisterCommand(command, data);
         }
 
         /// <summary>

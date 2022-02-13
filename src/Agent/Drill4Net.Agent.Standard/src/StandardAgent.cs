@@ -486,9 +486,11 @@ namespace Drill4Net.Agent.Standard
             var type = (AgentCommandType)command;
             _logger.Debug($"Command received: [{type}] -> [{data}]");
 
-            Repository.RegisterCommand(command, data);
+            var (res, answer) = Repository.RegisterCommand(command, data);
+            if (!res)
+                return;
+            TestCaseContext testCtx;
 
-            TestCaseContext testCaseCtx;
             switch (type)
             {
                 case AgentCommandType.ASSEMBLY_TESTS_START: StartAutoSession(data, true); break;
@@ -503,12 +505,14 @@ namespace Drill4Net.Agent.Standard
                 #endregion
 
                 case AgentCommandType.TEST_CASE_START:
-                    testCaseCtx = Repository.GetTestCaseContext(data);
-                    RegisterTestInfoStart(testCaseCtx);
+                    testCtx = (TestCaseContext)answer;
+                    RegisterTestInfoStart(testCtx);
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
-                    testCaseCtx = Repository.GetTestCaseContext(data);
-                    RegisterTestInfoFinish(testCaseCtx).Wait();
+                    testCtx = (TestCaseContext)answer;
+                    if(testCtx == null)
+                        testCtx = Repository.GetTestCaseContext(data);
+                    RegisterTestInfoFinish(testCtx).Wait();
                     break;
                 default:
                     _logger.Warning($"Skipping command: [{type}] -> [{data}]");
