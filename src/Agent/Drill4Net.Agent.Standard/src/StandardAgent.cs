@@ -486,9 +486,7 @@ namespace Drill4Net.Agent.Standard
             var type = (AgentCommandType)command;
             _logger.Debug($"Command received: [{type}] -> [{data}]");
 
-            var (res, answer) = Repository.RegisterCommand(command, data);
-            if (!res)
-                return;
+            var answer = Repository.RegisterCommand(command, data);
             TestCaseContext testCtx;
 
             switch (type)
@@ -505,19 +503,25 @@ namespace Drill4Net.Agent.Standard
                 #endregion
 
                 case AgentCommandType.TEST_CASE_START:
-                    testCtx = (TestCaseContext)answer;
+                    testCtx = SyncTestCaseContext(data, answer);
                     RegisterTestInfoStart(testCtx);
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
-                    testCtx = (TestCaseContext)answer;
-                    if(testCtx == null)
-                        testCtx = Repository.GetTestCaseContext(data);
+                    testCtx = SyncTestCaseContext(data, answer);
                     RegisterTestInfoFinish(testCtx).Wait();
                     break;
                 default:
                     _logger.Warning($"Skipping command: [{type}] -> [{data}]");
                     break;
             }
+        }
+
+        private TestCaseContext SyncTestCaseContext(string data, object registered)
+        {
+            var actual = Repository.GetTestCaseContext(data);
+            if(registered != null && registered is TestCaseContext context)
+                actual.Engine = context.Engine; //guanito
+            return actual;
         }
 
         #region Manage sessions on Agent side
@@ -631,9 +635,12 @@ namespace Drill4Net.Agent.Standard
 
         internal async Task RegisterTestInfoFinish(TestCaseContext testCtx)
         {
-            BlockProbeProcessing();
-            await SendRemainedCoverage();
-            CoverageSender.RegisterTestCaseFinish(testCtx);
+            if (_curAutoSession != null)
+            {
+                BlockProbeProcessing();
+                await SendRemainedCoverage();
+                CoverageSender.RegisterTestCaseFinish(testCtx);
+            }
         }
 
         private async Task SendRemainedCoverage()

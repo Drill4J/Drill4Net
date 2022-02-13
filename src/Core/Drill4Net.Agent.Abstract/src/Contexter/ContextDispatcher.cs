@@ -99,7 +99,7 @@ namespace Drill4Net.Agent.Abstract
 
         /**********************************************************************************/
 
-        public (bool Res, object Answer) RegisterCommand(int command, string data)
+        public object RegisterCommand(int command, string data)
         {
             _logger.Debug($"Command: [{command}]");
             foreach (var ctxr in _contexters)
@@ -116,11 +116,11 @@ namespace Drill4Net.Agent.Abstract
                     if (curTestCtx != null)
                     {
                         _logger.Debug($"Test context: [{data}]");
-                        return (true, curTestCtx);
+                        return curTestCtx;
                     }
                 }
             }
-            return (false, null);
+            return null; //exactly is true
         }
 
         public string GetContextId()
