@@ -62,6 +62,10 @@ namespace Drill4Net.Agent.Plugins.SpecFlow
             //
             var info = scenarioCtx.ScenarioInfo;
             _singleton._generator.TypeName = type.FullName;
+            var caseName = GetTestCase(info);
+            if (string.IsNullOrWhiteSpace(caseName))
+            {
+            }
             var caseCtx = new TestCaseContext
             {
                 AssemblyPath = asmPath,
@@ -70,9 +74,9 @@ namespace Drill4Net.Agent.Plugins.SpecFlow
                 //this static class must be fully non-static with creating reference in ProfilerProxy)
                 //Engine =
                 Group = GetTestGroup(featureCtx.FeatureInfo),
-                QualifiedName = TestContextHelper.GetQualifiedName(scenarioCtx.ScenarioInfo.Title),
+                QualifiedName = TestContextHelper.GetQualifiedName(info.Title),
                 DisplayName = info.Title,
-                CaseName = GetTestCase(scenarioCtx.ScenarioInfo),
+                CaseName = caseName,
                 Tags = info.Tags.ToList(),
             };
 

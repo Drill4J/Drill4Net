@@ -1,4 +1,4 @@
-﻿Path: inj_Bdd_xUnit_Std # Full/relative path or simple name of real injection cfg (as name with or without extension)
+﻿Path: inj_Bdd_NUnit_Std # Full/relative path or simple name of real injection cfg (as name with or without extension)
       
       #inj_File
       #inj_Std

@@ -1,5 +1,6 @@
 ﻿using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
+using System.Collections.Concurrent;
 
 namespace Drill4Net.Agent.Plugins.NUnit3
 {
@@ -7,8 +8,13 @@ namespace Drill4Net.Agent.Plugins.NUnit3
 
     public class NUnitContexter : AbstractEngineContexter
     {
+        private readonly ConcurrentDictionary<string, string> _method2ctxs;
+
+        /*********************************************************************/
+
         public NUnitContexter() : base(nameof(NUnitContexter))
         {
+            _method2ctxs = new();
         }
 
         /*********************************************************************/
@@ -18,10 +24,13 @@ namespace Drill4Net.Agent.Plugins.NUnit3
             var test = NUnit.Framework.TestContext.CurrentContext?.Test;
             if (test?.MethodName == null)
                 return null;
-            var ctx = test.FullName;
-            if (ctx?.Contains("Internal.TestExecutionContext+") == true) //in fact, NUnit's context is absent
+            var method = test.FullName;
+            if (method?.Contains("Internal.TestExecutionContext+") == true) //in fact, NUnit's context is absent
                 return null;
-            return ctx; //TODO: check !!!!
+            if (_method2ctxs.TryGetValue(method, out var context))
+                return context;
+            else
+                return method;
         }
 
         public override TestEngine GetTestEngine()
@@ -38,13 +47,20 @@ namespace Drill4Net.Agent.Plugins.NUnit3
         {
             if (!_comTypes.Contains(command))
                 return (false, null);
-            if (string.IsNullOrWhiteSpace(data) || GetContextId() == null)
+            if (string.IsNullOrWhiteSpace(data))
+                return (true, null);
+            var methodOrCtx = GetContextId(); // in fact, initially it will be real method name, not useful context (test case name, etc)
+            if(methodOrCtx == null)
                 return (true, null);
             //
             TestCaseContext testCaseCtx = null;
             switch ((AgentCommandType)command)
             {
                 case AgentCommandType.TEST_CASE_START:
+                    testCaseCtx = GetTestCaseContext(data);
+                    //now bind the method and useful context, so next time (for probes) GetContextId() will return the real context
+                    _method2ctxs.TryAdd(methodOrCtx, testCaseCtx.GetKey());
+                    break;
                 case AgentCommandType.TEST_CASE_STOP:
                     testCaseCtx = GetTestCaseContext(data);
                     break;
