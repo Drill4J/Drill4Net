@@ -627,6 +627,7 @@ namespace Drill4Net.Agent.Standard
                 _logger.Info("Tests' registering is sequential now");
                 _autotestsSequentialRegistering = true;
             }
+            _logger.Info(testCtx);
 
             BlockProbeProcessing();
             CoverageSender.RegisterTestCaseStart(testCtx);

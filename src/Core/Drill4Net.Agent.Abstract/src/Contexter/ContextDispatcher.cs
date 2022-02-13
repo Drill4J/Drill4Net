@@ -101,7 +101,7 @@ namespace Drill4Net.Agent.Abstract
 
         public object RegisterCommand(int command, string data)
         {
-            _logger.Debug($"Command: [{command}]");
+            _logger.Debug($"Command: [{command}] -> [{data}]");
             foreach (var ctxr in _contexters)
             {
                 var (res, answer) = ctxr.RegisterCommand(command, data);
@@ -115,7 +115,7 @@ namespace Drill4Net.Agent.Abstract
                     var curTestCtx = answer as TestCaseContext;
                     if (curTestCtx != null)
                     {
-                        _logger.Debug($"Test context: [{data}]");
+                        _logger.Debug($"Actual test's context: [{curTestCtx}]");
                         return curTestCtx;
                     }
                 }

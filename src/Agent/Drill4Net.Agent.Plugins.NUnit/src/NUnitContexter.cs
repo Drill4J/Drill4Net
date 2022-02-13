@@ -36,8 +36,10 @@ namespace Drill4Net.Agent.Plugins.NUnit3
 
         public override (bool Res, object Answer) RegisterCommand(int command, string data)
         {
-            if (!_comTypes.Contains(command) || GetContextId() == null)
+            if (!_comTypes.Contains(command))
                 return (false, null);
+            if (string.IsNullOrWhiteSpace(data) || GetContextId() == null)
+                return (true, null);
             //
             TestCaseContext testCaseCtx = null;
             switch ((AgentCommandType)command)
@@ -46,7 +48,7 @@ namespace Drill4Net.Agent.Plugins.NUnit3
                 case AgentCommandType.TEST_CASE_STOP:
                     testCaseCtx = GetTestCaseContext(data);
                     break;
-                    //another commands we don't process here
+                //another commands we don't process here
             }
             return (true, testCaseCtx);
         }
