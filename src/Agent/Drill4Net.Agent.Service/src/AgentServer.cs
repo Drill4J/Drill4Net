@@ -44,7 +44,7 @@ namespace Drill4Net.Agent.Service
         private Timer _timeoutTimer;
         private bool _inPingCheck;
         private readonly bool _needStartWorker;
-        private readonly bool _needDeleteTopics;
+        private readonly bool _dontDeleteTopics;
         private readonly string _cfgPath;
         private readonly string _workerDir;
         private readonly string _workerPath;
@@ -80,13 +80,13 @@ namespace Drill4Net.Agent.Service
             var fromEnvS = CommonUtils.ReadEnvironmentVar(CoreConstants.ENV_DEBUG_TOPICS_DONT_DELETE);
             if (fromEnvS != null)
             {
-                _needDeleteTopics = int.TryParse(fromEnvS, out var fromEnv) && fromEnv != 1;
-                _logger.Debug($"Target topic deleting mode by Env variable: {_needDeleteTopics}");
+                _dontDeleteTopics = int.TryParse(fromEnvS, out var fromEnv) && fromEnv == 1;
+                _logger.Debug($"Target topic deleting mode by Env variable: {_dontDeleteTopics}");
             }
             else
             {
-                _needDeleteTopics = !_isDebug || _debugOpts?.DontDeleteTopics != true;
-                _logger.Debug($"Target topic deleting  mode by options: {_needDeleteTopics}");
+                _dontDeleteTopics = _isDebug && _debugOpts?.DontDeleteTopics == true;
+                _logger.Debug($"Target topic deleting  mode by options: {_dontDeleteTopics}");
             }
             #endregion
 
@@ -240,14 +240,17 @@ namespace Drill4Net.Agent.Service
             Task.Run(() => CloseWorker(uid));
 
             //delete topics
-            var topics = new List<string>
+            if (!_dontDeleteTopics)
             {
-                worker.TargetInfoTopic,
-                worker.ProbeTopic,
-                worker.CommandToWorkerTopic,
-                worker.CommandToTransmitterTopic
-            };
-            Task.Run(() => _admin.DeleteTopics(topics));
+                var topics = new List<string>
+                {
+                    worker.TargetInfoTopic,
+                    worker.ProbeTopic,
+                    worker.CommandToWorkerTopic,
+                    worker.CommandToTransmitterTopic
+                };
+                Task.Run(() => _admin.DeleteTopics(topics));
+            }
         }
 
         /// <summary>
