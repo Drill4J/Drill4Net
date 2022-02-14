@@ -12,5 +12,12 @@
         /// Type name of Generator (in most cases it is the Hooks class)
         /// </summary>
         public string TypeName { get; set; }
+
+        /********************************************************************/
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

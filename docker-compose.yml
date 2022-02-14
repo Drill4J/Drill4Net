@@ -90,7 +90,7 @@ services:
       - drill4net-dev-network
 
   drill4net-service:
-    image: ghcr.io/epamx/drill4net:v0.9.0-108
+    image: ghcr.io/epamx/drill4net:v0.9.0-109
     container_name: drill4net-service
     environment:
       - MESSAGE_SERVER_ADDRESS=kafka1:9092

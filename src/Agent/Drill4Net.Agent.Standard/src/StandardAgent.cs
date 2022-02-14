@@ -53,7 +53,7 @@ namespace Drill4Net.Agent.Standard
         private static InitActiveScope _scope;
         private static bool _isFastInitializing;
         private static readonly object _entitiesLocker;
-        private static readonly ManualResetEvent _initEvent = new(false);
+        private static readonly ManualResetEvent _blocker = new(false);
 
         private static Logger _logger;
         private static FileSink _probeLogger;
@@ -78,7 +78,7 @@ namespace Drill4Net.Agent.Standard
             }
 
             _logger.Info("Wait for command to continue executing...");
-            _initEvent.WaitOne();
+            _blocker.WaitOne();
         }
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
 
-                _initEvent.WaitOne(); //in fact, the blocking will be only one time on the init
+                _blocker.WaitOne(); 
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
                 //
                 if (_writeProbesToFile)
@@ -578,7 +578,7 @@ namespace Drill4Net.Agent.Standard
             //we need to finish test scope + force finish the session
             CoverageSender.SendFinishScopeAction();
             ReleaseProbeProcessing(); //excess probes aren't need
-            await Task.Delay(5000); // it is needed, kids
+            await Task.Delay(5000); // it is really needed, kids
 
             _logger.Info($"Admin side session is stopped: [{session}]");
         }
@@ -607,9 +607,9 @@ namespace Drill4Net.Agent.Standard
                     string word = ar[i];
                     if (string.IsNullOrWhiteSpace(word))
                         continue;
-                    char[] a = word.ToLower().ToCharArray();
-                    a[0] = char.ToUpper(a[0]);
-                    ar[i] = new string(a);
+                    var chAr = word.ToLower().ToCharArray();
+                    chAr[0] = char.ToUpper(chAr[0]);
+                    ar[i] = new string(chAr);
                 }
                 session = string.Join(null, ar).Replace(" ", null);
             }
@@ -656,13 +656,13 @@ namespace Drill4Net.Agent.Standard
 
         private void BlockProbeProcessing()
         {
-            if (_autotestsSequentialRegistering)
-                _initEvent.Reset();
+            if(_autotestsSequentialRegistering)
+                _blocker.Reset();
         }
 
         private void ReleaseProbeProcessing()
         {
-            _initEvent.Set();
+            _blocker.Set();
         }
     }
 }

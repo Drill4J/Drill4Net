@@ -48,7 +48,7 @@
         /// </summary>
         public string Result { get; set; }
 
-        /********************************************************************/
+        /*****************************************************************************/
 
         public string GetKey()
         {
@@ -56,6 +56,19 @@
             //key = System.Web.HttpUtility.UrlEncode(key); //different test cases are different tests
             //key = key.GetHashCode().ToString(); // TEST!!!
             return key;
+        }
+
+        /*****************************************************************************/
+
+        public override string ToString()
+        {
+            string desc = Generator?.ToString();
+            if (desc != null)
+                desc += "/";
+            desc += Engine;
+            if (desc != null)
+                desc += " -> ";
+            return desc + GetKey();
         }
     }
 }
