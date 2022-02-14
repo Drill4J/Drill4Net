@@ -510,8 +510,10 @@ namespace Drill4Net.Agent.Standard
                 #endregion
 
                 case AgentCommandType.TEST_CASE_START:
+                    BlockProbeProcessing();
                     testCtx = SyncTestCaseContext(data, answer);
                     RegisterTestInfoStart(testCtx);
+                    ReleaseProbeProcessing();
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
                     testCtx = SyncTestCaseContext(data, answer);
@@ -630,8 +632,6 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
-            BlockProbeProcessing();
-
             //in one test assembly can be different Engines are located. If such tests have started (xUnit 2.x) -
             //now is only sequential registering (with blocking probes between tests' finish/start)
             if (testCtx.Engine?.MustSequential == true)
@@ -641,15 +641,15 @@ namespace Drill4Net.Agent.Standard
             }
             _logger.Info(testCtx);
 
+            //BlockProbeProcessing();
             CoverageSender.RegisterTestCaseStart(testCtx);
-            ReleaseProbeProcessing();
         }
 
         internal async Task RegisterTestInfoFinish(TestCaseContext testCtx)
         {
             if (_curAutoSession != null)
             {
-                BlockProbeProcessing();
+                //BlockProbeProcessing();
                 await SendRemainedCoverage();
                 CoverageSender.RegisterTestCaseFinish(testCtx);
             }
