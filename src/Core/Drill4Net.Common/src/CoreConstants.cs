@@ -75,6 +75,7 @@
         public const string ENV_DRILL_ADMIN_ADDRESS = "DRILL_ADMIN_ADDRESS";
 
         public const string ENV_DEBUG_WRITE_PROBES = "DEBUG_WRITE_PROBES";
+        public const string ENV_DEBUG_TOPICS_DONT_DELETE = "DEBUG_TOPICS_DONT_DELETE";
         #endregion
         #region CLI
         public const char SWITCH_FORCE = 'f';

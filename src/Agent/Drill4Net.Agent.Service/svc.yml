@@ -11,9 +11,10 @@ Receiver:
       # #- aaa
 WorkerDirs: # if not found, the local one for the Service is used (in Docker)
     - ..\..\Drill4Net.Agent.Worker\net6.0\
-#Debug:
-#    Disabled: true
-#    DontStartWorker: false
+Debug:
+    Disabled: false
+    DontStartWorker: false
+    DontDeleteTopics: false
 Logs:
     - Type: console
       Level: debug

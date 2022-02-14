@@ -1,5 +1,4 @@
 ﻿using Drill4Net.Configuration;
-using System;
 
 namespace Drill4Net.Agent.Messaging.Transport
 {
@@ -17,5 +16,6 @@ namespace Drill4Net.Agent.Messaging.Transport
         public bool Disabled { get; set; }
 
         public bool DontStartWorker { get; set; }
+        public bool DontDeleteTopics { get; set; }
     }
 }

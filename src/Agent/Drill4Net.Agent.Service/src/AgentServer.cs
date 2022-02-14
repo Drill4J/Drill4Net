@@ -43,6 +43,8 @@ namespace Drill4Net.Agent.Service
 
         private Timer _timeoutTimer;
         private bool _inPingCheck;
+        private readonly bool _needStartWorker;
+        private readonly bool _needDeleteTopics;
         private readonly string _cfgPath;
         private readonly string _workerDir;
         private readonly string _workerPath;
@@ -69,8 +71,24 @@ namespace Drill4Net.Agent.Service
             _workers = new ConcurrentDictionary<Guid, WorkerInfo>();
             _admin = _rep.GetTransportAdmin();
 
+            #region Debug options
             _debugOpts = _rep?.Options?.Debug;
             _isDebug = _debugOpts?.Disabled == false;
+            _needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
+
+            //_needDeleteTopics
+            var fromEnvS = CommonUtils.ReadEnvironmentVar(CoreConstants.ENV_DEBUG_TOPICS_DONT_DELETE);
+            if (fromEnvS != null)
+            {
+                _needDeleteTopics = int.TryParse(fromEnvS, out var fromEnv) && fromEnv != 1;
+                _logger.Debug($"Target topic deleting mode by Env variable: {_needDeleteTopics}");
+            }
+            else
+            {
+                _needDeleteTopics = !_isDebug || _debugOpts?.DontDeleteTopics != true;
+                _logger.Debug($"Target topic deleting  mode by options: {_needDeleteTopics}");
+            }
+            #endregion
 
             //worker's path
             var wDirs = _rep.Options.WorkerDirs;
@@ -286,8 +304,7 @@ namespace Drill4Net.Agent.Service
             var cmdToTransTopic = MessagingUtils.GetCommandToTransmitterTopic(sessionUid);
 
             int pid = -1;
-            var needStartWorker = !_isDebug || _debugOpts?.DontStartWorker != true;
-            if (needStartWorker)
+            if (_needStartWorker)
             {
                 pid = StartAgentWorkerProcess(target.Session, target.TargetName, target.TargetVersion);
                 _logger.Info($"Worker was started with pid={pid} -> {sessionUid} : {target.TargetName} {target.TargetVersion}");
