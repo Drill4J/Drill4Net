@@ -67,13 +67,14 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                             {
                                 var cr = c.Consume(_cts.Token);
                                 var probe = cr.Message.Value;
+                                _logger?.Trace($"Probe is retrieved: [{probe}]"); //TEST
                                 try
                                 {
                                     ProbeReceived?.Invoke(probe);
                                 }
                                 catch (Exception ex)
                                 {
-                                    var mess = $"Processing of probe failed. Probe  = [{probe}].";
+                                    var mess = $"Processing of probe failed. Probe = [{probe}].";
                                     _logger?.Error(mess, ex);
                                     ErrorOccuredHandler(this, true, true, mess + " Error: " + ex.Message);
                                 }
