@@ -516,6 +516,7 @@ namespace Drill4Net.Agent.Standard
                     ReleaseProbeProcessing();
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
+                    BlockProbeProcessing();
                     testCtx = SyncTestCaseContext(data, answer);
                     RegisterTestInfoFinish(testCtx).Wait();
                     break;
@@ -641,7 +642,6 @@ namespace Drill4Net.Agent.Standard
             }
             _logger.Info(testCtx);
 
-            //BlockProbeProcessing();
             CoverageSender.RegisterTestCaseStart(testCtx);
         }
 
@@ -649,7 +649,6 @@ namespace Drill4Net.Agent.Standard
         {
             if (_curAutoSession != null)
             {
-                //BlockProbeProcessing();
                 await SendRemainedCoverage();
                 CoverageSender.RegisterTestCaseFinish(testCtx);
             }
