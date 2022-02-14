@@ -86,7 +86,7 @@ namespace Drill4Net.Agent.Worker
             var path = LoggerHelper.GetCommonFilePath(LoggerHelper.LOG_FOLDER);
             var builder = new LogBuilder()
                 .AddSink(new FileSink(path))
-                .AddSink(new ConsoleSink()) //only for Debug or DebuggerAtached?
+                .AddSink(new ConsoleSink()) //TODO: only for Debug or DebuggerAtached
                 .Build();
             Log.Configure(builder);
             _logger = new TypedLogger<Program>(CoreConstants.SUBSYSTEM_CONFIGURATOR);

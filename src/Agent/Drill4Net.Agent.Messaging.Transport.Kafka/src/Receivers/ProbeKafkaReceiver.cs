@@ -2,6 +2,8 @@
 using System.Threading;
 using Confluent.Kafka;
 using Drill4Net.BanderLog;
+using Drill4Net.BanderLog.Sinks.Console;
+using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Repository;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
@@ -17,6 +19,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
         public ProbeKafkaReceiver(AbstractRepository<MessagerOptions> rep) : base(rep)
         {
+            PrepareDefaultLogger();
             _logger = new TypedLogger<ProbeKafkaReceiver>(rep.Subsystem);
         }
 
@@ -67,7 +70,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                             {
                                 var cr = c.Consume(_cts.Token);
                                 var probe = cr.Message.Value;
-                                _logger?.Trace($"Probe is retrieved: [{probe}]"); //TEST
+                                _logger.Trace($"Probe is retrieved: [{probe}]"); //TEST
                                 try
                                 {
                                     ProbeReceived?.Invoke(probe);
@@ -75,7 +78,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                                 catch (Exception ex)
                                 {
                                     var mess = $"Processing of probe failed. Probe = [{probe}].";
-                                    _logger?.Error(mess, ex);
+                                    _logger.Error(mess, ex);
                                     ErrorOccuredHandler(this, true, true, mess + " Error: " + ex.Message);
                                 }
                             }
@@ -103,6 +106,16 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                     Thread.Sleep(2000); //yes, I think sync call is better, because the problem more likely is remote
                 }
             }
+        }
+
+        public void PrepareDefaultLogger()
+        {
+            var path = LoggerHelper.GetCommonFilePath(LoggerHelper.LOG_FOLDER);
+            var builder = new LogBuilder()
+                .AddSink(new FileSink(path))
+                .AddSink(new ConsoleSink()) //TODO: only for Debug or DebuggerAtached
+                .Build();
+            Log.Configure(builder);
         }
     }
 }

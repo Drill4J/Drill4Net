@@ -87,7 +87,7 @@ namespace Drill4Net.Repository
         /// <summary>
         /// The preparing the logger. It need be called from the client side.
         /// </summary>
-        internal protected void PrepareLogger()
+        public void PrepareLogger()
         {
             LogManager logger = null;
             var bld = new LogBuilder();
