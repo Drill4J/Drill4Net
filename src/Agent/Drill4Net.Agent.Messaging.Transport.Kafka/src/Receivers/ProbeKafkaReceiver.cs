@@ -67,7 +67,16 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                             {
                                 var cr = c.Consume(_cts.Token);
                                 var probe = cr.Message.Value;
-                                ProbeReceived?.Invoke(probe);
+                                try
+                                {
+                                    ProbeReceived?.Invoke(probe);
+                                }
+                                catch (Exception ex)
+                                {
+                                    var mess = $"Processing of probe failed. Probe  = [{probe}].";
+                                    _logger?.Error(mess, ex);
+                                    ErrorOccuredHandler(this, true, true, mess + " Error: " + ex.Message);
+                                }
                             }
                             //Unknown topic (is not create by Server yet)
                             catch (ConsumeException e) when (e.HResult == -2146233088) { }
@@ -85,7 +94,6 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
 
                         _logger.Warning("Consuming was cancelled", opex);
                         ErrorOccuredHandler(this, true, false, opex.Message);
-                        return;
                     }
                 }
                 catch (Exception ex)

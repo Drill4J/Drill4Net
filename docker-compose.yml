@@ -90,13 +90,13 @@ services:
       - drill4net-dev-network
 
   drill4net-service:
-    image: ghcr.io/epamx/drill4net:v0.9.0-118
+    image: ghcr.io/epamx/drill4net:v0.9.0-119
     container_name: drill4net-service
     environment:
       - MESSAGE_SERVER_ADDRESS=kafka1:9092
       - DRILL_ADMIN_ADDRESS=drill-admin:8090
-      - DEBUG_WRITE_PROBES=1
-      - DEBUG_TOPICS_DONT_DELETE=1
+      #- DEBUG_WRITE_PROBES=1
+      #- DEBUG_TOPICS_DONT_DELETE=1
     depends_on:
       kafka1:
         condition: service_healthy

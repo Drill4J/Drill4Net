@@ -14,7 +14,7 @@ WorkerDirs: # if not found, the local one for the Service is used (in Docker)
 Debug:
     Disabled: false
     DontStartWorker: false
-    DontDeleteTopics: true
+    DontDeleteTopics: false
 Logs:
     - Type: console
       Level: debug
