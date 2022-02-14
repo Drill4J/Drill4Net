@@ -317,28 +317,16 @@ namespace Drill4Net.Common
             return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
         }
 
-        //private static readonly object _tmpLogLocker = new();
-        //private static bool _errorOnTmpLog;
-        //public static void WriteTempLog(string content, string logFile = null)
-        //{
-        //    if (_errorOnTmpLog)
-        //        return;
-        //    if (string.IsNullOrWhiteSpace(logFile))
-        //        logFile = @"D:\drill_tmpLog.txt"; //Path.Combine(FileUtils.EntryDir, "drill_tmpLog.txt");
-        //    if (!Directory.Exists(Path.GetPathRoot(logFile)))
-        //        return;
-        //    try
-        //    {
-        //        var dir = Path.GetDirectoryName(logFile);
-        //        if (!Directory.Exists(dir))
-        //            Directory.CreateDirectory(dir);
-        //        lock (_tmpLogLocker)
-        //        {
-        //            File.AppendAllText(logFile, $"{GetPreciseTime()}|{content}\n");
-        //        }
-        //    }
-        //    catch { _errorOnTmpLog = true; }
-        //}
+        /// <summary>
+        /// Read environment variable from system
+        /// </summary>
+        /// <param name="var">Name of the variable</param>
+        /// <param name="source">For Docker use default (Process)</param>
+        /// <returns></returns>
+        public static string ReadEnvironmentVar(string var, EnvironmentVariableTarget source = EnvironmentVariableTarget.Process)
+        {
+            return Environment.GetEnvironmentVariable(var, source);
+        }
 
         public static bool IsStringMachRegexPattern(string s, string pattern)
         {

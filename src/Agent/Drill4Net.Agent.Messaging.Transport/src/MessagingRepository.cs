@@ -46,7 +46,7 @@ namespace Drill4Net.Agent.Messaging.Transport
             servers = new();
 
             //.NET Core on macOS and Linux does not support per-machine or per-user environment variables.
-            var val = Environment.GetEnvironmentVariable(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS, EnvironmentVariableTarget.Process);
+            var val = CommonUtils.ReadEnvironmentVar(CoreConstants.ENV_MESSAGE_SERVER_ADDRESS);
             if (val == null)
             {
                 Log.Info("The environment variable for message server addresses is empty - will be used the config's value");

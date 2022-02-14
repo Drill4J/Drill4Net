@@ -152,7 +152,7 @@ namespace Drill4Net.Agent.Standard
         private void GetDebugOptions()
         {
             //inside Docker
-            var fromEnvS = Environment.GetEnvironmentVariable(CoreConstants.ENV_DEBUG_WRITE_PROBES, EnvironmentVariableTarget.Process);
+            var fromEnvS = CommonUtils.ReadEnvironmentVar(CoreConstants.ENV_DEBUG_WRITE_PROBES);
             if (fromEnvS != null)
             {
                 _writeProbesToFile = int.TryParse(fromEnvS, out var fromEnv) && fromEnv == 1;
@@ -161,6 +161,7 @@ namespace Drill4Net.Agent.Standard
             else
             {
                 _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
+                _logger.Debug($"Probes writing mode from options: {_writeProbesToFile}");
             }
 
             if (_writeProbesToFile)
@@ -487,7 +488,7 @@ namespace Drill4Net.Agent.Standard
             _logger.Debug($"Command received: [{type}] -> [{data}]");
 
             var answer = Repository.RegisterCommand(command, data);
-            TestCaseContext testCtx;
+            TestCaseContext testCtx = null;
 
             switch (type)
             {
@@ -514,6 +515,9 @@ namespace Drill4Net.Agent.Standard
                     _logger.Warning($"Skipping command: [{type}] -> [{data}]");
                     break;
             }
+            //
+            if(testCtx != null)
+                _logger.Debug($"Actual test' context: [{type}] -> [{testCtx}]");
         }
 
         private TestCaseContext SyncTestCaseContext(string data, object registered)

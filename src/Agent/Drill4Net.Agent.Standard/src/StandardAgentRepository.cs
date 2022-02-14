@@ -156,7 +156,7 @@ namespace Drill4Net.Agent.Standard
         internal bool GetAdminAddressFromEnvVar(out string address)
         {
             //.NET Core on macOS and Linux does not support per-machine or per-user environment variables.
-            address = Environment.GetEnvironmentVariable(CoreConstants.ENV_DRILL_ADMIN_ADDRESS, EnvironmentVariableTarget.Process);
+            address = CommonUtils.ReadEnvironmentVar(CoreConstants.ENV_DRILL_ADMIN_ADDRESS);
             if (address == null)
             {
                 _logger.Info("The environment variable for Drill service address is empty - will be used the config's value");
