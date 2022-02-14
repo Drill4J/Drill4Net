@@ -6,6 +6,7 @@ namespace Drill4Net.Agent.Messaging.Kafka
 {
     public class ProbeKafkaSender : AbstractKafkaSender, IProbeSender
     {
+        private Message<Null, Probe> _mess;
         private IProducer<Null, Probe> _probeProducer;
         private List<string> _probeTopics;
 
@@ -19,12 +20,11 @@ namespace Drill4Net.Agent.Messaging.Kafka
 
         public int SendProbe(string data, string ctx)
         {
-            var probe = new Probe { Context = ctx, Data = data };
+            _mess.Value.Context = ctx;
+            _mess.Value.Data = data;
+
             foreach (var topic in _probeTopics)
-            {
-                var mess = new Message<Null, Probe> { Value = probe, Headers = _headers };
-                _probeProducer.Produce(topic, mess, HandleProbeData);
-            }
+                _probeProducer.Produce(topic, _mess, HandleProbeData);
 
             if (!IsError) //if there is no connection, it will come here without an error :(
                 return 0;
@@ -47,6 +47,8 @@ namespace Drill4Net.Agent.Messaging.Kafka
             _probeProducer = new ProducerBuilder<Null, Probe>(_cfg)
                 .SetValueSerializer(new ProbeSerializer())
                 .Build();
+
+            _mess = new Message<Null, Probe> { Value = new Probe(), Headers = _headers };
         }
 
         protected override string GetMessageType()

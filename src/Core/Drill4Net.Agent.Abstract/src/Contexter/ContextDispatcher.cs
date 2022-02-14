@@ -99,6 +99,12 @@ namespace Drill4Net.Agent.Abstract
 
         /**********************************************************************************/
 
+        /// <summary>
+        /// Register the specified command.
+        /// </summary>
+        /// <param name="command">The number (ID) of the command</param>
+        /// <param name="data">Input data for the command</param>
+        /// <returns>The answer (result) for the command.</returns>
         public object RegisterCommand(int command, string data)
         {
             _logger.Debug($"Command: [{command}] -> [{data}]");
