@@ -156,12 +156,12 @@ namespace Drill4Net.Agent.Standard
             if (fromEnvS != null)
             {
                 _writeProbesToFile = int.TryParse(fromEnvS, out var fromEnv) && fromEnv == 1;
-                _logger.Debug($"Probes writing mode from Env variables: {_writeProbesToFile}");
+                _logger.Debug($"Probes writing mode by Env variable: {_writeProbesToFile}");
             }
             else
             {
                 _writeProbesToFile = Repository.Options.Debug is { Disabled: false, WriteProbes: true };
-                _logger.Debug($"Probes writing mode from options: {_writeProbesToFile}");
+                _logger.Debug($"Probes writing mode by options: {_writeProbesToFile}");
             }
 
             if (_writeProbesToFile)
@@ -194,7 +194,7 @@ namespace Drill4Net.Agent.Standard
 
         #pragma warning disable AsyncFixer03 // Fire-and-forget async-void methods or delegates
         private async void Agent_Initialized()
-        #pragma warning restore AsyncFixer03 // Fire-and-forget async-void methods or delegates
+
         {
             if (IsInitialized)
                 return;
@@ -220,6 +220,7 @@ namespace Drill4Net.Agent.Standard
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }
+        #pragma warning restore AsyncFixer03 // Fire-and-forget async-void methods or delegates
         #endregion
         #region Events from Admin side
         /// <summary>
@@ -445,7 +446,12 @@ namespace Drill4Net.Agent.Standard
                 //var funcName = ar[2];
                 //var probe = ar[3];
 
-                _blocker.WaitOne(); 
+                if (_writeProbesToFile)
+                {
+                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, "Raw data: " + data);
+                }
+
+                _blocker.WaitOne();
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
                 //
                 if (_writeProbesToFile)
@@ -581,7 +587,7 @@ namespace Drill4Net.Agent.Standard
 
             //we need to finish test scope + force finish the session
             CoverageSender.SendFinishScopeAction();
-            ReleaseProbeProcessing(); //excess probes aren't need
+            ReleaseProbeProcessing(); //remained (already excess) probes aren't need
             await Task.Delay(5000); // it is really needed, kids
 
             _logger.Info($"Admin side session is stopped: [{session}]");
@@ -624,6 +630,8 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
+            BlockProbeProcessing();
+
             //in one test assembly can be different Engines are located. If such tests have started (xUnit 2.x) -
             //now is only sequential registering (with blocking probes between tests' finish/start)
             if (testCtx.Engine?.MustSequential == true)
@@ -633,7 +641,6 @@ namespace Drill4Net.Agent.Standard
             }
             _logger.Info(testCtx);
 
-            BlockProbeProcessing();
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
         }
