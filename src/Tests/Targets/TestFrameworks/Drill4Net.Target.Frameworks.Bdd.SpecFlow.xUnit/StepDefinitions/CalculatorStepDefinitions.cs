@@ -81,6 +81,14 @@ namespace Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.StepDefinitions
             _result = _calculator.Substract();
         }
 
+        [When("the two numbers are multiplied")]
+        public void WhenTheTwoNumbersAreMultiplied()
+        {
+            //action logic
+
+            _result = _calculator.Multiply();
+        }
+
         [Then("the int result should be (.*)")]
         public void ThenTheResultShouldBe(int result)
         {

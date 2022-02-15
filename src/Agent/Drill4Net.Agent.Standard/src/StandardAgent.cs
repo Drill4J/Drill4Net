@@ -452,6 +452,7 @@ namespace Drill4Net.Agent.Standard
                 }
 
                 _blocker.WaitOne();
+                _logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
                 //
                 if (_writeProbesToFile)

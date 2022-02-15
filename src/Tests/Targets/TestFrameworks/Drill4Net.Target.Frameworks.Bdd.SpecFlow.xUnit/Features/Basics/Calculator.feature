@@ -26,6 +26,13 @@ Scenario: Substracting is wrong
 	When the two numbers are substracted
 	Then the int result should be 0
 
+@multiply
+Scenario: Multiply two numbers
+	Given the first number is 2
+	And the second number is 5
+	When the two numbers are multiplied
+	Then the int result should be 10
+
 @wrongDefinition
 Scenario: Wrong definition
 	Given the first number is 4
