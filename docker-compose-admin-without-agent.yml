@@ -3,11 +3,11 @@ version: '3.9'
 services:
 
   drill-admin:
-    image: drill4j/admin:0.8.0-40
+    image: drill4j/admin:${BACK_VERSION:-0.8.0-40}
     environment:
-      - TEST2CODE_PLUGIN_VERSION=0.8.0-40
+      - TEST2CODE_PLUGIN_VERSION=${TEST2CODE_PLUGIN_VERSION:-0.8.0-40}
       - LOG_LEVEL=DEBUG
-      - DRILL_AGENTS_SOCKET_TIMEOUT=60
+      - DRILL_AGENTS_SOCKET_TIMEOUT=${DRILL_AGENTS_SOCKET_TIMEOUT:-60}
     healthcheck:
       test: curl --fail http://localhost:8090/apidocs/index.html?url=./openapi.json || exit 1
       interval: 10s
@@ -21,13 +21,13 @@ services:
       - drill4net-dev-network
 
   admin-ui:
-    image: drill4j/admin-ui-root-config:0.1.0-101
+    image: drill4j/admin-ui-root-config:${FRONT_VERSION:-0.1.0-101}
     restart: always
     ports:
       - 8091:8080
     environment:
-      WAIT_HOSTS: drill-admin:8090
-      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@0.1.0-104/dist/Drill4J-test-to-code.js
+      WAIT_HOSTS: ${DRILLADMIN_ADDRESS:-drill-admin}:8090
+      UI_PLUGINS_URLS: test2code#https://cdn.jsdelivr.net/npm/@drill4j/test2code-ui@${TEST2CODE_UI_VERSION:-0.1.0-104}/dist/Drill4J-test-to-code.js
     depends_on:
       drill-admin:
         condition: service_healthy
@@ -35,7 +35,7 @@ services:
       - drill4net-dev-network
 
   zookeeper:
-    image: bitnami/zookeeper:3.6.2 #3.7
+    image: bitnami/zookeeper:${ZOOKEEPER_VERSION:-3.7} #3.6.2 #3.7
     container_name: zookeeper
     ports:
       - '2181:2181'
@@ -49,17 +49,21 @@ services:
     networks:
       - drill4net-dev-network
       
+  #https://github.com/bitnami/bitnami-docker-kafka#accessing-apache-kafka-with-internal-and-external-clients
   kafka1:
-    image: bitnami/kafka:2.7.0 #2.5.0
+    image: bitnami/kafka:${KAFKA_VERSION:-2.7.0} #2.5.0
     container_name: kafka1
     ports:
       - '9093:9093'
     environment:
       - KAFKA_BROKER_ID=1
-      - KAFKA_LISTENERS=PLAINTEXT://:9093
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://host.docker.internal:9093
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka1:9092,EXTERNAL://${KAFKA_ADVERTISED_LISTENER:-localhost}:9093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -72,12 +76,12 @@ services:
       - drill4net-dev-network
   
   kafdrop:
-    image: obsidiandynamics/kafdrop:3.27.0
+    image: obsidiandynamics/kafdrop:${KAFDROP_VERSION:-3.27.0}
     container_name: kafdrop
     ports:
       - 9000:9000
     environment:
-      - KAFKA_BROKERCONNECT=kafka1:9093
+      - KAFKA_BROKERCONNECT=kafka1:9092
     depends_on:
       kafka1:
         condition: service_healthy
