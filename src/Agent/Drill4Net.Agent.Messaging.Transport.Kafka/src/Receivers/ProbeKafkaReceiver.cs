@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using Confluent.Kafka;
-using Drill4Net.BanderLog;
-using Drill4Net.BanderLog.Sinks.Console;
-using Drill4Net.BanderLog.Sinks.File;
 using Drill4Net.Repository;
+using Drill4Net.BanderLog;
+using Drill4Net.BanderLog.Sinks.File;
+using Drill4Net.BanderLog.Sinks.Console;
 
 namespace Drill4Net.Agent.Messaging.Transport.Kafka
 {

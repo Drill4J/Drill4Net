@@ -542,6 +542,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="isAutotests">Is it autotests' environment?</param>
         internal void StartAutoSession(string metadata, bool isAutotests)
         {
+            BlockProbeProcessing();
             var session = GetAutoSessionName(metadata);
             _logger.Info($"Admin side session is starting: [{session}]");
 
@@ -559,6 +560,7 @@ namespace Drill4Net.Agent.Standard
 
             CoverageSender.SendStartSessionCommand(session); //actually it starts the session
             _logger.Info($"Admin side session is started: [{session}]");
+            ReleaseProbeProcessing();
         }
 
         /// <summary>
