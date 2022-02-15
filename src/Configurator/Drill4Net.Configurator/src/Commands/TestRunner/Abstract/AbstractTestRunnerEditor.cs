@@ -103,7 +103,7 @@ Specify at least one tests' assembly.";
                 while (true)
                 {
                     question = dirRun.Assemblies.Count == 0 ? "Tests' assembly name" : "One more tests' assembly name";
-                    if (!_cli.AskFileName(question, out var asmName, null, false))
+                    if (!_cli.AskFileNameOrPath(question, out var asmName, null, false))
                         return false;
                     if (_cli.IsOk(asmName))
                         break;

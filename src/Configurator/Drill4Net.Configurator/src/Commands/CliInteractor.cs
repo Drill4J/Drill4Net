@@ -112,14 +112,14 @@ namespace Drill4Net.Configurator
             return true;
         }
 
-        public bool AskFileName(string question, out string fileName, string? defValue, bool showDefVal = true)
+        public bool AskFileNameOrPath(string question, out string fileName, string? defValue, bool showDefVal = true)
         {
             fileName = "";
             while (true)
             {
                 if (!AskQuestion(question, out fileName, defValue, showDefVal))
                     return false;
-                if (!CheckFileNameAnswer(ref fileName, "File name cannot be empty", false))
+                if (!CheckFileNameAnswer(ref fileName, "", false))
                     continue;
                 break;
             }
@@ -244,12 +244,15 @@ namespace Drill4Net.Configurator
                 RaiseWarning(mess);
                 return false;
             }
-            if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            if (Path.GetPathRoot(filename) == null) //this is just name
             {
-                if (string.IsNullOrWhiteSpace(mess))
-                    mess = "File name contains invalid symbols";
-                RaiseWarning(mess);
-                return false;
+                if (filename.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+                {
+                    if (string.IsNullOrWhiteSpace(mess))
+                        mess = "File name contains invalid symbols";
+                    RaiseWarning(mess);
+                    return false;
+                }
             }
 
             //I don't see a way to unambiguously check the correctness of the path that

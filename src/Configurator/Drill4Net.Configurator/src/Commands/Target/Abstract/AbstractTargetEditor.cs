@@ -300,7 +300,7 @@ Please make your choice";
                                 string plugCfgPath = "";
                                 while (true)
                                 {
-                                    if (!_cli.AskFileName(@$"Name or full path file for the 'target specific config' for plugin ""{plugName}"". Please, create this config out of the Configurator. Usually such files have the ""plug_"" prefix.",
+                                    if (!_cli.AskFileNameOrPath(@$"Name or full path file for the 'target specific config' for plugin ""{plugName}"". Please, create this config out of the Configurator. Usually such files have the ""plug_"" prefix.",
                                         out var plugCfgName, def, false))
                                         return false;
                                     if (string.IsNullOrWhiteSpace(plugCfgName))
