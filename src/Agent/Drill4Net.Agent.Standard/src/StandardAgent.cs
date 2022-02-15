@@ -560,7 +560,6 @@ namespace Drill4Net.Agent.Standard
 
             CoverageSender.SendStartSessionCommand(session); //actually it starts the session
             _logger.Info($"Admin side session is started: [{session}]");
-            ReleaseProbeProcessing();
         }
 
         /// <summary>

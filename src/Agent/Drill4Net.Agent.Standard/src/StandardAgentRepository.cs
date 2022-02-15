@@ -330,7 +330,6 @@ namespace Drill4Net.Agent.Standard
         /// Recreate the session
         /// </summary>
         /// <param name="info"></param>
-        /// <param name="context"></param>
         public void RecreateSessionData(StartSessionPayload info)
         {
             RemoveSessionData(info.SessionId);
