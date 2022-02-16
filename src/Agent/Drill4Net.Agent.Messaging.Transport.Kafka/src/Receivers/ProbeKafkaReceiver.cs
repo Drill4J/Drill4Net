@@ -70,7 +70,7 @@ namespace Drill4Net.Agent.Messaging.Transport.Kafka
                             {
                                 var cr = c.Consume(_cts.Token);
                                 var probe = cr.Message.Value;
-                                _logger.Trace($"Probe is retrieved: [{probe}]"); //TEST
+                                //_logger.Trace($"Probe is retrieved: [{probe}]"); //TEST
                                 try
                                 {
                                     ProbeReceived?.Invoke(probe);

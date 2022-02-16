@@ -452,7 +452,7 @@ namespace Drill4Net.Agent.Standard
                 }
 
                 _blocker.WaitOne();
-                _logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
+                //_logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
                 //
                 if (_writeProbesToFile)
@@ -516,7 +516,7 @@ namespace Drill4Net.Agent.Standard
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
                     testCtx = SyncTestCaseContext(data, answer);
-                    RegisterTestInfoFinish(testCtx).Wait();
+                    RegisterTestInfoFinish(testCtx);
                     break;
                 default:
                     _logger.Warning($"Skipping command: [{type}] -> [{data}]");
@@ -571,9 +571,9 @@ namespace Drill4Net.Agent.Standard
             var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
 
-            ReleaseProbeProcessing(); //any way?
-            await Task.Delay(2500); //any way?
-            await SendRemainedCoverage().ConfigureAwait(false);
+            ReleaseProbeProcessing();
+            await Task.Delay(5000);
+            SendRemainedCoverage();
             _sessionStarted = false;
             _curAutoSession = null;
 
@@ -590,7 +590,7 @@ namespace Drill4Net.Agent.Standard
             //we need to finish test scope + force finish the session
             CoverageSender.SendFinishScopeAction();
             ReleaseProbeProcessing(); //remained (already excess) probes aren't need
-            await Task.Delay(5000); // it is really needed, kids
+            await Task.Delay(7000); // it is really needed, kids
 
             _logger.Info($"Admin side session is stopped: [{session}]");
         }
@@ -646,24 +646,19 @@ namespace Drill4Net.Agent.Standard
             ReleaseProbeProcessing();
         }
 
-        internal async Task RegisterTestInfoFinish(TestCaseContext testCtx)
+        internal void RegisterTestInfoFinish(TestCaseContext testCtx)
         {
             if (_curAutoSession != null)
             {
-                await SendRemainedCoverage();
                 CoverageSender.RegisterTestCaseFinish(testCtx);
             }
         }
 
-        private async Task SendRemainedCoverage()
+        private void SendRemainedCoverage()
         {
             if (_curAutoSession != null)
             {
-                ReleaseProbeProcessing();
-                await Task.Delay(2500);
-                BlockProbeProcessing(true);
                 Repository.SendCoverage(_curAutoSession.SessionId);
-                ReleaseProbeProcessing();
             }
         }
         #endregion
