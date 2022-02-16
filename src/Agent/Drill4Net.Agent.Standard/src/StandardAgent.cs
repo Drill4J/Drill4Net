@@ -670,7 +670,7 @@ namespace Drill4Net.Agent.Standard
 
         private void BlockProbeProcessing()
         {
-            //if(_autotestsSequentialRegistering)
+            if(_autotestsSequentialRegistering)
                 _blocker.Reset();
         }
 
