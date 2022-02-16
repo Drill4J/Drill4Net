@@ -52,15 +52,6 @@ namespace Drill4Net.Agent.Worker
 
             _cmdSender = cmdSender ?? throw new ArgumentNullException(nameof(cmdSender));
 
-            _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
-            _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
-
-            _probeReceiver.ProbeReceived += Receiver_ProbeReceived;
-            _probeReceiver.ErrorOccured += Receiver_ErrorOccured;
-
-            _cmdReceiver.CommandReceived += Receiver_CommandReceived;
-            _cmdReceiver.ErrorOccured += Receiver_ErrorOccured;
-
             _cmdToTransTopics = GetCommandToTransmitterTopics();
             _logger.Debug($"Topics for commands to Transmitter: {string.Join(", ", _cmdToTransTopics)}");
 
@@ -73,6 +64,16 @@ namespace Drill4Net.Agent.Worker
         {
             if (IsStarted)
                 return;
+
+            _targetReceiver.TargetInfoReceived += Receiver_TargetInfoReceived;
+            _targetReceiver.ErrorOccured += Receiver_ErrorOccured;
+
+            _probeReceiver.ProbeReceived += Receiver_ProbeReceived;
+            _probeReceiver.ErrorOccured += Receiver_ErrorOccured;
+
+            _cmdReceiver.CommandReceived += Receiver_CommandReceived;
+            _cmdReceiver.ErrorOccured += Receiver_ErrorOccured;
+
             IsStarted = true;
             _logger.Info("Worker is starting");
 

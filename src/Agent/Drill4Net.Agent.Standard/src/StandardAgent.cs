@@ -650,7 +650,7 @@ namespace Drill4Net.Agent.Standard
         {
             if (_curAutoSession != null)
             {
-                //BlockProbeProcessing();
+                BlockProbeProcessing();
                 await SendRemainedCoverage();
                 CoverageSender.RegisterTestCaseFinish(testCtx);
             }
@@ -668,7 +668,7 @@ namespace Drill4Net.Agent.Standard
 
         private void BlockProbeProcessing()
         {
-            if(_autotestsSequentialRegistering)
+            //if(_autotestsSequentialRegistering)
                 _blocker.Reset();
         }
 
