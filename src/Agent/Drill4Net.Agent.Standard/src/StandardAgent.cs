@@ -571,8 +571,8 @@ namespace Drill4Net.Agent.Standard
             var session = _curAutoSession.SessionId;
             _logger.Info($"Agent have to stop the session: [{session}]");
 
-            ReleaseProbeProcessing(); //any way
-            await Task.Delay(2000);
+            ReleaseProbeProcessing(); //any way?
+            await Task.Delay(2000); //any way?
             await SendRemainedCoverage().ConfigureAwait(false);
             _sessionStarted = false;
             _curAutoSession = null;
@@ -632,6 +632,8 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
+            BlockProbeProcessing();
+
             //in one test assembly can be different Engines are located. If such tests have started (xUnit 2.x) -
             //now is only sequential registering (with blocking probes between tests' finish/start)
             if (testCtx.Engine?.MustSequential == true)
@@ -641,7 +643,6 @@ namespace Drill4Net.Agent.Standard
             }
             _logger.Info(testCtx);
 
-            BlockProbeProcessing();
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
         }
@@ -650,7 +651,6 @@ namespace Drill4Net.Agent.Standard
         {
             if (_curAutoSession != null)
             {
-                BlockProbeProcessing();
                 await SendRemainedCoverage();
                 CoverageSender.RegisterTestCaseFinish(testCtx);
             }
@@ -660,15 +660,18 @@ namespace Drill4Net.Agent.Standard
         {
             if (_curAutoSession != null)
             {
-                await Task.Delay(2500); // possibly this is inefficient: TODO control by probe's context (=test) by dict
+                ReleaseProbeProcessing();
+                await Task.Delay(2500);
+                BlockProbeProcessing();
                 Repository.SendCoverage(_curAutoSession.SessionId);
+                ReleaseProbeProcessing();
             }
         }
         #endregion
 
         private void BlockProbeProcessing()
         {
-            //if(_autotestsSequentialRegistering)
+            if(_autotestsSequentialRegistering)
                 _blocker.Reset();
         }
 
