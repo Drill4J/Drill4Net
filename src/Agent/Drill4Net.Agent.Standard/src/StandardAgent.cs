@@ -572,7 +572,7 @@ namespace Drill4Net.Agent.Standard
             _logger.Info($"Agent have to stop the session: [{session}]");
 
             ReleaseProbeProcessing(); //any way?
-            await Task.Delay(2000); //any way?
+            await Task.Delay(2500); //any way?
             await SendRemainedCoverage().ConfigureAwait(false);
             _sessionStarted = false;
             _curAutoSession = null;
