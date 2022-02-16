@@ -543,7 +543,7 @@ namespace Drill4Net.Agent.Standard
         /// <param name="isAutotests">Is it autotests' environment?</param>
         internal void StartAutoSession(string metadata, bool isAutotests)
         {
-            BlockProbeProcessing();
+            BlockProbeProcessing(true);
             var session = GetAutoSessionName(metadata);
             _logger.Info($"Admin side session is starting: [{session}]");
 
@@ -641,7 +641,7 @@ namespace Drill4Net.Agent.Standard
             }
             _logger.Info(testCtx);
 
-            BlockProbeProcessing();
+            BlockProbeProcessing(true);
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
         }
@@ -661,16 +661,16 @@ namespace Drill4Net.Agent.Standard
             {
                 ReleaseProbeProcessing();
                 await Task.Delay(2500);
-                BlockProbeProcessing();
+                BlockProbeProcessing(true);
                 Repository.SendCoverage(_curAutoSession.SessionId);
                 ReleaseProbeProcessing();
             }
         }
         #endregion
 
-        private void BlockProbeProcessing()
+        private void BlockProbeProcessing(bool force = false)
         {
-            if(_autotestsSequentialRegistering)
+            if(force || _autotestsSequentialRegistering)
                 _blocker.Reset();
         }
 
