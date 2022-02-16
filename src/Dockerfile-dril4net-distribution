@@ -1,0 +1,56 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/runtime:6.0 AS base
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY . .
+RUN ls -la build || true
+RUN rm -rf build/bin 
+RUN rm -rf build/obj
+RUN ls -la build || true
+RUN dotnet restore "src/Configurator/Drill4Net.Configurator.App/Drill4Net.Configurator.App.csproj"
+RUN dotnet restore "src/Injector/Drill4Net.Injector.App/Drill4Net.Injector.App.csproj"
+RUN dotnet restore "src/Agent/Drill4Net.Agent.TestRunner/Drill4Net.Agent.TestRunner.csproj"
+RUN dotnet restore "src/Agent/Drill4Net.Agent.Transmitter/Drill4Net.Agent.Transmitter.csproj"
+RUN dotnet restore "src/Agent/Drill4Net.Agent.Plugins.NUnit/Drill4Net.Agent.Plugins.NUnit.csproj"
+RUN dotnet restore "src/Agent/Drill4Net.Agent.Plugins.SpecFlow/Drill4Net.Agent.Plugins.SpecFlow.csproj"
+RUN dotnet restore "src/Agent/Drill4Net.Agent.Plugins.xUnit/Drill4Net.Agent.Plugins.xUnit.csproj"
+WORKDIR "/src/src/Configurator/Drill4Net.Configurator.App"
+RUN dotnet build "Drill4Net.Configurator.App.csproj" -c Release -o /distribution/Drill4Net.Configurator.App
+WORKDIR "/src/src/Injector/Drill4Net.Injector.App"
+RUN dotnet build "Drill4Net.Injector.App.csproj" -c Release -o /distribution/Drill4Net.Injector.App
+WORKDIR "/src/src/Agent/Drill4Net.Agent.TestRunner"
+RUN dotnet build "Drill4Net.Agent.TestRunner.csproj" -c Release -o /distribution/Drill4Net.Agent.TestRunner
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Transmitter"
+RUN dotnet build "Drill4Net.Agent.Transmitter.csproj" -c Release -o /distribution/Drill4Net.Agent.Transmitter
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.NUnit"
+RUN dotnet build "Drill4Net.Agent.Plugins.NUnit.csproj" -c Release -o /distribution/Drill4Net.Agent.Plugins.NUnit
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.SpecFlow"
+RUN dotnet build "Drill4Net.Agent.Plugins.SpecFlow.csproj" -c Release -o /distribution/Drill4Net.Agent.Plugins.SpecFlow
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.xUnit"
+RUN dotnet build "Drill4Net.Agent.Plugins.xUnit.csproj" -c Release -o /distribution/Drill4Net.Agent.Plugins.xUnit
+
+
+FROM build AS publish
+WORKDIR "/src/src/Configurator/Drill4Net.Configurator.App"
+RUN dotnet publish "Drill4Net.Configurator.App.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Configurator.App
+WORKDIR "/src/src/Injector/Drill4Net.Injector.App"
+RUN dotnet publish "Drill4Net.Injector.App.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Injector.App
+WORKDIR "/src/src/Agent/Drill4Net.Agent.TestRunner"
+RUN dotnet publish "Drill4Net.Agent.TestRunner.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Agent.TestRunner
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Transmitter"
+RUN dotnet publish "Drill4Net.Agent.Transmitter.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Agent.Transmitter
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.NUnit"
+RUN dotnet publish "Drill4Net.Agent.Plugins.NUnit.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Agent.Plugins.NUnit
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.SpecFlow"
+RUN dotnet publish "Drill4Net.Agent.Plugins.SpecFlow.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Agent.Plugins.SpecFlow
+WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.xUnit"
+RUN dotnet publish "Drill4Net.Agent.Plugins.xUnit.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Agent.Plugins.xUnit
+
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /publish .
+ENTRYPOINT [ "bash"]

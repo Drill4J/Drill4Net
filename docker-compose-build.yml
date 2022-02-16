@@ -13,3 +13,7 @@ services:
     build: # "context" and "dockerfile" fields have to be under "build"
       context: .
       dockerfile: ./src/Agent/Dockerfile
+  # dril4net-distribution:
+  #   build: # "context" and "dockerfile" fields have to be under "build"
+  #     context: .
+  #     dockerfile: ./src/Dockerfile-dril4net-distribution
