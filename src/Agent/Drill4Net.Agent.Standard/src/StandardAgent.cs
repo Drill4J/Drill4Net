@@ -632,8 +632,6 @@ namespace Drill4Net.Agent.Standard
 
         internal void RegisterTestInfoStart(TestCaseContext testCtx)
         {
-            BlockProbeProcessing();
-
             //in one test assembly can be different Engines are located. If such tests have started (xUnit 2.x) -
             //now is only sequential registering (with blocking probes between tests' finish/start)
             if (testCtx.Engine?.MustSequential == true)
@@ -643,6 +641,7 @@ namespace Drill4Net.Agent.Standard
             }
             _logger.Info(testCtx);
 
+            BlockProbeProcessing();
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
         }
@@ -671,7 +670,7 @@ namespace Drill4Net.Agent.Standard
 
         private void BlockProbeProcessing()
         {
-            if(_autotestsSequentialRegistering)
+            //if(_autotestsSequentialRegistering)
                 _blocker.Reset();
         }
 

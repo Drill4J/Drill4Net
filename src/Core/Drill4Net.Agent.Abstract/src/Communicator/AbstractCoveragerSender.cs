@@ -196,7 +196,7 @@ namespace Drill4Net.Agent.Abstract
         {
             //executed test case
             string test = testCtx.GetKey();
-            if (!_testCaseCtxs.TryGetValue(test, out Test2RunInfo info)) //this is bad
+            if (!_testCaseCtxs.TryRemove(test, out Test2RunInfo info)) //this is bad - is the test retrieved again?
                 info = PrepareTest2RunInfo(testCtx);
             info.result = testCtx.Result ?? nameof(TestResult.UNKNOWN);
             info.finishedAt = testCtx.FinishTime;

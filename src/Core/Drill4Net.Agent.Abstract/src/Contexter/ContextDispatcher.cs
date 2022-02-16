@@ -152,5 +152,16 @@ namespace Drill4Net.Agent.Abstract
             _contextBindings.TryAdd(sysCtx, ctx);
             return ctx;
         }
+
+        //at the current moment
+        public TestEngine GetContextEngine()
+        {
+            foreach (var ctxr in _contexters)
+            {
+                if (ctxr.GetContextId() != null)
+                    return ctxr.GetTestEngine();
+            }
+            return null;
+        }
     }
 }
