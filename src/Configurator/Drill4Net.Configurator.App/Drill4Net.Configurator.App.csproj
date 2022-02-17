@@ -14,6 +14,11 @@
 	  <DocumentationFile>..\..\..\doc\xml\Drill4Net.Configurator.App\Drill4Net.Configurator.App.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\build\bin\Release\Drill4Net.Configurator.App</OutputPath>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="1486504823-lab.ico" />
   </ItemGroup>
