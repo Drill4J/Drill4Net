@@ -14,13 +14,6 @@ RUN rm -rf build/obj
 RUN ls -la build || true
 RUN dotnet restore "src/Agent/Drill4Net.Agent.Service/Drill4Net.Agent.Service.csproj"
 RUN dotnet restore "src/Agent/Drill4Net.Agent.Worker/Drill4Net.Agent.Worker.csproj"
-RUN dotnet restore "src/Configurator/Drill4Net.Configurator.App/Drill4Net.Configurator.App.csproj"
-RUN dotnet restore "src/Injector/Drill4Net.Injector.App/Drill4Net.Injector.App.csproj"
-RUN dotnet restore "src/Agent/Drill4Net.Agent.TestRunner/Drill4Net.Agent.TestRunner.csproj"
-RUN dotnet restore "src/Agent/Drill4Net.Agent.Transmitter/Drill4Net.Agent.Transmitter.csproj"
-RUN dotnet restore "src/Agent/Drill4Net.Agent.Plugins.NUnit/Drill4Net.Agent.Plugins.NUnit.csproj"
-RUN dotnet restore "src/Agent/Drill4Net.Agent.Plugins.SpecFlow/Drill4Net.Agent.Plugins.SpecFlow.csproj"
-RUN dotnet restore "src/Agent/Drill4Net.Agent.Plugins.xUnit/Drill4Net.Agent.Plugins.xUnit.csproj"
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Service"
 RUN dotnet build "Drill4Net.Agent.Service.csproj" -c Release -o /app/build
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Worker"
