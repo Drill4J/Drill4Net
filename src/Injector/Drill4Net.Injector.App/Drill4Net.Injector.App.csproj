@@ -111,8 +111,8 @@
   </ItemGroup>
 
   <!--https://stackoverflow.com/questions/150053/how-to-run-visual-studio-post-build-events-for-debug-build-only-->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Debug ( &quot;$(OutDir)$(ProjectName).exe&quot; --silent --cfg_path=$(SolutionDir)src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Engine\post_build_cfg.yml )" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ConfigurationName) == Debug">
+    <Exec Command="&quot;$(OutDir)$(ProjectName).exe&quot; --silent --cfg_path=$(SolutionDir)src\Tests\IntegrationTests\Engine\Drill4Net.Target.Tests.Engine\post_build_cfg.yml" />
   </Target>
 
 </Project>
