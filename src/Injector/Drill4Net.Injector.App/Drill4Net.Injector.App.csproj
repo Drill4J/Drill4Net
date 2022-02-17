@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6.0</TargetFrameworks>
-	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	<RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
 	<LangVersion>latest</LangVersion>
 	<ApplicationIcon>syringe-58824.ico</ApplicationIcon>
   </PropertyGroup>

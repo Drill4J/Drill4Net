@@ -135,7 +135,7 @@ namespace Drill4Net.Configurator
 
 {HelpHelper.GetArgumentsForSourceConfig(CoreConstants.SUBSYSTEM_CI, RawContexts, "ci", true)}
 
-In a real CI/CD pipelines you should use --version option to specify version of the target(s), if you don't change the version in the Injector or agent configs directly (and automatically) each CI run.
+In a real CI/CD pipelines you should use --{CoreConstants.ARGUMENT_TARGET_VERSION} option to specify version of the target(s), if you don't change the version in the Injector or agent configs directly (and automatically) each CI run.
 
     Example: {RawContexts} --{CoreConstants.ARGUMENT_TARGET_VERSION}=0.1.0
 

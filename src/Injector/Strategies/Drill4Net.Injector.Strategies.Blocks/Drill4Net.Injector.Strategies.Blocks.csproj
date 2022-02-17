@@ -14,6 +14,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\..\build\bin\Release\Drill4Net.Injector.Strategies.Blocks</OutputPath>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
