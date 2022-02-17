@@ -4,8 +4,8 @@ using Drill4Net.Injector.Core;
 
 //automatic version tagger including Git info
 //https://github.com/devlooped/GitInfo
-[assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
-[assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
+// [assembly: AssemblyFileVersion(CommonUtils.AssemblyFileGitVersion)]
+// [assembly: AssemblyInformationalVersion(CommonUtils.AssemblyProductVersion)]
 
 namespace Drill4Net.Injector.Strategies.Blocks
 {

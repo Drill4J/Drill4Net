@@ -35,9 +35,9 @@ RUN dotnet build "Drill4Net.Agent.Plugins.xUnit.csproj" -c Release -o /distribut
 
 FROM build AS publish
 WORKDIR "/src/src/Configurator/Drill4Net.Configurator.App"
-RUN dotnet publish "Drill4Net.Configurator.App.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Configurator.App
+RUN dotnet publish "Drill4Net.Configurator.App.csproj" -c Release --runtime win-x64 --framework net6.0 -o /publish/Drill4Net.Configurator.App
 WORKDIR "/src/src/Injector/Drill4Net.Injector.App"
-RUN dotnet publish "Drill4Net.Injector.App.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Injector.App
+RUN dotnet publish "Drill4Net.Injector.App.csproj" -c Release --runtime win-x64 --framework net6.0 -o /publish/Drill4Net.Injector.App
 WORKDIR "/src/src/Agent/Drill4Net.Agent.TestRunner"
 RUN dotnet publish "Drill4Net.Agent.TestRunner.csproj" -c Release --runtime win-x64 -o /publish/Drill4Net.Agent.TestRunner
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Transmitter"
