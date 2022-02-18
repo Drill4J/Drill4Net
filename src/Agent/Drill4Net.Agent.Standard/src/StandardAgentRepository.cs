@@ -245,7 +245,6 @@ namespace Drill4Net.Agent.Standard
         /// <summary>
         /// Get tool types, taking into account the current version of the target framework.
         /// </summary>
-        /// <param name="tree">The tree data of injected assemblies.</param>
         /// <returns></returns>
         public void SetTypesByTargetVersion()
         {
@@ -454,7 +453,7 @@ namespace Drill4Net.Agent.Standard
                 var res = reg.RegisterCoverage(pointUid, out missReason);
                 if (!res && !_wasNoRegistraton)
                 {
-                    _logger.Error($"NO POINT REGISTRATION. Point={pointUid}. This is signaled only at the first appearance.");
+                    _logger.Error($"NO POINT REGISTRATION: [{pointUid}] -> [{ctx}]. This is signaled only at the first appearance. Reason: [{missReason}]");
                     _wasNoRegistraton = true;
 
                     //first 5 potentially alien points
@@ -465,6 +464,10 @@ namespace Drill4Net.Agent.Standard
             }
             else
             {
+                if (_globalRegistrator == null)
+                {
+                    _logger.Error($"NO POINT REGISTRATOR: [{pointUid}] -> [{ctx}]");
+                }
                 return isGlobalReg;
             }
         }
@@ -597,7 +600,7 @@ namespace Drill4Net.Agent.Standard
                 var session = TryGetLocalSession();
                 if (session == null)
                 {
-                    //_logger.Warning($"No session for context [{ctx}]");
+                    _logger.Warning($"No session for context [{ctx}]");
                     return null;
                 }
                 reg = CreateCoverageRegistrator(ctx, session);

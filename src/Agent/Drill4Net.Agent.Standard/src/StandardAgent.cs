@@ -422,22 +422,27 @@ namespace Drill4Net.Agent.Standard
                 //_logger.Trace($"data={data}; ctx={ctx}");
 
                 #region Checks
-                //in Worker we can work only with one autotests' Target/suite/session (I still think so)
-                //yes, some needless probes of tests' infrastructure we should & can to lose
-                if (_isAutotests)
-                {
-                    if (_curAutoSession == null)
-                        return;
-                    if (ctx?.StartsWith(AgentConstants.CONTEXT_SYSTEM_PREFIX) == true)
-                        return;
-                }
-                if (Repository?.IsAnySession != true)
-                    return;
                 if (string.IsNullOrWhiteSpace(data))
                 {
                     _logger.Error("Data is empty");
                     return;
                 }
+
+                //in Worker we can work only with one autotests' Target/suite/session (I still think so)
+                //yes, some needless probes of tests' infrastructure we should & can to lose
+                if (_isAutotests)
+                {
+                    if (_curAutoSession == null)
+                    {
+                        _logger.Error($"No session for autotests: [{ctx}]");
+                        return;
+                    }
+                    if (ctx?.StartsWith(AgentConstants.CONTEXT_SYSTEM_PREFIX) == true)
+                        return;
+                }
+
+                if (Repository?.IsAnySession != true)
+                    return;
                 #endregion
 
                 var ar = data.Split('^'); //data can contains some additional info in the debug mode
@@ -452,9 +457,13 @@ namespace Drill4Net.Agent.Standard
                 }
 
                 _blocker.WaitOne();
-                //_logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
+                _logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
                 //
+                if (!res)
+                {
+                    _logger.Error("No point registration");
+                }
                 if (_writeProbesToFile)
                 {
                     var mess = $"[{ctx}] -> {probeUid} -> {res}";
@@ -589,7 +598,6 @@ namespace Drill4Net.Agent.Standard
 
             //we need to finish test scope + force finish the session
             CoverageSender.SendFinishScopeAction();
-            ReleaseProbeProcessing(); //remained (already excess) probes aren't need
             await Task.Delay(7000); // it is really needed, kids
 
             _logger.Info($"Admin side session is stopped: [{session}]");

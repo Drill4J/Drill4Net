@@ -129,13 +129,13 @@ namespace Drill4Net.Agent.Standard
             reason = null;
             if (!PointToRanges.TryGetValue(pointUid, out (int Start, int End) range)) //it's error
             {
-                reason = $"No point to range for: {pointUid}. PointToRanges.Count={PointToRanges.Count}";
+                reason = $"No point binding to range for: {pointUid}. PointToRanges.Count={PointToRanges.Count}";
                 return false;
             }
             //it's normal, but not the best (for the block coverage we not need "Enter" type of cross-points, another case is a possible error)
             if (!PointToTypes.TryGetValue(pointUid, out var classData))
             {
-                reason = $"No point to classData for: {pointUid} (it is just warning). PointToTypes.Count={PointToTypes.Count}";
+                reason = $"No point binding to classData for: {pointUid} (it is just warning). PointToTypes.Count={PointToTypes.Count}";
                 return false;
             }
             //
@@ -179,7 +179,7 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Context=[{Context}]; Session=[{Session?.SessionId}]; TestName=[{Session?.TestName}]; Type={Session? .TestType}";
+            return $"Context=[{Context}]; Session=[{Session?.SessionId}]; TestName=[{Session?.TestName}]; Type={Session?.TestType}";
         }
     }
 }
