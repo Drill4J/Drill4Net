@@ -419,7 +419,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                //_logger.Trace($"data={data}; ctx={ctx}");
+                _logger.Trace($"Get probe: data={data}; ctx={ctx}");
 
                 #region Checks
                 if (string.IsNullOrWhiteSpace(data))
@@ -452,14 +452,13 @@ namespace Drill4Net.Agent.Standard
                 //var probe = ar[3];
 
                 if (_writeProbesToFile)
-                {
                     _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, "Raw data: " + data);
-                }
 
                 _blocker.WaitOne();
                 _logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
-                //
+
+                #region Logging
                 if (!res)
                 {
                     _logger.Error("No point registration");
@@ -471,6 +470,7 @@ namespace Drill4Net.Agent.Standard
                         mess += $": {warning}";
                     _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, mess);
                 }
+                #endregion
             }
             catch (Exception ex)
             {
