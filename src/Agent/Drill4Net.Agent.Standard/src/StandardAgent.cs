@@ -78,7 +78,7 @@ namespace Drill4Net.Agent.Standard
             }
 
             _logger.Info("Wait for command to continue executing...");
-            _blocker.WaitOne();
+            _blocker.Wait();
         }
 
         /// <summary>
@@ -438,7 +438,7 @@ namespace Drill4Net.Agent.Standard
                 if (_writeProbesToFile)
                     _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, "Raw data: " + data);
 
-                _blocker.WaitOne();
+                _blocker.Wait();
 
                 #region Checks 2
                 //in Worker we can work only with one autotests' Target/suite/session (I still think so)
