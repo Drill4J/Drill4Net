@@ -464,9 +464,10 @@ namespace Drill4Net.Agent.Standard
             }
             else
             {
-                if (_globalRegistrator == null)
+                if (_globalRegistrator == null && _wasNoRegistraton)
                 {
-                    _logger.Error($"NO POINT REGISTRATOR: [{pointUid}] -> [{ctx}]");
+                    _wasNoRegistraton = true;
+                    _logger.Error($"NO POINT REGISTRATORS: [{pointUid}] -> [{ctx}]. This is signaled only at the first appearance.");
                 }
                 return isGlobalReg;
             }

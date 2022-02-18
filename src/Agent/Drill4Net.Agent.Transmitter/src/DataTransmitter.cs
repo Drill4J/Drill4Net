@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Transmitter
         private readonly FileSink _probeLogger;
         private readonly bool _writeProbesToFile;
 
-        private static readonly ManualResetEvent _initEvent = new(false);
+        private static readonly ManualResetEventSlim _initBlocker = new(false);
         private bool _disposed;
 
         /***********************************************************************************/
@@ -81,7 +81,7 @@ namespace Drill4Net.Agent.Transmitter
             _logger.Debug("Initialized.");
             _logger.Info("Wait for command to continue executing...");
 
-            _initEvent.WaitOne();
+            _initBlocker.Wait();
         }
 
         private DataTransmitter(TransmitterRepository rep)
@@ -193,7 +193,7 @@ namespace Drill4Net.Agent.Transmitter
             {
                 case AgentCommandType.TRANSMITTER_CAN_CONTINUE:
                     _logger.Info("Unlock the Target");
-                    _initEvent.Set();
+                    _initBlocker.Set();
                     break;
                 default:
                     _logger.Error($"Unknown command: [{command}]");

@@ -31,7 +31,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         private readonly AdminRequester _requester;
         private const string Subsystem = CoreConstants.SUBSYSTEM_TEST_RUNNER;
-        private readonly ManualResetEvent _initEvent = new(false);
+        private readonly ManualResetEventSlim _initBlocker = new(false);
         private readonly Logger _logger;
 
         /***************************************************************************/
@@ -58,7 +58,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             _agent.Initialized += AgentInitialized;
 
             _logger.Debug("Wait for the agent's initializing...");
-            _initEvent.WaitOne(); //waiting for agent's init
+            _initBlocker.Wait(); //waiting for agent's init
         }
 
         /***************************************************************************/
@@ -84,7 +84,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         private void AgentInitialized()
         {
-            _initEvent.Set();
+            _initBlocker.Set();
         }
 
         internal async Task<DirectoryRunInfo> GetRunInfo()
