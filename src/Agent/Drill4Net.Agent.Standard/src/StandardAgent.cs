@@ -53,7 +53,7 @@ namespace Drill4Net.Agent.Standard
         private static InitActiveScope _scope;
         private static bool _isFastInitializing;
         private static readonly object _entitiesLocker;
-        private static readonly ManualResetEvent _blocker = new(false);
+        private static readonly ManualResetEventSlim _blocker = new(false);
 
         private static Logger _logger;
         private static FileSink _probeLogger;
