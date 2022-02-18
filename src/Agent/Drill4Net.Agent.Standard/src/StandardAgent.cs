@@ -53,7 +53,9 @@ namespace Drill4Net.Agent.Standard
         private static InitActiveScope _scope;
         private static bool _isFastInitializing;
         private static readonly object _entitiesLocker;
-        private static readonly ManualResetEventSlim _blocker = new(false);
+
+        private static readonly ManualResetEventSlim _agentBlocker = new(false);
+        private static readonly ManualResetEventSlim _probeBlocker = new(false);
 
         private static Logger _logger;
         private static FileSink _probeLogger;
@@ -78,7 +80,7 @@ namespace Drill4Net.Agent.Standard
             }
 
             _logger.Info("Wait for command to continue executing...");
-            _blocker.Wait();
+            _agentBlocker.Wait();
         }
 
         /// <summary>
@@ -216,7 +218,7 @@ namespace Drill4Net.Agent.Standard
             //
             IsInitialized = true;
             RaiseInitilizedEvent(); //external delegates
-            ReleaseProbeProcessing();
+            _agentBlocker.Set();
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }
@@ -438,7 +440,7 @@ namespace Drill4Net.Agent.Standard
                 if (_writeProbesToFile)
                     _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, "Raw data: " + data);
 
-                _blocker.Wait();
+                _probeBlocker.Wait();
 
                 #region Checks 2
                 //in Worker we can work only with one autotests' Target/suite/session (I still think so)
@@ -677,12 +679,12 @@ namespace Drill4Net.Agent.Standard
         private void BlockProbeProcessing(bool force = false)
         {
             if(force || _autotestsSequentialRegistering)
-                _blocker.Reset();
+                _probeBlocker.Reset();
         }
 
         private void ReleaseProbeProcessing()
         {
-            _blocker.Set();
+            _probeBlocker.Set();
         }
     }
 }
