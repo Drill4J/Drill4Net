@@ -427,7 +427,20 @@ namespace Drill4Net.Agent.Standard
                     _logger.Error("Data is empty");
                     return;
                 }
+                #endregion
 
+                var ar = data.Split('^'); //data can contains some additional info in the debug mode
+                var probeUid = ar[0];
+                //var asmName = ar[1];
+                //var funcName = ar[2];
+                //var probe = ar[3];
+
+                if (_writeProbesToFile)
+                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, "Raw data: " + data);
+
+                _blocker.WaitOne();
+
+                #region Checks 2
                 //in Worker we can work only with one autotests' Target/suite/session (I still think so)
                 //yes, some needless probes of tests' infrastructure we should & can to lose
                 if (_isAutotests)
@@ -445,16 +458,6 @@ namespace Drill4Net.Agent.Standard
                     return;
                 #endregion
 
-                var ar = data.Split('^'); //data can contains some additional info in the debug mode
-                var probeUid = ar[0];
-                //var asmName = ar[1];
-                //var funcName = ar[2];
-                //var probe = ar[3];
-
-                if (_writeProbesToFile)
-                    _probeLogger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, "Raw data: " + data);
-
-                _blocker.WaitOne();
                 _logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
 
