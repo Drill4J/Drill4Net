@@ -421,7 +421,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
-                //_logger.Trace($"Get probe: data={data}; ctx={ctx}");
+                _logger.Trace($"Get probe: data={data}; ctx={ctx}");
 
                 #region Checks
                 if (string.IsNullOrWhiteSpace(data))
@@ -460,7 +460,7 @@ namespace Drill4Net.Agent.Standard
                     return;
                 #endregion
 
-                //_logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
+                _logger.Trace($"Probe goes to the processing: [{probeUid}] -> [{ctx}]");
                 var res = Repository.RegisterCoverage(probeUid, ctx, out var warning);
 
                 #region Logging
