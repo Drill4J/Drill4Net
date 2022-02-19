@@ -161,6 +161,11 @@ namespace Drill4Net.Injector.Core
             //
             if(FileUtils.AreFoldersNested(sourceDir, destDir))
                 throw new Exception("The source and destination directories are nested - this is forbidden.");
+            
+            //Filter (if no one rule)
+            var filter = opts.Source.Filter;
+            if(filter.Excludes.GetRuleCount() + filter.Includes.GetRuleCount() == 0)
+                throw new Exception("There are no filtering rules for the injected entities.");
         }
     }
 }

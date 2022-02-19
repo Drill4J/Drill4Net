@@ -18,6 +18,16 @@ namespace Drill4Net.Common
 
         /**********************************************************/
 
+        public int GetRuleCount()
+        {
+            return GetCount(Directories) + GetCount(Folders) + GetCount(Files) + GetCount(Namespaces) + GetCount(Classes) + GetCount(Attributes);
+        }
+
+        private int GetCount(List<string> list)
+        {
+            return (list?.Count) ?? 0;
+        }
+
         public void AddDirectory(string dir)
         {
             if (Directories == null)

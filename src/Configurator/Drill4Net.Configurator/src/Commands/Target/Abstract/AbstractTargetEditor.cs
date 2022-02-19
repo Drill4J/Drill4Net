@@ -133,8 +133,6 @@ You can enter several rules in separate strings, e.g. first for files, then for 
 Separate several entities in one rule with a comma. 
 You can use Include and Exclude rules at the same time. By default, a rule has Include type.
 
-
-
 The filters:
   - By directory (full path). Examples:
        {ConfiguratorConstants.FILTER_TYPE_DIR}=d:\Projects\ABC\  (include rule by default)
@@ -160,8 +158,8 @@ Hint: to set up value for ""all entities of current filter type"" use sign *. Ex
 To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".";
             RaiseMessage(filterHint, CliMessageType.Help);
 
-            const string? filterQuestion = "Please create at least one filter rule";
-            RaiseQuestion($"\n{filterQuestion}: ");
+            const string? filterQuestion = "Please create at least one filter rule (or skip this step now, but in this case you will need to manually create the above rules directly in the saved config):";
+            RaiseQuestion($"\n{filterQuestion}");
 
             while (true)
             {
