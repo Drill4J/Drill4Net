@@ -132,7 +132,7 @@ namespace Drill4Net.Agent.Standard
             Communicator = GetCommunicator(Options.Admin, targData, Options.Connector);
 
             //timer for periodically sending coverage data to admin side
-            _sendTimer = new System.Timers.Timer(1200);
+            _sendTimer = new System.Timers.Timer(1000);
             _sendTimer.Elapsed += Timer_Elapsed;
 
             _logger.Debug("Created.");
@@ -497,18 +497,18 @@ namespace Drill4Net.Agent.Standard
                 if (_globalRegistrator != null)
                     SendCoverageData(_globalRegistrator);
 
-                //clean old regs
-                var timeout = new TimeSpan(0, 1, 0);
-                var oldRegs = _ctxToRegistrators.Values.Where(a => a.AffectedProbeCount == 0 && (DateTime.Now - a.SentTime) > timeout).AsParallel();
-                foreach(var reg in oldRegs)
-                    _ctxToRegistrators.TryRemove(reg.Context, out _);
-
                 //send coverage
                 var regs = _ctxToRegistrators.Values.Where(a => a.AffectedProbeCount > 0).AsParallel();
                 foreach (var reg in regs)
                 {
                     SendCoverageData(reg);
                 }
+
+                //clean old regs
+                var timeout = new TimeSpan(0, 5, 0);
+                var oldRegs = _ctxToRegistrators.Values.Where(a => a.AffectedProbeCount == 0 && (DateTime.Now - a.SentTime) > timeout).AsParallel();
+                foreach (var reg in oldRegs)
+                    _ctxToRegistrators.TryRemove(reg.Context, out _);
             }
         }
 

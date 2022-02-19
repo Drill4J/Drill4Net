@@ -27,7 +27,7 @@ namespace Drill4Net.Agent.Plugins.NUnit3
             var method = test.FullName;
             if (method?.Contains("Internal.TestExecutionContext+") == true) //in fact, NUnit's context is absent
                 return null;
-            if (_method2ctxs.TryGetValue(method, out var context))
+            if (_method2ctxs.TryGetValue(method, out var context)) //context == test case for autotests
                 return context;
             else
                 return method;
@@ -49,9 +49,9 @@ namespace Drill4Net.Agent.Plugins.NUnit3
                 return (false, null);
             if (string.IsNullOrWhiteSpace(data))
                 return (true, null);
-            var methodOrCtx = GetContextId(); // in fact, initially it will be real method name, not useful context (test case name, etc)
-            if(methodOrCtx == null)
-                return (true, null);
+            var method = GetContextId(); // in fact, initially it will be real method name, not useful context (test case name, etc)
+            if(method == null)
+                return (true, null); //true is normal - the context is not for NUnit
             //
             TestCaseContext testCaseCtx = null;
             switch ((AgentCommandType)command)
@@ -59,7 +59,7 @@ namespace Drill4Net.Agent.Plugins.NUnit3
                 case AgentCommandType.TEST_CASE_START:
                     testCaseCtx = GetTestCaseContext(data);
                     //now bind the method and useful context, so next time (for probes) GetContextId() will return the real context
-                    _method2ctxs.TryAdd(methodOrCtx, testCaseCtx.GetKey());
+                    _method2ctxs.TryAdd(method, testCaseCtx.GetKey());
                     break;
                 case AgentCommandType.TEST_CASE_STOP:
                     testCaseCtx = GetTestCaseContext(data);

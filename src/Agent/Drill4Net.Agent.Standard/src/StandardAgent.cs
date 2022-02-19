@@ -53,8 +53,6 @@ namespace Drill4Net.Agent.Standard
         private static InitActiveScope _scope;
         private static bool _isFastInitializing;
         private static readonly object _entitiesLocker;
-
-        private static readonly ManualResetEventSlim _agentBlocker = new(false);
         private static readonly ManualResetEventSlim _probeBlocker = new(false);
 
         private static Logger _logger;
@@ -80,7 +78,7 @@ namespace Drill4Net.Agent.Standard
             }
 
             _logger.Info("Wait for command to continue executing...");
-            _agentBlocker.Wait();
+            StandardAgentBlocker.Wait();
         }
 
         /// <summary>
@@ -194,9 +192,8 @@ namespace Drill4Net.Agent.Standard
                 Agent_Initialized();
         }
 
-        #pragma warning disable AsyncFixer03 // Fire-and-forget async-void methods or delegates
+#pragma warning disable AsyncFixer03 // Fire-and-forget async-void methods or delegates
         private async void Agent_Initialized()
-
         {
             if (IsInitialized)
                 return;
@@ -218,11 +215,11 @@ namespace Drill4Net.Agent.Standard
             //
             IsInitialized = true;
             RaiseInitilizedEvent(); //external delegates
-            _agentBlocker.Set();
+            StandardAgentBlocker.Release();
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }
-        #pragma warning restore AsyncFixer03 // Fire-and-forget async-void methods or delegates
+#pragma warning restore AsyncFixer03 // Fire-and-forget async-void methods or delegates
         #endregion
         #region Events from Admin side
         /// <summary>
@@ -235,6 +232,7 @@ namespace Drill4Net.Agent.Standard
                 Repository.RegisterAllSessionsCancelled(); //just in case
                 _scope = scope;
                 CoverageSender.SendScopeInitialized(scope, CommonUtils.GetCurrentUnixTimeMs());
+                _logger.Debug($"Scope is initialized: [{scope.Payload.Name}]");
             }
             catch (Exception ex)
             {
@@ -249,6 +247,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
+                _logger.Debug("The classes are requested");
                 lock (_entitiesLocker)
                 {
                     _entities = Repository.GetEntities();
@@ -318,6 +317,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
+                _logger.Info($"Session is finished: [{info.Payload.SessionId}]");
                 RegisterFinishedSession(info.Payload.SessionId);
             }
             catch (Exception ex)
@@ -537,14 +537,14 @@ namespace Drill4Net.Agent.Standard
                     break;
             }
             //
-            if(testCtx != null)
+            if (testCtx != null)
                 _logger.Debug($"Actual test' context: [{type}] -> [{testCtx}]");
         }
 
         private TestCaseContext SyncTestCaseContext(string data, object registered)
         {
             var actual = Repository.GetTestCaseContext(data);
-            if(registered != null && registered is TestCaseContext context)
+            if (registered != null && registered is TestCaseContext context)
                 actual.Engine = context.Engine; //guanito
             return actual;
         }
@@ -603,7 +603,7 @@ namespace Drill4Net.Agent.Standard
 
             //we need to finish test scope + force finish the session
             CoverageSender.SendFinishScopeAction();
-            await Task.Delay(7000); // it is really needed, kids
+            await Task.Delay(8000); // it is really needed, kids
 
             _logger.Info($"Admin side session is stopped: [{session}]");
         }
@@ -654,6 +654,7 @@ namespace Drill4Net.Agent.Standard
             }
             _logger.Info(testCtx);
 
+            //Blocking and releasing are needed for the "Agent-in-Target scheme"
             BlockProbeProcessing(true);
             CoverageSender.RegisterTestCaseStart(testCtx);
             ReleaseProbeProcessing();
@@ -663,6 +664,7 @@ namespace Drill4Net.Agent.Standard
         {
             if (_curAutoSession != null)
             {
+                BlockProbeProcessing();
                 CoverageSender.RegisterTestCaseFinish(testCtx);
             }
         }
@@ -672,13 +674,14 @@ namespace Drill4Net.Agent.Standard
             if (_curAutoSession != null)
             {
                 Repository.SendCoverage(_curAutoSession.SessionId);
+                ReleaseProbeProcessing();
             }
         }
         #endregion
 
         private void BlockProbeProcessing(bool force = false)
         {
-            if(force || _autotestsSequentialRegistering)
+            if (force || _autotestsSequentialRegistering)
                 _probeBlocker.Reset();
         }
 
@@ -686,5 +689,13 @@ namespace Drill4Net.Agent.Standard
         {
             _probeBlocker.Set();
         }
+    }
+
+    internal static class StandardAgentBlocker
+    {
+        private static readonly ManualResetEventSlim _agentBlocker = new(false);
+
+        internal static void Wait() { _agentBlocker.Wait();  }
+        internal static void Release() { _agentBlocker.Set(); }
     }
 }
