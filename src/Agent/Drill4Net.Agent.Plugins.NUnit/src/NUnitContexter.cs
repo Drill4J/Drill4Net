@@ -26,7 +26,7 @@ namespace Drill4Net.Agent.Plugins.NUnit3
             return GetContextIdInner(true).Result;
         }
 
-        public async Task<string> GetContextIdInner(bool canWait)
+        private async Task<string> GetContextIdInner(bool canWait)
         {
             var test = NUnit.Framework.TestContext.CurrentContext?.Test;
             if (test?.MethodName == null)
@@ -34,7 +34,7 @@ namespace Drill4Net.Agent.Plugins.NUnit3
             var method = test.FullName;
             if (method?.Contains("Internal.TestExecutionContext+") == true) //in fact, NUnit's context is absent
                 return null;
-            var timeout = DateTime.Now.AddSeconds(2);
+            var timeout = DateTime.Now.AddSeconds(3);
             while (true)
             {
                 if (_method2ctxs.TryGetValue(method, out var context)) //context == test case for autotests
