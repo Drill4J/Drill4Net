@@ -275,6 +275,7 @@ namespace Drill4Net.Injector.Engine
         private List<IInjectorPlugin> GetPlugins(InjectorOptions opts)
         {
             var plugins = new List<IInjectorPlugin>();
+            var optPlugins = opts.Plugins;
 
             //TODO: loads them dynamically from the disk by cfg
 
@@ -286,9 +287,12 @@ namespace Drill4Net.Injector.Engine
             //...and use generated Proxy namespace
 
             //SpecFlow
-            var plugCfg = GetPluginOptions(SpecFlowGeneratorContexter.PluginName, opts.Plugins);
-            if (!string.IsNullOrWhiteSpace(plugCfg?.Directory))
-                plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
+            if (optPlugins.ContainsKey(SpecFlowGeneratorContexter.PluginName))
+            {
+                var plugCfg = GetPluginOptions(SpecFlowGeneratorContexter.PluginName, opts.Plugins);
+                if (!string.IsNullOrWhiteSpace(plugCfg?.Directory))
+                    plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
+            }
 
             return plugins;
         }
