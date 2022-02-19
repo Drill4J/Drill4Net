@@ -1,6 +1,8 @@
 ﻿using Drill4Net.Common;
 using Drill4Net.Agent.Abstract;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System;
 
 namespace Drill4Net.Agent.Plugins.NUnit3
 {
@@ -21,16 +23,38 @@ namespace Drill4Net.Agent.Plugins.NUnit3
 
         public override string GetContextId()
         {
+            return GetContextIdInner(true).Result;
+        }
+
+        public async Task<string> GetContextIdInner(bool canWait)
+        {
             var test = NUnit.Framework.TestContext.CurrentContext?.Test;
             if (test?.MethodName == null)
                 return null;
             var method = test.FullName;
             if (method?.Contains("Internal.TestExecutionContext+") == true) //in fact, NUnit's context is absent
                 return null;
-            if (_method2ctxs.TryGetValue(method, out var context)) //context == test case for autotests
-                return context;
-            else
-                return method;
+            var timeout = DateTime.Now.AddSeconds(2);
+            while (true)
+            {
+                if (_method2ctxs.TryGetValue(method, out var context)) //context == test case for autotests
+                {
+                    return context;
+                }
+                else
+                {
+                    if (!canWait)
+                    {
+                        return method;
+                    }
+                    else
+                    {
+                        if (DateTime.Now > timeout)
+                            return method;
+                        await Task.Delay(5);
+                    }
+                }
+            }
         }
 
         public override TestEngine GetTestEngine()
@@ -49,7 +73,7 @@ namespace Drill4Net.Agent.Plugins.NUnit3
                 return (false, null);
             if (string.IsNullOrWhiteSpace(data))
                 return (true, null);
-            var method = GetContextId(); // in fact, initially it will be real method name, not useful context (test case name, etc)
+            var method = GetContextIdInner(false).Result; // in fact, initially it will be real method name, not useful context (test case name, etc)
             if(method == null)
                 return (true, null); //true is normal - the context is not for NUnit
             //
