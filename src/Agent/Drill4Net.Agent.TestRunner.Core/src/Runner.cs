@@ -44,7 +44,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             _rep.Init();
             //
             _logger.Debug("Getting tests' run info...");
-            var infos = await _rep.GetRunInfos().ConfigureAwait(false);
+            var infos = await _rep.GetRunInfos(_rep.CliDescriptor).ConfigureAwait(false);
             if (infos.Count == 0)
             {
                 _logger.Info("Nothing to run");

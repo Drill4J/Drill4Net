@@ -49,7 +49,9 @@ namespace Drill4Net.Configurator
 
 Also you can use config path directly:
     Example: {RawContexts} -- ""d:\Drill4Net\ci\targetA\run.yml""
-    Example: {RawContexts} --{CoreConstants.ARGUMENT_CONFIG_PATH}=""d:\Drill4Net\ci\targetA\run.yml""";
+    Example: {RawContexts} --{CoreConstants.ARGUMENT_CONFIG_PATH}=""d:\Drill4Net\ci\targetA\run.yml""
+
+If you need to restart all tests on the current build, apply the switch ""{CoreConstants.SWITCH_FORCE_RUNNIG_TYPE_ALL}"" (with a capital letter).";
         }
     }
 }

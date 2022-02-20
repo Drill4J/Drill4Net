@@ -558,6 +558,11 @@ namespace Drill4Net.Configurator
             // run Test Runner
             var path = _rep.GetTestRunnerPath();
             var runnerArgs = $"--{CoreConstants.ARGUMENT_CONFIG_PATH}=\"{testRunnerCfgPath}\"";
+            //
+            var forceTypeS = parentCmd?.GetParameter(CoreConstants.SWITCH_FORCE_RUNNIG_TYPE_ALL, true);
+            if (forceTypeS != null)
+                runnerArgs += $" -{CoreConstants.SWITCH_FORCE_RUNNIG_TYPE_ALL}";
+            //
             var (res, pid) = CommonUtils.StartProgram(CoreConstants.SUBSYSTEM_TEST_RUNNER, path, runnerArgs, out var err);
             if (!res)
                 return (false, err);

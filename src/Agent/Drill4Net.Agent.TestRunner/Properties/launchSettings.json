@@ -10,6 +10,10 @@
     "ci2": {
       "commandName": "Project",
       "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Drill4Net\\build\\bin\\Debug\\Drill4Net.Agent.TestRunner\\net6.0\\\\run_IHS.yml\""
+    },
+    "run_test": {
+      "commandName": "Project",
+      "commandLineArgs": "--cfg_path=\\\"d:\\\\Projects\\\\EPM-D4J\\\\Drill4Net\\\\build\\\\bin\\\\Debug\\\\Drill4Net.Agent.TestRunner\\\\net6.0\\\\run_SpecFlow_xUnit.yml\\\" -A"
     }
   }
 }

@@ -14,6 +14,8 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// </summary>
     public class TestRunnerRepository : ConfiguredRepository<TestRunnerOptions, BaseOptionsHelper<TestRunnerOptions>>
     {
+        internal CliDescriptor CliDescriptor { get; }
+
         private List<TestInformer> _informers;
         private readonly Logger _logger;
 
@@ -21,6 +23,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         public TestRunnerRepository(CliDescriptor cliDescriptor): this(GetConfigPath(cliDescriptor))
         {
+            CliDescriptor = cliDescriptor;
         }
 
         public TestRunnerRepository(string cfgPath = null): base(CoreConstants.SUBSYSTEM_TEST_RUNNER, cfgPath)
@@ -47,16 +50,22 @@ namespace Drill4Net.Agent.TestRunner.Core
                     cfgPath = aloners[0].Value;
             }
             return cfgPath;
-
         }
 
-        internal async Task<List<DirectoryRunInfo>> GetRunInfos()
+        internal async Task<List<DirectoryRunInfo>> GetRunInfos(CliDescriptor cliDescriptor = null)
         {
             var list = new List<DirectoryRunInfo>();
             var targetInformes = _informers.DistinctBy(a => a.TargetName); //we need to collect test2Run data just by target
+            //
+            var forceType = RunningType.Unknown;
+            var forceTypeS = cliDescriptor?.GetParameter(CoreConstants.SWITCH_FORCE_RUNNIG_TYPE_ALL, true);
+            if (forceTypeS != null)
+                forceType = RunningType.All;
+            //
             foreach (var trgInformer in targetInformes.AsParallel())
             {
-                DirectoryRunInfo runInfo = await trgInformer.GetRunInfo().ConfigureAwait(false);
+                DirectoryRunInfo runInfo = await trgInformer.GetRunInfo(forceType)
+                    .ConfigureAwait(false);
                 if (runInfo.RunType == RunningType.Nothing)
                 {
                     _logger.Info($"Nothing to run for [{trgInformer}]");

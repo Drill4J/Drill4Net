@@ -87,12 +87,14 @@ namespace Drill4Net.Agent.TestRunner.Core
             _initBlocker.Set();
         }
 
-        internal async Task<DirectoryRunInfo> GetRunInfo()
+        internal async Task<DirectoryRunInfo> GetRunInfo(RunningType overridenType = RunningType.Unknown)
         {
             var isFake = _dbgOpts is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
 
-            var runningType = await GetRunningType(isFake).ConfigureAwait(false);
+            var runningType = overridenType == RunningType.Unknown ?
+                await GetRunningType(isFake).ConfigureAwait(false):
+                overridenType;
             _logger.Info($"Running type: {runningType}");
 
             var runInfo = new DirectoryRunInfo
