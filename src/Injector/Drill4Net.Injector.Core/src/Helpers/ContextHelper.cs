@@ -144,7 +144,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="asmCtx"></param>
         /// <param name="opts"></param>
-        public static void PrepareProxyCalls(AssemblyContext asmCtx, InjectorOptions opts)
+        public static void PrepareProxyCalls(AssemblyContext asmCtx, InjectionOptions opts)
         {
             asmCtx.ProxyNamespace = ProxyHelper.CreateProxyNamespace();
             asmCtx.ProxyMethRef = ProxyHelper.CreateProxyMethodReference(asmCtx, opts);

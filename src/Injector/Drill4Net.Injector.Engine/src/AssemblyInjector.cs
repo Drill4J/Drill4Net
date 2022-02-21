@@ -22,7 +22,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         public CodeHandlerStrategy Strategy { get; }
 
-        private readonly InjectorOptions _opts;
+        private readonly InjectionOptions _opts;
         private readonly Logger _logger;
 
         /**********************************************************************************/
@@ -32,7 +32,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="opts"></param>
         /// <param name="strategy"></param>
-        public AssemblyInjector(InjectorOptions opts, CodeHandlerStrategy strategy)
+        public AssemblyInjector(InjectionOptions opts, CodeHandlerStrategy strategy)
         {
             Strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
             _opts = opts ?? throw new ArgumentNullException(nameof(opts));

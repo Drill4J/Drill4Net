@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.Configuration;
 using Drill4Net.Profiling.Tree;
@@ -15,7 +15,12 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Options for the injection
         /// </summary>
-        InjectorOptions Options { get; set; }
+        InjectionOptions Options { get; set; }
+
+        /// <summary>
+        /// The options for Injector app itself.
+        /// </summary>
+        InjectorAppOptions AppOptions { get; }
 
         string Subsystem { get; }
 

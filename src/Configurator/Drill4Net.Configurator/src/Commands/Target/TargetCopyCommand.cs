@@ -30,7 +30,7 @@ namespace Drill4Net.Configurator
             //trg copy -- "d:\Projects\dest.yml" -a 0.1.2
 
             // source cfg path
-            var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, defDir, _desc,
+            var res = _cmdHelper.GetSourceConfigPath<InjectionOptions>(CoreConstants.SUBSYSTEM_INJECTOR, defDir, _desc,
                 out var sourcePath, out var fromPos, out var error);
             if (!res)
             {
@@ -75,7 +75,7 @@ namespace Drill4Net.Configurator
                 targetDir = GetPositional(pos);
 
             //set up the config
-            var cfg = _rep.ReadInjectorOptions(sourcePath);
+            var cfg = _rep.ReadInjectionOptions(sourcePath);
             if (cfg.Target == null)
             {
                 RaiseError($"Source section in config is empty: [{sourcePath}]");

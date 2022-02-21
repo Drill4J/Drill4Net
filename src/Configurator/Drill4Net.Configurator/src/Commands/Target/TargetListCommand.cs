@@ -20,7 +20,7 @@ namespace Drill4Net.Configurator
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
             var dir = _rep.GetInjectorDirectory();
-            _cmdHelper.ListConfigs<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir);
+            _cmdHelper.ListConfigs<InjectionOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir);
             return Task.FromResult(TrueEmptyResult);
         }
 

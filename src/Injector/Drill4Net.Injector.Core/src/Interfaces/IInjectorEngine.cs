@@ -26,6 +26,6 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="opts">Config for target's injection</param>
         /// <returns>Tree data of the injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
-        Task<InjectedSolution> Process(InjectorOptions opts);
+        Task<InjectedSolution> Process(InjectionOptions opts);
     }
 }

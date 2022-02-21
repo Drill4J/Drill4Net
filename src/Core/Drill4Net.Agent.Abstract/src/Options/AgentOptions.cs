@@ -1,4 +1,5 @@
 ﻿using System;
+using Drill4Net.Common;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.Abstract
@@ -31,5 +32,12 @@ namespace Drill4Net.Agent.Abstract
         public ConnectorAuxOptions Connector { get; set; }
 
         public AgentDebugOptions Debug { get; set; }
+
+        /**************************************************************************/
+
+        public AgentOptions()
+        {
+            Type = CoreConstants.SUBSYSTEM_AGENT;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Drill4Net.Common;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Injector.Core
@@ -8,7 +9,7 @@ namespace Drill4Net.Injector.Core
     /// Options for the Injector App
     /// </summary>
     [Serializable]
-    public class InjectorOptions : TargetOptions
+    public class InjectionOptions : TargetOptions
     {
         /// <summary>
         /// Options for the Source of the Target (instrumenting App) - what and how processing
@@ -33,7 +34,7 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Options for the Debug mode
         /// </summary>
-        public InjectorDebugOptions Debug { get; set; }
+        public InjectionDebugOptions Debug { get; set; }
 
         /// <summary>
         /// Options for the injecting process (types of methods, cross-points, etc)
@@ -51,5 +52,12 @@ namespace Drill4Net.Injector.Core
         /// Is the silent mode set (no interactive with defaults for the Injector)?
         /// </summary>
         public bool Silent { get; set; }
+
+        /**********************************************************************************/
+
+        public InjectionOptions()
+        {
+            Type = CoreConstants.SUBSYSTEM_INJECTOR;
+        }
     }
 }

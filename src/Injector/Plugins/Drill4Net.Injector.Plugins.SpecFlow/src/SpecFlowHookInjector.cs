@@ -11,6 +11,7 @@ using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Plugins.SpecFlow;
+using Drill4Net.TypeFinding;
 
 namespace Drill4Net.Injector.Plugins.SpecFlow
 {
@@ -20,27 +21,29 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
     public class SpecFlowHookInjector : AbstractCodeInjector<SpecFlowPluginOptions>, IInjectorPlugin
     {
         public string Name => SpecFlowGeneratorContexter.PluginName;
+        public bool IsInitialized { get; private set; }
 
-        public string SourceDir { get; }
-        public string ProxyClass { get; }
-        public string HelperReadDir { get; }
-        public string HelperClass { get; }
-        public string HelperNs { get; }
-        public string HelperAsmName { get; }
+        public string SourceDir { get; private set; }
+        public string ProxyClass { get; private set; }
+        public string HelperReadDir { get; private set; }
+        public string PluginClass { get; private set; }
+        public string PluginNs { get; private set; }
+        public string PluginAsmName { get; private set; }
 
         private const string _getContextDataMethod = "GetContextData";
         private const string _scenarioField = "_scenarioMethInfo";
         private const string SPEC_NS = "TechTalk.SpecFlow";
 
         private IProfilerProxyInjector _proxyGenerator;
-        private readonly PluginLoaderOptions _loaderOpts;
-        private readonly IDeserializer _deser;
+        private PluginLoaderOptions _loaderOpts;
+        private IDeserializer _deser;
         private ModuleDefinition _speclib;
-        private readonly Logger _logger;
+        private Logger _logger;
 
         /*************************************************************************************************/
 
-        public SpecFlowHookInjector(string sourceDir, string proxyClass, PluginLoaderOptions loaderCfg)
+        #region Init
+        public void Init(string sourceDir, string proxyClass, PluginLoaderOptions loaderCfg)
         {
             _logger = new TypedLogger<SpecFlowHookInjector>(CoreConstants.SUBSYSTEM_INJECTOR_PLUGIN);
 
@@ -52,9 +55,9 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
 
             // these are real constants, aren't the cfg params
             var typeHelper = typeof(SpecFlowGeneratorContexter);
-            HelperClass = typeHelper.Name;
-            HelperNs = typeHelper.Namespace;
-            HelperAsmName = Path.GetFileName(typeHelper.Assembly.Location); // "Drill4Net.Agent.Plugins.SpecFlow.dll";
+            PluginClass = typeHelper.Name;
+            PluginNs = typeHelper.Namespace;
+            PluginAsmName = Path.GetFileName(typeHelper.Assembly.Location); // "Drill4Net.Agent.Plugins.SpecFlow.dll";
 
             _deser = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
@@ -62,19 +65,34 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             Options = GetOptions(loaderCfg.Config); //inner options for the plugin
 
             LoadTestFramework(sourceDir);
+            IsInitialized = true;
         }
 
-        /*************************************************************************************************/
+        private void LoadTestFramework(string sourceDir)
+        {
+            const string dllName = "TechTalk.SpecFlow.dll";
+            var specDir = Path.Combine(FileUtils.ExecutingDir, dllName);
+            if (!File.Exists(specDir))
+                specDir = Path.Combine(sourceDir, dllName);
+            if (!File.Exists(specDir))
+            {
+                string[] files = Directory.GetFiles(sourceDir, "TechTalk.SpecFlow.dll", SearchOption.AllDirectories);
+                if (files.Length == 0)
+                    throw new FileNotFoundException("SpecFlow framework is not found");
+                specDir = files[0];
+            }
+            _speclib = ModuleDefinition.ReadModule(specDir, new ReaderParameters());
+        }
 
         public SpecFlowPluginOptions GetOptions(string plugConfigPath)
         {
             var configPath = GetInnerConfigFullPath(plugConfigPath);
             if (!File.Exists(configPath))
-                throw new FileNotFoundException($"File for plugin's options not found: [{configPath}]. Path from Injector parameters was: [{plugConfigPath}]");
+                throw new FileNotFoundException($"File for the plugin's options not found: [{configPath}]. Path from the Injector parameters was: [{plugConfigPath}]");
             var cfgStr = File.ReadAllText(configPath);
             return _deser.Deserialize<SpecFlowPluginOptions>(cfgStr);
         }
-
+        #endregion
         #region Traverse the assemblies
         public Task Process(RunContext runCtx)
         {
@@ -144,6 +162,11 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
                 else
                     proxyNs = ProxyHelper.CreateProxyNamespace();
 
+                //here we just need to load the SpecFlow dependency to memory before the main processing
+                var loader = new LibraryLoader();
+                loader.LoadAssembly(Path.Combine(runCtx.ProcessingDirectory, SPEC_NS + ".dll"));
+
+                //main process
                 InjectTo(asmCtx.Definition, proxyNs, asmCtx.Version.IsNetFramework);
                 _logger.Debug($"Processed by plugin: [{filePath}]");
 
@@ -179,17 +202,6 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
         }
         #endregion
         #region Injection
-        private void LoadTestFramework(string sourceDir)
-        {
-            const string dllName = "TechTalk.SpecFlow.dll";
-            var specDir = Path.Combine(FileUtils.ExecutingDir, dllName);
-            if (!File.Exists(specDir))
-                specDir = Path.Combine(sourceDir, dllName);
-            if (!File.Exists(specDir))
-                throw new FileNotFoundException("SpecFlow framework is not found");
-            _speclib = ModuleDefinition.ReadModule(specDir, new ReaderParameters());
-        }
-
         //.custom instance void [TechTalk.SpecFlow]TechTalk.SpecFlow.BeforeScenarioAttribute::.ctor(string[]) = (
         //    01 00 00 00 00 00 01 00 54 08 05 4f 72 64 65 72
         //    00 00 00 00
@@ -206,6 +218,8 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
 
         public override void InjectTo(AssemblyDefinition assembly, string proxyNs, bool isNetFX = false)
         {
+            if (!IsInitialized)
+                throw new InvalidOperationException("Plugin is not initialized");
             var type = GetClassTypeWithBindingAttribute(assembly);
             if (type == null)
                 return;
@@ -252,7 +266,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             //var profPath = @"d:\Projects\EPM-D4J\!!_exp\Injector.Net\Agent.Test\bin\Debug\netstandard2.0\Agent.Test.dll";
             var lv_profPath1 = new VariableDefinition(module.TypeSystem.String);
             funcDef.Body.Variables.Add(lv_profPath1);
-            var Ldstr2 = il_meth.Create(OpCodes.Ldstr, Path.Combine(HelperReadDir, HelperAsmName));
+            var Ldstr2 = il_meth.Create(OpCodes.Ldstr, Path.Combine(HelperReadDir, PluginAsmName));
             il_meth.Append(Ldstr2);
             var Stloc3 = il_meth.Create(OpCodes.Stloc, lv_profPath1);
             il_meth.Append(Stloc3);
@@ -281,7 +295,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             //module.ImportReference(TypeHelpers.ResolveMethod(coreLib, "System.Reflection.Assembly", "GetType", System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, "", "System.String"));
 
             var Callvirt10 = il_meth.Create(OpCodes.Callvirt, methGetType);
-            var Ldstr11 = il_meth.Create(OpCodes.Ldstr, $"{HelperNs}.{HelperClass}");
+            var Ldstr11 = il_meth.Create(OpCodes.Ldstr, $"{PluginNs}.{PluginClass}");
             il_meth.Append(Ldstr11);
             il_meth.Append(Callvirt10);
             var Stloc12 = il_meth.Create(OpCodes.Stloc, lv_type8);

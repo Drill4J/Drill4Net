@@ -28,9 +28,11 @@ namespace Drill4Net.Configurator
         public string? TransmitterDirectory { get; set; }
 
         /// <summary>
-        /// Default directory for the plugins
+        /// Default directory for the Transmitter (agent) plugins
         /// </summary>
-        public string? PluginDirectory { get; set; }
+        public string? AgentPluginDirectory { get; set; }
+
+        //Hint: on other hand, the Injector plugin dir (IInjectorPlugin) is placed in app.yml for the Injector (in its root)
 
         /// <summary>
         /// Default directory for the CI runs

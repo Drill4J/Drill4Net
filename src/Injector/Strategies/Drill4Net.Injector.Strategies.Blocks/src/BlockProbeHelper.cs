@@ -9,7 +9,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
     /// <seealso cref="Drill4Net.Injector.Core.AbstractProbeHelper" />
     public class BlockProbeHelper: AbstractProbeHelper
     { 
-        public BlockProbeHelper(InjectorOptions opts): base(opts)
+        public BlockProbeHelper(InjectionOptions opts): base(opts)
         {
         }
 

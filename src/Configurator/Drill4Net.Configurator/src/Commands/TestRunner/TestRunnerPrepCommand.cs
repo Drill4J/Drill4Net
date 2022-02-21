@@ -60,7 +60,7 @@ namespace Drill4Net.Configurator
                     if (_desc == null)
                         return Task.FromResult(FalseEmptyResult);
 
-                    var res = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+                    var res = _cmdHelper.GetSourceConfigPath<InjectionOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
                         injectorDir, _desc, out var cfgPath, out var _, out string? err);
                     if (!res)
                     {

@@ -6,23 +6,23 @@ using Drill4Net.Repository;
 
 namespace Drill4Net.Injector.Core
 {
-    public class InjectorOptionsHelper : BaseOptionsHelper<InjectorOptions>
+    public class InjectionOptionsHelper : BaseOptionsHelper<InjectionOptions>
     {
-        protected override void PostProcess(InjectorOptions opts)
+        protected override void PostProcess(InjectionOptions opts)
         {
             PreliminaryCheckConfig(opts);
             SetDestinationDirectory(opts, null);
             NormalizePaths(opts);
         }
 
-        internal void PreliminaryCheckConfig(InjectorOptions opts)
+        internal void PreliminaryCheckConfig(InjectionOptions opts)
         {
             //we check this here because Injector can process several configs in specified directory
             if (opts == null || !CoreConstants.SUBSYSTEM_INJECTOR.Equals(opts.Type, StringComparison.InvariantCultureIgnoreCase))
                 throw new ArgumentException($"In fact, this is not {CoreConstants.SUBSYSTEM_INJECTOR} options: {opts.Type}");
         }
 
-        public void SetDestinationDirectory(InjectorOptions opts, string destDir)
+        public void SetDestinationDirectory(InjectionOptions opts, string destDir)
         {
             if (opts.Destination == null)
                 opts.Destination = new DestinationOptions();
@@ -37,7 +37,7 @@ namespace Drill4Net.Injector.Core
             opts.Destination.Directory = destDir;
         }
 
-        public void NormalizePaths(InjectorOptions opts)
+        public void NormalizePaths(InjectionOptions opts)
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
@@ -84,7 +84,7 @@ namespace Drill4Net.Injector.Core
         /// </summary>
         /// <param name="args">The input arguments.</param>
         /// <param name="opts">The current options.</param>
-        public void Clarify(CliDescriptor cliDescriptor, InjectorOptions opts)
+        public void Clarify(CliDescriptor cliDescriptor, InjectionOptions opts)
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));
@@ -104,7 +104,7 @@ namespace Drill4Net.Injector.Core
             }
         }
 
-        internal void ClarifySourceDirectory(CliDescriptor cliDescriptor, InjectorOptions opts)
+        internal void ClarifySourceDirectory(CliDescriptor cliDescriptor, InjectionOptions opts)
         {
             var sourceDir = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_SOURCE_PATH);
             if (sourceDir == null)
@@ -118,7 +118,7 @@ namespace Drill4Net.Injector.Core
                 opts.Source.Directory = FileUtils.RefineDirectoryName(sourceDir);
         }
 
-        internal void ClarifyDestinationDirectory(CliDescriptor cliDescriptor, InjectorOptions opts)
+        internal void ClarifyDestinationDirectory(CliDescriptor cliDescriptor, InjectionOptions opts)
         {
             var destDir = cliDescriptor.GetParameter(CoreConstants.ARGUMENT_DESTINATION_PATH);
             if (destDir == null)
@@ -140,7 +140,7 @@ namespace Drill4Net.Injector.Core
         }
         #endregion
 
-        public void ValidateOptions(InjectorOptions opts)
+        public void ValidateOptions(InjectionOptions opts)
         {
             if (opts == null)
                 throw new ArgumentNullException(nameof(opts));

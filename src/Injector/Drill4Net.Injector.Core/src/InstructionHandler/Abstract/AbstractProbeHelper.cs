@@ -9,11 +9,11 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public abstract class AbstractProbeHelper
     {
-        public InjectorOptions Options { get; }
+        public InjectionOptions Options { get; }
 
         /*********************************************************************************/
 
-        protected AbstractProbeHelper(InjectorOptions options)
+        protected AbstractProbeHelper(InjectionOptions options)
         {
             Options = options;
         }

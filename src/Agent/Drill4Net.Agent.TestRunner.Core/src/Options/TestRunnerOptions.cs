@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Drill4Net.Common;
 using Drill4Net.Configuration;
 
 namespace Drill4Net.Agent.TestRunner.Core
@@ -28,6 +29,13 @@ namespace Drill4Net.Agent.TestRunner.Core
         /// Options exclusively for debug
         /// </summary>
         public TestRunnerDebugOptions Debug { get; set; }
+
+        /***********************************************************************/
+
+        public TestRunnerOptions()
+        {
+            Type = CoreConstants.SUBSYSTEM_TEST_RUNNER;
+        }
 
         /***********************************************************************/
 

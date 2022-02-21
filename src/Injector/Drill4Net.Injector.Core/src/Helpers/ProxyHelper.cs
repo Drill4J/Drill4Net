@@ -24,7 +24,7 @@ namespace Drill4Net.Injector.Core
         /// <param name="asmCtx">The assembly context.</param>
         /// <param name="opts">The Injector options.</param>
         /// <returns></returns>
-        public static MethodReference CreateProxyMethodReference(AssemblyContext asmCtx, InjectorOptions opts)
+        public static MethodReference CreateProxyMethodReference(AssemblyContext asmCtx, InjectionOptions opts)
         {
             //We will use proxy class (with cached Reflection) leading to real profiler.
             //Proxy will be injected in each target assembly - let construct the calling of it's method

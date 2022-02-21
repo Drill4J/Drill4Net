@@ -15,7 +15,7 @@ namespace Drill4Net.Injector.Strategies.Blocks
     /// <seealso cref="Drill4Net.Injector.Core.CodeHandlerStrategy" />
     public class BlockStrategy: CodeHandlerStrategy
     {
-        public BlockStrategy(InjectorOptions opts)
+        public BlockStrategy(InjectionOptions opts)
         {
             var helper = new BlockProbeHelper(opts);
             var probeOpts = opts.Probes;

@@ -71,9 +71,21 @@ namespace Drill4Net.Configurator
             cfg.AdminUrl = $"{host}:{port}";
             _logger.Info($"Admin url: {cfg.AdminUrl}");
 
-            // agent's plugin dir
+            // Injector's plugin dir
             string plugDir = "";
-            def = opts.PluginDirectory;
+            def = opts.AgentPluginDirectory;
+            do
+            {
+                if (!_cli.AskQuestion("Injector plugin's directory", out plugDir, def))
+                    return false;
+            }
+            while (!_cli.CheckDirectoryAnswer(ref plugDir, true));
+            cfg.InjectorPluginDirectory = plugDir;
+            _logger.Info($"Injector plugin dir: {plugDir}");
+
+            // agent's plugin dir (for Transmitter in Server/Worker scheme)
+            plugDir = "";
+            def = opts.AgentPluginDirectory;
             do
             {
                 if (!_cli.AskQuestion("Agent plugin's directory", out plugDir, def))
@@ -81,7 +93,7 @@ namespace Drill4Net.Configurator
             }
             while (!_cli.CheckDirectoryAnswer(ref plugDir, true));
             cfg.AgentPluginDirectory = plugDir;
-            _logger.Info($"Plugin dir: {plugDir}");
+            _logger.Info($"Agent plugin dir: {plugDir}");
             //
             return true;
         }

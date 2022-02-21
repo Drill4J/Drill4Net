@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\Core\Drill4Net.Configuration\Drill4Net.Configuration.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />
     <ProjectReference Include="..\..\Injector\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
+    <ProjectReference Include="..\..\Injector\Drill4Net.Injector.Engine\Drill4Net.Injector.Engine.csproj" />
   </ItemGroup>
 
 </Project>

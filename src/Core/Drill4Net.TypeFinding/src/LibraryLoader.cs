@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Drill4Net.Common;
-using System.Linq;
-using System.Reflection;
 
 namespace Drill4Net.TypeFinding
 {
-    internal class LibraryLoader
+    public class LibraryLoader
     {
-        internal AssemblyDefinition LoadDefinition(string asmPath)
+        public AssemblyDefinition LoadDefinition(string asmPath)
         {
             if (string.IsNullOrWhiteSpace(nameof(asmPath)))
                 throw new ArgumentNullException(nameof(asmPath));
@@ -31,13 +31,13 @@ namespace Drill4Net.TypeFinding
             return AssemblyDefinition.ReadAssembly(asmPath, readerParams);
         }
 
-        internal Type LoadType(string asmPath, string fullName)
+        public Type LoadType(string asmPath, string fullName)
         {
             var asm  = LoadAssembly(asmPath);
             return asm.GetTypes().SingleOrDefault(a => a.FullName == fullName);
         }
 
-        internal Assembly LoadAssembly(string asmPath)
+        public Assembly LoadAssembly(string asmPath)
         {
             if (string.IsNullOrWhiteSpace(nameof(asmPath)))
                 throw new ArgumentNullException(nameof(asmPath));

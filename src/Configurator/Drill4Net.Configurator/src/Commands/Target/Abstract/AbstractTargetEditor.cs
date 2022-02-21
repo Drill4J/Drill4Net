@@ -33,7 +33,7 @@ namespace Drill4Net.Configurator
                 RaiseError($"{appName} config not found: [{cfgPath}]");
                 return false;
             }
-            var cfg = _rep.ReadInjectorOptions(cfgPath);
+            var cfg = _rep.ReadInjectionOptions(cfgPath);
             #endregion
             #region Source dir
             string sourceDir = "";
@@ -184,7 +184,7 @@ To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".";
   2. Arbitrary path to the processed folder. It can be full or relative (for the Injector program).
 
 Please make your choice";
-            var cfgHelper = new InjectorOptionsHelper();
+            var cfgHelper = new InjectionOptionsHelper();
             while (true)
             {
                 if (!_cli.AskQuestion(destQuestion, out answer, def))
@@ -229,19 +229,19 @@ Please make your choice";
                 return false;
             if (answerBool)
             {
-                RaiseMessage("\nNow you need specify only necessary \"Generator contexter plugins\" which intercept the tests' execution workflow and retrieve their context (implemented IGeneratorContexter interface, for example, for SpecFlow framework. For simple test frameworks, such as xUnit, NUnit, or MsTest you don't need to do it here).");
+                RaiseMessage("\nNow you need specify only necessary agent's \"Generator contexter plugins\" which intercept the tests' execution workflow and retrieve their context (implemented IGeneratorContexter interface - for example, for SpecFlow framework. For simple test ones, such as xUnit, NUnit, or MsTest you don't need to do it here).");
                 var plugins = cfg.Plugins;
                 if (isNew)
                 {
                     plugins.Clear(); //clear plugins from the model config
 
                     #region Search the plugins
-                    string dir = _rep.GetPluginDirectory();
+                    var dir = _rep.GetAgentPluginDirectory();
                     List<Type> plugTypes = new();
                     try
                     {
                         RaiseMessage("Searching. Please, wait...");
-                        plugTypes = GetPlugins(dir).OrderBy(a => a.Name).ToList();
+                        plugTypes = GetGeneratorPlugins(dir).OrderBy(a => a.Name).ToList();
                     }
                     catch (Exception ex)
                     {
@@ -290,7 +290,7 @@ Please make your choice";
                                 //
                                 plugType = plugTypes[num - 1];
                                 var plugDir = Path.GetDirectoryName(plugType.Assembly.Location);
-                                var plug = (IGeneratorContexter)Activator.CreateInstance(plugType);
+                                var plug = Activator.CreateInstance(plugType) as IGeneratorContexter ?? throw new NullReferenceException($"The plugin type is wrong: [{plugType.FullName}]");
                                 var plugName = plug.Name;
                                 #endregion
                                 #region Plugin config path
@@ -369,7 +369,12 @@ Please make your choice";
             }
         }
 
-        internal List<Type> GetPlugins(string dir)
+        /// <summary>
+        /// Get the IGeneratorContexter plugins (SpecFlow, etc) for Transmitter
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        internal List<Type> GetGeneratorPlugins(string dir)
         {
             //search the plugins
             var pluginator = new TypeFinder();

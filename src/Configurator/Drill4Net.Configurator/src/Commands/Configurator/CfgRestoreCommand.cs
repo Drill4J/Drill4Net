@@ -51,11 +51,17 @@ namespace Drill4Net.Configurator
                 opts.TestRunnerDirectory = ConfiguratorConstants.PATH_RUNNER;
                 opts.CiDirectory = ConfiguratorConstants.PATH_CI;
                 opts.TransmitterDirectory = ConfiguratorConstants.PATH_TRANSMITTER;
-                opts.PluginDirectory = ConfiguratorConstants.PATH_TRANSMITTER_PLUGINS; //Agent's plugins (IEngineContexters)
+                opts.AgentPluginDirectory = ConfiguratorConstants.PATH_TRANSMITTER_PLUGINS; //Agent's plugins (IEngineContexters)
             }
 
-            //save
+            //save Configurator app itself
             _rep.WriteConfiguratorOptions(opts);
+
+            //save options for the Injector app
+            var injOpts = _rep.ReadInjectorAppOptions();
+            injOpts.PluginDir = ConfiguratorConstants.PATH_INJECTOR_PLUGINS; //IInjectorPlugin
+            _rep.WriteInjectorAppOptions(injOpts);
+
             RaiseMessage("The settings are restored.", CliMessageType.Info);
 
             return Task.FromResult(TrueEmptyResult);

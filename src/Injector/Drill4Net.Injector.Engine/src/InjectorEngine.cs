@@ -7,10 +7,9 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.TypeFinding;
 using Drill4Net.Injector.Core;
 using Drill4Net.Profiling.Tree;
-using Drill4Net.Agent.Plugins.SpecFlow;
-using Drill4Net.Injector.Plugins.SpecFlow;
 
 /*** INFO
      automatic version tagger including Git info - https://github.com/devlooped/GitInfo
@@ -83,10 +82,10 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         /// <param name="opts">Config for target's injection</param>
         /// <returns>Tree data of the injection (processed directories, assemblies, classes, methods, cross-points, and their meta-data)</returns>
-        public async Task<InjectedSolution> Process(InjectorOptions opts)
+        public async Task<InjectedSolution> Process(InjectionOptions opts)
         {
             _logger.Debug("Process is starting...");
-            var cfgHelper = new InjectorOptionsHelper();
+            var cfgHelper = new InjectionOptionsHelper();
             cfgHelper.ValidateOptions(opts);
 
             await CopySource(opts)
@@ -124,7 +123,7 @@ namespace Drill4Net.Injector.Engine
         /// Copying of all needed data in needed targets
         /// </summary>
         /// <param name="opts"></param>
-        internal async Task CopySource(InjectorOptions opts)
+        internal async Task CopySource(InjectionOptions opts)
         {
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
@@ -136,7 +135,7 @@ namespace Drill4Net.Injector.Engine
             _logger.Info("The source is copied");
         }
 
-        internal RunContext CreateRunContext(InjectorOptions opts)
+        internal RunContext CreateRunContext(InjectionOptions opts)
         {
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
@@ -272,28 +271,51 @@ namespace Drill4Net.Injector.Engine
         }
 
         #region Plugins
-        private List<IInjectorPlugin> GetPlugins(InjectorOptions opts)
+        private List<IInjectorPlugin> GetPlugins(InjectionOptions opts)
         {
             var plugins = new List<IInjectorPlugin>();
             var optPlugins = opts.Plugins;
-
-            //TODO: loads them dynamically from the disk by cfg
-
-            // standard plugins //
-
-            //now we work with already injected Destination, not Source
-            var dir = opts.Destination.Directory;
+            var dir = opts.Source.Directory;
             var proxyClass = opts.Proxy.Class;
-            //...and use generated Proxy namespace
 
-            //SpecFlow
-            if (optPlugins.ContainsKey(SpecFlowGeneratorContexter.PluginName))
+            //search the plugins
+            var pluginator = new TypeFinder();
+            var filter = new SourceFilterOptions
             {
-                var plugCfg = GetPluginOptions(SpecFlowGeneratorContexter.PluginName, opts.Plugins);
-                if (!string.IsNullOrWhiteSpace(plugCfg?.Directory))
-                    plugins.Add(new SpecFlowHookInjector(dir, proxyClass, plugCfg));
-            }
+                Excludes = new SourceFilterParams
+                {
+                    Files = new List<string>
+                    {
+                        "reg:.resources.dll$",
+                    },
+                },
+            };
 
+            foreach (var plugName in optPlugins.Keys)
+            {
+                try
+                {
+                    var plugCfg = GetPluginOptions(plugName, opts.Plugins);
+                    var plugDir =_rep.AppOptions.PluginDir;
+                    var plugTypes = pluginator.GetBy(TypeFinderMode.Interface, plugDir, nameof(IInjectorPlugin), filter);
+                    if (plugTypes.Count == 0)
+                    {
+                        _logger.Error($"No plugin type found for the name [{plugName}]");
+                        continue;
+                    }
+                    var plugType = plugTypes[0];
+                    if (plugTypes.Count > 1)
+                        _logger.Warning($"More one plugin type found for the name [{plugName}]. [{plugType.FullName}] will be used");
+                    //
+                    var plug = (IInjectorPlugin)Activator.CreateInstance(plugType);
+                    plug.Init(dir, proxyClass, plugCfg);
+                    plugins.Add(plug);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Plugin [{plugName}] is not loaded: {ex.Message}");
+                }
+            }
             return plugins;
         }
 

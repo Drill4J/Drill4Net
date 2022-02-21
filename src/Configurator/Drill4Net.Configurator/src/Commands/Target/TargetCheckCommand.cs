@@ -28,7 +28,7 @@ namespace Drill4Net.Configurator
 
             //open cfg
             var dir = _rep.GetInjectorDirectory();
-            var res2 = _cmdHelper.GetSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+            var res2 = _cmdHelper.GetSourceConfigPath<InjectionOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
                 dir, _desc, out var cfgPath, out var _, out var error);
             if (!res2)
             {
@@ -44,7 +44,7 @@ namespace Drill4Net.Configurator
             RaiseMessage($"Checking: [{cfgPath}]", CliMessageType.Info);
             _cli.DrawShortSeparator();
             //
-            var opts = _rep.ReadInjectorOptions(cfgPath ?? "", true);
+            var opts = _rep.ReadInjectionOptions(cfgPath ?? "", true);
             var destDir = opts.Destination.Directory ?? "";
             string check;
 

@@ -21,8 +21,13 @@ namespace Drill4Net.Injector.Engine
     /// Injector Engine's repository (provides injection strategy, target assemblies, 
     /// injector for them, the reading/writing of resulting tree data, etc)
     /// </summary>
-    public class InjectorRepository : TreeRepository<InjectorOptions, InjectorOptionsHelper>, IInjectorRepository
+    public class InjectorRepository : TreeRepository<InjectionOptions, InjectionOptionsHelper>, IInjectorRepository
     {
+        /// <summary>
+        /// The options for Injector app itself.
+        /// </summary>
+        public InjectorAppOptions AppOptions { get; }
+
         private Logger _logger;
         private const string _subsystem = CoreConstants.SUBSYSTEM_INJECTOR;
 
@@ -38,6 +43,7 @@ namespace Drill4Net.Injector.Engine
         {
             CreateLogger();
             _optHelper.Clarify(cliDescriptor, Options);
+            AppOptions = GetInjectorAppOptions();
         }
 
         /*****************************************************************************************/
@@ -58,6 +64,29 @@ namespace Drill4Net.Injector.Engine
         public CodeHandlerStrategy GetStrategy()
         {
             return new BlockStrategy(Options);
+        }
+
+        /// <summary>
+        /// Get the Injector app config
+        /// </summary>
+        /// <returns></returns>
+        public static InjectorAppOptions GetInjectorAppOptions()
+        {
+            var optHelper = new BaseOptionsHelper<InjectorAppOptions>();
+            var opts = optHelper.ReadOptions(GetInjectorAppOptionsPath());
+            if (string.IsNullOrWhiteSpace(opts.PluginDir))
+                opts.PluginDir = Path.Combine(FileUtils.EntryDir, "plugins");
+            opts.PluginDir = FileUtils.GetFullPath(opts.PluginDir);
+            return opts;
+        }
+
+        /// <summary>
+        /// Get Injector App Options path
+        /// </summary>
+        /// <returns></returns>
+        public static string GetInjectorAppOptionsPath()
+        {
+            return Path.Combine(FileUtils.EntryDir, CoreConstants.CONFIG_NAME_APP);
         }
 
         private void CreateLogger()
@@ -122,7 +151,7 @@ namespace Drill4Net.Injector.Engine
         /// </summary>
         public virtual void ValidateOptions()
         {
-            var cfgHelper = new InjectorOptionsHelper();
+            var cfgHelper = new InjectionOptionsHelper();
             cfgHelper.ValidateOptions(Options);
         }
 

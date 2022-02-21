@@ -1,0 +1,15 @@
+﻿Description: Model BDD SpecFlow injector's plugin options for some test project
+Type: InjectorPlugin
+Filter: # mask for search files, namespaces, classes...
+   Includes:
+      Directories:
+      Files:
+         #- Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll # assembly with tests - BDD framework's hooks is located exactly here
+      Namespaces:
+      Classes:
+      Attributes:
+   Excludes:
+      Directories:
+      Folders:
+         #- "*" # "*" means "all"
+      Files:

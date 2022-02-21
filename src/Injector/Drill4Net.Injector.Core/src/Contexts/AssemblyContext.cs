@@ -18,7 +18,7 @@ namespace Drill4Net.Injector.Core
         /// <value>
         /// The options.
         /// </value>
-        public InjectorOptions Options { get; }
+        public InjectionOptions Options { get; }
 
         /// <summary>
         /// Subject name - just short name of the assembly
@@ -111,7 +111,7 @@ namespace Drill4Net.Injector.Core
 
         /***********************************************************************************/
 
-        internal AssemblyContext(InjectorOptions options, string filePath, AssemblyVersioning version)
+        internal AssemblyContext(InjectionOptions options, string filePath, AssemblyVersioning version)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
             SourceFile = filePath ?? throw new ArgumentNullException(nameof(filePath));

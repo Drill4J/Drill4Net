@@ -1,4 +1,5 @@
-﻿using Drill4Net.Configuration;
+﻿using Drill4Net.Common;
+using Drill4Net.Configuration;
 
 namespace Drill4Net.Configurator
 {
@@ -13,5 +14,12 @@ namespace Drill4Net.Configurator
         /// The path to the TestRunner config used to run tests in injected targets
         /// </summary>
         public string? TestRunnerConfigPath { get; set; }
+
+        /*******************************************************************/
+
+        public CiOptions()
+        {
+            Type = CoreConstants.SUBSYSTEM_CI;
+        }
     }
 }

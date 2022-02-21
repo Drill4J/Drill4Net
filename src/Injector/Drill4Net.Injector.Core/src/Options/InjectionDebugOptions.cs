@@ -4,11 +4,11 @@ using Drill4Net.Configuration;
 namespace Drill4Net.Injector.Core
 {
     /// <summary>
-    /// Debug category for the Injector options
+    /// Debug category for the injection options
     /// </summary>
     /// <seealso cref="Drill4Net.Common.IDebugOptions" />
     [Serializable]
-    public class InjectorDebugOptions : IDebugOptions
+    public class InjectionDebugOptions : IDebugOptions
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="IDebugOptions"/> is disabled.
@@ -36,7 +36,7 @@ namespace Drill4Net.Injector.Core
 
         /*******************************************************/
 
-        public InjectorDebugOptions()
+        public InjectionDebugOptions()
         {
             CrossPointInfo = true;
         }

@@ -7,6 +7,7 @@ namespace Drill4Net.Configurator
     {
         public string? AdminUrl { get; set; }
         public string? MiddlewareUrl { get; set; }
+        public string? InjectorPluginDirectory { get; set; }
         public string? AgentPluginDirectory { get; set; }
         public List<LogData> Logs { get; }
 

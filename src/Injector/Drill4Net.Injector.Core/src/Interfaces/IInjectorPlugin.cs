@@ -8,6 +8,8 @@ namespace Drill4Net.Injector.Core
         /// Unique name of the plugin
         /// </summary>
         string Name { get; }
+
+        void Init(string sourceDir, string proxyClass, PluginLoaderOptions loaderCfg);
         Task Process(RunContext runCtx);
     }
 }

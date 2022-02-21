@@ -24,4 +24,10 @@
     <ProjectReference Include="..\..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="model.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

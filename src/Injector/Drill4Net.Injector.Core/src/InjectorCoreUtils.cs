@@ -12,7 +12,7 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public static class InjectorCoreUtils
     {
-        public static string GetDestinationDirectory(InjectorOptions opts, string currentDir)
+        public static string GetDestinationDirectory(InjectionOptions opts, string currentDir)
         {
             string destDir = FileUtils.GetFullPath(opts.Destination.Directory);
             if (currentDir.StartsWith(destDir)) // if we inject already injected assembly (plugins)

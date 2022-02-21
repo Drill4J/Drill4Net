@@ -9,6 +9,7 @@ using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Messaging;
 using Drill4Net.Agent.TestRunner.Core;
+using Drill4Net.Injector.Engine;
 
 namespace Drill4Net.Configurator
 {
@@ -86,7 +87,6 @@ namespace Drill4Net.Configurator
                 dir = ConfiguratorConstants.PATH_RUNNER;
             return FileUtils.GetFullPath(dir);
         }
-
 
         public string GetTestRunnerPath()
         {
@@ -167,9 +167,17 @@ namespace Drill4Net.Configurator
             return transDir;
         }
 
-        public string GetPluginDirectory()
+        public string GetAgentPluginDirectory()
         {
-            var dir = Options.PluginDirectory;
+            var dir = Options.AgentPluginDirectory;
+            if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
+                dir = GetAppPath();
+            return FileUtils.GetFullPath(dir);
+        }
+
+        public string GetInjectorPluginDirectory()
+        {
+            var dir = InjectorRepository.GetInjectorAppOptionsPath();
             if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
                 dir = GetAppPath();
             return FileUtils.GetFullPath(dir);
@@ -234,7 +242,7 @@ namespace Drill4Net.Configurator
             var agCfgPath = GetAgentModelConfigPath();
             var agentOpts = ReadAgentOptions(agCfgPath);
             agentOpts.Admin.Url = cfg.AdminUrl;
-            agentOpts.PluginDir = cfg.AgentPluginDirectory;
+            agentOpts.PluginDir = cfg.AgentPluginDirectory; //IGeneratorContexter
 
             WriteAgentOptions(agentOpts, agCfgPath);
 
@@ -244,6 +252,11 @@ namespace Drill4Net.Configurator
 
             transOpts.Servers.Clear();
             transOpts.Servers.Add(cfg.MiddlewareUrl);
+
+            //save options for the Injector app
+            var injOpts = ReadInjectorAppOptions();
+            injOpts.PluginDir = cfg.InjectorPluginDirectory; //IInjectorPlugin
+            WriteInjectorAppOptions(injOpts);
 
             //writing config to native Transmitter dir
             WriteMessagerOptions(transOpts, transCfgPath);
@@ -259,17 +272,27 @@ namespace Drill4Net.Configurator
             SaveSystemConfiguration(defCfg);
         }
 
-        public InjectorOptions ReadInjectorOptions(string cfgPath, bool processed = false)
+        public InjectorAppOptions ReadInjectorAppOptions()
+        {
+            return InjectorRepository.GetInjectorAppOptions();
+        }
+
+        public void WriteInjectorAppOptions(InjectorAppOptions opts)
+        {
+            WriteOptions<InjectorAppOptions>(opts, InjectorRepository.GetInjectorAppOptionsPath());
+        }
+
+        public InjectionOptions ReadInjectionOptions(string cfgPath, bool processed = false)
         {
             var optHelper = processed ?
-                new InjectorOptionsHelper() :
-                new BaseOptionsHelper<InjectorOptions>(Subsystem);
+                new InjectionOptionsHelper() :
+                new BaseOptionsHelper<InjectionOptions>(Subsystem);
             return optHelper.ReadOptions(cfgPath);
         }
 
-        public void WriteInjectorOptions(InjectorOptions opts, string cfgPath)
+        public void WriteInjectionOptions(InjectionOptions opts, string cfgPath)
         {
-            var optHelper = new InjectorOptionsHelper();
+            var optHelper = new InjectionOptionsHelper();
             optHelper.WriteOptions(opts, cfgPath);
         }
 
@@ -352,7 +375,7 @@ namespace Drill4Net.Configurator
             }
             try
             {
-                var opts = ReadInjectorOptions(cfgPath, true); //it needs to be processed to get the destination path
+                var opts = ReadInjectionOptions(cfgPath, true); //it needs to be processed to get the destination path
                 return opts.Destination.Directory;
             }
             catch (Exception ex)

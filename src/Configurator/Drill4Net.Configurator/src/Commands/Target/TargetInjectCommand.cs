@@ -21,7 +21,7 @@ namespace Drill4Net.Configurator
                 return FalseEmptyResult;
             //
             var dir = _rep.GetInjectorDirectory();
-            var res2 = _cmdHelper.GetExistingSourceConfigPath<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
+            var res2 = _cmdHelper.GetExistingSourceConfigPath<InjectionOptions>(CoreConstants.SUBSYSTEM_INJECTOR,
                 dir, _desc, out var injCfgPath, out var _);
             if (!res2)
                 return FalseEmptyResult;

@@ -20,7 +20,7 @@ namespace Drill4Net.Configurator
             if (_desc == null)
                 return Task.FromResult(FalseEmptyResult);
             var dir = _rep.GetInjectorDirectory();
-            var res = _cmdHelper.OpenConfig<InjectorOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc);
+            var res = _cmdHelper.OpenConfig<InjectionOptions>(CoreConstants.SUBSYSTEM_INJECTOR, dir, _desc);
             return Task.FromResult((res, new Dictionary<string, object>()));
         }
 

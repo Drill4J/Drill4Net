@@ -44,7 +44,7 @@ namespace Drill4Net.Injector.Core
         /// <summary>
         /// Options for injecting process
         /// </summary>
-        public InjectorOptions Options => Repository.Options;
+        public InjectionOptions Options => Repository.Options;
 
         /// <summary>
         /// The abstract member of the injection strategy 

@@ -30,10 +30,17 @@ namespace Drill4Net.Agent.Abstract
         public abstract TestEngine GetTestEngine();
         public abstract (bool Res, object Answer) RegisterCommand(int command, string data);
 
+        /// <summary>
+        /// Get the test case context by string serialized data. It Engine info is empty,
+        /// it will be retrieved from current test executing context (if it exists at this moment).
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         protected TestCaseContext GetTestCaseContext(string str)
         {
             var testCtx = JsonConvert.DeserializeObject<TestCaseContext>(str);
-            testCtx.Engine = GetTestEngine();
+            if(testCtx.Engine == null)
+                testCtx.Engine = GetTestEngine();
             return testCtx;
         }
     }

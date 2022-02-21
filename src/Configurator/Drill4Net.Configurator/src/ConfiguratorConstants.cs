@@ -59,6 +59,7 @@
         public const string PATH_CI = @"..\..\ci\";
         public const string PATH_TRANSMITTER = @"..\..\components\transmitter\";
         public const string PATH_TRANSMITTER_PLUGINS = @"..\..\components\transmitter_plugins\"; //Agent's plugins (IEngineContexters)
+        public const string PATH_INJECTOR_PLUGINS = @"..\..\components\injector_plugins\";
         #endregion
         #region Results
         public const string CHECK_KEY = "CHECK";
