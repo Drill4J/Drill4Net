@@ -54,6 +54,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /publish .
 COPY ./src/copy-artifacts-to-distribution.sh .
-RUN chmod + /app/copy-artifacts-to-distribution.sh
 # Run the command on container startup
 CMD ["/app/copy-artifacts-to-distribution.sh"]
