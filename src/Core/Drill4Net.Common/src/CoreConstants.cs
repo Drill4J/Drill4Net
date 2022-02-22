@@ -84,7 +84,7 @@
         /// <summary>
         /// If you need to re-run ALL the tests on the same assembly's build
         /// </summary>
-        public const string SWITCH_FORCE_RUNNIG_TYPE_ALL = "A";
+        public const char SWITCH_FORCE_RUNNIG_TYPE_ALL = 'A';
 
         public const string ARGUMENT_SILENT = "silent";
         public const string ARGUMENT_TARGET_NAME = "name";

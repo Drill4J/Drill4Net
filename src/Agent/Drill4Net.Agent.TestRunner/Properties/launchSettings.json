@@ -13,7 +13,7 @@
     },
     "run_test": {
       "commandName": "Project",
-      "commandLineArgs": "--cfg_path=\\\"d:\\\\Projects\\\\EPM-D4J\\\\Drill4Net\\\\build\\\\bin\\\\Debug\\\\Drill4Net.Agent.TestRunner\\\\net6.0\\\\run_SpecFlow_xUnit.yml\\\" -A"
+      "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Distributions\\test-builds\\SpecFlow+Xunit\\configs\\build2\\run_sp_xUnit_2_VS.yml\""
     }
   }
 }

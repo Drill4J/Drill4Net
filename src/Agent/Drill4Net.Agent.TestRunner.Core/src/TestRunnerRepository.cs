@@ -58,8 +58,8 @@ namespace Drill4Net.Agent.TestRunner.Core
             var targetInformes = _informers.DistinctBy(a => a.TargetName); //we need to collect test2Run data just by target
             //
             var forceType = RunningType.Unknown;
-            var forceTypeS = cliDescriptor?.GetParameter(CoreConstants.SWITCH_FORCE_RUNNIG_TYPE_ALL, true);
-            if (forceTypeS != null)
+            var forceTypeS = cliDescriptor?.IsSwitchSet(CoreConstants.SWITCH_FORCE_RUNNIG_TYPE_ALL);
+            if (forceTypeS == true)
                 forceType = RunningType.All;
             //
             foreach (var trgInformer in targetInformes.AsParallel())
