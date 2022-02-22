@@ -149,13 +149,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Core.Uni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Injector.Engine.UnitTests", "src\Tests\UnitTests\Drill4Net.Injector.Engine.UnitTests\Drill4Net.Injector.Engine.UnitTests.csproj", "{3BC9ADDE-EC6E-436A-BC8E-BB18615DCE0D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Adoption_cfg", "!!_Adoption_cfg", "{62F8FA14-B664-46E8-BDF1-88A1E77B959C}"
-	ProjectSection(SolutionItems) = preProject
-		IHS_v1.yml = IHS_v1.yml
-		IHS_v2.yml = IHS_v2.yml
-		svc.yml = svc.yml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standard", "Standard", "{5A5AB43E-890A-48AA-B426-8913AE372ADE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messaging", "Messaging", "{3C1B303F-7C0F-4C3D-9F33-ABBDEAC8F7E8}"
@@ -286,11 +279,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{0DF99DDD-78E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Demo.OnlineStore.Bll.Contracts", "src\Tests\Demo\WebApi\OnlineStore\Drill4Net.Demo.OnlineStore.Bll.Contracts\Drill4Net.Demo.OnlineStore.Bll.Contracts.csproj", "{751B77C9-2301-45C2-806D-6FA2343CB5ED}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Docker", "!!_Docker", "{8D22F77E-8C1E-4AA0-B0B3-86FE0B51A178}"
-	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Agent.Standard.UnitTests", "src\Tests\UnitTests\Drill4Net.Agent.Standard.UnitTests\Drill4Net.Agent.Standard.UnitTests.csproj", "{554F7FB7-F2BB-45EE-A069-03C778CD1E2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssemblyInstructionHelper", "AssemblyInstructionHelper", "{A5964FC8-67E3-4F05-ACE1-132AA92224DB}"
@@ -325,7 +313,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Configurator", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Configurator.App", "src\Configurator\Drill4Net.Configurator.App\Drill4Net.Configurator.App.csproj", "{1AD1F7C7-025A-4416-ADF2-DF0E7CA4A118}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drill4Net.Cli", "src\Core\Drill4Net.Cli\Drill4Net.Cli.csproj", "{85C0D36F-2951-4262-B063-9C7CE6588B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Cli", "src\Core\Drill4Net.Cli\Drill4Net.Cli.csproj", "{85C0D36F-2951-4262-B063-9C7CE6588B0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Distribution", "!!_Distribution", "{86B8D883-3D53-4754-93FF-03DFD96F0D77}"
+	ProjectSection(SolutionItems) = preProject
+		distribution\install\docker-compose.yml = distribution\install\docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
