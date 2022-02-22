@@ -342,4 +342,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-distribution/*
+distribution/distribution/*
