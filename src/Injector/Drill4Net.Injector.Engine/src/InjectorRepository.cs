@@ -77,6 +77,8 @@ namespace Drill4Net.Injector.Engine
             if (string.IsNullOrWhiteSpace(opts.PluginDir))
                 opts.PluginDir = Path.Combine(FileUtils.EntryDir, "plugins");
             opts.PluginDir = FileUtils.GetFullPath(opts.PluginDir);
+            //if (!Directory.Exists(opts.PluginDir))
+            //    throw new DirectoryNotFoundException("Injector plugin directory is not found");
             return opts;
         }
 

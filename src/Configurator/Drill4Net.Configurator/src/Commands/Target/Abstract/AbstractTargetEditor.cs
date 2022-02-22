@@ -298,7 +298,7 @@ Please make your choice";
                                 string plugCfgPath = "";
                                 while (true)
                                 {
-                                    if (!_cli.AskFileNameOrPath(@$"Name or full path file for the 'target specific config' for plugin ""{plugName}"". Please, create this config out of the Configurator. Usually such files have the ""plug_"" prefix.",
+                                    if (!_cli.AskFileNameOrPath(@$"Name or full path file for the 'target specific config' for plugin ""{plugName}"". Please create this configuration outside of the configurator manually - read the documentation for a specific plugin. Usually the model configuration can be located in the plugin directory, which you can use as a template. The best practice is to get the ""plug_"" prefix for such files.",
                                         out var plugCfgName, def, false))
                                         return false;
                                     if (string.IsNullOrWhiteSpace(plugCfgName))
@@ -395,7 +395,7 @@ Please make your choice";
             }
             catch (Exception ex)
             {
-                var er = $"Search for plugins is failed in [{dir}]";
+                var er = $"Search for Transmitter plugins (IGeneratorContexter) is failed in [{dir}]";
                 _logger.Fatal(er, ex);
                 RaiseWarning(er);
             }
