@@ -1,7 +1,18 @@
-## Get Windows Drill4Net Application
+## Get Windows Drill4Net Application ()
 ```
 Download https://github.com/epamX/Drill4Net/blob/main/docker-compose-run-distribution.yml to empty folder.
 docker-compose -f docker-compose-run-distribution.yml up
+```
+Script in Container have been download binary to distribution.
+After work directory contain:
+```
+Drill4Net.Agent.Plugins.NUnit
+Drill4Net.Agent.Plugins.SpecFlow
+Drill4Net.Agent.Plugins.xUnit
+Drill4Net.Agent.TestRunner
+Drill4Net.Agent.Transmitter
+Drill4Net.Configurator.App
+Drill4Net.Injector.App
 ```
 
 
