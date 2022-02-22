@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  dril4net-distribution:
+    image: ghcr.io/epamx/drill4net-win-distribution:latest
+    container_name: drill4net-distribution
+    volumes:
+      - "./distribution:/distribution"

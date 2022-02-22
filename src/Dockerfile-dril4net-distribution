@@ -53,4 +53,6 @@ RUN dotnet publish "Drill4Net.Agent.Plugins.xUnit.csproj" -c Release --runtime w
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /publish .
-ENTRYPOINT [ "bash"]
+COPY ./src/copy-artifacts-to-distribution.sh .
+# Run the command on container startup
+CMD ["/app/copy-artifacts-to-distribution.sh"]
