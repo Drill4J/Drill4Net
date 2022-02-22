@@ -44,13 +44,13 @@ RUN dotnet publish "Drill4Net.Injector.App.csproj" -c Release --runtime win-x64 
 WORKDIR "/src/src/Agent/Drill4Net.Agent.TestRunner"
 RUN dotnet publish "Drill4Net.Agent.TestRunner.csproj" -c Release --runtime win-x64 -o /publish/apps/test_runner
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Transmitter"
-RUN dotnet publish "Drill4Net.Agent.Transmitter.csproj" -c Release --runtime win-x64 -o /publish/transmitter
+RUN dotnet publish "Drill4Net.Agent.Transmitter.csproj" -c Release --runtime win-x64 -o /publish/components/transmitter
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.NUnit"
-RUN dotnet publish "Drill4Net.Agent.Plugins.NUnit.csproj" -c Release --runtime win-x64 -o /publish/transmitter_plugins/Drill4Net.Agent.Plugins.NUnit
+RUN dotnet publish "Drill4Net.Agent.Plugins.NUnit.csproj" -c Release --runtime win-x64 -o /publish/components/transmitter_plugins/Drill4Net.Agent.Plugins.NUnit
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.SpecFlow"
-RUN dotnet publish "Drill4Net.Agent.Plugins.SpecFlow.csproj" -c Release --runtime win-x64 -o /publish/transmitter_plugins/Drill4Net.Agent.Plugins.SpecFlow
+RUN dotnet publish "Drill4Net.Agent.Plugins.SpecFlow.csproj" -c Release --runtime win-x64 -o /publish/components/transmitter_plugins/Drill4Net.Agent.Plugins.SpecFlow
 WORKDIR "/src/src/Agent/Drill4Net.Agent.Plugins.xUnit"
-RUN dotnet publish "Drill4Net.Agent.Plugins.xUnit.csproj" -c Release --runtime win-x64 -o /publish/transmitter_plugins/Drill4Net.Agent.Plugins.xUnit
+RUN dotnet publish "Drill4Net.Agent.Plugins.xUnit.csproj" -c Release --runtime win-x64 -o /publish/components/transmitter_plugins/Drill4Net.Agent.Plugins.xUnit
 WORKDIR "/src/src/Injector/Plugins/Drill4Net.Injector.Plugins.SpecFlow"
 RUN dotnet publish "Drill4Net.Injector.Plugins.SpecFlow.csproj" -c Release --runtime win-x64 -o /publish/components/injector_plugins/Drill4Net.Injector.Plugins.SpecFlow
 
