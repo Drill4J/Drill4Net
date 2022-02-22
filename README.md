@@ -4,8 +4,7 @@
 Download https://github.com/epamX/Drill4Net/blob/main/docker-compose-run-distribution.yml to empty folder.
 docker-compose -f docker-compose-run-distribution.yml up
 ```
-Script in Container have been download binary to distribution.
-After work directory contain:
+Script in Container have been download binary to distribution folder. After work this directory contain:
 ```
 Drill4Net.Agent.Plugins.NUnit
 Drill4Net.Agent.Plugins.SpecFlow
