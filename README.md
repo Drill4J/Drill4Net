@@ -1,6 +1,6 @@
 ## Get Windows Drill4Net Application
 ```
-Download https://github.com/epamX/Drill4Net/blob/main/docker-compose-run-distribution.yml to emtpy folder.
+Download https://github.com/epamX/Drill4Net/blob/main/docker-compose-run-distribution.yml to empty folder.
 docker-compose -f docker-compose-run-distribution.yml up
 ```
 
