@@ -1,0 +1,12 @@
+Description: Model config for the TestRunner
+Type: TestRunner
+DefaultParallelRestrict: false # level-1: the whole Run (default value is false)
+DegreeOfParallelism: 4 # 0 and 1 mean no parallelism on Run and Directory levels
+Directories:
+   # - Directory: <..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.Injected\net6.0\> # base dir of the test assemblies
+     # DefaultParallelRestrict: false # level of the assemblies in the current directory. Missed value inherits the level-1
+     # Assemblies:
+       # - DefaultAssemblyName: <some lib>.dll  # some assembly to run tests
+         # DefaultParallelRestrict: true # level of the tests in the assembly
+       # - DefaultAssemblyName: <another_lib>.dll # another dll in the same folder
+       #  DefaultParallelRestrict: false

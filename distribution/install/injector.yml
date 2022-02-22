@@ -1,0 +1,58 @@
+Description: IHS adoption for BDD tests
+Type: Injector
+Target: # some metadata about target
+    Name: # optional injection name, if empty must be set in agent config
+    Version: # version of whole Product, can be empty and can be overridden by Agent's configs
+    VersionAssemblyName: # Name of main Product assembly - if the version is empty, you can specify with the automatic changing version
+Source: # what and how processing
+    Directory: # relative path resolved relative to the Injector
+    Filter: # mask for search files, namespaces, classes...
+      Includes:
+        Directories:
+        Files: 
+        Namespaces:
+        Classes:
+        Attributes:
+      Excludes:
+        Directories:
+        Files: 
+        Namespaces:
+        Classes:
+        Attributes:
+Destination: # where copying injected assemblies
+    Directory: # or a specific directory (absolute or relative to the Injector)...
+    FolderPostfix: Injected #...or prefix to source dir
+Proxy: # the injecting for transfer data to profiler
+    Class: ProfilerProxy
+    Method: Register
+    Static: true
+Profiler: # data collector/processor in separate assembly
+    Name: Standard agent # name exactly for agent subsystem
+    Directory: # absolute path, or relatively Destination dir
+    #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
+    AssemblyName: Drill4Net.Agent.Transmitter.dll
+    Namespace: Drill4Net.Agent.Transmitter
+    Class: DataTransmitter
+    Method: Transmit
+    Static: true
+Probes: # types of cross-cutting points
+    Ctor: true
+    Private: true
+    Getter: true
+    Setter: true
+    EventAdd: false
+    EventRemove: false
+    SkipEnterType: true
+    SkipIfElseType: true
+Plugins: # injected references to plugins for runtime transmitting data to the Admin service
+   'SpecFlow':
+       Directory: ..\..\Drill4Net.Agent.Plugins.SpecFlow\netstandard2.0\ #  # absolute path, or relatively Destination dir
+       Config: plug_IHS_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
+Logs: # for Injector
+    - Type: console
+      Level: debug
+    #local log
+    - Type: file
+      Level: trace
+Silent: false # no wait, no questions...
+

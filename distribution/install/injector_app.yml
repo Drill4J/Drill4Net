@@ -1,0 +1,3 @@
+﻿Description: Options for the Injector App itself
+Type: InjectorApp
+PluginDir: ..\..\components\injector_plugins\ # Directory for the Injector's plugins. If it empty will be used "plugin" folder in the root of the Injector.

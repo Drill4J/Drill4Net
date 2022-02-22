@@ -1,0 +1,19 @@
+Admin:
+  Url: localhost:8090
+PluginDir: ..\..\components\transmitter_plugins\ # if path is relative, it is used Configurator directory
+CreateManualSession: false
+Connector:
+  LogDir: 
+  LogFile: connector.log
+  LogLevel: debug
+Debug:
+  Disabled: true
+  WriteProbes: false
+Target:
+  Name: 
+  Version: 
+  VersionAssemblyName: 
+TreePath: 
+Type: Agent
+Logs: 
+Description: Agent's config for debug Configurator
