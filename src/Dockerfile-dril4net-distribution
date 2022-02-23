@@ -59,7 +59,7 @@ FROM base AS final
 RUN apt-get update && apt-get install dos2unix -y
 WORKDIR /
 COPY ./src/copy-artefacts-to-distribution.sh .
-RUN chmod + /app/copy-artefacts-to-distribution.sh
+RUN chmod +x /app/copy-artefacts-to-distribution.sh
 RUN dos2unix copy-artefacts-to-distribution.sh
 WORKDIR /app
 RUN mkdir ci
