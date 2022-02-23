@@ -71,4 +71,4 @@ COPY ./artifacts/install/ci.yml ./install/
 COPY ./artifacts/install/injector.yml ./install/
 COPY ./artifacts/install/test_runner.yml ./install/
 # Run the command on container startup
-CMD ["/app/copy-artifacts-to-distribution.sh"]
+CMD ["/copy-artifacts-to-distribution.sh"]
