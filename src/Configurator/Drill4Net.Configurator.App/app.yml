@@ -1,7 +1,7 @@
 ﻿Description: Config for Configurator App
 Type: Configurator
 
-#InstallDirectory: ..\..\install\
+#TemplatesDirectory: ..\..\templates\
 #InjectorDirectory: ..\..\apps\injector\
 #TestRunnerDirectory: ..\..\apps\test_runner\
 #CiDirectory: ..\..\ci\
@@ -9,7 +9,7 @@ Type: Configurator
 #AgentPluginDirectory: ..\..\components\transmitter_plugins\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net
 #InjectorPluginDirectory: ..\..\components\injector_plugins\
 
-InstallDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\install\
+TemplatesDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\templates\
 InjectorDirectory: ..\..\Drill4Net.Injector.App\net6.0\
 TestRunnerDirectory: ..\..\Drill4Net.Agent.TestRunner\net6.0\
 CiDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\ci\

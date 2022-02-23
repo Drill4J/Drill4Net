@@ -56,14 +56,14 @@ namespace Drill4Net.Configurator
         #region Dirs/paths
         public string GetAppPath()
         {
-            return Path.Combine(FileUtils.EntryDir, "dfn.exe");
+            return Path.Combine(FileUtils.EntryDir, "d4n.exe");
         }
 
-        public string GetInstallDirectory()
+        public string GetTemplatesDirectory()
         {
-            var dir = Options.InstallDirectory;
+            var dir = Options.TemplatesDirectory;
             if (string.IsNullOrEmpty(dir))
-                dir = ConfiguratorConstants.PATH_INSTALL;
+                dir = ConfiguratorConstants.PATH_TEMPLATES;
             return dir;
         }
 
@@ -109,7 +109,7 @@ namespace Drill4Net.Configurator
         /// <returns></returns>
         public string GetInjectorModelConfigPath()
         {
-            return Path.Combine(GetInstallDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
+            return Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Drill4Net.Configurator
         /// <returns></returns>
         public string GetTestRunnerModelConfigPath()
         {
-            return Path.Combine(GetInstallDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
+            return Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Drill4Net.Configurator
         /// <returns></returns>
         public string GetAgentModelConfigPath()
         {
-            return Path.Combine(GetInstallDirectory(), ConfiguratorConstants.CONFIG_AGENT_MODEL);
+            return Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_AGENT_MODEL);
         }
 
         /// <summary>

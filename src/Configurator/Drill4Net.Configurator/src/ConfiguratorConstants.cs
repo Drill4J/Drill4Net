@@ -53,7 +53,7 @@
         public const char SWITCH_CONTENT_NO = 'C';
         #endregion
         #region App paths
-        public const string PATH_INSTALL = @"..\..\install\";
+        public const string PATH_TEMPLATES = @"..\..\templates\";
         public const string PATH_INJECTOR = @"..\..\apps\injector\";
         public const string PATH_RUNNER = @"..\..\apps\test_runner\";
         public const string PATH_CI = @"..\..\ci\";

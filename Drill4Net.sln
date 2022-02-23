@@ -315,10 +315,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Configurator.App"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Cli", "src\Core\Drill4Net.Cli\Drill4Net.Cli.csproj", "{85C0D36F-2951-4262-B063-9C7CE6588B0B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Distribution", "!!_Distribution", "{86B8D883-3D53-4754-93FF-03DFD96F0D77}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Artefacts", "!!_Artefacts", "{86B8D883-3D53-4754-93FF-03DFD96F0D77}"
 	ProjectSection(SolutionItems) = preProject
+		artefacts\templates\agent.yml = artefacts\templates\agent.yml
+		artefacts\templates\ci.yml = artefacts\templates\ci.yml
+		artefacts\templates\configurator_app.yml = artefacts\templates\configurator_app.yml
 		artefacts\docker-compose.yml = artefacts\docker-compose.yml
 		src\Dockerfile-dril4net-distribution = src\Dockerfile-dril4net-distribution
+		artefacts\templates\injector.yml = artefacts\templates\injector.yml
+		artefacts\templates\injector_app.yml = artefacts\templates\injector_app.yml
+		artefacts\templates\test_runner.yml = artefacts\templates\test_runner.yml
 	EndProjectSection
 EndProject
 Global

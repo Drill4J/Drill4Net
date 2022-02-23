@@ -57,7 +57,7 @@ So, do you want to integrate CI run into some source code projects (on its post-
             ciCfgPath = "";
 
             //setting
-            var modelCfgPath = Path.Combine(_rep.Options.InstallDirectory, "ci.yml");
+            var modelCfgPath = Path.Combine(_rep.Options.TemplatesDirectory, "ci.yml");
             CiOptions opts;
             if (File.Exists(modelCfgPath))
                 opts = _rep.ReadCiOptions(modelCfgPath, false);

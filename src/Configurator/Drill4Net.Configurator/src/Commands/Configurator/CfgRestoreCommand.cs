@@ -46,7 +46,7 @@ namespace Drill4Net.Configurator
             }
             if (pathsNeed) //Configurator's options
             {
-                opts.InstallDirectory = ConfiguratorConstants.PATH_INSTALL;
+                opts.TemplatesDirectory = ConfiguratorConstants.PATH_TEMPLATES;
                 opts.InjectorDirectory = ConfiguratorConstants.PATH_INJECTOR;
                 opts.TestRunnerDirectory = ConfiguratorConstants.PATH_RUNNER;
                 opts.CiDirectory = ConfiguratorConstants.PATH_CI;

@@ -10,7 +10,7 @@ namespace Drill4Net.Configurator
         /// <summary>
         /// Install directory of Drill4Net system
         /// </summary>
-        public string? InstallDirectory { get; set; }
+        public string? TemplatesDirectory { get; set; }
 
         /// <summary>
         /// Default directory for the Injector module

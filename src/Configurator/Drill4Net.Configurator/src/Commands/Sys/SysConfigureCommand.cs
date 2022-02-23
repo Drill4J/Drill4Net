@@ -81,7 +81,7 @@ namespace Drill4Net.Configurator
             }
             while (!_cli.CheckDirectoryAnswer(ref plugDir, true));
             cfg.InjectorPluginDirectory = plugDir;
-            _logger.Info($"Injector plugin dir: {plugDir}");
+            _logger.Info($"{CoreConstants.SUBSYSTEM_INJECTOR} plugin dir: {plugDir}");
 
             // agent's plugin dir (for Transmitter in Server/Worker scheme)
             plugDir = "";
