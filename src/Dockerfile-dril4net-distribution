@@ -65,16 +65,11 @@ RUN mkdir ci
 COPY --from=publish /publish .
 COPY ./artifacts/1Drill4Net_workshop_IHS.pdf .
 COPY ./artifacts/2Drill4Net_docs.pdf .
-COPY ./artifacts/docker-compose.yml ./install/
+COPY ./artifacts/docker-compose.yml .
 
-COPY ./artifacts/install/* ./install/
-# COPY ./artifacts/install/ci.yml ./install/
-# COPY ./artifacts/install/injector.yml ./install/
-# COPY ./artifacts/install/test_runner.yml ./install/
-
-COPY ./artifacts/install/configurator_app.yml ./apps/configurator/app.yml
-COPY ./artifacts/install/injector_app.yml ./apps/injector/app.yml
-
+COPY ./artifacts/templates/* ./templates/
+COPY ./artifacts/templates/configurator_app.yml ./apps/configurator/app.yml
+COPY ./artifacts/templates/injector_app.yml ./apps/injector/app.yml
 
 # Run the command on container startup
 CMD ["/copy-artifacts-to-distribution.sh"]
