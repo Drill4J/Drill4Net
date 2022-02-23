@@ -103,7 +103,7 @@ namespace Drill4Net.Configurator
             if (string.IsNullOrWhiteSpace(postfix))
             {
                 if (string.IsNullOrWhiteSpace(dest.FolderPostfix))
-                    dest.FolderPostfix = "Injected";
+                    dest.FolderPostfix = CoreConstants.INJECTION_DESTITANTION_POSTFIX;
             }
             else
             {

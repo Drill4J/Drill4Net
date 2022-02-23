@@ -29,7 +29,7 @@ namespace Drill4Net.Injector.Core
             if (string.IsNullOrWhiteSpace(destDir))
             {
                 if (string.IsNullOrWhiteSpace(opts.Destination?.Directory))
-                    destDir = $"{FileUtils.RefineDirectoryName(opts.Source.Directory)}.{opts.Destination?.FolderPostfix ?? "Injected"}";
+                    destDir = $"{FileUtils.RefineDirectoryName(opts.Source.Directory)}.{opts.Destination?.FolderPostfix ?? CoreConstants.INJECTION_DESTITANTION_POSTFIX}";
                 else
                     destDir = FileUtils.RefineDirectoryName(opts.Destination.Directory);
             }

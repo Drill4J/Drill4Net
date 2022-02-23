@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Cli;
+using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
@@ -73,10 +73,10 @@ namespace Drill4Net.Configurator
 
             // Injector's plugin dir
             string plugDir = "";
-            def = opts.AgentPluginDirectory;
+            def = _rep.GetInjectorPluginDirectory();
             do
             {
-                if (!_cli.AskQuestion("Injector plugin's directory", out plugDir, def))
+                if (!_cli.AskQuestion($"{CoreConstants.SUBSYSTEM_INJECTOR} plugin's directory", out plugDir, def))
                     return false;
             }
             while (!_cli.CheckDirectoryAnswer(ref plugDir, true));
@@ -85,15 +85,15 @@ namespace Drill4Net.Configurator
 
             // agent's plugin dir (for Transmitter in Server/Worker scheme)
             plugDir = "";
-            def = opts.AgentPluginDirectory;
+            def = opts.AgentPluginDirectory; //in fact, those is Transmitter's plugins
             do
             {
-                if (!_cli.AskQuestion("Agent plugin's directory", out plugDir, def))
+                if (!_cli.AskQuestion($"{CoreConstants.SUBSYSTEM_AGENT} plugin's directory", out plugDir, def))
                     return false;
             }
             while (!_cli.CheckDirectoryAnswer(ref plugDir, true));
             cfg.AgentPluginDirectory = plugDir;
-            _logger.Info($"Agent plugin dir: {plugDir}");
+            _logger.Info($"{CoreConstants.SUBSYSTEM_AGENT} plugin dir: {plugDir}");
             //
             return true;
         }

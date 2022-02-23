@@ -163,7 +163,7 @@ To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".";
 
             while (true)
             {
-                answer = Console.ReadLine().Trim();
+                answer = Console.ReadLine()?.Trim() ?? "";
                 if (_cli.IsOk(answer))
                     break;
                 if (!AddFilterRules(answer, cfg.Source.Filter, out string err))
@@ -298,7 +298,7 @@ Please make your choice";
                                 string plugCfgPath = "";
                                 while (true)
                                 {
-                                    if (!_cli.AskFileNameOrPath(@$"Name or full path file for the 'target specific config' for plugin ""{plugName}"". Please create this configuration outside of the configurator manually - read the documentation for a specific plugin. Usually the model configuration can be located in the plugin directory, which you can use as a template. The best practice is to get the ""plug_"" prefix for such files.",
+                                    if (!_cli.AskFileNameOrPath(@$"Name or full path file for the 'target specific config' for the plugin ""{plugName}"". Please create this configuration outside of the configurator manually - read the documentation for a specific plugin. Usually the model configuration can be located in the plugin directory, which you can use as a template. The best practice is to get the ""plug_"" prefix for the concrete target specific files.",
                                         out var plugCfgName, def, false))
                                         return false;
                                     if (string.IsNullOrWhiteSpace(plugCfgName))
@@ -316,7 +316,7 @@ Please make your choice";
 
                                     if (File.Exists(plugCfgPath))
                                         break;
-                                    RaiseWarning(@$"The target specific config for the target ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
+                                    RaiseWarning(@$"The target specific config for the ""{trgName}"" and the plugin ""{plugName}"" does not exist: [{plugCfgPath}]");
                                 }
                                 #endregion
 
@@ -424,7 +424,7 @@ Please make your choice";
 
         private bool AskDestinationPostfix(ref string postfix)
         {
-            var def = string.IsNullOrWhiteSpace(postfix) ? "Injected" : postfix;
+            var def = string.IsNullOrWhiteSpace(postfix) ? CoreConstants.INJECTION_DESTITANTION_POSTFIX : postfix;
             do
             {
                 if (!_cli.AskQuestion("Postfix to original directory", out postfix, def))

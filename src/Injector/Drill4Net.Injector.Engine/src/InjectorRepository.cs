@@ -70,10 +70,10 @@ namespace Drill4Net.Injector.Engine
         /// Get the Injector app config
         /// </summary>
         /// <returns></returns>
-        public static InjectorAppOptions GetInjectorAppOptions()
+        public static InjectorAppOptions GetInjectorAppOptions(string cfgPath = null)
         {
             var optHelper = new BaseOptionsHelper<InjectorAppOptions>();
-            var opts = optHelper.ReadOptions(GetInjectorAppOptionsPath());
+            var opts = optHelper.ReadOptions(cfgPath ?? GetInjectorAppOptionsPath());
             if (string.IsNullOrWhiteSpace(opts.PluginDir))
                 opts.PluginDir = Path.Combine(FileUtils.EntryDir, "plugins");
             opts.PluginDir = FileUtils.GetFullPath(opts.PluginDir);

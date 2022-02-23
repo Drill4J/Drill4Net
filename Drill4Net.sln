@@ -317,7 +317,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drill4Net.Cli", "src\Core\D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Distribution", "!!_Distribution", "{86B8D883-3D53-4754-93FF-03DFD96F0D77}"
 	ProjectSection(SolutionItems) = preProject
-		distribution\install\docker-compose.yml = distribution\install\docker-compose.yml
+		artifacts\install\docker-compose.yml = artifacts\install\docker-compose.yml
 	EndProjectSection
 EndProject
 Global

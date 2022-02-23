@@ -177,9 +177,8 @@ namespace Drill4Net.Configurator
 
         public string GetInjectorPluginDirectory()
         {
-            var dir = InjectorRepository.GetInjectorAppOptionsPath();
-            if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
-                dir = GetAppPath();
+            var opts = InjectorRepository.GetInjectorAppOptions(GetInjectorAppOptionsPath());
+            var dir = string.IsNullOrWhiteSpace(opts?.PluginDir) ? Path.GetDirectoryName(GetAppPath()) : opts.PluginDir;
             return FileUtils.GetFullPath(dir);
         }
 
@@ -274,7 +273,16 @@ namespace Drill4Net.Configurator
 
         public InjectorAppOptions ReadInjectorAppOptions()
         {
-            return InjectorRepository.GetInjectorAppOptions();
+            return InjectorRepository.GetInjectorAppOptions(GetInjectorAppOptionsPath());
+        }
+
+        /// <summary>
+        /// Get Injector App Options path
+        /// </summary>
+        /// <returns></returns>
+        public string GetInjectorAppOptionsPath()
+        {
+            return Path.Combine(GetInjectorDirectory(), CoreConstants.CONFIG_NAME_APP);
         }
 
         public void WriteInjectorAppOptions(InjectorAppOptions opts)

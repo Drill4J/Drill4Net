@@ -101,6 +101,8 @@
         public const string ARGUMENT_DEGREE_PARALLELISM = "degree_parallelism";
         #endregion
 
+        public const string INJECTION_DESTITANTION_POSTFIX = "Injected";
+
         /// <summary>
         /// Prefix for regex filter in config
         /// </summary>
