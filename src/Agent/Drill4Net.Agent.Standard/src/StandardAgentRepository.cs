@@ -255,45 +255,44 @@ namespace Drill4Net.Agent.Standard
             var rootDirs = _tree.GetDirectories().ToList();
             _logger.Debug($"Root dirs: {rootDirs.Count}");
             Log.Flush();
-            if (rootDirs.Count > 1)
+            var files = Directory.GetDirectories(_tree.Path);
+            if (rootDirs.Count > 0 && files.Count() == 0) //maybe this is root of some monikers
             {
-                if (!_tree.GetAssemblies().Any()) //maybe this is root of monikers
+                var runDir = AgentInitParameters.TargetDir ?? (AgentInitParameters.LocatedInWorker ? null : FileUtils.EntryDir);
+                if (string.IsNullOrWhiteSpace(runDir))
+                    throw new Exception("Unknown target runtime dir");
+                if (!runDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                    runDir += "\\"; //Path.DirectorySeparatorChar;  TODO: depending on the target's OS
+                _logger.Debug($"Target runtime dir: [{runDir}]");
+
+                InjectedDirectory targetDir = null;
+
+                //by directory directly
+                foreach (var dir in rootDirs)
                 {
-                    var runDir = AgentInitParameters.TargetDir ?? (AgentInitParameters.LocatedInWorker ? null : FileUtils.EntryDir);
-                    if (string.IsNullOrWhiteSpace(runDir))
-                        throw new Exception("Unknown target runtime dir");
-                    if (!runDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                        runDir += "\\"; //Path.DirectorySeparatorChar;  TODO: depending on the target's OS
-                    _logger.Debug($"Target runtime dir: [{runDir}]");
-
-                    InjectedDirectory targetDir = null;
-
-                    //by directory directly
-                    foreach (var dir in rootDirs)
-                    {
-                        if (!dir.DestinationPath.Equals(runDir, StringComparison.InvariantCultureIgnoreCase))
-                            continue;
-                        targetDir = dir;
-                        _logger.Debug($"Target dir: {dir}");
-                        break;
-                    }
-
-                    //by run target version
-                    if (targetDir == null)
-                    {
-                        _logger.Warning("Target dir not found by its path directly");
-
-                        //TODO: search by target version against potential entry version in each injected directory
-                        //use AgentInitParameters.FrameworkVersion
-                    }
-                    injTypes = targetDir?.GetAllTypes();
+                    if (!dir.DestinationPath.Equals(runDir, StringComparison.InvariantCultureIgnoreCase))
+                        continue;
+                    targetDir = dir;
+                    _logger.Debug($"Target dir: {dir}");
+                    break;
                 }
+
+                //by run target version
+                if (targetDir == null)
+                {
+                    _logger.Warning("Target dir not found by its path directly");
+
+                    //TODO: search by target version against potential entry version in each injected directory
+                    //use AgentInitParameters.FrameworkVersion
+                }
+                injTypes = targetDir?.GetAllTypes();
             }
 
-            if(injTypes == null)
+            if (injTypes == null)
                 injTypes = _tree.GetAllTypes();
 
             _injTypes = injTypes.Distinct(new InjectedEntityComparer<InjectedType>());
+            Log.Flush();
         }
 
         /// <summary>

@@ -42,8 +42,8 @@ namespace Drill4Net.Configurator
 
             #region Tests' assemblies
             const string asmHint = $@"Now you need to specify one or more tests' assemblies to run their tests. They can be located either in one folder or in several.
-To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".
-Specify at least one tests' assembly.";
+Specify at least one tests' assembly.
+To finish, just enter ""{ConfiguratorConstants.ANSWER_OK}"".";
             RaiseMessage($"\n{asmHint}");
 
             if (cfg.Directories == null)
