@@ -57,10 +57,12 @@ RUN dotnet publish "Drill4Net.Injector.Plugins.SpecFlow.csproj" -c Release --run
 
 FROM base AS final
 RUN apt-get update && apt-get install dos2unix -y
-WORKDIR /app
-COPY --from=publish /publish .
+WORKDIR /
 COPY ./src/copy-artifacts-to-distribution.sh .
 RUN dos2unix copy-artifacts-to-distribution.sh
+WORKDIR /app
+RUN mkdir ci
+COPY --from=publish /publish .
 COPY ./artifacts/1Drill4Net_workshop_IHS.pdf .
 COPY ./artifacts/2Drill4Net_docs.pdf .
 COPY ./artifacts/docker-compose.yml ./install/
