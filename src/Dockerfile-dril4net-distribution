@@ -60,7 +60,7 @@ RUN apt-get update && apt-get install dos2unix -y
 WORKDIR /app
 COPY --from=publish /publish .
 COPY ./src/copy-artifacts-to-distribution.sh .
-COPY ./distribution/* ./distribution/
+COPY ./artifacts/* ./distribution/
 RUN dos2unix copy-artifacts-to-distribution.sh
 # Run the command on container startup
 CMD ["/app/copy-artifacts-to-distribution.sh"]
