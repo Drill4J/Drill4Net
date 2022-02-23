@@ -60,7 +60,13 @@ RUN apt-get update && apt-get install dos2unix -y
 WORKDIR /app
 COPY --from=publish /publish .
 COPY ./src/copy-artifacts-to-distribution.sh .
-COPY ./artifacts/* ./distribution/
 RUN dos2unix copy-artifacts-to-distribution.sh
+COPY ./artifacts/1Drill4Net_workshop_IHS.pdf .
+COPY ./artifacts/2Drill4Net_docs.pdf .
+COPY ./artifacts/docker-compose.yml ./install/
+COPY ./artifacts/install/agent.yml ./install/
+COPY ./artifacts/install/ci.yml ./install/
+COPY ./artifacts/install/injector.yml ./install/
+COPY ./artifacts/install/test_runner.yml ./install/
 # Run the command on container startup
 CMD ["/app/copy-artifacts-to-distribution.sh"]
