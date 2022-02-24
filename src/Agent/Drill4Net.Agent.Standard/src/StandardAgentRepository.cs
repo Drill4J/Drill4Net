@@ -255,8 +255,7 @@ namespace Drill4Net.Agent.Standard
             var rootDirs = _tree.GetDirectories().ToList();
             _logger.Debug($"Root dirs: {rootDirs.Count}");
             Log.Flush();
-            var files = Directory.GetDirectories(_tree.DestinationPath);
-            if (rootDirs.Count > 0 && files.Count() == 0) //maybe this is root of some monikers
+            if (rootDirs.Count > 0 && _tree.GetAssemblies().Count() == 0) //maybe this is root of some monikers
             {
                 var runDir = AgentInitParameters.TargetDir ?? (AgentInitParameters.LocatedInWorker ? null : FileUtils.EntryDir);
                 if (string.IsNullOrWhiteSpace(runDir))
