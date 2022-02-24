@@ -25,12 +25,9 @@ namespace Drill4Net.Profiling.Tree
 
         public InjectedSolution(): base(null, null) { } //Serializable
 
-        public InjectedSolution(string path) : this(null, path)
+        public InjectedSolution(string name, string sourceDir, string destDir) : base(sourceDir, destDir)
         {
-        }
-
-        public InjectedSolution(string name, string sourceDir) : base(sourceDir, sourceDir)
-        {
+            StartTime = DateTime.Now;
             Name = name;
             Path = sourceDir;
         }

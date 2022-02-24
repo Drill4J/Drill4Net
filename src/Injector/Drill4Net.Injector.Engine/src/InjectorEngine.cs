@@ -140,10 +140,9 @@ namespace Drill4Net.Injector.Engine
             var sourceDir = opts.Source.Directory;
             var destDir = opts.Destination.Directory;
 
-            var tree = new InjectedSolution(opts.Target?.Name, sourceDir)
+            _logger.Debug($"Creating {nameof(InjectedSolution)}: name=[{opts.Target?.Name}]; source=[{sourceDir}]; destination=[{destDir}]");
+            var tree = new InjectedSolution(opts.Target?.Name, sourceDir, destDir)
             {
-                StartTime = DateTime.Now,
-                DestinationPath = destDir,
                 Description = opts.Description,
             };
 

@@ -192,7 +192,7 @@ namespace Drill4Net.Agent.Standard
                 Agent_Initialized();
         }
 
-#pragma warning disable AsyncFixer03 // Fire-and-forget async-void methods or delegates
+        #pragma warning disable AsyncFixer03 // Fire-and-forget async-void methods or delegates
         private async void Agent_Initialized()
         {
             if (IsInitialized)
@@ -219,7 +219,7 @@ namespace Drill4Net.Agent.Standard
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }
-#pragma warning restore AsyncFixer03 // Fire-and-forget async-void methods or delegates
+        #pragma warning restore AsyncFixer03 // Fire-and-forget async-void methods or delegates
         #endregion
         #region Events from Admin side
         /// <summary>
