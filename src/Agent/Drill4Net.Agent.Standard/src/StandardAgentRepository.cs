@@ -260,7 +260,7 @@ namespace Drill4Net.Agent.Standard
                 var runDir = AgentInitParameters.TargetDir ?? (AgentInitParameters.LocatedInWorker ? null : FileUtils.EntryDir);
                 if (string.IsNullOrWhiteSpace(runDir))
                     throw new Exception("Unknown target runtime dir");
-                if (!runDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                if (!runDir.EndsWith("\\"))
                     runDir += "\\"; //Path.DirectorySeparatorChar;  TODO: depending on the target's OS
                 _logger.Debug($"Target runtime dir: [{runDir}]");
 
@@ -270,7 +270,7 @@ namespace Drill4Net.Agent.Standard
                 foreach (var dir in rootDirs)
                 {
                     var curDir = dir.DestinationPath;
-                    if (!curDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                    if (!curDir.EndsWith("\\"))
                         curDir += "\\"; //Path.DirectorySeparatorChar;  TODO: depending on the target's OS
                     if (!curDir.Equals(runDir, StringComparison.InvariantCultureIgnoreCase))
                     {
