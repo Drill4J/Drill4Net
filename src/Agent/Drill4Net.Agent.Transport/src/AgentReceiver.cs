@@ -108,14 +108,17 @@ namespace Drill4Net.Agent.Transport
                         break;
                     case AgentConstants.TOPIC_AGENT_NAMESPACES: //TODO: additional filter for incoming probes?
                         break;
-                    case AgentConstants.TOPIC_AGENT_PLUGIN_LOAD: //don't use yet
+                    case AgentConstants.TOPIC_AGENT_PLUGIN_LOAD: // Agent init - if it has the Fast initializing
+                        _logger.Debug($"Plugin loaded: [{message}]");
                         PluginLoaded?.Invoke();
                         break;
                     case AgentConstants.TOPIC_CLASSES_LOAD:
+                        _logger.Debug("Request classes");
                         RequestClassesData?.Invoke();
                         break;
-                    case AgentConstants.TOPIC_TOGGLE_PLUGIN:
+                    case AgentConstants.TOPIC_TOGGLE_PLUGIN: // as Slow initializing (with agent registration)
                         var plugin = message; //TODO: processing
+                        _logger.Debug($"Plugin toggled: [{plugin}]");
                         TogglePlugin?.Invoke(plugin);
                         break;
                     case AgentConstants.TOPIC_PLUGIN_ACTION:

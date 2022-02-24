@@ -255,7 +255,7 @@ namespace Drill4Net.Agent.Standard
             var rootDirs = _tree.GetDirectories().ToList();
             _logger.Debug($"Root dirs: {rootDirs.Count}");
             Log.Flush();
-            if (rootDirs.Count > 0 && _tree.GetAssemblies().Count() == 0) //maybe this is root of some monikers
+            if (rootDirs.Count > 1 && _tree.GetAssemblies().Count() == 0) //maybe this is root of some monikers
             {
                 var runDir = AgentInitParameters.TargetDir ?? (AgentInitParameters.LocatedInWorker ? null : FileUtils.EntryDir);
                 if (string.IsNullOrWhiteSpace(runDir))
@@ -278,14 +278,14 @@ namespace Drill4Net.Agent.Standard
                         continue;
                     }
                     targetDir = dir;
-                    _logger.Debug($"Target dir: {dir}");
+                    _logger.Debug($"Found target dir in the tree data: {dir.DestinationPath}");
                     break;
                 }
 
                 //by run target version
                 if (targetDir == null)
                 {
-                    _logger.Warning("Target dir not found by its path directly");
+                    _logger.Warning("Target dir not found directly");
 
                     //TODO: search by target version against potential entry version in each injected directory
                     //use AgentInitParameters.FrameworkVersion
