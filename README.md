@@ -1,9 +1,10 @@
 ## Deploy Drill4Net local application from docker to Windows
-
-```
 Download https://github.com/epamX/Drill4Net/blob/main/docker-compose-run-distribution.yml to empty folder.
+```
 docker-compose -f docker-compose-run-distribution.yml up
 ```
+Agree for share/mount volume in docker for windows
+
 Script in Container have been download binary to distribution folder. After work this directory contains:
 ```
 Drill4Net.Agent.Plugins.NUnit
