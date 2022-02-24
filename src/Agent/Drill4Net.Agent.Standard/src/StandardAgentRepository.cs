@@ -269,8 +269,14 @@ namespace Drill4Net.Agent.Standard
                 //by directory directly
                 foreach (var dir in rootDirs)
                 {
-                    if (!dir.DestinationPath.Equals(runDir, StringComparison.InvariantCultureIgnoreCase))
+                    var curDir = dir.DestinationPath;
+                    if (!curDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                        curDir += "\\"; //Path.DirectorySeparatorChar;  TODO: depending on the target's OS
+                    if (!curDir.Equals(runDir, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        _logger.Debug($"Dir [{curDir}] is skipped");
                         continue;
+                    }
                     targetDir = dir;
                     _logger.Debug($"Target dir: {dir}");
                     break;
@@ -291,6 +297,7 @@ namespace Drill4Net.Agent.Standard
                 injTypes = _tree.GetAllTypes();
 
             _injTypes = injTypes.Distinct(new InjectedEntityComparer<InjectedType>());
+            _logger.Debug($"Target types: {_injTypes.Count()}");
             Log.Flush();
         }
 
