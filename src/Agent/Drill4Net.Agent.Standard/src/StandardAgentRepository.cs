@@ -128,7 +128,7 @@ namespace Drill4Net.Agent.Standard
                 Version = TargetVersion,
             };
             Communicator = GetCommunicator(Options.Admin, targData, Options.Connector);
-
+            Log.Flush();
             RetrieveTargetBuilds().GetAwaiter().GetResult();
 
             //timer for periodically sending coverage data to admin side
@@ -157,7 +157,7 @@ namespace Drill4Net.Agent.Standard
         {
             //.NET Core on macOS and Linux does not support per-machine or per-user environment variables.
             address = CommonUtils.ReadEnvironmentVar(CoreConstants.ENV_DRILL_ADMIN_ADDRESS);
-            if (address == null)
+            if (string.IsNullOrWhiteSpace(address))
             {
                 _logger.Info("The environment variable for Drill service address is empty - will be used the config's value");
                 return false;
