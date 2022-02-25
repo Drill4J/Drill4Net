@@ -49,7 +49,9 @@ namespace Drill4Net.Admin.Requester
             //http://localhost:8090/api/agents/IHS-bdd/plugins/test2code/builds/summary
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
-            var request = new RestRequest(ResourceManager.GetSummaryResource(target), Method.GET, DataFormat.Json);
+            var resr = ResourceManager.GetSummaryResource(target);
+            Log.Debug("GetBuildSummaries: " + resr);
+            var request = new RestRequest(resr, Method.GET, DataFormat.Json);
             return GetData<List<BuildSummary>>(request, target, "builds' summaries", "Bad response for builds' summaries retrieving");
         }
 
