@@ -121,8 +121,6 @@ namespace Drill4Net.Agent.Standard
 
             _logger.Info($"Target: {TargetName}, version: {TargetVersion}");
 
-            RetrieveTargetBuilds().GetAwaiter().GetResult();
-
             //Communicator
             var targData = new TargetData
             {
@@ -130,6 +128,8 @@ namespace Drill4Net.Agent.Standard
                 Version = TargetVersion,
             };
             Communicator = GetCommunicator(Options.Admin, targData, Options.Connector);
+
+            RetrieveTargetBuilds().GetAwaiter().GetResult();
 
             //timer for periodically sending coverage data to admin side
             _sendTimer = new System.Timers.Timer(1000);

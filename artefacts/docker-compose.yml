@@ -4,6 +4,7 @@ services:
 
   drill-admin:
     image: drill4j/admin:${BACK_VERSION:-0.8.0-40}
+    container_name: drill-admin
     environment:
       - TEST2CODE_PLUGIN_VERSION=${TEST2CODE_PLUGIN_VERSION:-0.8.0-40}
       - LOG_LEVEL=DEBUG
@@ -22,6 +23,7 @@ services:
 
   admin-ui:
     image: drill4j/admin-ui-root-config:${FRONT_VERSION:-0.1.0-101}
+    container_name: admin-ui
     restart: always
     ports:
       - 8091:8080
@@ -90,7 +92,7 @@ services:
       - drill4net-dev-network
 
   drill4net-service:
-    image: ghcr.io/epamx/drill4net:${DRILL4NET_SERVICE_VERSION:-v0.9.0-210}
+    image: ghcr.io/epamx/drill4net:${DRILL4NET_SERVICE_VERSION:-v0.9.0-211}
     container_name: drill4net-service
     environment:
       - MESSAGE_SERVER_ADDRESS=kafka1:9092
