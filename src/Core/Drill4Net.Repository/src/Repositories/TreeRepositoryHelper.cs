@@ -34,7 +34,7 @@ namespace Drill4Net.Repository
                 var hintPath = GetTreeFileHintPath(baseDir);
                 if (File.Exists(hintPath))
                 {
-                    _logger.Debug($"The tree hint file founded: [{hintPath}]");
+                    _logger.Debug($"The tree hint file found: [{hintPath}]");
                     path = File.ReadAllText(hintPath);
                 }
                 else

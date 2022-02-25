@@ -88,6 +88,7 @@ namespace Drill4Net.Agent.Standard
         #region Init
         private void Init(InjectedSolution tree = null)
         {
+            //PrepareLogger();
             _logger = new TypedLogger<StandardAgentRepository>(CoreConstants.SUBSYSTEM_AGENT);
             _logger.Debug("Creating...");
 

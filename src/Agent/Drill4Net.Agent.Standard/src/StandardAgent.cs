@@ -178,7 +178,10 @@ namespace Drill4Net.Agent.Standard
         {
             var builds = Repository.Builds;
             if (builds == null || builds.Count == 0)
+            {
+                _logger.Debug("No build on Drill admin side");
                 return false;
+            }
             var current = builds.Find(a => HttpUtility.UrlDecode(a.BuildVersion) == Repository.TargetVersion);
             var s = current == null ? "null" : (current?.Summary == null ? "Summary is null" : current?.Summary.ToString());
             _logger.Debug($"Build for [{Repository.TargetVersion}]: [{s}]");
@@ -216,9 +219,7 @@ namespace Drill4Net.Agent.Standard
             }
             //
             IsInitialized = true;
-            RaiseInitilizedEvent(); //external delegates
-
-            _logger.Trace($"Now the releasing the Agent's ctor");
+            RaiseInitilizedEvent(); //for external delegates (e.g. in Configurator)
             StandardAgentBlocker.Release();
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
