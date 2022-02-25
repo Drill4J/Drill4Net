@@ -190,6 +190,7 @@ namespace Drill4Net.Agent.Standard
         {
             try
             {
+                await Task.Delay(2500);
                 Builds = await _requester.GetBuildSummaries()
                     .ConfigureAwait(false);
                 //
@@ -200,10 +201,14 @@ namespace Drill4Net.Agent.Standard
                 else
                 {
                     foreach (var build in Builds)
-                        _logger.Info($"Existed build: [{build}]");
+                        _logger.Info($"Detected build: [{build}]");
                 }
             }
-            catch { Builds = new(); }
+            catch
+            {
+                _logger.Error("Can't get builds");
+                Builds = new();
+            }
         }
 
         internal (string logFile, Microsoft.Extensions.Logging.LogLevel logLevel) GetConnectorLogParameters(ConnectorAuxOptions connOpts, Logger logger)

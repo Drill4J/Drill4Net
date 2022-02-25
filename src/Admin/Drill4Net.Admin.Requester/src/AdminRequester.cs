@@ -64,7 +64,7 @@ namespace Drill4Net.Admin.Requester
                 if (response.StatusCode != HttpStatusCode.BadRequest)
                     break;
                 var answer = JsonConvert.DeserializeObject<SimpleRestAnswer>(response.Content);
-                if (answer?.message.Contains("not found") == true) //Drill doesn't know about this Target yet
+                if (answer?.message?.Contains("not found") == true) //Drill doesn't know about this Target yet
                 {
                     _logger.Info($"New target for Drill: {target}");
                     return default;
