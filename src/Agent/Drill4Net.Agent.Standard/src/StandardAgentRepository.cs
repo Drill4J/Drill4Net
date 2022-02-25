@@ -121,7 +121,6 @@ namespace Drill4Net.Agent.Standard
 
             _logger.Info($"Target: {TargetName}, version: {TargetVersion}");
 
-            _requester = new AdminRequester(Subsystem, Options.Admin.Url, TargetName, TargetVersion);
             RetrieveTargetBuilds().GetAwaiter().GetResult();
 
             //Communicator
@@ -188,6 +187,7 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public async Task RetrieveTargetBuilds()
         {
+            CreateRequester();
             for (var i = 0; i < 5; i++)
             {
                 try
@@ -213,6 +213,12 @@ namespace Drill4Net.Agent.Standard
                 }
                 await Task.Delay(2000);
             }
+        }
+
+        internal void CreateRequester()
+        {
+            if(_requester == null)
+                _requester = new AdminRequester(Subsystem, Options.Admin.Url, TargetName, TargetVersion);
         }
 
         internal (string logFile, Microsoft.Extensions.Logging.LogLevel logLevel) GetConnectorLogParameters(ConnectorAuxOptions connOpts, Logger logger)
