@@ -145,6 +145,9 @@ namespace Drill4Net.Agent.Standard
             //
             if (!GetAdminAddressFromEnvVar(out var adminUrl))
                 adminUrl = adminOpts.Url;
+            else
+                adminOpts.Url = adminUrl;
+
             return new Communicator(CoreConstants.SUBSYSTEM_AGENT, adminUrl, GetAdminAgentConfig(targetOpts, connOpts));
         }
 

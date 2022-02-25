@@ -29,6 +29,7 @@ namespace Drill4Net.Admin.Requester
             _logger = new TypedLogger<AdminRequester>(subsystem, logExtras);
 
             _url = ResourceManager.CheckUrl(url);
+            Log.Debug($"AdminRequester: URL={url}");
             _client = new RestClient(_url);
             _client.ConfigureWebRequest((r) =>
             {
