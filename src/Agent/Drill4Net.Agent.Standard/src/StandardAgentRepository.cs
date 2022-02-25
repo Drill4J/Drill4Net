@@ -194,6 +194,8 @@ namespace Drill4Net.Agent.Standard
                 {
                     Builds = await _requester.GetBuildSummaries()
                         .ConfigureAwait(false);
+                    if (Builds == null)
+                        Builds = new();
                     //
                     if (Builds.Count == 0)
                     {
@@ -208,7 +210,7 @@ namespace Drill4Net.Agent.Standard
                 }
                 catch (Exception ex)
                 {
-                    _logger.Fatal($"Can't get builds for the target {TargetName} from the Drill admin side. Trying: {i+1}", ex);
+                    _logger.Fatal($"Can't get builds for the target [{TargetName}] from the Drill admin side. Trying: {i+1}", ex);
                     Builds = new();
                 }
                 await Task.Delay(2000);
