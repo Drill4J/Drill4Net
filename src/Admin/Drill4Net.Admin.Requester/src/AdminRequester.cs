@@ -18,7 +18,7 @@ namespace Drill4Net.Admin.Requester
         private readonly RestClient _client;
         private readonly Logger _logger;
 
-        /****************************************************************************/
+        /*********************************************************************************/
 
         public AdminRequester(string subsystem, string url, string target, string build)
         {
@@ -33,7 +33,7 @@ namespace Drill4Net.Admin.Requester
             //client.Authenticator = new HttpBasicAuthenticator("username", "password");
         }
 
-        /****************************************************************************/
+        /*********************************************************************************/
 
         public virtual Task<List<BuildSummary>> GetBuildSummaries(string target = null)
         {

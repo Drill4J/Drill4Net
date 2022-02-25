@@ -188,26 +188,30 @@ namespace Drill4Net.Agent.Standard
         /// <returns></returns>
         public async Task RetrieveTargetBuilds()
         {
-            try
+            for (var i = 0; i < 5; i++)
             {
-                await Task.Delay(2500);
-                Builds = await _requester.GetBuildSummaries()
-                    .ConfigureAwait(false);
-                //
-                if (Builds.Count == 0)
+                try
                 {
-                    _logger.Info("No build detected");
+                    Builds = await _requester.GetBuildSummaries()
+                        .ConfigureAwait(false);
+                    //
+                    if (Builds.Count == 0)
+                    {
+                        _logger.Info($"No build detected for the target {TargetName}.");
+                    }
+                    else
+                    {
+                        foreach (var build in Builds)
+                            _logger.Info($"Detected build: [{build}].");
+                    }
+                    return;
                 }
-                else
+                catch (Exception ex)
                 {
-                    foreach (var build in Builds)
-                        _logger.Info($"Detected build: [{build}]");
+                    _logger.Fatal($"Can't get builds for the target {TargetName} from the Drill admin side. Trying: {i+1}", ex);
+                    Builds = new();
                 }
-            }
-            catch
-            {
-                _logger.Error("Can't get builds");
-                Builds = new();
+                await Task.Delay(2000);
             }
         }
 
