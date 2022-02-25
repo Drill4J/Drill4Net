@@ -51,7 +51,7 @@ services:
       
   #https://github.com/bitnami/bitnami-docker-kafka#accessing-apache-kafka-with-internal-and-external-clients
   kafka1:
-    image: bitnami/kafka:${KAFKA_VERSION:-2.7.0} #2.5.0
+    image: bitnami/kafka:${KAFKA_VERSION:-2.7.0}
     container_name: kafka1
     ports:
       - '9093:9093'
@@ -90,7 +90,7 @@ services:
       - drill4net-dev-network
 
   drill4net-service:
-    image: ghcr.io/epamx/drill4net:${DRILL4NET_SERVICE_VERSION:-v0.9.0-209}
+    image: ghcr.io/epamx/drill4net:${DRILL4NET_SERVICE_VERSION:-v0.9.0-210}
     container_name: drill4net-service
     environment:
       - MESSAGE_SERVER_ADDRESS=kafka1:9092

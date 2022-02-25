@@ -213,7 +213,7 @@ Please make your choice";
                 try
                 {
                     cfgHelper.SetDestinationDirectory(cfg, null);
-                    cfgHelper.ValidateOptions(cfg);
+                    cfgHelper.ValidateOptions(cfg, false);
                 } 
                 catch (Exception ex)
                 {

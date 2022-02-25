@@ -30,8 +30,16 @@ namespace Drill4Net.Admin.Requester
 
             _url = ResourceManager.CheckUrl(url);
             _client = new RestClient(_url);
+            _client.ConfigureWebRequest((r) =>
+            {
+                r.ServicePoint.Expect100Continue = false;
+                r.KeepAlive = true;
+            });
             //client.Authenticator = new HttpBasicAuthenticator("username", "password");
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            ServicePointManager.ServerCertificateValidationCallback = (senderX, certificate, chain, sslPolicyErrors) => { return true; };
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         /*********************************************************************************/
@@ -62,6 +70,7 @@ namespace Drill4Net.Admin.Requester
                 response = _client.Get(request);
                 //if (response.StatusCode == HttpStatusCode.OK)
                 //    break;
+                _logger.Debug($"Response: Type={typeof(T).FullName}; IsSuccessful={response?.IsSuccessful}; StatusCode={response?.StatusCode}; ResponseStatus={response?.ResponseStatus}; ErrorMessage=[{response?.ErrorMessage}]");
                 if (response.StatusCode != HttpStatusCode.BadRequest && response.StatusCode != 0)
                     break;
                 var answer = JsonConvert.DeserializeObject<SimpleRestAnswer>(response.Content);
