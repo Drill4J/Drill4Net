@@ -31,6 +31,7 @@ namespace Drill4Net.Admin.Requester
             _url = ResourceManager.CheckUrl(url);
             _client = new RestClient(_url);
             //client.Authenticator = new HttpBasicAuthenticator("username", "password");
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         /*********************************************************************************/
@@ -61,7 +62,7 @@ namespace Drill4Net.Admin.Requester
                 response = _client.Get(request);
                 //if (response.StatusCode == HttpStatusCode.OK)
                 //    break;
-                if (response.StatusCode != HttpStatusCode.BadRequest)
+                if (response.StatusCode != HttpStatusCode.BadRequest && response.StatusCode != 0)
                     break;
                 var answer = JsonConvert.DeserializeObject<SimpleRestAnswer>(response.Content);
                 if (answer?.message?.Contains("not found") == true) //Drill doesn't know about this Target yet
@@ -76,7 +77,7 @@ namespace Drill4Net.Admin.Requester
             if (response == null)
                 throw new Exception(errorMsg + " -> response is null");
             if (response.StatusCode != HttpStatusCode.OK)
-                throw new Exception(errorMsg + $" -> HttpStatusCode={response.StatusCode}. Content: {response.Content}");
+                throw new Exception(errorMsg + $" -> HttpStatusCode={response.StatusCode}. Description=[{response.StatusDescription}]. Content: [{response.Content}]");
 
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
