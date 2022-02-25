@@ -72,8 +72,12 @@ namespace Drill4Net.Admin.Requester
                 _logger.Warning($"Waiting for retrieving {purpose}...");
                 await Task.Delay(5000).ConfigureAwait(false);
             }
-            if (response == null || response.StatusCode != HttpStatusCode.OK)
-                throw new Exception(errorMsg);
+
+            if (response == null)
+                throw new Exception(errorMsg + " -> response is null");
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw new Exception(errorMsg + $" -> HttpStatusCode={response.StatusCode}. Content: {response.Content}");
+
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
 
