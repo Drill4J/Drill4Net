@@ -179,8 +179,10 @@ namespace Drill4Net.Agent.Standard
             var builds = Repository.Builds;
             if (builds == null || builds.Count == 0)
                 return false;
-            var exactly = builds.Find(a => HttpUtility.UrlDecode(a.BuildVersion) == Repository.TargetVersion);
-            if (exactly?.Summary == null) //such version already exists
+            var current = builds.Find(a => HttpUtility.UrlDecode(a.BuildVersion) == Repository.TargetVersion);
+            var s = current == null ? "null" : (current?.Summary == null ? "Summary is null" : current?.Summary.ToString());
+            _logger.Debug($"Build for [{Repository.TargetVersion}]: [{s}]");
+            if (current?.Summary == null) //does such version already exist?
                 return false;
             return true;
         }
@@ -252,6 +254,7 @@ namespace Drill4Net.Agent.Standard
                 _logger.Debug("The classes are requested");
                 lock (_entitiesLocker)
                 {
+                    //just preparing here
                     _entities = Repository.GetEntities();
                 }
             }

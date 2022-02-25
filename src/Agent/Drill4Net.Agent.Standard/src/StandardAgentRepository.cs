@@ -191,6 +191,16 @@ namespace Drill4Net.Agent.Standard
             {
                 Builds = await _requester.GetBuildSummaries()
                     .ConfigureAwait(false);
+                //
+                if (Builds.Count == 0)
+                {
+                    _logger.Info("No build detected");
+                }
+                else
+                {
+                    foreach (var build in Builds)
+                        _logger.Info($"Existed build: [{build}]");
+                }
             }
             catch { Builds = new(); }
         }

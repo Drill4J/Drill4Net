@@ -31,7 +31,7 @@ namespace Drill4Net.Admin.Requester
 
         public override string ToString()
         {
-            return BuildVersion;
+            return $"{BuildVersion} -> {Summary}";
         }
     }
 }
