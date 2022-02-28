@@ -37,6 +37,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit</OutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
 </Project>
