@@ -1,3 +1,7 @@
+## Dotnet publish Drill4NET to local directory
+Install Git, Dotnet SDK for 5.0, 6.0
+Run PowerShell script Drill4NetBuildOnWindows.ps1
+
 ## Deploy Drill4Net local application from docker to Windows
 Download https://github.com/epamX/Drill4Net/blob/main/docker-compose-run-distribution.yml to empty folder.
 ```
