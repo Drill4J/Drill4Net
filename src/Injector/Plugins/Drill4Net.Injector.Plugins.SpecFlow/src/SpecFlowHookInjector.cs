@@ -147,7 +147,8 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             {
                 //reading
                 var reader = new AssemblyReader();
-                using var asmCtx = reader.ReadAssembly(runCtx);
+                //var sDir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Injector.Plugins.SpecFlow\net6.0\";
+                using var asmCtx = reader.ReadAssembly(runCtx, new List<string> { HelperReadDir });
                 if (asmCtx.Definition == null)
                     return false;
 
@@ -162,9 +163,9 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
                 else
                     proxyNs = ProxyHelper.CreateProxyNamespace();
 
-                //here we just need to load the SpecFlow dependency to memory before the main processing
-                var loader = new LibraryLoader();
-                loader.LoadAssembly(Path.Combine(runCtx.ProcessingDirectory, SPEC_NS + ".dll"));
+                ////here we just need to load the SpecFlow dependency to memory before the main processing
+                //var loader = new LibraryLoader();
+                //loader.LoadAssembly(Path.Combine(runCtx.ProcessingDirectory, SPEC_NS + ".dll"));
 
                 //main process
                 InjectTo(asmCtx.Definition, proxyNs, asmCtx.Version.IsNetFramework);
@@ -181,7 +182,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Processing of file by plugin failed: {runCtx.ProcessingFile}");
+                _logger.Fatal($"Processing of file by plugin failed: {runCtx.ProcessingFile}", ex);
                 if (runCtx.Options.Debug?.IgnoreErrors != true)
                     throw;
                 return false;

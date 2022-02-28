@@ -8,10 +8,6 @@
       "environmentVariables": {},
       "distributionName": ""
     },
-    "VersionFromArgs": {
-      "commandName": "Project",
-      "commandLineArgs": "--silent --cfg_path=d:\\Projects\\EPM-D4J\\Drill4Net\\src\\Tests\\IntegrationTests\\Engine\\Drill4Net.Target.Tests.Engine\\post_build_cfg.yml "
-    },
     "args_for_d4n": {
       "commandName": "Project",
       "commandLineArgs": "--silent  --degree_parallelism=4 --cfg_dir=\"d:\\Projects\\EPM-D4J\\Distributions\\Drill4Net_debug\\debug_ci\\set_1\\inj_cfg\\\""
@@ -23,6 +19,10 @@
     "ci": {
       "commandName": "Project",
       "commandLineArgs": "--silent --degree_parallelism=4 --cfg_dir=\"d:\\Projects\\EPM-D4J\\Distributions\\debug\\Drill4Net_dis\\ci\\test_A\\\""
+    },
+    "byCfg": {
+      "commandName": "Project",
+      "commandLineArgs": "--silent --cfg_path=d:\\Projects\\EPM-D4J\\Distributions\\CI\\IHS\\build1\\inj_IHS_Kafka.yml"
     }
   }
 }

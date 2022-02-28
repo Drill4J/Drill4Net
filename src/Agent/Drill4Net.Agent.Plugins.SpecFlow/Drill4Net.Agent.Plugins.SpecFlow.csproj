@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="SpecFlow" Version="3.9.40" />
+    <PackageReference Include="SpecFlow" Version="3.9.52" />
   </ItemGroup>
 
   <ItemGroup>

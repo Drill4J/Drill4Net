@@ -29,9 +29,10 @@ namespace Drill4Net.Injector.Core
         /// Reads the assembly.
         /// </summary>
         /// <param name="runCtx">The Injector Engine's Run context.</param>
+        /// <param name="searches">Search dirs for the resolving the dependencies.</param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException">$"File not exists: [{filePath}]</exception>
-        public AssemblyContext ReadAssembly(RunContext runCtx)
+        public AssemblyContext ReadAssembly(RunContext runCtx, List<string> searches = null)
         {
             var filePath = runCtx.ProcessingFile;
             if (!File.Exists(filePath))
@@ -59,7 +60,16 @@ namespace Drill4Net.Injector.Core
                 return asmCtx;
 
             #region Params
-            var searches = new List<string> { runCtx.Options.Source.Directory };
+            var sDir = runCtx.Options.Source.Directory;
+            if (searches == null || searches.Count == 0)
+            {
+                searches = new List<string> { sDir };
+            }
+            else
+            {
+                if(!searches.Contains(sDir))
+                    searches.Add(sDir);
+            }
             var readerParams = new ReaderParameters
             {
                 // we will write to another file, so we don't need this
