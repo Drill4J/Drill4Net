@@ -1,3 +1,4 @@
+New-Item -Path '../distribution/ci' -ItemType Directory
 dotnet publish "src/Configurator/Drill4Net.Configurator.App/Drill4Net.Configurator.App.csproj" -c Release --runtime win-x64 --framework net6.0 -o ../distribution/apps/configurator
 dotnet publish "src/Injector/Drill4Net.Injector.App/Drill4Net.Injector.App.csproj" -c Release --runtime win-x64 --framework net6.0 -o ../distribution/apps/injector
 dotnet publish "src/Agent/Drill4Net.Agent.TestRunner/Drill4Net.Agent.TestRunner.csproj" -c Release --runtime win-x64 -o ../distribution/apps/test_runner
