@@ -128,7 +128,7 @@ namespace Drill4Net.Configurator
         /// <returns></returns>
         public string GetAgentModelConfigPath()
         {
-            return Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_AGENT_MODEL);
+            return FileUtils.GetFullPath(Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_AGENT_MODEL));
         }
 
         /// <summary>
