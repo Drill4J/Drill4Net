@@ -15,7 +15,9 @@ Copy-Item -Path "./artefacts/templates/*" -Destination "../distribution/template
 Copy-Item "./artefacts/templates/configurator_app.yml" -Destination "../distribution/apps/configurator/app.yml"
 Copy-Item "./artefacts/templates/injector_app.yml" -Destination "../distribution/apps/injector/app.yml"
 
+Remove-item "../distribution/apps/injector/_redirect.yml"
+New-Item -Path "../distribution/apps/injector/_redirect.yml"
 Add-Content "../distribution/apps/injector/_redirect.yml" "Path: C:\Users\WDAGUtilityAccount\Desktop\distribution\apps\injector\inj_xUnit_SpecFlow.yml"
 New-Item -Path '../distribution/apps/configurator/logs_drill' -ItemType Directory
-
-
+New-Item -Path '../distribution/apps/injector/logs_drill/' -ItemType Directory
+New-Item -Path '../distribution/apps/test_runner/logs_drill' -ItemType Directory
