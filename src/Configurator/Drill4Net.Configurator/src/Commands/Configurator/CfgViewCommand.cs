@@ -18,7 +18,7 @@ namespace Drill4Net.Configurator.src.Commands.Configurator
         {
             if (_desc == null)
                 return Task.FromResult(FalseEmptyResult);
-            var cfgPath = _rep.GetInjectorAppOptionsPath();
+            var cfgPath = _rep.GetConfiguratorConfigPath();
             var done = _cmdHelper.ViewFile(cfgPath);
             return Task.FromResult((done, new Dictionary<string, object>()));
         }
