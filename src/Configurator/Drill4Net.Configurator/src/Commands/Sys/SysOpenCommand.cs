@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Cli;
+using System.IO;
 
 namespace Drill4Net.Configurator
 {
@@ -15,15 +16,18 @@ namespace Drill4Net.Configurator
 
         public override Task<(bool done, Dictionary<string, object> results)> Process()
         {
-            RaiseMessage("Be careful! The system properties are stored in two configs: for Agent and Transmitter components.", CliMessageType.Info);
+            RaiseMessage("Be careful! The system properties are stored in three configs: for Agent and Transmitter components, and Injector app.", CliMessageType.Info);
             //
             var agentCfgPath = _rep.GetAgentModelConfigPath();
-            var res = _cmdHelper.OpenFile(agentCfgPath);
+            var res = File.Exists(agentCfgPath) ? _cmdHelper.OpenFile(agentCfgPath) : false;
             //
             var trCfgPath = _rep.GetTransmitterConfigPath();
-            var res2 = _cmdHelper.OpenFile(trCfgPath);
+            var res2 = File.Exists(trCfgPath) ? _cmdHelper.OpenFile(trCfgPath) : false;
             //
-            return Task.FromResult((res && res2, new Dictionary<string, object>()));
+            var injCfgPath = _rep.GetInjectorAppOptionsPath();
+            var res3 = File.Exists(injCfgPath) ? _cmdHelper.OpenFile(injCfgPath) : false;
+            //
+            return Task.FromResult((res && res2 && res3, new Dictionary<string, object>()));
         }
 
         public override string GetShortDescription()

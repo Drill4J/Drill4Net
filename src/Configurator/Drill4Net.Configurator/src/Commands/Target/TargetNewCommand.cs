@@ -6,9 +6,7 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         //ConfiguratorConstants.CONTEXT_CFG,
-                         ConfiguratorConstants.COMMAND_NEW)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_NEW)]
     public class TargetNewCommand : AbstractTargetEditor
     {
         public TargetNewCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)

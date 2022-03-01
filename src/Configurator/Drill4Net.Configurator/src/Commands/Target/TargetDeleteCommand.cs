@@ -6,9 +6,7 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         //ConfiguratorConstants.CONTEXT_CFG,
-                         ConfiguratorConstants.COMMAND_DELETE)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_DELETE)]
     public class TargetDeleteCommand : AbstractConfiguratorCommand
     {
         public TargetDeleteCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)

@@ -6,9 +6,7 @@ using Drill4Net.Common;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER,
-                         //ConfiguratorConstants.CONTEXT_CFG,
-                         ConfiguratorConstants.COMMAND_NEW)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_NEW)]
     public class TestRunnerNewCommand : AbstractTestRunnerEditor
     {
         public TestRunnerNewCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)

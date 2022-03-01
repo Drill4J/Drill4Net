@@ -21,9 +21,13 @@ namespace Drill4Net.Configurator
             var transCfgPath = _rep.GetTransmitterConfigPath();
             var transOpts = _rep.ReadMessagerOptions(transCfgPath);
 
+            var injOpts = _rep.ReadInjectorAppOptions();
+
             RaiseMessage($"\nDrill service address: {agentOpts.Admin.Url}");
             RaiseMessage($"CreateManualSession: {agentOpts.CreateManualSession}");
             RaiseMessage($"Middleware (Kafka): {string.Join(", ", transOpts.Servers)}");
+            RaiseMessage($"Injector plugin dir: {string.Join(", ", injOpts.PluginDir)}");
+            RaiseMessage($"Agent plugin dir: {string.Join(", ", agentOpts.PluginDir)}");
             _cmdHelper.ViewLogOptions(transOpts.Logs);
             //
             return Task.FromResult(TrueEmptyResult);
@@ -36,7 +40,7 @@ namespace Drill4Net.Configurator
 
         public override string GetHelp()
         {
-            return "The article has not been written yet";
+            return "";
         }
     }
 }

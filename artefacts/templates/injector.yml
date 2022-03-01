@@ -1,4 +1,4 @@
-Description: IHS adoption for BDD tests
+Description: Model config for an injection
 Type: Injector
 Target: # some metadata about target
     Name: # optional injection name, if empty must be set in agent config
@@ -45,9 +45,9 @@ Probes: # types of cross-cutting points
     SkipEnterType: true
     SkipIfElseType: true
 Plugins: # injected references to plugins for runtime transmitting data to the Admin service
-   'SpecFlow':
-       Directory: ..\..\Drill4Net.Agent.Plugins.SpecFlow\netstandard2.0\ #  # absolute path, or relatively Destination dir
-       Config: plug_IHS_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
+   #'SpecFlow':
+   #    Directory: ..\..\Drill4Net.Agent.Plugins.SpecFlow\netstandard2.0\ #  # absolute path, or relatively Destination dir
+   #    Config: plug_IHS_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs: # for Injector
     - Type: console
       Level: debug

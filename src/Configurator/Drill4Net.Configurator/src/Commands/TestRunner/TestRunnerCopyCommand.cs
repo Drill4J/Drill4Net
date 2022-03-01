@@ -6,9 +6,7 @@ using Drill4Net.Agent.TestRunner.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER,
-                         //ConfiguratorConstants.CONTEXT_CFG,
-                         ConfiguratorConstants.COMMAND_COPY)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_RUNNER, ConfiguratorConstants.COMMAND_COPY)]
     public class TestRunnerCopyCommand : AbstractConfiguratorCommand
     {
         public TestRunnerCopyCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)

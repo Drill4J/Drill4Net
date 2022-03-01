@@ -6,9 +6,7 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         //ConfiguratorConstants.CONTEXT_CFG,
-                         ConfiguratorConstants.COMMAND_VIEW)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_VIEW)]
     public class TargetViewCommand : AbstractConfiguratorCommand
     {
         public TargetViewCommand(ConfiguratorRepository rep, CliCommandRepository cliRep) : base(rep, cliRep)

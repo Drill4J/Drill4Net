@@ -8,9 +8,7 @@ using Drill4Net.Injector.Core;
 
 namespace Drill4Net.Configurator
 {
-    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET,
-                         //ConfiguratorConstants.CONTEXT_CFG,
-                         ConfiguratorConstants.COMMAND_CHECK)]
+    [CliCommandAttribute(ConfiguratorConstants.CONTEXT_TARGET, ConfiguratorConstants.COMMAND_CHECK)]
     public class TargetCheckCommand : AbstractConfiguratorCommand
     {
         public TargetCheckCommand(ConfiguratorRepository rep, CliCommandRepository cliRep): base(rep, cliRep)

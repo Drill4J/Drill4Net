@@ -241,7 +241,7 @@ namespace Drill4Net.Configurator
         internal string GetProjectCommand(string ciCfgPath)
         {
             var command = GetPureCommand(ciCfgPath);
-            return command.Replace(@"""", "&quot");
+            return command.Replace(@"""", "&quot;");
         }
 
         internal string GetAloneCommandTag(string command)

@@ -192,9 +192,23 @@ namespace Drill4Net.Configurator
             return (needActivate, redirectCfgPath);
         }
 
+        internal bool ViewFile(string sourcePath)
+        {
+            if(!File.Exists(sourcePath))
+            {
+                RaiseError($"File does not exist: [{sourcePath}]");
+                return false;
+            }
+
+            //output
+            var text = File.ReadAllText(sourcePath);
+            RaiseMessage(text);
+            return true;
+        }
+
         internal bool ViewFile<T>(string cfgSubsystem, string dir, CliDescriptor desc, out string sourcePath) where T : AbstractOptions, new()
         {
-            // sorce path
+            // source path
             var res = GetSourceConfigPath<T>(cfgSubsystem, dir, desc, out sourcePath,
                 out var _, out var error);
             if (!res)
@@ -348,13 +362,17 @@ namespace Drill4Net.Configurator
             var configs = _rep.GetConfigs<T>(cfgSubsystem, dir)
                 .OrderBy(a => a).ToArray();
             var actualPath = _rep.GetActualConfigPath(dir);
+            var redWithoutExt = Path.GetFileNameWithoutExtension(CoreConstants.CONFIG_NAME_REDIRECT);
+            var cnt = 0;
             for (int i = 0; i < configs.Length; i++)
             {
                 string? path = configs[i];
                 var isActual = path.Equals(actualPath, StringComparison.InvariantCultureIgnoreCase);
-                var a = isActual ? " <<" : "";
                 var name = Path.GetFileNameWithoutExtension(path);
-                RaiseMessage($"{i + 1}. {name}{a}", CliMessageType.Info);
+                if (name.Equals(redWithoutExt, StringComparison.InvariantCultureIgnoreCase))
+                    continue;
+                var a = isActual ? " <<" : "";
+                RaiseMessage($"{++cnt}. {name}{a}", CliMessageType.Info);
             }
         }
 
