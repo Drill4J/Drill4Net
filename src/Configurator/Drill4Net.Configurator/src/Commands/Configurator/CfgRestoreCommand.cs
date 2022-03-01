@@ -39,8 +39,8 @@ namespace Drill4Net.Configurator
             var opts = _rep.Options;
             opts.ExternalEditor = null;
             opts.ProjectsDirectory = null;
-            opts.Logs = null;
-            if (connNeed) //it is located in the "model configs"
+
+            if (connNeed) //it is located in the "model/template configs"
             {
                 _rep.SetDefaultSystemConfiguration();
             }
@@ -57,13 +57,7 @@ namespace Drill4Net.Configurator
             //save Configurator app itself
             _rep.WriteConfiguratorOptions(opts);
 
-            //save options for the Injector app
-            var injOpts = _rep.ReadInjectorAppOptions();
-            injOpts.PluginDir = ConfiguratorConstants.PATH_INJECTOR_PLUGINS; //IInjectorPlugin
-            _rep.WriteInjectorAppOptions(injOpts);
-
             RaiseMessage("The settings are restored.", CliMessageType.Info);
-
             return Task.FromResult(TrueEmptyResult);
         }
 

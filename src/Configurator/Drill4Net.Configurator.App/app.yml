@@ -9,10 +9,10 @@ Type: Configurator
 #AgentPluginDirectory: ..\..\components\transmitter_plugins\  # Agent's plugins (IEngineContexters) - located somewhere in the distribution of Drill4Net
 #InjectorPluginDirectory: ..\..\components\injector_plugins\
 
-TemplatesDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\templates\
+TemplatesDirectory: ..\..\..\..\..\artefacts\templates\ # {solution root}\artefacts\templates
 InjectorDirectory: ..\..\Drill4Net.Injector.App\net6.0\
 TestRunnerDirectory: ..\..\Drill4Net.Agent.TestRunner\net6.0\
-CiDirectory: d:\Projects\EPM-D4J\Distributions\debug\Drill4Net_dis\ci\
+CiDirectory: d:\Projects\EPM-D4J\Distributions\CI\
 TransmitterDirectory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\ # located somewhere in the distribution of Drill4Net
 AgentPluginDirectory: ..\..\  # transmitter (agent) plugins - located somewhere in the distribution of Drill4Net
 

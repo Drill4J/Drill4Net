@@ -16,7 +16,7 @@ namespace Drill4Net.Agent.Abstract
         public DrillServerOptions Admin { get; set; }
 
         /// <summary>
-        /// Path where Transmitter plugins are located (contexters)
+        /// Path where Transmitter (as agent) plugins are located (contexters)
         /// </summary>
         public string PluginDir { get; set; }
 

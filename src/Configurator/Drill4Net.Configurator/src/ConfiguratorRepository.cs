@@ -77,7 +77,7 @@ namespace Drill4Net.Configurator
 
         public string GetInjectorPath()
         {
-            return Path.Combine(GetInjectorDirectory(), GetExecutableName("Drill4Net.Injector.App"));
+            return FileUtils.GetFullPath(Path.Combine(GetInjectorDirectory(), GetExecutableName("Drill4Net.Injector.App")));
         }
 
         public string GetTestRunnerDirectory()
@@ -90,7 +90,7 @@ namespace Drill4Net.Configurator
 
         public string GetTestRunnerPath()
         {
-            return Path.Combine(GetTestRunnerDirectory(), GetExecutableName("Drill4Net.Agent.TestRunner"));
+            return FileUtils.GetFullPath(Path.Combine(GetTestRunnerDirectory(), GetExecutableName("Drill4Net.Agent.TestRunner")));
         }
 
         internal string GetExecutableName(string appFullName)
@@ -109,7 +109,7 @@ namespace Drill4Net.Configurator
         /// <returns></returns>
         public string GetInjectorModelConfigPath()
         {
-            return Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL);
+            return FileUtils.GetFullPath(Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_INJECTOR_MODEL));
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Drill4Net.Configurator
         /// <returns></returns>
         public string GetTestRunnerModelConfigPath()
         {
-            return Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL);
+            return FileUtils.GetFullPath(Path.Combine(GetTemplatesDirectory(), ConfiguratorConstants.CONFIG_TEST_RUNNER_MODEL));
         }
 
         /// <summary>
@@ -156,7 +156,12 @@ namespace Drill4Net.Configurator
         public string GetTransmitterConfigPath()
         {
             var transDir = GetTransmitterDir();
-            return Path.Combine(transDir, CoreConstants.CONFIG_NAME_MIDDLEWARE);
+            return FileUtils.GetFullPath(Path.Combine(transDir, CoreConstants.CONFIG_NAME_MIDDLEWARE));
+        }
+
+        public string GetTransmitterModelConfigPath()
+        {
+            return FileUtils.GetFullPath(Path.Combine(ConfiguratorConstants.PATH_TRANSMITTER, CoreConstants.CONFIG_NAME_MIDDLEWARE));
         }
 
         public string GetCiDirectory()
@@ -247,18 +252,21 @@ namespace Drill4Net.Configurator
 
             //Transmitter's opts - middleware (as Kafka) using inside Target
             var transCfgPath = GetTransmitterConfigPath();
-            var transOpts = ReadMessagerOptions(transCfgPath);
+            MessagerOptions transOpts;
+            if (!File.Exists(transCfgPath))
+                transCfgPath = GetTransmitterModelConfigPath();
+            transOpts = ReadMessagerOptions(transCfgPath);
 
             transOpts.Servers.Clear();
             transOpts.Servers.Add(cfg.MiddlewareUrl);
+
+            //writing config to native Transmitter dir
+            WriteMessagerOptions(transOpts, transCfgPath);
 
             //save options for the Injector app
             var injOpts = ReadInjectorAppOptions();
             injOpts.PluginDir = cfg.InjectorPluginDirectory; //IInjectorPlugin
             WriteInjectorAppOptions(injOpts);
-
-            //writing config to native Transmitter dir
-            WriteMessagerOptions(transOpts, transCfgPath);
         }
 
         public void SetDefaultSystemConfiguration()
@@ -267,6 +275,8 @@ namespace Drill4Net.Configurator
             {
                 AdminUrl = "localhost:8090",
                 MiddlewareUrl = "localhost:9093",
+                AgentPluginDirectory = ConfiguratorConstants.PATH_TRANSMITTER_PLUGINS,
+                InjectorPluginDirectory = ConfiguratorConstants.PATH_INJECTOR_PLUGINS,
             };
             SaveSystemConfiguration(defCfg);
         }
