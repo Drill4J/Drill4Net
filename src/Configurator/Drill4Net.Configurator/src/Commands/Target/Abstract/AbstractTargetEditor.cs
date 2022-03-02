@@ -230,6 +230,8 @@ Please make your choice";
             if (answerBool)
             {
                 RaiseMessage("\nNow you need specify only necessary agent's \"Generator contexter plugins\" which intercept the tests' execution workflow and retrieve their context (implemented IGeneratorContexter interface - for example, for SpecFlow framework. For simple test ones, such as xUnit, NUnit, or MsTest you don't need to do it here).");
+                if (cfg.Plugins == null)
+                    cfg.Plugins = new();
                 var plugins = cfg.Plugins;
                 if (isNew)
                 {
