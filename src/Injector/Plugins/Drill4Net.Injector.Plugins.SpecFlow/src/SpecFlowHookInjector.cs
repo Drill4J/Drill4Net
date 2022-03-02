@@ -89,6 +89,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             if (!File.Exists(configPath))
                 throw new FileNotFoundException($"File for the plugin's options not found: [{configPath}]. Path from the Injector parameters was: [{plugConfigPath}]");
             var cfgStr = File.ReadAllText(configPath);
+            _logger.Debug($"Options for the plugin {nameof(Name)}: {cfgStr}");
             return _deser.Deserialize<SpecFlowPluginOptions>(cfgStr);
         }
         #endregion
@@ -143,11 +144,12 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             var filePath = runCtx.ProcessingFile;
             if (!InjectorCoreUtils.IsNeedProcessFile(Options.Filter, filePath))
             {
-                _logger.Trace($"File skipped: [{filePath}]");
+                _logger.Trace($"File is skipped: [{filePath}]");
                 return false;
             }
             #endregion
 
+            _logger.Debug($"Processing by plugin: [{filePath}]");
             try
             {
                 //reading
@@ -155,7 +157,10 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
                 //var sDir = @"d:\Projects\EPM-D4J\Drill4Net\build\bin\Debug\Drill4Net.Injector.Plugins.SpecFlow\net6.0\";
                 using var asmCtx = reader.ReadAssembly(runCtx, new List<string> { HelperReadDir });
                 if (asmCtx.Definition == null)
+                {
+                    _logger.Debug($"Can't read the content of [{filePath}]");
                     return false;
+                }
 
                 if (!Directory.Exists(asmCtx.DestinationDir))
                     Directory.CreateDirectory(asmCtx.DestinationDir);

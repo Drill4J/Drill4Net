@@ -39,7 +39,7 @@ namespace Drill4Net.Configurator
                     return Task.FromResult(TrueEmptyResult);
                 if (!_cli.AskQuestionBoolean(@"At the moment, CI integration is implemented only for IDEs (Visual Studio, Rider, etc). Integration with the Jenkins, TeamCity, etc will be implement later.
 So, do you want to integrate CI run into some source code projects (on its post-build events)?",
-                    out var answerBool, true))
+                    out var answerBool, false))
                     return Task.FromResult(FalseEmptyResult);
                 if(!answerBool)
                     return Task.FromResult(TrueEmptyResult);
@@ -57,7 +57,7 @@ So, do you want to integrate CI run into some source code projects (on its post-
             ciCfgPath = "";
 
             //setting
-            var modelCfgPath = Path.Combine(_rep.Options.TemplatesDirectory, "ci.yml");
+            var modelCfgPath = Path.Combine(_rep.GetTemplatesDirectory(), "ci.yml");
             CiOptions opts;
             if (File.Exists(modelCfgPath))
                 opts = _rep.ReadCiOptions(modelCfgPath, false);
@@ -83,11 +83,13 @@ So, do you want to integrate CI run into some source code projects (on its post-
             var ciDir = _rep.GetCiDirectory();
             var diInjDir = new DirectoryInfo(injCfgDir);
             if (!diInjDir.FullName.StartsWith(ciDir))
+            {
                 defCfgDir = ciDir;
+            }
             else
             {
-                var parent = diInjDir.Parent.FullName;
-                if (ciDir.StartsWith(parent))
+                var parent = diInjDir.Parent?.FullName;
+                if (parent == null || ciDir.StartsWith(parent))
                     defCfgDir = ciDir;
                 else
                     defCfgDir = parent;
@@ -113,7 +115,6 @@ So, do you want to integrate CI run into some source code projects (on its post-
         internal bool InjectCiToProjects(string ciCfgPath = "")
         {
             var ide = new IdeConfigurator(_rep);
-            bool answerBool;
 
             #region Search the projects
             var def = ide.GetDefaultProjectSourcesDirectory();
@@ -198,7 +199,7 @@ So, do you want to integrate CI run into some source code projects (on its post-
                 {
                     RaiseMessage(prj, CliMessageType.Info);
                 }
-                if (!_cli.AskQuestionBoolean("Is that right?", out answerBool, true))
+                if (!_cli.AskQuestionBoolean("Is that right?", out bool answerBool, true))
                     return false;
                 if (answerBool)
                     break;
