@@ -146,7 +146,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return "Configures the basic system properties (connections, etc).";
+            return "Configures the basic system properties (service connections, plugin directories, etc).";
         }
 
         public override string GetHelp()

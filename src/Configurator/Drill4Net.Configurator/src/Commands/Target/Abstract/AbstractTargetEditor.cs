@@ -201,7 +201,7 @@ Please make your choice";
                         cfg.Destination.FolderPostfix = postfix;
                         break;
                     case 2:
-                        if (!_cli.AskDirectory("Destination's directory (processed assemblies). It may not exist yet. Be careful: the targets output folder is intended exclusively for this instrumented target. During the injection process, it will be cleaned!",
+                        if (!_cli.AskDirectory("Destination's directory (processed assemblies). It may not exist yet. BE CAREFUL: the targets output folder is intended exclusively for this instrumented target. This is exactly the new catalog. Do not use the root of system folders, user folders, your data folders! During the injection process, it will be cleaned!",
                             out var destDir, null, false, false))
                             return false;
                         cfg.Destination.Directory = destDir;
@@ -242,7 +242,7 @@ Please make your choice";
                     List<Type> plugTypes = new();
                     try
                     {
-                        RaiseMessage("Searching. Please, wait...");
+                        RaiseMessage($"Search for existing plugins in the [{dir}]. Please, wait...");
                         plugTypes = GetGeneratorPlugins(dir).OrderBy(a => a.Name).ToList();
                     }
                     catch (Exception ex)

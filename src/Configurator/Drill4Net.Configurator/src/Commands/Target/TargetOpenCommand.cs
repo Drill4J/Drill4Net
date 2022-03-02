@@ -26,7 +26,7 @@ namespace Drill4Net.Configurator
 
         public override string GetShortDescription()
         {
-            return $"Open in external editor the config for {CoreConstants.SUBSYSTEM_INJECTOR}.";
+            return $"Open in external editor the config for the {CoreConstants.SUBSYSTEM_INJECTOR}.";
         }
 
         public override string GetHelp()

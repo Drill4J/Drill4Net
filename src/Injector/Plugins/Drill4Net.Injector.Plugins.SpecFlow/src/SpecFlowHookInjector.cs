@@ -11,7 +11,6 @@ using Drill4Net.BanderLog;
 using Drill4Net.Injector.Core;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Plugins.SpecFlow;
-using Drill4Net.TypeFinding;
 
 namespace Drill4Net.Injector.Plugins.SpecFlow
 {
@@ -113,7 +112,10 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
         {
             var directory = runCtx.ProcessingDirectory;
             if (!InjectorCoreUtils.IsNeedProcessDirectory(Options.Filter, directory, directory == runCtx.Options.Destination.Directory))
+            {
+                _logger.Trace($"Dir skipped: [{directory}]");
                 return false;
+            }
             _logger.Info($"Processing dir [{directory}]");
 
             //files
@@ -140,7 +142,10 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             //filter
             var filePath = runCtx.ProcessingFile;
             if (!InjectorCoreUtils.IsNeedProcessFile(Options.Filter, filePath))
+            {
+                _logger.Trace($"File skipped: [{filePath}]");
                 return false;
+            }
             #endregion
 
             try
