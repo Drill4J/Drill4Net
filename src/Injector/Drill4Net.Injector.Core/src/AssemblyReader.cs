@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using System.Diagnostics;
@@ -25,7 +26,7 @@ namespace Drill4Net.Injector.Core
         {
             var filePath = runCtx.ProcessingFile;
             if (!File.Exists(filePath))
-                throw new FileNotFoundException($"File not exists: [{filePath}]");
+                throw new FileNotFoundException($"File does not exist: [{filePath}]");
 
             #region Version
             //need to know the version of the assembly before reading it via cecil
@@ -41,15 +42,20 @@ namespace Drill4Net.Injector.Core
                 if (version != null)
                     versions.Add(filePath, version);
             }
-            Console.WriteLine($"Version = {version}");
+            Log.Debug($"Version = [{version}]");
             #endregion
 
             var asmCtx = new AssemblyContext(runCtx.Options, filePath, version);
-            if (asmCtx.Skipped)
+            if (asmCtx.NeedSkip)
+            {
+                Log.Debug($"Skipped by AssemblyContext.NeedSkip property: [{filePath}]");
                 return asmCtx;
+            }
 
             #region Params
             var sDir = runCtx.Options.Source.Directory;
+            if(searches != null)
+                searches = searches.Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
             if (searches == null || searches.Count == 0)
             {
                 searches = new List<string> { sDir };

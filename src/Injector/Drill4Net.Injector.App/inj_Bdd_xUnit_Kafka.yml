@@ -48,7 +48,7 @@ Probes: # types of cross-cutting points
 Plugins: # injected references to plugins for runtime transmitting data to the Admin service
    'SpecFlow':
        Directory: ..\..\Drill4Net.Agent.Plugins.SpecFlow\netstandard2.0\
-       Config: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.nUnit\net6.0\plug_xUnit_SpecFlow.yml # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
+       Config: ..\..\Tests\Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit\net6.0\plug_xUnit_SpecFlow.yml # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs:
     - Type: console
       Level: debug

@@ -56,9 +56,10 @@ namespace Drill4Net.Injector.Core
         public bool IsNeedPdb { get; set; }
 
         /// <summary>
-        /// Do the assembly need to be injected?
+        /// Do the assembly need to be injected? This will be true for a native DLL,
+        /// a file without a version, an EXE for .NET Core, etc
         /// </summary>
-        public bool Skipped { get; set; }
+        public bool NeedSkip { get; set; }
 
         /// <summary>
         /// Version info of assembly
@@ -120,7 +121,7 @@ namespace Drill4Net.Injector.Core
             Version = version;
 
             var ext = Path.GetExtension(filePath);
-            Skipped = version == null || version.FrameworkType == AssemblyVersionType.NotIL ||
+            NeedSkip = version == null || version.FrameworkType == AssemblyVersionType.NotIL ||
                 (ext == ".exe" && version.FrameworkType == AssemblyVersionType.NetCore);
 
             TypeContexts = new Dictionary<string, TypeContext>();

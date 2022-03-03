@@ -234,7 +234,7 @@ namespace Drill4Net.Injector.Engine
                 //reading
                 var reader = new AssemblyReader();
                 using var asmCtx = reader.ReadAssembly(runCtx);
-                if (asmCtx.Skipped)
+                if (asmCtx.NeedSkip)
                     return false;
 
                 if (!Directory.Exists(asmCtx.DestinationDir))
