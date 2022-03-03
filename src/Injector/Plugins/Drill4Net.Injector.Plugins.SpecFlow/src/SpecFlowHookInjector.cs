@@ -114,7 +114,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             var directory = runCtx.ProcessingDirectory;
             if (!InjectorCoreUtils.IsNeedProcessDirectory(Options.Filter, directory, directory == runCtx.Options.Destination.Directory))
             {
-                _logger.Trace($"Dir skipped: [{directory}]");
+                _logger.Trace($"Dir is skipped: [{directory}]");
                 return false;
             }
             _logger.Info($"Processing dir [{directory}]");
@@ -149,7 +149,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
             }
             #endregion
 
-            _logger.Debug($"Processing by plugin: [{filePath}]");
+            _logger.Trace($"Processing by plugin: [{filePath}]");
             try
             {
                 //reading

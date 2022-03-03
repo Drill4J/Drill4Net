@@ -70,6 +70,7 @@ namespace Drill4Net.Injector.Core
                 if(!searches.Contains(sDir))
                     searches.Add(sDir);
             }
+            _logger.Debug($"Dependency dirs: [{string.Join("], [", searches)}]");
             var readerParams = new ReaderParameters
             {
                 // we will write to another file, so we don't need this
