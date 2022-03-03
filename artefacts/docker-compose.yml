@@ -8,7 +8,7 @@ services:
     environment:
       - TEST2CODE_PLUGIN_VERSION=${TEST2CODE_PLUGIN_VERSION:-0.8.0-40}
       - LOG_LEVEL=DEBUG
-      - DRILL_AGENTS_SOCKET_TIMEOUT=${DRILL_AGENTS_SOCKET_TIMEOUT:-60}
+      - DRILL_AGENTS_SOCKET_TIMEOUT=${DRILL_AGENTS_SOCKET_TIMEOUT:-240}
     healthcheck:
       test: curl --fail http://localhost:8090/apidocs/index.html?url=./openapi.json || exit 1
       interval: 10s
