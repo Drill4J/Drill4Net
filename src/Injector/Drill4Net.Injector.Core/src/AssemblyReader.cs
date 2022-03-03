@@ -14,17 +14,6 @@ namespace Drill4Net.Injector.Core
     /// </summary>
     public class AssemblyReader
     {
-        private readonly Logger _logger;
-
-        /*****************************************************************************/
-
-        public AssemblyReader()
-        {
-            _logger = new TypedLogger<AssemblyReader>(CoreConstants.SUBSYSTEM_INJECTOR);
-        }
-
-        /*****************************************************************************/
-
         /// <summary>
         /// Reads the assembly.
         /// </summary>
@@ -70,7 +59,7 @@ namespace Drill4Net.Injector.Core
                 if(!searches.Contains(sDir))
                     searches.Add(sDir);
             }
-            _logger.Debug($"Dependency dirs: [{string.Join("], [", searches)}]");
+            Log.Debug($"Dependency dirs: [{string.Join("], [", searches)}]");
             var readerParams = new ReaderParameters
             {
                 // we will write to another file, so we don't need this
@@ -100,7 +89,7 @@ namespace Drill4Net.Injector.Core
                     if (!Debugger.IsAttached)
                         // _logger.Warning(ex, $"Reading PDB (from IDE): {nameof(ProcessAssembly)}");
                         //else
-                        _logger.Error($"Reading PDB: {nameof(ReadAssembly)}", ex);
+                        Log.Error($"Reading PDB: {nameof(ReadAssembly)}", ex);
                 }
                 asmCtx.IsNeedPdb = needPdb;
             }
@@ -108,7 +97,7 @@ namespace Drill4Net.Injector.Core
             #endregion
 
             //reading
-            _logger.Debug($"Reading: [{filePath}]");
+            Log.Debug($"Reading: [{filePath}]");
             asmCtx.Definition = AssemblyDefinition.ReadAssembly(filePath, readerParams);
 
             return asmCtx;

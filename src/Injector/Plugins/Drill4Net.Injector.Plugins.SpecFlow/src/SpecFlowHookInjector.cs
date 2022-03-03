@@ -158,7 +158,7 @@ namespace Drill4Net.Injector.Plugins.SpecFlow
                 using var asmCtx = reader.ReadAssembly(runCtx, new List<string> { HelperReadDir });
                 if (asmCtx.Definition == null)
                 {
-                    _logger.Debug($"Can't read the content of [{filePath}]");
+                    _logger.Fatal($"Can't read the content of [{filePath}]");
                     return false;
                 }
 
