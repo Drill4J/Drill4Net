@@ -7,7 +7,7 @@ dotnet publish "src/Agent/Drill4Net.Agent.Plugins.NUnit/Drill4Net.Agent.Plugins.
 dotnet publish "src/Agent/Drill4Net.Agent.Plugins.SpecFlow/Drill4Net.Agent.Plugins.SpecFlow.csproj" -c Release --runtime win-x64 -o ../Drill4Net-ci/distribution/components/transmitter_plugins/Drill4Net.Agent.Plugins.SpecFlow
 dotnet publish "src/Agent/Drill4Net.Agent.Plugins.xUnit/Drill4Net.Agent.Plugins.xUnit.csproj" -c Release --runtime win-x64 -o ../Drill4Net-ci/distribution/components/transmitter_plugins/Drill4Net.Agent.Plugins.xUnit
 dotnet publish "src/Injector/Plugins/Drill4Net.Injector.Plugins.SpecFlow/Drill4Net.Injector.Plugins.SpecFlow.csproj" -c Release --runtime win-x64 -o ../Drill4Net-ci/distribution/components/injector_plugins/Drill4Net.Injector.Plugins.SpecFlow
-dotnet publish "src/Tests/Targets/TestFrameworks/Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit/Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.csproj" -c Release --runtime win-x64 --framework net6.0 -o ../Drill4Net-ci/targets/specflow-xunit
+dotnet publish "src/Tests/Targets/TestFrameworks/Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit/Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.csproj" -c Debug --runtime win-x64 --framework net6.0 -o ../Drill4Net-ci/targets/specflow-xunit
 New-Item -Path '../Drill4Net-ci/ci' -ItemType Directory
 New-Item -Path '../Drill4Net-ci/ci/specflow-xunit' -ItemType Directory
 New-Item -Path '../Drill4Net-ci/ci/specflow-xunit/build1' -ItemType Directory
