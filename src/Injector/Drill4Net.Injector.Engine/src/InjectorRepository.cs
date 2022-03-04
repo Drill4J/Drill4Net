@@ -182,7 +182,7 @@ namespace Drill4Net.Injector.Engine
             try
             {
                 var asmName = AssemblyName.GetAssemblyName(filePath);
-                if (asmName.ProcessorArchitecture != ProcessorArchitecture.MSIL)
+                if (asmName.ProcessorArchitecture == ProcessorArchitecture.None)
                     return new AssemblyVersioning() { FrameworkType = AssemblyVersionType.NotIL };
 
                 //TODO: we don't work with strong names yet (it's possible)

@@ -1,11 +1,11 @@
 ﻿Description: BDD SpecFlow + xUnit tests for debug to the file
 Type: Injector
 Target: # some metadata about target
-    Name: test-specflow-xUnit-file #optional injection name, if empty must be set in agent config
+    Name: specflow-xUnit-stend #optional injection name, if empty must be set in agent config
     Version:  # version of whole Product, can be empty and can be overridden by Agent configs
     VersionAssemblyName: # Name of main Product assembly - if the version is empty, you can specify with the automatic changing version
 Source: # what and how processing
-    Directory: d:\Projects\test-specflow-xUnit\
+    Directory: c:\Users\Ivan_Bezrodnyi\Downloads\specflow-xunit-apatsev-04-03-2022\specflow-xunit\
     Filter: # mask for search files, namespaces, classes...
       Includes:
         Directories:
@@ -21,20 +21,21 @@ Source: # what and how processing
         Files:
           - Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.dll
 Destination: # where copying injected assemblies
-    Directory: # Or a specific directory (absolute or relative to the Injector)...
-    FolderPostfix: Injected #...or prefix to source dir
+    Directory: c:\Users\Ivan_Bezrodnyi\Downloads\specflow-xunit-apatsev-04-03-2022\specflow-xunit.Injected\ # Or a specific directory (absolute or relative to the Injector)...
+    FolderPostfix: #Injected #...or prefix to source dir
 Proxy: # the injecting for transfer data to profiler
     Class: ProfilerProxy
     Method: Register
     Static: true
 Profiler: # data collector/processor in separate assembly
-    Name: Debug logger agent # name exactly for agent subsystem
-    Directory: ..\..\Drill4Net.Agent.File\netstandard2.0\  # absolute path, or relatively Destination dir
-    AssemblyName: Drill4Net.Agent.File.dll
-    Namespace: Drill4Net.Agent.File
-    Class: LoggerAgent
-    Method: RegisterStatic
-    Static: true
+   Name: Transmitter # name exactly for agent subsystem
+   Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\
+   #Directory: c:\drill-agents\StandardAgent\ #for QA, etc
+   AssemblyName: Drill4Net.Agent.Transmitter.dll
+   Namespace: Drill4Net.Agent.Transmitter
+   Class: DataTransmitter
+   Method: Transmit
+   Static: true
 Probes: # types of cross-cutting points
     Ctor: false
     Private: true
@@ -47,16 +48,12 @@ Probes: # types of cross-cutting points
 Plugins: # injected references to plugins for runtime transmitting data to the Admin service
     'SpecFlow':
         Directory: ..\..\Drill4Net.Agent.Plugins.SpecFlow\netstandard2.0\
-        Config: plug_xUnit_SpecFlow # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
+        Config: c:\Users\Ivan_Bezrodnyi\Downloads\specflow-xunit-apatsev-04-03-2022\specflow-xunit\plug_xUnit_SpecFlow.yml # plugin specific config: name (for Injector's root directory) or path (relative or absolute)
 Logs:
     - Type: console
       Level: debug
     #local log
     - Type: file
-      Level: trace
-    #common place
-    - Type: file
-      Path: ..\..\..\..\..\logs # if the path is relative will be used common path/URI for the Drill4Net. If no file (extension) will be used name of current subsystem
       Level: trace
 Debug:
     CrossPointInfo : true # cross-point information is included into injected probe data. By default is true if this section presents
