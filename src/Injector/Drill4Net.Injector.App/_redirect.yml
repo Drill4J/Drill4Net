@@ -17,8 +17,10 @@
       #inj_Bdd_xUnit_File
       #inj_Bdd_xUnit_Std
       #inj_Bdd_xUnit_Kafka
+
       #inj_specflow-xUnit-net6-Kafka
       #inj_specflow-xUnit-stend-Kafka
+      #inj_specflow-xUnit-runtime-version-Kafka
 
       #inj_Bdd_NUnit_File
       #inj_Bdd_NUnit_Std

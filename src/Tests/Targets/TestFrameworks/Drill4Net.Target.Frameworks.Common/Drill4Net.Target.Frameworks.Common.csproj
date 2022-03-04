@@ -16,4 +16,8 @@
 		<OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Testers.Common</OutputPath>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="GitInfo" Version="2.2.0" />
+	</ItemGroup>
+
 </Project>

@@ -73,20 +73,21 @@ namespace Drill4Net.Profiling.Tree
         {
             if(!string.IsNullOrWhiteSpace(ProductVersion))
                 return ProductVersion;
-            var asms = GetAllAssemblies().Where(a => a.ProductVersion != "0.0.0.0");
+            //var aaa = GetAllAssemblies();
+            var asms = GetAllAssemblies().Where(a => a.ProductVersion != "0.0.0.0").ToList();
+            if (asms.Count == 0)
+                return null;
             if (!string.IsNullOrWhiteSpace(productAssemblyName))
             {
-                var productAsm = asms.FirstOrDefault(a => a.Name.Equals(productAssemblyName, StringComparison.CurrentCultureIgnoreCase));
+                var productAsm = asms.FirstOrDefault(a => a.Name.Equals(productAssemblyName, StringComparison.InvariantCultureIgnoreCase));
                 if (productAsm != null)
-                {
                     return productAsm.ProductVersion;
-                }
             }
             //
-            var entryAsmVersion = asms.FirstOrDefault(a => a.HasEntryPoint)?.ProductVersion;
-            if(entryAsmVersion != null)
-                return entryAsmVersion;
-            return asms.FirstOrDefault(a => !a.HasEntryPoint)?.ProductVersion;
+            var entryAsm = asms.FirstOrDefault(a => a.HasEntryPoint);
+            if(entryAsm != null)
+                return entryAsm.ProductVersion;
+            return asms.FirstOrDefault().ProductVersion;
         }
     }
 }
