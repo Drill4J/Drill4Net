@@ -10,7 +10,8 @@ dotnet publish "src/Injector/Plugins/Drill4Net.Injector.Plugins.SpecFlow/Drill4N
 dotnet publish "src/Tests/Targets/TestFrameworks/Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit/Drill4Net.Target.Frameworks.Bdd.SpecFlow.xUnit.csproj" -c Release --runtime win-x64 --framework net6.0 -o ../Drill4Net-ci/targets/specflow-xunit
 New-Item -Path '../Drill4Net-ci/ci' -ItemType Directory
 New-Item -Path '../Drill4Net-ci/ci/specflow-xunit' -ItemType Directory
-New-Item -Path '../Drill4Net-ci/ci/specflow-xunit/.gitkeep'
+New-Item -Path '../Drill4Net-ci/ci/specflow-xunit/build1' -ItemType Directory
+New-Item -Path '../Drill4Net-ci/ci/specflow-xunit/build1/.gitkeep'
 New-Item -Path '../Drill4Net-ci/distribution/templates' -ItemType Directory
 Copy-Item -Path "./artefacts/templates/*" -Destination "../Drill4Net-ci/distribution/templates"
 Copy-Item "./artefacts/templates/configurator_app.yml" -Destination "../Drill4Net-ci/distribution/apps/configurator/app.yml"
