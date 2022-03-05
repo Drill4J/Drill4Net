@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
+    <ProjectReference Include="..\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
     <ProjectReference Include="..\Drill4Net.Repository\Drill4Net.Repository.csproj" />
     <ProjectReference Include="..\Drill4Net.TypeFinding\Drill4Net.TypeFinding.csproj" />
   </ItemGroup>

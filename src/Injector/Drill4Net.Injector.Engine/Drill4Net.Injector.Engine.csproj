@@ -34,9 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Drill4Net.Cli\Drill4Net.Cli.csproj" />
+    <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Common\Drill4Net.Common.csproj" />
-    <ProjectReference Include="..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.Profiling.Tree\Drill4Net.Profiling.Tree.csproj" />
     <ProjectReference Include="..\..\Core\Drill4Net.TypeFinding\Drill4Net.TypeFinding.csproj" />
     <ProjectReference Include="..\Drill4Net.Injector.Core\Drill4Net.Injector.Core.csproj" />

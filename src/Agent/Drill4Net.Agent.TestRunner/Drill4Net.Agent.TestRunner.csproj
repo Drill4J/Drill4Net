@@ -22,7 +22,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Core\Drill4Net.BanderLog\Drill4Net.BanderLog.csproj" />
-	  <ProjectReference Include="..\..\Core\Drill4Net.Repository\Drill4Net.Repository.csproj" />
 	  <ProjectReference Include="..\Drill4Net.Agent.TestRunner.Core\Drill4Net.Agent.TestRunner.Core.csproj" />
 	</ItemGroup>
 
