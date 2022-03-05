@@ -97,6 +97,7 @@ namespace Drill4Net.Agent.Standard
                 var logExtras = new Dictionary<string, object> { { "PID", CommonUtils.CurrentProcessId }, { "Target", Repository.TargetName } };
                 _logger = new TypedLogger<StandardAgent>($"{Repository.Subsystem}/{CoreConstants.SUBSYSTEM_AGENT}", logExtras);
 
+                AddDependencies(rep.Options.PluginDir);
                 _comm = Repository.Communicator;
 
                 //it needed to be done here  before connect to Admin by Connector with websocket

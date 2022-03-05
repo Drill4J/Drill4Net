@@ -17,7 +17,7 @@ namespace Drill4Net.Common
         protected BaseResolver(List<string> searchDirs = null)
         {
             SearchDirs = searchDirs ?? new List<string>();
-            if(!SearchDirs.Any())
+            if(!SearchDirs.Contains(FileUtils.EntryDir))
                 SearchDirs.Add(FileUtils.EntryDir);
             var runtimeRootPath = GetRuntimeDir();
             _runtimeDirs = Directory.GetDirectories(runtimeRootPath).ToList();

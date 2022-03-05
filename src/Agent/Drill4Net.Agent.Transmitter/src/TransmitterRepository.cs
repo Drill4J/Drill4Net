@@ -86,6 +86,15 @@ namespace Drill4Net.Agent.Transmitter
             return Guid.NewGuid();
         }
 
+        internal List<string> GetDependencyDirs()
+        {
+            var dirs = new List<string>();
+            var root = Options.PluginDir;
+            if (string.IsNullOrWhiteSpace(root) || System.IO.Directory.Exists(root))
+                return dirs;
+            return System.IO.Directory.GetDirectories(root).ToList();
+        }
+
         public byte[] GetTargetInfo()
         {
             var entryAsm = Assembly.GetEntryAssembly()?.Location;

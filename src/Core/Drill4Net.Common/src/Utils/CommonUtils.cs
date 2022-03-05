@@ -154,7 +154,7 @@ namespace Drill4Net.Common
                 return asm;
             var info = $"{GetPreciseTime()}|{context}: {name} -> request assembly from [{args.RequestingAssembly.FullName}] at [{args.RequestingAssembly.Location}]";
             File.AppendAllLines(Path.Combine(dir, "resolve_failed.log"), new string[] { info });
-            log?.LogDebug($"{context}: assembly [{name}] didn't resolve");
+            log?.LogDebug($"{context}: assembly [{name}] was not resolved");
             return args.RequestingAssembly; //null
         }
 

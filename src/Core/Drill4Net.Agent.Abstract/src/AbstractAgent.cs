@@ -2,8 +2,10 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.Repository;
+using System.Linq;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -72,6 +74,19 @@ namespace Drill4Net.Agent.Abstract
         protected void RaiseInitilizedEvent()
         {
             Initialized?.Invoke();
+        }
+
+        internal protected void AddDependencies(List<string> dirs)
+        {
+            if(dirs?.Count > 0)
+                _resolver.SearchDirs.AddRange(dirs);
+        }
+
+        internal protected void AddDependencies(string root)
+        {
+            if (string.IsNullOrWhiteSpace(root) || Directory.Exists(root))
+                return;
+            AddDependencies(Directory.GetDirectories(root).ToList());
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

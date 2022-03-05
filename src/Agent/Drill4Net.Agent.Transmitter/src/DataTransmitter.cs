@@ -90,12 +90,12 @@ namespace Drill4Net.Agent.Transmitter
             Repository = rep ?? throw new ArgumentNullException(nameof(rep));
 
             //TODO: find out - on IHS adoption it falls
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException; ;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
             AppDomain.CurrentDomain.ResourceResolve += CurrentDomain_ResourceResolve;
 
-            _resolver = new AssemblyResolver();
+            _resolver = new AssemblyResolver(rep.GetDependencyDirs());
 
             EmergencyLogDir = LoggerHelper.GetDefaultLogDir();
 
