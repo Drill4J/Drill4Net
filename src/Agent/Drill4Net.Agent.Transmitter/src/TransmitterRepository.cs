@@ -88,10 +88,9 @@ namespace Drill4Net.Agent.Transmitter
 
         internal List<string> GetDependencyDirs()
         {
-            var dirs = new List<string>();
             var root = Options.PluginDir;
-            if (string.IsNullOrWhiteSpace(root) || System.IO.Directory.Exists(root))
-                return dirs;
+            if (string.IsNullOrWhiteSpace(root) || !System.IO.Directory.Exists(root))
+                return new List<string>();
             return System.IO.Directory.GetDirectories(root).ToList();
         }
 

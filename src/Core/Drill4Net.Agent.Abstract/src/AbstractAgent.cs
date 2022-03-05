@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.Repository;
-using System.Linq;
 
 namespace Drill4Net.Agent.Abstract
 {
@@ -84,7 +84,7 @@ namespace Drill4Net.Agent.Abstract
 
         internal protected void AddDependencies(string root)
         {
-            if (string.IsNullOrWhiteSpace(root) || Directory.Exists(root))
+            if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root))
                 return;
             AddDependencies(Directory.GetDirectories(root).ToList());
         }
