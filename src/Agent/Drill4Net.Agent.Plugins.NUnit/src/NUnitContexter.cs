@@ -1,8 +1,8 @@
-﻿using Drill4Net.Common;
-using Drill4Net.Agent.Abstract;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Threading.Tasks;
-using System;
+using System.Collections.Concurrent;
+using Drill4Net.Common;
+using Drill4Net.Agent.Abstract;
 
 namespace Drill4Net.Agent.Plugins.NUnit3
 {

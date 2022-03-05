@@ -15,6 +15,7 @@ namespace Drill4Net.Agent.Abstract
         private readonly ConcurrentDictionary<string, string> _contextBindings;
         private readonly SimpleContexter _stdContexter;
         private readonly List<AbstractEngineContexter> _contexters;
+        private readonly HashSet<AbstractEngineContexter> _failedContexters;
         private readonly Logger _logger;
 
         /**********************************************************************************/
@@ -26,7 +27,8 @@ namespace Drill4Net.Agent.Abstract
         public ContextDispatcher(string subsystem)
         {
             _logger = new TypedLogger<ContextDispatcher>(subsystem);
-            _contexters = new List<AbstractEngineContexter>();
+            _contexters = new();
+            _failedContexters = new();
             _contextBindings = new();
 
             _stdContexter = new SimpleContexter();
@@ -110,20 +112,31 @@ namespace Drill4Net.Agent.Abstract
             _logger.Debug($"Command: [{command}] -> [{data}]");
             foreach (var ctxr in _contexters)
             {
-                var (res, answer) = ctxr.RegisterCommand(command, data);
-                if (!res)
+                if (_failedContexters.Contains(ctxr))
+                    continue;
+                try
                 {
-                    _logger.Error($"Unknown command: [{command}] -> [{data}]");
-                }
-                else
-                {
-                    //only one contexter should get the context of test here
-                    var curTestCtx = answer as TestCaseContext;
-                    if (curTestCtx != null)
+                    var (res, answer) = ctxr.RegisterCommand(command, data);
+                    if (!res)
                     {
-                        _logger.Debug($"Actual test's context: [{curTestCtx}]");
-                        return curTestCtx;
+                        _logger.Error($"Unknown command: [{command}] -> [{data}]");
                     }
+                    else
+                    {
+                        //only one contexter should get the context of test here
+                        var curTestCtx = answer as TestCaseContext;
+                        if (curTestCtx != null)
+                        {
+                            _logger.Debug($"Actual test's context: [{curTestCtx}]");
+                            return curTestCtx;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Warning($"Register command failed for the contexter: [{ctxr.Name}]. Reason: {ex.Message}");
+                    if(!_failedContexters.Contains(ctxr))
+                        _failedContexters.Add(ctxr);
                 }
             }
             return null; //exactly is true
@@ -138,10 +151,21 @@ namespace Drill4Net.Agent.Abstract
             //TODO: dynamic prioritizing ?!!!
             foreach (var ctxr in _contexters)
             {
-                ctx = ctxr.GetContextId();
-                //_logger.Trace($"Contexter: [{ctxr.Name}] -> [{ctx}]");
-                if (ctx != null)
-                    break;
+                if (_failedContexters.Contains(ctxr))
+                    continue;
+                try
+                {
+                    ctx = ctxr.GetContextId();
+                    //_logger.Trace($"Contexter: [{ctxr.Name}] -> [{ctx}]");
+                    if (ctx != null)
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Warning($"Retrieving context failed for the contexter: [{ctxr.Name}]. Reason: {ex.Message}");
+                    if (!_failedContexters.Contains(ctxr))
+                        _failedContexters.Add(ctxr);
+                }
             }
 
             //nobody from specific plugins know how to retrieve the current context...
@@ -158,8 +182,19 @@ namespace Drill4Net.Agent.Abstract
         {
             foreach (var ctxr in _contexters)
             {
-                if (ctxr.GetContextId() != null)
-                    return ctxr.GetTestEngine();
+                if (_failedContexters.Contains(ctxr))
+                    continue;
+                try
+                {
+                    if (ctxr.GetContextId() != null)
+                        return ctxr.GetTestEngine();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Warning($"Retrieving context engine failed for the contexter: [{ctxr.Name}]. Reason: {ex.Message}");
+                    if (!_failedContexters.Contains(ctxr))
+                        _failedContexters.Add(ctxr);
+                }
             }
             return null;
         }
