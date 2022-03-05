@@ -10,10 +10,12 @@
 		<OutputPath>..\..\..\..\..\build\bin\Debug\Tests\Drill4Net.Target.Testers.Common</OutputPath>
 		<DocumentationFile></DocumentationFile>
 		<WarningLevel>5</WarningLevel>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<OutputPath>..\..\..\..\..\build\bin\Release\Tests\Drill4Net.Target.Testers.Common</OutputPath>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 
 	<ItemGroup>
