@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
+using Drill4Net.Repository;
 using Drill4Net.Agent.Abstract;
 using Drill4Net.Agent.Standard;
-using Drill4Net.Repository;
 using Drill4Net.Admin.Requester;
 
 namespace Drill4Net.Agent.TestRunner.Core
@@ -21,6 +21,8 @@ namespace Drill4Net.Agent.TestRunner.Core
     {
         public string TargetName { get; }
 
+        public string AssemblyPath => FileUtils.GetFullPath(Path.Combine(_dirOptions.Directory, _asmOptions.DefaultAssemblyName));
+
         private readonly RunDirectoryOptions _dirOptions;
         private readonly RunAssemblyOptions _asmOptions;
         private readonly TestRunnerDebugOptions _dbgOpts;
@@ -29,7 +31,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         private readonly StandardAgentRepository _agentRep;
         private readonly StandardAgent _agent;
 
-        private readonly AdminRequester _requester;
+        private readonly AdminRequester _adminRequester;
         private const string Subsystem = CoreConstants.SUBSYSTEM_TEST_RUNNER;
         private readonly ManualResetEventSlim _initBlocker = new(false);
         private readonly Logger _logger;
@@ -40,16 +42,18 @@ namespace Drill4Net.Agent.TestRunner.Core
         {
             _dirOptions = dirOptions ?? throw new Exception("Test assembly directory's options is empty");
             _asmOptions = asmOptions ?? throw new Exception("Test assembly's options is empty");
-            _dbgOpts = dbgOpts;
             if (string.IsNullOrWhiteSpace(asmOptions.DefaultAssemblyName))
                 throw new Exception("Assembly name is empty");
-            _logger = new TypedLogger<TestInformer>(Subsystem);
+            if (!File.Exists(AssemblyPath))
+                throw new Exception("Test assembly does not exist");
             //
+            _dbgOpts = dbgOpts;
+            _logger = new TypedLogger<TestInformer>(Subsystem);
             _agentRep = CreateAgentRepository();
             TargetName = _agentRep.TargetName;
             _logger.Extras.Add("Target", TargetName);
             _logger.RefreshExtrasInfo();
-            _requester = new(CoreConstants.SUBSYSTEM_TEST_RUNNER, _agentRep.Options.Admin.Url,
+            _adminRequester = new(CoreConstants.SUBSYSTEM_TEST_RUNNER, _agentRep.Options.Admin.Url,
                 _agentRep.TargetName, _agentRep.TargetVersion);
 
             // agent
@@ -90,9 +94,14 @@ namespace Drill4Net.Agent.TestRunner.Core
         internal async Task<DirectoryRunInfo> GetRunInfo(RunningType overridenType = RunningType.Unknown)
         {
             var isFake = _dbgOpts is { Disabled: false, IsFake: true };
-            _logger.Info($"Fake mode: {isFake}");
+            _logger.Debug($"Fake mode: {isFake}");
 
-            var assocTests = await GetAssociatedTests();
+            var assocCtxs = await GetAssociatedTests();
+            var assocTests = assocCtxs.Select(a => a.DisplayName);
+            var asmTests = await GetAssemblyTests();
+            var shareTests = asmTests.Intersect(assocTests);
+            var newTests = asmTests.Except(shareTests); //we have only DisplayNames
+            var delTests = assocTests.Except(shareTests); //we have full test case contexts
 
             var runningType = overridenType == RunningType.Unknown ?
                 await GetRunningType(isFake).ConfigureAwait(false):
@@ -201,9 +210,37 @@ namespace Drill4Net.Agent.TestRunner.Core
             return runInfo;
         }
 
-        internal Task<AssociatedTestsResponse> GetAssociatedTests()
+        internal Task<List<string>> GetAssemblyTests()
         {
-            return _requester.GetAssociatedTests();
+            var asmRequester = new AssemblyRequester();
+            return asmRequester.GetAssemblyTests(AssemblyPath);
+        }
+
+        internal async Task<List<TestCaseContext>> GetAssociatedTests()
+        {
+            var tests = await _adminRequester.GetAssociatedTests();
+            List<TestCaseContext> res = new();
+            foreach (var test in tests.Tests)
+            {
+                if (test.overview.details.metadata?.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT) != true)
+                    continue;
+                var dataS = test.overview.details.metadata[AgentConstants.KEY_TESTCASE_CONTEXT];
+                try
+                {
+                    var data = JsonConvert.DeserializeObject<TestCaseContext>(dataS);
+                    var path = data.AssemblyPath;
+                    if (!File.Exists(path))
+                        continue;
+                    if (!path.Equals(AssemblyPath, StringComparison.InvariantCultureIgnoreCase))
+                        continue;
+                    res.Add(data);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Test case data was not deserialized for the test [{test.name}] in [{AssemblyPath}]", ex);
+                }
+            }
+            return res;
         }
 
         internal async Task<TestToRunResponse> GetTestsToRun(bool isFake)
@@ -211,7 +248,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             TestToRunResponse run = null;
             for (var i = 0; i < 5; i++) //guanito, but Drill REST service has strange behaviour
             {
-                run = await (!isFake ? _requester.GetTestsToRun() : GetFakeTestsToRun())
+                run = await (!isFake ? _adminRequester.GetTestsToRun() : GetFakeTestsToRun())
                     .ConfigureAwait(false);
                 if (run.ByType != null)
                     break;

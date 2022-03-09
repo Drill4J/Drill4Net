@@ -259,6 +259,31 @@ namespace Drill4Net.Common
         }
         #endregion
 
+        public static void WaitForFinishingProcesses(List<int> pids)
+        {
+            //TODO: loading new consoles after the gradual finishing of the current ones ???
+            while (true)
+            {
+                for (int i = 0; i < pids.Count; i++)
+                {
+                    int pid = pids[i];
+                    Process prc = null;
+                    try
+                    {
+                        prc = Process.GetProcessById(pid);
+                    }
+                    catch { }
+                    if (prc != null)
+                        continue;
+                    pids.RemoveAt(i);
+                    i--;
+                }
+                if (pids.Count == 0)
+                    return;
+                Task.Delay(1000);
+            }
+        }
+
         public static bool IsWindows()
         {
             return Environment.OSVersion.Platform == PlatformID.Win32NT;

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
@@ -128,33 +126,8 @@ namespace Drill4Net.Agent.TestRunner.Core
                         return; //no sense to wait LAST run
 
                     // we must wait here until all CLI are finish
-                    WaitForFinishingProcesses(pids);
+                    CommonUtils.WaitForFinishingProcesses(pids);
                 }
-            }
-        }
-
-        internal void WaitForFinishingProcesses(List<int> pids)
-        {
-            //TODO: loading new consoles after the gradual finishing of the current ones ???
-            while (true)
-            {
-                for (int i = 0; i < pids.Count; i++)
-                {
-                    int pid = pids[i];
-                    Process prc = null;
-                    try
-                    {
-                        prc = Process.GetProcessById(pid);
-                    }
-                    catch { }
-                    if (prc != null)
-                        continue;
-                    pids.RemoveAt(i);
-                    i--;
-                }
-                if (pids.Count == 0)
-                    return;
-                Task.Delay(2000);
             }
         }
 
