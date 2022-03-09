@@ -22,5 +22,12 @@ namespace Drill4Net.Admin.Requester
         /// Probes info of 'type' tests
         /// </summary>
         public ProbeCounter Count { get; set; }
+
+        /***********************************************************************/
+
+        public override string ToString()
+        {
+            return $"{MethodCount} methods -> {Percentage}% by {Count} probes";
+        }
     }
 }

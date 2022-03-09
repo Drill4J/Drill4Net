@@ -51,18 +51,36 @@ namespace Drill4Net.Admin.Requester
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var resr = ResourceManager.GetSummaryResource(target);
-            Log.Debug("GetBuildSummaries: " + resr);
+            Log.Trace("GetBuildSummaries: " + resr);
             var request = new RestRequest(resr, Method.GET, DataFormat.Json);
             return GetData<List<BuildSummary>>(request, target, "builds' summaries", "Bad response for builds' summaries retrieving");
         }
 
-        public virtual Task<TestToRunResponse> GetTestToRun(string target = null)
+        public virtual Task<TestToRunResponse> GetTestsToRun(string target = null)
         {
             //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
             if (string.IsNullOrWhiteSpace(target))
                 target = _target;
             var request = new RestRequest(ResourceManager.GetTest2RunResource(target), DataFormat.Json);
-            return GetData<TestToRunResponse>(request, target, "test to run", "Bad response for tasks to run retrieving");
+            return GetData<TestToRunResponse>(request, target, "tests to run", "Bad response for tasks to run retrieving");
+        }
+
+        public virtual Task<AssociatedTestsResponse> GetAssociatedTests(string build = null) => GetAssociatedTests(build, null);
+
+        public async virtual Task<AssociatedTestsResponse> GetAssociatedTests(string build, string target)
+        {
+            if (string.IsNullOrWhiteSpace(target))
+                target = _target;
+            if (string.IsNullOrWhiteSpace(build))
+                build = _build;
+            //
+            //http://localhost:8090/api/plugins/test2code/build/tests?agentId=bdd-specflow-xUnit-kafka&buildVersion=0.1.0&type=AGENT
+            var request = new RestRequest(ResourceManager.GetAssociatedTestListResource(target, build), Method.GET, DataFormat.Json);
+            //var a = _client.Get(request);
+            var tests = await GetData<AssociatedTest[]>(request, target, "associated tests", "Bad response for associated tests retrieving");
+            var response = new AssociatedTestsResponse();
+            response.Tests.AddRange(tests);
+            return response;
         }
 
         private async Task<T> GetData<T>(IRestRequest request, string target, string purpose, string errorMsg)
@@ -73,7 +91,7 @@ namespace Drill4Net.Admin.Requester
                 response = _client.Get(request);
                 //if (response.StatusCode == HttpStatusCode.OK)
                 //    break;
-                _logger.Debug($"Response: Type={typeof(T).FullName}; IsSuccessful={response?.IsSuccessful}; StatusCode={response?.StatusCode}; ResponseStatus={response?.ResponseStatus}; ErrorMessage=[{response?.ErrorMessage}]");
+                _logger.Trace($"Response: Type={typeof(T).FullName}; IsSuccessful={response?.IsSuccessful}; StatusCode={response?.StatusCode}; ResponseStatus={response?.ResponseStatus}; ErrorMessage=[{response?.ErrorMessage}]");
                 if (response.StatusCode != HttpStatusCode.BadRequest && response.StatusCode != 0)
                     break;
                 var answer = JsonConvert.DeserializeObject<SimpleRestAnswer>(response.Content);
@@ -94,20 +112,5 @@ namespace Drill4Net.Admin.Requester
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
 
-        public virtual object GetTestList(string build = null) => GetTestList(build, null);
-
-        public virtual object GetTestList(string build, string target)
-        {
-            if (string.IsNullOrWhiteSpace(target))
-                target = _target;
-            if (string.IsNullOrWhiteSpace(build))
-                build = _build;
-            //
-            var request = new RestRequest(ResourceManager.GetTestListResource(target, build), Method.GET, DataFormat.Json);
-            var a = _client.Get(request);
-            // DON'T WORK YET
-
-            return null;
-        }
     }
 }

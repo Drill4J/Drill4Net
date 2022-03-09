@@ -121,6 +121,8 @@ namespace Drill4Net.Agent.Abstract
                 }
             };
             _logger.Debug($"Send FinishScope action. {data}");
+
+            //https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
             SendActionToPlugin(AgentConstants.ADMIN_PLUGIN_NAME, data);
         }
         #endregion

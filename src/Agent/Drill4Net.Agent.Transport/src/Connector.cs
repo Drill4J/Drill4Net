@@ -119,7 +119,7 @@ namespace Drill4Net.Agent.Transport
         /// <param name="message"></param>
         public void SendPluginAction(string pluginId, string message)
         {
-            sendPluginAction(pluginId, message); //currently pluginId is the only one = "test2code"
+            sendPluginAction(pluginId, message); //coverage plugin is "test2code"
         }
 
         /// <summary>

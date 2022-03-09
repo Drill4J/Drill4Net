@@ -92,6 +92,8 @@ namespace Drill4Net.Agent.TestRunner.Core
             var isFake = _dbgOpts is { Disabled: false, IsFake: true };
             _logger.Info($"Fake mode: {isFake}");
 
+            var assocTests = await GetAssociatedTests();
+
             var runningType = overridenType == RunningType.Unknown ?
                 await GetRunningType(isFake).ConfigureAwait(false):
                 overridenType;
@@ -109,7 +111,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             if (runningType == RunningType.Certain)
             {
                 // get tests to run from Admin
-                var run = await GetTestToRun(isFake)
+                var run = await GetTestsToRun(isFake)
                     .ConfigureAwait(false);
                 if (run.ByType == null) //it is error here
                 {
@@ -130,16 +132,16 @@ namespace Drill4Net.Agent.TestRunner.Core
                     var name = t2r.Name; //it is DisplayName, not QualifiedName
                     var metadata = t2r.Details.metadata;
                     if (!metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
-                        _logger.Error($"Unknown context in metadata for test {name}");
+                        _logger.Error($"Unknown context in metadata for test [{name}]");
                     var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
                     if (ctx == null)
-                        _logger.Error($"Tests' context in metadata is emty for test {name}");
+                        _logger.Error($"Tests' context in metadata is empty for test [{name}]");
 
                     // assembly path
                     var asmPath = ctx.AssemblyPath; //it's original tests' assembly path! Possibly, new build id located by ANOTHER path
                     if (string.IsNullOrWhiteSpace(asmPath))
                     {
-                        _logger.Error($"Unknown test assembly for test {name}");
+                        _logger.Error($"Unknown test assembly for test [{name}]");
                         continue;
                     }
 
@@ -199,16 +201,21 @@ namespace Drill4Net.Agent.TestRunner.Core
             return runInfo;
         }
 
-        internal async Task<TestToRunResponse> GetTestToRun(bool isFake)
+        internal Task<AssociatedTestsResponse> GetAssociatedTests()
+        {
+            return _requester.GetAssociatedTests();
+        }
+
+        internal async Task<TestToRunResponse> GetTestsToRun(bool isFake)
         {
             TestToRunResponse run = null;
-            for (var i = 0; i < 5; i++) //guanito, but Drill REST has strange behaviour
+            for (var i = 0; i < 5; i++) //guanito, but Drill REST service has strange behaviour
             {
-                run = await (!isFake ? _requester.GetTestToRun() : GetFakeTestToRun())
+                run = await (!isFake ? _requester.GetTestsToRun() : GetFakeTestsToRun())
                     .ConfigureAwait(false);
                 if (run.ByType != null)
                     break;
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Task.Delay(1000).ConfigureAwait(false); //...and repeat
             }
             return run;
         }
@@ -265,7 +272,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         //TODO: move to the normal test project
         #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        internal async virtual Task<TestToRunResponse> GetFakeTestToRun()
+        internal async virtual Task<TestToRunResponse> GetFakeTestsToRun()
         #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             TestToRunResponse tests = new();
