@@ -78,10 +78,9 @@ namespace Drill4Net.Admin.Requester
             //
             //http://localhost:8090/api/plugins/test2code/build/tests?agentId=bdd-specflow-xUnit-kafka&buildVersion=0.1.0&type=AGENT
             var request = new RestRequest(ResourceManager.GetAssociatedTestListResource(target, build), Method.GET, DataFormat.Json);
-            //var a = _client.Get(request);
             var tests = await GetData<AssociatedTest[]>(request, target, "associated tests", "Bad response for associated tests retrieving");
             var response = new AssociatedTestsResponse();
-            if(tests != null && tests.Length > 0)
+            if(tests?.Length > 0)
                 response.Tests.AddRange(tests);
             return response;
         }

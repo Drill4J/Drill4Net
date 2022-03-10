@@ -106,13 +106,13 @@ namespace Drill4Net.Agent.TestRunner.Core
 
             #region Calc running type
             var assocCtxs = await GetAssociatedTests();
-            var assocTests = assocCtxs.Select(a => a.DisplayName);
-            var asmTests = await GetAssemblyTests();
+            var assocTests = assocCtxs.Select(a => a.DisplayName); //we have full test case contexts, but...
+            var asmTests = await GetAssemblyTests(); //...we have only DisplayNames here
             var shareTests = asmTests.Intersect(assocTests);
-            var newTests = asmTests.Except(shareTests) //we have only DisplayNames
+            var newTests = asmTests.Except(shareTests)
                 .Select(a => TestContextHelper.GetQualifiedName(a))
                 .ToList();
-            var delTests = assocTests.Except(shareTests) //we have full test case contexts
+            var delTests = assocTests.Except(shareTests)
                 .Select(a => TestContextHelper.GetQualifiedName(a))
                 .ToHashSet();
             _logger.Info($"New tests: {newTests.Count}, deleted tests: {delTests.Count}");
@@ -160,60 +160,63 @@ namespace Drill4Net.Agent.TestRunner.Core
                     }
                     //
                     var nameHash = new HashSet<string>();
-
-                    foreach (var t2r in _t2run.ByType[AgentConstants.TEST_AUTO])
+                    if (_t2run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
                     {
-                        var name = t2r.Name; //it is DisplayName, not QualifiedName
-                        var metadata = t2r.Details.metadata;
-                        if (!metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
-                            _logger.Error($"Unknown context in metadata for test [{name}]");
-                        var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
-                        if (ctx == null)
-                            _logger.Error($"Tests' context in metadata is empty for test [{name}]");
-
-                        // assembly path
-                        var asmPath = ctx.AssemblyPath; //it's original tests' assembly path! Possibly, new build id located by ANOTHER path
-                        if (string.IsNullOrWhiteSpace(asmPath))
+                        foreach (var t2r in _t2run.ByType[AgentConstants.TEST_AUTO])
                         {
-                            _logger.Error($"Unknown test assembly for test [{name}]");
-                            continue;
+                            var name = t2r.Name; //it is DisplayName, not QualifiedName
+                            var metadata = t2r.Details.metadata;
+                            if (!metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
+                                _logger.Error($"Unknown context in metadata for test [{name}]");
+                            var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
+                            if (ctx == null)
+                                _logger.Error($"Tests' context in metadata is empty for test [{name}]");
+
+                            // assembly path
+                            var asmPath = ctx.AssemblyPath; //it's original tests' assembly path! Possibly, new build id located by ANOTHER path
+                            if (string.IsNullOrWhiteSpace(asmPath))
+                            {
+                                _logger.Error($"Unknown test assembly for test [{name}]");
+                                continue;
+                            }
+
+                            // we only need tests for the current TestInformer object
+                            var asmName = Path.GetFileName(asmPath);
+                            if (!curAsmFilename.Equals(asmName, StringComparison.InvariantCultureIgnoreCase))
+                                continue;
+
+                            //test qualified name
+                            string qName = ctx.QualifiedName;
+                            if (string.IsNullOrWhiteSpace(qName)) //it's possible
+                                qName = TestContextHelper.GetQualifiedName(name);
+
+                            if (delTests.Contains(qName))
+                                continue;
+
+                            //dublicates aren't needed
+                            if (nameHash.Contains(qName))
+                                continue;
+                            nameHash.Add(qName);
+
+                            var mustSeq = _asmOptions.DefaultParallelRestrict;
+                            if (ctx.Engine != null)
+                                mustSeq = ctx.Engine.MustSequential;
+
+                            if (!seqDict.ContainsKey(AssemblyPath))
+                                seqDict.Add(AssemblyPath, mustSeq);
+
+                            // insert test info
+                            RunAssemblyInfo asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, AssemblyPath, mustSeq); //exactly AssemblyPath, not asmPath
+                            asmInfo.Tests.Add(qName);
                         }
-
-                        // we only need tests for the current TestInformer object
-                        var asmName = Path.GetFileName(asmPath);
-                        if (!curAsmFilename.Equals(asmName, StringComparison.InvariantCultureIgnoreCase))
-                            continue;
-
-                        //test qualified name
-                        string qName = ctx.QualifiedName;
-                        if (string.IsNullOrWhiteSpace(qName)) //it's possible
-                            qName = TestContextHelper.GetQualifiedName(name);
-
-                        if (delTests.Contains(qName))
-                            continue;
-
-                        //dublicates aren't needed
-                        if (nameHash.Contains(qName))
-                            continue;
-                        nameHash.Add(qName);
-
-                        var mustSeq = _asmOptions.DefaultParallelRestrict;
-                        if (ctx.Engine != null)
-                            mustSeq = ctx.Engine.MustSequential;
-
-                        if (!seqDict.ContainsKey(AssemblyPath))
-                            seqDict.Add(AssemblyPath, mustSeq);
-
-                        // insert test info
-                        RunAssemblyInfo asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, AssemblyPath, mustSeq); //exactly AssemblyPath, not asmPath
-                        asmInfo.Tests.Add(qName);
                     }
                 }
                 
                 // new tests
                 if (newTests.Count > 0) //we have the new tests that the admin side doesn't know about
                 {
-                    var asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, AssemblyPath, seqDict.ContainsKey(AssemblyPath) ? seqDict[AssemblyPath] : _asmOptions.DefaultParallelRestrict);
+                    var parRestrict = seqDict.ContainsKey(AssemblyPath) ? seqDict[AssemblyPath] : _asmOptions.DefaultParallelRestrict;
+                    var asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, AssemblyPath, parRestrict);
                     asmInfo.Tests.AddRange(newTests);
                 }
                 //
