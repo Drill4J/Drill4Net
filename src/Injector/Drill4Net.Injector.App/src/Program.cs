@@ -6,6 +6,7 @@ using Drill4Net.Cli;
 using Drill4Net.Common;
 using Drill4Net.BanderLog;
 using Drill4Net.Repository;
+using Drill4Net.Injector.Core;
 using Drill4Net.Injector.Engine;
 
 namespace Drill4Net.Injector.App
@@ -53,11 +54,11 @@ namespace Drill4Net.Injector.App
 
                     //run in parallel
                     var parOpts = new ParallelOptions { MaxDegreeOfParallelism = degreeParallel };
-                    Parallel.ForEach(configs, parOpts, (cfgPath) => Process(cfgPath));
+                    Parallel.ForEach(configs, parOpts, (cfgPath) => Process(true, cfgPath));
                 }
                 else //manual start
                 {
-                    await Process().ConfigureAwait(false);
+                    await Process(false).ConfigureAwait(false);
                 }
 #if DEBUG
                 #region Benchmark
@@ -90,11 +91,19 @@ namespace Drill4Net.Injector.App
         }
 
         // *** The magic is here *** //
-        internal static Task Process(string cfgPath = null)
+        internal static Task Process(bool fromDir, string cfgPath = null)
         {
             InjectorRepository rep = null;
             try
             {
+                // the directory can contains different types of the configs
+                if (fromDir && !string.IsNullOrWhiteSpace(cfgPath))
+                {
+                    var helper = new BaseOptionsHelper<InjectionOptions>(CoreConstants.SUBSYSTEM_INJECTOR);
+                    var opts = helper.ReadOptions(cfgPath);
+                    if (opts.Type != CoreConstants.SUBSYSTEM_INJECTOR)
+                        return Task.CompletedTask;
+                }
                 rep = new InjectorRepository(cfgPath, _cliDescriptor);
                 _logger.Debug(rep.Options);
                 var injector = new InjectorEngine(rep);
