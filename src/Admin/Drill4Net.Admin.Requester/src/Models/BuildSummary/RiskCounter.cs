@@ -27,7 +27,7 @@ namespace Drill4Net.Admin.Requester
 
         public override string ToString()
         {
-            return $"mod:{Modified}, new:{New}, total:{Total}";
+            return $"mod={Modified}, new={New}, total={Total}";
         }
     }
 }

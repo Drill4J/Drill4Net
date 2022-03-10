@@ -59,7 +59,12 @@ namespace Drill4Net.Admin.Requester
 
         public override string ToString()
         {
-            return $"{Arrow} -> methods: {MethodCount}; tests: {Tests.Count}; risks: {RiskCounts}";
+            var testS = "";
+            foreach (var test in Tests)
+                testS += $"[{test.Type}: {test.Summary.TestCount}], ";
+            if(testS.Length > 2)
+                testS = testS.Substring(0, testS.Length - 2);
+            return $"{Arrow} -> methods: {MethodCount}; tests: {testS}; test2run: {TestsToRun.Count}; risks: [{RiskCounts}]";
         }
     }
 }
