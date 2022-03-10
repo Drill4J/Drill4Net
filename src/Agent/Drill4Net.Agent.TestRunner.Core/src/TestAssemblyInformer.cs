@@ -17,7 +17,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     /// <summary>
     /// Informer about test needed to run for specified directory and assembly
     /// </summary>
-    public class TestInformer
+    public class TestAssemblyInformer
     {
         public string TargetName { get; }
 
@@ -31,6 +31,7 @@ namespace Drill4Net.Agent.TestRunner.Core
         private readonly StandardAgentRepository _agentRep;
         private readonly StandardAgent _agent;
 
+        private static TestToRunResponse _t2run;
         private readonly AdminRequester _adminRequester;
         private const string Subsystem = CoreConstants.SUBSYSTEM_TEST_RUNNER;
         private readonly ManualResetEventSlim _initBlocker = new(false);
@@ -38,7 +39,7 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         /***************************************************************************/
 
-        public TestInformer(RunDirectoryOptions dirOptions, RunAssemblyOptions asmOptions, TestRunnerDebugOptions dbgOpts = null)
+        public TestAssemblyInformer(RunDirectoryOptions dirOptions, RunAssemblyOptions asmOptions, TestRunnerDebugOptions dbgOpts = null)
         {
             _dirOptions = dirOptions ?? throw new Exception("Test assembly directory's options is empty");
             _asmOptions = asmOptions ?? throw new Exception("Test assembly's options is empty");
@@ -48,7 +49,7 @@ namespace Drill4Net.Agent.TestRunner.Core
                 throw new Exception("Test assembly does not exist");
             //
             _dbgOpts = dbgOpts;
-            _logger = new TypedLogger<TestInformer>(Subsystem);
+            _logger = new TypedLogger<TestAssemblyInformer>(Subsystem);
             _agentRep = CreateAgentRepository();
             TargetName = _agentRep.TargetName;
             _logger.Extras.Add("Target", TargetName);
@@ -96,19 +97,30 @@ namespace Drill4Net.Agent.TestRunner.Core
             var isFake = _dbgOpts is { Disabled: false, IsFake: true };
             _logger.Debug($"Fake mode: {isFake}");
 
+            #region Calc running type
             var assocCtxs = await GetAssociatedTests();
             var assocTests = assocCtxs.Select(a => a.DisplayName);
             var asmTests = await GetAssemblyTests();
             var shareTests = asmTests.Intersect(assocTests);
-            var newTests = asmTests.Except(shareTests); //we have only DisplayNames
-            var delTests = assocTests.Except(shareTests); //we have full test case contexts
+            var newTests = asmTests.Except(shareTests) //we have only DisplayNames
+                .Select(a => TestContextHelper.GetQualifiedName(a))
+                .ToList();
+            var delTests = assocTests.Except(shareTests) //we have full test case contexts
+                .Select(a => TestContextHelper.GetQualifiedName(a))
+                .ToHashSet();
+            _logger.Info($"New tests: {newTests.Count}, deleted tests: {delTests.Count}");
 
             var runningType = overridenType == RunningType.Unknown ?
-                await GetRunningType(isFake).ConfigureAwait(false):
+                await GetRunningTypeByService(isFake).ConfigureAwait(false):
                 overridenType;
-            _logger.Info($"Running type: {runningType}");
 
-            var runInfo = new DirectoryRunInfo
+            if (runningType == RunningType.Nothing && newTests.Count > 0)
+                runningType = RunningType.Certain;
+            
+            _logger.Info($"Running type: {runningType}");
+            #endregion
+
+            var dirInfo = new DirectoryRunInfo
             {
                 Target = TargetName,
                 RunType = runningType,
@@ -120,78 +132,86 @@ namespace Drill4Net.Agent.TestRunner.Core
             if (runningType == RunningType.Certain)
             {
                 // get tests to run from Admin
-                var run = await GetTestsToRun(isFake)
-                    .ConfigureAwait(false);
-                if (run.ByType == null) //it is error here
-                {
-                    _logger.Error("No tests");
-                    return runInfo;
-                }
+                if(_t2run == null)
+                    _t2run = await GetTestsToRun(isFake).ConfigureAwait(false);
 
-                if (!run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
+                var seqDict = new Dictionary<string, bool>();
+                if (newTests.Count == 0)
                 {
-                    runInfo.RunType = RunningType.Nothing;
-                    return runInfo;
-                }
-
-                // adapt tests to run in CLI
-                var hash = new HashSet<string>();
-                foreach (var t2r in run.ByType[AgentConstants.TEST_AUTO])
-                {
-                    var name = t2r.Name; //it is DisplayName, not QualifiedName
-                    var metadata = t2r.Details.metadata;
-                    if (!metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
-                        _logger.Error($"Unknown context in metadata for test [{name}]");
-                    var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
-                    if (ctx == null)
-                        _logger.Error($"Tests' context in metadata is empty for test [{name}]");
-
-                    // assembly path
-                    var asmPath = ctx.AssemblyPath; //it's original tests' assembly path! Possibly, new build id located by ANOTHER path
-                    if (string.IsNullOrWhiteSpace(asmPath))
+                    if (_t2run.ByType == null) //it is error here
                     {
-                        _logger.Error($"Unknown test assembly for test [{name}]");
-                        continue;
+                        _logger.Error("No tests");
+                        return dirInfo;
                     }
 
-                    //test qualified name
-                    string qName = ctx.QualifiedName;
-                    if (string.IsNullOrWhiteSpace(qName)) //it's possible
-                        qName = TestContextHelper.GetQualifiedName(name);
-
-                    //dublicates aren't needed
-                    if (hash.Contains(qName))
-                        continue;
-                    hash.Add(qName);
-
-                    bool mustSeq = true;
-                    if (ctx.Engine != null)
-                        mustSeq = ctx.Engine.MustSequential;
-
-                    // insert test info
-                    RunAssemblyInfo asmInfo;
-                    if (runInfo.RunAssemblyInfos.ContainsKey(asmPath))
+                    if (!_t2run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
                     {
-                        asmInfo = runInfo.RunAssemblyInfos[asmPath];
+                        dirInfo.RunType = RunningType.Nothing;
+                        return dirInfo;
                     }
-                    else
+                    //
+                    var nameHash = new HashSet<string>();
+
+                    foreach (var t2r in _t2run.ByType[AgentConstants.TEST_AUTO])
                     {
-                        asmInfo = new()
+                        var name = t2r.Name; //it is DisplayName, not QualifiedName
+                        var metadata = t2r.Details.metadata;
+                        if (!metadata.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT))
+                            _logger.Error($"Unknown context in metadata for test [{name}]");
+                        var ctx = GetTestCaseContext(metadata[AgentConstants.KEY_TESTCASE_CONTEXT]);
+                        if (ctx == null)
+                            _logger.Error($"Tests' context in metadata is empty for test [{name}]");
+
+                        // assembly path
+                        var asmPath = ctx.AssemblyPath; //it's original tests' assembly path! Possibly, new build id located by ANOTHER path
+                        if (string.IsNullOrWhiteSpace(asmPath))
                         {
-                            OrigDirectory = Path.GetDirectoryName(asmPath),
-                            AssemblyName = Path.GetFileName(asmPath),
-                            MustSequential = mustSeq,
-                            Tests = new(),
-                        };
-                        runInfo.RunAssemblyInfos.Add(asmPath, asmInfo);
+                            _logger.Error($"Unknown test assembly for test [{name}]");
+                            continue;
+                        }
+
+                        // we only need tests for the current TestInformer object
+                        if (!AssemblyPath.Equals(asmPath, StringComparison.InvariantCultureIgnoreCase))
+                            continue;
+
+                        //test qualified name
+                        string qName = ctx.QualifiedName;
+                        if (string.IsNullOrWhiteSpace(qName)) //it's possible
+                            qName = TestContextHelper.GetQualifiedName(name);
+
+                        if (delTests.Contains(qName))
+                            continue;
+
+                        //dublicates aren't needed
+                        if (nameHash.Contains(qName))
+                            continue;
+                        nameHash.Add(qName);
+
+                        var mustSeq = _asmOptions.DefaultParallelRestrict;
+                        if (ctx.Engine != null)
+                            mustSeq = ctx.Engine.MustSequential;
+
+                        if (!seqDict.ContainsKey(asmPath))
+                            seqDict.Add(asmPath, mustSeq);
+
+                        // insert test info
+                        RunAssemblyInfo asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, asmPath, mustSeq);
+                        asmInfo.Tests.Add(qName);
                     }
-                    asmInfo.Tests.Add(qName);
                 }
-                return runInfo;
+                
+                // new tests
+                if (newTests.Count > 0) //we have the new tests that the admin side doesn't know about
+                {
+                    var asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, AssemblyPath, seqDict.ContainsKey(AssemblyPath) ? seqDict[AssemblyPath] : _asmOptions.DefaultParallelRestrict);
+                    asmInfo.Tests.AddRange(newTests);
+                }
+                //
+                return dirInfo;
             }
             #endregion
             #region All
-            if (runInfo.RunType == RunningType.All)
+            if (dirInfo.RunType == RunningType.All)
             {
                 var dir = _dirOptions.Directory;
                 foreach (var asm in _dirOptions.Assemblies)
@@ -203,11 +223,32 @@ namespace Drill4Net.Agent.TestRunner.Core
                         AssemblyName = asmName,
                         MustSequential = _asmOptions.DefaultParallelRestrict,
                     };
-                    runInfo.RunAssemblyInfos.Add(Path.Combine(dir, asm.DefaultAssemblyName), asmInfo);
+                    dirInfo.RunAssemblyInfos.Add(Path.Combine(dir, asm.DefaultAssemblyName), asmInfo);
                 }
             }
             #endregion
-            return runInfo;
+            return dirInfo;
+        }
+
+        internal RunAssemblyInfo GetOrCreateRunAssemblyInfo(DirectoryRunInfo runInfo, string asmPath, bool mustSeq)
+        {
+            RunAssemblyInfo asmInfo;
+            if (runInfo.RunAssemblyInfos.ContainsKey(asmPath))
+            {
+                asmInfo = runInfo.RunAssemblyInfos[asmPath];
+            }
+            else
+            {
+                asmInfo = new()
+                {
+                    OrigDirectory = Path.GetDirectoryName(asmPath),
+                    AssemblyName = Path.GetFileName(asmPath),
+                    MustSequential = mustSeq,
+                    Tests = new(),
+                };
+                runInfo.RunAssemblyInfos.Add(asmPath, asmInfo);
+            }
+            return asmInfo;
         }
 
         internal Task<List<string>> GetAssemblyTests()
@@ -262,7 +303,7 @@ namespace Drill4Net.Agent.TestRunner.Core
             return JsonConvert.DeserializeObject<TestCaseContext>(str);
         }
 
-        internal async virtual Task<RunningType> GetRunningType(bool isFake)
+        internal async virtual Task<RunningType> GetRunningTypeByService(bool isFake)
         {
             RunningType runningType;
             if (isFake)

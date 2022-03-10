@@ -16,7 +16,7 @@ namespace Drill4Net.Agent.TestRunner.Core
     {
         internal CliDescriptor CliDescriptor { get; }
 
-        private List<TestInformer> _informers;
+        private List<TestAssemblyInformer> _informers;
         private readonly Logger _logger;
 
         /********************************************************************************/
@@ -76,15 +76,15 @@ namespace Drill4Net.Agent.TestRunner.Core
             return list;
         }
 
-        private List<TestInformer> CreateInformers(IEnumerable<RunDirectoryOptions> dirs, TestRunnerDebugOptions dbgOpts)
+        private List<TestAssemblyInformer> CreateInformers(IEnumerable<RunDirectoryOptions> dirs, TestRunnerDebugOptions dbgOpts)
         {
             // 1. No parallel execution - Connector with websocket cannot so
             // 2. No async here because inside TestInformer (and deeper) all so
-            var list = new List<TestInformer>();
+            var list = new List<TestAssemblyInformer>();
             foreach (var dirOpts in dirs)
             {
                 foreach(var asmOpts in dirOpts.Assemblies)
-                    list.Add(new TestInformer(dirOpts, asmOpts, dbgOpts));
+                    list.Add(new TestAssemblyInformer(dirOpts, asmOpts, dbgOpts));
             }
             //we wait here until ALL agents are initialized (and manually registered in Drill admin!)
             return list;
