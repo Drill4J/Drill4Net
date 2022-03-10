@@ -9,6 +9,8 @@ using Drill4Net.BanderLog;
 namespace Drill4Net.Admin.Requester
 {
     //ALSO: http://localhost:8090/apidocs/index.html?url=./openapi.json#/
+    //https://kb.epam.com/display/EPMDJ/Code+Coverage+plugin+endpoints
+    //https://kb.epam.com/display/EPMDJ/API+End+points+for+Back-end+admin+service
 
     public class AdminRequester
     {
@@ -79,7 +81,8 @@ namespace Drill4Net.Admin.Requester
             //var a = _client.Get(request);
             var tests = await GetData<AssociatedTest[]>(request, target, "associated tests", "Bad response for associated tests retrieving");
             var response = new AssociatedTestsResponse();
-            response.Tests.AddRange(tests);
+            if(tests != null && tests.Length > 0)
+                response.Tests.AddRange(tests);
             return response;
         }
 
@@ -111,6 +114,5 @@ namespace Drill4Net.Admin.Requester
 
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
-
     }
 }

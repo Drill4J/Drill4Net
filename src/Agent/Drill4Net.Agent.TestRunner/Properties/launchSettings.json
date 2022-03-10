@@ -3,10 +3,6 @@
     "Drill4Net.Agent.TestRunner": {
       "commandName": "Project"
     },
-    "ci": {
-      "commandName": "Project",
-      "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Distributions\\debug\\Drill4Net_dis\\ci\\test_A\\run.yml\""
-    },
     "ci2": {
       "commandName": "Project",
       "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Drill4Net\\build\\bin\\Debug\\Drill4Net.Agent.TestRunner\\net6.0\\\\run_IHS.yml\""
@@ -14,6 +10,18 @@
     "run_test": {
       "commandName": "Project",
       "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Distributions\\test-builds\\SpecFlow+Xunit\\configs\\build2\\run_sp_xUnit_2_VS.yml\""
+    },
+    "build_2": {
+      "commandName": "Project",
+      "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Distributions\\test-builds\\SpecFlow+Xunit\\configs\\build2_VS\\run_sp_xUnit.yml\""
+    },
+    "build_3": {
+      "commandName": "Project",
+      "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Distributions\\test-builds\\SpecFlow+Xunit\\configs\\build3_VS\\run_sp_xUnit.yml\""
+    },
+    "build_1": {
+      "commandName": "Project",
+      "commandLineArgs": "--cfg_path=\"d:\\Projects\\EPM-D4J\\Distributions\\test-builds\\SpecFlow+Xunit\\configs\\build1_VS\\run_sp_xUnit.yml\""
     }
   }
 }

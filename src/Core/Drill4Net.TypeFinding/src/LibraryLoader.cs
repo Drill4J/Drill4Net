@@ -34,7 +34,7 @@ namespace Drill4Net.TypeFinding
         public Type LoadType(string asmPath, string fullName)
         {
             var asm  = LoadAssembly(asmPath);
-            return asm.GetTypes().SingleOrDefault(a => a.FullName == fullName);
+             return asm.GetTypes().SingleOrDefault(a => a.FullName == fullName);
         }
 
         public Assembly LoadAssembly(string asmPath)

@@ -54,6 +54,13 @@ namespace Drill4Net.Agent.TestRunner.Core
             TargetName = _agentRep.TargetName;
             _logger.Extras.Add("Target", TargetName);
             _logger.RefreshExtrasInfo();
+
+            // admin side data retriever
+            //var testVersion = _agentRep.TargetVersion;
+            //var testBuild = _agentRep.Builds.Where(a => a.Summary.Tests.Any())
+            //    .OrderByDescending(a => a.BuildVersion).FirstOrDefault();
+            //if (testBuild != null)
+            //    testVersion = testBuild.BuildVersion;
             _adminRequester = new(CoreConstants.SUBSYSTEM_TEST_RUNNER, _agentRep.Options.Admin.Url,
                 _agentRep.TargetName, _agentRep.TargetVersion);
 
@@ -131,20 +138,22 @@ namespace Drill4Net.Agent.TestRunner.Core
             #region Certain
             if (runningType == RunningType.Certain)
             {
+                var curAsmFilename = Path.GetFileName(AssemblyPath);
+
                 // get tests to run from Admin
-                if(_t2run == null)
+                if (_t2run == null)
                     _t2run = await GetTestsToRun(isFake).ConfigureAwait(false);
 
                 var seqDict = new Dictionary<string, bool>();
-                if (newTests.Count == 0)
+                if (_t2run.ByType == null && newTests.Count == 0) //it is error here
                 {
-                    if (_t2run.ByType == null) //it is error here
-                    {
-                        _logger.Error("No tests");
-                        return dirInfo;
-                    }
+                    _logger.Error("No tests to run");
+                    return dirInfo;
+                }
 
-                    if (!_t2run.ByType.ContainsKey(AgentConstants.TEST_AUTO))
+                if (_t2run.ByType != null)
+                {
+                    if (!_t2run.ByType.ContainsKey(AgentConstants.TEST_AUTO) && newTests.Count == 0)
                     {
                         dirInfo.RunType = RunningType.Nothing;
                         return dirInfo;
@@ -171,7 +180,8 @@ namespace Drill4Net.Agent.TestRunner.Core
                         }
 
                         // we only need tests for the current TestInformer object
-                        if (!AssemblyPath.Equals(asmPath, StringComparison.InvariantCultureIgnoreCase))
+                        var asmName = Path.GetFileName(asmPath);
+                        if (!curAsmFilename.Equals(asmName, StringComparison.InvariantCultureIgnoreCase))
                             continue;
 
                         //test qualified name
@@ -191,11 +201,11 @@ namespace Drill4Net.Agent.TestRunner.Core
                         if (ctx.Engine != null)
                             mustSeq = ctx.Engine.MustSequential;
 
-                        if (!seqDict.ContainsKey(asmPath))
-                            seqDict.Add(asmPath, mustSeq);
+                        if (!seqDict.ContainsKey(AssemblyPath))
+                            seqDict.Add(AssemblyPath, mustSeq);
 
                         // insert test info
-                        RunAssemblyInfo asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, asmPath, mustSeq);
+                        RunAssemblyInfo asmInfo = GetOrCreateRunAssemblyInfo(dirInfo, AssemblyPath, mustSeq); //exactly AssemblyPath, not asmPath
                         asmInfo.Tests.Add(qName);
                     }
                 }
@@ -259,29 +269,42 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         internal async Task<List<TestCaseContext>> GetAssociatedTests()
         {
-            var tests = await _adminRequester.GetAssociatedTests();
-            List<TestCaseContext> res = new();
-            foreach (var test in tests.Tests)
+            //get ALL tests in the Agent's history
+            Dictionary<string, TestCaseContext> res = new();
+            foreach (var build in _agentRep.Builds.OrderByDescending(a => a.BuildVersion))
             {
-                if (test.overview.details.metadata?.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT) != true)
-                    continue;
-                var dataS = test.overview.details.metadata[AgentConstants.KEY_TESTCASE_CONTEXT];
-                try
+                var adminRequester = new AdminRequester(CoreConstants.SUBSYSTEM_TEST_RUNNER, _agentRep.Options.Admin.Url,
+                    _agentRep.TargetName, build.BuildVersion);
+                var tests = await adminRequester.GetAssociatedTests();
+
+                var curAsmFileName = Path.GetFileName(AssemblyPath);
+                foreach (var test in tests.Tests)
                 {
-                    var data = JsonConvert.DeserializeObject<TestCaseContext>(dataS);
-                    var path = data.AssemblyPath;
-                    if (!File.Exists(path))
+                    if (test.overview.details.metadata?.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT) != true)
                         continue;
-                    if (!path.Equals(AssemblyPath, StringComparison.InvariantCultureIgnoreCase))
-                        continue;
-                    res.Add(data);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error($"Test case data was not deserialized for the test [{test.name}] in [{AssemblyPath}]", ex);
+                    var dataS = test.overview.details.metadata[AgentConstants.KEY_TESTCASE_CONTEXT];
+                    try
+                    {
+                        var data = JsonConvert.DeserializeObject<TestCaseContext>(dataS);
+                        var key = data.GetKey();
+                        if (res.ContainsKey(key))
+                            continue;
+
+                        var path = data.AssemblyPath;
+                        if (!File.Exists(path))
+                            continue;
+                        var fileName = Path.GetFileName(path);
+                        if (!fileName.Equals(curAsmFileName, StringComparison.InvariantCultureIgnoreCase))
+                            continue;
+                        res.Add(key, data);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Test case data was not deserialized for the test [{test.name}] in [{AssemblyPath}]", ex);
+                    }
                 }
             }
-            return res;
+            return res.Values.ToList();
         }
 
         internal async Task<TestToRunResponse> GetTestsToRun(bool isFake)
