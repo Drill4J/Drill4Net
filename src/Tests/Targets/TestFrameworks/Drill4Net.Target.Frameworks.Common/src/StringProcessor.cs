@@ -4,12 +4,12 @@
     {
         public string Uppercase(string str)
         {
-            return str?.ToUpper(); //ToUpperString(str);
+            return ToUpperString(str);// return str?.ToUpper();
         }
 
-        //internal string ToUpperString(string str)
-        //{
-        //    return str?.ToUpper();
-        //}
+        internal string ToUpperString(string str)
+        {
+            return str?.ToUpper();
+        }
     }
 }
