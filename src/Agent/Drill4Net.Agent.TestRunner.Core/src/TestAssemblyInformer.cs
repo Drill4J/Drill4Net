@@ -272,6 +272,10 @@ namespace Drill4Net.Agent.TestRunner.Core
 
         internal async Task<List<TestCaseContext>> GetAssociatedTests()
         {
+            //https://jiraeu.epam.com/browse/EPMDJ-9329
+            //If some test will be deleted in build-A, and then in build-B it will be restored,
+            //it won't be started without the changing its associated methods. Maybe it's not an issue...
+
             //get ALL tests in the Agent's history
             Dictionary<string, TestCaseContext> res = new();
             foreach (var build in _agentRep.Builds.OrderByDescending(a => a.BuildVersion))
@@ -286,24 +290,27 @@ namespace Drill4Net.Agent.TestRunner.Core
                     if (test.overview.details.metadata?.ContainsKey(AgentConstants.KEY_TESTCASE_CONTEXT) != true)
                         continue;
                     var dataS = test.overview.details.metadata[AgentConstants.KEY_TESTCASE_CONTEXT];
-                    try
+                    if (dataS != null)
                     {
-                        var data = JsonConvert.DeserializeObject<TestCaseContext>(dataS);
-                        var key = data.GetKey();
-                        if (res.ContainsKey(key))
-                            continue;
+                        try
+                        {
+                            var data = JsonConvert.DeserializeObject<TestCaseContext>(dataS);
+                            var key = data.GetKey();
+                            if (res.ContainsKey(key))
+                                continue;
 
-                        var path = data.AssemblyPath;
-                        if (!File.Exists(path))
-                            continue;
-                        var fileName = Path.GetFileName(path);
-                        if (!fileName.Equals(curAsmFileName, StringComparison.InvariantCultureIgnoreCase))
-                            continue;
-                        res.Add(key, data);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error($"Test case data was not deserialized for the test [{test.name}] in [{AssemblyPath}]", ex);
+                            var path = data.AssemblyPath;
+                            if (!File.Exists(path))
+                                continue;
+                            var fileName = Path.GetFileName(path);
+                            if (!fileName.Equals(curAsmFileName, StringComparison.InvariantCultureIgnoreCase))
+                                continue;
+                            res.Add(key, data);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Error($"Test case data was not deserialized for the test [{test.name}] in [{AssemblyPath}]", ex);
+                        }
                     }
                 }
             }

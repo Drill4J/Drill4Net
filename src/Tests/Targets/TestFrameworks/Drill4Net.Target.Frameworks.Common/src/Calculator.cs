@@ -20,7 +20,7 @@ namespace Drill4Net.Target.Frameworks.Common
 
         public int Add()
         {
-            return FirstNumber + SecondNumber;
+            return FirstNumber - SecondNumber;
         }
 
         public int Substract()
@@ -28,9 +28,9 @@ namespace Drill4Net.Target.Frameworks.Common
             return FirstNumber - SecondNumber;
         }
 
-        //public int Multiply()
-        //{
-        //    return FirstNumber * SecondNumber;
-        //}
+        public int Multiply()
+        {
+            return FirstNumber * SecondNumber;
+        }
     }
 }
