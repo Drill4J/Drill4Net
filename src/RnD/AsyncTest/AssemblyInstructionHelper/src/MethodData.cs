@@ -13,7 +13,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
         public string MethodName {get; set;}
         public List<InstructionData> Instructions { get; set; }
 
-        //**************************************************************************************//
+        /**************************************************************************************/
 
         public MethodInfo(string methodName)
         {
@@ -27,11 +27,11 @@ namespace Drill4Net.AssemblyInstruction.Helper
             MethodName = methodName;
         }
 
-        //**************************************************************************************//
+        /**************************************************************************************/
 
         public List<Instruction> GetUserInstructions ()
         {
-            return this.Instructions.Where(i => i.IsUserInst == true).Select(e => e.Inst).ToList();
+            return Instructions.Where(i => i.IsUserInst).Select(e => e.Inst).ToList();
         }
 
         public void PrintUserInstructions()
@@ -45,7 +45,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
 
         public List<Instruction> GetCGInstructions()
         {
-            return this.Instructions.Where(i => i.IsUserInst == false).Select(e => e.Inst).ToList();
+            return Instructions.Where(i => i.IsUserInst).Select(e => e.Inst).ToList();
         }
     }
 }

@@ -127,6 +127,7 @@ namespace Drill4Net.Injector.Core
                 Path.Combine(prg32, "Reference Assemblies", "Microsoft", "Framework", ".NETFramework") :
                 Path.Combine(dotnetDir, "Microsoft.NETCore.App");
 
+            //guanito...
             Regex reg = new(isNetFx ? "v4.*" : @"5\.*|6\.*|7\.*|8\.*");
             var fileName = isNetFx ? "mscorlib.dll" : "System.Private.CoreLib.dll";
             var dirs = Directory.GetDirectories(root)

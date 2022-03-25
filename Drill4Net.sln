@@ -320,6 +320,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!!_Artefacts", "!!_Artefact
 		artefacts\templates\agent.yml = artefacts\templates\agent.yml
 		artefacts\templates\ci.yml = artefacts\templates\ci.yml
 		artefacts\templates\configurator_app.yml = artefacts\templates\configurator_app.yml
+		docker-compose-run-distribution.yml = docker-compose-run-distribution.yml
 		artefacts\docker-compose.yml = artefacts\docker-compose.yml
 		src\Dockerfile-dril4net-distribution = src\Dockerfile-dril4net-distribution
 		artefacts\templates\injector.yml = artefacts\templates\injector.yml

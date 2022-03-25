@@ -8,13 +8,13 @@ using Mono.Cecil.Cil;
 namespace Drill4Net.AssemblyInstruction.Helper
 {
     /// <summary>
-    /// Process IL Instructions for assembly.
+    /// Process IL instructions for assembly.
     /// </summary>
     public class AsyncInstructionManager
     {
         public List<MethodInfo> AsyncMethodInfo { get; }
 
-        //**************************************************************************************//
+        /**************************************************************************************/
 
         public AsyncInstructionManager(string assemmblyPath)
         {
@@ -23,10 +23,10 @@ namespace Drill4Net.AssemblyInstruction.Helper
             ProcessInstructions(methods);
         }
 
-        //**************************************************************************************//
+        /**************************************************************************************/
 
         /// <summary>
-        ///Skip compiller generated code at the beggining of method and find start index for processing.
+        ///Skip compiler generated code at the beggining of method and find start index for processing.
         /// </summary>
         ///<param name="body">Method body</param>
         ///<returns> Start index for processing.</returns>
@@ -92,7 +92,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
         }
 
         /// <summary>
-        ///Read MoveNext Methods From Assembly.
+        ///Read MoveNext methods from the assembly.
         /// </summary>
         ///<param name="assemmblyPath">Path to assembly</param>
         private List<MethodDefinition> ReadAsyncMethodsFromAssembly(string assemmblyPath)
@@ -100,16 +100,16 @@ namespace Drill4Net.AssemblyInstruction.Helper
             var instructions = new List<InstructionData>();
             AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemmblyPath);
             return assembly.MainModule
-                      .GetTypes()
-                      .SelectMany(t => t.Methods)
-                      .Where(m => m.HasBody && Regex.IsMatch(m.FullName, $@"<\w+>d__\d+::MoveNext()"))
-                      .ToList();
+                    .GetTypes()
+                    .SelectMany(t => t.Methods)
+                    .Where(m => m.HasBody && Regex.IsMatch(m.FullName, $@"<\w+>d__\d+::MoveNext()"))
+                    .ToList();
         }
 
         /// <summary>
         ///Check if instruction starts try block and skip generated code at the beggining.
         /// </summary>
-        ///<param name="methods">List of MethodDefinition</param>
+        ///<param name="methods">List of <see cref="MethodDefinition"/></param>
         private void ProcessInstructions(List<MethodDefinition> methods)
         {
             foreach (var method in methods)
@@ -133,7 +133,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
                     }
                 }
                 AsyncMethodInfo.Add(methodInfo);
-                var test = methodInfo.GetUserInstructions();
+                var instrs = methodInfo.GetUserInstructions();
                 Console.WriteLine("Done.");
             }
         }
@@ -169,9 +169,8 @@ namespace Drill4Net.AssemblyInstruction.Helper
         }
 
         /// <summary>
-        ///Check if instruction is user instruction.
+        ///Check if a instruction is user instruction.
         /// </summary>
-        ///<param name="inst">Instruction</param>
         public void UserInstCheck(List<Instruction> instList, ref MethodInfo processedInfo, ref int currentInst)
         {
             //process Nop
@@ -186,7 +185,7 @@ namespace Drill4Net.AssemblyInstruction.Helper
             else if (instList[currentInst].Operand!=null && instList[currentInst].Operand.ToString().Contains("::get_IsCompleted()"))
             {
                 processedInfo.Instructions.Last().IsUserInst = false;
-                while(currentInst < instList.Count() && 
+                while(currentInst < instList.Count() &&
                     instList[currentInst].Previous.Operand == null || !instList[currentInst].Previous.Operand.ToString().Contains("::GetResult()"))
                 {
                     processedInfo.Instructions.Add(new InstructionData(instList[currentInst], false));

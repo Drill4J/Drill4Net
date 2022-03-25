@@ -10,13 +10,12 @@ namespace Drill4Net.AssemblyInstruction.Helper
         public Instruction Inst { get; set; }
         public bool IsUserInst { get; set; }
 
-        //**************************************************************************************//
+        /********************************************************************/
+
         public InstructionData (Instruction inst, bool isUserInst)
         {
             Inst = inst;
             IsUserInst=isUserInst;
         }
-
-        //**************************************************************************************//
     }
 }

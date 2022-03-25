@@ -28,7 +28,7 @@ Proxy: # the injecting for transfer data to profiler
    Method: Register
    Static: true
 Profiler: # data collector/processor in separate assembly
-   Name: Standard agent # name exactly for agent subsystem
+   Name: Transmitter # name exactly for agent subsystem
    Directory: ..\..\Drill4Net.Agent.Transmitter\netstandard2.0\
    AssemblyName: Drill4Net.Agent.Transmitter.dll
    Namespace: Drill4Net.Agent.Transmitter
