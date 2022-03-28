@@ -290,29 +290,32 @@ namespace Drill4Net.Injector.Engine
                 },
             };
 
-            foreach (var plugName in optPlugins.Keys)
+            if (optPlugins != null)
             {
-                try
+                foreach (var plugName in optPlugins.Keys)
                 {
-                    var plugCfg = GetPluginOptions(plugName, opts.Plugins);
-                    var plugDir =_rep.AppOptions.PluginDir;
-                    var plugTypes = pluginator.GetBy(TypeFinderMode.Interface, plugDir, nameof(IInjectorPlugin), filter);
-                    if (plugTypes.Count == 0)
+                    try
                     {
-                        _logger.Error($"No plugin type found for the name [{plugName}]");
-                        continue;
+                        var plugCfg = GetPluginOptions(plugName, opts.Plugins);
+                        var plugDir = _rep.AppOptions.PluginDir;
+                        var plugTypes = pluginator.GetBy(TypeFinderMode.Interface, plugDir, nameof(IInjectorPlugin), filter);
+                        if (plugTypes.Count == 0)
+                        {
+                            _logger.Error($"No plugin type found for the name [{plugName}]");
+                            continue;
+                        }
+                        var plugType = plugTypes[0];
+                        if (plugTypes.Count > 1)
+                            _logger.Warning($"More one plugin type found for the name [{plugName}]. [{plugType.FullName}] will be used");
+                        //
+                        var plug = (IInjectorPlugin)Activator.CreateInstance(plugType);
+                        plug.Init(dir, proxyClass, plugCfg);
+                        plugins.Add(plug);
                     }
-                    var plugType = plugTypes[0];
-                    if (plugTypes.Count > 1)
-                        _logger.Warning($"More one plugin type found for the name [{plugName}]. [{plugType.FullName}] will be used");
-                    //
-                    var plug = (IInjectorPlugin)Activator.CreateInstance(plugType);
-                    plug.Init(dir, proxyClass, plugCfg);
-                    plugins.Add(plug);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error($"Plugin [{plugName}] is not loaded: {ex.Message}");
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Plugin [{plugName}] is not loaded: {ex.Message}");
+                    }
                 }
             }
             return plugins;
