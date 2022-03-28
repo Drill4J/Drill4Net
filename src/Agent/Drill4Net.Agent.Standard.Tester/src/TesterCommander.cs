@@ -102,6 +102,7 @@ namespace Drill4Net.Agent.Standard.Tester
             {
                 "?" or "help" => _helper.PrintMenu(),
                 "tree" or "list" => _helper.PrintTree(TreeInfo.MethodSorted),
+                "info" => _helper.PrintTreeInfo(TreeInfo),
                 "save" => _helper.SaveTreeData(TreeInfo.MethodSorted, TreeInfo.Opts),
                 _ => CallMethod(input)
             };

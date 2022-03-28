@@ -222,6 +222,7 @@ namespace Drill4Net.Agent.Standard
             IsInitialized = true;
             RaiseInitilizedEvent(); //for external delegates (e.g. in Configurator)
             StandardAgentBlocker.Release();
+            ReleaseProbeProcessing();
 
             _logger.Debug($"{nameof(StandardAgent)} is fully initialized.");
         }

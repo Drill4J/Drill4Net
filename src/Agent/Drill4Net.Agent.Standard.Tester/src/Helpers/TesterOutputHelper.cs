@@ -34,9 +34,12 @@ namespace Drill4Net.Agent.Standard.Tester
         {
             WriteMessage($"\n  Tree data:", TesterConstants.COLOR_TEXT_HIGHLITED);
             WriteMessage($"  Name: {treeInfo.InjSolution.Name}", TesterConstants.COLOR_INFO);
+            WriteMessage($"  Product version: {treeInfo.InjSolution.ProductVersion}", TesterConstants.COLOR_INFO);
             if (!string.IsNullOrWhiteSpace(treeInfo.InjSolution.Description))
                 WriteMessage($"  Description: {treeInfo.InjSolution.Description}", TesterConstants.COLOR_INFO);
-            WriteMessage($"  Orig destination: {treeInfo.InjSolution.DestinationPath}", TesterConstants.COLOR_INFO);
+            WriteMessage($"  Source directory: {treeInfo.InjSolution.SourceDir}", TesterConstants.COLOR_INFO);
+            WriteMessage($"  Instrumented directory (orig): {treeInfo.InjSolution.DestinationPath}", TesterConstants.COLOR_INFO);
+            WriteMessage($"  Instrumented directory (current): {treeInfo.TargetPath}", TesterConstants.COLOR_INFO);
 
             //TODO: fix empty FinishTime
             WriteMessage($"  Processed time: {treeInfo.InjSolution.FinishTime ?? treeInfo.InjSolution.StartTime}", TesterConstants.COLOR_INFO);
@@ -86,6 +89,7 @@ namespace Drill4Net.Agent.Standard.Tester
                 WriteMessage($"        {methCounter}. {meth.Name} ({meth.Signature.Parameters})", TesterConstants.COLOR_TEXT);
             }
             WriteMessage("\n   ***  END OF METHOD'S TREE  ***", TesterConstants.COLOR_TEXT_HIGHLITED);
+            WriteMessage("\n   !!!  Please, use methods only for the ModelTarget class  !!!", TesterConstants.COLOR_TEXT_HIGHLITED);
             return true;
         }
 
